@@ -28,15 +28,24 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapdevSupportingDocsValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,13 +56,13 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
    */
   private static final long serialVersionUID = 1L;
 
-  private long supportingDocID;
+  private long deliverableID;
   private long capdevID;
   private long projectID;
   private CapacityDevelopment capdev;
   private CapdevSupportingDocsValidator validator;
   private CapdevSupportingDocs capdevSupportingDocs;
-  private CenterDeliverable supportingDoc;
+  private CenterDeliverable deliverable;
   private List<CenterDeliverableType> deliverablesList;
   private List<CenterDeliverableType> deliverablesSubtypesList;
   private List<String> links;
@@ -85,6 +94,29 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
+  @Override
+  public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
   public String deleteDocumentLink() {
     Map<String, Object> parameters = this.getParameters();
     long documentID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
@@ -93,6 +125,15 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     document.setModifiedBy(this.getCurrentUser());
     centerDeliverableDocService.saveDeliverableDocument(document);
     return SUCCESS;
+  }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = deliverable.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
@@ -108,6 +149,16 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   public CapdevSupportingDocs getCapdevSupportingDocs() {
     return capdevSupportingDocs;
+  }
+
+
+  public CenterDeliverable getDeliverable() {
+    return deliverable;
+  }
+
+
+  public long getDeliverableID() {
+    return deliverableID;
   }
 
 
@@ -141,19 +192,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public CenterDeliverable getSupportingDoc() {
-    return supportingDoc;
-  }
-
-
-  public long getSupportingDocID() {
-    return supportingDocID;
-  }
-
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -164,14 +206,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     Collections.sort(deliverablesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
 
     try {
-      supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
-      System.out.println(supportingDocID);
+      deliverableID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_DELIVERABLE_ID)));
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
-      System.out.println(capdevID);
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
-      System.out.println(projectID);
     } catch (final Exception e) {
-      supportingDocID = -1;
+      deliverableID = -1;
       capdevID = -1;
       projectID = 0;
     }
@@ -182,59 +222,103 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
 
       if (history != null) {
-        supportingDoc = history;
+        deliverable = history;
       } else {
         this.transaction = null;
         this.setTransaction("-1");
       }
     } else {
-      supportingDoc = centerDeliverableService.getDeliverableById(supportingDocID);
+      deliverable = centerDeliverableService.getDeliverableById(deliverableID);
     }
 
-    if (supportingDoc != null) {
-      capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    if (deliverable != null) {
+      Path path = this.getAutoSaveFilePath();
 
-      if (supportingDoc.getDeliverableType() != null) {
-        Long deliverableTypeParentId = supportingDoc.getDeliverableType().getDeliverableType().getId();
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
+        BufferedReader reader = null;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
 
-        deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
-          .filter(
-            dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
-          .collect(Collectors.toList()));
-        Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
 
+
+        deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
+        capdev = capdevService.getCapacityDevelopmentById(capdevID);
+
+        deliverable.setCapdev(capdev);
+        System.out.println(deliverable.getDeliverableType().getId());
+        System.out.println(deliverable.getDeliverableType().getDeliverableType().getId());
+        if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
+          Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+          deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
+            .filter(
+              dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+            .collect(Collectors.toList()));
+          Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+
+        }
+
+
+        if (deliverable.getDocuments() != null) {
+          List<CenterDeliverableDocument> documents = new ArrayList<>();
+          for (CenterDeliverableDocument document : deliverable.getDocuments()) {
+            CenterDeliverableDocument doc = centerDeliverableDocService.getDeliverableDocumentById(document.getId());
+            documents.add(doc);
+          }
+          deliverable.setDocuments(documents);
+        }
+
+
+        this.setDraft(true);
+
+      } else {
+        this.setDraft(false);
+        capdev = capdevService.getCapacityDevelopmentById(capdevID);
+
+        if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
+          Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+          deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
+            .filter(
+              dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+            .collect(Collectors.toList()));
+          Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+
+        }
+
+        if (deliverable.getDeliverableDocuments() != null) {
+
+          List<CenterDeliverableDocument> documents =
+            deliverable.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+          Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+          deliverable.setDocuments(documents);
+        }
       }
-
-      if (supportingDoc.getDeliverableDocuments() != null) {
-
-        documents =
-          supportingDoc.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-      }
-
 
     }
-
 
   }
 
 
   @Override
   public String save() {
-    final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(supportingDocID);
-    supportingDocDB.setName(supportingDoc.getName());
+    final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(deliverableID);
+    supportingDocDB.setName(deliverable.getName());
 
 
-    if (supportingDoc.getDeliverableType().getId() != null) {
-      if (supportingDoc.getDeliverableType().getId() != -1) {
+    if (deliverable.getDeliverableType().getDeliverableType() != null) {
+      if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
         CenterDeliverableType deliverableType =
-          centerDeliverableTypeService.getDeliverableTypeById(supportingDoc.getDeliverableType().getId());
+          centerDeliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
         supportingDocDB.setDeliverableType(deliverableType);
       }
-
     }
 
-    supportingDocDB.setStartDate(supportingDoc.getStartDate());
+    supportingDocDB.setStartDate(deliverable.getStartDate());
+    supportingDocDB.setEndDate(deliverable.getEndDate());
 
 
     this.saveLinks(supportingDocDB);
@@ -248,6 +332,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     supportingDocDB.setModifiedBy(this.getCurrentUser());
 
     centerDeliverableService.saveDeliverable(supportingDocDB, this.getActionName(), relationsName);
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
 
 
     if (!this.getInvalidFields().isEmpty()) {
@@ -272,15 +362,15 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         supportingDocDB.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
       for (CenterDeliverableDocument document : documentsDB) {
-        if (!documents.contains(document)) {
+        if (!deliverable.getDocuments().contains(document)) {
           // capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
         }
       }
     }
 
-    if (documents != null) {
-      if (!documents.isEmpty()) {
-        for (CenterDeliverableDocument document : documents) {
+    if (deliverable.getDocuments() != null) {
+      if (!deliverable.getDocuments().isEmpty()) {
+        for (CenterDeliverableDocument document : deliverable.getDocuments()) {
           CenterDeliverableDocument documentSave = null;
           if (document.getId() == null) {
 
@@ -333,15 +423,23 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
+  public void setDeliverable(CenterDeliverable deliverable) {
+    this.deliverable = deliverable;
+  }
+
+
+  public void setDeliverableID(long deliverableID) {
+    this.deliverableID = deliverableID;
+  }
+
+
   public void setDeliverablesList(List<CenterDeliverableType> deliverablesList) {
     this.deliverablesList = deliverablesList;
   }
 
-
   public void setDeliverablesSubtypesList(List<CenterDeliverableType> deliverablesSubtypesList) {
     this.deliverablesSubtypesList = deliverablesSubtypesList;
   }
-
 
   public void setDocuments(List<CenterDeliverableDocument> documents) {
     this.documents = documents;
@@ -363,16 +461,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
 
-  public void setSupportingDoc(CenterDeliverable supportingDoc) {
-    this.supportingDoc = supportingDoc;
-  }
-
-
-  public void setSupportingDocID(long supportingDocID) {
-    this.supportingDocID = supportingDocID;
-  }
-
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
@@ -381,7 +469,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, supportingDoc, documents);
+      validator.validate(this, deliverable);
     }
   }
 

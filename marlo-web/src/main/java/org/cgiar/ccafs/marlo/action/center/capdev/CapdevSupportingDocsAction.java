@@ -43,7 +43,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
   private CapacityDevelopment capdev;
   private long capdevID;
   private long projectID;
-  private long supportingDocID;
+  private long deliverableID;
   private List<CenterDeliverable> deliverables;
 
   private CapdevSupportingDocsManager capdevsupportingDocsService;
@@ -68,7 +68,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     supportingDoc.setActiveSince(new Date());
     supportingDoc.setCreatedBy(this.getCurrentUser());
     supportingDoc.setModifiedBy(this.getCurrentUser());
-    supportingDocID = centerDeliverableSErvice.saveDeliverable(supportingDoc);
+    deliverableID = centerDeliverableSErvice.saveDeliverable(supportingDoc);
 
     return SUCCESS;
   }
@@ -95,6 +95,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public long getDeliverableID() {
+    return deliverableID;
+  }
+
+
   public List<CenterDeliverable> getDeliverables() {
     return deliverables;
   }
@@ -104,10 +109,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
     return projectID;
   }
 
-
-  public long getSupportingDocID() {
-    return supportingDocID;
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -139,6 +140,11 @@ public class CapdevSupportingDocsAction extends BaseAction {
   }
 
 
+  public void setDeliverableID(long deliverableID) {
+    this.deliverableID = deliverableID;
+  }
+
+
   public void setDeliverables(List<CenterDeliverable> deliverables) {
     this.deliverables = deliverables;
   }
@@ -146,11 +152,6 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setSupportingDocID(long supportingDocID) {
-    this.supportingDocID = supportingDocID;
   }
 
 

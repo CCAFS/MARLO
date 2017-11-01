@@ -36,13 +36,13 @@ function init(){
 
 
      (function(){
-      if($('input[type="checkbox"][name="otherDiscipline"]').is(":checked")){
+      if($('input[type="checkbox"][name="capdev.otherDiscipline"]').is(":checked")){
         $(".suggestDiscipline").show();
       }
-      if($('input[type="checkbox"][name="otherTargetGroup"]').is(":checked")){
+      if($('input[type="checkbox"][name="capdev.otherTargetGroup"]').is(":checked")){
         $(".suggestTagetGroup").show();
       }
-      if($('input[type="checkbox"][name="otherPartner"]').is(":checked")){
+      if($('input[type="checkbox"][name="capdev.otherPartner"]').is(":checked")){
         $(".suggestPartner").show();
       }
     })();
@@ -99,7 +99,7 @@ function init(){
 
 
   //display suggest text area to discipline
-  $('input[type="checkbox"][name="otherDiscipline"]').change(function() {
+  $('input[type="checkbox"][name="capdev.otherDiscipline"]').change(function() {
      if(this.checked) {
        $(".suggestDiscipline").show();
        $(".otherDisciplinecheck").val("1")
@@ -132,7 +132,7 @@ $(".removeTargetGroup").on("click", removeTargetGroup);
 $(".removeTargetGroup-action").on("click", removeTargetGroupAction);
 
 //display suggest text area to target groups
-  $('input[type="checkbox"][name="otherTargetGroup"]').change(function() {
+  $('input[type="checkbox"][name="capdev.otherTargetGroup"]').change(function() {
      if(this.checked) {
        $(".suggestTagetGroup").show();
        $(".otherTargetcheck").val("1")
@@ -324,7 +324,7 @@ $(".removepartner").on("click", removePartner);
 $(".removepartner-action").on("click", removePartnerAction);
 
 //display suggest text area to partners
-  $('input[type="checkbox"][name="otherPartner"]').change(function() {
+  $('input[type="checkbox"][name="capdev.otherPartner"]').change(function() {
      if(this.checked) {
        $(".suggestPartner").show();
        $(".otherPartnercheck").val("1")

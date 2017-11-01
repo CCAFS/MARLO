@@ -39,11 +39,17 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.ReadExcelFile;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapacityDevelopmentValidator;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +59,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -147,7 +156,25 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String cancel() {
-    return super.cancel();
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
   }
 
   public String deleteCountry() {
@@ -182,7 +209,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public String deleteRegion() {
     final Map<String, Object> parameters = this.getParameters();
     final long capDevRegionID =
@@ -192,6 +218,15 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdev_region.setModifiedBy(this.getCurrentUser());
     capdevLocationService.saveCapdevLocations(capdev_region);
     return SUCCESS;
+  }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = capdev.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = capdev.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
@@ -357,10 +392,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return transaction;
   }
 
-
   public File getUploadFile() {
     return uploadFile;
   }
+
 
   public String getUploadFileContentType() {
     return uploadFileContentType;
@@ -526,38 +561,95 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     if (capdev != null) {
 
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
+        BufferedReader reader = null;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        capdev = (CapacityDevelopment) autoSaveReader.readFromJson(jReader);
+
+        if (capdev.getCapDevCountries() != null) {
+          for (CapdevLocations capdevLocation : capdev.getCapDevCountries()) {
+            if (capdevLocation != null) {
+              capdevLocation.setLocElement(locElementService.getLocElementById(capdevLocation.getLocElement().getId()));
+            }
+          }
+        }
+
+        if (capdev.getCapDevRegions() != null) {
+
+          for (CapdevLocations capdevLocation : capdev.getCapDevRegions()) {
+            if (capdevLocation != null) {
+              capdevLocation.setLocElement(locElementService.getLocElementById(capdevLocation.getLocElement().getId()));
+            }
+          }
+        }
+
+
+        this.setDraft(true);
+
+      } else {
+        this.setDraft(false);
+
+        List<CapdevParticipant> participants = new ArrayList<>(
+          capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+        Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+
+        if (capdev.getCategory() == 1) {
+          if (!participants.isEmpty()) {
+            System.out.println(participants.get(0).getParticipant().getId());
+            capdev.setParticipant(participants.get(0).getParticipant());
+            System.out.println(participant);
+          }
+
+        }
+
+        if (capdev.getCategory() == 2) {
+          String ctFirstName = "";
+          String ctLastName = "";
+          String ctEmail = "";
+          if (capdev.getCtFirstName() != null) {
+            ctFirstName = capdev.getCtFirstName() + ", ";
+          }
+          if (capdev.getCtLastName() != null) {
+            ctLastName = capdev.getCtLastName();
+          }
+          if (capdev.getCtEmail() != null) {
+            ctEmail = capdev.getCtEmail();
+          }
+          contact = ctFirstName + ctLastName + " " + ctEmail;
+          final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+          capdev.setCapdevParticipant(capdevParticipants);
+
+        }
+
+        if (capdev.getCapdevLocations() != null) {
+          List<CapdevLocations> regions = new ArrayList<>(capdev.getCapdevLocations().stream()
+            .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 1))
+            .collect(Collectors.toList()));
+          Collections.sort(regions, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+          capdev.setCapDevRegions(regions);
+
+          List<CapdevLocations> countries = new ArrayList<>(capdev.getCapdevLocations().stream()
+            .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 2))
+            .collect(Collectors.toList()));
+          Collections.sort(countries, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+          capdev.setCapDevCountries(countries);
+
+        }
+      }
+
+
       capdevTypes = new ArrayList<>(capdevTypeService.findAll().stream()
         .filter(le -> le.getCategory().equals("" + capdev.getCategory())).collect(Collectors.toList()));
       Collections.sort(capdevTypes, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-      final List<CapdevParticipant> participants =
-        new ArrayList<>(capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
-      Collections.sort(participants, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-
-      if (capdev.getCategory() == 1) {
-        if (!participants.isEmpty()) {
-          participant = participants.get(0).getParticipant();
-        }
-
-      }
-      if (capdev.getCategory() == 2) {
-        String ctFirstName = "";
-        String ctLastName = "";
-        String ctEmail = "";
-        if (capdev.getCtFirstName() != null) {
-          ctFirstName = capdev.getCtFirstName() + ", ";
-        }
-        if (capdev.getCtLastName() != null) {
-          ctLastName = capdev.getCtLastName();
-        }
-        if (capdev.getCtEmail() != null) {
-          ctEmail = capdev.getCtEmail();
-        }
-        contact = ctFirstName + ctLastName + " " + ctEmail;
-        final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
-        capdev.setCapdevParticipant(capdevParticipants);
-
-      }
 
       if (capdev.getGlobal() != null) {
         capdev.setsGlobal(String.valueOf(capdev.getGlobal()));
@@ -566,21 +658,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         capdev.setsRegional(String.valueOf(capdev.getRegional()));
       }
 
-
-      if (!capdev.getCapdevLocations().isEmpty()) {
-        final List<CapdevLocations> regions = new ArrayList<>(capdev.getCapdevLocations().stream()
-          .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 1))
-          .collect(Collectors.toList()));
-        Collections.sort(regions, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-        capdev.setCapDevRegions(regions);
-
-        final List<CapdevLocations> countries = new ArrayList<>(capdev.getCapdevLocations().stream()
-          .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 2))
-          .collect(Collectors.toList()));
-        Collections.sort(countries, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-        capdev.setCapDevCountries(countries);
-
-      }
 
     }
 
@@ -647,25 +724,24 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     // if capdev is individual
     if (capdevDB.getCategory() == 1) {
 
+      participant = capdev.getParticipant();
+
       capdevDB.setNumParticipants(1);
-      if (participant.getGender().equals("Male")) {
+      if (capdev.getParticipant().getGender().equals("Male")) {
         capdevDB.setNumMen(1);
       }
-      if (participant.getGender().equals("Female")) {
+      if (capdev.getParticipant().getGender().equals("Female")) {
         capdevDB.setNumWomen(1);
       }
-      if (participant.getGender().equals("Other")) {
+      if (capdev.getParticipant().getGender().equals("Other")) {
         capdevDB.setNumOther(1);
       }
 
-
-      participant.setOtherInstitution(otherInstitucion);
-
-      this.saveParticipant(participant);
+      this.saveParticipant(capdev.getParticipant());
 
       // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
       if (capdevDB.getCapdevParticipant().isEmpty()) {
-        this.saveCapDevParticipan(participant, capdevDB);
+        this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
       }
 
     }
@@ -722,8 +798,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
 
 
-    this.saveCapDevRegions(capdevRegions, capdevDB);
-    this.saveCapDevCountries(capdevCountries, capdevDB);
+    this.saveCapDevRegions(capdev.getCapDevRegions(), capdevDB);
+    this.saveCapDevCountries(capdev.getCapDevCountries(), capdevDB);
 
     // Save CapDev with History
     final List<String> relationsName = new ArrayList<>();
@@ -734,6 +810,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
     capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
 
 
     if (!this.getInvalidFields().isEmpty()) {
@@ -751,25 +833,22 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public void saveCapDevCountries(List<Long> capdevCountries, CapacityDevelopment capdev) {
+  public void saveCapDevCountries(List<CapdevLocations> capdevCountries, CapacityDevelopment capdev) {
     CapdevLocations capdevLocations = null;
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    if (!capdevCountries.isEmpty()) {
-      for (final Long iterator : capdevCountries) {
-        if (iterator != null) {
-          final LocElement country = locElementService.getLocElementById(iterator);
-          if (country != null) {
-            capdevLocations = new CapdevLocations();
-            capdevLocations.setCapacityDevelopment(capdev);
-            capdevLocations.setLocElement(country);
-            capdevLocations.setActive(true);
-            capdevLocations.setActiveSince(new Date());
-            capdevLocations.setCreatedBy(currentUser);
-            capdevLocations.setModifiedBy(currentUser);
-            capdevLocationService.saveCapdevLocations(capdevLocations);
-          }
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    if (capdevCountries != null) {
+      for (CapdevLocations iterator : capdevCountries) {
+        if (iterator.getId() == null) {
+          capdevLocations = new CapdevLocations();
+          capdevLocations.setCapacityDevelopment(capdev);
+          capdevLocations.setLocElement(iterator.getLocElement());
+          capdevLocations.setActive(true);
+          capdevLocations.setActiveSince(new Date());
+          capdevLocations.setCreatedBy(currentUser);
+          capdevLocations.setModifiedBy(currentUser);
+          capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
       }
@@ -793,28 +872,23 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
-  public void saveCapDevRegions(List<Long> capdevRegions, CapacityDevelopment capdev) {
+  public void saveCapDevRegions(List<CapdevLocations> capdevRegions, CapacityDevelopment capdev) {
 
     CapdevLocations capdevLocations = null;
-    if (!capdevRegions.isEmpty()) {
-      final Session session = SecurityUtils.getSubject().getSession();
-
-      final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-      for (final Long iterator : capdevRegions) {
-        if (iterator != null) {
-          final LocElement region = locElementService.getLocElementById(iterator);
-          if (region != null) {
-            capdevLocations = new CapdevLocations();
-            capdevLocations.setCapacityDevelopment(capdev);
-            capdevLocations.setLocElement(region);
-            capdevLocations.setActive(true);
-            capdevLocations.setActiveSince(new Date());
-            capdevLocations.setCreatedBy(currentUser);
-            capdevLocations.setModifiedBy(currentUser);
-            capdevLocationService.saveCapdevLocations(capdevLocations);
-          }
+    if (capdevRegions != null) {
+      Session session = SecurityUtils.getSubject().getSession();
+      User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+      for (CapdevLocations iterator : capdevRegions) {
+        if (iterator.getId() == null) {
+          capdevLocations = new CapdevLocations();
+          capdevLocations.setCapacityDevelopment(capdev);
+          capdevLocations.setLocElement(iterator.getLocElement());
+          capdevLocations.setActive(true);
+          capdevLocations.setActiveSince(new Date());
+          capdevLocations.setCreatedBy(currentUser);
+          capdevLocations.setModifiedBy(currentUser);
+          capdevLocationService.saveCapdevLocations(capdevLocations);
         }
-
       }
     }
   }
@@ -823,8 +897,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void saveParticipant(Participant participant) {
     final Session session = SecurityUtils.getSubject().getSession();
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+
+
     if (participant.getCode() == null) {
       participant.setCode(null);
+    }
+    if (participant.getGender().equals("-1")) {
+      participant.setGender(null);
     }
     if ((participant.getLocElementsByCitizenship() == null)
       || (participant.getLocElementsByCitizenship().getId() == -1)) {
@@ -991,7 +1070,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void validate() {
     this.setInvalidFields(new HashMap<>());
     if (save) {
-      validator.validate(this, capdev, participant, uploadFile, uploadFileContentType, capdevCountries, capdevRegions);
+
+      validator.validate(this, capdev, capdev.getParticipant(), uploadFile, uploadFileContentType);
     }
 
 

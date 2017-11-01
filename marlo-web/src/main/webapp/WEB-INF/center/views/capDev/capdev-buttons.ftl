@@ -1,9 +1,13 @@
 [#ftl]
 
+<input type="hidden"  name="className" value="${(capdev.class.name)!}"/>
+<input type="hidden"  name="id" value="${(capdev.id)!}"/>
+<input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
+<input type="hidden"  name="actionName" value="${(actionName)!}"/>
+
+<input id="redirectionUrl" type="hidden" name="url" value="" />
+
 [#assign recordsList = (action.getListLog(capdev))!{} /]
-
-
-
 
 	<div class="col-md-12">
 			<div class="buttons">

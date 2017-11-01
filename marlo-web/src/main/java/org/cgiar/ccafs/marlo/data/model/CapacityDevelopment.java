@@ -130,10 +130,14 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   private List<CapdevLocations> capDevCountries;
   private List<CapdevLocations> capDevRegions;
   private Set<CapdevDiscipline> capdevDiscipline = new HashSet<CapdevDiscipline>(0);
+  private List<CapdevDiscipline> capdevDisciplineList;
   private Set<CapdevTargetgroup> capdevTargetgroup = new HashSet<CapdevTargetgroup>(0);
+  private List<CapdevTargetgroup> capdevTargetGroupList;
   private Set<CapdevParticipant> capdevParticipant = new HashSet<CapdevParticipant>(0);
   private Set<CapdevOutputs> capdevOutputs = new HashSet<CapdevOutputs>(0);
+  private List<CapdevOutputs> capdevOutputsList;
   private Set<CapdevPartners> capdevPartners = new HashSet<CapdevPartners>(0);
+  private List<CapdevPartners> capdevPartnersList;
   private Set<CapdevSupportingDocs> capdevSupportingDocs = new HashSet<CapdevSupportingDocs>(0);
   private Set<CenterDeliverable> deliverables = new HashSet<CenterDeliverable>(0);
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
@@ -144,12 +148,12 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public CapacityDevelopment(CenterProject project, User modifiedBy, User createdBy, CenterArea researchArea, Crp crp,
     CenterProgram researchProgram, String title, CapacityDevelopmentType capdevType, int category, boolean active,
     Date activeSince, String modificationJustification, String ctFirstName, String ctLastName, String ctEmail,
-    Date startDate, Date endDate, Long duration, String durationUnit, Boolean global, Boolean regional,
-    Integer numParticipants, Integer numMen, Integer numWomen, Integer numOther, String otherDiscipline,
-    String disciplineSuggested, String otherTargetGroup, String targetGroupSuggested, String otherPartner,
-    String partnerSuggeste, Set<CapdevLocations> capdevLocations, Set<CapdevDiscipline> capdevDiscipline,
-    Set<CapdevTargetgroup> capdevTargetgroup, Set<CapdevParticipant> capdevParticipant,
-    Set<CapdevOutputs> capdevOutputs, Set<CapdevPartners> capdevPartners,
+    Date startDate, Date endDate, Long duration, String durationUnit, Participant participant, Boolean global,
+    Boolean regional, Integer numParticipants, Integer numMen, Integer numWomen, Integer numOther,
+    String otherDiscipline, String disciplineSuggested, String otherTargetGroup, String targetGroupSuggested,
+    String otherPartner, String partnerSuggeste, Set<CapdevLocations> capdevLocations,
+    Set<CapdevDiscipline> capdevDiscipline, Set<CapdevTargetgroup> capdevTargetgroup,
+    Set<CapdevParticipant> capdevParticipant, Set<CapdevOutputs> capdevOutputs, Set<CapdevPartners> capdevPartners,
     Set<CapdevSupportingDocs> capdevSupportingDocs) {
     this.project = project;
     this.modifiedBy = modifiedBy;
@@ -170,6 +174,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.endDate = endDate;
     this.duration = duration;
     this.durationUnit = durationUnit;
+    this.participant = participant;
     this.global = global;
     this.regional = regional;
     this.numParticipants = numParticipants;
@@ -218,6 +223,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<CapdevDiscipline> getCapdevDisciplineList() {
+    return capdevDisciplineList;
+  }
+
   public Set<CapdevLocations> getCapdevLocations() {
     return capdevLocations;
   }
@@ -226,17 +235,29 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return capdevOutputs;
   }
 
+  public List<CapdevOutputs> getCapdevOutputsList() {
+    return capdevOutputsList;
+  }
+
   public Set<CapdevParticipant> getCapdevParticipant() {
     return capdevParticipant;
   }
+
 
   public Set<CapdevPartners> getCapdevPartners() {
     return capdevPartners;
   }
 
+
+  public List<CapdevPartners> getCapdevPartnersList() {
+    return capdevPartnersList;
+  }
+
+
   public List<CapdevLocations> getCapDevRegions() {
     return capDevRegions;
   }
+
 
   public Set<CapdevSupportingDocs> getCapdevSupportingDocs() {
     return capdevSupportingDocs;
@@ -247,26 +268,25 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return capdevTargetgroup;
   }
 
+  public List<CapdevTargetgroup> getCapdevTargetGroupList() {
+    return capdevTargetGroupList;
+  }
 
   public CapacityDevelopmentType getCapdevType() {
     return this.capdevType;
   }
 
-
   public int getCategory() {
     return this.category;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Crp getCrp() {
     return this.crp;
   }
-
 
   public String getCtEmail() {
     return this.ctEmail;
@@ -295,6 +315,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public String getDurationUnit() {
     return durationUnit;
   }
+
 
   public Date getEndDate() {
     return this.endDate;
@@ -337,6 +358,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public Integer getNumMen() {
     return numMen;
   }
@@ -345,13 +367,16 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     return numOther;
   }
 
+
   public Integer getNumParticipants() {
     return this.numParticipants;
   }
 
+
   public Integer getNumWomen() {
     return numWomen;
   }
+
 
   public String getOtherDiscipline() {
     return otherDiscipline;
@@ -366,6 +391,12 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public String getOtherTargetGroup() {
     return otherTargetGroup;
   }
+
+
+  public Participant getParticipant() {
+    return participant;
+  }
+
 
   public String getPartnerSuggested() {
     return partnerSuggested;
@@ -459,6 +490,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCapdevDisciplineList(List<CapdevDiscipline> capdevDisciplineList) {
+    this.capdevDisciplineList = capdevDisciplineList;
+  }
+
   public void setCapdevLocations(Set<CapdevLocations> capdevLocations) {
     this.capdevLocations = capdevLocations;
   }
@@ -469,6 +504,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCapdevOutputsList(List<CapdevOutputs> capdevOutputsList) {
+    this.capdevOutputsList = capdevOutputsList;
+  }
+
+
   public void setCapdevParticipant(Set<CapdevParticipant> capdevParticipant) {
     this.capdevParticipant = capdevParticipant;
   }
@@ -476,6 +516,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
 
   public void setCapdevPartners(Set<CapdevPartners> capdevPartners) {
     this.capdevPartners = capdevPartners;
+  }
+
+
+  public void setCapdevPartnersList(List<CapdevPartners> capdevPartnersList) {
+    this.capdevPartnersList = capdevPartnersList;
   }
 
 
@@ -493,6 +538,10 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.capdevTargetgroup = capdevTargetgroup;
   }
 
+
+  public void setCapdevTargetGroupList(List<CapdevTargetgroup> capdevTargetGroupList) {
+    this.capdevTargetGroupList = capdevTargetGroupList;
+  }
 
   public void setCapdevType(CapacityDevelopmentType capdevType) {
     this.capdevType = capdevType;
@@ -583,7 +632,6 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
     this.numOther = numOther;
   }
 
-
   public void setNumParticipants(Integer numParticipants) {
     this.numParticipants = numParticipants;
   }
@@ -609,6 +657,11 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setParticipant(Participant participant) {
+    this.participant = participant;
+  }
+
+
   public void setPartnerSuggested(String partnerSuggested) {
     this.partnerSuggested = partnerSuggested;
   }
@@ -627,6 +680,7 @@ public class CapacityDevelopment implements java.io.Serializable, IAuditLog {
   public void setResearchArea(CenterArea researchArea) {
     this.researchArea = researchArea;
   }
+
 
   public void setResearchProgram(CenterProgram researchProgram) {
     this.researchProgram = researchProgram;

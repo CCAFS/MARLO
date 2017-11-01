@@ -47,15 +47,24 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapDevDescriptionValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -82,7 +91,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private List<Crp> crps;
   private List<Institution> partners;
   private List<CenterOutput> outputs;
-  private List<Long> capdevDisciplines;
+  private List<Long> capdevdisciplines;
   private String otherDiscipline;
   private String otherTargetGroup;
   private String otherPartner;
@@ -133,6 +142,29 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
+  @Override
+  public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
   public String deleteDiscipline() {
     final Map<String, Object> parameters = this.getParameters();
     final long capdevDisciplineID =
@@ -174,13 +206,23 @@ public class CapdevDescriptionAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = capdev.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = capdev.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
   public CapacityDevelopment getCapdev() {
     return capdev;
   }
 
 
-  public List<Long> getCapdevDisciplines() {
-    return capdevDisciplines;
+  public List<Long> getCapdevdisciplines() {
+    return capdevdisciplines;
   }
 
 
@@ -208,7 +250,6 @@ public class CapdevDescriptionAction extends BaseAction {
     return crps;
   }
 
-
   public List<Discipline> getDisciplines() {
     return disciplines;
   }
@@ -218,10 +259,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return json;
   }
 
+
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
-
 
   public String getOtherDiscipline() {
     return otherDiscipline;
@@ -232,6 +273,7 @@ public class CapdevDescriptionAction extends BaseAction {
     return otherPartner;
   }
 
+
   public String getOtherTargetGroup() {
     return otherTargetGroup;
   }
@@ -241,15 +283,14 @@ public class CapdevDescriptionAction extends BaseAction {
     return outputs;
   }
 
-
   public List<Institution> getPartners() {
     return partners;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CenterProject> getProjects() {
     return projects;
@@ -259,14 +300,15 @@ public class CapdevDescriptionAction extends BaseAction {
     return researchAreas;
   }
 
-
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
+
   public List<TargetGroup> getTargetGroups() {
     return targetGroups;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -305,7 +347,7 @@ public class CapdevDescriptionAction extends BaseAction {
     targetGroups = targetGroupService.findAll();
     Collections.sort(targetGroups, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
-    capdevDisciplines = new ArrayList<>();
+    capdevdisciplines = new ArrayList<>();
     capdevTargetGroup = new ArrayList<>();
     capdevPartners = new ArrayList<>();
     capdevOutputs = new ArrayList<>();
@@ -334,6 +376,88 @@ public class CapdevDescriptionAction extends BaseAction {
       capdev = capdevService.getCapacityDevelopmentById(capdevID);
     }
 
+    if (capdev != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
+        BufferedReader reader = null;
+        reader = new BufferedReader(new FileReader(path.toFile()));
+        Gson gson = new GsonBuilder().create();
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+        capdev = (CapacityDevelopment) autoSaveReader.readFromJson(jReader);
+
+        if (capdev.getCapdevDisciplineList() != null) {
+          for (CapdevDiscipline capdevDiscipline : capdev.getCapdevDisciplineList()) {
+            if (capdevDiscipline != null) {
+              capdevDiscipline
+                .setDiscipline(disciplineService.getDisciplineById(capdevDiscipline.getDiscipline().getId()));
+            }
+          }
+        }
+
+        if (capdev.getCapdevTargetGroupList() != null) {
+          for (CapdevTargetgroup capdevtgroups : capdev.getCapdevTargetGroupList()) {
+            if (capdevtgroups != null) {
+              capdevtgroups
+                .setTargetGroups(targetGroupService.getTargetGroupById(capdevtgroups.getTargetGroups().getId()));
+            }
+          }
+        }
+
+        if (capdev.getCapdevPartnersList() != null) {
+          for (CapdevPartners capdevPartner : capdev.getCapdevPartnersList()) {
+            if (capdevPartner != null) {
+              capdevPartner
+                .setInstitution(institutionService.getInstitutionById(capdevPartner.getInstitution().getId()));
+            }
+          }
+        }
+
+        if (capdev.getCapdevOutputsList() != null) {
+          for (CapdevOutputs capdevOutputs : capdev.getCapdevOutputsList()) {
+            if (capdevOutputs != null) {
+              capdevOutputs.setResearchOutputs(
+                researchOutputService.getResearchOutputById(capdevOutputs.getResearchOutputs().getId()));
+            }
+          }
+        }
+
+
+        this.setDraft(true);
+
+      } else {
+        this.setDraft(false);
+        if (capdev.getCapdevDiscipline() != null) {
+          List<CapdevDiscipline> capdevDisciplines = new ArrayList<CapdevDiscipline>(
+            capdev.getCapdevDiscipline().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+          capdev.setCapdevDisciplineList(capdevDisciplines);
+        }
+
+        if (capdev.getCapdevTargetgroup() != null) {
+          List<CapdevTargetgroup> capdevTargetGroups = new ArrayList<CapdevTargetgroup>(
+            capdev.getCapdevTargetgroup().stream().filter(t -> t.isActive()).collect(Collectors.toList()));
+          capdev.setCapdevTargetGroupList(capdevTargetGroups);
+        }
+
+        if (capdev.getCapdevPartners() != null) {
+          List<CapdevPartners> capdevPartners = new ArrayList<CapdevPartners>(
+            capdev.getCapdevPartners().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+          capdev.setCapdevPartnersList(capdevPartners);
+        }
+
+        if (capdev.getCapdevOutputs() != null) {
+          List<CapdevOutputs> capdevOuputs = new ArrayList<CapdevOutputs>(
+            capdev.getCapdevOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
+          capdev.setCapdevOutputsList(capdevOuputs);
+        }
+      }
+
+
+    }
+
 
   }
 
@@ -344,11 +468,11 @@ public class CapdevDescriptionAction extends BaseAction {
 
     final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
-    capdevDB.setOtherDiscipline(otherDiscipline);
+    capdevDB.setOtherDiscipline(capdev.getOtherDiscipline());
+    capdevDB.setOtherTargetGroup(capdev.getOtherTargetGroup());
+    capdevDB.setOtherPartner(capdev.getOtherPartner());
     capdevDB.setDisciplineSuggested(capdev.getDisciplineSuggested());
-    capdevDB.setOtherTargetGroup(otherTargetGroup);
     capdevDB.setTargetGroupSuggested(capdev.getTargetGroupSuggested());
-    capdevDB.setOtherPartner(otherPartner);
     capdevDB.setPartnerSuggested(capdev.getPartnerSuggested());
 
 
@@ -372,10 +496,10 @@ public class CapdevDescriptionAction extends BaseAction {
     }
 
 
-    this.saveCapDevDisciplines(capdevDisciplines, capdevDB);
-    this.saveCapdevTargetGroups(capdevTargetGroup, capdevDB);
-    this.saveCapdevPartners(capdevPartners, capdevDB);
-    this.saveCapdevOutputs(capdevOutputs, capdevDB);
+    this.saveCapDevDisciplines(capdev.getCapdevDisciplineList(), capdevDB);
+    this.saveCapdevTargetGroups(capdev.getCapdevTargetGroupList(), capdevDB);
+    this.saveCapdevPartners(capdev.getCapdevPartnersList(), capdevDB);
+    this.saveCapdevOutputs(capdev.getCapdevOutputsList(), capdevDB);
 
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_DISCIPLINES_RELATION);
@@ -386,6 +510,12 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevDB.setModifiedBy(this.getCurrentUser());
 
     capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
 
     if (!this.getInvalidFields().isEmpty()) {
       this.setActionMessages(null);
@@ -401,25 +531,24 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void saveCapDevDisciplines(List<Long> disciplines, CapacityDevelopment capdev) {
+  public void saveCapDevDisciplines(List<CapdevDiscipline> disciplines, CapacityDevelopment capdev) {
     CapdevDiscipline capdevDiscipline = null;
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    if (!disciplines.isEmpty()) {
-      for (final Long iterator : disciplines) {
-        if (iterator != null) {
-          final Discipline discipline = disciplineService.getDisciplineById(iterator);
-          if (discipline != null) {
-            capdevDiscipline = new CapdevDiscipline();
-            capdevDiscipline.setCapacityDevelopment(capdev);
-            capdevDiscipline.setDiscipline(discipline);
-            capdevDiscipline.setActive(true);
-            capdevDiscipline.setActiveSince(new Date());
-            capdevDiscipline.setCreatedBy(currentUser);
-            capdevDiscipline.setModifiedBy(currentUser);
-            capdevDisciplineService.saveCapdevDiscipline(capdevDiscipline);
-          }
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    if (disciplines != null) {
+      for (CapdevDiscipline iterator : disciplines) {
+        if (iterator.getId() == null) {
+          capdevDiscipline = new CapdevDiscipline();
+          Discipline discipline = disciplineService.getDisciplineById(iterator.getDiscipline().getId());
+          capdevDiscipline.setCapacityDevelopment(capdev);
+          capdevDiscipline.setDiscipline(discipline);
+          capdevDiscipline.setActive(true);
+          capdevDiscipline.setActiveSince(new Date());
+          capdevDiscipline.setCreatedBy(currentUser);
+          capdevDiscipline.setModifiedBy(currentUser);
+          capdevDisciplineService.saveCapdevDiscipline(capdevDiscipline);
+
         }
 
 
@@ -428,14 +557,14 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void saveCapdevOutputs(List<Long> outputs, CapacityDevelopment capdev) {
+  public void saveCapdevOutputs(List<CapdevOutputs> outputs, CapacityDevelopment capdev) {
     CapdevOutputs capdevOutput = null;
-    final Session session = SecurityUtils.getSubject().getSession();
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    if (!outputs.isEmpty()) {
-      for (final Long iterator : outputs) {
-        final CenterOutput output = researchOutputService.getResearchOutputById(iterator);
-        if (output != null) {
+    Session session = SecurityUtils.getSubject().getSession();
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    if (outputs != null) {
+      for (CapdevOutputs iterator : outputs) {
+        if (iterator.getId() == null) {
+          CenterOutput output = researchOutputService.getResearchOutputById(iterator.getResearchOutputs().getId());
           capdevOutput = new CapdevOutputs();
           capdevOutput.setCapacityDevelopment(capdev);
           capdevOutput.setResearchOutputs(output);
@@ -450,14 +579,14 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void saveCapdevPartners(List<Long> partners, CapacityDevelopment capdev) {
+  public void saveCapdevPartners(List<CapdevPartners> partners, CapacityDevelopment capdev) {
     CapdevPartners capdevPartner = null;
-    final Session session = SecurityUtils.getSubject().getSession();
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    if (!partners.isEmpty()) {
-      for (final Long iterator : partners) {
-        final Institution institution = institutionService.getInstitutionById(iterator);
-        if (institution != null) {
+    Session session = SecurityUtils.getSubject().getSession();
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    if (partners != null) {
+      for (CapdevPartners iterator : partners) {
+        if (iterator.getId() == null) {
+          Institution institution = institutionService.getInstitutionById(iterator.getInstitution().getId());
           capdevPartner = new CapdevPartners();
           capdevPartner.setCapacityDevelopment(capdev);
           capdevPartner.setInstitution(institution);;
@@ -472,25 +601,24 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void saveCapdevTargetGroups(List<Long> targetGroups, CapacityDevelopment capdev) {
+  public void saveCapdevTargetGroups(List<CapdevTargetgroup> targetGroups, CapacityDevelopment capdev) {
     CapdevTargetgroup capdevTargetgroup = null;
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-    if (!targetGroups.isEmpty()) {
-      for (final Long iterator : targetGroups) {
-        if (iterator != null) {
-          final TargetGroup targetGroup = targetGroupService.getTargetGroupById(iterator);
-          if (targetGroup != null) {
-            capdevTargetgroup = new CapdevTargetgroup();
-            capdevTargetgroup.setCapacityDevelopment(capdev);
-            capdevTargetgroup.setTargetGroups(targetGroup);
-            capdevTargetgroup.setActive(true);
-            capdevTargetgroup.setActiveSince(new Date());
-            capdevTargetgroup.setCreatedBy(currentUser);
-            capdevTargetgroup.setModifiedBy(currentUser);
-            capdevTargetgroupService.saveCapdevTargetgroup(capdevTargetgroup);
-          }
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    if (targetGroups != null) {
+      for (CapdevTargetgroup iterator : targetGroups) {
+        if (iterator.getId() == null) {
+          TargetGroup targetGroup = targetGroupService.getTargetGroupById(iterator.getTargetGroups().getId());
+          capdevTargetgroup = new CapdevTargetgroup();
+          capdevTargetgroup.setCapacityDevelopment(capdev);
+          capdevTargetgroup.setTargetGroups(targetGroup);
+          capdevTargetgroup.setActive(true);
+          capdevTargetgroup.setActiveSince(new Date());
+          capdevTargetgroup.setCreatedBy(currentUser);
+          capdevTargetgroup.setModifiedBy(currentUser);
+          capdevTargetgroupService.saveCapdevTargetgroup(capdevTargetgroup);
+
         }
 
 
@@ -504,8 +632,8 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void setCapdevDisciplines(List<Long> capdevDisciplines) {
-    this.capdevDisciplines = capdevDisciplines;
+  public void setCapdevdisciplines(List<Long> capdevdisciplines) {
+    this.capdevdisciplines = capdevdisciplines;
   }
 
 
@@ -543,7 +671,6 @@ public class CapdevDescriptionAction extends BaseAction {
     this.json = json;
   }
 
-
   public void setJsonProjects(List<Map<String, Object>> jsonProjects) {
     this.jsonProjects = jsonProjects;
   }
@@ -552,6 +679,7 @@ public class CapdevDescriptionAction extends BaseAction {
   public void setOtherDiscipline(String otherDiscipline) {
     this.otherDiscipline = otherDiscipline;
   }
+
 
   public void setOtherPartner(String otherPartner) {
     this.otherPartner = otherPartner;
@@ -597,16 +725,14 @@ public class CapdevDescriptionAction extends BaseAction {
     this.targetGroups = targetGroups;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
 
-
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, capdev, capdevDisciplines, capdevTargetGroup, capdevPartners, capdevOutputs);
+      validator.validate(this, capdev);
     }
   }
 

@@ -151,6 +151,39 @@ public class BaseValidator {
    * * ******************************************************************************************
    * ************************* CENTER METHOD **************************************************
    * *******************************************************************************************
+   * This method saves the missing fields into the database for a section at CapDev - Supporting Documents.
+   * 
+   * @param deliverable is a CenterDeliverable.
+   * @param capacityDevelopment is a CapacityDevelopment.
+   * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
+   */
+  protected void saveMissingFields(CenterDeliverable deliverable, CapacityDevelopment capacityDevelopment,
+    String sectionName) {
+    int year = Calendar.getInstance().get(Calendar.YEAR);
+
+    CenterSectionStatus status = centerSectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+      capacityDevelopment.getId(), sectionName, year);
+    if (status == null) {
+
+      status = new CenterSectionStatus();
+      status.setSectionName(sectionName);
+      status.setDeliverable(deliverable);
+      status.setCapacityDevelopment(capacityDevelopment);
+      status.setYear(year);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    centerSectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * * ******************************************************************************************
+   * ************************* CENTER METHOD **************************************************
+   * *******************************************************************************************
    * This method saves the missing fields into the database for a section at Project - Deliverable.
    * 
    * @param program is a CenterProgram.
@@ -585,7 +618,7 @@ public class BaseValidator {
   protected void validateLessonsLearn(BaseAction action, IpProgram program) {
     if (program.getProjectComponentLesson() != null) {
       ProjectComponentLesson lesson = program.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
+      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
         // Let them save.
         this.addMessage("Lessons");
 
@@ -599,7 +632,7 @@ public class BaseValidator {
   protected void validateLessonsLearn(BaseAction action, Project project) {
     if (project.getProjectComponentLesson() != null) {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
+      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
         // Let them save.
         this.addMessage("Lessons");
 
@@ -613,7 +646,7 @@ public class BaseValidator {
   protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
     if (project.getProjectComponentLesson() != null) {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();
-      if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
+      if (!(this.isValidString(lesson.getLessons()) && (this.wordCount(lesson.getLessons()) <= 100))) {
         // Let them save.
         this.addMessage("Lessons");
 

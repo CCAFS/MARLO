@@ -22,8 +22,8 @@
     datePickerConfig({
       "startDate": "#capdev\\.startDate",
       "endDate": "#capdev\\.endDate",
-      "publicationStartDate":"#supportingDoc\\.startDate",
-      "publicationEndDate":"#supportingDoc\\.endDate"
+      "publicationStartDate":"#deliverable\\.startDate",
+      "publicationEndDate":"#deliverable\\.endDate"
     });
 
 
@@ -210,7 +210,7 @@
 
 
     (function(){
-      if($('input[type="checkbox"][name="otherInstitucion"]').is(":checked")){
+      if($('input[type="checkbox"][name="capdev.participant.otherInstitution"]').is(":checked")){
         $(".suggestInstitution").show();
       }
     })();
@@ -230,7 +230,7 @@
 
 
   //display suggest text area
-  $('input[type="checkbox"][name="otherInstitucion"]').change(function() {
+  $('input[type="checkbox"][name="capdev.participant.otherInstitution"]').change(function() {
      if(this.checked) {
        $(".suggestInstitution").show();
        $(".otherInstcheck").val("1")

@@ -26,3 +26,8 @@
     [/#list]
   </ul> 
 </nav>
+
+
+
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]

@@ -44,6 +44,7 @@ public class CapdevDiscipline implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+
   public CapdevDiscipline() {
   }
 

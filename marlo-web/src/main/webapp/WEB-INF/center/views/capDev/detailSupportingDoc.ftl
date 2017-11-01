@@ -6,9 +6,13 @@
 
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flat-flags"] /]
 
-[#assign customJS = ["${baseUrlMedia}/js/capDev/supportingDocuments.js",
-					 "${baseUrl}/global/js/fieldsValidation.js", 
-					 "${baseUrlMedia}/js/capDev/capacityDevelopment.js"] /]
+[#assign customJS = [
+	"${baseUrlMedia}/js/capDev/supportingDocuments.js",
+	"${baseUrl}/global/js/fieldsValidation.js", 
+	"${baseUrlMedia}/js/capDev/capacityDevelopment.js", 
+	"${baseUrl}/global/js/autoSave.js"
+	] 
+/]
 
 [#assign currentStage = "supportingDocuments" /] 
 
@@ -19,10 +23,6 @@
 
 [#include "/WEB-INF/center/pages/header.ftl" /]
 [#include "/WEB-INF/center/pages/main-menu.ftl" /]
-
-
-
-
 
 
 
@@ -56,7 +56,7 @@
 		      <p>[@s.text name="capdev.message.historyVersion" ]  
 		          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
 		          [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
-		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+		          [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
 		         [/@s.text]
 		      </p>
 		      [#-- Differences --]
@@ -91,27 +91,27 @@
 				<!-- supporting documents -->
 				<div class="form-group row ">
 					<div class="col-md-12">
-						[@customForm.input name="supportingDoc.name" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
+						[@customForm.input name="deliverable.name" i18nkey="capdev.supportingDocs.title" type="text" help="" editable=editable   required=true /]
 					</div>
 					
 				</div>
 				<div class="form-group row ">
 					<!-- supporting docs type -->
 					<div class="col-md-6">
-						 [@customForm.select name="supportingDoc.deliverableType.deliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
+						 [@customForm.select name="deliverable.deliverableType.deliverableType.id" listName="deliverablesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.type" className="capdevDeliverableType" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 					<!-- supporting docs subtypes -->
 					<div class="col-md-6">
-						[@customForm.select name="supportingDoc.deliverableType.id"  listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
+						[@customForm.select name="deliverable.deliverableType.id"  listName="deliverablesSubtypesList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.supportingDocs.subType" className="capdevDeliverableSubtype" placeholder="capdev.select" required=true editable=editable/]
 					</div>
 				</div>
 
 				<div class="form-group row">  
 	              <div class="col-md-6">
-	                [@customForm.input name="supportingDoc.startDate" i18nkey="Start date" type="text" disabled=!editable  required=true editable=editable /]
+	                [@customForm.input name="deliverable.startDate" i18nkey="Start date" type="text" disabled=!editable  required=true editable=editable /]
 	              </div> 
 	              <div class="col-md-6">
-	                [@customForm.input name="supportingDoc.endDate" i18nkey="End date" type="text" disabled=!editable required=false editable=editable /]
+	                [@customForm.input name="deliverable.endDate" i18nkey="End date" type="text" disabled=!editable required=false editable=editable /]
 	              </div>
 	            </div>
 					
@@ -122,8 +122,8 @@
 						<label for="">Document(s):</label>
 						<div class=" borderBox documentList" listname="capdev.supportingDocs">
 							
-							[#if documents?has_content]
-								[#list documents as document ]
+							[#if deliverable.documents?has_content]
+								[#list deliverable.documents as document ]
 									[#if document.active]
 									
 									<div class="col-md-12 documents">
@@ -132,16 +132,14 @@
 									    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
 								    	[/#if]
 										<div class="input input-" style="display:block;">
-											
-											[@customForm.input name="documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"  editable=editable /]
-											
-											
+											<input class="id" type="hidden"  value="${(document.id)!-1}" name="deliverable.documents[${document_index}].id" />
+											[@customForm.input name="deliverable.documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"  editable=editable /]
 										</div>
 								    </div>
 								    [/#if]
 							    [/#list]
 							[#else]
-								<p class="text-center inf" style="display:${(documents?has_content)?string('none','block')}">[@s.text name="There are not document(s) added yet." /]</p>
+								<p class="text-center inf" style="display:${(deliverable.documents?has_content)?string('none','block')}">[@s.text name="There are not document(s) added yet." /]</p>
 
 							[/#if]
 							
@@ -160,18 +158,22 @@
 
 				<input  type="hidden" name="capdevID" value="${capdev.id}" /> 
 				<input  type="hidden" name="projectID" value="${projectID}" /> 
-				<input  type="hidden" name="supportingDocID" value="${supportingDoc.id}" /> 
+				<input  type="hidden" name="deliverableID" value="${deliverable.id}" /> 
+				<input  type="hidden" name="id" value="${deliverable.id}" /> 
+				<input type="hidden"  name="className" value="${(deliverable.class.name)!}"/>
+				<input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
+				<input type="hidden"  name="actionName" value="${(actionName)!}"/>
 
 
 				<!-- buttons -->
-				[#assign recordsList = (action.getListLog(supportingDoc))!{} /]
+				[#assign recordsList = (action.getListLog(deliverable))!{} /]
 					<div class="col-md-12">
 							<div class="buttons">
 
 					        	<div class="buttons-content">  
 					        		[#if recordsList?has_content]
 								      [#import "/WEB-INF/center//views/capDev/logHistory.ftl" as logHistory /]
-								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="supportingDocID" itemName3="projectID" itemId1=supportingDoc.capdev.id itemId2=supportingDoc.id  itemId3=projectID/]
+								      [@logHistory.logList list=recordsList itemName1="capdevID" itemName2="deliverableID" itemName3="projectID" itemId1=capdev.id itemId2=deliverable.id  itemId3=projectID/]
 								      <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
 								    [/#if] 
 
@@ -182,7 +184,7 @@
 
 						        	[#elseif canEdit]
 							        	<!-- Edit Button -->
-									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="supportingDocID" value=supportingDocID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
 						        	
 						        	[/#if]
 					        	</div>
@@ -217,7 +219,7 @@
 <div id="document-template" class="documents form-group "  style="display:none;">
     <div class="col-md-12">
     	<div class="removeCapdevsupportDocument removeIcon" title="Remove document"></div>
-    	[@customForm.input name="documents[-1].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
+    	[@customForm.input name="deliverable.documents[-1].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"   /]
     </div>
 </div>
 

@@ -21,8 +21,6 @@ import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -33,8 +31,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
   }
 
-  public void validate(BaseAction baseAction, CapacityDevelopment capdev, List<Long> disciplines,
-    List<Long> targetGroups, List<Long> partners, List<Long> outputs) {
+  public void validate(BaseAction baseAction, CapacityDevelopment capdev) {
 
     baseAction.setInvalidFields(new HashMap<>());
 
@@ -42,57 +39,54 @@ public class CapDevDescriptionValidator extends BaseValidator {
       baseAction.addActionError(baseAction.getText("saving.fields.required"));
     }
 
-    this.validateCapdevDescription(baseAction, capdev, disciplines, targetGroups, partners, outputs);
+    this.validateCapdevDescription(baseAction, capdev);
+    this.saveMissingFields(capdev, "descriptionCapdev");
   }
 
-  public void validateCapdevDescription(BaseAction baseAction, CapacityDevelopment capdev, List<Long> disciplines,
-    List<Long> targetGroups, List<Long> partners, List<Long> outputs) {
+  public void validateCapdevDescription(BaseAction baseAction, CapacityDevelopment capdev) {
 
-    // remueve el elemento por defecto de la lista de disciplinas cuando no es seleccionada ninguna
-    if (disciplines.get(0) == -1) {
-      disciplines.remove(0);
-    }
-    if (disciplines.isEmpty()
-      && capdev.getCapdevDiscipline().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
-      this.addMessage(baseAction.getText("capdev.action.disciplines"));
-      baseAction.getInvalidFields().put("list-capdev.disciplines",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
-    }
-    // remueve el elemento por defecto de la lista de target groups cuando no es seleccionada ninguno
-    if (targetGroups.get(0) == -1) {
-      targetGroups.remove(0);
-    }
-    if (targetGroups.isEmpty()
-      && capdev.getCapdevTargetgroup().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
-      this.addMessage(baseAction.getText("capdev.action.targetgroup"));
-      baseAction.getInvalidFields().put("list-capdev.targetgroup",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+    if (capdev.getCapdevDisciplineList() != null) {
+      if (capdev.getCapdevDisciplineList().isEmpty()) {
+        this.addMessage(baseAction.getText("capdev.action.disciplines"));
+        baseAction.getInvalidFields().put("list-capdev.disciplines",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
+      }
     }
 
-    // remueve el elemento por defecto de la lista de partners cuando no es seleccionada ninguno
-    if (partners.get(0) == -1) {
-      partners.remove(0);
+    if (capdev.getCapdevTargetGroupList() != null) {
+      if (capdev.getCapdevTargetGroupList().isEmpty()) {
+        this.addMessage(baseAction.getText("capdev.action.targetgroup"));
+        baseAction.getInvalidFields().put("list-capdev.targetgroup",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+      }
     }
-    if (partners.isEmpty()
-      && capdev.getCapdevPartners().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
-      this.addMessage(baseAction.getText("capdev.action.partners"));
-      baseAction.getInvalidFields().put("list-capdev.partners",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+
+
+    if (capdev.getCapdevPartnersList() != null) {
+      if (capdev.getCapdevPartnersList().isEmpty()) {
+        this.addMessage(baseAction.getText("capdev.action.partners"));
+        baseAction.getInvalidFields().put("list-capdev.partners",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+
+      }
 
     }
 
-    if (capdev.getResearchArea().getId() == -1) {
+    if (capdev.getResearchArea() == null) {
       this.addMessage(baseAction.getText("capdev.action.researchArea"));
       baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
       // baseAction.getInvalidFields().put("list-capdev.researcharea",
       // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Area"}));
+
     }
 
-    if (outputs.isEmpty()
-      && capdev.getCapdevOutputs().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()).isEmpty()) {
-      this.addMessage(baseAction.getText("capdev.action.outputs"));
-      baseAction.getInvalidFields().put("list-capdev.outputs",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+
+    if (capdev.getCapdevOutputsList() != null) {
+      if (capdev.getCapdevOutputsList().isEmpty()) {
+        this.addMessage(baseAction.getText("capdev.action.outputs"));
+        baseAction.getInvalidFields().put("list-capdev.outputs",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+      }
     }
 
 

@@ -80,7 +80,7 @@
 						<div class="col-md-12 newCapdevField">
 							<div class="pull-right">
 								<div class="buttons-content">        
-									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='supportingDocID']${supportingDocID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
+									<a class="addButton" href="[@s.url action='${centerSession}/addSupportingDoc'][@s.param name='deliverableID']${deliverableID}[/@s.param] [@s.param name='capdevID']${capdevID}[/@s.param] [@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url]">[@s.text name="capdev.addSupportingDoc" /]</a>
 									<div class="clearfix"></div>
 								</div>
 							</div>

@@ -29,6 +29,7 @@ public class InvalidFieldsMessages {
   public static String WRONG_FILE = "The file does not match the template.";
   public static String EMPTY_FILE = "The file can be empty or can has empty fields.";
   public static String WRONGVALUE = "Wrong value";
+  public static String WRONG_EMAIL = "Invalid Email";
 
 
 }

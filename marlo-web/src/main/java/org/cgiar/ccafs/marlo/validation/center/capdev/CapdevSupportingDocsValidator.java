@@ -17,13 +17,10 @@ package org.cgiar.ccafs.marlo.validation.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
-import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -34,7 +31,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
   }
 
-  public void validate(BaseAction baseAction, CenterDeliverable supportingDoc, List<CenterDeliverableDocument> links) {
+  public void validate(BaseAction baseAction, CenterDeliverable deliverable) {
 
     baseAction.setInvalidFields(new HashMap<>());
 
@@ -42,30 +39,30 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
       baseAction.addActionError(baseAction.getText("saving.fields.required"));
     }
 
-    this.validateSupportingDocs(baseAction, supportingDoc, links);
+    this.validateSupportingDocs(baseAction, deliverable);
+    this.saveMissingFields(deliverable, deliverable.getCapdev(), "supportingDocs");
   }
 
 
-  public void validateSupportingDocs(BaseAction baseAction, CenterDeliverable supportingDoc,
-    List<CenterDeliverableDocument> links) {
-    if (supportingDoc.getName().equalsIgnoreCase("")) {
+  public void validateSupportingDocs(BaseAction baseAction, CenterDeliverable deliverable) {
+    if (deliverable.getName() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
-      baseAction.getInvalidFields().put("input-supportingDoc.name", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
-    if (supportingDoc.getStartDate() == null) {
+    if (deliverable.getStartDate() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
-      baseAction.getInvalidFields().put("input-supportingDoc.startDate", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-deliverable.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (links.isEmpty() && (supportingDoc.getDeliverableDocuments().stream().filter(docs -> docs.isActive())
-      .collect(Collectors.toList()).isEmpty())) {
+
+    if (deliverable.getDocuments() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
       baseAction.getInvalidFields().put("list-capdev.supportingDocs",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Supporting Documents"}));
     } else {
-      for (int j = 0; j < links.size(); j++) {
-        this.valideDocument(baseAction, links.get(j).getLink(), j);
+      for (int j = 0; j < deliverable.getDocuments().size(); j++) {
+        this.valideDocument(baseAction, deliverable.getDocuments().get(j).getLink(), j);
       }
     }
   }
@@ -73,7 +70,8 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
   public void valideDocument(BaseAction baseAction, String link, int i) {
     if ((link == null) || link.equals("")) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.link"));
-      baseAction.getInvalidFields().put("input-documents[" + i + "].link", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("input-deliverable.documents[" + i + "].link",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 

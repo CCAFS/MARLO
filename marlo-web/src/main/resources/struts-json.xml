@@ -540,6 +540,15 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		
+		<action name="validateCenterCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.json.capdev.ValidateCapDevSectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="previewParticipants"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
