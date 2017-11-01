@@ -25,14 +25,14 @@
 
   <appender name="FILE-TEST"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${log.folder}/marlo-test.log</file>
+    <file>${log.folder}/marlo-test-${log.instance}.log</file>
     <encoder>     
     <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]
         : %msg%n</pattern>
     </encoder>    
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <!-- 30 days, daily rollover -->   
-        <fileNamePattern>${log.folder}/marlo-test.%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <fileNamePattern>${log.folder}/marlo-test-${log.instance}.%d{yyyy-MM-dd}.zip</fileNamePattern>
         <maxHistory>30</maxHistory>
     </rollingPolicy>     
 </appender>
