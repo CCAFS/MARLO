@@ -628,8 +628,9 @@ public class FundingSourceAction extends BaseAction {
           } else {
 
             // if the funding source is type bilateral -- institutions are not cgiar center
-            institutionsDonors = institutionManager.findAll().stream()
-              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+            institutionsDonors =
+              institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+            institutionsDonors.removeAll(institutions);
           }
 
         }
