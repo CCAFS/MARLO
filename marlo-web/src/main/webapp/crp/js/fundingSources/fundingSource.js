@@ -39,10 +39,7 @@ function init() {
     var count = 0;
 
     if(selectedValue == "-1") {
-      return
-
-      
-
+      return;
     }
 
     // Count repeated donors
@@ -607,10 +604,7 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
         if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
-          return
-
-          
-
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
@@ -642,10 +636,7 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
-
-          
-
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
@@ -681,9 +672,7 @@ function settingDate(start,end,extensionDate) {
         console.log(selectedDate);
         if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
-          
-
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
@@ -925,20 +914,15 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         $('.loading').show();
       },
       success: function(m) {
-        $donorSelectLists.each(function(i, select){
-          var currentValue = $(select).find("option:selected").val();
-          $(select).empty();
-          $(select).addOption("-1", "Select an option...");
-          console.log(m.institutions.length);
-          $.each(m.institutions, function(i,e) {
-            $(select).addOptionFast(e.id, e.name);
-          });
-          $(select).val(currentValue).trigger("change");
+        $donorSelectLists.empty();
+        $donorSelectLists.addOption("-1", "Select an option...");
+
+        $.each(m.institutions, function(i,e) {
+          $donorSelectLists.addOptionFast(e.id, e.name);
         });
-        
+
         // Set CGIAR Consortium Office if applicable to the direct donor
         changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));
-
       },
       error: function(e) {
         console.log(e);
@@ -954,13 +938,13 @@ function changeDonorByFundingType(budgetType,$donorSelect) {
   var currentDonorId = $donorSelect.find("option:selected").val();
   var currentDonorName = $donorSelect.attr('name');
   var cgConsortiumId = $(".cgiarConsortium").text();
-  
+
   // If budget type is W1W2 and the donor is not selected
   if((currentDonorId == "-1") && (budgetType == W1W2)) {
     // Set CGIAR System Organization
     $donorSelect.val(cgConsortiumId).attr("disabled", true).trigger("change");
-    $donorSelect.parents('.select').parent().append('<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="' + cgConsortiumId
-        + '" />');
+    $donorSelect.parents('.select').parent().append(
+        '<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="' + cgConsortiumId + '" />');
   } else if(budgetType != W1W2) {
     $donorSelect.attr("disabled", false).trigger("change");
     $('#donorHiddenInput').remove();
