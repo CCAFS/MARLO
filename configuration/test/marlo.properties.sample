@@ -77,6 +77,7 @@ log.file=false
 log.production=false
 #Test log shows logs of all types trace, debug, info, warn and error 
 log.test=true
+log.instance=instance
 # ----------------------------------------------------
 #                   OCS Link Service
 # ----------------------------------------------------
