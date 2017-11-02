@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
@@ -90,6 +92,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
+  private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
+
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
   private ProjectScopeManager projectScopeManager;
@@ -146,7 +150,8 @@ public class ProjectDescriptionAction extends BaseAction {
     AuditLogManager auditLogManager, ProjectDescriptionValidator validator,
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
-    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator) {
+    ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -166,6 +171,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
+    this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
   }
 
   /**
@@ -831,6 +837,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
             // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
 
+            for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
+              .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
+            }
           }
         }
         // Add Project Cluster Activities
