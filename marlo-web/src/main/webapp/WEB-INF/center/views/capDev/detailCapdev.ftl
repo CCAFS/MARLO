@@ -90,7 +90,7 @@
 						</div>
 
 						<!-- Contact person -->
-						<div class="col-md-6 contactField group individual">
+						<div class="col-md-6 contactField" style="display:${((capdev.category == 2)!false)?string('block','none')};">
 							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  readOnly=true required=true  editable=editable /]
 							<input class="ctFirsName" type="hidden" name="capdev.ctFirstName" value="${(capdev.ctFirstName)!}" /> 
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
@@ -129,129 +129,131 @@
 
 
 				<!-- groups participants-->
-				<h4 class="form-group headTitle newCapdevField grupsParticipantsForm">Participants Information</h4>
-				<div class="form-group row grupsParticipantsForm simpleBox">
-					[#if capdev.capdevParticipant?has_content && capdev.capdevParticipant?size > 1] 
-						<div class="capdevParticipantsTable">
-							<div class="capdev-participantslist-title">List of participants</div>
-							[@capdevList capdev.capdevParticipant /]
-							<div class="col-md-12">
-								<div class="pull-right">
-									[#if editable]	
-							        	<button type="button" class="" title="Delete list of participants">
-							        		<a id="" class="removeCapdev" data-href=""  data-toggle="modal" data-target="#confirm-clear-participantList"> Clear
-								            </a>
-							        	</button>
+				<div style="display:${((capdev.category == 2)!false)?string('block','none')};">
+					<h4 class="form-group headTitle newCapdevField grupsParticipantsForm" >Participants Information</h4>
+					<div class="form-group row  simpleBox" >
+						[#if capdev.capdevParticipant?has_content && capdev.capdevParticipant?size > 1] 
+							<div class="capdevParticipantsTable">
+								<div class="capdev-participantslist-title">List of participants</div>
+								[@capdevList capdev.capdevParticipant /]
+								<div class="col-md-12">
+									<div class="pull-right">
+										[#if editable]	
+								        	<button type="button" class="" title="Delete list of participants">
+								        		<a id="" class="removeCapdev" data-href=""  data-toggle="modal" data-target="#confirm-clear-participantList"> Clear
+									            </a>
+								        	</button>
 
-							        	<div class="modal fade" id="confirm-clear-participantList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								        <div class="modal-dialog">
-								            <div class="modal-content">
-								            
-								                <div class="modal-header">
-								                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-								                    <h4 class="modal-title" id="myModalLabel">Confirm Clear</h4>
-								                </div>
-								            
-								                <div class="modal-body">
-								                    <p>You are about to clear the list of participants, this procedure is irreversible.</p>
-								                    <p>Do you want to proceed?</p>
-								                    <p class="debug-url"></p>
-								                </div>
-								                
-								                <div class="modal-footer">
-								                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='category']${capdev.category}[/@s.param] [@s.param name='edit' value='true' /][/@s.url]">Clear</a>
-								                </div>
-								            </div>
-								        </div>
-								    </div>
+								        	<div class="modal fade" id="confirm-clear-participantList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									        <div class="modal-dialog">
+									            <div class="modal-content">
+									            
+									                <div class="modal-header">
+									                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									                    <h4 class="modal-title" id="myModalLabel">Confirm Clear</h4>
+									                </div>
+									            
+									                <div class="modal-body">
+									                    <p>You are about to clear the list of participants, this procedure is irreversible.</p>
+									                    <p>Do you want to proceed?</p>
+									                    <p class="debug-url"></p>
+									                </div>
+									                
+									                <div class="modal-footer">
+									                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+									                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='category']${capdev.category}[/@s.param] [@s.param name='edit' value='true' /][/@s.url]">Clear</a>
+									                </div>
+									            </div>
+									        </div>
+									    </div>
 
-							        [/#if]
-			    				</div>
-							</div>
-
-
-								     
-
-						</div>
-					[#else]
-						[#if editable]
-							<div class="form-group col-md-12 newCapdevField participantsheader">
-								<div class="pull-right">
-									<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
-										<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a>
-									</button>
+								        [/#if]
+				    				</div>
 								</div>
+
+
+									     
+
 							</div>
-
-							<div class="form-group row ">
-								<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
-									<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
-									
-									
-									<div class="col-md-12">
-										[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants" editable=editable/]
-									</div>
-									
-
-									<div class="col-md-12" style="margin-top: 10px;">
-									<div class="btnPreview">
-										<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded" >
-											preview 
+						[#else]
+							[#if editable]
+								<div class="form-group col-md-12 newCapdevField participantsheader">
+									<div class="pull-right">
+										<button type="button" class="capdevButtons" aria-label="Left Align" title="Download template to upload the list of participants">
+											<a class="downloadButton" href="[@s.url action='${centerSession}/downloadFile' /] ">[@s.text name="capdev.downloadTemplate" /]</a>
 										</button>
 									</div>
+								</div>
 
-									
+								<div class="form-group row ">
+									<div class="col-md-12  participantsBox " listname="capdev.uploadFile">
+										<!-- [@s.fielderror fieldName="upload_File" class="fileError" /] -->
+										
+										
+										<div class="col-md-12">
+											[@s.file id="uploadFile" name="uploadFile" label="Select a File to upload" size="40" class="uploadParticipants" editable=editable/]
+										</div>
+										
 
-									<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
+										<div class="col-md-12" style="margin-top: 10px;">
+										<div class="btnPreview">
+											<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded" >
+												preview 
+											</button>
+										</div>
+
+										
+
+										<div id="filewarning" class="warning" style="display: none; margin-top: 10px;">
+										</div>
+										<div class="loader" style="display:none;"><img src="${baseUrl}/global/images/loading_2.gif" width="80" height="30"></div>
+
+										<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+										  <div class="modal-dialog modal-lg" role="document">
+										    <div class="modal-content highlight">
+										      <div class="modal-header">
+										      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										          <span aria-hidden="true">&times;</span>
+										        </button>
+										        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
+										        
+										      </div>
+										      <div id="participantsTable"  class="modal-body">
+										        
+										      </div>
+										     
+										    </div>
+										  </div>
+										</div>
 									</div>
-									<div class="loader" style="display:none;"><img src="${baseUrl}/global/images/loading_2.gif" width="80" height="30"></div>
-
-									<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-									  <div class="modal-dialog modal-lg" role="document">
-									    <div class="modal-content highlight">
-									      <div class="modal-header">
-									      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									          <span aria-hidden="true">&times;</span>
-									        </button>
-									        <h5 class="modal-title" id="exampleModalLabel">Preview participants file</h5>
-									        
-									      </div>
-									      <div id="participantsTable"  class="modal-body">
-									        
-									      </div>
-									     
-									    </div>
-									  </div>
 									</div>
 								</div>
-								</div>
-							</div>
+							[/#if]
+
 						[/#if]
 
-					[/#if]
-
-					<!-- num participants, num men and num women -->
-					<div class="form-group row">
-						<div class="col-md-12 ">
-							<div class="col-md-4 group individual">
-								[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=editable className="numParticipants" /]
-							</div>
-							<div class="col-md-3 group individual">
-								[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" editable=editable/]
-							</div>
-							<div class="col-md-3 group individual">
-								[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numWomen" type="text" className="numWomen" editable=editable/]
-							</div>
-							<div class="col-md-2 group individual">
-								[@customForm.input name="capdev.numOther" i18nkey="capdev.form.numOther" help="capdev.help.numOther" type="text" className="numOhter" editable=editable/]
+						<!-- num participants, num men and num women -->
+						<div class="form-group row">
+							<div class="col-md-12 ">
+								<div class="col-md-4 group individual">
+									[@customForm.input name="capdev.numParticipants" i18nkey="capdev.form.numParticipants" type="text" help="capdev.help.numParticipants"  editable=editable className="numParticipants" /]
+								</div>
+								<div class="col-md-3 group individual">
+									[@customForm.input name="capdev.numMen" i18nkey="capdev.form.numMen" help="capdev.help.numMen" type="text" className="numMen" editable=editable/]
+								</div>
+								<div class="col-md-3 group individual">
+									[@customForm.input name="capdev.numWomen" i18nkey="capdev.form.numWomen" help="capdev.help.numWomen" type="text" className="numWomen" editable=editable/]
+								</div>
+								<div class="col-md-2 group individual">
+									[@customForm.input name="capdev.numOther" i18nkey="capdev.form.numOther" help="capdev.help.numOther" type="text" className="numOhter" editable=editable/]
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div class="row grupsParticipantsForm">
-						<div class="note participantMessage">
-							<p>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</p>
+						<div class="row grupsParticipantsForm">
+							<div class="note participantMessage">
+								<p>If you don’t have a list of participants, please enter the number of participants, specifying number of men,  number of women, or other</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -261,91 +263,94 @@
 
 
 				<!-- induvidual participant-->
-				<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
-					<div class="note  individualparticipantForm">
-						<p>Please complete the information of the trainee who received the individual capdev intervention </p>
-					</div>
-				<div class="row  individualparticipantForm simpleBox" style="display:none;">
+				<div style="display:${((capdev.category == 1)!false)?string('block','none')};">
+					<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
+						<div class="note  individualparticipantForm">
+							<p>Please complete the information of the trainee who received the individual capdev intervention </p>
+						</div>
+					<div class="row  individualparticipantForm simpleBox" style="display:none;">
 
-					<input type="hidden" name="capdev.participant.id" value="${(capdev.participant.id)!}" class="genderInput"/>
-					<!-- participant code -->
-					<div class="form-group row">
-						<div class="col-md-12">
-							[@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
-						</div>
-					</div>
-					<!-- participant name and middle name -->
-					<div class="form-group row">
-						<div class="col-md-6">
-							[@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" required=true editable=editable/]
-						</div>
-						<div class=" col-md-6">
-							[@customForm.input name="capdev.participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
-						</div>
-					</div>
-					<!-- participant last name and gender -->
-					<div class="form-group row ">
-						<div class="form-group col-md-6">
-							[@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true editable=editable/]
-						</div>
-						<div class="form-group col-md-6 genderSelect">
-							<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
-							[@customForm.select name="capdev.participant.gender" value="'${(capdev.participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
-						</div>
-					</div>
-					<!-- participant citizenship and highest degree -->
-					<div class="form-group row">
-						<div class="col-md-6 pCitizenshipcountriesList">
-							[@customForm.select name="capdev.participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
-						</div>
-						<div class="col-md-6">
-							[@customForm.select name="capdev.participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  editable=editable/]
-						</div>
-					</div>
-					<!-- participant personal email and job email -->
-					<div class="form-group row  ">
-						<div class="col-md-6">
-							[@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true editable=editable/]
-						</div>
-						<div class="col-md-6">
-							[@customForm.input name="capdev.participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
-						</div>
-					</div>
-					<!-- intitucion and country of institution -->
-					<div class="form-group row">
-						<div class="col-md-6">
-							[@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
-
-							[#if editable]
-								<div class="note participantMessage">
-									<p>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
-								</div>
-							[/#if]
-
-							<div>
-
-								<label>Other <input type="checkbox" name="capdev.participant.otherInstitution" class="otherInstcheck"   [#if (capdev.participant.otherInstitution)??]
-								[#if (capdev.participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(capdev.participant.otherInstitution)!}"[/#if]  [#if !editable] disabled="true"[/#if] > </label>
-								<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="capdev.participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea" editable=editable /]</div>
+						<input type="hidden" name="capdev.participant.id" value="${(capdev.participant.id)!}" class="genderInput"/>
+						<!-- participant code -->
+						<div class="form-group row">
+							<div class="col-md-12">
+								[@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
 							</div>
-						
+						</div>
+						<!-- participant name and middle name -->
+						<div class="form-group row">
+							<div class="col-md-6">
+								[@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" required=true editable=editable/]
+							</div>
+							<div class=" col-md-6">
+								[@customForm.input name="capdev.participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
+							</div>
+						</div>
+						<!-- participant last name and gender -->
+						<div class="form-group row ">
+							<div class="form-group col-md-6">
+								[@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true editable=editable/]
+							</div>
+							<div class="form-group col-md-6 genderSelect">
+								<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
+								[@customForm.select name="capdev.participant.gender" value="'${(capdev.participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
+							</div>
+						</div>
+						<!-- participant citizenship and highest degree -->
+						<div class="form-group row">
+							<div class="col-md-6 pCitizenshipcountriesList">
+								[@customForm.select name="capdev.participant.locElementsByCitizenship.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.citizenship" className="" multiple=false placeholder="capdev.select" required=true editable=editable/]
+							</div>
+							<div class="col-md-6">
+								[@customForm.select name="capdev.participant.highestDegree.id" listName="highestDegrreList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Highestdegree"  multiple=false placeholder="capdev.select"  editable=editable/]
+							</div>
+						</div>
+						<!-- participant personal email and job email -->
+						<div class="form-group row  ">
+							<div class="col-md-6">
+								[@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true editable=editable/]
+							</div>
+							<div class="col-md-6">
+								[@customForm.input name="capdev.participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
+							</div>
+						</div>
+						<!-- intitucion and country of institution -->
+						<div class="form-group row">
+							<div class="col-md-6">
+								[@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
 
+								[#if editable]
+									<div class="note participantMessage">
+										<p>If you cannot find the institution you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
+									</div>
+								[/#if]
+
+								<div>
+
+									<label>Other <input type="checkbox" name="capdev.participant.otherInstitution" class="otherInstcheck"   [#if (capdev.participant.otherInstitution)??]
+									[#if (capdev.participant.otherInstitution) == "1"] checked="checked" [/#if] value="${(capdev.participant.otherInstitution)!}"[/#if]  [#if !editable] disabled="true"[/#if] > </label>
+									<div class="suggestInstitution" style="display: none;">[@customForm.textArea name="capdev.participant.institutionsSuggested" i18nkey="Suggest institution"  className="textarea" editable=editable /]</div>
+								</div>
+							
+
+							</div>
+							<div class="col-md-6 pcountryOfInstitucionList">
+								[@customForm.select name="capdev.participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
+							</div>
 						</div>
-						<div class="col-md-6 pcountryOfInstitucionList">
-							[@customForm.select name="capdev.participant.locElementsByCountryOfInstitucion.id" listName="countryList" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.country" className="" multiple=false placeholder="capdev.select" editable=editable /]
-						</div>
-					</div>
-					<!-- supervisor and funding type -->
-					<div class="form-group row">
-						<div class="col-md-6">
-							[@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true editable=editable/]
-						</div>
-						<div class="col-md-6">
-							<!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
-							[@customForm.select name="capdev.participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select" editable=editable /]
+						<!-- supervisor and funding type -->
+						<div class="form-group row">
+							<div class="col-md-6">
+								[@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true editable=editable/]
+							</div>
+							<div class="col-md-6">
+								<!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->
+								[@customForm.select name="capdev.participant.fellowship.id" listName="foundingTypeList" keyFieldName="id" displayFieldName="name"  i18nkey="capdev.participant.Fellowship"  multiple=false placeholder="capdev.select" editable=editable /]
+							</div>
 						</div>
 					</div>
 				</div>
+
 
 				
 
