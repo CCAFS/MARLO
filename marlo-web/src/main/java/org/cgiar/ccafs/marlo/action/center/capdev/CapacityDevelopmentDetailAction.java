@@ -615,7 +615,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           String ctLastName = "";
           String ctEmail = "";
           if (capdev.getCtFirstName() != null) {
-            ctFirstName = capdev.getCtFirstName() + ", ";
+            ctFirstName = capdev.getCtFirstName();
           }
           if (capdev.getCtLastName() != null) {
             ctLastName = capdev.getCtLastName();

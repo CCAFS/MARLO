@@ -109,7 +109,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
 
     if ((this.bolValue(capdev.getsRegional()) == null) && (this.bolValue(capdev.getsGlobal()) == null)) {
-      if (capdev.getCapDevCountries().isEmpty()) {
+      if (capdev.getCapDevCountries() == null) {
         this.addMessage(baseAction.getText("capdev.action.countries"));
         baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
           new String[] {"Capacity Development Intervention Countries"}));
@@ -117,7 +117,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     } else {
       if ((this.bolValue(capdev.getsRegional()) != null)) {
         if (this.bolValue(capdev.getsRegional()) == false) {
-          if (capdev.getCapDevCountries().isEmpty()) {
+          if (capdev.getCapDevCountries() == null) {
             this.addMessage(baseAction.getText("capdev.action.countries"));
             baseAction.getInvalidFields().put("list-capdev.countries", baseAction
               .getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
@@ -151,8 +151,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     }
     if (capdev.getCategory() == 2) {
 
-      if (capdev.getCtFirstName().equalsIgnoreCase("") || capdev.getCtLastName().equalsIgnoreCase("")
-        || capdev.getCtEmail().equalsIgnoreCase("")) {
+      if ((capdev.getCtFirstName() == null) || (capdev.getCtLastName() == null) || (capdev.getCtEmail() == null)) {
         this.addMessage(baseAction.getText("capdev.action.contactPerson"));
         baseAction.getInvalidFields().put("input-contact", InvalidFieldsMessages.EMPTYFIELD);
       }
