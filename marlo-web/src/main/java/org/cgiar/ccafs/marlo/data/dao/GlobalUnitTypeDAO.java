@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,9 +30,8 @@ public interface GlobalUnitTypeDAO {
    * This method removes a specific globalUnitType value from the database.
    * 
    * @param globalUnitTypeId is the globalUnitType identifier.
-   * @return true if the globalUnitType was successfully deleted, false otherwise.
    */
-  public boolean deleteGlobalUnitType(long globalUnitTypeId);
+  public void deleteGlobalUnitType(long globalUnitTypeId);
 
   /**
    * This method validate if the globalUnitType identify with the given id exists in the system.
@@ -62,9 +61,7 @@ public interface GlobalUnitTypeDAO {
    * This method saves the information of the given globalUnitType
    * 
    * @param globalUnitType - is the globalUnitType object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the globalUnitType was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return GlobalUnitType object created or updated;
    */
-  public long save(GlobalUnitType globalUnitType);
+  public GlobalUnitType save(GlobalUnitType globalUnitType);
 }

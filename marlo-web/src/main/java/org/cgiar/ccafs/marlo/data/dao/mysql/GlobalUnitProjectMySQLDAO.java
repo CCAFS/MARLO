@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class GlobalUnitProjectMySQLDAO implements GlobalUnitProjectDAO {
+public class GlobalUnitProjectMySQLDAO extends AbstractMarloDAO<GlobalUnitProject, Long>
+  implements GlobalUnitProjectDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public GlobalUnitProjectMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public GlobalUnitProjectMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteGlobalUnitProject(long globalUnitProjectId) {
+  public void deleteGlobalUnitProject(long globalUnitProjectId) {
     GlobalUnitProject globalUnitProject = this.find(globalUnitProjectId);
     globalUnitProject.setActive(false);
-    return this.save(globalUnitProject) > 0;
+    this.save(globalUnitProject);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class GlobalUnitProjectMySQLDAO implements GlobalUnitProjectDAO {
 
   @Override
   public GlobalUnitProject find(long id) {
-    return dao.find(GlobalUnitProject.class, id);
+    return super.find(GlobalUnitProject.class, id);
 
   }
 
   @Override
   public List<GlobalUnitProject> findAll() {
     String query = "from " + GlobalUnitProject.class.getName() + " where is_active=1";
-    List<GlobalUnitProject> list = dao.findAll(query);
+    List<GlobalUnitProject> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,13 @@ public class GlobalUnitProjectMySQLDAO implements GlobalUnitProjectDAO {
   }
 
   @Override
-  public long save(GlobalUnitProject globalUnitProject) {
+  public GlobalUnitProject save(GlobalUnitProject globalUnitProject) {
     if (globalUnitProject.getId() == null) {
-      dao.save(globalUnitProject);
+      super.saveEntity(globalUnitProject);
     } else {
-      dao.update(globalUnitProject);
+      super.update(globalUnitProject);
     }
-
-
-    return globalUnitProject.getId();
+    return globalUnitProject;
   }
 
 

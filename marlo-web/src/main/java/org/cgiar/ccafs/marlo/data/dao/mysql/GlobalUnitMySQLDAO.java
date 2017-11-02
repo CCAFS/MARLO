@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class GlobalUnitMySQLDAO implements GlobalUnitDAO {
+public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> implements GlobalUnitDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public GlobalUnitMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteGlobalUnit(long globalUnitId) {
+  public void deleteGlobalUnit(long globalUnitId) {
     GlobalUnit globalUnit = this.find(globalUnitId);
     globalUnit.setActive(false);
-    return this.save(globalUnit) > 0;
+    this.save(globalUnit);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class GlobalUnitMySQLDAO implements GlobalUnitDAO {
 
   @Override
   public GlobalUnit find(long id) {
-    return dao.find(GlobalUnit.class, id);
+    return super.find(GlobalUnit.class, id);
 
   }
 
   @Override
   public List<GlobalUnit> findAll() {
     String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
-    List<GlobalUnit> list = dao.findAll(query);
+    List<GlobalUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class GlobalUnitMySQLDAO implements GlobalUnitDAO {
   }
 
   @Override
-  public long save(GlobalUnit globalUnit) {
+  public GlobalUnit save(GlobalUnit globalUnit) {
     if (globalUnit.getId() == null) {
-      dao.save(globalUnit);
+      super.saveEntity(globalUnit);
     } else {
-      dao.update(globalUnit);
+      globalUnit = super.update(globalUnit);
     }
 
 
-    return globalUnit.getId();
+    return globalUnit;
   }
 
 

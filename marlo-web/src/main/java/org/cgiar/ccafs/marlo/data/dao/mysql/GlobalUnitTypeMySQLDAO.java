@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class GlobalUnitTypeMySQLDAO implements GlobalUnitTypeDAO {
+public class GlobalUnitTypeMySQLDAO extends AbstractMarloDAO<GlobalUnitType, Long> implements GlobalUnitTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public GlobalUnitTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public GlobalUnitTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteGlobalUnitType(long globalUnitTypeId) {
+  public void deleteGlobalUnitType(long globalUnitTypeId) {
     GlobalUnitType globalUnitType = this.find(globalUnitTypeId);
     globalUnitType.setActive(false);
-    return this.save(globalUnitType) > 0;
+    this.save(globalUnitType);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class GlobalUnitTypeMySQLDAO implements GlobalUnitTypeDAO {
 
   @Override
   public GlobalUnitType find(long id) {
-    return dao.find(GlobalUnitType.class, id);
+    return super.find(GlobalUnitType.class, id);
 
   }
 
   @Override
   public List<GlobalUnitType> findAll() {
     String query = "from " + GlobalUnitType.class.getName() + " where is_active=1";
-    List<GlobalUnitType> list = dao.findAll(query);
+    List<GlobalUnitType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class GlobalUnitTypeMySQLDAO implements GlobalUnitTypeDAO {
   }
 
   @Override
-  public long save(GlobalUnitType globalUnitType) {
+  public GlobalUnitType save(GlobalUnitType globalUnitType) {
     if (globalUnitType.getId() == null) {
-      dao.save(globalUnitType);
+      super.saveEntity(globalUnitType);
     } else {
-      dao.update(globalUnitType);
+      super.update(globalUnitType);
     }
 
 
-    return globalUnitType.getId();
+    return globalUnitType;
   }
 
 
