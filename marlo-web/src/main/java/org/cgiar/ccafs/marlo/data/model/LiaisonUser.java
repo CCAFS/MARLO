@@ -41,14 +41,17 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
 
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
+
   @Expose
   private User user;
+
+
   @Expose
-  private Crp crp;
-  @Expose
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
   @Expose
   private boolean active;
+
   private Set<Project> projects = new HashSet<Project>(0);
 
   public LiaisonUser() {
@@ -58,7 +61,6 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
   }
-
 
   public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<Project> projectses) {
     this.liaisonInstitution = liaisonInstitution;
@@ -70,13 +72,9 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return user.getComposedName();
   }
 
-  public Crp getCrp() {
+
+  public GlobalUnit getCrp() {
     return crp;
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
   @Override
@@ -89,6 +87,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return liaisonInstitution;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -98,7 +97,6 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -131,18 +129,15 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
 
-
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

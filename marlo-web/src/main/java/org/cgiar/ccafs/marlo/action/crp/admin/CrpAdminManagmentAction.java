@@ -19,24 +19,24 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -72,7 +72,9 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class CrpAdminManagmentAction extends BaseAction {
 
+
   private static final long serialVersionUID = 3355662668874414548L;
+
 
   /**
    * Helper method to read a stream into memory.
@@ -94,42 +96,42 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   // Managers
   private RoleManager roleManager;
+
   private UserRoleManager userRoleManager;
+
   private CrpProgramManager crpProgramManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private CustomParameterManager crpParameterManager;
   private ParameterManager parameterManager;
-
   private CrpUserManager crpUserManager;
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
+
   private Role rolePmu;
   private long pmuRol;
   private long cuId;
   private List<CrpProgram> flagshipsPrograms;
-
-
   private List<CrpProgram> regionsPrograms;
-
-
   private List<CustomParameter> parameters;
 
+
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
+
   private LiaisonUserManager liaisonUserManager;
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private Role fplRole;
-
-
   private Role fpmRole;
-
-
   // Util
   private SendMailS sendMail;
 
+
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager, CustomParameterManager crpParameterManager,
+    CrpProgramManager crpProgramManager, GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, SendMailS sendMail,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     CrpUserManager crpUserManager, ParameterManager parameterManager) {
@@ -147,6 +149,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpUserManager = crpUserManager;
   }
+
 
   public void addCrpUser(User user) {
     user = userManager.getUser(user.getId());
@@ -188,12 +191,11 @@ public class CrpAdminManagmentAction extends BaseAction {
     return fplRole;
   }
 
-
   public Role getFpmRole() {
     return fpmRole;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -296,6 +298,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
 
   }
+
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Flagship
@@ -469,7 +472,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   private void notifyRoleFlagshipManagerUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
     // Email send to the user assigned
     String toEmail = userRemoved.getEmail();
@@ -551,6 +553,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
   }
+
 
   private void notifyRoleFlagshipUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
     // Email send to the user assigned
@@ -673,7 +676,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -722,6 +724,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
+
 
   private void pmuRoleData() {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -794,8 +797,8 @@ public class CrpAdminManagmentAction extends BaseAction {
   public void prepare() throws Exception {
 
     // Get the Users list that have the pmu role in this crp.
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
@@ -842,7 +845,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     }
   }
-
 
   private void programLeaderData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
@@ -950,6 +952,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
   }
+
 
   private void programManagerData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
@@ -1101,7 +1104,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -1173,6 +1175,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   public void setFlagshipsPrograms(List<CrpProgram> flagshipsPrograms) {
     this.flagshipsPrograms = flagshipsPrograms;
   }
@@ -1181,14 +1184,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.fplRole = fplRole;
   }
 
-
   public void setFpmRole(Role fpmRole) {
     this.fpmRole = fpmRole;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPmuRol(long pmuRol) {
     this.pmuRol = pmuRol;

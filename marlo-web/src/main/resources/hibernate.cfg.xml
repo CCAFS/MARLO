@@ -196,5 +196,8 @@
       <mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
       <mapping resource="xmls/PlaAgreement.hbm.xml" />
       <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
+      <mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
+      <mapping resource="xmls/GlobalUnits.hbm.xml" />
+      <mapping resource="xmls/GlobalUnitTypes.hbm.xml" />
    </session-factory>
 </hibernate-configuration>

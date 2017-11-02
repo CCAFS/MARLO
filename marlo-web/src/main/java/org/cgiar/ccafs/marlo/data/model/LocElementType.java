@@ -28,21 +28,18 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private Crp crp;
-
-  @Expose
-  private GlobalUnit globalUnit;
-
+  private GlobalUnit crp;
 
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
 
+
   @Expose
   private Date activeSince;
-
 
   @Expose
   private User modifiedBy;
@@ -53,7 +50,6 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean scope;
-
 
   @Expose
   private Boolean hasCoordinates;
@@ -70,13 +66,14 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
-  private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
-  private List<LocElement> locationElements;
 
+  private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
+
+
+  private List<LocElement> locationElements;
 
   public LocElementType() {
   }
-
 
   public LocElementType(LocElementType locElementType, String name, Set<LocElement> locElements,
     Set<LocElementType> locElementTypes, Set<ProjectLocationElementType> projectLocationElementTypes) {
@@ -86,6 +83,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     this.locElementTypes = locElementTypes;
     this.projectLocationElementTypes = projectLocationElementTypes;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -107,6 +105,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -115,7 +114,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -124,13 +123,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   }
 
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
-  }
-
   public Boolean getHasCoordinates() {
     return hasCoordinates;
   }
+
 
   @Override
   public Long getId() {
@@ -160,11 +156,11 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -200,17 +196,15 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
     this.crpLocElementTypes = crpLocElementTypes;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setHasCoordinates(Boolean hasCoordinates) {
     this.hasCoordinates = hasCoordinates;

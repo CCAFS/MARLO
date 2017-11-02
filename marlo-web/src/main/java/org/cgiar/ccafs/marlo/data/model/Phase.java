@@ -21,45 +21,45 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   private Long id;
 
-  private Crp crp;
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
+
+
   private String description;
+
+
   private int year;
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
 
   public Phase() {
   }
 
-  public Phase(Crp crp, String description, int year) {
+  public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
     this.description = description;
     this.year = year;
   }
 
-  public Phase(Crp crp, String description, int year, Set<ProjectPhase> projectPhases) {
+  public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
     this.year = year;
     this.projectPhases = projectPhases;
   }
 
-
-  public Crp getCrp() {
-    return this.crp;
+  public GlobalUnit getCrp() {
+    return crp;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
-  }
 
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -95,17 +95,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

@@ -128,6 +128,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource" />
         </set>
+        <set name="fundingSources" table="funding_sources" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="global_unit_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
+        </set>
         <set name="centerRoles" table="center_roles" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="global_unit_id" />
@@ -152,7 +158,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
         </set>
-        <set name="crpsSiteIntegrations" table="crps_sites_integration" inverse="true" lazy="true" fetch="select">
+        <set name="crpsSitesIntegrations" table="crps_sites_integration" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="global_unit_id" />
             </key>
@@ -175,6 +181,18 @@
                 <column name="global_unit_id" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
+        </set>
+        <set name="globalUnitProjects" table="global_unit_projects" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="global_unit_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
+        </set>
+        <set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="global_unit_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
         </set>
     </class>
 </hibernate-mapping>

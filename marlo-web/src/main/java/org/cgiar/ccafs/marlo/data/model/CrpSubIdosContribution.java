@@ -37,16 +37,14 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
   private Long id;
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
-  @Expose
-  private GlobalUnit globalUnit;
+
   @Expose
   private SrfSubIdo srfSubIdo;
 
   @Expose
   private boolean active;
-
   @Expose
   private User createdBy;
 
@@ -62,7 +60,7 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
   public CrpSubIdosContribution() {
   }
 
-  public CrpSubIdosContribution(Crp crps, SrfSubIdo srfSubIdos) {
+  public CrpSubIdosContribution(GlobalUnit crps, SrfSubIdo srfSubIdos) {
     this.crp = crps;
     this.srfSubIdo = srfSubIdos;
   }
@@ -75,12 +73,8 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public Crp getCrp() {
-    return this.crp;
-  }
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
+  public GlobalUnit getCrp() {
+    return crp;
   }
 
   @Override
@@ -126,13 +120,10 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crps) {
-    this.crp = crps;
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

@@ -18,18 +18,18 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -73,22 +73,23 @@ public class FundingSourceAddAction extends BaseAction {
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
   private static String FILE = "fileID";
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private FundingSourceManager fundingSourceManager;
   private LiaisonUserManager liaisonUserManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
-  private CrpManager crpManager;
   private FileDBManager fileDBManager;
   private List<Map<String, Object>> fsCreated;
   private Map<String, Object> fsProp = new HashMap<>();
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
-    InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
+    InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, GlobalUnitManager crpManager,
     FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager,
     FileDBManager fileDBManager, FundingSourceInstitutionManager fundingSourceInstitutionManager) {
     super(config);
@@ -114,8 +115,8 @@ public class FundingSourceAddAction extends BaseAction {
     budgets = budgets.replace("]", "");
     budgets = budgets.replace("}", "");
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     int selectedYear = Integer.parseInt(((String[]) parameters.get(SELECTED_YEAR))[0]);
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);

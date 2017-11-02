@@ -17,11 +17,11 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.ParameterCategoryEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -36,20 +36,25 @@ import com.google.inject.Inject;
 
 public class CrpParametersAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 2672633110828731495L;
 
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+
   private CustomParameterManager crpParameterManager;
+
   private ParameterManager parameterManager;
   private List<ParameterCategoryEnum> parametersTypes;
-  private List<Crp> crps;
+  private List<GlobalUnit> crps;
 
   @Inject
-  public CrpParametersAction(APConfig config, CrpManager crpManager, CustomParameterManager crpParameterManager,
+  public CrpParametersAction(APConfig config, GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
     ParameterManager parameterManager) {
 
     super(config);
@@ -58,11 +63,9 @@ public class CrpParametersAction extends BaseAction {
     this.crpParameterManager = crpParameterManager;
   }
 
-
-  public List<Crp> getCrps() {
+  public List<GlobalUnit> getCrps() {
     return crps;
   }
-
 
   public List<ParameterCategoryEnum> getParametersTypes() {
     return parametersTypes;
@@ -74,7 +77,7 @@ public class CrpParametersAction extends BaseAction {
 
     super.prepare();
     crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
-    for (Crp crp : crps) {
+    for (GlobalUnit crp : crps) {
       crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
@@ -99,7 +102,7 @@ public class CrpParametersAction extends BaseAction {
     parametersTypes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()) * -1);
 
     if (this.isHttpPost()) {
-      for (Crp crp : crps) {
+      for (GlobalUnit crp : crps) {
         if (crp.getParameters() != null) {
           crp.getParameters().clear();
         }
@@ -112,11 +115,11 @@ public class CrpParametersAction extends BaseAction {
   public String save() {
     if (this.canAccessSuperAdmin()) {
 
-      for (Crp crp : crps) {
+      for (GlobalUnit crp : crps) {
         if (crp.getParameters() == null) {
           crp.setParameters(new ArrayList<CustomParameter>());
         }
-        Crp crpDB = crpManager.getCrpById(crp.getId());
+        GlobalUnit crpDB = crpManager.getGlobalUnitById(crp.getId());
         for (CustomParameter parameter : crpDB.getCustomParameters().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (!crp.getParameters().contains(parameter)) {
@@ -162,9 +165,10 @@ public class CrpParametersAction extends BaseAction {
   }
 
 
-  public void setCrps(List<Crp> crps) {
+  public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
+
 
   public void setParametersTypes(List<ParameterCategoryEnum> parametersTypes) {
     this.parametersTypes = parametersTypes;

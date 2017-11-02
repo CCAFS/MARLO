@@ -19,14 +19,15 @@ public class CustomParameter implements java.io.Serializable {
   private Long id;
 
 
-  private Crp crp;
-
-
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
 
 
   private Parameter parameter;
+
+
   private User modifiedBy;
+
+
   private User createdBy;
   private String value;
   private boolean active;
@@ -36,7 +37,7 @@ public class CustomParameter implements java.io.Serializable {
   public CustomParameter() {
   }
 
-  public CustomParameter(Crp crp, Parameter parameter, User usersByModifiedBy, String value, boolean isActive,
+  public CustomParameter(GlobalUnit crp, Parameter parameter, User usersByModifiedBy, String value, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crp = crp;
     this.parameter = parameter;
@@ -47,8 +48,8 @@ public class CustomParameter implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
-  public CustomParameter(Crp crp, Parameter parameter, User usersByModifiedBy, User usersByCreatedBy, String value,
-    boolean isActive, Date activeSince, String modificationJustification) {
+  public CustomParameter(GlobalUnit crp, Parameter parameter, User usersByModifiedBy, User usersByCreatedBy,
+    String value, boolean isActive, Date activeSince, String modificationJustification) {
     this.crp = crp;
     this.parameter = parameter;
     this.modifiedBy = usersByModifiedBy;
@@ -83,24 +84,18 @@ public class CustomParameter implements java.io.Serializable {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
-  }
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
   public Long getId() {
     return id;
   }
-
 
   public String getModificationJustification() {
     return modificationJustification;
@@ -151,13 +146,8 @@ public class CustomParameter implements java.io.Serializable {
   }
 
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
-  }
-
-
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
   }
 
 

@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -2941,7 +2942,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public void loadLessons(Crp crp, Project project) {
+  public void loadLessons(GlobalUnit crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
@@ -2973,7 +2974,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public void loadLessons(Crp crp, Project project, String actionName) {
+  public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
@@ -3094,7 +3095,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-  public void saveLessons(Crp crp, Project project) {
+  public void saveLessons(GlobalUnit crp, Project project) {
 
     if (project.isProjectEditLeader() && !this.isProjectNew(project.getId())) {
 

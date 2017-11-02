@@ -25,9 +25,9 @@
       class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
       <column name="direct_donor" />
     </many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp_id" />
+			<column name="global_unit_id" />
 		</many-to-one>
 		<many-to-one name="file"
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">

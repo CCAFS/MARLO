@@ -36,8 +36,11 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   @Expose
   private DeliverableType deliverableType;
+
+
   @Expose
   private String name;
+
   @Expose
   private String description;
   @Expose
@@ -45,17 +48,14 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean fair;
   @Expose
-  private Crp crp;
-
-  @Expose
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
+
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   public DeliverableType() {
   }
-
 
   public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
     Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
@@ -67,7 +67,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-  public Crp getCrp() {
+
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -75,6 +76,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public Set<Deliverable> getDeliverables() {
     return this.deliverables;
   }
+
 
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
@@ -92,14 +94,11 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     return fair;
   }
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
-  }
-
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -137,9 +136,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;
@@ -161,9 +161,6 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.fair = fair;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

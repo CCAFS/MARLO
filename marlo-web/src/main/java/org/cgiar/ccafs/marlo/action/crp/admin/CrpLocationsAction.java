@@ -18,13 +18,13 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
@@ -47,25 +47,26 @@ public class CrpLocationsAction extends BaseAction {
 
 
   private static final long serialVersionUID = 7866923077836156028L;
-  // Managers
-  private CrpManager crpManager;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+
   private LocElementManager locElementManager;
   private LocElementTypeManager locElementTypeManager;
   private LocGeopositionManager locGeopositionManager;
   private LocElementManager locElementManger;
   private CrpLocElementTypeManager crpLocElementTypeManager;
-
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<LocElement> countriesList;
 
   private List<LocElement> regions;
-
   private List<LocElementType> defaultLocationTypes;
 
-
   @Inject
-  public CrpLocationsAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
+  public CrpLocationsAction(APConfig config, GlobalUnitManager crpManager, LocElementManager locElementManager,
     LocElementTypeManager locElementTypeManager, LocGeopositionManager locGeopositionManager,
     CrpLocElementTypeManager crpLocElementTypeManager, LocElementManager locElementManger) {
     super(config);
@@ -103,10 +104,10 @@ public class CrpLocationsAction extends BaseAction {
     return defaultLocationTypes;
   }
 
-  public Crp getLoggedCrp() {
+
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<LocElement> getRegions() {
     return regions;
@@ -227,6 +228,7 @@ public class CrpLocationsAction extends BaseAction {
       }
     }
   }
+
 
   private void locationNewData() {
     for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
@@ -396,8 +398,8 @@ public class CrpLocationsAction extends BaseAction {
     defaultLocationTypes = locElementTypeManager.findAll().stream()
       .filter(let -> let.isActive() && let.getCrp() == null).collect(Collectors.toList());
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
     Collections.sort(defaultLocationTypes, (tu1, tu2) -> tu1.getName().compareTo(tu2.getName()));
 
@@ -488,7 +490,6 @@ public class CrpLocationsAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -523,6 +524,7 @@ public class CrpLocationsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveCustomLocations() {
     if (loggedCrp.getCustomLevels() == null) {
@@ -567,9 +569,10 @@ public class CrpLocationsAction extends BaseAction {
     this.defaultLocationTypes = defaultLocationTypes;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;

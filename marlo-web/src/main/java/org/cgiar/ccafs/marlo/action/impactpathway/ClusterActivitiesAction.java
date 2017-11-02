@@ -23,14 +23,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -39,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -79,10 +79,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ClusterActivitiesAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -2049759808815382048L;
+
 
   /**
    * Helper method to read a stream into memory.
@@ -102,41 +104,43 @@ public class ClusterActivitiesAction extends BaseAction {
     return baos.toByteArray();
   }
 
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private AuditLogManager auditLogManager;
+
   private long clRol;
   private List<CrpClusterOfActivity> clusterofActivities;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private CrpManager crpManager;
   private long crpProgramID;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private CrpUserManager crpUserManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private Role roleCl;
   private RoleManager roleManager;
   private CrpProgram selectedProgram;
-
   private HistoryComparator historyComparator;
-
   // Util
   private SendMailS sendMail;
-
 
   private String transaction;
 
   private UserManager userManager;
+
+
   private UserRoleManager userRoleManager;
 
   private ClusterActivitiesValidator validator;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
+    GlobalUnitManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
     SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager, HistoryComparator historyComparator,
@@ -179,7 +183,6 @@ public class ClusterActivitiesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String cancel() {
 
@@ -216,6 +219,7 @@ public class ClusterActivitiesAction extends BaseAction {
     }
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -232,15 +236,14 @@ public class ClusterActivitiesAction extends BaseAction {
     return clusterofActivities;
   }
 
-
   public long getCrpProgramID() {
     return crpProgramID;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -261,10 +264,10 @@ public class ClusterActivitiesAction extends BaseAction {
     return selectedProgram;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -428,6 +431,7 @@ public class ClusterActivitiesAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
+
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
     // Send email to the new user and the P&R notification email.
     // TO
@@ -506,8 +510,8 @@ public class ClusterActivitiesAction extends BaseAction {
   public void prepare() throws Exception {
 
     // Get the Users list that have the pmu role in this crp.
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     clRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_CL_ROLE));
     roleCl = roleManager.getRoleById(clRol);
     clusterofActivities = new ArrayList<>();
@@ -722,7 +726,6 @@ public class ClusterActivitiesAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -989,7 +992,7 @@ public class ClusterActivitiesAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

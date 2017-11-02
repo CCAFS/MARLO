@@ -18,14 +18,14 @@ package org.cgiar.ccafs.marlo.action.publications;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -43,20 +43,26 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PublicationListAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -5176367401132626314L;
-  private Crp loggedCrp;
-  private CrpManager crpManager;
+
+
+  private GlobalUnit loggedCrp;
+
+
   private long deliverableID;
   private DeliverableManager deliverableManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
   private DeliverableLeaderManager deliverableLeaderManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
+  public PublicationListAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
     InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
     DeliverableLeaderManager deliverableLeaderManager) {
 
@@ -67,7 +73,6 @@ public class PublicationListAction extends BaseAction {
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.institutionManager = institutionManager;
   }
-
 
   @Override
   public String add() {
@@ -121,13 +126,13 @@ public class PublicationListAction extends BaseAction {
 
   }
 
-
   public boolean canEdit(long deliverableID) {
     String params[] = {loggedCrp.getAcronym()};
     String paramDeliverableID[] = {loggedCrp.getAcronym(), deliverableID + ""};
     return this.hasPermission(this.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
       || this.hasPermission(this.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
   }
+
 
   @Override
   public String delete() {
@@ -150,14 +155,14 @@ public class PublicationListAction extends BaseAction {
 
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<Deliverable> getPublications(boolean permission) {
 
@@ -174,8 +179,8 @@ public class PublicationListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
 
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
@@ -199,7 +204,10 @@ public class PublicationListAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
+
 }

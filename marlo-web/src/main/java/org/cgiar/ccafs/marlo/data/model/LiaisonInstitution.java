@@ -41,20 +41,22 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   @Expose
   private CrpProgram crpProgram;
+
+
   @Expose
   private Institution institution;
+
+
   @Expose
   private String name;
   @Expose
   private String acronym;
-
   @Expose
-  private Crp crp;
-
-  @Expose
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
   @Expose
   private boolean active;
+
+
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
   private Set<Project> projects = new HashSet<Project>(0);
 
@@ -80,7 +82,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
-
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -95,18 +96,15 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   }
 
-
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
+
 
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
 
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
-  }
 
   @Override
   public Long getId() {
@@ -118,10 +116,10 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
+
   public Set<LiaisonUser> getLiaisonUsers() {
     return liaisonUsers;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -158,31 +156,30 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return projects;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

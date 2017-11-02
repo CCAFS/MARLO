@@ -20,15 +20,10 @@ public class CrpTargetUnit implements java.io.Serializable {
 
   private User createdBy;
 
-
-  private Crp crp;
-
-
-  private GlobalUnit globalUnit;
+  private GlobalUnit crp;
 
 
   private SrfTargetUnit srfTargetUnit;
-
 
   private boolean active;
 
@@ -43,7 +38,7 @@ public class CrpTargetUnit implements java.io.Serializable {
   }
 
 
-  public CrpTargetUnit(User modifiedBy, User createdBy, Crp crp, SrfTargetUnit srfTargetUnit, boolean active,
+  public CrpTargetUnit(User modifiedBy, User createdBy, GlobalUnit crp, SrfTargetUnit srfTargetUnit, boolean active,
     Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -65,13 +60,8 @@ public class CrpTargetUnit implements java.io.Serializable {
   }
 
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
@@ -88,6 +78,7 @@ public class CrpTargetUnit implements java.io.Serializable {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public SrfTargetUnit getSrfTargetUnit() {
     return srfTargetUnit;
@@ -109,13 +100,10 @@ public class CrpTargetUnit implements java.io.Serializable {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

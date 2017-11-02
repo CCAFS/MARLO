@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
@@ -27,10 +27,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
@@ -74,27 +74,24 @@ public class ProjectLocationAction extends BaseAction {
 
   private static final long serialVersionUID = -3215013554941621274L;
 
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private AuditLogManager auditLogManager;
-
-
-  private CrpManager crpManager;
-
-
   private FundingSourceManager fundingSourceManager;
   private List<LocationLevel> locationsLevels;
 
-
   private ProjectLocationValidator locationValidator;
-
-
   private LocElementManager locElementManager;
+
 
   private LocElementTypeManager locElementTypeManager;
 
+
   private LocGeopositionManager locGeopositionManager;
 
-
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private Project project;
 
@@ -102,6 +99,7 @@ public class ProjectLocationAction extends BaseAction {
   private long projectID;
 
   private ProjectLocationElementTypeManager projectLocationElementTypeManager;
+
 
   private ProjectLocationManager projectLocationManager;
 
@@ -112,15 +110,14 @@ public class ProjectLocationAction extends BaseAction {
   private List<LocElement> regionLists;
 
   private List<ScopeData> scopeData;
+
   private List<LocElementType> scopeRegionLists;
 
   private List<LocElementType> scopeRegions;
-
   private String transaction;
 
-
   @Inject
-  public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
+  public ProjectLocationAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
     ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
     AuditLogManager auditLogManager, ProjectLocationValidator locationValidator,
@@ -137,7 +134,6 @@ public class ProjectLocationAction extends BaseAction {
     this.projectLocationElementTypeManager = projectLocationElementTypeManager;
     this.fundingSourceManager = fundingSourceManager;
   }
-
 
   @Override
   public String cancel() {
@@ -163,6 +159,7 @@ public class ProjectLocationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -176,9 +173,10 @@ public class ProjectLocationAction extends BaseAction {
     return locationsLevels;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -188,6 +186,7 @@ public class ProjectLocationAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CountryLocationLevel> getProjectLocationsData() {
 
@@ -308,10 +307,10 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
-
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
+
 
   public List<ScopeData> getScopeData() {
     return scopeData;
@@ -325,10 +324,10 @@ public class ProjectLocationAction extends BaseAction {
     return scopeRegions;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isRegion() {
     return region;
@@ -423,7 +422,7 @@ public class ProjectLocationAction extends BaseAction {
 
     countryLocationLevels = new ArrayList<>();
     List<LocElementType> elementTypes = new ArrayList<>();
-    Crp crpBD = crpManager.getCrpById(this.getCrpID());
+    GlobalUnit crpBD = crpManager.getGlobalUnitById(this.getCrpID());
     for (CrpLocElementType locElementType : crpBD.getCrpLocElementTypes().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
       elementTypes.add(locElementType.getLocElementType());
@@ -508,8 +507,8 @@ public class ProjectLocationAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
@@ -785,7 +784,6 @@ public class ProjectLocationAction extends BaseAction {
     }
 
   }
-
 
   public void prepareFundingList() {
 
@@ -1072,6 +1070,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+
   public void projectLocationPreviousData() {
     List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
 
@@ -1144,7 +1143,6 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -1198,6 +1196,7 @@ public class ProjectLocationAction extends BaseAction {
     }
     return SUCCESS;
   }
+
 
   public void saveGeoProjectLocation(LocElement locElement, Long elementTypeId) {
     LocElement parentElement = locElementManager.getLocElementByISOCode(locElement.getIsoAlpha2());
@@ -1403,14 +1402,15 @@ public class ProjectLocationAction extends BaseAction {
     }
   }
 
-
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setProject(Project project) {
     this.project = project;

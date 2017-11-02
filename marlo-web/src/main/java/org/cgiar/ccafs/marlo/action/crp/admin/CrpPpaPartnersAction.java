@@ -17,11 +17,11 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -43,27 +43,29 @@ public class CrpPpaPartnersAction extends BaseAction {
   private static final long serialVersionUID = -8561096521514225205L;
 
 
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private InstitutionManager institutionManager;
 
-  private CrpManager crpManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private List<Institution> institutions;
-
   private List<Institution> crpInstitutions;
 
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   @Inject
-  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager,
+  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, GlobalUnitManager crpManager,
     CrpPpaPartnerManager crpPpaPartnerManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.crpManager = crpManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
   }
+
 
   public List<Institution> getCrpInstitutions() {
     return crpInstitutions;
@@ -73,16 +75,15 @@ public class CrpPpaPartnersAction extends BaseAction {
     return institutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   @Override
   public void prepare() throws Exception {
     super.prepare();
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
 
     if (loggedCrp.getCrpPpaPartners() != null) {
@@ -102,6 +103,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       loggedCrp.getCrpInstitutionsPartners().clear();
     }
   }
+
 
   @Override
   public String save() {
@@ -162,8 +164,9 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.institutions = institutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
 }

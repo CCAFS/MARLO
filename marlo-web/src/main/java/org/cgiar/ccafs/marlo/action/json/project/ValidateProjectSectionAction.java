@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
@@ -41,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -108,7 +108,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Model
   public boolean existProject;
-  public Crp loggedCrp;
+  public GlobalUnit loggedCrp;
   public boolean validSection;
 
   public String sectionName;
@@ -171,7 +171,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   ProjectOutputsValidator projectOutputsValidator;
   @Inject
-  public CrpManager crpManager;
+  public GlobalUnitManager crpManager;
 
   @Inject
   public ValidateProjectSectionAction(APConfig config) {
@@ -614,8 +614,8 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
     projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
