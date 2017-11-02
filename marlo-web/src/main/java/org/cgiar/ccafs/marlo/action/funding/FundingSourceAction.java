@@ -750,8 +750,10 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setSyncedDate(fundingSource.getSyncedDate());
       fundingSourceDB.setGrantAmount(fundingSource.getGrantAmount());
 
+
       // if Direct donor has a select option, no option put donor null
-      if (fundingSource.getDirectDonor().getId().longValue() != -1) {
+      if (fundingSource.getDirectDonor() != null && fundingSource.getDirectDonor().getId() != null
+        && fundingSource.getDirectDonor().getId().longValue() != -1) {
         fundingSourceDB.setDirectDonor(fundingSource.getDirectDonor());
       } else {
         fundingSourceDB.setDirectDonor(null);
