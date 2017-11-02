@@ -185,17 +185,7 @@
             
           </div>
         
-          [#--capdev report by program--]
-          <!-- <div class="summariesFiles borderBox col-md-12">
-            <div class="col-md-12 title-file">
-              
-              <label for="">Capacity development intervention report by research program </label>
-            </div>
-            
-              <div class="pull-right">
-                <a   target="_blank" class=" addButton pull-right" href="[@s.url action='/capdevSummaries' /]">[@s.text name="form.buttons.generate" /]</a>
-              </div>
-          </div> -->
+          
         
           
         </div>

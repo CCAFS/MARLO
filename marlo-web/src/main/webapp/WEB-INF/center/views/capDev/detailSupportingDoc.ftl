@@ -132,7 +132,7 @@
 									    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
 								    	[/#if]
 										<div class="input input-" style="display:block;">
-											<input class="id" type="hidden"  value="${(document.id)!-1}" name="deliverable.documents[${document_index}].id" />
+											<input class="id" type="hidden"  value="${(document.id)!}" name="deliverable.documents[${document_index}].id" />
 											[@customForm.input name="deliverable.documents[${document_index}].link" i18nkey="capdev.supportingDocs.link" type="text" className="link"  editable=editable /]
 										</div>
 								    </div>
@@ -184,7 +184,7 @@
 
 						        	[#elseif canEdit]
 							        	<!-- Edit Button -->
-									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+									    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
 						        	
 						        	[/#if]
 					        	</div>

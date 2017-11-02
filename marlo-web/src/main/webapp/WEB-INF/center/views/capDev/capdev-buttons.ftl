@@ -26,7 +26,7 @@
 
 		        	[#elseif canEdit]
 			        	<!-- Edit Button -->
-					    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+					    <a href="[@s.url][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
 		        	[/#if]
 	        	</div>
 

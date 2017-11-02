@@ -94,8 +94,7 @@ public class CapacityDevelopmentAction extends BaseAction {
       CenterProgram program = projectDB.getResearchProgram();
       CenterArea researchArea = program.getResearchArea();
 
-      System.out.println("program " + program.getName());
-      System.out.println("area " + researchArea.getName());
+
       capdev.setResearchArea(researchArea);
       capdev.setResearchProgram(program);
 

@@ -137,12 +137,28 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
         }
       }
+      if (this.bolValue(capdev.getsGlobal()) == null) {
+        if (capdev.getCapDevCountries() != null) {
+          if (capdev.getCapDevCountries().isEmpty()) {
+            this.addMessage(baseAction.getText("capdev.action.countries"));
+            baseAction.getInvalidFields().put("list-capdev.countries", baseAction
+              .getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
+          }
+        }
+      }
     }
+
 
     if (capdev.getCapDevRegions() == null) {
       this.addMessage(baseAction.getText("capdev.action.regions"));
       baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
         new String[] {"Capacity Development Intervention Regions"}));
+    } else {
+      if (capdev.getCapDevRegions().isEmpty()) {
+        this.addMessage(baseAction.getText("capdev.action.regions"));
+        baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+          new String[] {"Capacity Development Intervention Regions"}));
+      }
     }
 
     if (capdev.getCategory() == 1) {

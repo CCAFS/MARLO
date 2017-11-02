@@ -248,8 +248,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         capdev = capdevService.getCapacityDevelopmentById(capdevID);
 
         deliverable.setCapdev(capdev);
-        System.out.println(deliverable.getDeliverableType().getId());
-        System.out.println(deliverable.getDeliverableType().getDeliverableType().getId());
+
         if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
           Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
 
@@ -265,7 +264,10 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         if (deliverable.getDocuments() != null) {
           List<CenterDeliverableDocument> documents = new ArrayList<>();
           for (CenterDeliverableDocument document : deliverable.getDocuments()) {
+            System.out.println(document.getLink());
             CenterDeliverableDocument doc = centerDeliverableDocService.getDeliverableDocumentById(document.getId());
+            doc.setLink(document.getLink());
+            System.out.println(doc.getLink());
             documents.add(doc);
           }
           deliverable.setDocuments(documents);
@@ -278,16 +280,19 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         this.setDraft(false);
         capdev = capdevService.getCapacityDevelopmentById(capdevID);
 
-        if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
-          Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+        if (deliverable.getDeliverableType() != null) {
+          if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
+            Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
 
-          deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
-            .filter(
-              dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
-            .collect(Collectors.toList()));
-          Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+            deliverablesSubtypesList = new ArrayList<>(centerDeliverableTypeService.findAll().stream()
+              .filter(
+                dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+              .collect(Collectors.toList()));
+            Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
 
+          }
         }
+
 
         if (deliverable.getDeliverableDocuments() != null) {
 

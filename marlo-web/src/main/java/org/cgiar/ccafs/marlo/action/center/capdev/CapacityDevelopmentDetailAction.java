@@ -203,6 +203,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdev.setNumParticipants(null);
     capdev.setNumMen(null);
     capdev.setNumWomen(null);
+    capdev.setNumOther(null);
     capdevService.saveCapacityDevelopment(capdev);
 
 
@@ -573,6 +574,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         capdev = (CapacityDevelopment) autoSaveReader.readFromJson(jReader);
+        System.out.println("===>" + capdev.getsGlobal().equals(""));
+        System.out.println("==>" + capdev.getsRegional().equals(""));
+        if (capdev.getsGlobal().equals("")) {
+          capdev.setsGlobal(null);
+        }
+        if (capdev.getsRegional().equals("")) {
+          capdev.setsRegional(null);
+        }
+        capdev.setGlobal(this.bolValue(capdev.getsGlobal()));
+        capdev.setRegional(this.bolValue(capdev.getsGlobal()));
+
 
         if (capdev.getCapDevCountries() != null) {
           for (CapdevLocations capdevLocation : capdev.getCapDevCountries()) {
@@ -603,9 +615,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
         if (capdev.getCategory() == 1) {
           if (!participants.isEmpty()) {
-            System.out.println(participants.get(0).getParticipant().getId());
             capdev.setParticipant(participants.get(0).getParticipant());
-            System.out.println(participant);
           }
 
         }

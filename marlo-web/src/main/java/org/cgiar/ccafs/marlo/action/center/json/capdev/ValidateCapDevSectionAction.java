@@ -275,6 +275,8 @@ public class ValidateCapDevSectionAction extends BaseAction {
       if (capdev.getCategory() == 1) {
         if (!participants.isEmpty()) {
           capdev.setParticipant(participants.get(0).getParticipant());
+        } else {
+          capdev.setParticipant(null);
         }
 
       }

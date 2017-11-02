@@ -160,7 +160,7 @@
 								                
 								                <div class="modal-footer">
 								                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='category']${capdev.category}[/@s.param] [@s.param name='edit' value='true' /][/@s.url]">Clear</a>
+								                    <a class="btn btn-danger btn-ok" href="[@s.url action='${centerSession}/delete_list_of_participants'][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='category']${capdev.category}[/@s.param] [@s.param name='edit' value='true' /][/@s.url]">Clear</a>
 								                </div>
 								            </div>
 								        </div>
@@ -353,15 +353,15 @@
 				<h4 class="headTitle newCapdevField">Reach</h4>	
 				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
-						
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal" value="${(capdev.sGlobal)!'-1'}" inverse=false  cssClass="global" editable=editable/] </div>
+					
+						<div class="form-roup capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal" value="${(capdev.sGlobal)!'-1'}" inverse=false  cssClass="global" editable=editable/] </div>
 
 						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional" value="${(capdev.sRegional)!'-1'}" inverse=false  cssClass="regional" editable=editable/] </div>
 
 						
 						<!-- regions-->
-						<div class="form-group capdevRegional regionsBox" style="display:none" >
-							<div class="panel tertiary" >
+						<div class="form-group capdevRegional regionsBox" style="display:${((capdev.regional)!false)?string('block','none')};" >
+							<div class="panel tertiary">
 								<div id="capdevRegionsList">
 									<div class=" panel-body" listname="capdev.regions">
 										[@customForm.select name="" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select" disabled=!editable /]
