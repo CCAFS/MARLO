@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,9 +32,8 @@ public interface GlobalUnitProjectManager {
    * This method removes a specific globalUnitProject value from the database.
    * 
    * @param globalUnitProjectId is the globalUnitProject identifier.
-   * @return true if the globalUnitProject was successfully deleted, false otherwise.
    */
-  public boolean deleteGlobalUnitProject(long globalUnitProjectId);
+  public void deleteGlobalUnitProject(long globalUnitProjectId);
 
 
   /**
@@ -66,11 +65,9 @@ public interface GlobalUnitProjectManager {
    * This method saves the information of the given globalUnitProject
    * 
    * @param globalUnitProject - is the globalUnitProject object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the globalUnitProject was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return GlobalUnitProject object created or updated.
    */
-  public long saveGlobalUnitProject(GlobalUnitProject globalUnitProject);
+  public GlobalUnitProject saveGlobalUnitProject(GlobalUnitProject globalUnitProject);
 
 
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,9 +41,9 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
   }
 
   @Override
-  public boolean deleteGlobalUnit(long globalUnitId) {
+  public void deleteGlobalUnit(long globalUnitId) {
 
-    return globalUnitDAO.deleteGlobalUnit(globalUnitId);
+    globalUnitDAO.deleteGlobalUnit(globalUnitId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
   }
 
   @Override
-  public long saveGlobalUnit(GlobalUnit globalUnit) {
+  public GlobalUnit saveGlobalUnit(GlobalUnit globalUnit) {
 
     return globalUnitDAO.save(globalUnit);
   }
