@@ -30,29 +30,13 @@
      <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.RulesListener</listener-class>
   </listener>
-    
-    <!--  Hibernate listener  -->
-   <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
-  </listener>
   
-
     <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
 
   
-  
-  <filter>
-  <filter-name>ShiroFilter</filter-name>
-  <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
-</filter>
-  <filter-mapping>
-    <filter-name>ShiroFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping> 
-  
-  <!-- Google Guice integration with our web application -->
+  <!-- Google Guice integration with our web application.  Other filters are configured in Guice Module-->
   <filter>
     <filter-name>guice</filter-name>
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
@@ -61,21 +45,6 @@
   <!-- Google Guice configuration for all requests -->
   <filter-mapping>
     <filter-name>guice</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>struts2</filter-name>
-    <filter-class>
-      org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
-    </filter-class>
-    <init-param>
-      <param-name>actionPackages</param-name>
-      <param-value>com.concretepage.action</param-value>
-    </init-param> 
-  </filter>
-  <filter-mapping>
-    <filter-name>struts2</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping> 
   

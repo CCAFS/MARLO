@@ -34,7 +34,7 @@ public interface LiaisonUserManager {
    * @param liaisonUserId is the liaisonUser identifier.
    * @return true if the liaisonUser was successfully deleted, false otherwise.
    */
-  public boolean deleteLiaisonUser(long liaisonUserId);
+  public void deleteLiaisonUser(long liaisonUserId);
 
 
   /**
@@ -86,7 +86,7 @@ public interface LiaisonUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveLiaisonUser(LiaisonUser liaisonUser);
+  public LiaisonUser saveLiaisonUser(LiaisonUser liaisonUser);
 
 
 }

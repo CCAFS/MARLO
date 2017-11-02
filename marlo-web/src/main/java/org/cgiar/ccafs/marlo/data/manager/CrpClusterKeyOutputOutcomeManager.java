@@ -34,7 +34,7 @@ public interface CrpClusterKeyOutputOutcomeManager {
    * @param crpClusterKeyOutputOutcomeId is the crpClusterKeyOutputOutcome identifier.
    * @return true if the crpClusterKeyOutputOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpClusterKeyOutputOutcome(long crpClusterKeyOutputOutcomeId);
+  public void deleteCrpClusterKeyOutputOutcome(long crpClusterKeyOutputOutcomeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpClusterKeyOutputOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpClusterKeyOutputOutcome(CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome);
+  public CrpClusterKeyOutputOutcome saveCrpClusterKeyOutputOutcome(CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome);
 
 
 }

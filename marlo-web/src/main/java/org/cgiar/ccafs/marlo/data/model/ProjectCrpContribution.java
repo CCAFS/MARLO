@@ -30,6 +30,7 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String collaborationNature;
+
   @Expose
   private String explainAchieved;
   @Expose
@@ -158,6 +159,11 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectCrpContribution [id=" + id + ", crp=" + crp + ", project=" + project + "]";
   }
 
 

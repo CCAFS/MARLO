@@ -32,7 +32,7 @@ public interface DeliverableUserDAO {
    * @param deliverableUserId is the deliverableUser identifier.
    * @return true if the deliverableUser was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableUser(long deliverableUserId);
+  public void deleteDeliverableUser(long deliverableUserId);
 
   /**
    * This method validate if the deliverableUser identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableUserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableUser deliverableUser);
+  public DeliverableUser save(DeliverableUser deliverableUser);
 }

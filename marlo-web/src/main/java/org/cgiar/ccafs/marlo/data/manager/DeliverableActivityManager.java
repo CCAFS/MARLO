@@ -34,7 +34,7 @@ public interface DeliverableActivityManager {
    * @param deliverableActivityId is the deliverableActivity identifier.
    * @return true if the deliverableActivity was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableActivity(long deliverableActivityId);
+  public void deleteDeliverableActivity(long deliverableActivityId);
 
 
   /**
@@ -79,5 +79,5 @@ public interface DeliverableActivityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableActivity(DeliverableActivity deliverableActivity);
+  public DeliverableActivity saveDeliverableActivity(DeliverableActivity deliverableActivity);
 }

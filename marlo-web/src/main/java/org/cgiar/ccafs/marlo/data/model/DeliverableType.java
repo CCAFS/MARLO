@@ -47,12 +47,14 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   private Integer timeline;
   @Expose
   private Boolean fair;
+
   @Expose
   private GlobalUnit crp;
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
 
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
 
   public DeliverableType() {
   }
@@ -66,6 +68,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverableTypes = deliverableTypes;
     this.deliverables = deliverables;
   }
+
 
 
   public GlobalUnit getCrp() {
@@ -172,6 +175,12 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setTimeline(Integer timeline) {
     this.timeline = timeline;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableType [id=" + id + ", deliverableType=" + deliverableType + ", name=" + name + ", description="
+      + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
   }
 
 }

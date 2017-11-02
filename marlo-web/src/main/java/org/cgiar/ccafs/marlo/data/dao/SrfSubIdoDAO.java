@@ -32,7 +32,7 @@ public interface SrfSubIdoDAO {
    * @param srfSubIdoId is the srfSubIdo identifier.
    * @return true if the srfSubIdo was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSubIdo(long srfSubIdoId);
+  public void deleteSrfSubIdo(long srfSubIdoId);
 
   /**
    * This method validate if the srfSubIdo identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface SrfSubIdoDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(SrfSubIdo srfSubIdo);
+  public SrfSubIdo save(SrfSubIdo srfSubIdo);
 }

@@ -41,9 +41,9 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
-  public boolean deleteCrpProgram(long crpProgramId) {
+  public void deleteCrpProgram(long crpProgramId) {
 
-    return crpProgramDAO.deleteCrpProgram(crpProgramId);
+    crpProgramDAO.deleteCrpProgram(crpProgramId);
   }
 
   @Override
@@ -71,14 +71,14 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
-  public long saveCrpProgram(CrpProgram crpProgram) {
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram) {
 
     return crpProgramDAO.save(crpProgram);
   }
 
 
   @Override
-  public long saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName) {
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName) {
 
     return crpProgramDAO.save(crpProgram, actionName, relationsName);
   }

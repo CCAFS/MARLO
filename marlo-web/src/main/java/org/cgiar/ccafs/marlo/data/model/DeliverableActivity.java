@@ -46,12 +46,12 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
   @Expose
   private String modificationJustification;
-
 
   public DeliverableActivity() {
   }
@@ -101,6 +101,7 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -129,6 +130,7 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -146,11 +148,11 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -172,18 +174,23 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableActivity [id=" + id + ", activity=" + activity + ", deliverable=" + deliverable + "]";
   }
 
 

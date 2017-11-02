@@ -599,11 +599,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               reCountryFundingSources.add(co);
             }
@@ -631,11 +630,10 @@ public class ProjectLocationAction extends BaseAction {
               }
             }
             if (!co.getFundingSources().stream()
-              .filter(
-                c -> c.isActive() && c.getProjectBudgets().stream()
-                  .filter(fp -> fp.isActive() && fp.getProject().isActive()
-                    && fp.getProject().getId().longValue() == projectID)
-                  .collect(Collectors.toList()).size() > 0)
+              .filter(c -> c.isActive() && c.getProjectBudgets().stream()
+                .filter(
+                  fp -> fp.isActive() && fp.getProject().isActive() && fp.getProject().getId().longValue() == projectID)
+                .collect(Collectors.toList()).size() > 0)
               .collect(Collectors.toList()).isEmpty()) {
               coCountryFundingSources.add(co);
             }
@@ -1227,11 +1225,11 @@ public class ProjectLocationAction extends BaseAction {
       element.setLocGeoposition(geoposition);
       element.setIsSiteIntegration(false);
 
-      LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
+      element = locElementManager.saveLocElement(element);
 
       ProjectLocation projectLocation = new ProjectLocation();
       projectLocation.setProject(project);
-      projectLocation.setLocElement(newLocElement);
+      projectLocation.setLocElement(element);
       projectLocation.setActive(true);
       projectLocation.setActiveSince(new Date());
       projectLocation.setCreatedBy(this.getCurrentUser());
@@ -1252,11 +1250,9 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions =
-      new ArrayList<>(projectDB.getProjectLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
-        .collect(Collectors.toList()));
+    List<ProjectLocation> regions = new ArrayList<>(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
     regions.addAll(projectDB.getProjectLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));
@@ -1349,11 +1345,9 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions =
-      new ArrayList<>(projectDB.getProjectLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
-        .collect(Collectors.toList()));
+    regions = new ArrayList<>(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
     regions.addAll(projectDB.getProjectLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));

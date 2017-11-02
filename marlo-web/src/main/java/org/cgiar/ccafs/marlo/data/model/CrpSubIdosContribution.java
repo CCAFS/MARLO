@@ -143,7 +143,7 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+     return "CrpSubIdosContribution [id=" + id + ", crp=" + crp + ", srfSubIdo=" + srfSubIdo + "]";
   }
 }
 

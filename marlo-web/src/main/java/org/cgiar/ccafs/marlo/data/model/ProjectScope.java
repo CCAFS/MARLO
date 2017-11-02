@@ -123,6 +123,7 @@ public class ProjectScope implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -189,7 +190,7 @@ public class ProjectScope implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "ProjectScope [id=" + id + ", locElementType=" + locElementType + ", project=" + project + "]";
   }
 
 }

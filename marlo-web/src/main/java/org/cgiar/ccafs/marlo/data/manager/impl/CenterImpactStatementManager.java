@@ -42,9 +42,9 @@ public class CenterImpactStatementManager implements ICenterImpactStatementManag
   }
 
   @Override
-  public boolean deleteResearchImpactStatement(long researchImpactStatementId) {
+  public void deleteResearchImpactStatement(long researchImpactStatementId) {
 
-    return researchImpactStatementDAO.deleteResearchImpactStatement(researchImpactStatementId);
+    researchImpactStatementDAO.deleteResearchImpactStatement(researchImpactStatementId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterImpactStatementManager implements ICenterImpactStatementManag
   }
 
   @Override
-  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement) {
+  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement) {
 
     return researchImpactStatementDAO.save(researchImpactStatement);
   }
 
   @Override
-  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
+  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
     List<String> relationsName) {
     return researchImpactStatementDAO.save(researchImpactStatement, actionName, relationsName);
   }

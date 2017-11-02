@@ -34,7 +34,7 @@ public interface DeliverableGenderLevelManager {
    * @param deliverableGenderLevelId is the deliverableGenderLevel identifier.
    * @return true if the deliverableGenderLevel was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableGenderLevel(long deliverableGenderLevelId);
+  public void deleteDeliverableGenderLevel(long deliverableGenderLevelId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableGenderLevelManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableGenderLevel(DeliverableGenderLevel deliverableGenderLevel);
+  public DeliverableGenderLevel saveDeliverableGenderLevel(DeliverableGenderLevel deliverableGenderLevel);
 
 
 }

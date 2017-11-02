@@ -213,5 +213,12 @@ public class ProjectOutcomePandr implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public String toString() {
+    return "ProjectOutcomePandr [id=" + id + ", project=" + project + ", year=" + year + ", statement=" + statement
+      + ", file=" + file + "]";
+  }
+
+
 }
 

@@ -22,7 +22,6 @@ public class CrpTargetUnit implements java.io.Serializable {
 
   private GlobalUnit crp;
 
-
   private SrfTargetUnit srfTargetUnit;
 
   private boolean active;
@@ -119,6 +118,11 @@ public class CrpTargetUnit implements java.io.Serializable {
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
+  }
+
+  @Override
+  public String toString() {
+    return "CrpTargetUnit [id=" + id + ", crp=" + crp + ", srfTargetUnit=" + srfTargetUnit + "]";
   }
 
 

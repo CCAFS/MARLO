@@ -33,7 +33,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
 
   @Expose
   private int year;
-
   @Expose
   private String statusQuo;
 
@@ -71,7 +70,6 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.year = year;
     this.active = active;
   }
-
 
   public CenterMonitoringOutcome(User modifiedBy, User createdBy, CenterOutcome researchOutcome, int year,
     boolean active, Date activeSince, String modificationJustification) {
@@ -220,12 +218,18 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
   }
 
 
+
   public void setWhatChanged(String whatChanged) {
     this.whatChanged = whatChanged;
   }
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterMonitoringOutcome [id=" + id + ", researchOutcome=" + researchOutcome + ", year=" + year + "]";
   }
 
 

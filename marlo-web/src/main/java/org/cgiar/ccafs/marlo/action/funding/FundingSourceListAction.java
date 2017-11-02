@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -42,12 +41,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class FundingSourceListAction extends BaseAction {
 
 
   private static final long serialVersionUID = -8858893084495492581L;
 
+  private final Logger logger = LoggerFactory.getLogger(FundingSourceListAction.class);
 
   private GlobalUnit loggedCrp;
 
@@ -66,10 +69,8 @@ public class FundingSourceListAction extends BaseAction {
   private GlobalUnitManager crpManager;
 
   private RoleManager roleManager;
-  private UserManager userManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
-  private ProjectManager projectManager;
   private long fundingSourceID;
   private String justification;
 
@@ -83,7 +84,6 @@ public class FundingSourceListAction extends BaseAction {
     this.roleManager = roleManager;
     this.liaisonUserManager = liaisonUserManager;
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
-    this.projectManager = projectManager;
     this.institutionManager = institutionManager;
   }
 
@@ -100,8 +100,9 @@ public class FundingSourceListAction extends BaseAction {
 
 
     // project.setCrp(loggedCrp);
+    fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
-    fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+    fundingSourceID = fundingSource.getId();
 
 
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
@@ -118,7 +119,11 @@ public class FundingSourceListAction extends BaseAction {
           fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
         }
       } catch (Exception e) {
-
+        logger.error("unable to save FundingSourceInstitution", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
 
 
@@ -148,17 +153,20 @@ public class FundingSourceListAction extends BaseAction {
   @Override
   public String delete() {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-    System.out.println("fundign id" + fundingSourceID);
+    logger.info("Deleting fundingSource with  id: " + fundingSourceID);
     fundingSource.setModifiedBy(this.getCurrentUser());
     fundingSource.setModificationJustification(justification);
 
-    fundingSourceManager.saveFundingSource(fundingSource);
+    fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
-
-    if (fundingSourceManager.deleteFundingSource(fundingSource.getId())) {
+    try {
+      fundingSourceManager.deleteFundingSource(fundingSource.getId());
+      logger.info("Deleted fundingSource with id: " + fundingSource);
       this.addActionMessage(
         "message:" + this.getText("deleting.success", new String[] {this.getText("fundingSource").toLowerCase()}));
-    } else {
+    } catch (Exception e) {
+
+      logger.error("Unable to delete fundingSource with id: " + fundingSource + " , with exception " + e);
       this.addActionError(this.getText("deleting.problem", new String[] {this.getText("fundingSource").toLowerCase()}));
     }
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,23 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
-public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO {
+public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
+  implements DeliverablePartnershipDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverablePartnershipMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverablePartnershipMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
+  public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    return this.save(deliverablePartnership) > 0;
+    this.save(deliverablePartnership);
   }
 
   @Override
@@ -51,14 +53,14 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
 
   @Override
   public DeliverablePartnership find(long id) {
-    return dao.find(DeliverablePartnership.class, id);
+    return super.find(DeliverablePartnership.class, id);
 
   }
 
   @Override
   public List<DeliverablePartnership> findAll() {
     String query = "from " + DeliverablePartnership.class.getName() + " where is_active=1";
-    List<DeliverablePartnership> list = dao.findAll(query);
+    List<DeliverablePartnership> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +69,44 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
   }
 
   @Override
-  public long save(DeliverablePartnership deliverablePartnership) {
+  public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.deliverable as d "
+      + "where dp.active is true " + "and dp.partnerType = 'Other' " + "and d.id = :deliverableId ";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
+    long projectPersonId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.projectPartnerPerson as ppp "
+      + "inner join dp.deliverable as d " + "where dp.active is true " + "and dp.partnerType = 'Other' "
+      + "and d.id = :deliverableId " + "and ppp.id = :projectPersonId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("projectPersonId", projectPersonId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
+  }
+
+  @Override
+  public DeliverablePartnership save(DeliverablePartnership deliverablePartnership) {
     if (deliverablePartnership.getId() == null) {
-      dao.save(deliverablePartnership);
+      super.saveEntity(deliverablePartnership);
     } else {
-      dao.update(deliverablePartnership);
+      deliverablePartnership = super.update(deliverablePartnership);
     }
 
 
-    return deliverablePartnership.getId();
+    return deliverablePartnership;
   }
 
 

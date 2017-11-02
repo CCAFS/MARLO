@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterImpactObjectiveDAO implements ICenterImpactObjectiveDAO {
+public class CenterImpactObjectiveDAO extends AbstractMarloDAO<CenterImpactObjective, Long>
+  implements ICenterImpactObjectiveDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterImpactObjectiveDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterImpactObjectiveDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchImpactObjective(long researchImpactObjectiveId) {
+  public void deleteResearchImpactObjective(long researchImpactObjectiveId) {
     CenterImpactObjective researchImpactObjective = this.find(researchImpactObjectiveId);
     researchImpactObjective.setActive(false);
-    return this.save(researchImpactObjective) > 0;
+    this.save(researchImpactObjective);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterImpactObjectiveDAO implements ICenterImpactObjectiveDAO {
 
   @Override
   public CenterImpactObjective find(long id) {
-    return dao.find(CenterImpactObjective.class, id);
+    return super.find(CenterImpactObjective.class, id);
 
   }
 
   @Override
   public List<CenterImpactObjective> findAll() {
     String query = "from " + CenterImpactObjective.class.getName();
-    List<CenterImpactObjective> list = dao.findAll(query);
+    List<CenterImpactObjective> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterImpactObjectiveDAO implements ICenterImpactObjectiveDAO {
   @Override
   public List<CenterImpactObjective> getResearchImpactObjectivesByUserId(long userId) {
     String query = "from " + CenterImpactObjective.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterImpactObjective researchImpactObjective) {
+  public CenterImpactObjective save(CenterImpactObjective researchImpactObjective) {
     if (researchImpactObjective.getId() == null) {
-      dao.save(researchImpactObjective);
+      super.saveEntity(researchImpactObjective);
     } else {
-      dao.update(researchImpactObjective);
+      researchImpactObjective = super.update(researchImpactObjective);
     }
-    return researchImpactObjective.getId();
+    return researchImpactObjective;
   }
 
 

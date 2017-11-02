@@ -46,6 +46,7 @@ public class GenderType implements java.io.Serializable, IAuditLog {
   }
 
 
+
   public GlobalUnit getCrp() {
     return crp;
   }
@@ -107,6 +108,13 @@ public class GenderType implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  @Override
+  public String toString() {
+    return "GenderType [id=" + id + ", crp=" + crp + ", description=" + description + ", completeDescription="
+      + completeDescription + "]";
   }
 
 

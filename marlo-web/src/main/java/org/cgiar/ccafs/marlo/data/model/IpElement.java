@@ -38,6 +38,8 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
+
+
   @Expose
   private String description;
   @Expose
@@ -60,7 +62,6 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public IpElement() {
   }
-
 
   public IpElement(IpElementType ipElementType, IpProgram ipProgram, User usersByModifiedBy, User usersByCreatedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -107,6 +108,7 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getComposedId() {
     StringBuilder composedID = new StringBuilder();
     // composedID.append("O");
@@ -126,7 +128,6 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public String getDescription() {
     return description;
   }
@@ -137,6 +138,7 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public List<IpIndicator> getIndicators() {
     return indicators;
   }
@@ -144,7 +146,6 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   public IpElementType getIpElementType() {
     return ipElementType;
   }
-
 
   public Set<IpIndicator> getIpIndicators() {
     return ipIndicators;
@@ -324,6 +325,13 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public void setOutcomeSynthesis(Set<OutcomeSynthesy> outcomeSynthesis) {
     this.outcomeSynthesis = outcomeSynthesis;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpElement [id=" + id + ", ipElementType=" + ipElementType + ", ipProgram=" + ipProgram + ", description="
+      + description + "]";
   }
 
 

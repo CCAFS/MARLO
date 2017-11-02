@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class BudgetTypeMySQLDAO implements BudgetTypeDAO {
+public class BudgetTypeMySQLDAO extends AbstractMarloDAO<BudgetType, Long> implements BudgetTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public BudgetTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public BudgetTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteBudgetType(long budgetTypeId) {
+  public void deleteBudgetType(long budgetTypeId) {
     BudgetType budgetType = this.find(budgetTypeId);
 
-    return dao.delete(budgetType);
+    super.delete(budgetType);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class BudgetTypeMySQLDAO implements BudgetTypeDAO {
 
   @Override
   public BudgetType find(long id) {
-    return dao.find(BudgetType.class, id);
+    return super.find(BudgetType.class, id);
 
   }
 
   @Override
   public List<BudgetType> findAll() {
     String query = "from " + BudgetType.class.getName() + " ";
-    List<BudgetType> list = dao.findAll(query);
+    List<BudgetType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class BudgetTypeMySQLDAO implements BudgetTypeDAO {
   }
 
   @Override
-  public long save(BudgetType budgetType) {
+  public BudgetType save(BudgetType budgetType) {
     if (budgetType.getId() == null) {
-      dao.save(budgetType);
+      super.saveEntity(budgetType);
     } else {
-      dao.update(budgetType);
+      budgetType = super.update(budgetType);
     }
 
 
-    return budgetType.getId();
+    return budgetType;
   }
 
 

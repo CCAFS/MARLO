@@ -31,6 +31,7 @@ public class CenterMonitoringOutcomeEvidence implements java.io.Serializable, IA
   @Expose
   private String evidenceLink;
 
+
   @Expose
   private boolean active;
 
@@ -40,12 +41,12 @@ public class CenterMonitoringOutcomeEvidence implements java.io.Serializable, IA
   @Expose
   private String modificationJustification;
 
-
   public CenterMonitoringOutcomeEvidence() {
   }
 
 
-  public CenterMonitoringOutcomeEvidence(CenterMonitoringOutcome monitoringOutcome, String evidenceLink, boolean active) {
+  public CenterMonitoringOutcomeEvidence(CenterMonitoringOutcome monitoringOutcome, String evidenceLink,
+    boolean active) {
     this.monitoringOutcome = monitoringOutcome;
     this.evidenceLink = evidenceLink;
     this.active = active;
@@ -116,9 +117,11 @@ public class CenterMonitoringOutcomeEvidence implements java.io.Serializable, IA
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -162,18 +165,24 @@ public class CenterMonitoringOutcomeEvidence implements java.io.Serializable, IA
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setMonitoringOutcome(CenterMonitoringOutcome monitoringOutcome) {
     this.monitoringOutcome = monitoringOutcome;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterMonitoringOutcomeEvidence [id=" + id + ", monitoringOutcome=" + monitoringOutcome + ", evidenceLink="
+      + evidenceLink + "]";
   }
 
 

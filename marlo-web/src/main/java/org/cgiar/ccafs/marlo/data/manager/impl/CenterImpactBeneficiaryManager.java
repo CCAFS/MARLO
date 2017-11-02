@@ -42,9 +42,9 @@ public class CenterImpactBeneficiaryManager implements ICenterImpactBeneficiaryM
   }
 
   @Override
-  public boolean deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId) {
+  public void deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId) {
 
-    return researchImpactBeneficiaryDAO.deleteResearchImpactBeneficiary(researchImpactBeneficiaryId);
+    researchImpactBeneficiaryDAO.deleteResearchImpactBeneficiary(researchImpactBeneficiaryId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterImpactBeneficiaryManager implements ICenterImpactBeneficiaryM
   }
 
   @Override
-  public long saveResearchImpactBeneficiary(CenterImpactBeneficiary researchImpactBeneficiary) {
+  public CenterImpactBeneficiary saveResearchImpactBeneficiary(CenterImpactBeneficiary researchImpactBeneficiary) {
 
     return researchImpactBeneficiaryDAO.save(researchImpactBeneficiary);
   }

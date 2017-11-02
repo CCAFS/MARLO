@@ -32,7 +32,7 @@ public interface ProjectFocusDAO {
    * @param projectFocusId is the projectFocus identifier.
    * @return true if the projectFocus was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectFocus(long projectFocusId);
+  public void deleteProjectFocus(long projectFocusId);
 
   /**
    * This method validate if the projectFocus identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectFocusDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectFocus projectFocus);
+  public ProjectFocus save(ProjectFocus projectFocus);
 }

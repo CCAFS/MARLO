@@ -32,7 +32,7 @@ public interface DeliverablePublicationMetadataDAO {
    * @param deliverablePublicationMetadataId is the deliverablePublicationMetadata identifier.
    * @return true if the deliverablePublicationMetadata was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId);
+  public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId);
 
   /**
    * This method validate if the deliverablePublicationMetadata identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverablePublicationMetadataDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverablePublicationMetadata deliverablePublicationMetadata);
+  public DeliverablePublicationMetadata save(DeliverablePublicationMetadata deliverablePublicationMetadata);
 }

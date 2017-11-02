@@ -178,8 +178,7 @@ public class CustomParameter implements java.io.Serializable {
 
   @Override
   public String toString() {
-
-    return id.toString();
+    return "CustomParameter [id=" + id + ", crp=" + crp + ", parameter=" + parameter + ", value=" + value + "]";
   }
 
 

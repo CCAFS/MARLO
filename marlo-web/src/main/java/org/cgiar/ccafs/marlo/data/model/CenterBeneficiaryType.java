@@ -28,6 +28,7 @@ public class CenterBeneficiaryType implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private String name;
 
@@ -44,7 +45,6 @@ public class CenterBeneficiaryType implements java.io.Serializable, IAuditLog {
 
   public CenterBeneficiaryType() {
   }
-
 
   public CenterBeneficiaryType(String name, boolean active) {
     this.name = name;
@@ -93,9 +93,11 @@ public class CenterBeneficiaryType implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -131,18 +133,23 @@ public class CenterBeneficiaryType implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterBeneficiaryType [id=" + id + ", name=" + name + "]";
   }
 
 }

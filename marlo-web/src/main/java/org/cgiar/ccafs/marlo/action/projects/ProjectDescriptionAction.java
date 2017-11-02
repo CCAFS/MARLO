@@ -71,6 +71,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -79,6 +81,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ProjectDescriptionAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
   // Managers
   private ProjectManager projectManager;
@@ -403,7 +406,11 @@ public class ProjectDescriptionAction extends BaseAction {
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse projectID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
     // We check that you have a TRANSACTION_ID to know if it is history version
@@ -516,7 +523,11 @@ public class ProjectDescriptionAction extends BaseAction {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               programs.add(program);
             } catch (Exception e) {
-
+              LOG.error("unable to add program to programs list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -529,7 +540,11 @@ public class ProjectDescriptionAction extends BaseAction {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               regions.add(program);
             } catch (Exception e) {
-
+              LOG.error("unable to add program to regions list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -579,7 +594,8 @@ public class ProjectDescriptionAction extends BaseAction {
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
+          projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
+            .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
           projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);
@@ -667,6 +683,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getClusterActivities().clear();
 
       }
+
+      project.setLiaisonInstitution(null);
+      project.setLiaisonUser(null);
+
       project.setNoRegional(null);
       project.setCrossCuttingGender(null);
       project.setCrossCuttingCapacity(null);
@@ -814,6 +834,8 @@ public class ProjectDescriptionAction extends BaseAction {
           }
           if (!project.getClusterActivities().contains(projectClusterActivity)) {
             projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+
+            // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
 
             for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
               .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())

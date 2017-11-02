@@ -43,9 +43,9 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
-  public boolean deleteProject(Project project) {
+  public void deleteProject(Project project) {
 
-    return projectDAO.deleteProject(project);
+    projectDAO.deleteProject(project);
   }
 
   @Override
@@ -101,13 +101,13 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
-  public long saveProject(Project project) {
+  public Project saveProject(Project project) {
 
     return projectDAO.save(project);
   }
 
   @Override
-  public long saveProject(Project project, String sectionName, List<String> relationsName) {
+  public Project saveProject(Project project, String sectionName, List<String> relationsName) {
 
     return projectDAO.save(project, sectionName, relationsName);
   }

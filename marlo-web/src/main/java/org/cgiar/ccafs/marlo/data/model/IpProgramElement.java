@@ -23,6 +23,7 @@ public class IpProgramElement implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private IpElement ipElement;
 
@@ -31,7 +32,6 @@ public class IpProgramElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private IpProgram ipProgram;
-
 
   private Set<IpIndicator> ipIndicators = new HashSet<IpIndicator>(0);
 
@@ -60,6 +60,7 @@ public class IpProgramElement implements java.io.Serializable, IAuditLog {
   public Set<IpIndicator> getIpIndicators() {
     return ipIndicators;
   }
+
 
   public IpProgram getIpProgram() {
     return ipProgram;
@@ -95,10 +96,10 @@ public class IpProgramElement implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setIpElement(IpElement ipElement) {
     this.ipElement = ipElement;
@@ -112,9 +113,15 @@ public class IpProgramElement implements java.io.Serializable, IAuditLog {
     this.ipProgram = ipProgram;
   }
 
-
   public void setIpProgramElementRelationType(IpProgramElementRelationType ipProgramElementRelationType) {
     this.ipProgramElementRelationType = ipProgramElementRelationType;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpProgramElement [id=" + id + ", ipElement=" + ipElement + ", ipProgramElementRelationType="
+      + ipProgramElementRelationType + ", ipProgram=" + ipProgram + "]";
   }
 
 }

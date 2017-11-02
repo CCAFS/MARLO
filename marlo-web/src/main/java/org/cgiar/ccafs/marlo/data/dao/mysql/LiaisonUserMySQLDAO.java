@@ -22,22 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
+public class LiaisonUserMySQLDAO extends AbstractMarloDAO<LiaisonUser, Long> implements LiaisonUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public LiaisonUserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LiaisonUserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteLiaisonUser(long liaisonUserId) {
+  public void deleteLiaisonUser(long liaisonUserId) {
     LiaisonUser liaisonUser = this.find(liaisonUserId);
 
     liaisonUser.setActive(false);
-    return this.save(liaisonUser) > 0;
+    this.save(liaisonUser);
 
   }
 
@@ -53,14 +53,14 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
 
   @Override
   public LiaisonUser find(long id) {
-    return dao.find(LiaisonUser.class, id);
+    return super.find(LiaisonUser.class, id);
 
   }
 
   @Override
   public List<LiaisonUser> findAll() {
     String query = "from " + LiaisonUser.class.getName();
-    List<LiaisonUser> list = dao.findAll(query);
+    List<LiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -72,7 +72,7 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
   public List<LiaisonUser> findByInstitutionId(Long institutionId) {
     String query =
       "from " + LiaisonUser.class.getName() + " where institution_id =" + institutionId + " and is_active=1";
-    List<LiaisonUser> list = dao.findAll(query);
+    List<LiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -82,7 +82,7 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
   @Override
   public LiaisonUser findByUser(long id, long crpID) {
     String query = "from " + LiaisonUser.class.getName() + " where user_id=" + id + " and crp_id=" + crpID + "";
-    List<LiaisonUser> list = dao.findAll(query);
+    List<LiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -90,16 +90,16 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
   }
 
   @Override
-  public long save(LiaisonUser liaisonUser) {
+  public LiaisonUser save(LiaisonUser liaisonUser) {
     if (liaisonUser.getId() == null) {
       liaisonUser.setActive(true);
-      dao.save(liaisonUser);
+      super.saveEntity(liaisonUser);
     } else {
-      dao.update(liaisonUser);
+      liaisonUser = super.update(liaisonUser);
     }
 
 
-    return liaisonUser.getId();
+    return liaisonUser;
   }
 
 

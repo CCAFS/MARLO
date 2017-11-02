@@ -239,7 +239,7 @@ public class CenterObjective implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterObjective [id=" + id + ", objective=" + objective + ", researchCenter=" + researchCenter + "]";
   }
 
 }

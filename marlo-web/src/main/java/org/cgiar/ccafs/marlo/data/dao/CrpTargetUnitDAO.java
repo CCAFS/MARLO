@@ -32,7 +32,7 @@ public interface CrpTargetUnitDAO {
    * @param crpTargetUnitId is the crpTargetUnit identifier.
    * @return true if the crpTargetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpTargetUnit(long crpTargetUnitId);
+  public void deleteCrpTargetUnit(long crpTargetUnitId);
 
   /**
    * This method validate if the crpTargetUnit identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface CrpTargetUnitDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpTargetUnit crpTargetUnit);
+  public CrpTargetUnit save(CrpTargetUnit crpTargetUnit);
 }

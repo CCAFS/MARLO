@@ -35,9 +35,9 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private CenterOutput researchOutput;
 
+
   @Expose
   private boolean active;
-
 
   @Expose
   private String modificationJustification;
@@ -46,6 +46,7 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private Date activeSince;
 
+
   public CenterProjectOutput() {
   }
 
@@ -53,8 +54,8 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public CenterProjectOutput(User modifiedBy, User createdBy, CenterProject project, CenterOutput researchOutput, boolean active,
-    String modificationJustification, Date activeSince) {
+  public CenterProjectOutput(User modifiedBy, User createdBy, CenterProject project, CenterOutput researchOutput,
+    boolean active, String modificationJustification, Date activeSince) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.project = project;
@@ -106,7 +107,7 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -136,6 +137,7 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
@@ -145,10 +147,10 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -166,7 +168,6 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(CenterProject project) {
     this.project = project;
   }
@@ -174,6 +175,12 @@ public class CenterProjectOutput implements java.io.Serializable, IAuditLog {
 
   public void setResearchOutput(CenterOutput researchOutput) {
     this.researchOutput = researchOutput;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectOutput [id=" + id + ", project=" + project + ", researchOutput=" + researchOutput + "]";
   }
 
 

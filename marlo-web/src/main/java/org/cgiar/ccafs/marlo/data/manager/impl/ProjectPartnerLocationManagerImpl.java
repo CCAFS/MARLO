@@ -41,9 +41,9 @@ public class ProjectPartnerLocationManagerImpl implements ProjectPartnerLocation
   }
 
   @Override
-  public boolean deleteProjectPartnerLocation(long projectPartnerLocationId) {
+  public void deleteProjectPartnerLocation(long projectPartnerLocationId) {
 
-    return projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocationId);
+    projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocationId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectPartnerLocationManagerImpl implements ProjectPartnerLocation
   }
 
   @Override
-  public long saveProjectPartnerLocation(ProjectPartnerLocation projectPartnerLocation) {
+  public ProjectPartnerLocation saveProjectPartnerLocation(ProjectPartnerLocation projectPartnerLocation) {
 
     return projectPartnerLocationDAO.save(projectPartnerLocation);
   }

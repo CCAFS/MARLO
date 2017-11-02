@@ -41,9 +41,9 @@ public class ProjectPhaseManagerImpl implements ProjectPhaseManager {
   }
 
   @Override
-  public boolean deleteProjectPhase(long projectPhaseId) {
+  public void deleteProjectPhase(long projectPhaseId) {
 
-    return projectPhaseDAO.deleteProjectPhase(projectPhaseId);
+    projectPhaseDAO.deleteProjectPhase(projectPhaseId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectPhaseManagerImpl implements ProjectPhaseManager {
   }
 
   @Override
-  public long saveProjectPhase(ProjectPhase projectPhase) {
+  public ProjectPhase saveProjectPhase(ProjectPhase projectPhase) {
 
     return projectPhaseDAO.save(projectPhase);
   }

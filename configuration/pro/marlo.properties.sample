@@ -1,3 +1,88 @@
+<<<<<<< HEAD
+#configuration for developer machine
+# BD
+mysql.host=localhost
+mysql.user=user
+mysql.password=password
+mysql.database=database_name
+mysql.url=jdbc:mysql://localhost:3306/database_name
+mysql.port=3306
+mysql.show_sql=false
+
+# -----------------------------
+marlo.baseUrl=https://localhost:8443/marlo-web/
+
+# ----------------------------------------------------
+#                   Sections Variables
+# ----------------------------------------------------
+# Parameters to activate or deactivate some sections in MARLO 
+marlo.admin.active=true
+marlo.impactPathway.active=true
+
+#---------------------------------------------------
+#                   Google API Key
+#---------------------------------------------------
+google.api.key=
+
+#---------------------------------------------------
+#                   Pusher API Key
+#---------------------------------------------------
+pusher.api.key=
+pusher.api.appid=
+pusher.api.privatekey=
+
+
+# ----------------------------------------------------
+#                   AutoSave Properties
+# ----------------------------------------------------
+autosave.active=true
+autosave.folder=C:/SomeFolder/
+
+# ------------------------------------------------
+# Email account
+# ------------------------------------------------
+email.notification=some_email@gmail.com
+email.user=
+email.password=
+email.host=
+email.port=
+
+# ------------------------------------------------
+# Upload folder locations
+# ------------------------------------------------
+# URL where the files uploaded can be downloaded
+file.downloads=http://localhost/marlo/
+# Main folder where files will be uploaded
+file.uploads.baseFolder=C:/xampp/htdocs/marlo
+# sub-folder where all projects will be saved.
+file.uploads.projectsFolder=projects/
+# sub-folder to upload project work plans
+file.uploads.project.WorkplanFolder=workplan/
+# sub-folder to upload bilateral project contract proposal
+file.uploads.project.bilateralProposalFolder=bilateralProposal/
+file.uploads.project.bilateralPAnualReport=anualReport/
+# Maximum size allowed
+file.maxSizeAllowed.bytes=3145728
+
+# -----------------------------------------------
+# TEST MODE
+# ------------------------------------------------
+marlo.production=true
+marlo.debug=false
+
+# ------------------------------------------------
+# Logger properties
+# ------------------------------------------------
+log.folder=C:/LOGS/marlo/
+log.console=true
+log.file=true
+#Production log only shows logs of type info, warn and error 
+log.production=true
+#Test log shows logs of all types trace, debug, info, warn and error 
+log.test=false
+log.instance=instance
+
+=======
 #configuration for developer machine
 # BD
 mysql.host=localhost
@@ -86,3 +171,4 @@ ocs.link=link ws
 ocs.user=user ws
 ocs.password=password ws
 # ----------------------------------------------------
+>>>>>>> refs/remotes/origin/staging

@@ -34,7 +34,7 @@ public interface CrpDAO {
    * @param crpId is the crp identifier.
    * @return true if the crp was successfully deleted, false otherwise.
    */
-  public boolean deleteCrp(long crpId);
+  public void deleteCrp(long crpId);
 
   /**
    * This method validate if the crp identify with the given id exists in the system.
@@ -76,6 +76,6 @@ public interface CrpDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Crp crp);
+  public Crp save(Crp crp);
 
 }

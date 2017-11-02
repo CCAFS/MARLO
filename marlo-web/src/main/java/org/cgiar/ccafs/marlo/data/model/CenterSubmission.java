@@ -17,9 +17,7 @@ public class CenterSubmission implements java.io.Serializable {
 
   private User user;
 
-
   private CenterCycle researchCycle;
-
 
   private CenterProgram researchProgram;
 
@@ -29,19 +27,13 @@ public class CenterSubmission implements java.io.Serializable {
 
   private Date dateTime;
 
-  private String modificationJustification;
 
+  private String modificationJustification;
 
   private Short year;
 
 
   public CenterSubmission() {
-  }
-
-
-  public CenterSubmission(User user, Date dateTime) {
-    this.user = user;
-    this.dateTime = dateTime;
   }
 
 
@@ -53,6 +45,12 @@ public class CenterSubmission implements java.io.Serializable {
     this.dateTime = dateTime;
     this.modificationJustification = modificationJustification;
     this.year = year;
+  }
+
+
+  public CenterSubmission(User user, Date dateTime) {
+    this.user = user;
+    this.dateTime = dateTime;
   }
 
 
@@ -84,6 +82,7 @@ public class CenterSubmission implements java.io.Serializable {
   public CenterProgram getResearchProgram() {
     return researchProgram;
   }
+
 
   public User getUser() {
     return user;
@@ -117,13 +116,19 @@ public class CenterSubmission implements java.io.Serializable {
     this.researchProgram = researchProgram;
   }
 
-
   public void setUser(User user) {
     this.user = user;
   }
 
+
   public void setYear(Short year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterSubmission [id=" + id + ", user=" + user + ", researchCycle=" + researchCycle + ", researchProgram="
+      + researchProgram + ", year=" + year + "]";
   }
 
 }

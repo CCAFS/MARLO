@@ -627,6 +627,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.w1w2 = w1w2;
   }
 
-
+  @Override
+  public String toString() {
+    return "FundingSource [id=" + id + ", institution=" + institution + ", status=" + status + ", title=" + title + "]";
+  }
 }
 

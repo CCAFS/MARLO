@@ -24,6 +24,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private IpProgram ipProgram;
 
+
   @Expose
   private Deliverable deliverable;
 
@@ -57,10 +58,10 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public CrpPandr getCrpPandr() {
     return crpPandr;
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -75,13 +76,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return ipProgram;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -103,7 +104,6 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -129,6 +129,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableCrp [id=" + id + ", crpPandr=" + crpPandr + ", ipProgram=" + ipProgram + ", deliverable="
+      + deliverable + "]";
   }
 
 

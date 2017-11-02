@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,9 +41,9 @@ public class PartnerRequestManagerImpl implements PartnerRequestManager {
   }
 
   @Override
-  public boolean deletePartnerRequest(long partnerRequestId) {
+  public void deletePartnerRequest(long partnerRequestId) {
 
-    return partnerRequestDAO.deletePartnerRequest(partnerRequestId);
+    partnerRequestDAO.deletePartnerRequest(partnerRequestId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class PartnerRequestManagerImpl implements PartnerRequestManager {
   }
 
   @Override
-  public long savePartnerRequest(PartnerRequest partnerRequest) {
+  public PartnerRequest savePartnerRequest(PartnerRequest partnerRequest) {
 
     return partnerRequestDAO.save(partnerRequest);
   }

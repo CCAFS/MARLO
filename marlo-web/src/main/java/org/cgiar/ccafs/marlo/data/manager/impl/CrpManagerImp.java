@@ -37,9 +37,9 @@ public class CrpManagerImp implements CrpManager {
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
+  public void deleteCrp(long crpId) {
 
-    return crpDAO.deleteCrp(crpId);
+    crpDAO.deleteCrp(crpId);
   }
 
   @Override
@@ -67,7 +67,7 @@ public class CrpManagerImp implements CrpManager {
   }
 
   @Override
-  public long saveCrp(Crp crp) {
+  public Crp saveCrp(Crp crp) {
 
     return crpDAO.save(crp);
   }

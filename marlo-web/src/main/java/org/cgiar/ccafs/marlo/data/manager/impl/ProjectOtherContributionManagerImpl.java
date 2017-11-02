@@ -41,9 +41,9 @@ public class ProjectOtherContributionManagerImpl implements ProjectOtherContribu
   }
 
   @Override
-  public boolean deleteProjectOtherContribution(long projectOtherContributionId) {
+  public void deleteProjectOtherContribution(long projectOtherContributionId) {
 
-    return projectOtherContributionDAO.deleteProjectOtherContribution(projectOtherContributionId);
+    projectOtherContributionDAO.deleteProjectOtherContribution(projectOtherContributionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectOtherContributionManagerImpl implements ProjectOtherContribu
   }
 
   @Override
-  public long saveProjectOtherContribution(ProjectOtherContribution projectOtherContribution) {
+  public ProjectOtherContribution saveProjectOtherContribution(ProjectOtherContribution projectOtherContribution) {
 
     return projectOtherContributionDAO.save(projectOtherContribution);
   }

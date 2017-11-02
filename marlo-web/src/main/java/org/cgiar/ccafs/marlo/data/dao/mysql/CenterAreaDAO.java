@@ -24,18 +24,18 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * Modified by @author nmatovu last on Oct 7, 2016
  */
-public class CenterAreaDAO implements ICenterAreaDAO {
+public class CenterAreaDAO extends AbstractMarloDAO<CenterArea, Long> implements ICenterAreaDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterAreaDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterAreaDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   /*
@@ -43,10 +43,10 @@ public class CenterAreaDAO implements ICenterAreaDAO {
    * @see org.cgiar.ccafs.marlo.data.dao.ICenterAreaDAO#deleteResearchArea(long)
    */
   @Override
-  public boolean deleteResearchArea(long researchAreaId) {
+  public void deleteResearchArea(long researchAreaId) {
     CenterArea researchArea = this.find(researchAreaId);
     researchArea.setActive(false);
-    return this.save(researchArea) > 0;
+    this.save(researchArea);
   }
 
   /*
@@ -69,7 +69,7 @@ public class CenterAreaDAO implements ICenterAreaDAO {
    */
   @Override
   public CenterArea find(long researchId) {
-    return dao.find(CenterArea.class, researchId);
+    return super.find(CenterArea.class, researchId);
   }
 
   /*
@@ -79,7 +79,7 @@ public class CenterAreaDAO implements ICenterAreaDAO {
   @Override
   public List<CenterArea> findAll() {
     String query = "from " + CenterArea.class.getName();
-    List<CenterArea> list = dao.findAll(query);
+    List<CenterArea> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -93,7 +93,7 @@ public class CenterAreaDAO implements ICenterAreaDAO {
   @Override
   public CenterArea findResearchAreaByAcronym(String acronym) {
     String query = "from " + CenterArea.class.getName() + " where acronym='" + acronym + "'";
-    List<CenterArea> list = dao.findAll(query);
+    List<CenterArea> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -105,13 +105,13 @@ public class CenterAreaDAO implements ICenterAreaDAO {
    * @see org.cgiar.ccafs.marlo.data.dao.ICenterAreaDAO#save(org.cgiar.ccafs.marlo.data.model.CenterArea)
    */
   @Override
-  public long save(CenterArea researchArea) {
+  public CenterArea save(CenterArea researchArea) {
     if (researchArea.getId() == null) {
-      dao.save(researchArea);
+      super.saveEntity(researchArea);
     } else {
-      dao.update(researchArea);
+      researchArea = super.update(researchArea);
     }
-    return researchArea.getId();
+    return researchArea;
   }
 
 }

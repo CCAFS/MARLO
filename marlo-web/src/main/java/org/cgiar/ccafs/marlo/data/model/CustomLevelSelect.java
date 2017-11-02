@@ -50,4 +50,10 @@ public class CustomLevelSelect implements Serializable {
   }
 
 
+  @Override
+  public String toString() {
+    return "CustomLevelSelect [locElementType=" + locElementType + ", check=" + check + "]";
+  }
+
+
 }

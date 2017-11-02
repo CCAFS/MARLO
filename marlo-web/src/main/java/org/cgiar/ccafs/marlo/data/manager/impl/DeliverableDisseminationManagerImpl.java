@@ -41,9 +41,9 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
   }
 
   @Override
-  public boolean deleteDeliverableDissemination(long deliverableDisseminationId) {
+  public void deleteDeliverableDissemination(long deliverableDisseminationId) {
 
-    return deliverableDisseminationDAO.deleteDeliverableDissemination(deliverableDisseminationId);
+    deliverableDisseminationDAO.deleteDeliverableDissemination(deliverableDisseminationId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
   }
 
   @Override
-  public long saveDeliverableDissemination(DeliverableDissemination deliverableDissemination) {
+  public DeliverableDissemination saveDeliverableDissemination(DeliverableDissemination deliverableDissemination) {
 
     return deliverableDisseminationDAO.save(deliverableDissemination);
   }

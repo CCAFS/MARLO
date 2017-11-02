@@ -119,5 +119,12 @@ public class CenterCustomParameter implements java.io.Serializable {
   }
 
 
+  @Override
+  public String toString() {
+    return "CenterCustomParameter [id=" + id + ", centerParameter=" + centerParameter + ", researchCenter="
+      + researchCenter + "]";
+  }
+
+
 }
 

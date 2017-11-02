@@ -32,7 +32,7 @@ public interface ActivityDAO {
    * @param activityId is the activity identifier.
    * @return true if the activity was successfully deleted, false otherwise.
    */
-  public boolean deleteActivity(long activityId);
+  public void deleteActivity(long activityId);
 
   /**
    * This method validate if the activity identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ActivityDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Activity activity);
+  public Activity save(Activity activity);
 }

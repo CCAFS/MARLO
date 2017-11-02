@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ public interface CenterAllTypesDAO {
    * @param centerAllTypesId is the centerAllTypes identifier.
    * @return true if the centerAllTypes was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterAllTypes(long centerAllTypesId);
+  public void deleteCenterAllTypes(long centerAllTypesId);
 
   /**
    * This method validate if the centerAllTypes identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CenterAllTypesDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterAllTypes centerAllTypes);
+  public CenterAllTypes save(CenterAllTypes centerAllTypes);
 }

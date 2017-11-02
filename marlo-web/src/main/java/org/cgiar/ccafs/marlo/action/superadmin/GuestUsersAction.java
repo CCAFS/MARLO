@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -51,7 +53,6 @@ public class GuestUsersAction extends BaseAction {
 
 
   private static final long serialVersionUID = 6860177996446505143L;
-
 
   /**
    * Helper method to read a stream into memory.
@@ -70,6 +71,8 @@ public class GuestUsersAction extends BaseAction {
     }
     return baos.toByteArray();
   }
+
+  private final Logger LOG = LoggerFactory.getLogger(GuestUsersAction.class);
 
   private UserManager userManager;
 
@@ -135,9 +138,12 @@ public class GuestUsersAction extends BaseAction {
     try {
       userID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.USER_ID)));
       user = userManager.getUser(userID);
-      System.out.println("");
     } catch (Exception e) {
-
+      LOG.error("unable to parse userID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
     crps = new ArrayList<>(
@@ -152,7 +158,6 @@ public class GuestUsersAction extends BaseAction {
   @Override
   public String save() {
     User newUser;
-    long newUserID;
 
     if (isNewUser) {
 
@@ -173,7 +178,7 @@ public class GuestUsersAction extends BaseAction {
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser, this.getCurrentUser());
 
 
     } else {
@@ -188,14 +193,11 @@ public class GuestUsersAction extends BaseAction {
       if (!user.isCgiarUser()) {
         newUser.setPassword(user.getPassword());
       }
-      newUserID = userManager.saveUser(newUser, this.getCurrentUser());
+      newUser = userManager.saveUser(newUser, this.getCurrentUser());
     }
 
 
-    if (newUserID != -1) {
-      userID = newUserID;
-      newUser = userManager.getUser(newUserID);
-
+    if (newUser.getId() != -1) {
       if (user.getCrpUser() != null) {
         for (CrpUser crpUser : user.getCrpUser()) {
           if (crpUser.getId() == -1) {
@@ -211,11 +213,9 @@ public class GuestUsersAction extends BaseAction {
             newCrpUser.setModificationJustification(" ");
             newCrpUser.setActive(true);
 
-            long newCrpUserID = crpUserManager.saveCrpUser(newCrpUser);
+            newCrpUser = crpUserManager.saveCrpUser(newCrpUser);
 
-            if (newCrpUserID != -1) {
-
-              newCrpUser = crpUserManager.getCrpUserById(newCrpUserID);
+            if (newCrpUser.getId() != -1) {
 
               UserRole userRole = new UserRole();
 
@@ -227,9 +227,9 @@ public class GuestUsersAction extends BaseAction {
               userRole.setRole(guestRole);
               userRole.setUser(newUser);
 
-              long userRoleID = userRoleManager.saveUserRole(userRole);
+              userRole = userRoleManager.saveUserRole(userRole);
 
-              if (isNewUser && userRoleID != -1) {
+              if (isNewUser && userRole.getId() != -1) {
                 try {
                   this.sendMailNewUser(newUser, crp);
                 } catch (NoSuchAlgorithmException e) {

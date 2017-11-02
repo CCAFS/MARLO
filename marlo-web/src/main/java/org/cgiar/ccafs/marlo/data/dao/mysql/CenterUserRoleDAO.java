@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterUserRoleDAO implements ICenterUserRoleDAO {
+public class CenterUserRoleDAO extends AbstractMarloDAO<CenterUserRole, Long> implements ICenterUserRoleDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterUserRoleDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterUserRoleDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteUserRole(long userRoleId) {
+  public void deleteUserRole(long userRoleId) {
     CenterUserRole userRole = this.find(userRoleId);
-    return dao.delete(userRole);
+    super.delete(userRole);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class CenterUserRoleDAO implements ICenterUserRoleDAO {
 
   @Override
   public CenterUserRole find(long id) {
-    return dao.find(CenterUserRole.class, id);
+    return super.find(CenterUserRole.class, id);
 
   }
 
   @Override
   public List<CenterUserRole> findAll() {
     String query = "from " + CenterUserRole.class.getName();
-    List<CenterUserRole> list = dao.findAll(query);
+    List<CenterUserRole> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,17 +68,17 @@ public class CenterUserRoleDAO implements ICenterUserRoleDAO {
   @Override
   public List<CenterUserRole> getUserRolesByUserId(long userId) {
     String query = "from " + CenterUserRole.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterUserRole userRole) {
+  public CenterUserRole save(CenterUserRole userRole) {
     if (userRole.getId() == null) {
-      dao.save(userRole);
+      super.saveEntity(userRole);
     } else {
-      dao.update(userRole);
+      userRole = super.update(userRole);
     }
-    return userRole.getId();
+    return userRole;
   }
 
 

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
+public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceBudget, Long> implements FundingSourceBudgetDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceBudgetMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceBudgetMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteFundingSourceBudget(long fundingSourceBudgetId) {
+  public void deleteFundingSourceBudget(long fundingSourceBudgetId) {
     FundingSourceBudget fundingSourceBudget = this.find(fundingSourceBudgetId);
     fundingSourceBudget.setActive(false);
-    return this.save(fundingSourceBudget) > 0;
+    this.save(fundingSourceBudget);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
 
   @Override
   public FundingSourceBudget find(long id) {
-    return dao.find(FundingSourceBudget.class, id);
+    return super.find(FundingSourceBudget.class, id);
 
   }
 
   @Override
   public List<FundingSourceBudget> findAll() {
     String query = "from " + FundingSourceBudget.class.getName() + " where is_active=1";
-    List<FundingSourceBudget> list = dao.findAll(query);
+    List<FundingSourceBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
   public FundingSourceBudget getByFundingSourceAndYear(long fundingSourceID, int year) {
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= " + fundingSourceID
       + " and year= " + year + " and is_active=1";
-    List<FundingSourceBudget> list = dao.findAll(query);
+    List<FundingSourceBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,21 +78,21 @@ public class FundingSourceBudgetMySQLDAO implements FundingSourceBudgetDAO {
   }
 
   @Override
-  public long save(FundingSourceBudget fundingSourceBudget) {
+  public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget) {
 
     String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= "
       + fundingSourceBudget.getFundingSource().getId() + " and year= " + fundingSourceBudget.getYear()
       + " and is_active=1";
-    List<FundingSourceBudget> list = dao.findAll(query);
+    List<FundingSourceBudget> list = super.findAll(query);
     if (list.size() > 0) {
       fundingSourceBudget.setId(list.get(0).getId());
-      dao.update(fundingSourceBudget);
+      fundingSourceBudget = super.update(fundingSourceBudget);
     } else {
-      dao.save(fundingSourceBudget);
+      super.saveEntity(fundingSourceBudget);
     }
 
 
-    return fundingSourceBudget.getId();
+    return fundingSourceBudget;
   }
 
 

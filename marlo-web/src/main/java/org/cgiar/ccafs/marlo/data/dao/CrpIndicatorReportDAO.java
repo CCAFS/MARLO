@@ -32,7 +32,7 @@ public interface CrpIndicatorReportDAO {
    * @param crpIndicatorReportId is the crpIndicatorReport identifier.
    * @return true if the crpIndicatorReport was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpIndicatorReport(long crpIndicatorReportId);
+  public void deleteCrpIndicatorReport(long crpIndicatorReportId);
 
   /**
    * This method validate if the crpIndicatorReport identify with the given id exists in the system.
@@ -75,7 +75,7 @@ public interface CrpIndicatorReportDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpIndicatorReport crpIndicatorReport);
+  public CrpIndicatorReport save(CrpIndicatorReport crpIndicatorReport);
 
 
 }

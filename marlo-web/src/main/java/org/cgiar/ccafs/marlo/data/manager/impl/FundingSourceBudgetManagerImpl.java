@@ -41,9 +41,9 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
   }
 
   @Override
-  public boolean deleteFundingSourceBudget(long fundingSourceBudgetId) {
+  public void deleteFundingSourceBudget(long fundingSourceBudgetId) {
 
-    return fundingSourceBudgetDAO.deleteFundingSourceBudget(fundingSourceBudgetId);
+    fundingSourceBudgetDAO.deleteFundingSourceBudget(fundingSourceBudgetId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
   }
 
   @Override
-  public long saveFundingSourceBudget(FundingSourceBudget fundingSourceBudget) {
+  public FundingSourceBudget saveFundingSourceBudget(FundingSourceBudget fundingSourceBudget) {
 
     return fundingSourceBudgetDAO.save(fundingSourceBudget);
   }

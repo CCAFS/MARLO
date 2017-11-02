@@ -34,7 +34,7 @@ public interface ProjectHighligthManager {
    * @param projectHighligthId is the projectHighligth identifier.
    * @return true if the projectHighligth was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectHighligth(long projectHighligthId);
+  public void deleteProjectHighligth(long projectHighligthId);
 
 
   /**
@@ -70,8 +70,8 @@ public interface ProjectHighligthManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectHighligth(ProjectHighlight projectHighlight);
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight);
 
-  public long saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName);
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName);
 
 }

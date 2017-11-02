@@ -221,7 +221,8 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+     return "CrpsSiteIntegration [id=" + id + ", crp=" + crp + ", locElement=" + locElement + ", regional=" + regional
+      + ", programName=" + programName + "]";
   }
 
 }

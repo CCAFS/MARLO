@@ -160,7 +160,8 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "LiaisonUser [id=" + id + ", liaisonInstitution=" + liaisonInstitution + ", user=" + user + ", crp=" + crp
+      + "]";
   }
 
 

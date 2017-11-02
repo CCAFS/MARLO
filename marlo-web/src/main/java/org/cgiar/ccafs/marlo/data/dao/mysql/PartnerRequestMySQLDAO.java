@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class PartnerRequestMySQLDAO implements PartnerRequestDAO {
-
-  private StandardDAO dao;
+public class PartnerRequestMySQLDAO extends AbstractMarloDAO<PartnerRequest, Long> implements PartnerRequestDAO {
 
   @Inject
-  public PartnerRequestMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public PartnerRequestMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deletePartnerRequest(long partnerRequestId) {
+  public void deletePartnerRequest(long partnerRequestId) {
     PartnerRequest partnerRequest = this.find(partnerRequestId);
     partnerRequest.setActive(false);
-    return this.save(partnerRequest) > 0;
+    this.save(partnerRequest);
   }
 
   @Override
@@ -51,14 +50,14 @@ public class PartnerRequestMySQLDAO implements PartnerRequestDAO {
 
   @Override
   public PartnerRequest find(long id) {
-    return dao.find(PartnerRequest.class, id);
+    return super.find(PartnerRequest.class, id);
 
   }
 
   @Override
   public List<PartnerRequest> findAll() {
     String query = "from " + PartnerRequest.class.getName() + " where is_active=1";
-    List<PartnerRequest> list = dao.findAll(query);
+    List<PartnerRequest> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +66,15 @@ public class PartnerRequestMySQLDAO implements PartnerRequestDAO {
   }
 
   @Override
-  public long save(PartnerRequest partnerRequest) {
+  public PartnerRequest save(PartnerRequest partnerRequest) {
     if (partnerRequest.getId() == null) {
-      dao.save(partnerRequest);
+      partnerRequest = super.saveEntity(partnerRequest);
     } else {
-      dao.update(partnerRequest);
+      partnerRequest = super.update(partnerRequest);
     }
 
 
-    return partnerRequest.getId();
+    return partnerRequest;
   }
 
 

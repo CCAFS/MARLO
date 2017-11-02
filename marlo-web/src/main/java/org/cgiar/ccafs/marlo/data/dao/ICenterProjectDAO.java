@@ -32,7 +32,7 @@ public interface ICenterProjectDAO {
    * @param projectId is the project identifier.
    * @return true if the project was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterProject(long projectId);
+  public void deleteCenterProject(long projectId);
 
   /**
    * This method validate if the project identify with the given id exists in the system.
@@ -74,7 +74,7 @@ public interface ICenterProjectDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProject project);
+  public CenterProject save(CenterProject project);
 
   /**
    * This method saves the information of the given project
@@ -84,5 +84,5 @@ public interface ICenterProjectDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProject project, String actionName, List<String> relationsName);
+  public CenterProject save(CenterProject project, String actionName, List<String> relationsName);
 }

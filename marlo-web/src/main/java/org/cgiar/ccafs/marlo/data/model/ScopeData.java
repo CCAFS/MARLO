@@ -66,5 +66,10 @@ public class ScopeData implements Serializable {
     this.size = size;
   }
 
+  @Override
+  public String toString() {
+    return "ScopeData [id=" + id + ", scopeRegion=" + scopeRegion + ", size=" + size + "]";
+  }
+
 
 }

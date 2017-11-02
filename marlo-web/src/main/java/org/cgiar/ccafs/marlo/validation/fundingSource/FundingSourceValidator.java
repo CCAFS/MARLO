@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
@@ -51,6 +52,25 @@ public class FundingSourceValidator extends BaseValidator {
 
   @Inject
   private FundingSourceManager fundingSourceManager;
+
+  /**
+   * Until I work out why the File is being set to an empty file instead of null, this will temporarily
+   * fix the problem.
+   * 
+   * @param fundingSource
+   */
+  private void checkFileIsValid(FundingSource fundingSource) {
+    FileDB file = fundingSource.getFile();
+    if (file != null) {
+
+      if (file.getId() == null) {
+        // The UI component has instantiated an empty file object instead of null.
+        fundingSource.setFile(null);
+
+      }
+    }
+
+  }
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
@@ -99,6 +119,8 @@ public class FundingSourceValidator extends BaseValidator {
         this.addMissingField("draft");
       }
     }
+
+    this.checkFileIsValid(fundingSource);
 
     if (!this.isValidString(fundingSource.getTitle())) {
       this.addMessage(action.getText("fundingSource.title"));
