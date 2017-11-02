@@ -395,6 +395,10 @@ jQuery.fn.addOption = function(val,name) {
   }
 };
 
+jQuery.fn.addOptionFast = function(val,name) {
+  $(this).append("<option value='" + val + "'>" + name + "</option>");
+};
+
 function removeOption(select,val) {
   $(select).find('option[value=' + val + ']').remove();
 }

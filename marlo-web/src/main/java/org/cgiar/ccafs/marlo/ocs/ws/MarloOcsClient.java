@@ -56,7 +56,7 @@ public class MarloOcsClient {
     executor.shutdownNow();
     // Wait until all threads are finish
     while (!executor.isTerminated()) {
-      LOG.info("Ws OCS waiting");
+      // LOG.info("Ws OCS waiting");
     }
 
     if (agreementOCS.getId() == null) {
