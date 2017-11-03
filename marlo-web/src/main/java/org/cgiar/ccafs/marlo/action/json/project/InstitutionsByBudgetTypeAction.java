@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -42,6 +44,7 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
   private static final long serialVersionUID = -8182788196525839215L;
 
   private List<Map<String, Object>> institutions;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
 
   private long budgetTypeID;
 
@@ -50,16 +53,26 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
 
   @Inject
-  public InstitutionsByBudgetTypeAction(APConfig config, InstitutionManager institutionManager) {
+  public InstitutionsByBudgetTypeAction(APConfig config, InstitutionManager institutionManager,
+    CrpPpaPartnerManager crpPpaPartnerManager) {
     super(config);
 
     this.institutionManager = institutionManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
 
   }
 
   @Override
   public String execute() throws Exception {
 
+    List<Institution> institutionsPpa = new ArrayList<>();
+
+    List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID() && c.isActive()).collect(Collectors.toList());
+
+    for (CrpPpaPartner crpPpaPartner : ppaPartners) {
+      institutionsPpa.add(crpPpaPartner.getInstitution());
+    }
 
     institutions = new ArrayList<>();
     Map<String, Object> institution;
@@ -74,8 +87,8 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
         institutionsType = institutionManager.findAll().stream()
           .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
       } else {
-        institutionsType = institutionManager.findAll().stream()
-          .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+        institutionsType = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+        institutionsType.removeAll(institutionsPpa);
       }
 
 
