@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -256,13 +258,13 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getCapDevListTableModel() {
     // Initialization of Model
-    final TypedTableModel model = new TypedTableModel(
+    TypedTableModel model = new TypedTableModel(
       new String[] {"title", "type", "category", "numParticipants", "numMen", "numWomen", "numOther", "researchArea",
         "researchProgram", "startDate", "endDate", "duration", "duration_unit", "num_supporting_docs"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Date.class, Date.class, String.class, String.class, Integer.class});
 
-    for (final CapacityDevelopment capdev : capDevs) {
+    for (CapacityDevelopment capdev : capDevs) {
 
       String title = null;
       if ((capdev.getTitle() != null)) {
@@ -684,7 +686,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() throws Exception {
-
+    capDevs = new ArrayList<CapacityDevelopment>();
     try {
       researchAreaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("raID")));
       year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
@@ -697,15 +699,35 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       }
 
       if ((researchAreaID == -1) && (year != 0)) {
-        capDevs = capdevService.findAll().stream()
-          .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null) && (cdl.getStartDate().getYear() == year))
-          .collect(Collectors.toList());
+        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
+          .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null)).collect(Collectors.toList());
+        for (CapacityDevelopment capdev : capdevs) {
+          Calendar startDate = Calendar.getInstance();
+          startDate.setTime(capdev.getStartDate());
+          int anio = startDate.get(Calendar.YEAR);
+          if (anio == year) {
+            capDevs.add(capdev);
+          }
+        }
+        System.out.println(capDevs.size());
       }
       if ((researchAreaID != -1) && (year != 0)) {
-        capDevs = capdevService.findAll().stream().filter(
-          cdl -> cdl.isActive() && (cdl.getResearchArea() != null) && ((cdl.getResearchArea().getId() == researchAreaID)
-            && (cdl.getStartDate() != null) && (cdl.getStartDate().getYear() == year)))
+        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
+          .filter(cdl -> cdl.isActive() && (cdl.getResearchArea() != null)
+            && ((cdl.getResearchArea().getId() == researchAreaID) && (cdl.getStartDate() != null)))
           .collect(Collectors.toList());
+        System.out.println(capdevs.size());
+        for (CapacityDevelopment capdev : capdevs) {
+          System.out.println(capdev.getStartDate());
+          Calendar startDate = Calendar.getInstance();
+          startDate.setTime(capdev.getStartDate());
+          int anio = startDate.get(Calendar.YEAR);
+          System.out.println(anio);
+          if (anio == year) {
+            capDevs.add(capdev);
+          }
+        }
+        System.out.println(capDevs.size());
 
       }
       if ((researchAreaID == -1) && (year == 0)) {
