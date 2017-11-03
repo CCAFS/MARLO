@@ -73,7 +73,6 @@ public class CapacityDevelopmentAction extends BaseAction {
   public String add() {
 
     capdevCategory = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("capdevCategory")));
-
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
     capdev.setActive(true);
@@ -94,10 +93,8 @@ public class CapacityDevelopmentAction extends BaseAction {
       CenterProgram program = projectDB.getResearchProgram();
       CenterArea researchArea = program.getResearchArea();
 
-
       capdev.setResearchArea(researchArea);
       capdev.setResearchProgram(program);
-
 
     }
 

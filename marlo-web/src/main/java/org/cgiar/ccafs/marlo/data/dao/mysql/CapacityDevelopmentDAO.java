@@ -74,6 +74,7 @@ public class CapacityDevelopmentDAO implements ICapacityDevelopmentDAO {
 
   @Override
   public long save(CapacityDevelopment capacityDevelopment) {
+    System.out.println(capacityDevelopment.getCategory());
     if (capacityDevelopment.getId() == null) {
       dao.save(capacityDevelopment);
     } else {

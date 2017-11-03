@@ -5,8 +5,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
-  "${baseUrl}/global/js/fieldsValidation.js", 
-  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/fieldsValidation.js",
   "${baseUrlMedia}/js/capDev/capdevList.js"
   ] 
 /]
