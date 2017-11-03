@@ -32,7 +32,7 @@ public interface FundingSourceBudgetDAO {
    * @param fundingSourceBudgetId is the fundingSourceBudget identifier.
    * @return true if the fundingSourceBudget was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceBudget(long fundingSourceBudgetId);
+  public void deleteFundingSourceBudget(long fundingSourceBudgetId);
 
   /**
    * This method validate if the fundingSourceBudget identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface FundingSourceBudgetDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(FundingSourceBudget fundingSourceBudget);
+  public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget);
 }

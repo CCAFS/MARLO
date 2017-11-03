@@ -33,7 +33,7 @@ public interface ICenterCycleDAO {
    * @param researchCycleId is the researchCycle identifier.
    * @return true if the researchCycle was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchCycle(long researchCycleId);
+  public void deleteResearchCycle(long researchCycleId);
 
   /**
    * This method validate if the researchCycle identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface ICenterCycleDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterCycle researchCycle);
+  public CenterCycle save(CenterCycle researchCycle);
 }

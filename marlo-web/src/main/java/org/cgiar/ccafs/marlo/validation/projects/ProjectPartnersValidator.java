@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -45,6 +47,8 @@ import com.google.inject.Inject;
  */
 
 public class ProjectPartnersValidator extends BaseValidator {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
   @Inject
   private CrpManager crpManager;
@@ -242,7 +246,11 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
     } catch (Exception e) {
-
+      LOG.error("unable to validate contact persons for project " + project, e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
   }
 

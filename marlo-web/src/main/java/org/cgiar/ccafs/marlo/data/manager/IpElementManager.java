@@ -35,7 +35,7 @@ public interface IpElementManager {
    * @param ipElementId is the ipElement identifier.
    * @return true if the ipElement was successfully deleted, false otherwise.
    */
-  public boolean deleteIpElement(long ipElementId);
+  public void deleteIpElement(long ipElementId);
 
 
   /**
@@ -96,7 +96,7 @@ public interface IpElementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpElement(IpElement ipElement);
+  public IpElement saveIpElement(IpElement ipElement);
 
 
 }

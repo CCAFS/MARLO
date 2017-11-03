@@ -32,7 +32,7 @@ public interface ProjectMilestoneDAO {
    * @param projectMilestoneId is the projectMilestone identifier.
    * @return true if the projectMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectMilestone(long projectMilestoneId);
+  public void deleteProjectMilestone(long projectMilestoneId);
 
   /**
    * This method validate if the projectMilestone identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectMilestone projectMilestone);
+  public ProjectMilestone save(ProjectMilestone projectMilestone);
 }

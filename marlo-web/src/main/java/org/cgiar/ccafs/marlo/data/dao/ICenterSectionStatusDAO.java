@@ -33,7 +33,7 @@ public interface ICenterSectionStatusDAO {
    * @param sectionStatusId is the sectionStatus identifier.
    * @return true if the sectionStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteSectionStatus(long sectionStatusId);
+  public void deleteSectionStatus(long sectionStatusId);
 
   /**
    * This method gets a list of sectionStatus to verify if the program have all the sections
@@ -160,5 +160,5 @@ public interface ICenterSectionStatusDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterSectionStatus sectionStatus);
+  public CenterSectionStatus save(CenterSectionStatus sectionStatus);
 }

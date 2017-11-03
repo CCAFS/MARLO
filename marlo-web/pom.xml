@@ -1,147 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.cgiar.ccafs</groupId>
+    <artifactId>marlo</artifactId>
+    <version>4.1.8-SNAPSHOT</version>
+  </parent>
+  <artifactId>marlo-web</artifactId>
+  <packaging>war</packaging>
+  <name>marlo-web</name>
+  <description>Marlo-Web</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <struts2.version>2.3.32</struts2.version>
+    <struts2-json.version>2.3.32</struts2-json.version>
+    <guice.version>3.0</guice.version>
+    <mysql.version>5.1.39</mysql.version>
+    <junit.version>4.12</junit.version>
+    <servlet-api.version>2.5</servlet-api.version>
+    <jsp-api.version>2.0</jsp-api.version>
+    <janino.version>2.7.8</janino.version>
+    <poi.version>3.13</poi.version>
+    <flyway.version>4.0.1</flyway.version>
+    <org.json.version>20160212</org.json.version>
+    <hibbernate-core-version>4.3.11.Final</hibbernate-core-version>
+    <jta-version>1.1</jta-version>
+    <commons-logging-version>1.2</commons-logging-version>
+    <xml-apis-version>1.4.01</xml-apis-version>
+    <apache-shiro-version>1.2.4</apache-shiro-version>
+    <groovy-version>2.4.6</groovy-version>
+    <jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
+    <jasper-reports-version>6.2.2</jasper-reports-version>
+    <com.google.code.gson-version>2.6.2</com.google.code.gson-version>
+    <pusher-http-java>1.0.0</pusher-http-java>
+    <log-properties>0.9.28</log-properties>
+    <pentaho-report.version>6.1.0.1-196</pentaho-report.version>
+    <org-apache-axis.version>1.4</org-apache-axis.version> 
+    <javax-xml.version>1.1</javax-xml.version>
+  </properties>
+
+  <developers>
+    <developer>
+      <name>Christian David Garcia Oviedo</name>
+      <email>c.d.garcia@cgiar.org</email>
+    </developer>
+    <developer>
+      <name>Héctor F. Tobón R.</name>
+      <email>h.f.tobon@cgiar.org</email>
+    </developer>
+    <developer>
+      <name>Hernán D. Carvajal B.</name>
+      <email>h.d.carvajal@cgiar.org</email>
+    </developer>
+    <developer>
+      <name>Hermes Jimenez</name>
+      <email>h.jimenez@cgiar.org</email>
+    </developer>
+    <developer>
+      <name>Sebastian Amariles</name>
+      <email>s.amariles@cgiar.org</email>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>Github issue tracker</system>
+    <url>https://github.com/CCAFS/marlo/issues</url>
+  </issueManagement>
+  <dependencies>
+    <!-- Project dependecies -->
+    <dependency>
       <groupId>org.cgiar.ccafs</groupId>
-      <artifactId>marlo</artifactId>
-
+      <artifactId>marlo-utils</artifactId>
       <version>4.1.8-SNAPSHOT</version>
-   </parent>
-   <artifactId>marlo-web</artifactId>
-   <packaging>war</packaging>
-   <name>marlo-web</name>
-   <description>Marlo-Web</description>
-   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <struts2.version>2.3.32</struts2.version>
-      <struts2-json.version>2.3.32</struts2-json.version>
-      <guice.version>3.0</guice.version>
-      <mysql.version>5.1.37</mysql.version>
-      <junit.version>4.12</junit.version>
-      <servlet-api.version>2.5</servlet-api.version>
-      <jsp-api.version>2.0</jsp-api.version>
-      <janino.version>2.7.8</janino.version>
-      <poi.version>3.13</poi.version>
-      <flyway.version>4.0.1</flyway.version>
-      <org.json.version>20160212</org.json.version>
-      <hibbernate-core-version>4.3.6</hibbernate-core-version>
-      <jta-version>1.1</jta-version>
-      <commons-logging-version>1.2</commons-logging-version>
-      <xml-apis-version>1.4.01</xml-apis-version>
-      <apache-shiro-version>1.2.4</apache-shiro-version>
-      <groovy-version>2.4.6</groovy-version>
-      <jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
-      <jasper-reports-version>6.2.2</jasper-reports-version>
-      <com.google.code.gson-version>2.6.2</com.google.code.gson-version>
-      <pusher-http-java>1.0.0</pusher-http-java>
-      <log-properties>0.9.28</log-properties>
-      <pentaho-report.version>6.1.0.1-196</pentaho-report.version>
-      <org-apache-axis.version>1.4</org-apache-axis.version>
-      <javax-xml.version>1.1</javax-xml.version>
-   </properties>
-   <developers>
-      <developer>
-         <name>Christian David Garcia Oviedo</name>
-         <email>c.d.garcia@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Héctor F. Tobón R.</name>
-         <email>h.f.tobon@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Hernán D. Carvajal B.</name>
-         <email>h.d.carvajal@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Hermes Jimenez</name>
-         <email>h.jimenez@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Sebastian Amariles</name>
-         <email>s.amariles@cgiar.org</email>
-      </developer>
-   </developers>
-   <issueManagement>
-      <system>Github issue tracker</system>
-      <url>https://github.com/CCAFS/marlo/issues</url>
-   </issueManagement>
-   <dependencies>
-      <!-- Project dependecies -->
-      <dependency>
-         <groupId>org.cgiar.ccafs</groupId>
-         <artifactId>marlo-utils</artifactId>
-         <version>4.1.8-SNAPSHOT</version>
-
-      </dependency>
-      <!-- End of project dependecies -->
-      <!-- STRUTS 2 - Framework Core -->
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-core</artifactId>
-         <version>${struts2.version}</version>
-           <exclusions>
-               <exclusion>
-               <groupId>org.javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-             <exclusion>
-               <groupId>javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-config-browser-plugin</artifactId>
-         <version>${struts2.version}</version>
-          <exclusions>
-               <exclusion>
-               <groupId>org.javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-             <exclusion>
-               <groupId>javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-junit-plugin</artifactId>
-         <version>${struts2.version}</version>
-          <exclusions>
-               <exclusion>
-               <groupId>org.javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-             <exclusion>
-               <groupId>javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-         </exclusions>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-java8-support-plugin</artifactId>
-         <version>2.3.32</version>
-          <exclusions>
-               <exclusion>
-               <groupId>org.javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-             <exclusion>
-               <groupId>javassist</groupId>
-               <artifactId>javassist</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts.xwork</groupId>
-         <artifactId>xwork-core</artifactId>
-         <version>2.3.31</version>
-         <exclusions>
+    </dependency>
+    <!-- End of project dependecies -->
+    <!-- STRUTS 2 - Framework Core -->
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-core</artifactId>
+      <version>${struts2.version}</version>
+      <exclusions>
+          <!-- Ensure the Hibernate version of javassist is used -->
             <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-config-browser-plugin</artifactId>
+      <version>${struts2.version}</version>
+      <exclusions>
+          <exclusion>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-junit-plugin</artifactId>
+      <version>${struts2.version}</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+   <groupId>org.apache.struts</groupId>
+   <artifactId>struts2-java8-support-plugin</artifactId>
+   <version>2.3.32</version>
+        <exclusions>
+               <exclusion>
+               <groupId>org.javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+             <exclusion>
+               <groupId>javassist</groupId>
+               <artifactId>javassist</artifactId>
+            </exclusion>
+         </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.apache.struts.xwork</groupId>
+    <artifactId>xwork-core</artifactId>
+    <version>2.3.31</version>
+    <exclusions>
+        <exclusion>
                <groupId>asm</groupId>
                <artifactId>asm</artifactId>
             </exclusion>
@@ -157,99 +159,102 @@
                <groupId>javassist</groupId>
                <artifactId>javassist</artifactId>
             </exclusion>
-         </exclusions>
-      </dependency>
+    </exclusions>
+</dependency>
+    <dependency>
+      <groupId>org.cgiar.ciat.auth</groupId>
+      <artifactId>adauth</artifactId>
+      <version>1.8</version>
+    </dependency>
+    <dependency> 
+      <groupId>org.pentaho</groupId>
+      <artifactId>core</artifactId>
+      <version>${pentaho-report.version}</version>
+     </dependency>
+     <dependency> 
+      <groupId>org.pentaho</groupId>
+      <artifactId>extensions</artifactId>
+      <version>${pentaho-report.version}</version>
+     </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>base</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libdocbundle</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libfonts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libformat</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libformula</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libloader</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>librepository</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libserializer</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libxml</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+     <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libswing</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+       <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>libsparkline</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
       <dependency>
-         <groupId>org.cgiar.ciat.auth</groupId>
-         <artifactId>adauth</artifactId>
-         <version>1.8</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>core</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>extensions</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>base</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libdocbundle</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libfonts</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libformat</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libformula</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libloader</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>librepository</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libserializer</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libxml</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libswing</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>libsparkline</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>charts</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.pentaho</groupId>
-         <artifactId>report-charts</artifactId>
-         <version>${pentaho-report.version}</version>
-      </dependency>
-      <!--  Struts 2 Rest Plugin -->
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-convention-plugin</artifactId>
-         <version>2.3.32</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-rest-plugin</artifactId>
-         <version>2.3.32</version>
-          <exclusions>
+      <groupId>org.pentaho</groupId>
+      <artifactId>charts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>report-charts</artifactId>
+      <version>${pentaho-report.version}</version>
+    </dependency>
+    <!--  Struts 2 Rest Plugin -->
+  <dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-convention-plugin</artifactId>
+    <version>2.3.32</version>
+        
+  </dependency>
+  
+  <dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-rest-plugin</artifactId>
+    <version>2.3.32</version>
+        <exclusions>
                <exclusion>
                <groupId>org.javassist</groupId>
                <artifactId>javassist</artifactId>
@@ -259,22 +264,24 @@
                <artifactId>javassist</artifactId>
             </exclusion>
          </exclusions>
-      </dependency>
-      <!-- Although struts2-core has its own freemarker dependency, it seems 
+  </dependency>
+
+    
+    <!-- Although struts2-core has its own freemarker dependency, it seems 
       there is an error with its version. Thus, we had to use this version (which 
       is higher than the struts2-core). They said they fixed the problem in the 
       struts version 2.3.24. But are still experiencing it: https://issues.apache.org/jira/browse/WW-4437 -->
-      <dependency>
-         <groupId>org.freemarker</groupId>
-         <artifactId>freemarker</artifactId>
-         <version>2.3.23</version>
-      </dependency>
-      <!-- Struts JSON library -->
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-json-plugin</artifactId>
-         <version>${struts2-json.version}</version>
-          <exclusions>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.23</version>
+    </dependency>
+    <!-- Struts JSON library -->
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts2-json-plugin</artifactId>
+      <version>${struts2-json.version}</version>
+        <exclusions>
                <exclusion>
                <groupId>org.javassist</groupId>
                <artifactId>javassist</artifactId>
@@ -284,100 +291,100 @@
                <artifactId>javassist</artifactId>
             </exclusion>
          </exclusions>
-      </dependency>
-      <!-- Java JSON Library -->
-      <dependency>
-         <groupId>org.json</groupId>
-         <artifactId>json</artifactId>
-         <version>${org.json.version}</version>
-      </dependency>
-      <!-- Google Guice - connector to use Guice natively with struts2 -->
-      <!-- 2016-01-04: Version 4.0 is not supported by Shiro 1.2.3. Perhaps will 
+    </dependency>
+    <!-- Java JSON Library -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${org.json.version}</version>
+    </dependency>
+    <!-- Google Guice - connector to use Guice natively with struts2 -->
+    <!-- 2016-01-04: Version 4.0 is not supported by Shiro 1.2.3. Perhaps will 
       be supported later. -->
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-struts2</artifactId>
-         <version>${guice.version}</version>
-         <scope>compile</scope>
-         <exclusions>
-            <!-- clashes with newer version included in struts2.1.6 -->
-            <exclusion>
-               <groupId>opensymphony</groupId>
-               <artifactId>xwork</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>ognl</groupId>
-               <artifactId>ognl</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-assistedinject</artifactId>
-         <version>${guice.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-servlet</artifactId>
-         <version>${guice.version}</version>
-      </dependency>
-      <!-- End of Google Guice -->
-      <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-         <version>${mysql.version}</version>
-      </dependency>
-      <!-- This dependency allows conditions in logger configuration -->
-      <dependency>
-         <groupId>org.codehaus.janino</groupId>
-         <artifactId>janino</artifactId>
-         <version>${janino.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>${junit.version}</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-         <version>${servlet-api.version}</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jsp-api</artifactId>
-         <version>${jsp-api.version}</version>
-         <scope>provided</scope>
-      </dependency>
-      <!-- Apache POI - JAVA API To Access Microsoft XLS Format Files -->
-      <dependency>
-         <groupId>org.apache.poi</groupId>
-         <artifactId>poi</artifactId>
-         <version>${poi.version}</version>
-      </dependency>
-      <!-- Apache POI - JAVA API To Access Microsoft XLSX Format Files -->
-      <dependency>
-         <groupId>org.apache.poi</groupId>
-         <artifactId>poi-ooxml</artifactId>
-         <version>${poi.version}</version>
-      </dependency>
-      <!-- Database version control -->
-      <dependency>
-         <groupId>org.flywaydb</groupId>
-         <artifactId>flyway-core</artifactId>
-         <version>${flyway.version}</version>
-      </dependency>
-      <!-- START Hibernate -->
-      <!-- Hibernate Core -->
-      <!-- START Hibernate -->
-      <!-- Hibernate Core -->
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-core</artifactId>
-         <version>4.3.11.Final</version>
-         <exclusions>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-struts2</artifactId>
+      <version>${guice.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <!-- clashes with newer version included in struts2.1.6 -->
+        <exclusion>
+          <groupId>opensymphony</groupId>
+          <artifactId>xwork</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ognl</groupId>
+          <artifactId>ognl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-servlet</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <!-- End of Google Guice -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql.version}</version>
+    </dependency>
+    <!-- This dependency allows conditions in logger configuration -->
+    <dependency>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+      <version>${janino.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${servlet-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>${jsp-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- Apache POI - JAVA API To Access Microsoft XLS Format Files -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+    <!-- Apache POI - JAVA API To Access Microsoft XLSX Format Files -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+    <!-- Database version control -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>${flyway.version}</version>
+    </dependency>
+    <!-- START Hibernate -->
+    <!-- Hibernate Core -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibbernate-core-version}</version>
+      <exclusions>
             <exclusion>
                <groupId>org.javassist</groupId>
                <artifactId>javassist</artifactId>
@@ -387,8 +394,9 @@
                <artifactId>javassist</artifactId>
             </exclusion>
          </exclusions>
-      </dependency>
-      <dependency>
+    </dependency>
+
+    <dependency>
          <groupId>com.zaxxer</groupId>
          <artifactId>HikariCP</artifactId>
          <version>2.4.6</version>
@@ -408,294 +416,328 @@
          <artifactId>javassist</artifactId>
          <version>3.18.1-GA</version>
       </dependency>
-      <!-- Dependency needed for Hibernate -->
+
+    <!-- Dependency needed for Hibernate -->
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>${jta-version}</version>
+    </dependency>
       <!-- <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>${commons-logging-version}</version>
     </dependency>
      -->
-      <dependency>
+    <dependency>
          <groupId>ch.qos.logback</groupId>
          <artifactId>logback-classic</artifactId>
          <version>${log-properties}</version>
       </dependency>
-      <!-- END Hibernate -->
-      <!-- jasper -->
-      <dependency>
-         <groupId>net.sf.jasperreports</groupId>
-         <artifactId>jasperreports</artifactId>
-         <version>${jasper-reports-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.codehaus.groovy</groupId>
-         <artifactId>groovy-all</artifactId>
-         <version>${groovy-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>xml-apis</groupId>
-         <artifactId>xml-apis</artifactId>
-         <version>${xml-apis-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>net.sf.jasperreports</groupId>
-         <artifactId>jasperreports-fonts</artifactId>
-         <version>${jasperreports-fonts-version}</version>
-      </dependency>
-      <!-- End jasper -->
-      <!-- gson -->
-      <dependency>
-         <groupId>com.google.code.gson</groupId>
-         <artifactId>gson</artifactId>
-         <version>${com.google.code.gson-version}</version>
-      </dependency>
-      <!-- End jasper -->
-      <!-- Apache shiro -->
-      <dependency>
-         <groupId>org.apache.shiro</groupId>
-         <artifactId>shiro-web</artifactId>
-         <version>${apache-shiro-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shiro</groupId>
-         <artifactId>shiro-guice</artifactId>
-         <version>${apache-shiro-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>com.pusher</groupId>
-         <artifactId>pusher-http-java</artifactId>
-         <version>${pusher-http-java}</version>
-      </dependency>
-      <!-- Dependency for pentaho -->
-      <dependency>
-         <groupId>com.lowagie</groupId>
-         <artifactId>itext</artifactId>
-         <version>2.1.7</version>
-      </dependency>
-      <dependency>
-         <groupId>com.lowagie</groupId>
-         <artifactId>itext-rtf</artifactId>
-         <version>2.1.7</version>
-      </dependency>
-      <dependency>
-         <groupId>org.beanshell</groupId>
-         <artifactId>bsh</artifactId>
-         <version>1.3.0</version>
-         <optional>true</optional>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/bsf/bsf -->
-      <dependency>
-         <groupId>bsf</groupId>
-         <artifactId>bsf</artifactId>
-         <version>2.4.0</version>
-      </dependency>
-      <dependency>
-         <groupId>net.sourceforge.barbecue</groupId>
-         <artifactId>barbecue</artifactId>
-         <version>1.5-beta1</version>
-      </dependency>
-      <dependency>
-         <groupId>javax.ws.rs</groupId>
-         <artifactId>javax.ws.rs-api</artifactId>
-         <version>2.0</version>
-      </dependency>
-      <dependency>
-         <groupId>org.glassfish.jersey.core</groupId>
-         <artifactId>jersey-client</artifactId>
-         <version>2.5.1</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
-      <dependency>
-         <groupId>jfree</groupId>
-         <artifactId>jfreechart</artifactId>
-         <version>1.0.13</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/jfree/jcommon -->
-      <!-- https://mvnrepository.com/artifact/jfree/jcommon -->
-      <dependency>
-         <groupId>jfree</groupId>
-         <artifactId>jcommon</artifactId>
-         <version>1.0.16</version>
-      </dependency>
-      <!-- easy rules -->
-      <dependency>
-         <groupId>org.easyrules</groupId>
-         <artifactId>easyrules-core</artifactId>
-         <version>2.4.0</version>
-      </dependency>
-      <!-- library to ws client -->
-      <dependency>
-         <groupId>org.apache.axis</groupId>
-         <artifactId>axis</artifactId>
-         <version>${org-apache-axis.version}</version>
-      </dependency>
-      <!-- library to cast xml to object -->
-      <dependency>
-         <groupId>javax.xml</groupId>
-         <artifactId>jaxrpc-api</artifactId>
-         <version>${javax-xml.version}</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
-      <dependency>
-         <groupId>commons-discovery</groupId>
-         <artifactId>commons-discovery</artifactId>
-         <version>0.4</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/wsdl4j/wsdl4j -->
-      <dependency>
-         <groupId>wsdl4j</groupId>
-         <artifactId>wsdl4j</artifactId>
-         <version>1.6.2</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.tomcat</groupId>
-         <artifactId>catalina</artifactId>
-         <version>6.0.16</version>
-         <scope>provided</scope>
-      </dependency>
-   </dependencies>
-   <!-- Profile configuration -->
-   <profiles>
-      <!-- The configuration of the development profile -->
-      <profile>
-         <id>dev</id>
-         <!-- The development profile is active by default -->
-         <activation>
-            <activeByDefault>true</activeByDefault>
-         </activation>
-         <properties>
-            <build.profile.id>dev</build.profile.id>
-         </properties>
-      </profile>
-      <!-- The configuration of the production profile -->
-      <profile>
-         <id>pro</id>
-         <properties>
-            <build.profile.id>pro</build.profile.id>
-         </properties>
-      </profile>
-      <!-- The configuration of the testing profile -->
-      <profile>
-         <id>test</id>
-         <properties>
-            <build.profile.id>test</build.profile.id>
-         </properties>
-      </profile>
-   </profiles>
-   <build>
-      <finalName>${project.artifactId}</finalName>
-      <defaultGoal>tomcat7:run</defaultGoal>
-      <plugins>
-         <!-- Tomcat plugin just to test compatibilities with Tomcat. -->
-         <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <version>2.0</version>
+    <!-- END Hibernate -->
+    <!-- jasper -->
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports</artifactId>
+      <version>${jasper-reports-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+
+      <artifactId>groovy-all</artifactId>
+      <version>${groovy-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>${xml-apis-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports-fonts</artifactId>
+      <version>${jasperreports-fonts-version}</version>
+    </dependency>
+    <!-- End jasper -->
+    <!-- gson -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${com.google.code.gson-version}</version>
+    </dependency>
+    <!-- End jasper -->
+    <!-- Apache shiro -->
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-web</artifactId>
+      <version>${apache-shiro-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-guice</artifactId>
+      <version>${apache-shiro-version}</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.pusher</groupId>
+      <artifactId>pusher-http-java</artifactId>
+      <version>${pusher-http-java}</version>
+    </dependency>
+
+    <!-- Dependency for pentaho -->
+   
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext-rtf</artifactId>
+      <version>2.1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>1.3.0</version>
+      <optional>true</optional>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/bsf/bsf -->
+<dependency>
+    <groupId>bsf</groupId>
+    <artifactId>bsf</artifactId>
+    <version>2.4.0</version>
+</dependency>
+    <dependency>
+      <groupId>net.sourceforge.barbecue</groupId>
+      <artifactId>barbecue</artifactId>
+      <version>1.5-beta1</version>
+    </dependency>
+    
+     
+
+<dependency>
+    <groupId>javax.ws.rs</groupId>
+    <artifactId>javax.ws.rs-api</artifactId>
+    <version>2.0</version>
+</dependency>
+
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-client</artifactId>
+    <version>2.5.1</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
+<dependency>
+    <groupId>jfree</groupId>
+    <artifactId>jfreechart</artifactId>
+    <version>1.0.13</version>
+</dependency>
+
+
+
+<!-- https://mvnrepository.com/artifact/jfree/jcommon -->
+<!-- https://mvnrepository.com/artifact/jfree/jcommon -->
+<dependency>
+    <groupId>jfree</groupId>
+    <artifactId>jcommon</artifactId>
+    <version>1.0.16</version>
+</dependency>
+<!-- easy rules -->
+<dependency>
+    <groupId>org.easyrules</groupId>
+    <artifactId>easyrules-core</artifactId>
+    <version>2.4.0</version>
+</dependency>
+
+<!-- library to ws client -->
+<dependency>
+    <groupId>org.apache.axis</groupId>
+    <artifactId>axis</artifactId>
+    <version>${org-apache-axis.version}</version>
+</dependency>
+<!-- library to cast xml to object -->
+<dependency>
+    <groupId>javax.xml</groupId>
+    <artifactId>jaxrpc-api</artifactId>
+    <version>${javax-xml.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-discovery/commons-discovery -->
+<dependency>
+    <groupId>commons-discovery</groupId>
+    <artifactId>commons-discovery</artifactId>
+    <version>0.4</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/wsdl4j/wsdl4j -->
+<dependency>
+    <groupId>wsdl4j</groupId>
+    <artifactId>wsdl4j</artifactId>
+    <version>1.6.2</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.tomcat</groupId>
+    <artifactId>catalina</artifactId>
+    <version>6.0.16</version>
+    <scope>provided</scope>
+</dependency>
+
+  </dependencies>
+
+
+
+  <!-- Profile configuration -->
+  <profiles>
+    <!-- The configuration of the development profile -->
+    <profile>
+      <id>dev</id>
+      <!-- The development profile is active by default -->
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <build.profile.id>dev</build.profile.id>
+      </properties>
+    </profile>
+    <!-- The configuration of the production profile -->
+    <profile>
+      <id>pro</id>
+      <properties>
+        <build.profile.id>pro</build.profile.id>
+      </properties>
+    </profile>
+    <!-- The configuration of the testing profile -->
+    <profile>
+      <id>test</id>
+      <properties>
+        <build.profile.id>test</build.profile.id>
+      </properties>
+    </profile>
+  </profiles>
+
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <defaultGoal>tomcat7:run</defaultGoal>
+
+    <plugins>
+      <!-- Tomcat plugin just to test compatibilities with Tomcat. -->
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <port>8080</port>
+          <useTestClasspath>true</useTestClasspath>
+          <httpsPort>8443</httpsPort>
+          <keystoreFile>${project.basedir}/.keystore</keystoreFile>
+          <keystorePass>d5jtY68oBqWj</keystorePass>
+          <contextFile>tomcat/context.xml</contextFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <debug>true</debug>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <archiveClasses>true</archiveClasses>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+          <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
+        </configuration>
+      </plugin>
+      <!-- Plugin to copy the resources -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <!-- Copy properties to impactPathways module -->
+          <execution>
+            <id>copy-properties-to-module</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
             <configuration>
-               <port>8080</port>
-               <useTestClasspath>true</useTestClasspath>
-               <httpsPort>8443</httpsPort>
-               <keystoreFile>${project.basedir}/.keystore</keystoreFile>
-               <keystorePass>d5jtY68oBqWj</keystorePass>
-               <contextFile>tomcat/context.xml</contextFile>
+              <outputDirectory>target/classes</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+
+                  <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
+                </resource>
+              </resources>
             </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- MINIFYING CSS AND JS - TEST -->
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.7.4</version>
+        <executions>
+          <execution>
+            <id>default-minify</id>
+            <phase>package</phase>
             <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
-               <debug>true</debug>
+              <charset>UTF-8</charset>
+              <nosuffix>true</nosuffix>
+              <skipMerge>true</skipMerge>
+              <verbose>true</verbose>
+              <cssSourceDir>center/css</cssSourceDir>
+              <cssSourceDir>crp/css</cssSourceDir>
+              <cssSourceIncludes>
+                <cssSourceInclude>**/*.css</cssSourceInclude>
+              </cssSourceIncludes>
+              <cssTargetDir>css</cssTargetDir>
+              <jsSourceDir>center/js</jsSourceDir>
+              <jsSourceDir>crp/js</jsSourceDir>
+              <jsSourceIncludes>
+                <jsSourceInclude>**/*.js</jsSourceInclude>
+              </jsSourceIncludes>
+              <jsTargetDir>js</jsTargetDir>
             </configuration>
-         </plugin>
-         <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.3</version>
-            <configuration>
-               <archive>
-                  <manifest>
-                     <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                     <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                  </manifest>
-               </archive>
-               <archiveClasses>true</archiveClasses>
-               <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-               <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
-            </configuration>
-         </plugin>
-         <!-- Plugin to copy the resources -->
-         <plugin>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.7</version>
-            <executions>
-               <!-- Copy properties to impactPathways module -->
-               <execution>
-                  <id>copy-properties-to-module</id>
-                  <phase>compile</phase>
-                  <goals>
-                     <goal>copy-resources</goal>
-                  </goals>
-                  <configuration>
-                     <outputDirectory>target/classes</outputDirectory>
-                     <overwrite>true</overwrite>
-                     <resources>
-                        <resource>
-                           <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
-                        </resource>
-                     </resources>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         <!-- MINIFYING CSS AND JS - TEST -->
-         <plugin>
-            <groupId>com.samaxes.maven</groupId>
-            <artifactId>minify-maven-plugin</artifactId>
-            <version>1.7.4</version>
-            <executions>
-               <execution>
-                  <id>default-minify</id>
-                  <phase>package</phase>
-                  <configuration>
-                     <charset>UTF-8</charset>
-                     <nosuffix>true</nosuffix>
-                     <skipMerge>true</skipMerge>
-                     <verbose>true</verbose>
-                     <cssSourceDir>center/css</cssSourceDir>
-                     <cssSourceDir>crp/css</cssSourceDir>
-                     <cssSourceIncludes>
-                        <cssSourceInclude>**/*.css</cssSourceInclude>
-                     </cssSourceIncludes>
-                     <cssTargetDir>css</cssTargetDir>
-                     <jsSourceDir>center/js</jsSourceDir>
-                     <jsSourceDir>crp/js</jsSourceDir>
-                     <jsSourceIncludes>
-                        <jsSourceInclude>**/*.js</jsSourceInclude>
-                     </jsSourceIncludes>
-                     <jsTargetDir>js</jsTargetDir>
-                  </configuration>
-                  <goals>
-                     <goal>minify</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-         <!-- END -->
-      </plugins>
-   </build>
-   <repositories>
-      <repository>
-         <id>Internal project repo</id>
-         <url>file://${basedir}/src/main/resources/libs/</url>
-      </repository>
-      <!-- Maven repo -->
-   </repositories>
-   <licenses>
-      <license>
-         <name>GNU General Public License (GPL)</name>
-         <url>http://www.gnu.org/licenses/gpl.txt</url>
-         <distribution>manual</distribution>
-      </license>
-   </licenses>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- END -->
+
+
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>Internal project repo</id>
+      <url>file://${basedir}/src/main/resources/libs/</url>
+    </repository>
+
+    <!-- Maven repo -->
+    
+  </repositories>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
 </project>

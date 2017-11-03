@@ -34,7 +34,7 @@ public interface InstitutionTypeManager {
    * @param institutionTypeId is the institutionType identifier.
    * @return true if the institutionType was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitutionType(long institutionTypeId);
+  public void deleteInstitutionType(long institutionTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface InstitutionTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveInstitutionType(InstitutionType institutionType);
+  public InstitutionType saveInstitutionType(InstitutionType institutionType);
 
 
 }

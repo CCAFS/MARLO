@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpLiaisonUserMySQLDAO implements IpLiaisonUserDAO {
+public class IpLiaisonUserMySQLDAO extends AbstractMarloDAO<IpLiaisonUser, Long> implements IpLiaisonUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpLiaisonUserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpLiaisonUserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpLiaisonUser(long ipLiaisonUserId) {
+  public void deleteIpLiaisonUser(long ipLiaisonUserId) {
     IpLiaisonUser ipLiaisonUser = this.find(ipLiaisonUserId);
-    return dao.delete(ipLiaisonUser);
+    super.delete(ipLiaisonUser);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpLiaisonUserMySQLDAO implements IpLiaisonUserDAO {
 
   @Override
   public IpLiaisonUser find(long id) {
-    return dao.find(IpLiaisonUser.class, id);
+    return super.find(IpLiaisonUser.class, id);
 
   }
 
   @Override
   public List<IpLiaisonUser> findAll() {
     String query = "from " + IpLiaisonUser.class.getName() + " where is_active=1";
-    List<IpLiaisonUser> list = dao.findAll(query);
+    List<IpLiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class IpLiaisonUserMySQLDAO implements IpLiaisonUserDAO {
   }
 
   @Override
-  public long save(IpLiaisonUser ipLiaisonUser) {
+  public IpLiaisonUser save(IpLiaisonUser ipLiaisonUser) {
     if (ipLiaisonUser.getId() == null) {
-      dao.save(ipLiaisonUser);
+      super.saveEntity(ipLiaisonUser);
     } else {
-      dao.update(ipLiaisonUser);
+      ipLiaisonUser = super.update(ipLiaisonUser);
     }
 
 
-    return ipLiaisonUser.getId();
+    return ipLiaisonUser;
   }
 
 

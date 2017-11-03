@@ -32,7 +32,7 @@ public interface ICenterRegionDAO {
    * @param researchRegionId is the researchRegion identifier.
    * @return true if the researchRegion was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchRegion(long researchRegionId);
+  public void deleteResearchRegion(long researchRegionId);
 
   /**
    * This method validate if the researchRegion identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterRegionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterRegion researchRegion);
+  public CenterRegion save(CenterRegion researchRegion);
 }

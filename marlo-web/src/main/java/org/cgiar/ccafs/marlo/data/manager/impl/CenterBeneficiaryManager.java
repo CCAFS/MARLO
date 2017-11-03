@@ -42,9 +42,9 @@ public class CenterBeneficiaryManager implements ICenterBeneficiaryManager {
   }
 
   @Override
-  public boolean deleteBeneficiary(long beneficiaryId) {
+  public void deleteBeneficiary(long beneficiaryId) {
 
-    return beneficiaryDAO.deleteBeneficiary(beneficiaryId);
+    beneficiaryDAO.deleteBeneficiary(beneficiaryId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterBeneficiaryManager implements ICenterBeneficiaryManager {
   }
 
   @Override
-  public long saveBeneficiary(CenterBeneficiary beneficiary) {
+  public CenterBeneficiary saveBeneficiary(CenterBeneficiary beneficiary) {
 
     return beneficiaryDAO.save(beneficiary);
   }

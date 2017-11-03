@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectStatusDAO implements ICenterProjectStatusDAO {
+public class CenterProjectStatusDAO extends AbstractMarloDAO<CenterProjectStatus, Long>
+  implements ICenterProjectStatusDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectStatusDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectStatusDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectStatus(long projectStatusId) {
+  public void deleteProjectStatus(long projectStatusId) {
     CenterProjectStatus projectStatus = this.find(projectStatusId);
     projectStatus.setActive(false);
-    return this.save(projectStatus) > 0;
+    this.save(projectStatus);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectStatusDAO implements ICenterProjectStatusDAO {
 
   @Override
   public CenterProjectStatus find(long id) {
-    return dao.find(CenterProjectStatus.class, id);
+    return super.find(CenterProjectStatus.class, id);
 
   }
 
   @Override
   public List<CenterProjectStatus> findAll() {
     String query = "from " + CenterProjectStatus.class.getName();
-    List<CenterProjectStatus> list = dao.findAll(query);
+    List<CenterProjectStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterProjectStatusDAO implements ICenterProjectStatusDAO {
   @Override
   public List<CenterProjectStatus> getProjectStatussByUserId(long userId) {
     String query = "from " + CenterProjectStatus.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectStatus projectStatus) {
+  public CenterProjectStatus save(CenterProjectStatus projectStatus) {
     if (projectStatus.getId() == null) {
-      dao.save(projectStatus);
+      super.saveEntity(projectStatus);
     } else {
-      dao.update(projectStatus);
+      projectStatus = super.update(projectStatus);
     }
-    return projectStatus.getId();
+    return projectStatus;
   }
 
 

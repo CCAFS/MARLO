@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,21 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SubmissionMySQLDAO implements SubmissionDAO {
+public class SubmissionMySQLDAO extends AbstractMarloDAO<Submission, Long> implements SubmissionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SubmissionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SubmissionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
     Submission submission = this.find(submissionId);
 
-    return dao.delete(submission);
+    super.delete(submission);
   }
 
   @Override
@@ -52,14 +52,14 @@ public class SubmissionMySQLDAO implements SubmissionDAO {
 
   @Override
   public Submission find(long id) {
-    return dao.find(Submission.class, id);
+    return super.find(Submission.class, id);
 
   }
 
   @Override
   public List<Submission> findAll() {
     String query = "from " + Submission.class.getName() + "";
-    List<Submission> list = dao.findAll(query);
+    List<Submission> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,15 +68,15 @@ public class SubmissionMySQLDAO implements SubmissionDAO {
   }
 
   @Override
-  public long save(Submission submission) {
+  public Submission save(Submission submission) {
     if (submission.getId() == null) {
-      dao.save(submission);
+      super.saveEntity(submission);
     } else {
-      dao.update(submission);
+      submission = super.update(submission);
     }
 
 
-    return submission.getId();
+    return submission;
   }
 
 

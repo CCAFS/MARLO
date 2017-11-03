@@ -114,6 +114,7 @@ public class LocGeoposition implements java.io.Serializable, IAuditLog {
     return this.longitude;
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -174,7 +175,8 @@ public class LocGeoposition implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "LocGeoposition [id=" + id + ", locGeoposition=" + locGeoposition + ", latitude=" + latitude + ", longitude="
+      + longitude + "]";
   }
 }
 

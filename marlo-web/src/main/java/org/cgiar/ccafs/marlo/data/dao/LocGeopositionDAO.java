@@ -32,7 +32,7 @@ public interface LocGeopositionDAO {
    * @param locGeopositionId is the locGeoposition identifier.
    * @return true if the locGeoposition was successfully deleted, false otherwise.
    */
-  public boolean deleteLocGeoposition(long locGeopositionId);
+  public void deleteLocGeoposition(long locGeopositionId);
 
   /**
    * This method validate if the locGeoposition identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface LocGeopositionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(LocGeoposition locGeoposition);
+  public LocGeoposition save(LocGeoposition locGeoposition);
 }

@@ -3228,6 +3228,10 @@ button.ipGraph-btn{
   border-bottom: 2px solid #fff;
   font-style: italic;
 }
+
+.topNote{
+  margin:0;
+}
 .note.left { 
   text-align: left;
 }

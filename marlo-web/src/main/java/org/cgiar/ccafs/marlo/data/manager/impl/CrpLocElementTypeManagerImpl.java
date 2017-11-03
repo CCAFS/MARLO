@@ -41,9 +41,9 @@ public class CrpLocElementTypeManagerImpl implements CrpLocElementTypeManager {
   }
 
   @Override
-  public boolean deleteCrpLocElementType(long crpLocElementTypeId) {
+  public void deleteCrpLocElementType(long crpLocElementTypeId) {
 
-    return crpLocElementTypeDAO.deleteCrpLocElementType(crpLocElementTypeId);
+    crpLocElementTypeDAO.deleteCrpLocElementType(crpLocElementTypeId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class CrpLocElementTypeManagerImpl implements CrpLocElementTypeManager {
   }
 
   @Override
-  public long saveCrpLocElementType(CrpLocElementType crpLocElementType) {
+  public CrpLocElementType saveCrpLocElementType(CrpLocElementType crpLocElementType) {
 
     return crpLocElementTypeDAO.save(crpLocElementType);
   }

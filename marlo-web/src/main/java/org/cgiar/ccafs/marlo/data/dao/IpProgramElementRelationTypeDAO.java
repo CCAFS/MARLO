@@ -32,7 +32,7 @@ public interface IpProgramElementRelationTypeDAO {
    * @param ipProgramElementRelationTypeId is the ipProgramElementRelationType identifier.
    * @return true if the ipProgramElementRelationType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId);
+  public void deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId);
 
   /**
    * This method validate if the ipProgramElementRelationType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpProgramElementRelationTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProgramElementRelationType ipProgramElementRelationType);
+  public IpProgramElementRelationType save(IpProgramElementRelationType ipProgramElementRelationType);
 }

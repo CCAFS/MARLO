@@ -102,7 +102,7 @@ public interface UserManager {
    * @param modifiedBy - is the user that is creating/updating the given user.
    * @return the id of the user id that was created, 0 if the user was updated and -1 if some error occurred.
    */
-  public Long saveUser(User user, User modifiedBy);
+  public User saveUser(User user, User modifiedBy);
 
   /**
    * This method looks for the active users that contains the

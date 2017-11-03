@@ -41,9 +41,9 @@ public class CrpsSiteIntegrationManagerImpl implements CrpsSiteIntegrationManage
   }
 
   @Override
-  public boolean deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
+  public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
 
-    return crpsSiteIntegrationDAO.deleteCrpsSiteIntegration(crpsSiteIntegrationId);
+    crpsSiteIntegrationDAO.deleteCrpsSiteIntegration(crpsSiteIntegrationId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpsSiteIntegrationManagerImpl implements CrpsSiteIntegrationManage
   }
 
   @Override
-  public long saveCrpsSiteIntegration(CrpsSiteIntegration crpsSiteIntegration) {
+  public CrpsSiteIntegration saveCrpsSiteIntegration(CrpsSiteIntegration crpsSiteIntegration) {
 
     return crpsSiteIntegrationDAO.save(crpsSiteIntegration);
   }

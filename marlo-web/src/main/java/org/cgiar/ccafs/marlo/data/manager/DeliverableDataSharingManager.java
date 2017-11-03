@@ -34,7 +34,7 @@ public interface DeliverableDataSharingManager {
    * @param deliverableDataSharingId is the deliverableDataSharing identifier.
    * @return true if the deliverableDataSharing was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDataSharing(long deliverableDataSharingId);
+  public void deleteDeliverableDataSharing(long deliverableDataSharingId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableDataSharingManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableDataSharing(DeliverableDataSharing deliverableDataSharing);
+  public DeliverableDataSharing saveDeliverableDataSharing(DeliverableDataSharing deliverableDataSharing);
 
 
 }

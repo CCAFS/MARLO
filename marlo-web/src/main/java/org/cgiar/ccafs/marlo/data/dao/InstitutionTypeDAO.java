@@ -32,7 +32,7 @@ public interface InstitutionTypeDAO {
    * @param institutionTypeId is the institutionType identifier.
    * @return true if the institutionType was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitutionType(long institutionTypeId);
+  public void deleteInstitutionType(long institutionTypeId);
 
   /**
    * This method validate if the institutionType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface InstitutionTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(InstitutionType institutionType);
+  public InstitutionType save(InstitutionType institutionType);
 }

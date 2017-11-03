@@ -34,7 +34,7 @@ public interface ICenterObjectiveManager {
    * @param researchObjectiveId is the researchObjective identifier.
    * @return true if the researchObjective was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchObjective(long researchObjectiveId);
+  public void deleteResearchObjective(long researchObjectiveId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterObjectiveManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchObjective(CenterObjective researchObjective);
+  public CenterObjective saveResearchObjective(CenterObjective researchObjective);
 
 
 }

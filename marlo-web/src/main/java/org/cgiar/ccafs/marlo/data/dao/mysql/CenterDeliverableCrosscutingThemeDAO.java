@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterDeliverableCrosscutingThemeDAO implements ICenterDeliverableCrosscutingThemeDAO {
+public class CenterDeliverableCrosscutingThemeDAO extends AbstractMarloDAO<CenterDeliverableCrosscutingTheme, Long>
+  implements ICenterDeliverableCrosscutingThemeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDeliverableCrosscutingThemeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDeliverableCrosscutingThemeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
+  public void deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
     CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme = this.find(deliverableCrosscutingThemeId);
     deliverableCrosscutingTheme.setActive(false);
-    return this.save(deliverableCrosscutingTheme) > 0;
+    this.save(deliverableCrosscutingTheme);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterDeliverableCrosscutingThemeDAO implements ICenterDeliverableC
 
   @Override
   public CenterDeliverableCrosscutingTheme find(long id) {
-    return dao.find(CenterDeliverableCrosscutingTheme.class, id);
+    return super.find(CenterDeliverableCrosscutingTheme.class, id);
 
   }
 
   @Override
   public List<CenterDeliverableCrosscutingTheme> findAll() {
     String query = "from " + CenterDeliverableCrosscutingTheme.class.getName();
-    List<CenterDeliverableCrosscutingTheme> list = dao.findAll(query);
+    List<CenterDeliverableCrosscutingTheme> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +70,28 @@ public class CenterDeliverableCrosscutingThemeDAO implements ICenterDeliverableC
   @Override
   public List<CenterDeliverableCrosscutingTheme> getDeliverableCrosscutingThemesByUserId(long userId) {
     String query = "from " + CenterDeliverableCrosscutingTheme.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
     if (deliverableCrosscutingTheme.getId() == null) {
-      dao.save(deliverableCrosscutingTheme);
+      super.saveEntity(deliverableCrosscutingTheme);
     } else {
-      dao.update(deliverableCrosscutingTheme);
+      deliverableCrosscutingTheme = super.update(deliverableCrosscutingTheme);
     }
-    return deliverableCrosscutingTheme.getId();
+    return deliverableCrosscutingTheme;
   }
 
   @Override
-  public long save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName, List<String> relationsName) {
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
+    List<String> relationsName) {
     if (deliverableCrosscutingTheme.getId() == null) {
-      dao.save(deliverableCrosscutingTheme, actionName, relationsName);
+      super.saveEntity(deliverableCrosscutingTheme, actionName, relationsName);
     } else {
-      dao.update(deliverableCrosscutingTheme, actionName, relationsName);
+      deliverableCrosscutingTheme = super.update(deliverableCrosscutingTheme, actionName, relationsName);
     }
-    return deliverableCrosscutingTheme.getId();
+    return deliverableCrosscutingTheme;
   }
 
 

@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProgramMySQLDAO implements IpProgramDAO {
+public class IpProgramMySQLDAO extends AbstractMarloDAO<IpProgram, Long> implements IpProgramDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProgramMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProgramMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpProgram(long ipProgramId) {
+  public void deleteIpProgram(long ipProgramId) {
     IpProgram ipProgram = this.find(ipProgramId);
-    return dao.delete(ipProgram);
+    super.delete(ipProgram);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpProgramMySQLDAO implements IpProgramDAO {
 
   @Override
   public IpProgram find(long id) {
-    return dao.find(IpProgram.class, id);
+    return super.find(IpProgram.class, id);
 
   }
 
   @Override
   public List<IpProgram> findAll() {
     String query = "from " + IpProgram.class.getName() + " ";
-    List<IpProgram> list = dao.findAll(query);
+    List<IpProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,25 +66,25 @@ public class IpProgramMySQLDAO implements IpProgramDAO {
   }
 
   @Override
-  public long save(IpProgram ipProgram) {
+  public IpProgram save(IpProgram ipProgram) {
     if (ipProgram.getId() == null) {
-      dao.save(ipProgram);
+      super.saveEntity(ipProgram);
     } else {
-      dao.update(ipProgram);
+      ipProgram = super.update(ipProgram);
     }
 
 
-    return ipProgram.getId();
+    return ipProgram;
   }
 
   @Override
-  public long save(IpProgram ipProgram, String section, List<String> relationsName) {
+  public IpProgram save(IpProgram ipProgram, String section, List<String> relationsName) {
     if (ipProgram.getId() == null) {
-      dao.save(ipProgram, section, relationsName);
+      super.saveEntity(ipProgram, section, relationsName);
     } else {
-      dao.update(ipProgram, section, relationsName);
+      ipProgram = super.update(ipProgram, section, relationsName);
     }
-    return ipProgram.getId();
+    return ipProgram;
   }
 
 

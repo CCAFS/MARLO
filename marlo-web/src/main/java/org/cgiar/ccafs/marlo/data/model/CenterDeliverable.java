@@ -65,9 +65,9 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
-
 
   @Expose
   private Date dateCreated;
@@ -80,6 +80,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme;
 
+
   private Set<CenterDeliverableOutput> deliverableOutputs = new HashSet<CenterDeliverableOutput>(0);
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
@@ -90,16 +91,15 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
 
   private List<CenterDeliverableOutput> outputs;
 
-
   public CenterDeliverable() {
   }
+
 
   public CenterDeliverable(CenterProject project, CapacityDevelopment capdev, boolean active) {
     this.project = project;
     this.capdev = capdev;
     this.active = active;
   }
-
 
   public CenterDeliverable(User modifiedBy, User createdBy, CenterProjectStatus projectStatus, CenterProject project,
     CapacityDevelopment capdev, Boolean capdevD, CenterDeliverableType deliverableType, String name, Date startDate,
@@ -118,6 +118,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -216,7 +217,6 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public CenterProjectStatus getProjectStatus() {
     return projectStatus;
   }
@@ -282,6 +282,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.deliverableCrosscutingTheme = deliverableCrosscutingTheme;
   }
 
+
   public void setDeliverableDocuments(Set<CenterDeliverableDocument> deliverableDocuments) {
     this.deliverableDocuments = deliverableDocuments;
   }
@@ -335,7 +336,6 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.projectStatus = projectStatus;
   }
 
-
   public void setSectionStatuses(Set<CenterSectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
@@ -343,6 +343,12 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterDeliverable [id=" + id + ", project=" + project + ", name=" + name + "]";
   }
 
 

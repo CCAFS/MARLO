@@ -42,9 +42,9 @@ public class CenterSubmissionManager implements ICenterSubmissionManager {
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
 
-    return submissionDAO.deleteSubmission(submissionId);
+    submissionDAO.deleteSubmission(submissionId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterSubmissionManager implements ICenterSubmissionManager {
   }
 
   @Override
-  public long saveSubmission(CenterSubmission submission) {
+  public CenterSubmission saveSubmission(CenterSubmission submission) {
 
     return submissionDAO.save(submission);
   }

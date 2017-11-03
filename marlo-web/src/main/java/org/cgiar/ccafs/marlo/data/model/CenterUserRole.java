@@ -24,90 +24,90 @@ import com.google.gson.annotations.Expose;
 
 /**
  * Modified by @author nmatovu last on Sep 29, 2016
- *
  */
 public class CenterUserRole implements Serializable {
-	private static final long serialVersionUID = 9180666672990063594L;
-	@Expose
-	private Long id;
 
-	private CenterRole role;
+  private static final long serialVersionUID = 9180666672990063594L;
+  @Expose
+  private Long id;
 
-	@Expose
-	private User user;
+  private CenterRole role;
 
-	public CenterUserRole() {
-	}
+  @Expose
+  private User user;
 
-	public CenterUserRole(CenterRole roles, User users) {
-		this.role = roles;
-		this.user = users;
-	}
+  public CenterUserRole() {
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-		CenterUserRole other = (CenterUserRole) obj;
-		if (role == null) {
-			if (other.role != null) {
-				return false;
-			}
-		} else if (!role.getId().equals(other.getRole().getId())) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.getUser())) {
-			return false;
-		}
-		return true;
-	}
+  public CenterUserRole(CenterRole roles, User users) {
+    this.role = roles;
+    this.user = users;
+  }
 
-	public Long getId() {
-		return this.id;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CenterUserRole other = (CenterUserRole) obj;
+    if (role == null) {
+      if (other.role != null) {
+        return false;
+      }
+    } else if (!role.getId().equals(other.getRole().getId())) {
+      return false;
+    }
+    if (user == null) {
+      if (other.user != null) {
+        return false;
+      }
+    } else if (!user.equals(other.getUser())) {
+      return false;
+    }
+    return true;
+  }
 
-	public CenterRole getRole() {
-		return this.role;
-	}
+  public Long getId() {
+    return this.id;
+  }
 
-	public User getUser() {
-		return this.user;
-	}
+  public CenterRole getRole() {
+    return this.role;
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
-	}
+  public User getUser() {
+    return this.user;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((role == null) ? 0 : role.hashCode());
+    result = prime * result + ((user == null) ? 0 : user.hashCode());
+    return result;
+  }
 
-	public void setRole(CenterRole roles) {
-		this.role = roles;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setUser(User users) {
-		this.user = users;
-	}
+  public void setRole(CenterRole roles) {
+    this.role = roles;
+  }
 
-	@Override
-	public String toString() {
-		return id.toString();
-	}
+  public void setUser(User users) {
+    this.user = users;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterUserRole [id=" + id + ", role=" + role + ", user=" + user + "]";
+  }
 }

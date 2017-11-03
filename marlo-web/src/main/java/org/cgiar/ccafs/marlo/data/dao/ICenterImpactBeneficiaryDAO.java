@@ -33,7 +33,7 @@ public interface ICenterImpactBeneficiaryDAO {
    * @param researchImpactBeneficiaryId is the researchImpactBeneficiary identifier.
    * @return true if the researchImpactBeneficiary was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId);
+  public void deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId);
 
   /**
    * This method validate if the researchImpactBeneficiary identify with the given id exists in the system.
@@ -77,5 +77,5 @@ public interface ICenterImpactBeneficiaryDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterImpactBeneficiary researchImpactBeneficiary);
+  public CenterImpactBeneficiary save(CenterImpactBeneficiary researchImpactBeneficiary);
 }

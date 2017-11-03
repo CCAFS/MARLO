@@ -34,7 +34,7 @@ public interface DeliverableCrpManager {
    * @param deliverableCrpId is the deliverableCrp identifier.
    * @return true if the deliverableCrp was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableCrp(long deliverableCrpId);
+  public void deleteDeliverableCrp(long deliverableCrpId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableCrpManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableCrp(DeliverableCrp deliverableCrp);
+  public DeliverableCrp saveDeliverableCrp(DeliverableCrp deliverableCrp);
 
 
 }

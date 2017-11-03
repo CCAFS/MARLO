@@ -167,6 +167,13 @@ public class CenterSectionStatus implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
+  @Override
+  public String toString() {
+    return "CenterSectionStatus [id=" + id + ", researchProgram=" + researchProgram + ", researchOutcome="
+      + researchOutcome + ", researchOutput=" + researchOutput + ", project=" + project + ", deliverable=" + deliverable
+      + ", sectionName=" + sectionName + ", cycle=" + cycle + ", year=" + year + "]";
+  }
+
 
 }
 

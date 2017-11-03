@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfSloIdoMySQLDAO implements SrfSloIdoDAO {
+public class SrfSloIdoMySQLDAO extends AbstractMarloDAO<SrfSloIdo, Long> implements SrfSloIdoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfSloIdoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfSloIdoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSrfSloIdo(long srfSloIdoId) {
+  public void deleteSrfSloIdo(long srfSloIdoId) {
     SrfSloIdo srfSloIdo = this.find(srfSloIdoId);
     srfSloIdo.setActive(false);
-    return this.save(srfSloIdo) > 0;
+    this.save(srfSloIdo);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfSloIdoMySQLDAO implements SrfSloIdoDAO {
 
   @Override
   public SrfSloIdo find(long id) {
-    return dao.find(SrfSloIdo.class, id);
+    return super.find(SrfSloIdo.class, id);
 
   }
 
   @Override
   public List<SrfSloIdo> findAll() {
     String query = "from " + SrfSloIdo.class.getName() + " where is_active=1";
-    List<SrfSloIdo> list = dao.findAll(query);
+    List<SrfSloIdo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class SrfSloIdoMySQLDAO implements SrfSloIdoDAO {
   }
 
   @Override
-  public long save(SrfSloIdo srfSloIdo) {
+  public SrfSloIdo save(SrfSloIdo srfSloIdo) {
     if (srfSloIdo.getId() == null) {
-      dao.save(srfSloIdo);
+      super.saveEntity(srfSloIdo);
     } else {
-      dao.update(srfSloIdo);
+      srfSloIdo = super.update(srfSloIdo);
     }
-    return srfSloIdo.getId();
+    return srfSloIdo;
   }
 
 

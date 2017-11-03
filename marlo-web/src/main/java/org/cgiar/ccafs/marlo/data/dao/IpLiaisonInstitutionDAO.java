@@ -33,7 +33,7 @@ public interface IpLiaisonInstitutionDAO {
    * @param ipLiaisonInstitutionId is the ipLiaisonInstitution identifier.
    * @return true if the ipLiaisonInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteIpLiaisonInstitution(long ipLiaisonInstitutionId);
+  public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId);
 
   /**
    * This method validate if the ipLiaisonInstitution identify with the given id exists in the system.
@@ -89,7 +89,7 @@ public interface IpLiaisonInstitutionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpLiaisonInstitution ipLiaisonInstitution);
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution);
 
-  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
 }

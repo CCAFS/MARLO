@@ -41,9 +41,9 @@ public class CrpIndicatorReportManagerImpl implements CrpIndicatorReportManager 
   }
 
   @Override
-  public boolean deleteCrpIndicatorReport(long crpIndicatorReportId) {
+  public void deleteCrpIndicatorReport(long crpIndicatorReportId) {
 
-    return crpIndicatorReportDAO.deleteCrpIndicatorReport(crpIndicatorReportId);
+    crpIndicatorReportDAO.deleteCrpIndicatorReport(crpIndicatorReportId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class CrpIndicatorReportManagerImpl implements CrpIndicatorReportManager 
   }
 
   @Override
-  public long saveCrpIndicatorReport(CrpIndicatorReport crpIndicatorReport) {
+  public CrpIndicatorReport saveCrpIndicatorReport(CrpIndicatorReport crpIndicatorReport) {
 
     return crpIndicatorReportDAO.save(crpIndicatorReport);
   }

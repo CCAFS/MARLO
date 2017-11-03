@@ -34,7 +34,7 @@ public interface LocElementTypeManager {
    * @param locElementTypeId is the locElementType identifier.
    * @return true if the locElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteLocElementType(long locElementTypeId);
+  public void deleteLocElementType(long locElementTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface LocElementTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveLocElementType(LocElementType locElementType);
+  public LocElementType saveLocElementType(LocElementType locElementType);
 
 
 }

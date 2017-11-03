@@ -32,7 +32,7 @@ public interface CrpClusterActivityLeaderDAO {
    * @param crpClusterActivityLeaderId is the crpClusterActivityLeader identifier.
    * @return true if the crpClusterActivityLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId);
+  public void deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId);
 
   /**
    * This method validate if the crpClusterActivityLeader identify with the given id exists in the system.
@@ -67,5 +67,5 @@ public interface CrpClusterActivityLeaderDAO {
    *         0 if the crpClusterActivityLeader was updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpClusterActivityLeader crpClusterActivityLeader);
+  public CrpClusterActivityLeader save(CrpClusterActivityLeader crpClusterActivityLeader);
 }

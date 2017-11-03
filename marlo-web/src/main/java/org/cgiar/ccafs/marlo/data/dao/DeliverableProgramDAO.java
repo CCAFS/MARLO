@@ -32,7 +32,7 @@ public interface DeliverableProgramDAO {
    * @param deliverableProgramId is the deliverableProgram identifier.
    * @return true if the deliverableProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableProgram(long deliverableProgramId);
+  public void deleteDeliverableProgram(long deliverableProgramId);
 
   /**
    * This method validate if the deliverableProgram identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableProgram deliverableProgram);
+  public DeliverableProgram save(DeliverableProgram deliverableProgram);
 }

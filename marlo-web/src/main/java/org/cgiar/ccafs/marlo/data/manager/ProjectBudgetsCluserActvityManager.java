@@ -34,7 +34,7 @@ public interface ProjectBudgetsCluserActvityManager {
    * @param projectBudgetsCluserActvityId is the projectBudgetsCluserActvity identifier.
    * @return true if the projectBudgetsCluserActvity was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId);
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectBudgetsCluserActvityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity);
+  public ProjectBudgetsCluserActvity saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity);
 
 
 }

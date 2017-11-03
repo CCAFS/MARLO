@@ -34,7 +34,7 @@ public interface PartnerDivisionManager {
    * @param partnerDivisionId is the partnerDivision identifier.
    * @return true if the partnerDivision was successfully deleted, false otherwise.
    */
-  public boolean deletePartnerDivision(long partnerDivisionId);
+  public void deletePartnerDivision(long partnerDivisionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface PartnerDivisionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long savePartnerDivision(PartnerDivision partnerDivision);
+  public PartnerDivision savePartnerDivision(PartnerDivision partnerDivision);
 
 
 }

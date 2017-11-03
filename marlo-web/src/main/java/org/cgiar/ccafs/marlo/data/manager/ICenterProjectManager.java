@@ -34,7 +34,7 @@ public interface ICenterProjectManager {
    * @param projectId is the project identifier.
    * @return true if the project was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterProject(long projectId);
+  public void deleteCenterProject(long projectId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterProject(CenterProject project);
+  public CenterProject saveCenterProject(CenterProject project);
 
   /**
    * This method saves the information of the given project
@@ -88,7 +88,7 @@ public interface ICenterProjectManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterProject(CenterProject project, String actionName, List<String> relationsName);
+  public CenterProject saveCenterProject(CenterProject project, String actionName, List<String> relationsName);
 
 
 }

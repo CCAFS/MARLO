@@ -34,7 +34,7 @@ public interface CrpClusterOfActivityManager {
    * @param crpClusterOfActivityId is the crpClusterOfActivity identifier.
    * @return true if the crpClusterOfActivity was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpClusterOfActivity(long crpClusterOfActivityId);
+  public void deleteCrpClusterOfActivity(long crpClusterOfActivityId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpClusterOfActivityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public Long saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity);
+  public CrpClusterOfActivity saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity);
 
 
 }

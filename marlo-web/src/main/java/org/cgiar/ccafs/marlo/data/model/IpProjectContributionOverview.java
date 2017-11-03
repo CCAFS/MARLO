@@ -18,6 +18,7 @@ public class IpProjectContributionOverview implements java.io.Serializable, IAud
    * 
    */
   private static final long serialVersionUID = -3171833178725261483L;
+
   @Expose
   private Long id;
   @Expose
@@ -157,6 +158,12 @@ public class IpProjectContributionOverview implements java.io.Serializable, IAud
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "IpProjectContributionOverview [id=" + id + ", ipElement=" + ipElement + ", project=" + project + ", year="
+      + year + ", anualContribution=" + anualContribution + ", genderContribution=" + genderContribution + "]";
   }
 
 

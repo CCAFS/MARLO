@@ -34,7 +34,7 @@ public interface ICenterFundingSourceTypeManager {
    * @param fundingSourceTypeId is the fundingSourceType identifier.
    * @return true if the fundingSourceType was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceType(long fundingSourceTypeId);
+  public void deleteFundingSourceType(long fundingSourceTypeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterFundingSourceTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSourceType(CenterFundingSourceType fundingSourceType);
+  public CenterFundingSourceType saveFundingSourceType(CenterFundingSourceType fundingSourceType);
 
 
 }

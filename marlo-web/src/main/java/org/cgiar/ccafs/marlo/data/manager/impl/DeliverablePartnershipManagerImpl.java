@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,9 +41,9 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
+  public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
-    return deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
+    deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
   }
 
   @Override
@@ -60,13 +60,25 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
+    return deliverablePartnershipDAO.findForDeliverableIdAndPartnerTypeOther(deliverableId);
+  }
+
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
+    long projectPersonId) {
+    return deliverablePartnershipDAO.findForDeliverableIdAndProjectPersonIdPartnerTypeOther(deliverableId,
+      projectPersonId);
+  }
+
+  @Override
   public DeliverablePartnership getDeliverablePartnershipById(long deliverablePartnershipID) {
 
     return deliverablePartnershipDAO.find(deliverablePartnershipID);
   }
 
   @Override
-  public long saveDeliverablePartnership(DeliverablePartnership deliverablePartnership) {
+  public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership) {
 
     return deliverablePartnershipDAO.save(deliverablePartnership);
   }

@@ -34,7 +34,7 @@ public interface SectionStatusManager {
    * @param sectionStatusId is the sectionStatus identifier.
    * @return true if the sectionStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteSectionStatus(long sectionStatusId);
+  public void deleteSectionStatus(long sectionStatusId);
 
 
   /**
@@ -152,7 +152,7 @@ public interface SectionStatusManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSectionStatus(SectionStatus sectionStatus);
+  public SectionStatus saveSectionStatus(SectionStatus sectionStatus);
 
 
 }

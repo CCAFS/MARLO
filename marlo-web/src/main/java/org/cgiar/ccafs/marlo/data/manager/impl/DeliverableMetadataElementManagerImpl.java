@@ -41,9 +41,9 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
   }
 
   @Override
-  public boolean deleteDeliverableMetadataElement(long deliverableMetadataElementId) {
+  public void deleteDeliverableMetadataElement(long deliverableMetadataElementId) {
 
-    return deliverableMetadataElementDAO.deleteDeliverableMetadataElement(deliverableMetadataElementId);
+    deliverableMetadataElementDAO.deleteDeliverableMetadataElement(deliverableMetadataElementId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableMetadataElementManagerImpl implements DeliverableMetadat
   }
 
   @Override
-  public long saveDeliverableMetadataElement(DeliverableMetadataElement deliverableMetadataElement) {
+  public DeliverableMetadataElement saveDeliverableMetadataElement(DeliverableMetadataElement deliverableMetadataElement) {
 
     return deliverableMetadataElementDAO.save(deliverableMetadataElement);
   }

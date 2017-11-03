@@ -93,5 +93,11 @@ public class CrpLocElementType implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public String toString() {
+    return "CrpLocElementType [id=" + id + ", crp=" + crp + ", locElementType=" + locElementType + "]";
+  }
+
+
 }
 

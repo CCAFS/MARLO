@@ -448,9 +448,7 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverableDB.setDeliverableType(deliverableType);
       }
 
-      final long deliverableSaveID = deliverableService.saveDeliverable(deliverableDB);
-
-      deliverableDB = deliverableService.getDeliverableById(deliverableSaveID);
+      deliverableDB = deliverableService.saveDeliverable(deliverableDB);
 
       if (deliverable.getDeliverableCrosscutingTheme() != null) {
         this.saveCrossCuting(deliverableDB);

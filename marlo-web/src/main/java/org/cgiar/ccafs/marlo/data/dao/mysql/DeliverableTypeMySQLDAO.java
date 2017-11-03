@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableTypeMySQLDAO implements DeliverableTypeDAO {
+public class DeliverableTypeMySQLDAO extends AbstractMarloDAO<DeliverableType, Long> implements DeliverableTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableType(long deliverableTypeId) {
+  public void deleteDeliverableType(long deliverableTypeId) {
     DeliverableType deliverableType = this.find(deliverableTypeId);
-    return dao.delete(deliverableType);
+    super.delete(deliverableType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableTypeMySQLDAO implements DeliverableTypeDAO {
 
   @Override
   public DeliverableType find(long id) {
-    return dao.find(DeliverableType.class, id);
+    return super.find(DeliverableType.class, id);
 
   }
 
   @Override
   public List<DeliverableType> findAll() {
     String query = "from " + DeliverableType.class.getName();
-    List<DeliverableType> list = dao.findAll(query);
+    List<DeliverableType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,7 +68,7 @@ public class DeliverableTypeMySQLDAO implements DeliverableTypeDAO {
   @Override
   public List<DeliverableType> getSubDeliverableType(Long deliverableId) {
     String query = "from " + DeliverableType.class.getName() + " where parent_id= " + deliverableId;
-    List<DeliverableType> list = dao.findAll(query);
+    List<DeliverableType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -76,15 +76,15 @@ public class DeliverableTypeMySQLDAO implements DeliverableTypeDAO {
   }
 
   @Override
-  public long save(DeliverableType deliverableType) {
+  public DeliverableType save(DeliverableType deliverableType) {
     if (deliverableType.getId() == null) {
-      dao.save(deliverableType);
+      super.saveEntity(deliverableType);
     } else {
-      dao.update(deliverableType);
+      deliverableType = super.update(deliverableType);
     }
 
 
-    return deliverableType.getId();
+    return deliverableType;
   }
 
 

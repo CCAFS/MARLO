@@ -41,9 +41,9 @@ public class ProjectCrpContributionManagerImpl implements ProjectCrpContribution
   }
 
   @Override
-  public boolean deleteProjectCrpContribution(long projectCrpContributionId) {
+  public void deleteProjectCrpContribution(long projectCrpContributionId) {
 
-    return projectCrpContributionDAO.deleteProjectCrpContribution(projectCrpContributionId);
+    projectCrpContributionDAO.deleteProjectCrpContribution(projectCrpContributionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectCrpContributionManagerImpl implements ProjectCrpContribution
   }
 
   @Override
-  public long saveProjectCrpContribution(ProjectCrpContribution projectCrpContribution) {
+  public ProjectCrpContribution saveProjectCrpContribution(ProjectCrpContribution projectCrpContribution) {
 
     return projectCrpContributionDAO.save(projectCrpContribution);
   }

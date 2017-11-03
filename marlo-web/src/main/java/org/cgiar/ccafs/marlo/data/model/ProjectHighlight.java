@@ -73,9 +73,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   private List<ProjectHighlightType> types;
   private List<Long> countriesIds = new ArrayList<>();
   private List<ProjectHighligthsTypeEnum> TypesIds = new ArrayList<>();
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-
 
   private String typesidsText;
 
@@ -85,8 +83,8 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   private List<String> typesids = new ArrayList<>();
 
-  private List<ProjectHighlightCountry> countries;
 
+  private List<ProjectHighlightCountry> countries;
 
   public ProjectHighlight() {
   }
@@ -130,10 +128,10 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     return author;
   }
 
+
   public List<ProjectHighlightCountry> getCountries() {
     return countries;
   }
-
 
   public List<Long> getCountriesIds() {
     return countriesIds;
@@ -154,10 +152,10 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     return description;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
-
 
   public FileDB getFile() {
     return file;
@@ -458,6 +456,12 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setYear(Long year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectHighlight [id=" + id + ", project=" + project + ", title=" + title + ", author=" + author + "]";
   }
 
 

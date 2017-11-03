@@ -26,6 +26,7 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
 
@@ -65,7 +66,6 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -100,6 +100,7 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -109,6 +110,7 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public String getName() {
     return name;
@@ -139,7 +141,6 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverableType = deliverableType;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
@@ -149,13 +150,19 @@ public class CenterDeliverableType implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterDeliverableType [id=" + id + ", name=" + name + "]";
   }
 
 

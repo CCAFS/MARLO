@@ -32,7 +32,7 @@ public interface ICenterParameterDAO {
    * @param centerParameterId is the centerParameter identifier.
    * @return true if the centerParameter was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterParameter(long centerParameterId);
+  public void deleteCenterParameter(long centerParameterId);
 
   /**
    * This method validate if the centerParameter identify with the given id exists in the system.
@@ -74,7 +74,7 @@ public interface ICenterParameterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterParameter centerParameter);
+  public CenterParameter save(CenterParameter centerParameter);
 
   /**
    * This method saves the information of the given centerParameter
@@ -84,5 +84,5 @@ public interface ICenterParameterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterParameter centerParameter, String actionName, List<String> relationsName);
+  public CenterParameter save(CenterParameter centerParameter, String actionName, List<String> relationsName);
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
+public class LocGeopositionMySQLDAO extends AbstractMarloDAO<LocGeoposition, Long> implements LocGeopositionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public LocGeopositionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LocGeopositionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteLocGeoposition(long locGeopositionId) {
+  public void deleteLocGeoposition(long locGeopositionId) {
     LocGeoposition locGeoposition = this.find(locGeopositionId);
     locGeoposition.setActive(false);
-    return this.save(locGeoposition) > 0;
+    this.save(locGeoposition);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
 
   @Override
   public LocGeoposition find(long id) {
-    return dao.find(LocGeoposition.class, id);
+    return super.find(LocGeoposition.class, id);
 
   }
 
   @Override
   public List<LocGeoposition> findAll() {
     String query = "from " + LocGeoposition.class.getName() + " where is_active=1";
-    List<LocGeoposition> list = dao.findAll(query);
+    List<LocGeoposition> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
   }
 
   @Override
-  public long save(LocGeoposition locGeoposition) {
+  public LocGeoposition save(LocGeoposition locGeoposition) {
     if (locGeoposition.getId() == null) {
-      dao.save(locGeoposition);
+      super.saveEntity(locGeoposition);
     } else {
-      dao.update(locGeoposition);
+      locGeoposition = super.update(locGeoposition);
     }
-    return locGeoposition.getId();
+    return locGeoposition;
   }
 
 

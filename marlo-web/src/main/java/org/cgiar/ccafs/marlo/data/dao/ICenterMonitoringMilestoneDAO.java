@@ -32,7 +32,7 @@ public interface ICenterMonitoringMilestoneDAO {
    * @param monitoringMilestoneId is the monitoringMilestone identifier.
    * @return true if the monitoringMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitoringMilestone(long monitoringMilestoneId);
+  public void deleteMonitoringMilestone(long monitoringMilestoneId);
 
   /**
    * This method validate if the monitoringMilestone identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterMonitoringMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMonitoringMilestone monitoringMilestone);
+  public CenterMonitoringMilestone save(CenterMonitoringMilestone monitoringMilestone);
 }

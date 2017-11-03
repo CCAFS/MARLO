@@ -203,7 +203,8 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "ProjectComponentLesson [id=" + id + ", project=" + project + ", componentName=" + componentName + ", year="
+      + year + "]";
   }
 
 

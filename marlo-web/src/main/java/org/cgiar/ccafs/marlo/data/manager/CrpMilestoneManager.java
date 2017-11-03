@@ -34,7 +34,7 @@ public interface CrpMilestoneManager {
    * @param crpMilestoneId is the crpMilestone identifier.
    * @return true if the crpMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpMilestone(long crpMilestoneId);
+  public void deleteCrpMilestone(long crpMilestoneId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpMilestoneManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpMilestone(CrpMilestone crpMilestone);
+  public CrpMilestone saveCrpMilestone(CrpMilestone crpMilestone);
 
 
 }

@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class OutcomeSynthesyMySQLDAO implements OutcomeSynthesyDAO {
+public class OutcomeSynthesyMySQLDAO extends AbstractMarloDAO<OutcomeSynthesy, Long> implements OutcomeSynthesyDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public OutcomeSynthesyMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public OutcomeSynthesyMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteOutcomeSynthesy(long outcomeSynthesyId) {
+  public void deleteOutcomeSynthesy(long outcomeSynthesyId) {
     OutcomeSynthesy outcomeSynthesy = this.find(outcomeSynthesyId);
-    return dao.delete(outcomeSynthesy);
+    super.delete(outcomeSynthesy);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class OutcomeSynthesyMySQLDAO implements OutcomeSynthesyDAO {
 
   @Override
   public OutcomeSynthesy find(long id) {
-    return dao.find(OutcomeSynthesy.class, id);
+    return super.find(OutcomeSynthesy.class, id);
 
   }
 
   @Override
   public List<OutcomeSynthesy> findAll() {
     String query = "from " + OutcomeSynthesy.class.getName() + "";
-    List<OutcomeSynthesy> list = dao.findAll(query);
+    List<OutcomeSynthesy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class OutcomeSynthesyMySQLDAO implements OutcomeSynthesyDAO {
   }
 
   @Override
-  public long save(OutcomeSynthesy outcomeSynthesy) {
+  public OutcomeSynthesy save(OutcomeSynthesy outcomeSynthesy) {
     if (outcomeSynthesy.getId() == null) {
-      dao.save(outcomeSynthesy);
+      super.saveEntity(outcomeSynthesy);
     } else {
-      dao.update(outcomeSynthesy);
+      outcomeSynthesy = super.update(outcomeSynthesy);
     }
 
 
-    return outcomeSynthesy.getId();
+    return outcomeSynthesy;
   }
 
 
