@@ -56,6 +56,14 @@ public interface GlobalUnitDAO {
    */
   public List<GlobalUnit> findAll();
 
+  /**
+   * This method find a global unit from it acronym
+   * 
+   * @param acronym - the global unit acronym
+   * @return a GlobalUnit object or null if the GlobalUnit does not exist
+   */
+  public GlobalUnit findGlobalUnitByAcronym(String acronym);
+
 
   /**
    * This method saves the information of the given globalUnit

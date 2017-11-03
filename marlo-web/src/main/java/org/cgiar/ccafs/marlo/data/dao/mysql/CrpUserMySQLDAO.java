@@ -51,7 +51,7 @@ public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements 
 
   @Override
   public boolean existCrpUser(long userId, long crpId) {
-    String query = "from " + CrpUser.class.getName() + " where user_id=" + userId + " and crp_id=" + crpId;
+    String query = "from " + CrpUser.class.getName() + " where user_id=" + userId + " and global_unit_id=" + crpId;
     List<CrpUser> crpUser = super.findAll(query);
     if (crpUser != null && crpUser.size() > 0) {
       return true;

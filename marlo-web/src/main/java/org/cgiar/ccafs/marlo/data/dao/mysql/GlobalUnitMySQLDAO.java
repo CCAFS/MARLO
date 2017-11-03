@@ -67,6 +67,16 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
   }
 
   @Override
+  public GlobalUnit findGlobalUnitByAcronym(String acronym) {
+    String query = "from " + GlobalUnit.class.getName() + " where acronym='" + acronym + "'";
+    List<GlobalUnit> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public GlobalUnit save(GlobalUnit globalUnit) {
     if (globalUnit.getId() == null) {
       super.saveEntity(globalUnit);

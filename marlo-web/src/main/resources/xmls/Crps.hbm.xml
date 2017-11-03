@@ -50,12 +50,7 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
 		</set>
-		<set lazy="true" name="roles" table="roles" inverse="true" fetch="select">
-			<key>
-				<column name="crp_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
-		</set>
+		
 	
 		<set name="crpPpaPartners" table="crp_ppa_partners" inverse="true"
 			lazy="true" fetch="select">
@@ -157,11 +152,6 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
         </set>
-        <set name="customParameters" table="custom_parameters" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="crp_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
-        </set>
+
 	</class>
 </hibernate-mapping>

@@ -25,8 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -278,7 +278,7 @@ public class LoginAction extends BaseAction {
   public String loginCrp(User loggedUser) {
 
     // Obtain the crp selected
-    Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
+    GlobalUnit loggedCrp = crpManager.findCrpByAcronym(this.crp);
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {

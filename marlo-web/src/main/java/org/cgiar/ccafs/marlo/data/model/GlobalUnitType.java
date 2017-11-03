@@ -14,6 +14,7 @@ public class GlobalUnitType implements java.io.Serializable {
 
   private static final long serialVersionUID = 1393262857086220239L;
 
+
   private Long id;
 
   private User modifiedBy;
@@ -29,6 +30,8 @@ public class GlobalUnitType implements java.io.Serializable {
   private String modificationJustification;
 
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);
+
+  private Set<Parameter> parameters = new HashSet<Parameter>(0);
 
   public GlobalUnitType() {
   }
@@ -74,6 +77,10 @@ public class GlobalUnitType implements java.io.Serializable {
     return name;
   }
 
+  public Set<Parameter> getParameters() {
+    return parameters;
+  }
+
   public boolean isActive() {
     return active;
   }
@@ -108,6 +115,10 @@ public class GlobalUnitType implements java.io.Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setParameters(Set<Parameter> parameters) {
+    this.parameters = parameters;
   }
 
 
