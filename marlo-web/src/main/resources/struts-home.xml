@@ -13,12 +13,19 @@
 			<result name="login" type="redirect">${url}</result>
 		</action>
 
-    <action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest"
-     >
-     <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crpDashboard</param>
-      </result>
-    </action>
+		<action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/crpDashboard</param>
+			</result>
+		</action>
+
+		<action name="testCIATOCS" class="org.cgiar.ccafs.marlo.action.TestCIATOCSAction">
+			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
+			<result name="input" type="httpheader">
+				<param name="status">404</param>
+				<param name="errorMessage">Not Found</param>
+			</result>
+		</action>
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">

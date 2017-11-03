@@ -14,11 +14,7 @@
           [#-- Legal Information--]
           <div class="col-md-4 infoLinks text-left">
             <strong>Legal</strong><br />
-            <ul>
-              <li><a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#privacyNotice">Privacy Notice </a></li>
-              <li><a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a></li>
-              <li><a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#copyRight">Copyright</a></li>
-            </ul>
+            
           </div>
           [#-- Glossary --]
           <div class="col-md-4 glossary text-right">

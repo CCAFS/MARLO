@@ -91,7 +91,7 @@
 
 						<!-- Contact person -->
 						<div class="col-md-6 contactField" style="display:${((capdev.category == 2)!false)?string('block','none')};">
-							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  readOnly=true required=true  editable=editable /]
+							[@customForm.input name="contact" i18nkey="capdev.form.contactPerson" type="text" help="capdev.help.contact" className='contact'  readOnly=true   editable=editable /]
 							<input class="ctFirsName" type="hidden" name="capdev.ctFirstName" value="${(capdev.ctFirstName)!}" /> 
 							<input class="ctLastName" type="hidden" name="capdev.ctLastName" value="${(capdev.ctLastName)!}" /> 
 							<input class="ctEmail" type="hidden" name="capdev.ctEmail" value="${(capdev.ctEmail)!}" /> 
