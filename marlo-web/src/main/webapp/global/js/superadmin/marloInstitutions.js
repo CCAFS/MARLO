@@ -17,11 +17,21 @@ $(document).ready(function() {
   $modal.find('.rejectButton').on('click', function() {
     var $request = $('#partnerRequestItem-' + requestID);
     
+    var justificationText = $modal.find('textarea').val();
+    
+    if(!justificationText){
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'The justification field is required';
+      noty(notyOptions);
+      return
+    }
+    
+    
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
             requestID: requestID,
-            justification: $modal.find('textarea').val(),
+            justification: justificationText,
             sendNotification : ($modal.find('.sendEmailInput').is(':checked'))? true : false
         },
         beforeSend: function() {
@@ -53,10 +63,10 @@ $(document).ready(function() {
     var $request = $(this).parents('.partnerRequestItem');
 
     // Validate fields
-    var name = $('input[name="name"]').val();
-    var typeValue = $('select#type').val();
-    var countryValue = $('select#country').val();
-    var modificationJustification = $('textarea[name="modificationJustification"]').val();
+    var name = $request.find('input[name="name"]').val();
+    var typeValue = $request.find('select#type').val();
+    var countryValue = $request.find('select#country').val();
+    var modificationJustification = $request.find('textarea[name="modificationJustification"]').val();
 
     if(!name || !modificationJustification || (typeValue == "-1") || (countryValue == "-1")) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
@@ -109,7 +119,10 @@ $(document).ready(function() {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'Please select at least a country';
       noty(notyOptions);
+      
       return
+    }else{
+      $rejectOfficeRequest.modal('show');
     }
     
     $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);

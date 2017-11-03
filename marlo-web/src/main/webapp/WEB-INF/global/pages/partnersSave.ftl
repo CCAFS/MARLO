@@ -47,7 +47,7 @@
             [#list institutionTypesList as type]
               <div id="institutionType-${type.id}">
                 <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
-                <i>${(type.description)!'No description'}</i>
+                <i>${(type.description)!''}</i>
               </div>
             [/#list]
           </div>

@@ -12,7 +12,7 @@
                <h4 style="font-family: 'Open Sans';">${partner.partnerInfo}</h4>
                <span class="hiddenTitle" style="display:none">${partner.partnerName}</span>
                [#if partner.webPage??]
-                <i>(<a href="${partner.webPage}">${partner.webPage}</a>)</i>
+                <i>(<a href="${partner.webPage}" target="_blank">${partner.webPage}</a>)</i>
                [/#if]
                <hr />
             </div>
@@ -88,7 +88,7 @@
               <label for="">Justification: [@customForm.req required=true /]</label>
               <textarea class="form-control input-sm" name="modificationJustification" id="" cols="30" rows="3">${(partner.modificationJustification)!}</textarea>
             </div>
-            <button class="saveButton">Save</button>
+            <button class="saveButton">Update request</button>
             <button class="cancelButton">Cancel</button>
           </form>
           
@@ -129,7 +129,7 @@
                 <span class="glyphicon glyphicon-ok"></span> Accept selected
               </a>
               [#-- Reject --]
-              <a class="btn btn-danger btn-sm openRejectOfficeRequest institutionOfficeRequestId-${partner.institution.id}" data-toggle="modal" data-target="#rejectOfficeRequest">
+              <a class="btn btn-danger btn-sm openRejectOfficeRequest institutionOfficeRequestId-${partner.institution.id}" >
                 <span class="glyphicon glyphicon-remove"></span>  Reject selected
               </a>
             </div>
