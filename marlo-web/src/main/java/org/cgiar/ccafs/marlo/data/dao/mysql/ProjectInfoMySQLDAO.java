@@ -16,15 +16,10 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -78,69 +73,8 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
       dao.update(projectInfo);
     }
 
-    if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
-      if (projectInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);
-      }
-    }
-
 
     return projectInfo.getId();
-  }
-
-  public void saveInfoPhase(Phase next, long projecID, ProjectInfo projectInfo) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    Calendar cal = Calendar.getInstance();
-    if (projectInfo.getEndDate() != null) {
-      cal.setTime(projectInfo.getEndDate());
-    }
-
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
-      if (!projectInfos.isEmpty()) {
-        for (ProjectInfo projectInfoPhase : projectInfos) {
-          projectInfoPhase.updateProjectInfo(projectInfo);
-
-
-          if (cal.get(Calendar.YEAR) < phase.getYear()) {
-
-            dao.delete(projectInfoPhase);
-            List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
-              .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
-            if (!projectPhases.isEmpty()) {
-              dao.delete(projectPhases.get(0));
-            }
-          } else {
-            dao.update(projectInfoPhase);
-          }
-
-        }
-      } else {
-        if (projectInfo.getEndDate() != null) {
-
-          if (cal.get(Calendar.YEAR) >= phase.getYear()) {
-            ProjectInfo projectInfoPhaseAdd = new ProjectInfo();
-            projectInfoPhaseAdd.setProject(projectInfo.getProject());
-            projectInfoPhaseAdd.setPhase(phase);
-            projectInfoPhaseAdd.setProjectEditLeader(false);
-            projectInfoPhaseAdd.updateProjectInfo(projectInfo);
-            dao.save(projectInfoPhaseAdd);
-            ProjectPhase projectPhase = new ProjectPhase();
-            projectPhase.setPhase(phase);
-            projectPhase.setProject(projectInfo.getProject());
-            dao.save(projectPhase);
-          }
-        }
-      }
-
-
-    }
-    if (phase.getNext() != null) {
-      this.saveInfoPhase(phase.getNext(), projecID, projectInfo);
-    }
-
-
   }
 
 

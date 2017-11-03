@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -713,10 +714,14 @@ public class ClusterActivitiesAction extends BaseAction {
             this.setCanEdit(false);
             this.setEditable(false);
           }
-          this.setSubmission(selectedProgram
+          List<Submission> submissions = selectedProgram
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-            .collect(Collectors.toList()).get(0));
+            .collect(Collectors.toList());
+          if (submissions.isEmpty()) {
+            this.setSubmission(submissions.get(0));
+          }
+
         }
       }
       if (this.isHttpPost()) {
