@@ -506,11 +506,11 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getLiaisonUser() != null) {
+        if (project.getLiaisonUser() != null && project.getLiaisonUser().getId() != null) {
           project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
         }
         // load LiaisonUser info
-        if (project.getLiaisonInstitution() != null) {
+        if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getId() != null) {
           project.setLiaisonInstitution(
             liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
         }
