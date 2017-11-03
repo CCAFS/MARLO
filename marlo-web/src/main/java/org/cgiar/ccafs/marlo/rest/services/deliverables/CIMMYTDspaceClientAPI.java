@@ -21,74 +21,37 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.icu.util.Calendar;
 import org.dom4j.Element;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CIMMYTDspaceClientAPI: Get metadata from CIMMYT Dspace according to an URL.
+ * CIMMYTDspaceClientAPI:Get metadata from CIMMYT Dspace according to an URL.
  * 
  * @author avalencia - CCAFS
  * @date Nov 2, 2017
- * @time 1:59:29 PM
+ * @time 1:59:29 PM: Create class
+ * @date Nov 3, 2017
+ * @time 2:38:03 PM: Add metadata and get handle
  */
 public class CIMMYTDspaceClientAPI extends MetadataClientApi {
 
   private static final Logger LOG = LoggerFactory.getLogger(CIMMYTDspaceClientAPI.class);
 
-  /**
-   * Extract parameters from a given URL
-   * 
-   * @param url
-   * @return Map<key,List<values>>
-   */
-  public static Map<String, List<String>> getQueryParams(String url) {
-    try {
-      Map<String, List<String>> params = new HashMap<String, List<String>>();
-      String[] urlParts = url.split("\\?");
-      if (urlParts.length > 1) {
-        String query = urlParts[1];
-        for (String param : query.split("&")) {
-          String[] pair = param.split("=");
-          String key = URLDecoder.decode(pair[0], "UTF-8");
-          String value = "";
-          if (pair.length > 1) {
-            value = URLDecoder.decode(pair[1], "UTF-8");
-          }
-          List<String> values = params.get(key);
-          if (values == null) {
-            values = new ArrayList<String>();
-            params.put(key, values);
-          }
-          values.add(value);
-        }
-      }
-      return params;
-    } catch (UnsupportedEncodingException ex) {
-      throw new AssertionError(ex);
-    }
-  }
-
-  public static void main(String[] args) {
-    CIMMYTDspaceClientAPI cIMMYTDspaceClientAPI = new CIMMYTDspaceClientAPI();
-    cIMMYTDspaceClientAPI.getMetadata(
-      "http://repository.cimmyt.org/oai/request?verb=GetRecord&identifier=oai:repository.cimmyt.org:10883/19065&metadataPrefix=oai_dc");
-  }
-
-
   private final String Dataverse_OAI_PMH_HANDLE =
     "http://repository.cimmyt.org/oai/request?verb=GetRecord&identifier=oai:repository.cimmyt.org:{0}&metadataPrefix=oai_dc";
+  private final String CYMMYT_DSPACE_URL = "http://repository.cimmyt.org/xmlui/handle/";
   private RestConnectionUtil xmlReaderConnectionUtil;
 
   private Map<String, String> coverterAtrributes;
@@ -105,8 +68,6 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
     JSONObject jo = new JSONObject();
     try {
       Element metadata = xmlReaderConnectionUtil.getXmlRestClient(link);
-      // System.out.println(metadata.asXML());
-
       List<Author> authors = new ArrayList<Author>();
       List<Element> elements = metadata.elements();
       for (Element element : elements) {
@@ -125,14 +86,13 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                 Element titleElement = oai_dc.element("title");
                 String titleValue = titleElement.getStringValue();
                 jo.put(titleElement.getName(), titleValue);
-                System.out.println("title: " + titleValue);
               }
               // get authors
               if (oai_dc.elements("creator") != null) {
                 List<Element> authorsElements = oai_dc.elements("creator");
                 if (authorsElements != null && authorsElements.size() > 0) {
                   for (Element value : authorsElements) {
-                    Author author = new Author(value.getStringValue());
+                    Author author = new Author(value.getStringValue().replaceAll(",", ""));
                     String names[] = author.getFirstName().split(" ");
                     // Name validations
                     if (names.length > 0) {
@@ -165,7 +125,6 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                         }
                         author.setLastName(lastName);
                         authors.add(author);
-                        System.out.println("author: " + author);
                       }
                     }
                   }
@@ -184,7 +143,6 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                     }
                   }
                   jo.put(subjectsElements.get(0).getName(), keyWords);
-                  System.out.println("keyWords: " + keyWords);
                 }
               }
               // get description
@@ -192,14 +150,21 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                 Element descriptionElement = oai_dc.element("description");
                 String descriptionValue = descriptionElement.getStringValue();
                 jo.put(descriptionElement.getName(), descriptionValue);
-                System.out.println("description: " + descriptionValue);
               }
 
               // get date
               if (oai_dc.element("date") != null) {
-                Element dateElement = oai_dc.element("date");
-                String dateValue = dateElement.getStringValue();
-                jo.put("publicationDate", dateValue);
+                List<Element> dateElements = oai_dc.elements("date");
+                if (dateElements != null && dateElements.size() > 0) {
+                  dateElements =
+                    dateElements.stream().sorted((e1, e2) -> e1.getStringValue().compareTo(e2.getStringValue()))
+                      .collect(Collectors.toList());
+                  Element dateElement = dateElements.get(0);
+                  Calendar cal = Calendar.getInstance();
+                  cal.set(Integer.parseInt(dateElement.getStringValue()), 1, 1, 0, 0, 0);
+                  Date date = cal.getTime();
+                  jo.put("publicationDate", date);
+                }
               }
               // get rights
               if (oai_dc.element("rights") != null) {
@@ -207,10 +172,15 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
                 String rightsValue = rightsElement.getStringValue();
                 jo.put(rightsElement.getName(), rightsValue);
               }
-
               // get handle
               if (this.getId() != null) {
                 jo.put("handle", this.getId());
+              }
+              // get language
+              if (oai_dc.element("language") != null) {
+                Element languageElement = oai_dc.element("language");
+                String languageValue = languageElement.getStringValue();
+                jo.put(languageElement.getName(), languageValue);
               }
             }
           }
@@ -244,29 +214,12 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
    */
   @Override
   public String parseLink(String link) {
-    // Map<String, List<String>> map = CIMMYTDspaceClientAPI.getQueryParams(link);
-    // if (map.containsKey("identifier")) {
-    // List<String> handles = map.get("identifier");
-    // for (String handle : handles) {
-    // if (handle.contains("hdl")) {
-    // this.setId(handle);
-    // }
-    // }
-    // String handleURL = Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId());
-    // return handleURL;
-    // }
-    // if (map.containsKey("globalId")) {
-    // List<String> handles = map.get("globalId");
-    // for (String handle : handles) {
-    // if (handle.contains("hdl")) {
-    // this.setId(handle);
-    // }
-    // }
-    // String handleURL = Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId());
-    // return handleURL;
-    // }
-    // return null;
-    return null;
+    // if the link contains http://repository.cimmyt.org/xmlui/handle/ we remove it from the link
+    if (link.contains(CYMMYT_DSPACE_URL)) {
+      this.setId(link.replace(CYMMYT_DSPACE_URL, ""));
+    }
+    String linkRest = (Dataverse_OAI_PMH_HANDLE.replace("{0}", this.getId()));
+    return linkRest;
   }
 
 }
