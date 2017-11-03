@@ -164,14 +164,15 @@ public class CrpPpaPartnersAction extends BaseAction {
             if (liaisonUser.getId() == null || !partnerDB.getContactPoints().contains(liaisonUser)) {
               LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
                 .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
+              Institution institution = institutionManager.getInstitutionById(crpPpaPartner.getInstitution().getId());
               // Add LiaisonInstitution if don't exists
-              if (liaisonInstitution == null) {
+              if (liaisonInstitution == null && institution != null) {
                 liaisonInstitution = new LiaisonInstitution();
-                liaisonInstitution.setInstitution(crpPpaPartner.getInstitution());
+                liaisonInstitution.setInstitution(institution);
                 liaisonInstitution.setCrp(loggedCrp);
                 liaisonInstitution.setActive(true);
-                liaisonInstitution.setName(crpPpaPartner.getInstitution().getName());
-                liaisonInstitution.setAcronym(crpPpaPartner.getInstitution().getAcronym());
+                liaisonInstitution.setName(institution.getName());
+                liaisonInstitution.setAcronym(institution.getAcronym());
                 liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
               }
               // Add liaisonUser
