@@ -41,9 +41,9 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   }
 
   @Override
-  public boolean deleteFundingSourceLocations(long fundingSourceLocationsId) {
+  public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
 
-    return fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);
+    fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   }
 
   @Override
-  public long saveFundingSourceLocations(FundingSourceLocation fundingSourceLocations) {
+  public FundingSourceLocation saveFundingSourceLocations(FundingSourceLocation fundingSourceLocations) {
 
     return fundingSourceLocationsDAO.save(fundingSourceLocations);
   }

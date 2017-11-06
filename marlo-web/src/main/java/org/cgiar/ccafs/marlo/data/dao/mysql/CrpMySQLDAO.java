@@ -21,25 +21,25 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class CrpMySQLDAO implements CrpDAO {
+public class CrpMySQLDAO extends AbstractMarloDAO<Crp, Long> implements CrpDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
+  public void deleteCrp(long crpId) {
     Crp crp = this.find(crpId);
     crp.setActive(false);
-    return this.save(crp) > 0;
+    this.save(crp);
   }
 
   @Override
@@ -54,14 +54,14 @@ public class CrpMySQLDAO implements CrpDAO {
 
   @Override
   public Crp find(long id) {
-    return dao.find(Crp.class, id);
+    return super.find(Crp.class, id);
 
   }
 
   @Override
   public List<Crp> findAll() {
     String query = "from " + Crp.class.getName() + " where is_active=1";
-    List<Crp> list = dao.findAll(query);
+    List<Crp> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -72,7 +72,7 @@ public class CrpMySQLDAO implements CrpDAO {
   @Override
   public Crp findCrpByAcronym(String acronym) {
     String query = "from " + Crp.class.getName() + " where acronym='" + acronym + "'";
-    List<Crp> list = dao.findAll(query);
+    List<Crp> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -80,12 +80,12 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
-  public long save(Crp crp) {
+  public Crp save(Crp crp) {
     if (crp.getId() == null) {
-      dao.save(crp);
+      super.saveEntity(crp);
     } else {
-      dao.update(crp);
+      crp = super.update(crp);
     }
-    return crp.getId();
+    return crp;
   }
 }

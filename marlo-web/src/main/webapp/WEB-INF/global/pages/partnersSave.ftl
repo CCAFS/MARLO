@@ -1,14 +1,14 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/partnersSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/partnersSave.css"] /]
+[#assign customJS = ["${baseUrl}/global/js/partnersSave.js"] /]
+[#assign customCSS = ["${baseUrl}/global/css/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 
   <section> 
     <article>
@@ -55,18 +55,19 @@
         
         [#-- Countries list --]
         <div id="partnerCountry" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.locElement.id" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
+          [@customForm.select name="locationId" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
         </div>
         
         [#-- Web page link --]
         <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
+          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
         </div>
         
         [#-- Hidden input with message of success --]
         <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
         <input type="hidden" name="projectID" value="${projectID}"/>
         <input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>
+
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">

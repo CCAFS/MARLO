@@ -43,9 +43,9 @@ public class IpElementManagerImpl implements IpElementManager {
   }
 
   @Override
-  public boolean deleteIpElement(long ipElementId) {
+  public void deleteIpElement(long ipElementId) {
 
-    return ipElementDAO.deleteIpElement(ipElementId);
+    ipElementDAO.deleteIpElement(ipElementId);
   }
 
   @Override
@@ -169,7 +169,7 @@ public class IpElementManagerImpl implements IpElementManager {
   }
 
   @Override
-  public long saveIpElement(IpElement ipElement) {
+  public IpElement saveIpElement(IpElement ipElement) {
 
     return ipElementDAO.save(ipElement);
   }

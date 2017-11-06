@@ -48,9 +48,9 @@ public class CenterOutput implements Serializable, IAuditLog {
   @Expose
   private CenterOutcome researchOutcome;
 
-
   @Expose
   private Date activeSince;
+
 
   @Expose
   private boolean active;
@@ -61,9 +61,9 @@ public class CenterOutput implements Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String shortName;
+
 
   @Expose
   private String modificationJustification;
@@ -76,10 +76,10 @@ public class CenterOutput implements Serializable, IAuditLog {
 
   private List<CenterOutputsNextUser> nextUsers;
 
-
   public CenterOutput() {
     super();
   }
+
 
   /**
    * @param output
@@ -116,15 +116,14 @@ public class CenterOutput implements Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
+
   public String getComposedName() {
     return "O" + this.id + "- " + (this.title != null ? this.title : "title not defined");
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -155,6 +154,8 @@ public class CenterOutput implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -168,10 +169,10 @@ public class CenterOutput implements Serializable, IAuditLog {
     return nextUsers;
   }
 
-
   public Set<CenterProjectOutput> getProjectOutputs() {
     return projectOutputs;
   }
+
 
   /**
    * @return the researchOutcome
@@ -196,7 +197,6 @@ public class CenterOutput implements Serializable, IAuditLog {
     return title;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -205,11 +205,11 @@ public class CenterOutput implements Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -241,6 +241,7 @@ public class CenterOutput implements Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -248,7 +249,6 @@ public class CenterOutput implements Serializable, IAuditLog {
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
 
   public void setNextUsers(List<CenterOutputsNextUser> nextUsers) {
     this.nextUsers = nextUsers;
@@ -267,6 +267,7 @@ public class CenterOutput implements Serializable, IAuditLog {
     this.researchOutcome = researchOutcome;
   }
 
+
   public void setResearchOutputsNextUsers(Set<CenterOutputsNextUser> researchOutputsNextUsers) {
     this.researchOutputsNextUsers = researchOutputsNextUsers;
   }
@@ -281,6 +282,11 @@ public class CenterOutput implements Serializable, IAuditLog {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterOutput [id=" + id + ", title=" + title + "]";
   }
 
 }

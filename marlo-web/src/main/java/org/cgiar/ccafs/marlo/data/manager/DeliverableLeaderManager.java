@@ -34,7 +34,7 @@ public interface DeliverableLeaderManager {
    * @param deliverableLeaderId is the deliverableLeader identifier.
    * @return true if the deliverableLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableLeader(long deliverableLeaderId);
+  public void deleteDeliverableLeader(long deliverableLeaderId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableLeaderManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableLeader(DeliverableLeader deliverableLeader);
+  public DeliverableLeader saveDeliverableLeader(DeliverableLeader deliverableLeader);
 
 
 }

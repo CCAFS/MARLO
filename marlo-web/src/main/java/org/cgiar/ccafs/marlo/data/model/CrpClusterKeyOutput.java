@@ -31,30 +31,30 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Double contribution;
+
   @Expose
   private User createdBy;
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
   @Expose
   private CrpClusterOfActivity crpClusterOfActivity;
-
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-
 
   @Expose
   private Long id;
 
+
   @Expose
   private String keyOutput;
+
   private List<CrpClusterKeyOutputOutcome> keyOutputOutcomes;
   @Expose
   private String modificationJustification;
-
   @Expose
   private User modifiedBy;
 
-
   public CrpClusterKeyOutput() {
   }
+
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
     boolean isActive, Date activeSince, String modificationJustification, Set<Deliverable> deliverables) {
@@ -66,7 +66,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.deliverables = deliverables;
   }
-
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, User usersByCreatedBy,
     String keyOutput, boolean isActive, Date activeSince, String modificationJustification) {
@@ -99,6 +98,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
+
 
   public Date getActiveSince() {
     return this.activeSince;
@@ -138,10 +138,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public String getKeyOutput() {
     return this.keyOutput;
   }
+
 
   public List<CrpClusterKeyOutputOutcome> getKeyOutputOutcomes() {
     return keyOutputOutcomes;
@@ -223,6 +223,12 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  @Override
+  public String toString() {
+    return "CrpClusterKeyOutput [contribution=" + contribution + ", crpClusterOfActivity=" + crpClusterOfActivity
+      + ", id=" + id + ", keyOutput=" + keyOutput + "]";
   }
 
 

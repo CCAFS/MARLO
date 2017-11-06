@@ -29,11 +29,11 @@ public class IpElementType implements java.io.Serializable, IAuditLog {
   public IpElementType() {
   }
 
-
   public IpElementType(Long id) {
     super();
     this.id = id;
   }
+
 
   public IpElementType(String name, Set<IpElement> ipElementses) {
     this.name = name;
@@ -89,6 +89,11 @@ public class IpElementType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "IpElementType [id=" + id + ", name=" + name + "]";
   }
 
 

@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectLocationDAO implements ICenterProjectLocationDAO {
+public class CenterProjectLocationDAO extends AbstractMarloDAO<CenterProjectLocation, Long>
+  implements ICenterProjectLocationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectLocationDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectLocationDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectLocation(long projectLocationId) {
+  public void deleteProjectLocation(long projectLocationId) {
     CenterProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    return this.save(projectLocation) > 0;
+    this.save(projectLocation);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectLocationDAO implements ICenterProjectLocationDAO {
 
   @Override
   public CenterProjectLocation find(long id) {
-    return dao.find(CenterProjectLocation.class, id);
+    return super.find(CenterProjectLocation.class, id);
 
   }
 
   @Override
   public List<CenterProjectLocation> findAll() {
     String query = "from " + CenterProjectLocation.class.getName();
-    List<CenterProjectLocation> list = dao.findAll(query);
+    List<CenterProjectLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +70,27 @@ public class CenterProjectLocationDAO implements ICenterProjectLocationDAO {
   @Override
   public List<CenterProjectLocation> getProjectLocationsByUserId(long userId) {
     String query = "from " + CenterProjectLocation.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectLocation projectLocation) {
+  public CenterProjectLocation save(CenterProjectLocation projectLocation) {
     if (projectLocation.getId() == null) {
-      dao.save(projectLocation);
+      super.saveEntity(projectLocation);
     } else {
-      dao.update(projectLocation);
+      projectLocation = super.update(projectLocation);
     }
-    return projectLocation.getId();
+    return projectLocation;
   }
 
   @Override
-  public long save(CenterProjectLocation projectLocation, String actionName, List<String> relationsName) {
+  public CenterProjectLocation save(CenterProjectLocation projectLocation, String actionName, List<String> relationsName) {
     if (projectLocation.getId() == null) {
-      dao.save(projectLocation, actionName, relationsName);
+      super.saveEntity(projectLocation, actionName, relationsName);
     } else {
-      dao.update(projectLocation, actionName, relationsName);
+      projectLocation = super.update(projectLocation, actionName, relationsName);
     }
-    return projectLocation.getId();
+    return projectLocation;
   }
 
 

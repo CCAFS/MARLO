@@ -243,5 +243,12 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     this.qualityAssurance = qualityAssurance;
   }
 
+  @Override
+  public String toString() {
+    return "DeliverableQualityCheck [id=" + id + ", dataDictionary=" + dataDictionary + ", deliverable=" + deliverable
+      + ", qualityAssurance=" + qualityAssurance + ", fileAssurance=" + fileAssurance + ", fileDictionary="
+      + fileDictionary + ", linkAssurance=" + linkAssurance + ", linkDictionary=" + linkDictionary + "]";
+  }
+
 }
 

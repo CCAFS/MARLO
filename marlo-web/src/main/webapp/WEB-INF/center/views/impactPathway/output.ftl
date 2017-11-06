@@ -2,8 +2,17 @@
 [#assign title = "Output" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${outputID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outputs" /]
 [#assign currentSubStage = "mainInformation" /]
@@ -14,9 +23,9 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outcomesList /]
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutputs.help" /]
@@ -114,7 +123,7 @@
 [#-- Macros --]
 [@nextUserMacro nextUser={} name="output.nextUsers" index=-1 template=true/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro nextUserMacro nextUser name index template=false]
   [#assign nextUserCustomName = "${name}[${index}]" /]

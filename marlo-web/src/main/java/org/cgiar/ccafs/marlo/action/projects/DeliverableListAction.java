@@ -100,8 +100,9 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setProject(project);
     deliverable.setCreateDate(new Date());
 
+    deliverable = deliverableManager.saveDeliverable(deliverable);
 
-    deliverableID = deliverableManager.saveDeliverable(deliverable);
+    deliverableID = deliverable.getId();
 
     if (deliverableID > 0) {
       return SUCCESS;

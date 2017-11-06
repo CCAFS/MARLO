@@ -34,7 +34,7 @@ public interface GenderTypeManager {
    * @param genderTypeId is the genderType identifier.
    * @return true if the genderType was successfully deleted, false otherwise.
    */
-  public boolean deleteGenderType(long genderTypeId);
+  public void deleteGenderType(long genderTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface GenderTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveGenderType(GenderType genderType);
+  public GenderType saveGenderType(GenderType genderType);
 
 
 }

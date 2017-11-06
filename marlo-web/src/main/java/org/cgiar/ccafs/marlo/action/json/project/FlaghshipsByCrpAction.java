@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlaghshipsByCrpAction extends BaseAction {
 
@@ -39,6 +41,7 @@ public class FlaghshipsByCrpAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
+  private final Logger logger = LoggerFactory.getLogger(FlaghshipsByCrpAction.class);
   private List<Map<String, Object>> flagships;
 
   private Long crpID;
@@ -66,7 +69,11 @@ public class FlaghshipsByCrpAction extends BaseAction {
 
         this.flagships.add(flagShip);
       } catch (Exception e) {
-
+        logger.error("unable to add flagship to flagships list", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
     }
     return SUCCESS;

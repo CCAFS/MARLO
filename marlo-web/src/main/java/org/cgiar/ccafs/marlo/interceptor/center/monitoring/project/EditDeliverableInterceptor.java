@@ -32,6 +32,7 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
 /**
@@ -69,7 +70,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     try {
       // deliverableID = Long.parseLong(((String[]) parameters.get(APConstants.DELIVERABLE_ID))[0]);
-      deliverableID = Long.parseLong(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]);
+      deliverableID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_DELIVERABLE_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }

@@ -351,9 +351,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
 
-    String subject =
-      this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String subject = this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -362,7 +363,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.flagship.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(),
-      loggedCrp.getName(), this.getText("email.flagship.responsabilities")}));
+      crp, this.getText("email.flagship.responsabilities")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
@@ -441,9 +442,11 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
 
-    String subject = this.getText("email.flagshipmanager.assigned.subject",
-      new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String subject =
+      this.getText("email.flagshipmanager.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -451,8 +454,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.flagshipmanager.assigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName(),
+    message.append(
+      this.getText("email.flagshipmanager.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp,
         this.getText("email.flagshipmanager.responsabilities"), this.getText("email.flagshipmanager.note")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -525,9 +528,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    String subject = this.getText("email.flagshipmanager.unassigned.subject",
-      new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject =
+      this.getText("email.flagshipmanager.unassigned.subject", new String[] {crpProgram.getAcronym(), crp});
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
     userRemoved = userManager.getUser(userRemoved.getId());
@@ -535,7 +539,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagshipmanager.unassigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+      new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
 
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
@@ -592,9 +596,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    String subject =
-      this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject = this.getText("email.flagship.unassigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
 
@@ -602,9 +606,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
-    message
-      .append(this.getText("email.flagship.unassigned", new String[] {this.getText("programManagement.flagship.role"),
-        crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+    message.append(this.getText("email.flagship.unassigned", new String[] {
+      this.getText("programManagement.flagship.role"), crpProgram.getAcronym(), crpProgram.getName(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -647,11 +650,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
     String managementRoleAcronym = this.getText("programManagement.role.acronym");
-    String subject = this.getText("email.programManagement.assigned.subject",
-      new String[] {loggedCrp.getName(), managementRoleAcronym});
+    String subject =
+      this.getText("email.programManagement.assigned.subject", new String[] {crp, managementRoleAcronym});
 
     String managementRole =
       this.getText("programManagement.role") + " (" + this.getText("programManagement.role.acronym") + ")";
@@ -661,7 +665,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.programManagement.assigned",
-      new String[] {managementRole, loggedCrp.getName(), this.getText("email.programManagement.responsibilities")}));
+      new String[] {managementRole, crp, this.getText("email.programManagement.responsibilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -702,16 +706,17 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     String subject = this.getText("email.programManagement.unassigned.subject",
-      new String[] {loggedCrp.getName(), this.getText("programManagement.role.acronym")});
+      new String[] {crp, this.getText("programManagement.role.acronym")});
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.programManagement.unassigned",
-      new String[] {this.getText("programManagement.role"), loggedCrp.getName()}));
+    message.append(
+      this.getText("email.programManagement.unassigned", new String[] {this.getText("programManagement.role"), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -839,199 +844,202 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
-  private void programLeaderData() {
-    for (CrpProgram crpProgram : flagshipsPrograms) {
-      CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
-      for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream()
-        .filter(c -> c.isActive() && !c.isManager()).collect(Collectors.toList())) {
+  private void programLeaderData(CrpProgram crpProgramDb, CrpProgram crpProgram) {
+    if (crpProgram.getLeaders() != null) {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
+        if (crpProgramLeader.getId() == null) {
+          crpProgramLeader.setActive(true);
+          crpProgramLeader.setCrpProgram(crpProgram);
+          crpProgramLeader.setCreatedBy(this.getCurrentUser());
+          crpProgramLeader.setModifiedBy(this.getCurrentUser());
+          crpProgramLeader.setModificationJustification("");
+          crpProgramLeader.setActiveSince(new Date());
+          crpProgramLeader.setManager(false);
+          CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
+            .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+              && c.getUser().equals(crpProgramLeader.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
 
-        if (crpProgram.getLeaders() == null) {
-          crpProgram.setLeaders(new ArrayList<>());
-        }
-        if (!crpProgram.getLeaders().contains(leaderPreview)) {
-          crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
-          Set<LiaisonInstitution> liaisonInstitutions = crpProgramPrev.getLiaisonInstitutions();
-          for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-            List<LiaisonUser> liaisonUsers = liaisonInstitution.getLiaisonUsers().stream()
-              .filter(c -> c.getUser().getId().equals(leaderPreview.getUser().getId())).collect(Collectors.toList());
-            for (LiaisonUser liaisonUser : liaisonUsers) {
-              liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+            for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
+
+              LiaisonUser liaisonUser = new LiaisonUser();
+              liaisonUser.setCrp(loggedCrp);
+              liaisonUser.setLiaisonInstitution(liasonInstitution);
+              liaisonUser.setUser(crpProgramLeader.getUser());
+              liaisonUserManager.saveLiaisonUser(liaisonUser);
             }
 
+
+            crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
           }
 
-          User user = userManager.getUser(leaderPreview.getUser().getId());
 
+          User user = userManager.getUser(crpProgramLeader.getUser().getId());
+          UserRole userRole = new UserRole();
+          userRole.setUser(user);
 
-          List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
-            .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
-              && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
-            .collect(Collectors.toList());
-
-
-          if (existsUserLeader == null || existsUserLeader.isEmpty()) {
-
-            if (crpProgramPrev.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-              List<UserRole> fplUserRoles =
-                user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
-              if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
-                for (UserRole userRole : fplUserRoles) {
-                  userRoleManager.deleteUserRole(userRole.getId());
-                  userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-                  // Notifiy user been unasigned Program Leader to Flagship
-                  this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
-                }
-              }
-            }
+          if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+            userRole.setRole(fplRole);
           }
 
-          this.checkCrpUserByRole(user);
+          if (!user.getUserRoles().contains(userRole)) {
+            userRoleManager.saveUserRole(userRole);
+            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+            this.notifyNewUserCreated(userRole.getUser());
+            // Notifiy user been asigned Program Leader to Flagship
+            /**
+             * TODO UNCOMENT THIS LINE
+             */
+            this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+          }
+
+          this.addCrpUser(user);
         }
       }
 
+    }
+    /*
+     * Temporally soluction
+     */
+    for (CrpProgramLeader leaderPreview : crpProgramLeaderManager.findAll().stream()
+      .filter(c -> c.getCrpProgram().equals(crpProgramDb) && c.isActive() && !c.isManager())
+      .collect(Collectors.toList())) {
+      /*
+       * crpProgramDb.getCrpProgramLeaders().stream()
+       * .filter(c -> c.isActive() && !c.isManager()).collect(Collectors.toList())) {
+       */
+      if (crpProgram.getLeaders() == null) {
+        crpProgram.setLeaders(new ArrayList<>());
+      }
+      if (!crpProgram.getLeaders().contains(leaderPreview)) {
+        crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
+        Set<LiaisonInstitution> liaisonInstitutions = crpProgramDb.getLiaisonInstitutions();
+        for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+          List<LiaisonUser> liaisonUsers = liaisonInstitution.getLiaisonUsers().stream()
+            .filter(c -> c.getUser().getId().equals(leaderPreview.getUser().getId())).collect(Collectors.toList());
+          for (LiaisonUser liaisonUser : liaisonUsers) {
+            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+          }
 
-      if (crpProgram.getLeaders() != null) {
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
-          if (crpProgramLeader.getId() == null) {
-            crpProgramLeader.setActive(true);
-            crpProgramLeader.setCrpProgram(crpProgram);
-            crpProgramLeader.setCreatedBy(this.getCurrentUser());
-            crpProgramLeader.setModifiedBy(this.getCurrentUser());
-            crpProgramLeader.setModificationJustification("");
-            crpProgramLeader.setActiveSince(new Date());
-            crpProgramLeader.setManager(false);
-            CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
-            if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
-                && c.getUser().equals(crpProgramLeader.getUser()))
-              .collect(Collectors.toList()).isEmpty()) {
+        }
 
-              for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
+        User user = userManager.getUser(leaderPreview.getUser().getId());
 
-                LiaisonUser liaisonUser = new LiaisonUser();
-                liaisonUser.setCrp(loggedCrp);
-                liaisonUser.setLiaisonInstitution(liasonInstitution);
-                liaisonUser.setUser(crpProgramLeader.getUser());
-                liaisonUserManager.saveLiaisonUser(liaisonUser);
+
+        List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+          .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
+            && u.getCrpProgram().getProgramType() == crpProgramDb.getProgramType())
+          .collect(Collectors.toList());
+
+
+        if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+          if (crpProgramDb.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+            List<UserRole> fplUserRoles =
+              user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
+            if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+              for (UserRole userRole : fplUserRoles) {
+                userRoleManager.deleteUserRole(userRole.getId());
+                userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+                // Notifiy user been unasigned Program Leader to Flagship
+                this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
               }
-
-
-              crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
             }
-
-
-            User user = userManager.getUser(crpProgramLeader.getUser().getId());
-            UserRole userRole = new UserRole();
-            userRole.setUser(user);
-
-            if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-              userRole.setRole(fplRole);
-            }
-
-            if (!user.getUserRoles().contains(userRole)) {
-              userRoleManager.saveUserRole(userRole);
-              userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-              this.notifyNewUserCreated(userRole.getUser());
-              // Notifiy user been asigned Program Leader to Flagship
-              /**
-               * TODO UNCOMENT THIS LINE
-               */
-              this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
-            }
-
-            this.addCrpUser(user);
           }
         }
+
+        this.checkCrpUserByRole(user);
       }
     }
   }
 
-  private void programManagerData() {
-    for (CrpProgram crpProgram : flagshipsPrograms) {
-      CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
-      for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream()
-        .filter(c -> c.isActive() && c.isManager()).collect(Collectors.toList())) {
+  private void programManagerData(CrpProgram crpProgramDb, CrpProgram crpProgram) {
 
-        if (crpProgram.getManagers() == null) {
-          crpProgram.setManagers(new ArrayList<>());
-        }
-        if (!crpProgram.getManagers().contains(leaderPreview)) {
-          crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
+    for (CrpProgramLeader leaderPreview : crpProgramLeaderManager.findAll().stream()
+      .filter(c -> c.getCrpProgram().equals(crpProgramDb) && c.isActive() && c.isManager())
+      .collect(Collectors.toList())) {
 
-
-          User user = userManager.getUser(leaderPreview.getUser().getId());
+      if (crpProgram.getManagers() == null) {
+        crpProgram.setManagers(new ArrayList<>());
+      }
+      if (!crpProgram.getManagers().contains(leaderPreview)) {
+        crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
 
 
-          List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
-            .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
-              && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
-            .collect(Collectors.toList());
+        User user = userManager.getUser(leaderPreview.getUser().getId());
 
 
-          if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+        List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+          .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
+            && u.getCrpProgram().getProgramType() == crpProgramDb.getProgramType())
+          .collect(Collectors.toList());
 
-            if (crpProgramPrev.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-              List<UserRole> fplUserRoles =
-                user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fpmRole)).collect(Collectors.toList());
-              if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
-                for (UserRole userRole : fplUserRoles) {
-                  userRoleManager.deleteUserRole(userRole.getId());
-                  userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-                  // Notifiy user been unasigned Program Leader to Flagship
 
-                  this.notifyRoleFlagshipManagerUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
-                }
+        if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+          if (crpProgramDb.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+            List<UserRole> fplUserRoles =
+              user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fpmRole)).collect(Collectors.toList());
+            if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+              for (UserRole userRole : fplUserRoles) {
+                userRoleManager.deleteUserRole(userRole.getId());
+                userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+                // Notifiy user been unasigned Program Leader to Flagship
+
+                this.notifyRoleFlagshipManagerUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
               }
             }
           }
-
-          this.checkCrpUserByRole(user);
         }
+
+        this.checkCrpUserByRole(user);
       }
+    }
 
 
-      if (crpProgram.getManagers() != null) {
-        for (CrpProgramLeader crpProgramLeader : crpProgram.getManagers()) {
-          if (crpProgramLeader.getId() == null) {
-            crpProgramLeader.setActive(true);
-            crpProgramLeader.setCrpProgram(crpProgram);
-            crpProgramLeader.setCreatedBy(this.getCurrentUser());
-            crpProgramLeader.setModifiedBy(this.getCurrentUser());
-            crpProgramLeader.setModificationJustification("");
-            crpProgramLeader.setManager(true);
+    if (crpProgram.getManagers() != null) {
+      for (CrpProgramLeader crpProgramLeader : crpProgram.getManagers()) {
+        if (crpProgramLeader.getId() == null) {
+          crpProgramLeader.setActive(true);
+          crpProgramLeader.setCrpProgram(crpProgram);
+          crpProgramLeader.setCreatedBy(this.getCurrentUser());
+          crpProgramLeader.setModifiedBy(this.getCurrentUser());
+          crpProgramLeader.setModificationJustification("");
+          crpProgramLeader.setManager(true);
 
-            crpProgramLeader.setActiveSince(new Date());
-            CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
-            if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
-                && c.getUser().equals(crpProgramLeader.getUser()))
-              .collect(Collectors.toList()).isEmpty()) {
-
-
-              crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
-            }
+          crpProgramLeader.setActiveSince(new Date());
+          CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
+            .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+              && c.getUser().equals(crpProgramLeader.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
 
 
-            User user = userManager.getUser(crpProgramLeader.getUser().getId());
-            UserRole userRole = new UserRole();
-            userRole.setUser(user);
-
-            if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-              userRole.setRole(fpmRole);
-            }
-
-            if (!user.getUserRoles().contains(userRole)) {
-              userRoleManager.saveUserRole(userRole);
-              userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-              this.notifyNewUserCreated(userRole.getUser());
-              // Notifiy user been asigned Program Leader to Flagship
-              this.notifyRoleFlagshipManagerAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
-            }
-
-            this.addCrpUser(user);
+            crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
           }
+
+
+          User user = userManager.getUser(crpProgramLeader.getUser().getId());
+          UserRole userRole = new UserRole();
+          userRole.setUser(user);
+
+          if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+            userRole.setRole(fpmRole);
+          }
+
+          if (!user.getUserRoles().contains(userRole)) {
+            userRoleManager.saveUserRole(userRole);
+            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+            this.notifyNewUserCreated(userRole.getUser());
+            // Notifiy user been asigned Program Leader to Flagship
+            this.notifyRoleFlagshipManagerAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
+          }
+
+          this.addCrpUser(user);
         }
       }
+
     }
   }
 
@@ -1056,6 +1064,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
       }
     }
+    CrpProgram crpProgramDb = null;
     // Add crp flagship program type
     for (CrpProgram crpProgram : flagshipsPrograms) {
       if (crpProgram.getId() == null) {
@@ -1065,7 +1074,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         crpProgram.setModifiedBy(this.getCurrentUser());
         crpProgram.setModificationJustification("");
         crpProgram.setActiveSince(new Date());
-        crpProgramManager.saveCrpProgram(crpProgram);
+        crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
         LiaisonInstitution liasonInstitution = new LiaisonInstitution();
         liasonInstitution.setAcronym(crpProgram.getAcronym());
         liasonInstitution.setCrp(loggedCrp);
@@ -1076,15 +1085,15 @@ public class CrpAdminManagmentAction extends BaseAction {
         liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
       } else {
-        CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+        crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
         crpProgram.setCrp(loggedCrp);
         crpProgram.setActive(true);
         crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
         crpProgram.setModifiedBy(this.getCurrentUser());
         crpProgram.setModificationJustification("");
         crpProgram.setActiveSince(crpProgramDb.getActiveSince());
-        crpProgramManager.saveCrpProgram(crpProgram);
-        for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {
+        crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
+        for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
           liasonInstitution.setAcronym(crpProgram.getAcronym());
           liasonInstitution.setName(crpProgram.getName());
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
@@ -1092,7 +1101,8 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
 
       }
-
+      this.programLeaderData(crpProgramDb, crpProgram);
+      this.programManagerData(crpProgramDb, crpProgram);
     }
   }
 
@@ -1103,8 +1113,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       this.pmuRoleData();
       this.programsData();
-      this.programLeaderData();
-      this.programManagerData();
+
 
       CustomParameter parameter = null;
       if (parameters.size() == 0) {

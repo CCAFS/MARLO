@@ -4,7 +4,7 @@
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
-	<package name="admin" namespace="/admin" extends="marlo-default">
+	<package name="centerAdmin" namespace="/centerAdmin" extends="marlo-default">
 	
 		<action name="{centerSession}/coordination"
 			class="org.cgiar.ccafs.marlo.action.center.admin.ProgramCoordinatorAction">

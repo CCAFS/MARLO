@@ -25,18 +25,29 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ProjectMySQLDAO implements ProjectDAO {
+public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
-  private StandardDAO dao;
+  private Logger Log = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
-  public ProjectMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-
-  public boolean deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
+  /**
+   * This looks like it is generic functionality, why is it here in the ProjectDAO?
+   * 
+   * @param tableName
+   * @param columnName
+   * @param columnValue
+   * @param userID
+   * @param justification
+   */
+  public void deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
     String justification) {
 
     StringBuilder query = new StringBuilder();
@@ -58,7 +69,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
       query.append("' ");
       //
 
-      List<Map<String, Object>> rsReferences = dao.findCustomQuery(query.toString());
+      List<Map<String, Object>> rsReferences = super.findCustomQuery(query.toString());
 
 
       String table, column;
@@ -76,7 +87,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
         query.append(table);
         query.append("' ");
         query.append("AND COLUMN_NAME = 'is_active'");
-        List<Map<String, Object>> rsColumnExist = dao.findCustomQuery(query.toString());
+        List<Map<String, Object>> rsColumnExist = super.findCustomQuery(query.toString());
         if (!rsColumnExist.isEmpty()) {
           query.setLength(0);
           query.append("UPDATE ");
@@ -87,32 +98,27 @@ public class ProjectMySQLDAO implements ProjectDAO {
           query.append(column);
           query.append(" = '" + columnValue + "'");
 
-          dao.executeQuery(query.toString());
+          super.executeUpdateQuery(query.toString());
 
 
         }
       }
 
 
-    } catch (Exception e)
-
-    {
-
-      e.printStackTrace();
-      return false;
+    } catch (Exception e) {
+      Log.error("Delete on cascade failed for tableName: " + tableName + ", columnName : " + columnName
+        + " , columnValue: " + columnValue + " , and userId ; " + userID + " , with error = " + e.getMessage());
     }
-
-    return true;
 
   }
 
   @Override
-  public boolean deleteProject(Project project) {
+  public void deleteProject(Project project) {
 
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
-    return this.save(project) > 0;
+    this.saveEntity(project);
   }
 
   @Override
@@ -128,14 +134,15 @@ public class ProjectMySQLDAO implements ProjectDAO {
 
   @Override
   public Project find(long id) {
-    return dao.find(Project.class, id);
+    Project project = super.find(Project.class, id);
 
+    return project;
   }
 
   @Override
   public List<Project> findAll() {
     String query = "from " + Project.class.getName() + " where is_active=1";
-    List<Project> list = dao.findAll(query);
+    List<Project> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -145,40 +152,46 @@ public class ProjectMySQLDAO implements ProjectDAO {
 
   @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
-    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id not in (438,462)";
-    return dao.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
+      + "' and project_id is not null and  permission_id not in (438,462)");
+    List<Map<String, Object>> list =
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    return list;
   }
 
   @Override
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
-    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id  in (110,195)";
-    return dao.findCustomQuery(query);
+    StringBuilder builder = new StringBuilder();
+    builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
+      + "' and project_id is not null and  permission_id  in (110,195)");
+    List<Map<String, Object>> list =
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+    return list;
   }
 
   @Override
-  public long save(Project project) {
+  public Project save(Project project) {
     if (project.getId() == null) {
-      dao.save(project);
+      project = super.saveEntity(project);
     } else {
-      dao.update(project);
+      project = project = super.update(project);
     }
 
 
-    return project.getId();
+    return project;
   }
 
   @Override
-  public long save(Project project, String sectionName, List<String> relationsName) {
+  public Project save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
-      dao.save(project, sectionName, relationsName);
+      super.saveEntity(project, sectionName, relationsName);
     } else {
-      dao.update(project, sectionName, relationsName);
+      project = super.update(project, sectionName, relationsName);
     }
 
 
-    return project.getId();
+    return project;
   }
 
 

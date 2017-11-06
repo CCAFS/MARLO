@@ -8,7 +8,7 @@
     
     <action name="{crp}/outcomes" class="org.cgiar.ccafs.marlo.action.impactpathway.OutcomesAction">
       <interceptor-ref name="impactPathwayStack" />			
-      <result name="input">/WEB-INF/views/impactPathway/outcomes.ftl</result>
+      <result name="input">/WEB-INF/crp/views/impactPathway/outcomes.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
@@ -29,7 +29,7 @@
     
     <action name="{crp}/clusterActivities" class="org.cgiar.ccafs.marlo.action.impactpathway.ClusterActivitiesAction">
       <interceptor-ref name="impactPathwayStack" />     
-      <result name="input">/WEB-INF/views/impactPathway/clusterActivities.ftl</result>
+      <result name="input">/WEB-INF/crp/views/impactPathway/clusterActivities.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/clusterActivities</param>
         <param name="crpProgramID">${crpProgramID}</param>
@@ -44,7 +44,7 @@
     
     
      <action name="{crp}/submit" class="org.cgiar.ccafs.marlo.action.impactpathway.ImpactSubmissionAction">
-      <result name="input">/WEB-INF/views/impactPathway/outcomes.ftl</result>
+      <result name="input">/WEB-INF/crp/views/impactPathway/outcomes.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${progamID}</param>        

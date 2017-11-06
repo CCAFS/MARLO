@@ -32,7 +32,7 @@ public interface ICenterProgramDAO {
    * @param programId is the CenterProgram identifier.
    * @return true if the CenterProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteProgram(long programId);
+  public void deleteProgram(long programId);
 
   /**
    * This method validate if the CenterProgram identify with the given id exists in the system.
@@ -81,7 +81,7 @@ public interface ICenterProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProgram researchProgram);
+  public CenterProgram save(CenterProgram researchProgram);
 
   /**
    * This method saves the information of the given CenterProgram
@@ -91,5 +91,5 @@ public interface ICenterProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProgram researchProgram, String actionName, List<String> relationsName);
+  public CenterProgram save(CenterProgram researchProgram, String actionName, List<String> relationsName);
 }

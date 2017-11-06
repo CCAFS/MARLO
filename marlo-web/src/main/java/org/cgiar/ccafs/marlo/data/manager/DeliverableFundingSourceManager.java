@@ -34,7 +34,7 @@ public interface DeliverableFundingSourceManager {
    * @param deliverableFundingSourceId is the deliverableFundingSource identifier.
    * @return true if the deliverableFundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableFundingSource(long deliverableFundingSourceId);
+  public void deleteDeliverableFundingSource(long deliverableFundingSourceId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableFundingSourceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource);
+  public DeliverableFundingSource saveDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource);
 
 
 }

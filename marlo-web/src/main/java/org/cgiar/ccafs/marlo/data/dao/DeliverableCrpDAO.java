@@ -32,7 +32,7 @@ public interface DeliverableCrpDAO {
    * @param deliverableCrpId is the deliverableCrp identifier.
    * @return true if the deliverableCrp was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableCrp(long deliverableCrpId);
+  public void deleteDeliverableCrp(long deliverableCrpId);
 
   /**
    * This method validate if the deliverableCrp identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableCrpDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableCrp deliverableCrp);
+  public DeliverableCrp save(DeliverableCrp deliverableCrp);
 }

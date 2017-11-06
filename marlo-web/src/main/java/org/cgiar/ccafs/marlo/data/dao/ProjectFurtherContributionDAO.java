@@ -32,7 +32,7 @@ public interface ProjectFurtherContributionDAO {
    * @param projectFurtherContributionId is the projectFurtherContribution identifier.
    * @return true if the projectFurtherContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectFurtherContribution(long projectFurtherContributionId);
+  public void deleteProjectFurtherContribution(long projectFurtherContributionId);
 
   /**
    * This method validate if the projectFurtherContribution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectFurtherContributionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectFurtherContribution projectFurtherContribution);
+  public ProjectFurtherContribution save(ProjectFurtherContribution projectFurtherContribution);
 }

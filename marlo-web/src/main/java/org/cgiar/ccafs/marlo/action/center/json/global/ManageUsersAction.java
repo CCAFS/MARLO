@@ -86,10 +86,9 @@ public class ManageUsersAction extends BaseAction {
     newUser.setActive(true);
     newUser.setId(null);
 
-    Long id = userManager.saveUser(newUser, this.getCurrentUser());
+    newUser = userManager.saveUser(newUser, this.getCurrentUser());
     // If successfully added.
-    if (id > 0) {
-      newUser = userManager.getUser(id);
+    if (newUser.getId() > 0) {
 
       this.users = new ArrayList<>();
       Map<String, Object> userMap = new HashMap<>();

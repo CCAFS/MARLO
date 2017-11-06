@@ -47,7 +47,7 @@ public interface ProjectBudgetManager {
    * @param projectBudgetId is the projectBudget identifier.
    * @return true if the projectBudget was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectBudget(long projectBudgetId);
+  public void deleteProjectBudget(long projectBudgetId);
 
 
   /**
@@ -104,6 +104,6 @@ public interface ProjectBudgetManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectBudget(ProjectBudget projectBudget);
+  public ProjectBudget saveProjectBudget(ProjectBudget projectBudget);
 
 }

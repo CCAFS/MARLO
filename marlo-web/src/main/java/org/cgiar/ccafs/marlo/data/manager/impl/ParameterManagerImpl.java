@@ -41,9 +41,9 @@ public class ParameterManagerImpl implements ParameterManager {
   }
 
   @Override
-  public boolean deleteParameter(long parameterId) {
+  public void deleteParameter(long parameterId) {
 
-    return parameterDAO.deleteParameter(parameterId);
+    parameterDAO.deleteParameter(parameterId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ParameterManagerImpl implements ParameterManager {
   }
 
   @Override
-  public long saveParameter(Parameter parameter) {
+  public Parameter saveParameter(Parameter parameter) {
 
     return parameterDAO.save(parameter);
   }

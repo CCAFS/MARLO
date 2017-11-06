@@ -273,7 +273,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
   }
 
   /**
-   * This method notify the user that is been assigned as Site Leaders for an specific Country
+   * This method notify the user that is been assigned as Site Leaders for an specific CountryOCS
    * 
    * @param userAssigned is the user been assigned
    * @param role is the role(Program Leader)
@@ -305,11 +305,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
         ccEmail = this.getCurrentUser().getEmail();
       }
     }
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.siteIntegration.assigned.subject",
-        new String[] {loggedCrp.getName(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
+        new String[] {crp, siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
       message.toString(), null, null, null, true);
   }
 
@@ -399,15 +401,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
         locElement.setIsSiteIntegration(true);
         locElementManager.saveLocElement(locElement);
 
-        Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+        siteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
 
         if (siteIntegration.getSiteLeaders() != null) {
           for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
             User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-            CrpsSiteIntegration crpSiteIntegration =
-              crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
 
-            sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+            sitesLeader.setCrpsSiteIntegration(siteIntegration);
             sitesLeader.setUser(userSiteLeader);
             sitesLeader.setActive(true);
             sitesLeader.setModifiedBy(this.getCurrentUser());

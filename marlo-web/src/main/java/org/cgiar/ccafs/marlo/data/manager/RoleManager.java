@@ -34,7 +34,7 @@ public interface RoleManager {
    * @param roleId is the role identifier.
    * @return true if the role was successfully deleted, false otherwise.
    */
-  public boolean deleteRole(long roleId);
+  public void deleteRole(long roleId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface RoleManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveRole(Role role);
+  public Role saveRole(Role role);
 
 
 }

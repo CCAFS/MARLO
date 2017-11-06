@@ -119,11 +119,8 @@ public class MilestoneAddAction extends BaseAction {
     milestone.setTitle(StringUtils.trim(parameters.get(TITLE).getMultipleValues()[0]));
     milestoneData.put("title", milestone.getTitle());
 
-    long milestoneID = milestoneService.saveCenterMilestone(milestone);
-    milestoneData.put("id", milestoneID);
-
-    milestone = milestoneService.getCenterMilestoneById(milestoneID);
-
+    milestone = milestoneService.saveCenterMilestone(milestone);
+    milestoneData.put("id", milestone.getId());
 
     List<CenterMonitoringOutcome> monitoringOutcomes = new ArrayList<>(
       outcome.getMonitoringOutcomes().stream().filter(mo -> mo.isActive()).collect(Collectors.toList()));
@@ -148,8 +145,8 @@ public class MilestoneAddAction extends BaseAction {
         monitoringMilestone.setMonitoringOutcome(monitoringOutcome);
         monitoringMilestone.setModificationJustification("Added in Monitoring " + this.getCenterYear());
 
-        long monitoringMilestoneID = monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestone);
-        monitoringData.put("Elementid", monitoringMilestoneID);
+        monitoringMilestone = monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestone);
+        monitoringData.put("Elementid", monitoringMilestone.getId());
 
         monitoringDatas.add(monitoringData);
       }

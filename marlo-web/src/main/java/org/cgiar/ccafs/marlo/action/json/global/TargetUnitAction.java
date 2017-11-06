@@ -80,10 +80,10 @@ public class TargetUnitAction extends BaseAction {
       targetUnit.setModifiedBy(this.getCurrentUser());
 
 
-      long newTargetUnitId = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
+      targetUnit = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
 
       newTargetUnit.put("status", true);
-      newTargetUnit.put("id", newTargetUnitId);
+      newTargetUnit.put("id", targetUnit.getId());
       newTargetUnit.put("name", queryParameter);
 
       return SUCCESS;
@@ -100,9 +100,6 @@ public class TargetUnitAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // Map<String, Object> parameters = this.getParameters();
-    // queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]);
-
     Map<String, Parameter> parameters = this.getParameters();
     queryParameter = StringUtils.trim(parameters.get(APConstants.TARGET_UNIT_NAME).getMultipleValues()[0]);
   }

@@ -42,9 +42,9 @@ public class CenterRoleManager implements ICenterRoleManager {
   }
 
   @Override
-  public boolean deleteRole(long roleId) {
+  public void deleteRole(long roleId) {
 
-    return roleDAO.deleteRole(roleId);
+    roleDAO.deleteRole(roleId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterRoleManager implements ICenterRoleManager {
   }
 
   @Override
-  public long saveRole(CenterRole role) {
+  public CenterRole saveRole(CenterRole role) {
 
     return roleDAO.save(role);
   }
 
   @Override
-  public long saveRole(CenterRole role, String actionName, List<String> relationsName) {
+  public CenterRole saveRole(CenterRole role, String actionName, List<String> relationsName) {
     return roleDAO.save(role, actionName, relationsName);
   }
 

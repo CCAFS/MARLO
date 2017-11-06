@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectDAO implements ICenterProjectDAO {
+public class CenterProjectDAO extends AbstractMarloDAO<CenterProject, Long> implements ICenterProjectDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCenterProject(long projectId) {
+  public void deleteCenterProject(long projectId) {
     CenterProject project = this.find(projectId);
     project.setActive(false);
-    return this.save(project) > 0;
+    this.save(project);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterProjectDAO implements ICenterProjectDAO {
 
   @Override
   public CenterProject find(long id) {
-    return dao.find(CenterProject.class, id);
+    return super.find(CenterProject.class, id);
 
   }
 
   @Override
   public List<CenterProject> findAll() {
     String query = "from " + CenterProject.class.getName();
-    List<CenterProject> list = dao.findAll(query);
+    List<CenterProject> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CenterProjectDAO implements ICenterProjectDAO {
   @Override
   public List<CenterProject> getCenterProjectsByUserId(long userId) {
     String query = "from " + CenterProject.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProject project) {
+  public CenterProject save(CenterProject project) {
     if (project.getId() == null) {
-      dao.save(project);
+      super.saveEntity(project);
     } else {
-      dao.update(project);
+      project = super.update(project);
     }
-    return project.getId();
+    return project;
   }
 
   @Override
-  public long save(CenterProject project, String actionName, List<String> relationsName) {
+  public CenterProject save(CenterProject project, String actionName, List<String> relationsName) {
     if (project.getId() == null) {
-      dao.save(project, actionName, relationsName);
+      super.saveEntity(project, actionName, relationsName);
     } else {
-      dao.update(project, actionName, relationsName);
+      project = super.update(project, actionName, relationsName);
     }
-    return project.getId();
+    return project;
   }
 
 

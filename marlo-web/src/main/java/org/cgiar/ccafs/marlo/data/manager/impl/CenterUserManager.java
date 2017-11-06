@@ -42,9 +42,9 @@ public class CenterUserManager implements ICenterUserManager {
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
 
-    return crpUserDAO.deleteCrpUser(crpUserId);
+    crpUserDAO.deleteCrpUser(crpUserId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterUserManager implements ICenterUserManager {
   }
 
   @Override
-  public long saveCrpUser(CenterUser crpUser) {
+  public CenterUser saveCrpUser(CenterUser crpUser) {
 
     return crpUserDAO.save(crpUser);
   }

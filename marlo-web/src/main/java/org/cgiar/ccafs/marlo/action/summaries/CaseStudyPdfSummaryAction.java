@@ -134,7 +134,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
         manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
 
 
       // Get datetime

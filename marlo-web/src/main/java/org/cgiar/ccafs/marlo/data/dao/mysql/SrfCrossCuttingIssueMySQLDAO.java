@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfCrossCuttingIssueMySQLDAO implements SrfCrossCuttingIssueDAO {
+public class SrfCrossCuttingIssueMySQLDAO extends AbstractMarloDAO<SrfCrossCuttingIssue, Long> implements SrfCrossCuttingIssueDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfCrossCuttingIssueMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfCrossCuttingIssueMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
+  public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
     SrfCrossCuttingIssue srfCrossCuttingIssue = this.find(srfCrossCuttingIssueId);
     srfCrossCuttingIssue.setActive(false);
-    return this.save(srfCrossCuttingIssue) > 0;
+    this.save(srfCrossCuttingIssue);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfCrossCuttingIssueMySQLDAO implements SrfCrossCuttingIssueDAO {
 
   @Override
   public SrfCrossCuttingIssue find(long id) {
-    return dao.find(SrfCrossCuttingIssue.class, id);
+    return super.find(SrfCrossCuttingIssue.class, id);
 
   }
 
   @Override
   public List<SrfCrossCuttingIssue> findAll() {
     String query = "from " + SrfCrossCuttingIssue.class.getName() + " where is_active=1";
-    List<SrfCrossCuttingIssue> list = dao.findAll(query);
+    List<SrfCrossCuttingIssue> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class SrfCrossCuttingIssueMySQLDAO implements SrfCrossCuttingIssueDAO {
   }
 
   @Override
-  public long save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
+  public SrfCrossCuttingIssue save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
     if (srfCrossCuttingIssue.getId() == null) {
-      dao.save(srfCrossCuttingIssue);
+      super.saveEntity(srfCrossCuttingIssue);
     } else {
-      dao.update(srfCrossCuttingIssue);
+      srfCrossCuttingIssue = super.update(srfCrossCuttingIssue);
     }
-    return srfCrossCuttingIssue.getId();
+    return srfCrossCuttingIssue;
   }
 
 

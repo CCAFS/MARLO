@@ -463,16 +463,16 @@ public class CrpProgamRegionsAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    String subject =
-      this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject = this.getText("email.region.assigned.subject", new String[] {crpProgram.getAcronym(), crp});
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.region.assigned",
-      new String[] {crpProgram.getAcronym(), crpProgram.getName(), loggedCrp.getName()}));
+    message
+      .append(this.getText("email.region.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -504,15 +504,18 @@ public class CrpProgamRegionsAction extends BaseAction {
         ccEmail = this.getCurrentUser().getEmail();
       }
     }
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     if (role.equals(rplRole)) {
       sendMail.send(toEmail, ccEmail, bbcEmails,
-        this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+        this.getText("email.region.unassigned.subject", new String[] {crp, crpProgram.getAcronym()}),
         message.toString(), null, null, null, true);
     } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.regionmanager.unassigned.subject",
-        new String[] {loggedCrp.getName(), crpProgram.getAcronym()}), message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails,
+        this.getText("email.regionmanager.unassigned.subject", new String[] {crp, crpProgram.getAcronym()}),
+        message.toString(), null, null, null, true);
     }
   }
 
@@ -909,14 +912,12 @@ public class CrpProgamRegionsAction extends BaseAction {
       crpsSiteIntegration.setActiveSince(new Date());
       crpsSiteIntegration.setRegional(true);
 
-      Long newSiteIntegrationID = crpsSiteIntegrationManager.saveCrpsSiteIntegration(crpsSiteIntegration);
-      CrpsSiteIntegration crpSiteIntegration =
-        crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationID);
+      crpsSiteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(crpsSiteIntegration);
 
       locElement.setIsSiteIntegration(true);
       locElementManger.saveLocElement(locElement);
 
-      this.saveSiteLeaderBySiteIntegration(crpProgram, crpSiteIntegration);
+      this.saveSiteLeaderBySiteIntegration(crpProgram, crpsSiteIntegration);
 
 
     } else {

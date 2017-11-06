@@ -42,9 +42,9 @@ public class CenterProjectOutputManager implements ICenterProjectOutputManager {
   }
 
   @Override
-  public boolean deleteProjectOutput(long projectOutputId) {
+  public void deleteProjectOutput(long projectOutputId) {
 
-    return projectOutputDAO.deleteProjectOutput(projectOutputId);
+    projectOutputDAO.deleteProjectOutput(projectOutputId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterProjectOutputManager implements ICenterProjectOutputManager {
   }
 
   @Override
-  public long saveProjectOutput(CenterProjectOutput projectOutput) {
+  public CenterProjectOutput saveProjectOutput(CenterProjectOutput projectOutput) {
 
     return projectOutputDAO.save(projectOutput);
   }

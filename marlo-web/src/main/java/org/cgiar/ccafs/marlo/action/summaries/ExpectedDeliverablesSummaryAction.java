@@ -46,6 +46,13 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
+/**
+ * ExpectedDeliverablesSummaryAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 2, 2017
+ * @time 9:13:34 AM: Added a new column to masterList called Project Managing Partners
+ */
 public class ExpectedDeliverablesSummaryAction extends BaseAction implements Summary {
 
   /**
@@ -105,6 +112,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
     masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
+    masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
+    masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
+    masterReport.getParameterValues().put("i8nProjectManaging", this.getText("deliverable.project.managing"));
 
     return masterReport;
   }
@@ -118,7 +128,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     manager.registerDefaults();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables_20171102.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -140,6 +150,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("hasOutcomeIndicator",
+        this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR));
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
       ExcelReportUtil.createXLSX(masterReport, os);

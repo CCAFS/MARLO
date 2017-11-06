@@ -41,9 +41,9 @@ public class DeliverableTypeManagerImpl implements DeliverableTypeManager {
   }
 
   @Override
-  public boolean deleteDeliverableType(long deliverableTypeId) {
+  public void deleteDeliverableType(long deliverableTypeId) {
 
-    return deliverableTypeDAO.deleteDeliverableType(deliverableTypeId);
+    deliverableTypeDAO.deleteDeliverableType(deliverableTypeId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class DeliverableTypeManagerImpl implements DeliverableTypeManager {
   }
 
   @Override
-  public long saveDeliverableType(DeliverableType deliverableType) {
+  public DeliverableType saveDeliverableType(DeliverableType deliverableType) {
 
     return deliverableTypeDAO.save(deliverableType);
   }

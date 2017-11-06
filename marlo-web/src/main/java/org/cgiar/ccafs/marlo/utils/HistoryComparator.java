@@ -42,9 +42,12 @@ import com.ibm.icu.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HistoryComparator {
 
+  private static final Logger LOG = LoggerFactory.getLogger(HistoryComparator.class);
 
   private AuditLogManager auditlogManager;
 
@@ -181,6 +184,7 @@ public class HistoryComparator {
 
         }
       } catch (Exception e) {
+        LOG.error("another thing went wrong???", e);
         str.setDifference(subFix + "." + str.getDifference());
         differences.add(str);
       }
@@ -194,12 +198,15 @@ public class HistoryComparator {
     Map<String, String> specialList, String subFix, String subFixDelete, int levels)
     throws ClassNotFoundException, NoSuchFieldException, SecurityException {
     List<HistoryDifference> differences = new ArrayList<>();
+    // This should be refactored so that the auditLog is retrieved from the Hibernate 1st level cache. (Assuming we have
+    // the id).
     Auditlog principal = auditlogManager.getAuditlog(transactionID, iaAuditLog);
     if (principal != null) {
       c = Class.forName(principal.getEntityName().replace("class ", ""));
       Set<HistoryDifference> differencesUniques = new HashSet<>();
 
-
+      // This should be refactored so that the auditLog is retrieved from the Hibernate 1st level cache. (Assuming we
+      // have the id).
       List<Auditlog> beforeHistory = auditlogManager.getHistoryBeforeList(transactionID,
         iaAuditLog.getClass().toString(), iaAuditLog.getId().toString());
 
@@ -239,7 +246,11 @@ public class HistoryComparator {
           }
         }
       } catch (Exception e) {
-
+        LOG.error("unable to split a string I guess?", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
       for (HistoryDifference str : differencesUniques) {
         try {
@@ -266,6 +277,7 @@ public class HistoryComparator {
 
           }
         } catch (Exception e) {
+          LOG.error("not sure but something went wrong", e);
           str.setDifference(subFix + "." + str.getDifference());
         }
         differences.add(str);
@@ -303,7 +315,11 @@ public class HistoryComparator {
         }
 
       } catch (Exception e) {
-
+        LOG.error("unable to return matching field: " + field, e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
     }
     return null;

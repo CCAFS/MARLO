@@ -1,5 +1,5 @@
 [#ftl]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utilities/]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 [#macro outputsList outputs={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction=""]
   <table class="outputList" id="outputs">
@@ -53,10 +53,10 @@
           <td class="text-center">
             [#if canEdit && action.centerCanBeDeleted(output.id, output.class.name)!false]
               <a id="removeOutput-${output.id}" class="removeOutput" href="#" title="">
-                <img src="${baseUrlMedia}/images/global/trash.png" title="[@s.text name="programImpact.outputList.removeOutcome" /]" /> 
+                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="programImpact.outputList.removeOutcome" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrlMedia}/images/global/trash_disable.png" title="[@s.text name="programImpact.outputList.cannotDelete" /]" />
+              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="programImpact.outputList.cannotDelete" /]" />
             [/#if]
           </td>          
         </tr>  

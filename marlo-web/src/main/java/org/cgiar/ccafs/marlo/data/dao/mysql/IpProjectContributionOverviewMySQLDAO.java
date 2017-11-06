@@ -24,21 +24,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProjectContributionOverviewMySQLDAO implements IpProjectContributionOverviewDAO {
+public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO<IpProjectContributionOverview, Long>
+  implements IpProjectContributionOverviewDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProjectContributionOverviewMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProjectContributionOverviewMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
+  public void deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
     IpProjectContributionOverview ipProjectContributionOverview = this.find(ipProjectContributionOverviewId);
     ipProjectContributionOverview.setActive(false);
-    return this.save(ipProjectContributionOverview) > 0;
+    this.save(ipProjectContributionOverview);
   }
 
   @Override
@@ -53,14 +54,14 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
 
   @Override
   public IpProjectContributionOverview find(long id) {
-    return dao.find(IpProjectContributionOverview.class, id);
+    return super.find(IpProjectContributionOverview.class, id);
 
   }
 
   @Override
   public List<IpProjectContributionOverview> findAll() {
     String query = "from " + IpProjectContributionOverview.class.getName() + " where is_active=1";
-    List<IpProjectContributionOverview> list = dao.findAll(query);
+    List<IpProjectContributionOverview> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -76,7 +77,7 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
     query.append(year + " and output_id=" + mogId
       + " and is_active=1 and project_id in (select project_id from project_focuses where program_id=" + program + ")");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<IpProjectContributionOverview> contributionOverviews = new ArrayList<>();
 
@@ -101,7 +102,7 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
       + "AND projects.is_location_global = 1)");
 
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<IpProjectContributionOverview> contributionOverviews = new ArrayList<>();
 
@@ -116,15 +117,15 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
   }
 
   @Override
-  public long save(IpProjectContributionOverview ipProjectContributionOverview) {
+  public IpProjectContributionOverview save(IpProjectContributionOverview ipProjectContributionOverview) {
     if (ipProjectContributionOverview.getId() == null) {
-      dao.save(ipProjectContributionOverview);
+      super.saveEntity(ipProjectContributionOverview);
     } else {
-      dao.update(ipProjectContributionOverview);
+      ipProjectContributionOverview = super.update(ipProjectContributionOverview);
     }
 
 
-    return ipProjectContributionOverview.getId();
+    return ipProjectContributionOverview;
   }
 
 

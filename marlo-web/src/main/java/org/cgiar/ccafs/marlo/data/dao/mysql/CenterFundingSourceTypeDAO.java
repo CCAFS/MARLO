@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterFundingSourceTypeDAO implements ICenterFundingSourceTypeDAO {
+public class CenterFundingSourceTypeDAO extends AbstractMarloDAO<CenterFundingSourceType, Long>
+  implements ICenterFundingSourceTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterFundingSourceTypeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterFundingSourceTypeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteFundingSourceType(long fundingSourceTypeId) {
+  public void deleteFundingSourceType(long fundingSourceTypeId) {
     CenterFundingSourceType fundingSourceType = this.find(fundingSourceTypeId);
     fundingSourceType.setActive(false);
-    return this.save(fundingSourceType) > 0;
+    this.save(fundingSourceType);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterFundingSourceTypeDAO implements ICenterFundingSourceTypeDAO {
 
   @Override
   public CenterFundingSourceType find(long id) {
-    return dao.find(CenterFundingSourceType.class, id);
+    return super.find(CenterFundingSourceType.class, id);
 
   }
 
   @Override
   public List<CenterFundingSourceType> findAll() {
     String query = "from " + CenterFundingSourceType.class.getName();
-    List<CenterFundingSourceType> list = dao.findAll(query);
+    List<CenterFundingSourceType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterFundingSourceTypeDAO implements ICenterFundingSourceTypeDAO {
   @Override
   public List<CenterFundingSourceType> getFundingSourceTypesByUserId(long userId) {
     String query = "from " + CenterFundingSourceType.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterFundingSourceType fundingSourceType) {
+  public CenterFundingSourceType save(CenterFundingSourceType fundingSourceType) {
     if (fundingSourceType.getId() == null) {
-      dao.save(fundingSourceType);
+      super.saveEntity(fundingSourceType);
     } else {
-      dao.update(fundingSourceType);
+      fundingSourceType = super.update(fundingSourceType);
     }
-    return fundingSourceType.getId();
+    return fundingSourceType;
   }
 
 

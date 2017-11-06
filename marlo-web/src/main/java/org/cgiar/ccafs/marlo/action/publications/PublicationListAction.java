@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PublicationListAction extends BaseAction {
 
@@ -48,6 +50,7 @@ public class PublicationListAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -5176367401132626314L;
+  private final Logger LOG = LoggerFactory.getLogger(PublicationListAction.class);
   private Crp loggedCrp;
   private CrpManager crpManager;
   private long deliverableID;
@@ -85,9 +88,8 @@ public class PublicationListAction extends BaseAction {
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
 
-
-      deliverableID = deliverableManager.saveDeliverable(deliverable);
-
+      deliverable = deliverableManager.saveDeliverable(deliverable);
+      deliverableID = deliverable.getId();
 
       LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
       if (user != null) {
@@ -104,7 +106,11 @@ public class PublicationListAction extends BaseAction {
             deliverableLeaderManager.saveDeliverableLeader(deliverableLeader);
           }
         } catch (Exception e) {
-
+          LOG.error("unable to save deliverableLeader", e);
+          /**
+           * Original code swallows the exception and didn't even log it. Now we at least log it,
+           * but we need to revisit to see if we should continue processing or re-throw the exception.
+           */
         }
 
 
@@ -192,7 +198,11 @@ public class PublicationListAction extends BaseAction {
           .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 5).collect(Collectors.toList()));
       }
     } catch (Exception e) {
-
+      LOG.error("unable to update deliverable", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
   }

@@ -20,27 +20,28 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class InstitutionMySQLDAO implements InstitutionDAO {
+public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> implements InstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public InstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public InstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteInstitution(long institutionId) {
+  public void deleteInstitution(long institutionId) {
     Institution institution = this.find(institutionId);
-    return dao.delete(institution);
+    super.delete(institution);
   }
 
   @Override
@@ -54,13 +55,13 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
 
   @Override
   public Institution find(long id) {
-    return dao.find(Institution.class, id);
+    return super.find(Institution.class, id);
   }
 
   @Override
   public List<Institution> findAll() {
     String query = "from " + Institution.class.getName();
-    List<Institution> list = dao.findAll(query);
+    List<Institution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,13 +69,30 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
   }
 
   @Override
-  public long save(Institution institution) {
-    if (institution.getId() == null) {
-      dao.save(institution);
-    } else {
-      dao.update(institution);
+
+  public List<Institution> findPPAInstitutions(long crpID) {
+    StringBuilder query = new StringBuilder();
+    query.append("select inst.id from institutions inst INNER JOIN crp_ppa_partners ppa on ppa.institution_id=inst.id");
+    query.append(" where ppa.crp_id=");
+    query.append(crpID);
+    query.append("  and ppa.is_active=1");
+    List<Institution> institutions = new ArrayList<>();
+    List<Map<String, Object>> queryValue = super.findCustomQuery(query.toString());
+    for (Map<String, Object> map : queryValue) {
+      institutions.add(this.find(Long.parseLong(map.get("id").toString())));
     }
-    return institution.getId();
+    return institutions;
+  }
+
+  @Override
+  public Institution save(Institution institution) {
+
+    if (institution.getId() == null) {
+      super.saveEntity(institution);
+    } else {
+      institution = super.update(institution);
+    }
+    return institution;
   }
 
   @Override
@@ -105,7 +123,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
     query.append("END, name, acronym,website_link ");
 
 
-    List<Institution> institutions = dao.findAll(query.toString());
+    List<Institution> institutions = super.findAll(query.toString());
     List<Institution> institutionsAux = new ArrayList<Institution>();
 
     if (onlyPPA == 1) {

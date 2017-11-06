@@ -17,15 +17,16 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataApiFactory;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.MetadataClientApi;
+import org.cgiar.ccafs.marlo.rest.services.deliverables.model.MetadataModel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.ClientRepository;
 
 import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,85 +49,51 @@ public class MetadataByLink extends BaseAction {
   private String page;
 
 
-  private String id;
-  private String metadata;
-
-  // Managers
-  private ClientRepository clientRepository;
-
-  // http://cdm15738.contentdm.oclc.org/oai/oai.php?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:cdm15738.contentdm.oclc.org:p15738coll2/541
-  private final String CGSPACE = "https://cgspace.cgiar.org/rest/items/{0}/metadata";
-  private final String IFPRI = "https://server15738.contentdm.oclc.org/dmwebservices/index.php";
-  private final String ILRI = "http://data.ilri.org/portal/api/3/action/package_show";
-  private final String AGTRIALS = "http://oai2.agtrials.org/oai2.php";
-  private final String AMKN = "http://lab.amkn.org/oai/";
+  private String link;
+  private MetadataModel metadata;
 
   @Inject
-  public MetadataByLink(APConfig config, ClientRepository clientRepository) {
+  public MetadataByLink(APConfig config) {
     super(config);
-    this.clientRepository = clientRepository;
   }
-
 
   @Override
   public String execute() throws Exception {
-
     if (page.equals("-1")) {
       return NOT_FOUND;
     }
-
-    if (id.equals("-1")) {
+    if (link.equals("-1")) {
       return NOT_FOUND;
     }
-
-    String linkRequest = "";
-    switch (page) {
-      case "cgspace":
-        linkRequest = CGSPACE;
-        JSONObject metadataObject = clientRepository.getMetadata(linkRequest, id);
-        metadata = metadataObject.toString();
-        break;
-      case "ifpri":
-        linkRequest = IFPRI;
-        metadata = clientRepository.getMetadataIFPRI(linkRequest, id);
-        break;
-      case "ilri":
-        linkRequest = ILRI;
-        metadata = clientRepository.getMetadataILRI(linkRequest, id);
-        break;
-      default:
-        break;
-    }
-
+    // Api is created depending on the page we are looking for, if you are going to add a new repository you must create
+    // the class and write the methods and add it here in the factory
+    MetadataClientApi metadataClientApi = MetadataApiFactory.getMetadataClientApi(page);
+    String handleUrl = metadataClientApi.parseLink(link);
+    metadata = metadataClientApi.getMetadata(handleUrl);
     return SUCCESS;
   }
 
 
-  public String getMetadata() {
+  public MetadataModel getMetadata() {
     return metadata;
   }
 
   @Override
   public void prepare() throws Exception {
-    // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
 
     // If there is a parameter take its values
     try {
-      // id = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
-      id = StringUtils.trim(parameters.get(APConstants.METADATA_REQUEST_ID).getMultipleValues()[0]);
+      link = StringUtils.trim(parameters.get(APConstants.METADATA_REQUEST_ID).getMultipleValues()[0]);
     } catch (Exception e) {
-      // id = StringUtils.trim(((String[]) parameters.get("q"))[0]);
-      id = StringUtils.trim(parameters.get("q").getMultipleValues()[0]);
+      link = StringUtils.trim(parameters.get("q").getMultipleValues()[0]);
     }
-
-    // page = StringUtils.trim(((String[]) parameters.get(APConstants.PAGE_ID))[0]);
     page = StringUtils.trim(parameters.get(APConstants.PAGE_ID).getMultipleValues()[0]);
 
   }
 
 
-  public void setMetadata(String metadata) {
+  public void setMetadata(MetadataModel metadata) {
     this.metadata = metadata;
   }
 

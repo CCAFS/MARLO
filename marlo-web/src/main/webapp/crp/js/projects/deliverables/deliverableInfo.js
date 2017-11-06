@@ -229,8 +229,7 @@ function addFundingSource(option) {
   }
 
   // Set funding source parameters
-  $item.find(".name").attr("title", $(option).text());
-  $item.find(".name").html(v);
+  $item.find(".name").html($("#fundingSource-" + option.val()).clone(true));
   $item.find(".fId").val(option.val());
   $list.append($item);
   $item.show('slow');
@@ -250,7 +249,7 @@ function removeFundingSource() {
   var name = $item.find(".name").attr("title");
   console.log(name + "-" + value);
   var $select = $(".fundingSource");
-  $item.hide(1000, function() {
+  $item.hide(500, function() {
     $item.remove();
     checkFundingItems($list);
     updateFundingSources($list);
@@ -411,7 +410,7 @@ function addPartnerEvent() {
 function removePartnerEvent() {
   var $list = $(this).parents('.partnersList');
   var $item = $(this).parents('.deliverablePartner');
-  $item.hide(1000, function() {
+  $item.hide(500, function() {
     $item.remove();
     checkItems($list);
     updatePartners();
@@ -552,7 +551,10 @@ function notify(text) {
 }
 
 function formatState(state) {
-  var $state = $("<span>" + state.text + "</span>");
+  if(state.id == -1) {
+    return state.text;
+  }
+  var $state = $("#fundingSource-" + state.id).clone(true);
   return $state;
 
 };

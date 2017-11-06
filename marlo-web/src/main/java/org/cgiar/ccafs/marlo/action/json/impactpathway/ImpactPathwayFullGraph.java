@@ -106,6 +106,9 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataDetailOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
         dataDetailOutcome.put("parent", "F" + crpProgram.getId());
         dataDetailOutcome.put("type", "O");
+        if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+          dataDetailOutcome.put("indicator", crpProgramOutcome.getIndicator());
+        }
         dataOutcome.put("data", dataDetailOutcome);
         // dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
         // dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());

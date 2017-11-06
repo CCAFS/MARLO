@@ -2,15 +2,14 @@
 
 [#assign title = "Glossary" /]
 [#assign globalLibs = ["jquery", "noty"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/glossary.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/glossary.css"] /]
+[#assign customJS = ["${baseUrl}/global/js/glossary.js"] /]
+[#assign customCSS = ["${baseUrl}/global/css/glossary.css"] /]
 [#assign currentSection = "home" /]
 [#assign currentCycleSection = "glossary" /]
 [#assign currentStage = "glossary" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
 
 
 [#assign glossaryContent= [ 
@@ -91,4 +90,4 @@
  </div>
 [/#macro]
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]

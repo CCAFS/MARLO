@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Strategic Objectives" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js"] /]
+[#assign customJS = ["${baseUrl}/global/js/usersManagement.js"] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "strategicObjectives" /]
 
@@ -10,8 +10,8 @@
   {"label":"superadmin.strategicObjectives", "nameSpace":"", "action":""}
 ]/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -63,7 +63,7 @@
 
 [@strategicObjectives element={} name="coordinators" index=-1 template=true/]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro strategicObjectives element name index template=false]
   [#local customName = "${name}[${index}]" /]

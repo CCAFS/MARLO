@@ -42,9 +42,9 @@ public class CenterProjectLocationManager implements ICenterProjectLocationManag
   }
 
   @Override
-  public boolean deleteProjectLocation(long projectLocationId) {
+  public void deleteProjectLocation(long projectLocationId) {
 
-    return projectLocationDAO.deleteProjectLocation(projectLocationId);
+    projectLocationDAO.deleteProjectLocation(projectLocationId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterProjectLocationManager implements ICenterProjectLocationManag
   }
 
   @Override
-  public long saveProjectLocation(CenterProjectLocation projectLocation) {
+  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation) {
 
     return projectLocationDAO.save(projectLocation);
   }
 
   @Override
-  public long saveProjectLocation(CenterProjectLocation projectLocation, String actionName,
+  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation, String actionName,
     List<String> relationsName) {
     return projectLocationDAO.save(projectLocation, actionName, relationsName);
   }

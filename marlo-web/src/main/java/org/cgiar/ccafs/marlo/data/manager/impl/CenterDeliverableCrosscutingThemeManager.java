@@ -43,9 +43,9 @@ public class CenterDeliverableCrosscutingThemeManager implements ICenterDelivera
   }
 
   @Override
-  public boolean deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
+  public void deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
 
-    return deliverableCrosscutingThemeDAO.deleteDeliverableCrosscutingTheme(deliverableCrosscutingThemeId);
+    deliverableCrosscutingThemeDAO.deleteDeliverableCrosscutingTheme(deliverableCrosscutingThemeId);
   }
 
   @Override
@@ -73,13 +73,13 @@ public class CenterDeliverableCrosscutingThemeManager implements ICenterDelivera
   }
 
   @Override
-  public long saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
+  public CenterDeliverableCrosscutingTheme saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
 
     return deliverableCrosscutingThemeDAO.save(deliverableCrosscutingTheme);
   }
 
   @Override
-  public long saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme,
+  public CenterDeliverableCrosscutingTheme saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme,
     String actionName, List<String> relationsName) {
     return deliverableCrosscutingThemeDAO.save(deliverableCrosscutingTheme, actionName, relationsName);
   }

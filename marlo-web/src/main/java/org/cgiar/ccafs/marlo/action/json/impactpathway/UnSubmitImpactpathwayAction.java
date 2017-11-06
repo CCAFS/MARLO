@@ -189,17 +189,18 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    String crp = program.getCrp().getAcronym() != null && !program.getCrp().getAcronym().isEmpty()
+      ? program.getCrp().getAcronym() : program.getCrp().getName();
     // subject
     String subject = null;
-    subject =
-      this.getText("impact.unsubmit.email.subject", new String[] {program.getCrp().getName(), program.getAcronym()});
+    subject = this.getText("impact.unsubmit.email.subject", new String[] {crp, program.getAcronym()});
 
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
     values[1] = program.getAcronym();
-    values[2] = program.getCrp().getName();
+    values[2] = crp;
     values[3] = program.getName();
     values[4] = justification;
 

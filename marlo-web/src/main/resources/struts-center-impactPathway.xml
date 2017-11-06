@@ -22,6 +22,11 @@
 				<param name="edit">true</param>
 				<param name="cancel">true</param>
 			</result>
+			<result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="programID">${programID}</param>
+      </result>
 		</action>
 
 		<action name="{center}/researchTopics"
@@ -40,6 +45,11 @@
 				<param name="edit">true</param>
 				<param name="cancel">true</param>
 			</result>
+			<result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="programID">${programID}</param>
+      </result>
 		</action>
 
 		<action name="{center}/outcomesList"
@@ -90,6 +100,12 @@
         <param name="edit">true</param>
         <param name="cancel">true</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="outcomeID">${outcomeID}</param>
+        <param name="programID">${programID}</param>
+      </result>
 		</action>
 
 		<action name="{center}/outputsList"
@@ -116,6 +132,12 @@
         <param name="programID">${programID}</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="outputID">${outputID}</param>
+        <param name="programID">${programID}</param>
       </result>
 		</action>
 

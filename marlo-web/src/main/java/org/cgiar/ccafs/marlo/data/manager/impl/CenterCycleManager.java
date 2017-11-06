@@ -42,9 +42,9 @@ public class CenterCycleManager implements ICenterCycleManager {
   }
 
   @Override
-  public boolean deleteResearchCycle(long researchCycleId) {
+  public void deleteResearchCycle(long researchCycleId) {
 
-    return researchCycleDAO.deleteResearchCycle(researchCycleId);
+    researchCycleDAO.deleteResearchCycle(researchCycleId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterCycleManager implements ICenterCycleManager {
   }
 
   @Override
-  public long saveResearchCycle(CenterCycle researchCycle) {
+  public CenterCycle saveResearchCycle(CenterCycle researchCycle) {
 
     return researchCycleDAO.save(researchCycle);
   }

@@ -54,8 +54,9 @@ public class RequestTargetUnitAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-
-    String subject = this.getText("targetunit.request.email.subject", new String[] {loggedCrp.getAcronym()});
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
+    String subject = this.getText("targetunit.request.email.subject", new String[] {crp});
     String text = this.getText("targetUnit.request.email.text",
       new String[] {this.getCurrentUser().getComposedCompleteName(), this.getCurrentUser().getEmail(), targetUnitName});
 

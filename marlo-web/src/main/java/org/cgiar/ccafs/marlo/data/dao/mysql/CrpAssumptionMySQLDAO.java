@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
+public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long> implements CrpAssumptionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpAssumptionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpAssumptionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpAssumption(long crpAssumptionId) {
+  public void deleteCrpAssumption(long crpAssumptionId) {
     CrpAssumption crpAssumption = this.find(crpAssumptionId);
     crpAssumption.setActive(false);
-    return this.save(crpAssumption) > 0;
+    this.save(crpAssumption);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
 
   @Override
   public CrpAssumption find(long id) {
-    return dao.find(CrpAssumption.class, id);
+    return super.find(CrpAssumption.class, id);
 
   }
 
   @Override
   public List<CrpAssumption> findAll() {
     String query = "from " + CrpAssumption.class.getName() + " where is_active=1";
-    List<CrpAssumption> list = dao.findAll(query);
+    List<CrpAssumption> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
   }
 
   @Override
-  public long save(CrpAssumption crpAssumption) {
+  public CrpAssumption save(CrpAssumption crpAssumption) {
     if (crpAssumption.getId() == null) {
-      dao.save(crpAssumption);
+      super.saveEntity(crpAssumption);
     } else {
-      dao.update(crpAssumption);
+      crpAssumption = super.update(crpAssumption);
     }
 
 
-    return crpAssumption.getId();
+    return crpAssumption;
   }
 
 

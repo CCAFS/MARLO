@@ -1,5 +1,5 @@
 var $removePartnerDialog, $projectPPAPartners;
-var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType;
+var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType, partnerRespRequired;
 var projectLeader;
 var lWordsResp = 100;
 
@@ -12,6 +12,7 @@ function init() {
   $projectPPAPartners = $('#projectPPAPartners');
   allPPAInstitutions = JSON.parse($('#allPPAInstitutions').val());
   canUpdatePPAPartners = ($("#canUpdatePPAPartners").val() === "true");
+  partnerRespRequired = ($("#partnerRespRequired").val() === "true");
   leaderType = 'PL';
   coordinatorType = 'PC';
   defaultType = 'CP';
@@ -937,7 +938,7 @@ function PartnerObject(partner) {
   };
   this.showPPAs = function() {
     $(this.ppaPartnersList).slideDown();
-    $(partner).find('.partnerResponsabilities .requiredTag').hide();
+    // $(partner).find('.partnerResponsabilities .requiredTag').hide();
     $(partner).find('.contactsPerson .requiredTag').hide();
   };
   this.hidePPAs = function() {
@@ -949,7 +950,7 @@ function PartnerObject(partner) {
       $(partner).find('.addContact .addLink').trigger('click');
     }
     
-    $(partner).find('.partnerResponsabilities .requiredTag').show();
+    // $(partner).find('.partnerResponsabilities .requiredTag').show();
     $(partner).find('.contactsPerson .requiredTag').show();
     
   };
@@ -1011,22 +1012,11 @@ function PartnerPersonObject(partnerPerson) {
 }
 
 function formatState(state) {
-  var text = "";
-  if(state.id == "PC") {
-    text =
-        "Responsible for helping the Project Leader to fill the information requested by the system. He/she will have the same privileges as the Project Leader with the exception that cannot officially submit the project into the platform.";
-  } else if(state.id == "PL") {
-    text =
-        "Responsible for the entire project. He/she must officially submit the project into the platform. Only one Project Leader per project is allowed.";
-  } else if(state.id == "CP") {
-    text =
-        "This person is a member of the project but does not have access to nor responsibilities in MARLO. It could also be a person who is responsible for a producing a deliverable and/or activity.";
-  }
   var $state =
       $("<span><b>"
           + state.text
           + "</b> <br><small style='margin-top:2px; font-size:80%; line-height:13px; display:block; font-style:italic;'>"
-          + text + "</small> </span>");
+          + $('span.contactPersonRole-'+ state.id).text() + "</small> </span>");
   return $state;
 
 };
@@ -1046,7 +1036,6 @@ function formatStateCountries(state) {
 };
 
 // Locations (Country Offices)
-
 function addLocElementCountry() {
   var $partner = $(this).parents('.projectPartner');
   var partner = new PartnerObject($partner);

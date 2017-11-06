@@ -32,7 +32,7 @@ public interface ProjectCrpContributionDAO {
    * @param projectCrpContributionId is the projectCrpContribution identifier.
    * @return true if the projectCrpContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCrpContribution(long projectCrpContributionId);
+  public void deleteProjectCrpContribution(long projectCrpContributionId);
 
   /**
    * This method validate if the projectCrpContribution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectCrpContributionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectCrpContribution projectCrpContribution);
+  public ProjectCrpContribution save(ProjectCrpContribution projectCrpContribution);
 }

@@ -30,6 +30,9 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class LiasonUsersByInstitutionsAction extends BaseAction {
 
@@ -41,6 +44,7 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
 
   private Long liasonIntitutionId;
   private LiaisonUserManager liasonUserManager;
+  private final Logger logger = LoggerFactory.getLogger(LiasonUsersByInstitutionsAction.class);
 
   @Inject
   public LiasonUsersByInstitutionsAction(APConfig config, LiaisonUserManager liasonUserManager) {
@@ -61,7 +65,11 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
         liasonsUser.put("active", liaisonUser.isActive());
         this.liasonsUsers.add(liasonsUser);
       } catch (Exception e) {
-
+        logger.error("unable to add liasonUser to liasonUsers list", e);
+        /**
+         * Original code swallows the exception and didn't even log it. Now we at least log it,
+         * but we need to revisit to see if we should continue processing or re-throw the exception.
+         */
       }
     }
     return SUCCESS;

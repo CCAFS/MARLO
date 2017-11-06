@@ -42,9 +42,9 @@ public class CenterProgramManager implements ICenterProgramManager {
   }
 
   @Override
-  public boolean deleteProgram(long programId) {
+  public void deleteProgram(long programId) {
 
-    return crpProgramDAO.deleteProgram(programId);
+    crpProgramDAO.deleteProgram(programId);
   }
 
   @Override
@@ -83,13 +83,13 @@ public class CenterProgramManager implements ICenterProgramManager {
 
 
   @Override
-  public long saveProgram(CenterProgram researchProgram) {
+  public CenterProgram saveProgram(CenterProgram researchProgram) {
 
     return crpProgramDAO.save(researchProgram);
   }
 
   @Override
-  public long saveProgram(CenterProgram researchProgram, String actionName, List<String> relationsName) {
+  public CenterProgram saveProgram(CenterProgram researchProgram, String actionName, List<String> relationsName) {
 
     return crpProgramDAO.save(researchProgram, actionName, relationsName);
   }

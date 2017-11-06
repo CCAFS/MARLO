@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -52,6 +53,23 @@ public class ProjectHighLightValidator extends BaseValidator {
     this.projectValidator = projectValidator;
   }
 
+  /**
+   * Until I work out why the File is being set to an empty file instead of null, this will temporarily
+   * fix the problem.
+   * 
+   * @param projectHighlight
+   */
+  private void checkFileIsValid(ProjectHighlight projectHighlight) {
+    FileDB file = projectHighlight.getFile();
+    if (file != null) {
+      if (file.getFileName() == null && file.getTokenId() == null) {
+        // The UI component has instantiated an empty file object instead of null.
+        projectHighlight.setFile(null);
+      }
+    }
+
+  }
+
   private Path getAutoSaveFilePath(Project project, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
@@ -73,7 +91,7 @@ public class ProjectHighLightValidator extends BaseValidator {
         this.addMissingField("draft");
       }
     }
-
+    this.checkFileIsValid(highLigths);
 
     this.ValidateHightLigth(action, highLigths);
     this.ValidateHightAuthor(action, highLigths);

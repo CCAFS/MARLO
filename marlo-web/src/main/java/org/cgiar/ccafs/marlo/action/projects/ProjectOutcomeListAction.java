@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -52,6 +54,7 @@ public class ProjectOutcomeListAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeListAction.class);
 
   private ProjectManager projectManager;
   private CrpManager crpManager;
@@ -152,7 +155,11 @@ public class ProjectOutcomeListAction extends BaseAction {
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse projectID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     project = projectManager.getProjectById(projectID);
 

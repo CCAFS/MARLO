@@ -88,7 +88,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/outcomeSynthesis.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getName();
+      String center = loggedCrp.getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");

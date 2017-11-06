@@ -43,6 +43,7 @@ public class DashboardAction extends BaseAction {
     this.crpManager = crpManager;
   }
 
+
   public Center getLoggedCrp() {
     return loggedCrp;
   }
@@ -51,6 +52,10 @@ public class DashboardAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Center) this.getSession().get(APConstants.SESSION_CENTER);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+    if (this.isSwitchSession()) {
+      this.clearPermissionsCache();
+    }
   }
 
   public void setLoggedCrp(Center loggedCrp) {

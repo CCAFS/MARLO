@@ -91,8 +91,10 @@
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
                     <div class="selectList">   
+                        [#if projectOutcome.crpProgramOutcome.srfTargetUnit?has_content]
                         <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
                         <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
+                        [/#if]
                     </div> 
                   </div>
                 </div>
@@ -190,7 +192,7 @@
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                     [#assign comunication = action.loadProjectCommunication(year) /]
                     [#assign comunicationIndex = action.getIndexCommunication(year) /]
-                   
+                    <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
                     <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
                     <div class="communicationsBlock form-group">
                       <div class="form-group">

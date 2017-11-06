@@ -135,6 +135,9 @@ public class ImpactRelationAction extends BaseAction {
 
         datacrpProgramOutcome.put("type", "O");
         datacrpProgramOutcome.put("order", new Integer(5));
+        if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)) {
+          datacrpProgramOutcome.put("indicator", crpProgramOutcome.getIndicator());
+        }
         relations.add(datacrpProgramOutcome);
 
         Set<SrfSubIdo> subIdos = new HashSet<>();

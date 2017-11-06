@@ -41,9 +41,9 @@ public class IpProjectContributionManagerImpl implements IpProjectContributionMa
   }
 
   @Override
-  public boolean deleteIpProjectContribution(long ipProjectContributionId) {
+  public void deleteIpProjectContribution(long ipProjectContributionId) {
 
-    return ipProjectContributionDAO.deleteIpProjectContribution(ipProjectContributionId);
+    ipProjectContributionDAO.deleteIpProjectContribution(ipProjectContributionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpProjectContributionManagerImpl implements IpProjectContributionMa
   }
 
   @Override
-  public long saveIpProjectContribution(IpProjectContribution ipProjectContribution) {
+  public IpProjectContribution saveIpProjectContribution(IpProjectContribution ipProjectContribution) {
 
     return ipProjectContributionDAO.save(ipProjectContribution);
   }

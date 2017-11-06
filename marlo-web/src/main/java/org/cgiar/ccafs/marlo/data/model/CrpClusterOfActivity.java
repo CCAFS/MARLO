@@ -47,21 +47,25 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
 
+  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
+
+
   @Expose
   private CrpProgram crpProgram;
+
 
   @Expose
   private String description;
 
-
   @Expose
   private Long id;
-
 
   @Expose
   private String identifier;
 
+
   private List<CrpClusterKeyOutput> keyOutputs;
+
 
   private List<CrpClusterActivityLeader> leaders;
 
@@ -112,7 +116,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return clusterActivities;
   }
 
-
   public String getComposedName() {
     if (this.getIdentifier() != null && !this.getIdentifier().isEmpty()) {
       return this.getIdentifier() + " : " + this.description;
@@ -120,7 +123,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
       return description;
     }
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -141,9 +143,11 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return this.crpProgram;
   }
 
+
   public String getDescription() {
     return description;
   }
+
 
   @Override
   public Long getId() {
@@ -162,7 +166,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -170,6 +173,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -180,10 +184,15 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
+    return projectBudgetsCluserActvities;
+  }
+
 
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
+
 
   @Override
   public int hashCode() {
@@ -254,13 +263,18 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+  public void setProjectBudgetsCluserActvities(Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities) {
+    this.projectBudgetsCluserActvities = projectBudgetsCluserActvities;
+  }
+
   public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
     this.projectClusterActivities = projectClusterActivities;
   }
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpClusterOfActivity [crpProgram=" + crpProgram + ", description=" + description + ", id=" + id
+      + ", identifier=" + identifier + "]";
   }
 
 

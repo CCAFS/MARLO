@@ -34,7 +34,7 @@ public interface PhaseManager {
    * @param phaseId is the phase identifier.
    * @return true if the phase was successfully deleted, false otherwise.
    */
-  public boolean deletePhase(long phaseId);
+  public void deletePhase(long phaseId);
 
 
   /**
@@ -71,7 +71,7 @@ public interface PhaseManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long savePhase(Phase phase);
+  public Phase savePhase(Phase phase);
 
 
 }

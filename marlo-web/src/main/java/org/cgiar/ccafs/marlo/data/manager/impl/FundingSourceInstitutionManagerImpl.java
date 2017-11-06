@@ -41,9 +41,9 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
   }
 
   @Override
-  public boolean deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
+  public void deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
 
-    return fundingSourceInstitutionDAO.deleteFundingSourceInstitution(fundingSourceInstitutionId);
+    fundingSourceInstitutionDAO.deleteFundingSourceInstitution(fundingSourceInstitutionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
   }
 
   @Override
-  public long saveFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitution) {
+  public FundingSourceInstitution saveFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitution) {
 
     return fundingSourceInstitutionDAO.save(fundingSourceInstitution);
   }

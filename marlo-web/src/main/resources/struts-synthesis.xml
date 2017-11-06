@@ -9,7 +9,7 @@
     <!-- CRP Indicators -->
     <action name="{crp}/crpIndicators" class="org.cgiar.ccafs.marlo.action.synthesis.CrpIndicatorsAction">
       <interceptor-ref name="editCrpIndicatorsStack" />
-      <result name="input">/WEB-INF/views/synthesis/crpIndicators.ftl</result>
+      <result name="input">/WEB-INF/crp/views/synthesis/crpIndicators.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpIndicators</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -20,13 +20,13 @@
     <!-- Outcomes Synthesis -->
     <action name="{crp}/outcomeSynthesis" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="homeStack" />
-      <result name="input">/WEB-INF/views/synthesis/outcomeSynthesis.ftl</result>
+      <result name="input">/WEB-INF/crp/views/synthesis/outcomeSynthesis.ftl</result>
     </action>
     
     <!-- Outcomes Synthesis Planning and Reporting Vesion-->
     <action name="{crp}/outcomeSynthesisPandR" class="org.cgiar.ccafs.marlo.action.synthesis.OutcomeSynthesisAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/synthesis/outcomeSynthesisPandR.ftl</result>
+      <result name="input">/WEB-INF/crp/views/synthesis/outcomeSynthesisPandR.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomeSynthesisPandR</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -37,7 +37,7 @@
     <!-- Synthesis by MOGs -->
     <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.synthesis.SynthesisByMogAction">
       <interceptor-ref name="editSynthesisStack" />
-      <result name="input">/WEB-INF/views/synthesis/synthesisByMog.ftl</result>
+      <result name="input">/WEB-INF/crp/views/synthesis/synthesisByMog.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/synthesisByMog</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
@@ -48,7 +48,7 @@
     <!-- Synthesis by Cluster of Activities -->
     <action name="{crp}/coasSynthesis" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="homeStack" />
-      <result name="input">/WEB-INF/views/synthesis/coasSynthesis.ftl</result>
+      <result name="input">/WEB-INF/crp/views/synthesis/coasSynthesis.ftl</result>
       
     </action>
 

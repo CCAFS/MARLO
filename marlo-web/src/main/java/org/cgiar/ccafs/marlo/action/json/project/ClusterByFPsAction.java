@@ -32,17 +32,14 @@ import java.util.stream.Collectors;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClusterByFPsAction extends BaseAction {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -690592438898925949L;
 
-  /**
-   * 
-   */
+  private final Logger logger = LoggerFactory.getLogger(ClusterByFPsAction.class);
 
   private List<Map<String, Object>> clusters;
 
@@ -76,7 +73,11 @@ public class ClusterByFPsAction extends BaseAction {
 
           this.clusters.add(flagShip);
         } catch (Exception e) {
-
+          logger.error("unable to add flagship to clusters list", e);
+          /**
+           * Original code swallows the exception and didn't even log it. Now we at least log it,
+           * but we need to revisit to see if we should continue processing or re-throw the exception.
+           */
         }
       }
 

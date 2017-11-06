@@ -41,9 +41,9 @@ public class PartnerDivisionManagerImpl implements PartnerDivisionManager {
   }
 
   @Override
-  public boolean deletePartnerDivision(long partnerDivisionId) {
+  public void deletePartnerDivision(long partnerDivisionId) {
 
-    return partnerDivisionDAO.deletePartnerDivision(partnerDivisionId);
+    partnerDivisionDAO.deletePartnerDivision(partnerDivisionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class PartnerDivisionManagerImpl implements PartnerDivisionManager {
   }
 
   @Override
-  public long savePartnerDivision(PartnerDivision partnerDivision) {
+  public PartnerDivision savePartnerDivision(PartnerDivision partnerDivision) {
 
     return partnerDivisionDAO.save(partnerDivision);
   }

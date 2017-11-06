@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterDeliverableDocumentDAO implements ICenterDeliverableDocumentDAO {
+public class CenterDeliverableDocumentDAO extends AbstractMarloDAO<CenterDeliverableDocument, Long>
+  implements ICenterDeliverableDocumentDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDeliverableDocumentDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDeliverableDocumentDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableDocument(long deliverableDocumentId) {
+  public void deleteDeliverableDocument(long deliverableDocumentId) {
     CenterDeliverableDocument deliverableDocument = this.find(deliverableDocumentId);
     deliverableDocument.setActive(false);
-    return this.save(deliverableDocument) > 0;
+    this.save(deliverableDocument);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterDeliverableDocumentDAO implements ICenterDeliverableDocumentD
 
   @Override
   public CenterDeliverableDocument find(long id) {
-    return dao.find(CenterDeliverableDocument.class, id);
+    return super.find(CenterDeliverableDocument.class, id);
 
   }
 
   @Override
   public List<CenterDeliverableDocument> findAll() {
     String query = "from " + CenterDeliverableDocument.class.getName();
-    List<CenterDeliverableDocument> list = dao.findAll(query);
+    List<CenterDeliverableDocument> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterDeliverableDocumentDAO implements ICenterDeliverableDocumentD
   @Override
   public List<CenterDeliverableDocument> getDeliverableDocumentsByUserId(long userId) {
     String query = "from " + CenterDeliverableDocument.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterDeliverableDocument deliverableDocument) {
+  public CenterDeliverableDocument save(CenterDeliverableDocument deliverableDocument) {
     if (deliverableDocument.getId() == null) {
-      dao.save(deliverableDocument);
+      super.saveEntity(deliverableDocument);
     } else {
-      dao.update(deliverableDocument);
+      deliverableDocument = super.update(deliverableDocument);
     }
-    return deliverableDocument.getId();
+    return deliverableDocument;
   }
 
 
