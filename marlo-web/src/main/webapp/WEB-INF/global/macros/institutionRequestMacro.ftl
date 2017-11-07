@@ -73,7 +73,7 @@
             </div>
             <div class="form-group row">
               <div class="col-md-6">
-                [@customForm.select name="type" value=partner.institutionType required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+                [@customForm.select name="type" value="${(partner.institutionType.id)!}" required=true label="" i18nkey="Institution Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
               </div>
               <div class="col-md-6">
                 [@customForm.select name="country" value="'${partner.locElement.isoAlpha2}'" required=true label="" i18nkey="Country ISO Code" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" /]
