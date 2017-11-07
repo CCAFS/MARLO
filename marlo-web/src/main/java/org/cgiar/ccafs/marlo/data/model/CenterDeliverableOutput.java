@@ -29,6 +29,7 @@ public class CenterDeliverableOutput implements java.io.Serializable, IAuditLog 
   @Expose
   private CenterDeliverable deliverable;
 
+
   @Expose
   private CenterOutput researchOutput;
 
@@ -56,7 +57,6 @@ public class CenterDeliverableOutput implements java.io.Serializable, IAuditLog 
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -110,6 +110,7 @@ public class CenterDeliverableOutput implements java.io.Serializable, IAuditLog 
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -124,6 +125,7 @@ public class CenterDeliverableOutput implements java.io.Serializable, IAuditLog 
   public CenterOutput getResearchOutput() {
     return researchOutput;
   }
+
 
   @Override
   public int hashCode() {
@@ -166,9 +168,14 @@ public class CenterDeliverableOutput implements java.io.Serializable, IAuditLog 
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setResearchOutput(CenterOutput researchOutput) {
     this.researchOutput = researchOutput;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterDeliverableOutput [id=" + id + ", deliverable=" + deliverable + "]";
   }
 
 

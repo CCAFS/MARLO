@@ -41,9 +41,9 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
-  public boolean deletePhase(long phaseId) {
+  public void deletePhase(long phaseId) {
 
-    return phaseDAO.deletePhase(phaseId);
+    phaseDAO.deletePhase(phaseId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
-  public long savePhase(Phase phase) {
+  public Phase savePhase(Phase phase) {
 
     return phaseDAO.save(phase);
   }

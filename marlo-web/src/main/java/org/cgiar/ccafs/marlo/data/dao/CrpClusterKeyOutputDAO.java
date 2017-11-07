@@ -32,7 +32,7 @@ public interface CrpClusterKeyOutputDAO {
    * @param crpClusterKeyOutputId is the crpClusterKeyOutput identifier.
    * @return true if the crpClusterKeyOutput was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpClusterKeyOutput(long crpClusterKeyOutputId);
+  public void deleteCrpClusterKeyOutput(long crpClusterKeyOutputId);
 
   /**
    * This method validate if the crpClusterKeyOutput identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpClusterKeyOutputDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpClusterKeyOutput crpClusterKeyOutput);
+  public CrpClusterKeyOutput save(CrpClusterKeyOutput crpClusterKeyOutput);
 }

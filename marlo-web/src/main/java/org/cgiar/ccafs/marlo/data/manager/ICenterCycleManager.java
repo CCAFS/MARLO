@@ -34,7 +34,7 @@ public interface ICenterCycleManager {
    * @param researchCycleId is the researchCycle identifier.
    * @return true if the researchCycle was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchCycle(long researchCycleId);
+  public void deleteResearchCycle(long researchCycleId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterCycleManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchCycle(CenterCycle researchCycle);
+  public CenterCycle saveResearchCycle(CenterCycle researchCycle);
 
 
 }

@@ -33,7 +33,7 @@ public interface ICenterDeliverableOutputDAO {
    * @param deliverableOutputId is the deliverableOutput identifier.
    * @return true if the deliverableOutput was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableOutput(long deliverableOutputId);
+  public void deleteDeliverableOutput(long deliverableOutputId);
 
   /**
    * This method validate if the deliverableOutput identify with the given id exists in the system.
@@ -75,7 +75,7 @@ public interface ICenterDeliverableOutputDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverableOutput deliverableOutput);
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput);
 
   /**
    * This method saves the information of the given deliverableOutput
@@ -85,5 +85,5 @@ public interface ICenterDeliverableOutputDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName);
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName);
 }

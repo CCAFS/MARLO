@@ -34,7 +34,7 @@ public interface DeliverableMetadataElementManager {
    * @param deliverableMetadataElementId is the deliverableMetadataElement identifier.
    * @return true if the deliverableMetadataElement was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableMetadataElement(long deliverableMetadataElementId);
+  public void deleteDeliverableMetadataElement(long deliverableMetadataElementId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableMetadataElementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableMetadataElement(DeliverableMetadataElement deliverableMetadataElement);
+  public DeliverableMetadataElement saveDeliverableMetadataElement(DeliverableMetadataElement deliverableMetadataElement);
 
 
 }

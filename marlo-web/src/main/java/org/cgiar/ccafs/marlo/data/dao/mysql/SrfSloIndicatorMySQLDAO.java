@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfSloIndicatorMySQLDAO implements SrfSloIndicatorDAO {
+public class SrfSloIndicatorMySQLDAO extends AbstractMarloDAO<SrfSloIndicator, Long> implements SrfSloIndicatorDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfSloIndicatorMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfSloIndicatorMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSrfSloIndicator(long srfSloIndicatorId) {
+  public void deleteSrfSloIndicator(long srfSloIndicatorId) {
     SrfSloIndicator srfSloIndicator = this.find(srfSloIndicatorId);
     srfSloIndicator.setActive(false);
-    return this.save(srfSloIndicator) > 0;
+    this.save(srfSloIndicator);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfSloIndicatorMySQLDAO implements SrfSloIndicatorDAO {
 
   @Override
   public SrfSloIndicator find(long id) {
-    return dao.find(SrfSloIndicator.class, id);
+    return super.find(SrfSloIndicator.class, id);
 
   }
 
   @Override
   public List<SrfSloIndicator> findAll() {
     String query = "from " + SrfSloIndicator.class.getName() + " where is_active=1";
-    List<SrfSloIndicator> list = dao.findAll(query);
+    List<SrfSloIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class SrfSloIndicatorMySQLDAO implements SrfSloIndicatorDAO {
   }
 
   @Override
-  public long save(SrfSloIndicator srfSloIndicator) {
+  public SrfSloIndicator save(SrfSloIndicator srfSloIndicator) {
     if (srfSloIndicator.getId() == null) {
-      dao.save(srfSloIndicator);
+      super.saveEntity(srfSloIndicator);
     } else {
-      dao.update(srfSloIndicator);
+      srfSloIndicator = super.update(srfSloIndicator);
     }
-    return srfSloIndicator.getId();
+    return srfSloIndicator;
   }
 
 

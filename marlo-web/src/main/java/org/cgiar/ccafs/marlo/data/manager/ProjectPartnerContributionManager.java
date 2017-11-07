@@ -34,7 +34,7 @@ public interface ProjectPartnerContributionManager {
    * @param projectPartnerContributionId is the projectPartnerContribution identifier.
    * @return true if the projectPartnerContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerContribution(long projectPartnerContributionId);
+  public void deleteProjectPartnerContribution(long projectPartnerContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectPartnerContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartnerContribution(ProjectPartnerContribution projectPartnerContribution);
+  public ProjectPartnerContribution saveProjectPartnerContribution(ProjectPartnerContribution projectPartnerContribution);
 
 
 }

@@ -42,9 +42,9 @@ public class CenterBeneficiaryTypeManager implements ICenterBeneficiaryTypeManag
   }
 
   @Override
-  public boolean deleteBeneficiaryType(long beneficiaryTypeId) {
+  public void deleteBeneficiaryType(long beneficiaryTypeId) {
 
-    return beneficiaryTypeDAO.deleteBeneficiaryType(beneficiaryTypeId);
+    beneficiaryTypeDAO.deleteBeneficiaryType(beneficiaryTypeId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterBeneficiaryTypeManager implements ICenterBeneficiaryTypeManag
   }
 
   @Override
-  public long saveBeneficiaryType(CenterBeneficiaryType beneficiaryType) {
+  public CenterBeneficiaryType saveBeneficiaryType(CenterBeneficiaryType beneficiaryType) {
 
     return beneficiaryTypeDAO.save(beneficiaryType);
   }

@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
+public class ProjectHighligthTypeMySQLDAO extends AbstractMarloDAO<ProjectHighlightType, Long>
+  implements ProjectHighligthTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectHighligthTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectHighligthTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectHighligthType(long projectHighligthTypeId) {
+  public void deleteProjectHighligthType(long projectHighligthTypeId) {
     ProjectHighlightType projectHighlightType = this.find(projectHighligthTypeId);
 
-    return this.dao.delete(projectHighlightType);
+    super.delete(projectHighlightType);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
 
   @Override
   public ProjectHighlightType find(long id) {
-    return dao.find(ProjectHighlightType.class, Integer.parseInt(String.valueOf(id)));
+    return super.find(ProjectHighlightType.class, id);
 
   }
 
   @Override
   public List<ProjectHighlightType> findAll() {
     String query = "from " + ProjectHighlightType.class.getName() + " where is_active=1";
-    List<ProjectHighlightType> list = dao.findAll(query);
+    List<ProjectHighlightType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,15 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
   }
 
   @Override
-  public long save(ProjectHighlightType projectHighlightType) {
+  public ProjectHighlightType save(ProjectHighlightType projectHighlightType) {
     if (projectHighlightType.getId() == null) {
-      dao.save(projectHighlightType);
+      super.saveEntity(projectHighlightType);
     } else {
-      dao.update(projectHighlightType);
+      projectHighlightType = super.update(projectHighlightType);
     }
 
 
-    return projectHighlightType.getId();
+    return projectHighlightType;
   }
 
 

@@ -32,7 +32,7 @@ public interface ProjectHighligthCountryDAO {
    * @param projectHighligthCountryId is the projectHighligthCountry identifier.
    * @return true if the projectHighligthCountry was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectHighligthCountry(long projectHighligthCountryId);
+  public void deleteProjectHighligthCountry(long projectHighligthCountryId);
 
   /**
    * This method validate if the projectHighligthCountry identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectHighligthCountryDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectHighlightCountry projectHighlightCountry);
+  public ProjectHighlightCountry save(ProjectHighlightCountry projectHighlightCountry);
 }

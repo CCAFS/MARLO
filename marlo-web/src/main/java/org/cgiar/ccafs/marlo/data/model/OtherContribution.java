@@ -28,6 +28,8 @@ public class OtherContribution implements java.io.Serializable, IAuditLog {
   private IpProgram ipProgram;
 
   private Project project;
+
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -45,7 +47,6 @@ public class OtherContribution implements java.io.Serializable, IAuditLog {
 
   public OtherContribution() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -183,6 +184,7 @@ public class OtherContribution implements java.io.Serializable, IAuditLog {
     this.ipProgram = ipProgram;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -195,9 +197,15 @@ public class OtherContribution implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
-
   public void setTarget(Integer target) {
     this.target = target;
+  }
+
+
+  @Override
+  public String toString() {
+    return "OtherContribution [id=" + id + ", ipIndicator=" + ipIndicator + ", ipProgram=" + ipProgram + ", project="
+      + project + ", description=" + description + ", target=" + target + "]";
   }
 
 

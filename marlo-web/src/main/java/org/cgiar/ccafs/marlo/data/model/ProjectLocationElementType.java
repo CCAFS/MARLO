@@ -23,7 +23,6 @@ public class ProjectLocationElementType implements java.io.Serializable {
 
   private static final long serialVersionUID = -127486425529773813L;
 
-
   private Long id;
 
 
@@ -51,6 +50,7 @@ public class ProjectLocationElementType implements java.io.Serializable {
     return id;
   }
 
+
   public Boolean getIsGlobal() {
     return isGlobal;
   }
@@ -77,6 +77,12 @@ public class ProjectLocationElementType implements java.io.Serializable {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectLocationElementType [id=" + id + ", locElementType=" + locElementType + ", project=" + project
+      + ", isGlobal=" + isGlobal + "]";
   }
 
 }

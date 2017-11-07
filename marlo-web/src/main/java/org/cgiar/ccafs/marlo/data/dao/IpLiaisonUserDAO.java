@@ -32,7 +32,7 @@ public interface IpLiaisonUserDAO {
    * @param ipLiaisonUserId is the ipLiaisonUser identifier.
    * @return true if the ipLiaisonUser was successfully deleted, false otherwise.
    */
-  public boolean deleteIpLiaisonUser(long ipLiaisonUserId);
+  public void deleteIpLiaisonUser(long ipLiaisonUserId);
 
   /**
    * This method validate if the ipLiaisonUser identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpLiaisonUserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpLiaisonUser ipLiaisonUser);
+  public IpLiaisonUser save(IpLiaisonUser ipLiaisonUser);
 }

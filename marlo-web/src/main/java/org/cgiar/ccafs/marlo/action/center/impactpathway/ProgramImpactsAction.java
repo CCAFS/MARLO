@@ -279,11 +279,10 @@ public class ProgramImpactsAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
-              .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(
+              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -578,9 +577,8 @@ public class ProgramImpactsAction extends BaseAction {
             researchImpactNew.setDescription(researchImpact.getDescription().trim());
           }
 
-          long impactId = impactService.saveResearchImpact(researchImpactNew);
+          researchImpactNew = impactService.saveResearchImpact(researchImpactNew);
 
-          researchImpactNew = impactService.getResearchImpactById(impactId);
 
           if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {
             for (String objectiveId : researchImpact.getObjectiveValue().trim().split(",")) {
@@ -649,8 +647,8 @@ public class ProgramImpactsAction extends BaseAction {
 
           if (hasChanges) {
             researchImpactRew.setModifiedBy(this.getCurrentUser());
-            long impactId = impactService.saveResearchImpact(researchImpactRew);
-            researchImpactRew = impactService.getResearchImpactById(impactId);
+            researchImpactRew = impactService.saveResearchImpact(researchImpactRew);
+
           }
 
           if (researchImpact.getObjectiveValue() != null && researchImpact.getObjectiveValue().length() > 0) {

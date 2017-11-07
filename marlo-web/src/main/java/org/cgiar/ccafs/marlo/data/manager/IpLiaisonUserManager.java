@@ -34,7 +34,7 @@ public interface IpLiaisonUserManager {
    * @param ipLiaisonUserId is the ipLiaisonUser identifier.
    * @return true if the ipLiaisonUser was successfully deleted, false otherwise.
    */
-  public boolean deleteIpLiaisonUser(long ipLiaisonUserId);
+  public void deleteIpLiaisonUser(long ipLiaisonUserId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpLiaisonUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpLiaisonUser(IpLiaisonUser ipLiaisonUser);
+  public IpLiaisonUser saveIpLiaisonUser(IpLiaisonUser ipLiaisonUser);
 
 
 }

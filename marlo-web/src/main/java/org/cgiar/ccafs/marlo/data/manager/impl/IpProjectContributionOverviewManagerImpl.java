@@ -41,9 +41,9 @@ public class IpProjectContributionOverviewManagerImpl implements IpProjectContri
   }
 
   @Override
-  public boolean deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
+  public void deleteIpProjectContributionOverview(long ipProjectContributionOverviewId) {
 
-    return ipProjectContributionOverviewDAO.deleteIpProjectContributionOverview(ipProjectContributionOverviewId);
+    ipProjectContributionOverviewDAO.deleteIpProjectContributionOverview(ipProjectContributionOverviewId);
   }
 
   @Override
@@ -78,7 +78,7 @@ public class IpProjectContributionOverviewManagerImpl implements IpProjectContri
   }
 
   @Override
-  public long saveIpProjectContributionOverview(IpProjectContributionOverview ipProjectContributionOverview) {
+  public IpProjectContributionOverview saveIpProjectContributionOverview(IpProjectContributionOverview ipProjectContributionOverview) {
 
     return ipProjectContributionOverviewDAO.save(ipProjectContributionOverview);
   }

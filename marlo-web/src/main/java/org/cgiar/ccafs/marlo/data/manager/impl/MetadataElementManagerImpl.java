@@ -41,9 +41,9 @@ public class MetadataElementManagerImpl implements MetadataElementManager {
   }
 
   @Override
-  public boolean deleteMetadataElement(long metadataElementId) {
+  public void deleteMetadataElement(long metadataElementId) {
 
-    return metadataElementDAO.deleteMetadataElement(metadataElementId);
+    metadataElementDAO.deleteMetadataElement(metadataElementId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class MetadataElementManagerImpl implements MetadataElementManager {
   }
 
   @Override
-  public long saveMetadataElement(MetadataElement metadataElement) {
+  public MetadataElement saveMetadataElement(MetadataElement metadataElement) {
 
     return metadataElementDAO.save(metadataElement);
   }

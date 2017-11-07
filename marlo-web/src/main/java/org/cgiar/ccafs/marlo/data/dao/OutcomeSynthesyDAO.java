@@ -32,7 +32,7 @@ public interface OutcomeSynthesyDAO {
    * @param outcomeSynthesyId is the outcomeSynthesy identifier.
    * @return true if the outcomeSynthesy was successfully deleted, false otherwise.
    */
-  public boolean deleteOutcomeSynthesy(long outcomeSynthesyId);
+  public void deleteOutcomeSynthesy(long outcomeSynthesyId);
 
   /**
    * This method validate if the outcomeSynthesy identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface OutcomeSynthesyDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(OutcomeSynthesy outcomeSynthesy);
+  public OutcomeSynthesy save(OutcomeSynthesy outcomeSynthesy);
 }

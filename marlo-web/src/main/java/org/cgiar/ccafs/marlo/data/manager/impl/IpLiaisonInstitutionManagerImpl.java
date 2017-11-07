@@ -43,9 +43,9 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
-  public boolean deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
+  public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
 
-    return ipLiaisonInstitutionDAO.deleteIpLiaisonInstitution(ipLiaisonInstitutionId);
+    ipLiaisonInstitutionDAO.deleteIpLiaisonInstitution(ipLiaisonInstitutionId);
   }
 
   @Override
@@ -93,12 +93,12 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
-  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
     return ipLiaisonInstitutionDAO.save(ipLiaisonInstitution, section, relationsName);
   }
 
   @Override
-  public long saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
+  public IpLiaisonInstitution saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
 
     return ipLiaisonInstitutionDAO.save(ipLiaisonInstitution);
   }

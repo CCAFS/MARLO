@@ -41,9 +41,9 @@ public class DeliverableLeaderManagerImpl implements DeliverableLeaderManager {
   }
 
   @Override
-  public boolean deleteDeliverableLeader(long deliverableLeaderId) {
+  public void deleteDeliverableLeader(long deliverableLeaderId) {
 
-    return deliverableLeaderDAO.deleteDeliverableLeader(deliverableLeaderId);
+    deliverableLeaderDAO.deleteDeliverableLeader(deliverableLeaderId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableLeaderManagerImpl implements DeliverableLeaderManager {
   }
 
   @Override
-  public long saveDeliverableLeader(DeliverableLeader deliverableLeader) {
+  public DeliverableLeader saveDeliverableLeader(DeliverableLeader deliverableLeader) {
 
     return deliverableLeaderDAO.save(deliverableLeader);
   }

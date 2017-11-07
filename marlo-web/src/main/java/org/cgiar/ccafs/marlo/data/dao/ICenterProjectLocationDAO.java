@@ -32,7 +32,7 @@ public interface ICenterProjectLocationDAO {
    * @param projectLocationId is the projectLocation identifier.
    * @return true if the projectLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLocation(long projectLocationId);
+  public void deleteProjectLocation(long projectLocationId);
 
   /**
    * This method validate if the projectLocation identify with the given id exists in the system.
@@ -74,7 +74,7 @@ public interface ICenterProjectLocationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectLocation projectLocation);
+  public CenterProjectLocation save(CenterProjectLocation projectLocation);
 
   /**
    * This method saves the information of the given projectLocation
@@ -84,5 +84,5 @@ public interface ICenterProjectLocationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
+  public CenterProjectLocation save(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
 }

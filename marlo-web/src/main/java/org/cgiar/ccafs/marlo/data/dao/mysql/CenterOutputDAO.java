@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterOutputDAO implements ICenterOutputDAO {
+public class CenterOutputDAO extends AbstractMarloDAO<CenterOutput, Long> implements ICenterOutputDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterOutputDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterOutputDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchOutput(long researchOutputId) {
+  public void deleteResearchOutput(long researchOutputId) {
     CenterOutput researchOutput = this.find(researchOutputId);
     researchOutput.setActive(false);
-    return this.save(researchOutput) > 0;
+    this.save(researchOutput);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterOutputDAO implements ICenterOutputDAO {
 
   @Override
   public CenterOutput find(long id) {
-    return dao.find(CenterOutput.class, id);
+    return super.find(CenterOutput.class, id);
 
   }
 
   @Override
   public List<CenterOutput> findAll() {
     String query = "from " + CenterOutput.class.getName();
-    List<CenterOutput> list = dao.findAll(query);
+    List<CenterOutput> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CenterOutputDAO implements ICenterOutputDAO {
   @Override
   public List<CenterOutput> getResearchOutputsByUserId(long userId) {
     String query = "from " + CenterOutput.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterOutput researchOutput) {
+  public CenterOutput save(CenterOutput researchOutput) {
     if (researchOutput.getId() == null) {
-      dao.save(researchOutput);
+      super.saveEntity(researchOutput);
     } else {
-      dao.update(researchOutput);
+      researchOutput = super.update(researchOutput);
     }
-    return researchOutput.getId();
+    return researchOutput;
   }
 
   @Override
-  public long save(CenterOutput output, String actionName, List<String> relationsName) {
+  public CenterOutput save(CenterOutput output, String actionName, List<String> relationsName) {
     if (output.getId() == null) {
-      dao.save(output, actionName, relationsName);
+      super.saveEntity(output, actionName, relationsName);
     } else {
-      dao.update(output, actionName, relationsName);
+      output = super.update(output, actionName, relationsName);
     }
-    return output.getId();
+    return output;
   }
 
 

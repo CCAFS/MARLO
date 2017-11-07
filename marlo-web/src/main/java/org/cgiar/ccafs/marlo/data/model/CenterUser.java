@@ -81,6 +81,7 @@ public class CenterUser implements IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -137,7 +138,7 @@ public class CenterUser implements IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterUser [id=" + id + ", researchCenter=" + researchCenter + ", user=" + user + "]";
   }
 
 }

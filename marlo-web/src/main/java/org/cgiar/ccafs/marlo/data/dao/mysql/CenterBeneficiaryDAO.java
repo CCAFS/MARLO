@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterBeneficiary;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterBeneficiaryDAO implements ICenterBeneficiaryDAO {
+public class CenterBeneficiaryDAO extends AbstractMarloDAO<CenterBeneficiary, Long> implements ICenterBeneficiaryDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterBeneficiaryDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterBeneficiaryDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteBeneficiary(long beneficiaryId) {
+  public void deleteBeneficiary(long beneficiaryId) {
     CenterBeneficiary beneficiary = this.find(beneficiaryId);
     beneficiary.setActive(false);
-    return this.save(beneficiary) > 0;
+    this.save(beneficiary);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterBeneficiaryDAO implements ICenterBeneficiaryDAO {
 
   @Override
   public CenterBeneficiary find(long id) {
-    return dao.find(CenterBeneficiary.class, id);
+    return super.find(CenterBeneficiary.class, id);
 
   }
 
   @Override
   public List<CenterBeneficiary> findAll() {
     String query = "from " + CenterBeneficiary.class.getName();
-    List<CenterBeneficiary> list = dao.findAll(query);
+    List<CenterBeneficiary> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterBeneficiaryDAO implements ICenterBeneficiaryDAO {
   @Override
   public List<CenterBeneficiary> getBeneficiarysByUserId(long userId) {
     String query = "from " + CenterBeneficiary.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterBeneficiary beneficiary) {
+  public CenterBeneficiary save(CenterBeneficiary beneficiary) {
     if (beneficiary.getId() == null) {
-      dao.save(beneficiary);
+      super.saveEntity(beneficiary);
     } else {
-      dao.update(beneficiary);
+      beneficiary = super.update(beneficiary);
     }
-    return beneficiary.getId();
+    return beneficiary;
   }
 
 

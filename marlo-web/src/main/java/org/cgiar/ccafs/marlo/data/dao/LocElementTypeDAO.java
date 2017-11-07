@@ -32,7 +32,7 @@ public interface LocElementTypeDAO {
    * @param locElementTypeId is the locElementType identifier.
    * @return true if the locElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteLocElementType(long locElementTypeId);
+  public void deleteLocElementType(long locElementTypeId);
 
   /**
    * This method validate if the locElementType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface LocElementTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(LocElementType locElementType);
+  public LocElementType save(LocElementType locElementType);
 }

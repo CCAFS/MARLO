@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectComponentLessonMySQLDAO implements ProjectComponentLessonDAO {
+public class ProjectComponentLessonMySQLDAO extends AbstractMarloDAO<ProjectComponentLesson, Long> implements ProjectComponentLessonDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectComponentLessonMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectComponentLessonMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectComponentLesson(long projectComponentLessonId) {
+  public void deleteProjectComponentLesson(long projectComponentLessonId) {
     ProjectComponentLesson projectComponentLesson = this.find(projectComponentLessonId);
     projectComponentLesson.setActive(false);
-    return this.save(projectComponentLesson) > 0;
+    this.save(projectComponentLesson);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectComponentLessonMySQLDAO implements ProjectComponentLessonDAO
 
   @Override
   public ProjectComponentLesson find(long id) {
-    return dao.find(ProjectComponentLesson.class, id);
+    return super.find(ProjectComponentLesson.class, id);
 
   }
 
   @Override
   public List<ProjectComponentLesson> findAll() {
     String query = "from " + ProjectComponentLesson.class.getName() + " where is_active=1";
-    List<ProjectComponentLesson> list = dao.findAll(query);
+    List<ProjectComponentLesson> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectComponentLessonMySQLDAO implements ProjectComponentLessonDAO
   }
 
   @Override
-  public long save(ProjectComponentLesson projectComponentLesson) {
+  public ProjectComponentLesson save(ProjectComponentLesson projectComponentLesson) {
     if (projectComponentLesson.getId() == null) {
-      dao.save(projectComponentLesson);
+      super.saveEntity(projectComponentLesson);
     } else {
-      dao.update(projectComponentLesson);
+      projectComponentLesson = super.update(projectComponentLesson);
     }
 
 
-    return projectComponentLesson.getId();
+    return projectComponentLesson;
   }
 
 

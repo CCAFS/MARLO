@@ -32,7 +32,7 @@ public interface ICenterMonitoringOutcomeDAO {
    * @param monitoringOutcomeId is the monitoringOutcome identifier.
    * @return true if the monitoringOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitoringOutcome(long monitoringOutcomeId);
+  public void deleteMonitoringOutcome(long monitoringOutcomeId);
 
   /**
    * This method validate if the monitoringOutcome identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterMonitoringOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMonitoringOutcome monitoringOutcome);
+  public CenterMonitoringOutcome save(CenterMonitoringOutcome monitoringOutcome);
 }

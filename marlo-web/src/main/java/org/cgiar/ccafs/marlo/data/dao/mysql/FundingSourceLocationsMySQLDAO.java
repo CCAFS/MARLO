@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO {
+public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSourceLocation, Long>
+  implements FundingSourceLocationsDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceLocationsMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceLocationsMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteFundingSourceLocations(long fundingSourceLocationsId) {
+  public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
     FundingSourceLocation fundingSourceLocations = this.find(fundingSourceLocationsId);
     fundingSourceLocations.setActive(false);
-    return this.save(fundingSourceLocations) > 0;
+    this.save(fundingSourceLocations);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
 
   @Override
   public FundingSourceLocation find(long id) {
-    return dao.find(FundingSourceLocation.class, id);
+    return super.find(FundingSourceLocation.class, id);
 
   }
 
   @Override
   public List<FundingSourceLocation> findAll() {
     String query = "from " + FundingSourceLocation.class.getName() + " where is_active=1";
-    List<FundingSourceLocation> list = dao.findAll(query);
+    List<FundingSourceLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,15 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
   }
 
   @Override
-  public long save(FundingSourceLocation fundingSourceLocations) {
+  public FundingSourceLocation save(FundingSourceLocation fundingSourceLocations) {
     if (fundingSourceLocations.getId() == null) {
-      dao.save(fundingSourceLocations);
+      super.saveEntity(fundingSourceLocations);
     } else {
-      dao.update(fundingSourceLocations);
+      fundingSourceLocations = super.update(fundingSourceLocations);
     }
 
 
-    return fundingSourceLocations.getId();
+    return fundingSourceLocations;
   }
 
 

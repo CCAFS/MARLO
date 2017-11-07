@@ -35,7 +35,7 @@ public interface ICenterDAO {
    * @param crpId is the crp identifier.
    * @return true if the crp was successfully deleted, false otherwise.
    */
-  public boolean deleteCrp(long crpId);
+  public void deleteCrp(long crpId);
 
   /**
    * This method validate if the crp identify with the given id exists in the system.
@@ -77,6 +77,6 @@ public interface ICenterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Center crp);
+  public Center save(Center crp);
 
 }

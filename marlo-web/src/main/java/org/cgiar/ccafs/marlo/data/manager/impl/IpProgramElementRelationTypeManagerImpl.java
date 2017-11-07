@@ -41,9 +41,9 @@ public class IpProgramElementRelationTypeManagerImpl implements IpProgramElement
   }
 
   @Override
-  public boolean deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId) {
+  public void deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId) {
 
-    return ipProgramElementRelationTypeDAO.deleteIpProgramElementRelationType(ipProgramElementRelationTypeId);
+    ipProgramElementRelationTypeDAO.deleteIpProgramElementRelationType(ipProgramElementRelationTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpProgramElementRelationTypeManagerImpl implements IpProgramElement
   }
 
   @Override
-  public long saveIpProgramElementRelationType(IpProgramElementRelationType ipProgramElementRelationType) {
+  public IpProgramElementRelationType saveIpProgramElementRelationType(IpProgramElementRelationType ipProgramElementRelationType) {
 
     return ipProgramElementRelationTypeDAO.save(ipProgramElementRelationType);
   }

@@ -32,7 +32,7 @@ public interface BudgetTypeDAO {
    * @param budgetTypeId is the budgetType identifier.
    * @return true if the budgetType was successfully deleted, false otherwise.
    */
-  public boolean deleteBudgetType(long budgetTypeId);
+  public void deleteBudgetType(long budgetTypeId);
 
   /**
    * This method validate if the budgetType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface BudgetTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(BudgetType budgetType);
+  public BudgetType save(BudgetType budgetType);
 }

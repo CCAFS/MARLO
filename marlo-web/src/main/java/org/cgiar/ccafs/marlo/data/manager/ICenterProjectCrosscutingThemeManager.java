@@ -34,7 +34,7 @@ public interface ICenterProjectCrosscutingThemeManager {
    * @param projectCrosscutingThemeId is the projectCrosscutingTheme identifier.
    * @return true if the projectCrosscutingTheme was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCrosscutingTheme(long projectCrosscutingThemeId);
+  public void deleteProjectCrosscutingTheme(long projectCrosscutingThemeId);
 
 
   /**
@@ -80,7 +80,7 @@ public interface ICenterProjectCrosscutingThemeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme);
+  public CenterProjectCrosscutingTheme saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme);
 
 
 }

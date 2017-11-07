@@ -34,7 +34,7 @@ public interface CrpProgramOutcomeManager {
    * @param crpProgramOutcomeId is the crpProgramOutcome identifier.
    * @return true if the crpProgramOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramOutcome(long crpProgramOutcomeId);
+  public void deleteCrpProgramOutcome(long crpProgramOutcomeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpProgramOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome);
+  public CrpProgramOutcome saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome);
 
 
 }

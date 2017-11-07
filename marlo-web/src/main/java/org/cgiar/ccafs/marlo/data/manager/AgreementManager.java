@@ -26,9 +26,9 @@ public interface AgreementManager {
 
   public Agreement find(String id);
 
-  public String save(Agreement agreement);
+  public Agreement save(Agreement agreement);
 
-  public String update(Agreement agreement);
+  public Agreement update(Agreement agreement);
 
 
 }

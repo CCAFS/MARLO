@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpUserMySQLDAO implements CrpUserDAO {
+public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements CrpUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpUserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpUserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
     CrpUser crpUser = this.find(crpUserId);
     crpUser.setActive(false);
-    return this.save(crpUser) > 0;
+    this.save(crpUser);
   }
 
   @Override
@@ -52,7 +52,7 @@ public class CrpUserMySQLDAO implements CrpUserDAO {
   @Override
   public boolean existCrpUser(long userId, long crpId) {
     String query = "from " + CrpUser.class.getName() + " where user_id=" + userId + " and crp_id=" + crpId;
-    List<CrpUser> crpUser = dao.findAll(query);
+    List<CrpUser> crpUser = super.findAll(query);
     if (crpUser != null && crpUser.size() > 0) {
       return true;
     }
@@ -61,14 +61,14 @@ public class CrpUserMySQLDAO implements CrpUserDAO {
 
   @Override
   public CrpUser find(long id) {
-    return dao.find(CrpUser.class, id);
+    return super.find(CrpUser.class, id);
 
   }
 
   @Override
   public List<CrpUser> findAll() {
     String query = "from " + CrpUser.class.getName() + " where is_active=1";
-    List<CrpUser> list = dao.findAll(query);
+    List<CrpUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -77,13 +77,13 @@ public class CrpUserMySQLDAO implements CrpUserDAO {
   }
 
   @Override
-  public long save(CrpUser crpUser) {
+  public CrpUser save(CrpUser crpUser) {
     if (crpUser.getId() == null) {
-      dao.save(crpUser);
+      super.saveEntity(crpUser);
     } else {
-      dao.update(crpUser);
+      crpUser = super.update(crpUser);
     }
-    return crpUser.getId();
+    return crpUser;
   }
 
 

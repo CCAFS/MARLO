@@ -32,7 +32,7 @@ public interface CrpProgramDAO {
    * @param crpProgramId is the crpProgram identifier.
    * @return true if the crpProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgram(long crpProgramId);
+  public void deleteCrpProgram(long crpProgramId);
 
   /**
    * This method validate if the crpProgram identify with the given id exists in the system.
@@ -73,7 +73,7 @@ public interface CrpProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpProgram crpProgram);
+  public CrpProgram save(CrpProgram crpProgram);
 
   /**
    * This method saves the information of the given crpProgram
@@ -83,7 +83,7 @@ public interface CrpProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName);
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName);
 
 }
 

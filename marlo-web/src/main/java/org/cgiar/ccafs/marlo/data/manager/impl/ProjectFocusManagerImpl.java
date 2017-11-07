@@ -41,9 +41,9 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   }
 
   @Override
-  public boolean deleteProjectFocus(long projectFocusId) {
+  public void deleteProjectFocus(long projectFocusId) {
 
-    return projectFocusDAO.deleteProjectFocus(projectFocusId);
+    projectFocusDAO.deleteProjectFocus(projectFocusId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   }
 
   @Override
-  public long saveProjectFocus(ProjectFocus projectFocus) {
+  public ProjectFocus saveProjectFocus(ProjectFocus projectFocus) {
 
     return projectFocusDAO.save(projectFocus);
   }

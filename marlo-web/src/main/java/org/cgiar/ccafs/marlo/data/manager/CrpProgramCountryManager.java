@@ -34,7 +34,7 @@ public interface CrpProgramCountryManager {
    * @param crpProgramCountryId is the crpProgramCountry identifier.
    * @return true if the crpProgramCountry was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramCountry(long crpProgramCountryId);
+  public void deleteCrpProgramCountry(long crpProgramCountryId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpProgramCountryManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpProgramCountry(CrpProgramCountry crpProgramCountry);
+  public CrpProgramCountry saveCrpProgramCountry(CrpProgramCountry crpProgramCountry);
 
 
 }

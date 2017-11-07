@@ -34,25 +34,24 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   private DeliverableType deliverableType;
   @Expose
   private String name;
+
   @Expose
   private String description;
   @Expose
   private Integer timeline;
-
   @Expose
   private Boolean fair;
+
   @Expose
   private Crp crp;
-
-
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
 
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
+
   public DeliverableType() {
   }
-
 
   public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
     Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
@@ -63,6 +62,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverableTypes = deliverableTypes;
     this.deliverables = deliverables;
   }
+
 
   public Crp getCrp() {
     return crp;
@@ -163,6 +163,12 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setTimeline(Integer timeline) {
     this.timeline = timeline;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableType [id=" + id + ", deliverableType=" + deliverableType + ", name=" + name + ", description="
+      + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
   }
 
 }

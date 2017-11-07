@@ -38,7 +38,7 @@ public interface ICenterLeaderDAO {
    * @param researchLeaderId is the CenterLeader identifier.
    * @return true if the CenterLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchLeader(long researchLeaderId);
+  public void deleteResearchLeader(long researchLeaderId);
 
 
   /**
@@ -72,6 +72,6 @@ public interface ICenterLeaderDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterLeader researchLeader);
+  public CenterLeader save(CenterLeader researchLeader);
 
 }
