@@ -142,11 +142,12 @@ public class CrpPpaPartnersAction extends BaseAction {
         for (LiaisonUser liaisonUser : partnerDB.getContactPoints()) {
           if (crpPpaPartner.getContactPoints() == null || crpPpaPartner.getContactPoints().isEmpty()
             || !crpPpaPartner.getContactPoints().contains(liaisonUser)) {
-            // Disable liaisonUser, liaisonInstitution and UserRole
+            // Disable liaisonUser, liaisonInstitution and 1 UserRole
             if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
               List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId()).stream()
                 .filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
-              for (UserRole userRole : userRoles) {
+              if (userRoles != null && userRoles.size() > 0) {
+                UserRole userRole = userRoles.get(0);
                 userRoleManager.deleteUserRole(userRole.getId());
                 this.notifyRoleContactPointUnassigned(userRole, partnerDB);
               }
