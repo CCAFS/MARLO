@@ -153,7 +153,7 @@ $(document).ready(function() {
         url: baseURL + '/rejectOfficesRequest.do',
         data: formData,
         beforeSend: function() {
-          $request.find('.loading').fadeIn();
+          $rejectOfficeRequest.find('.loading').fadeIn();
         },
         success: function(data) {
           if(data.success) {
@@ -161,7 +161,7 @@ $(document).ready(function() {
           }
         },
         complete: function() {
-          $request.find('.loading').fadeOut();
+          $rejectOfficeRequest.find('.loading').fadeOut();
           $rejectOfficeRequest.find('textarea.modificationJustification').val('')
         }
     });
