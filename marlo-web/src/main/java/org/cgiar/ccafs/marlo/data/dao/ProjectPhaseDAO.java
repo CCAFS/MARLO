@@ -32,7 +32,7 @@ public interface ProjectPhaseDAO {
    * @param projectPhaseId is the projectPhase identifier.
    * @return true if the projectPhase was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPhase(long projectPhaseId);
+  public void deleteProjectPhase(long projectPhaseId);
 
   /**
    * This method validate if the projectPhase identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectPhaseDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectPhase projectPhase);
+  public ProjectPhase save(ProjectPhase projectPhase);
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpsSiteIntegrationMySQLDAO implements CrpsSiteIntegrationDAO {
+public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO<CrpsSiteIntegration, Long> implements CrpsSiteIntegrationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpsSiteIntegrationMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpsSiteIntegrationMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
+  public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
     CrpsSiteIntegration crpsSiteIntegration = this.find(crpsSiteIntegrationId);
     crpsSiteIntegration.setActive(false);
-    return this.save(crpsSiteIntegration) > 0;
+    this.save(crpsSiteIntegration);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpsSiteIntegrationMySQLDAO implements CrpsSiteIntegrationDAO {
 
   @Override
   public CrpsSiteIntegration find(long id) {
-    return dao.find(CrpsSiteIntegration.class, id);
+    return super.find(CrpsSiteIntegration.class, id);
 
   }
 
   @Override
   public List<CrpsSiteIntegration> findAll() {
     String query = "from " + CrpsSiteIntegration.class.getName() + " where is_active=1";
-    List<CrpsSiteIntegration> list = dao.findAll(query);
+    List<CrpsSiteIntegration> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class CrpsSiteIntegrationMySQLDAO implements CrpsSiteIntegrationDAO {
   }
 
   @Override
-  public long save(CrpsSiteIntegration crpsSiteIntegration) {
+  public CrpsSiteIntegration save(CrpsSiteIntegration crpsSiteIntegration) {
     if (crpsSiteIntegration.getId() == null) {
-      dao.save(crpsSiteIntegration);
+      super.saveEntity(crpsSiteIntegration);
     } else {
-      dao.update(crpsSiteIntegration);
+      crpsSiteIntegration = super.update(crpsSiteIntegration);
     }
-    return crpsSiteIntegration.getId();
+    return crpsSiteIntegration;
   }
 
 

@@ -41,9 +41,9 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
-  public boolean deleteActivity(long activityId) {
+  public void deleteActivity(long activityId) {
 
-    return activityDAO.deleteActivity(activityId);
+    activityDAO.deleteActivity(activityId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
-  public long saveActivity(Activity activity) {
+  public Activity saveActivity(Activity activity) {
 
     return activityDAO.save(activity);
   }

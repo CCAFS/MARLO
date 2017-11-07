@@ -34,7 +34,7 @@ public interface ICenterUserManager {
    * @param crpUserId is the crpUser identifier.
    * @return true if the crpUser was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpUser(long crpUserId);
+  public void deleteCrpUser(long crpUserId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpUser(CenterUser crpUser);
+  public CenterUser saveCrpUser(CenterUser crpUser);
 
 
 }

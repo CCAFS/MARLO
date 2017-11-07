@@ -169,8 +169,14 @@ public class CenterCycle implements java.io.Serializable {
     this.name = name;
   }
 
+
   public void setSubmissions(Set<CenterSubmission> submissions) {
     this.submissions = submissions;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterCycle [id=" + id + ", name=" + name + "]";
   }
 
 }

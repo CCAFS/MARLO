@@ -32,7 +32,7 @@ public interface DeliverableActivityDAO {
    * @param deliverableActivityId is the deliverableActivity identifier.
    * @return true if the deliverableActivity was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableActivity(long deliverableActivityId);
+  public void deleteDeliverableActivity(long deliverableActivityId);
 
   /**
    * This method validate if the deliverableActivity identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface DeliverableActivityDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableActivity deliverableActivity);
+  public DeliverableActivity save(DeliverableActivity deliverableActivity);
 }

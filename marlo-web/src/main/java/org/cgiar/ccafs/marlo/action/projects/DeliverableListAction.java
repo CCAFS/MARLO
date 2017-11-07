@@ -99,8 +99,9 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setProject(project);
     deliverable.setCreateDate(new Date());
 
+    deliverable = deliverableManager.saveDeliverable(deliverable);
 
-    deliverableID = deliverableManager.saveDeliverable(deliverable);
+    deliverableID = deliverable.getId();
 
     if (deliverableID > 0) {
       return SUCCESS;
@@ -147,6 +148,7 @@ public class DeliverableListAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -172,7 +174,7 @@ public class DeliverableListAction extends BaseAction {
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
           return openA;
         } else {
 
@@ -207,20 +209,18 @@ public class DeliverableListAction extends BaseAction {
 
       } else {
         if (this.isPlanningActive()) {
-          List<Deliverable> openA =
-            deliverables.stream()
-              .filter(a -> a.isActive() && ((a.getStatus() != null
-                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+          List<Deliverable> openA = deliverables.stream()
+            .filter(a -> a.isActive()
+              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
             .collect(Collectors.toList());
 
           return openA;
         } else {
-          List<Deliverable> openA =
-            deliverables.stream()
-              .filter(a -> a.isActive() && ((a.getStatus() != null
-                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+          List<Deliverable> openA = deliverables.stream()
+            .filter(a -> a.isActive()
+              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
             .collect(Collectors.toList());
           openA.removeAll(deliverables.stream()
             .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null

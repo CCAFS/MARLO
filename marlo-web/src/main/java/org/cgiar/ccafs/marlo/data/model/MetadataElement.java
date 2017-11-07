@@ -40,13 +40,13 @@ public class MetadataElement implements Serializable, IAuditLog {
   private String qualifier;
   @Expose
   private String econdedName;
+
   @Expose
   private String status;
   @Expose
   private String vocabulary;
   @Expose
   private String definitation;
-
   private Set<DeliverableMetadataElement> deliverableMetadataElements = new HashSet<DeliverableMetadataElement>(0);
 
   public MetadataElement() {
@@ -68,7 +68,6 @@ public class MetadataElement implements Serializable, IAuditLog {
     return definitation;
   }
 
-
   public Set<DeliverableMetadataElement> getDeliverableMetadataElements() {
     return deliverableMetadataElements;
   }
@@ -78,10 +77,10 @@ public class MetadataElement implements Serializable, IAuditLog {
     return econdedName;
   }
 
+
   public String getElement() {
     return element;
   }
-
 
   @Override
   public Integer getId() {
@@ -125,6 +124,7 @@ public class MetadataElement implements Serializable, IAuditLog {
   public String getStatus() {
     return status;
   }
+
 
   public String getVocabulary() {
     return vocabulary;
@@ -170,6 +170,13 @@ public class MetadataElement implements Serializable, IAuditLog {
 
   public void setVocabulary(String vocabulary) {
     this.vocabulary = vocabulary;
+  }
+
+  @Override
+  public String toString() {
+    return "MetadataElement [id=" + id + ", schema=" + schema + ", element=" + element + ", qualifier=" + qualifier
+      + ", econdedName=" + econdedName + ", status=" + status + ", vocabulary=" + vocabulary + ", definitation="
+      + definitation + "]";
   }
 
 }

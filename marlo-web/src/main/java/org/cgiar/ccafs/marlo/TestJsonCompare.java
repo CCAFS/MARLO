@@ -503,7 +503,8 @@ public class TestJsonCompare {
         }
 
       } catch (Exception e) {
-
+        // This is just a test class, so System.err is fine.
+        System.err.println(e.getStackTrace());
       }
     }
 

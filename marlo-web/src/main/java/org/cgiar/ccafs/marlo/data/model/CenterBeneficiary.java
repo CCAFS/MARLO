@@ -26,6 +26,7 @@ public class CenterBeneficiary implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
 
@@ -49,7 +50,6 @@ public class CenterBeneficiary implements java.io.Serializable, IAuditLog {
   public CenterBeneficiary() {
   }
 
-
   public CenterBeneficiary(CenterBeneficiaryType beneficiaryType, String name, boolean active) {
     this.beneficiaryType = beneficiaryType;
     this.name = name;
@@ -57,8 +57,9 @@ public class CenterBeneficiary implements java.io.Serializable, IAuditLog {
   }
 
 
-  public CenterBeneficiary(User modifiedBy, User createdBy, CenterBeneficiaryType beneficiaryType, String name, boolean isActive,
-    Date activeSince, String modificationJustification, Set<CenterImpactBeneficiary> researchImpactBeneficiaries) {
+  public CenterBeneficiary(User modifiedBy, User createdBy, CenterBeneficiaryType beneficiaryType, String name,
+    boolean isActive, Date activeSince, String modificationJustification,
+    Set<CenterImpactBeneficiary> researchImpactBeneficiaries) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.beneficiaryType = beneficiaryType;
@@ -98,15 +99,17 @@ public class CenterBeneficiary implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public String getName() {
     return name;
@@ -145,18 +148,23 @@ public class CenterBeneficiary implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setName(String name) {
     this.name = name;
   }
 
-
   public void setResearchImpactBeneficiaries(Set<CenterImpactBeneficiary> researchImpactBeneficiaries) {
     this.researchImpactBeneficiaries = researchImpactBeneficiaries;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterBeneficiary [id=" + id + ", name=" + name + "]";
   }
 
 

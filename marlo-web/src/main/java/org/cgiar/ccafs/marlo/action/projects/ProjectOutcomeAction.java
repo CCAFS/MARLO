@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -62,6 +63,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -74,7 +77,7 @@ public class ProjectOutcomeAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
-
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeAction.class);
 
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
@@ -318,7 +321,11 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcomeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse projectOutcomeID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -435,6 +442,11 @@ public class ProjectOutcomeAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
+      /**
+       * This might seem very strange what is going on here, but this is due to issue #1124. The Struts2 Prepare
+       * interceptor will set the values on the projectOutcome entity during save, but if we leave the values here and
+       * they ids change then Hibernate will be unhappy.
+       */
       if (projectOutcome.getMilestones() != null) {
         projectOutcome.getMilestones().clear();
       }
@@ -445,6 +457,12 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getNextUsers() != null) {
         projectOutcome.getNextUsers().clear();
       }
+
+      /**
+       * Hack to fix ManyToOne issue as a result of issue #1124
+       */
+      projectOutcome.setAchievedUnit(null);
+      projectOutcome.setExpectedUnit(null);
     }
   }
 
@@ -454,10 +472,11 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     if (this.hasPermission("canEdit")) {
-      this.saveProjectOutcome();
-      this.saveMilestones();
-      this.saveCommunications();
-      this.saveNextUsers();
+
+      ProjectOutcome projectOutcomeDB = this.saveProjectOutcome();
+      this.saveMilestones(projectOutcomeDB);
+      this.saveCommunications(projectOutcomeDB);
+      this.saveNextUsers(projectOutcomeDB);
 
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
@@ -506,9 +525,8 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public void saveCommunications() {
+  public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     for (ProjectCommunication projectCommunication : projectOutcomeDB.getProjectCommunications().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
@@ -524,50 +542,61 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getCommunications() != null) {
       for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
         if (projectCommunication != null) {
-          if (projectCommunication.getId() == null) {
+          if (projectCommunication.getId() == null || projectCommunication.getId() == -1L) {
+            // New entity
             projectCommunication.setCreatedBy(this.getCurrentUser());
 
             projectCommunication.setActiveSince(new Date());
             projectCommunication.setActive(true);
-            projectCommunication.setProjectOutcome(projectOutcome);
+            projectCommunication.setProjectOutcome(projectOutcomeDB);
             projectCommunication.setModifiedBy(this.getCurrentUser());
             projectCommunication.setModificationJustification("");
 
             if (projectCommunication.getFile() != null) {
 
+              FileDB summary = this.getFileDB(null, projectCommunication.getFile(),
+                projectCommunication.getFileFileName(), this.getSummaryAbsolutePath());
 
-              projectCommunication.setSummary(this.getFileDB(null, projectCommunication.getFile(),
-                projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+              projectCommunication.setSummary(summary);
               FileManager.copyFile(projectCommunication.getFile(),
                 this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
             }
+
+            if (projectCommunication.getSummary().getFileName().isEmpty()) {
+              projectCommunication.setSummary(null);
+            }
+
+            projectCommunication = projectCommunicationManager.saveProjectCommunication(projectCommunication);
+
           } else {
+            // Update existing entity.
             ProjectCommunication projectCommunicationDB =
               projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
-            projectCommunication.setCreatedBy(projectCommunicationDB.getCreatedBy());
 
-            projectCommunication.setActiveSince(projectCommunicationDB.getActiveSince());
-            projectCommunication.setActive(true);
-            projectCommunication.setProjectOutcome(projectOutcome);
-            projectCommunication.setModifiedBy(this.getCurrentUser());
-            projectCommunication.setModificationJustification("");
+            projectCommunicationDB.setActive(true);
+            projectCommunicationDB.setProjectOutcome(projectOutcomeDB);
+            projectCommunicationDB.setModifiedBy(this.getCurrentUser());
+            projectCommunicationDB.setModificationJustification("");
 
             if (projectCommunication.getFile() != null) {
 
+              FileDB summary = this.getFileDB(projectCommunicationDB.getSummary(), projectCommunication.getFile(),
+                projectCommunication.getFileFileName(), this.getSummaryAbsolutePath());
 
-              projectCommunication.setSummary(this.getFileDB(projectCommunicationDB.getSummary(),
-                projectCommunication.getFile(), projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+              projectCommunicationDB.setSummary(summary);
               FileManager.copyFile(projectCommunication.getFile(),
                 this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
             }
 
+            if (projectCommunication.getSummary().getFileName().isEmpty()) {
+              projectCommunicationDB.setSummary(null);
+            }
+
+            projectCommunicationDB = projectCommunicationManager.saveProjectCommunication(projectCommunicationDB);
+
           }
 
-          if (projectCommunication.getSummary().getFileName().isEmpty()) {
-            projectCommunication.setSummary(null);
-          }
 
-          projectCommunicationManager.saveProjectCommunication(projectCommunication);
         }
 
 
@@ -576,9 +605,8 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public void saveMilestones() {
+  public void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
 
@@ -594,35 +622,57 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
         if (projectMilestone != null) {
+          // Add new entity
           if (projectMilestone.getId() == null) {
             projectMilestone.setCreatedBy(this.getCurrentUser());
 
             projectMilestone.setActiveSince(new Date());
             projectMilestone.setActive(true);
-            projectMilestone.setProjectOutcome(projectOutcome);
+            projectMilestone.setProjectOutcome(projectOutcomeDB);
             projectMilestone.setModifiedBy(this.getCurrentUser());
             projectMilestone.setModificationJustification("");
+
+            if (projectMilestone.getExpectedUnit() != null) {
+              if (projectMilestone.getExpectedUnit().getId() == null
+                || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+                projectMilestone.setExpectedUnit(null);
+              }
+            }
+            projectMilestoneManager.saveProjectMilestone(projectMilestone);
 
           } else {
+            // Update existing entity.
             ProjectMilestone projectMilestoneDB =
               projectMilestoneManager.getProjectMilestoneById(projectMilestone.getId());
-            projectMilestone.setCreatedBy(projectMilestoneDB.getCreatedBy());
 
-            projectMilestone.setActiveSince(projectMilestoneDB.getActiveSince());
-            projectMilestone.setActive(true);
-            projectMilestone.setProjectOutcome(projectOutcome);
-            projectMilestone.setModifiedBy(this.getCurrentUser());
-            projectMilestone.setModificationJustification("");
-          }
+            projectMilestoneDB.setActive(true);
+            projectMilestoneDB.setProjectOutcome(projectOutcomeDB);
+            projectMilestoneDB.setModifiedBy(this.getCurrentUser());
+            projectMilestoneDB.setModificationJustification("");
+            /**
+             * Set fields from non managed entity to managed entity (double check if these fields are editable in the
+             * client)
+             */
+            projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
+            projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
+            projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
+            projectMilestoneDB.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+            projectMilestoneDB.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+            projectMilestoneDB.setYear(projectMilestone.getYear());
 
-          if (projectMilestone.getExpectedUnit() != null) {
-            if (projectMilestone.getExpectedUnit().getId() == null
-              || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
-              projectMilestone.setExpectedUnit(null);
+            if (projectMilestone.getExpectedUnit() != null) {
+              if (projectMilestone.getExpectedUnit().getId() == null
+                || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+                projectMilestone.setExpectedUnit(null);
+              } else {
+                projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
+              }
             }
+
+            projectMilestoneDB = projectMilestoneManager.saveProjectMilestone(projectMilestoneDB);
+
           }
 
-          projectMilestoneManager.saveProjectMilestone(projectMilestone);
         }
 
       }
@@ -630,9 +680,8 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public void saveNextUsers() {
+  public void saveNextUsers(ProjectOutcome projectOutcomeDB) {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
 
@@ -649,59 +698,77 @@ public class ProjectOutcomeAction extends BaseAction {
       for (ProjectNextuser projectNextuser : projectOutcome.getNextUsers()) {
         if (projectNextuser != null) {
           if (projectNextuser.getId() == null) {
+            // Create new entity
             projectNextuser.setCreatedBy(this.getCurrentUser());
 
             projectNextuser.setActiveSince(new Date());
             projectNextuser.setActive(true);
-            projectNextuser.setProjectOutcome(projectOutcome);
+            projectNextuser.setProjectOutcome(projectOutcomeDB);
             projectNextuser.setModifiedBy(this.getCurrentUser());
             projectNextuser.setModificationJustification("");
+
+            projectNextuserManager.saveProjectNextuser(projectNextuser);
 
           } else {
+            // Update existing entity
             ProjectNextuser projectNextuserDB = projectNextuserManager.getProjectNextuserById(projectNextuser.getId());
-            projectNextuser.setCreatedBy(projectNextuserDB.getCreatedBy());
 
-            projectNextuser.setActiveSince(projectNextuserDB.getActiveSince());
-            projectNextuser.setActive(true);
-            projectNextuser.setProjectOutcome(projectOutcome);
-            projectNextuser.setModifiedBy(this.getCurrentUser());
-            projectNextuser.setModificationJustification("");
+            projectNextuserDB.setActive(true);
+            projectNextuserDB.setProjectOutcome(projectOutcomeDB);
+            projectNextuserDB.setModifiedBy(this.getCurrentUser());
+            projectNextuserDB.setModificationJustification("");
+
+            // update existing fields
+            projectNextuserDB.setKnowledge(projectNextuser.getKnowledge());
+            projectNextuserDB.setNextUser(projectNextuser.getNextUser());
+            projectNextuserDB.setStrategies(projectNextuser.getStrategies());
+
+            projectNextuserDB = projectNextuserManager.saveProjectNextuser(projectNextuserDB);
           }
 
-          projectNextuserManager.saveProjectNextuser(projectNextuser);
+
         }
 
       }
     }
   }
 
-  public void saveProjectOutcome() {
+  public ProjectOutcome saveProjectOutcome() {
 
-    int startYear = 0;
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
     int endYear = 0;
     Calendar startDate = Calendar.getInstance();
     startDate.setTime(project.getStartDate());
-    startYear = startDate.get(Calendar.YEAR);
 
     Calendar endDate = Calendar.getInstance();
     endDate.setTime(project.getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
     if (this.isPlanningActive() || this.getCurrentCycleYear() == endYear) {
-      projectOutcome.setActive(true);
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setCreatedBy(this.getCurrentUser());
-      projectOutcome.setActiveSince(new Date());
-      projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
-      projectOutcome.setProject(project);
+      projectOutcomeDB.setActive(true);
+      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
+      projectOutcomeDB.setCreatedBy(this.getCurrentUser());
+      projectOutcomeDB.setActiveSince(new Date());
+      projectOutcomeDB.setCrpProgramOutcome(crpProgramOutcome);
+      projectOutcomeDB.setProject(project);
       if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
-        projectOutcome.setExpectedUnit(null);
+        projectOutcomeDB.setExpectedUnit(null);
+      } else {
+        projectOutcomeDB.setExpectedUnit(projectOutcome.getExpectedUnit());
       }
-      projectOutcome.setId(projectOutcomeID);
-      projectOutcome.setModificationJustification("");
-      projectOutcomeManager.saveProjectOutcome(projectOutcome);
+
+      projectOutcomeDB.setExpectedValue(projectOutcome.getExpectedValue());
+      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
+      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+
+      projectOutcomeDB.setModificationJustification("");
+      projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
 
     }
+
+    return projectOutcomeDB;
 
   }
 

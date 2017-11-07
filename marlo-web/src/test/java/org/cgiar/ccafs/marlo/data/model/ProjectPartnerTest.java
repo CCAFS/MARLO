@@ -13,42 +13,28 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.data.model;
 
-package org.cgiar.ccafs.marlo.data;
+import org.cgiar.ccafs.marlo.web.filter.MARLOCustomPersistFilter;
 
-import org.hibernate.Session;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CloseSession extends Thread {
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
-  private static final Logger LOG = LoggerFactory.getLogger(CloseSession.class);
-  private Session session;
+public class ProjectPartnerTest {
+
+  private final Logger LOG = LoggerFactory.getLogger(MARLOCustomPersistFilter.class);
 
 
-  public Session getSession() {
-    return session;
+  @Test
+  public void testProjectPartnerToStringHandlesNulls() throws Exception {
+    ProjectPartner projectPartner = new ProjectPartner();
+    String projectPartnerToString = projectPartner.toString();
+    LOG.info("projectPartnerToString : " + projectPartnerToString);
+    assertThat(projectPartnerToString, notNullValue());
   }
 
-
-  @Override
-  public void run() {
-    try {
-
-      Thread.sleep(30000);
-      session.disconnect();
-      if (!session.isOpen()) {
-        session.close();
-      }
-
-
-    } catch (Exception e) {
-      LOG.error(e.getMessage());
-    }
-
-  }
-
-  public void setSession(Session session) {
-    this.session = session;
-  }
 }

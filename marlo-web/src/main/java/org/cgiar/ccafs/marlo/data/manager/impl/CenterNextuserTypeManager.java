@@ -42,9 +42,9 @@ public class CenterNextuserTypeManager implements ICenterNextuserTypeManager {
   }
 
   @Override
-  public boolean deleteNextuserType(long nextuserTypeId) {
+  public void deleteNextuserType(long nextuserTypeId) {
 
-    return nextuserTypeDAO.deleteNextuserType(nextuserTypeId);
+    nextuserTypeDAO.deleteNextuserType(nextuserTypeId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterNextuserTypeManager implements ICenterNextuserTypeManager {
   }
 
   @Override
-  public long saveNextuserType(CenterNextuserType nextuserType) {
+  public CenterNextuserType saveNextuserType(CenterNextuserType nextuserType) {
 
     return nextuserTypeDAO.save(nextuserType);
   }

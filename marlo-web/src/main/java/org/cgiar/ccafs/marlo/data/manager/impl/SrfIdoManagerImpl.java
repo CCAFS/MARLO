@@ -41,9 +41,9 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   }
 
   @Override
-  public boolean deleteSrfIdo(long srfIdoId) {
+  public void deleteSrfIdo(long srfIdoId) {
 
-    return srfIdoDAO.deleteSrfIdo(srfIdoId);
+    srfIdoDAO.deleteSrfIdo(srfIdoId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   }
 
   @Override
-  public long saveSrfIdo(SrfIdo srfIdo) {
+  public SrfIdo saveSrfIdo(SrfIdo srfIdo) {
 
     return srfIdoDAO.save(srfIdo);
   }

@@ -20,32 +20,33 @@ import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
-public class AgreementMySQLDAO implements AgreementDAO {
-
-  private StandardDAO dao;
+public class AgreementMySQLDAO extends AbstractMarloDAO<Agreement, String> implements AgreementDAO {
 
   @Inject
-  public AgreementMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public AgreementMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public Agreement find(String id) {
-    return dao.find(Agreement.class, id);
+    return super.find(Agreement.class, id);
   }
 
   @Override
-  public String save(Agreement agreement) {
-    dao.save(agreement);
-    return agreement.getId();
+  public Agreement save(Agreement agreement) {
+    // dao.save(agreement);
+    return null;
   }
 
+
   @Override
-  public String update(Agreement agreement) {
-    dao.update(agreement);
-    return agreement.getId();
+  public Agreement update(Agreement agreement) {
+    // dao.update(agreement);
+    return null;
   }
+
 
 }

@@ -23,6 +23,7 @@ public class CenterProjectLocation implements java.io.Serializable, IAuditLog {
   @Expose
   private LocElement locElement;
 
+
   @Expose
   private User modifiedBy;
 
@@ -49,9 +50,8 @@ public class CenterProjectLocation implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
-  public CenterProjectLocation(LocElement locElement, User modifiedBy, User createdBy, CenterProject project, boolean active,
-    Date activeSince, String modificationJustification) {
+  public CenterProjectLocation(LocElement locElement, User modifiedBy, User createdBy, CenterProject project,
+    boolean active, Date activeSince, String modificationJustification) {
     this.locElement = locElement;
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -114,9 +114,11 @@ public class CenterProjectLocation implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -160,18 +162,23 @@ public class CenterProjectLocation implements java.io.Serializable, IAuditLog {
     this.locElement = locElement;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(CenterProject project) {
     this.project = project;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectLocation [id=" + id + ", locElement=" + locElement + ", project=" + project + "]";
   }
 
 }

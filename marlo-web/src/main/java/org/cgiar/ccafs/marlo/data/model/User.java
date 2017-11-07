@@ -132,6 +132,9 @@ public class User implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
     User other = (User) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
@@ -429,7 +432,9 @@ public class User implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
+      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", autoSave=" + autoSave
+      + ", lastLogin=" + lastLogin + "]";
   }
 }
 

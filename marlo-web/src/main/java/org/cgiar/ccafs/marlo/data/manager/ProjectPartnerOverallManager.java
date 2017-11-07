@@ -34,7 +34,7 @@ public interface ProjectPartnerOverallManager {
    * @param projectPartnerOverallId is the projectPartnerOverall identifier.
    * @return true if the projectPartnerOverall was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerOverall(long projectPartnerOverallId);
+  public void deleteProjectPartnerOverall(long projectPartnerOverallId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectPartnerOverallManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartnerOverall(ProjectPartnerOverall projectPartnerOverall);
+  public ProjectPartnerOverall saveProjectPartnerOverall(ProjectPartnerOverall projectPartnerOverall);
 
 
 }

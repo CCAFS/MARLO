@@ -32,7 +32,7 @@ public interface ICenterTargetUnitDAO {
    * @param targetUnitId is the targetUnit identifier.
    * @return true if the targetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteTargetUnit(long targetUnitId);
+  public void deleteTargetUnit(long targetUnitId);
 
   /**
    * This method validate if the targetUnit identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterTargetUnitDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterTargetUnit targetUnit);
+  public CenterTargetUnit save(CenterTargetUnit targetUnit);
 }

@@ -32,7 +32,7 @@ public interface DeliverableGenderLevelDAO {
    * @param deliverableGenderLevelId is the deliverableGenderLevel identifier.
    * @return true if the deliverableGenderLevel was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableGenderLevel(long deliverableGenderLevelId);
+  public void deleteDeliverableGenderLevel(long deliverableGenderLevelId);
 
   /**
    * This method validate if the deliverableGenderLevel identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableGenderLevelDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableGenderLevel deliverableGenderLevel);
+  public DeliverableGenderLevel save(DeliverableGenderLevel deliverableGenderLevel);
 }

@@ -39,12 +39,12 @@ public class AgreementManagerImpl implements AgreementManager {
   }
 
   @Override
-  public String save(Agreement agreement) {
+  public Agreement save(Agreement agreement) {
     return this.agreementDAO.save(agreement);
   }
 
   @Override
-  public String update(Agreement agreement) {
+  public Agreement update(Agreement agreement) {
     return this.agreementDAO.update(agreement);
   }
 

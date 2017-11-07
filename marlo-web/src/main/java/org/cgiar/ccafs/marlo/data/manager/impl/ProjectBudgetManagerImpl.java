@@ -46,9 +46,9 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public boolean deleteProjectBudget(long projectBudgetId) {
+  public void deleteProjectBudget(long projectBudgetId) {
 
-    return projectBudgetDAO.deleteProjectBudget(projectBudgetId);
+    projectBudgetDAO.deleteProjectBudget(projectBudgetId);
   }
 
   @Override
@@ -87,7 +87,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public long saveProjectBudget(ProjectBudget projectBudget) {
+  public ProjectBudget saveProjectBudget(ProjectBudget projectBudget) {
 
     return projectBudgetDAO.save(projectBudget);
   }

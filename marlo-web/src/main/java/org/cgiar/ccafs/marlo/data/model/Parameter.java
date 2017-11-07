@@ -19,6 +19,7 @@ public class Parameter implements java.io.Serializable {
   private String key;
   private String description;
   private Integer format;
+
   private String defaultValue;
   private Integer category;
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
@@ -26,10 +27,10 @@ public class Parameter implements java.io.Serializable {
   public Parameter() {
   }
 
-
   public Parameter(String description) {
     this.description = description;
   }
+
 
   public Parameter(String key, String description, Integer format, String defaultValue, Integer category,
     Set<CustomParameter> customParameterses) {
@@ -95,6 +96,12 @@ public class Parameter implements java.io.Serializable {
 
   public void setKey(String key) {
     this.key = key;
+  }
+
+  @Override
+  public String toString() {
+    return "Parameter [id=" + id + ", key=" + key + ", description=" + description + ", format=" + format
+      + ", defaultValue=" + defaultValue + ", category=" + category + "]";
   }
 
 

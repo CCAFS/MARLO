@@ -32,7 +32,7 @@ public interface IpProjectContributionOverviewDAO {
    * @param ipProjectContributionOverviewId is the ipProjectContributionOverview identifier.
    * @return true if the ipProjectContributionOverview was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectContributionOverview(long ipProjectContributionOverviewId);
+  public void deleteIpProjectContributionOverview(long ipProjectContributionOverviewId);
 
   /**
    * This method validate if the ipProjectContributionOverview identify with the given id exists in the system.
@@ -84,5 +84,5 @@ public interface IpProjectContributionOverviewDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProjectContributionOverview ipProjectContributionOverview);
+  public IpProjectContributionOverview save(IpProjectContributionOverview ipProjectContributionOverview);
 }

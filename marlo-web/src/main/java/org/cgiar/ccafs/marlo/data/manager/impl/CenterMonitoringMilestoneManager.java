@@ -42,9 +42,9 @@ public class CenterMonitoringMilestoneManager implements ICenterMonitoringMilest
   }
 
   @Override
-  public boolean deleteMonitoringMilestone(long monitoringMilestoneId) {
+  public void deleteMonitoringMilestone(long monitoringMilestoneId) {
 
-    return monitoringMilestoneDAO.deleteMonitoringMilestone(monitoringMilestoneId);
+    monitoringMilestoneDAO.deleteMonitoringMilestone(monitoringMilestoneId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterMonitoringMilestoneManager implements ICenterMonitoringMilest
   }
 
   @Override
-  public long saveMonitoringMilestone(CenterMonitoringMilestone monitoringMilestone) {
+  public CenterMonitoringMilestone saveMonitoringMilestone(CenterMonitoringMilestone monitoringMilestone) {
 
     return monitoringMilestoneDAO.save(monitoringMilestone);
   }

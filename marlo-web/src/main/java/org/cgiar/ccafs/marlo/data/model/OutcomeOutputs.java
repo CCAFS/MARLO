@@ -46,4 +46,9 @@ public class OutcomeOutputs implements Serializable {
     this.outputs = outputs;
   }
 
+  @Override
+  public String toString() {
+    return "OutcomeOutputs [outcome=" + outcome + "]";
+  }
+
 }

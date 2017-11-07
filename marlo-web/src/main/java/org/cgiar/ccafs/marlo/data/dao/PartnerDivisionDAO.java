@@ -32,7 +32,7 @@ public interface PartnerDivisionDAO {
    * @param partnerDivisionId is the partnerDivision identifier.
    * @return true if the partnerDivision was successfully deleted, false otherwise.
    */
-  public boolean deletePartnerDivision(long partnerDivisionId);
+  public void deletePartnerDivision(long partnerDivisionId);
 
   /**
    * This method validate if the partnerDivision identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface PartnerDivisionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(PartnerDivision partnerDivision);
+  public PartnerDivision save(PartnerDivision partnerDivision);
 }

@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterBeneficiaryType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterBeneficiaryTypeDAO implements ICenterBeneficiaryTypeDAO {
+public class CenterBeneficiaryTypeDAO extends AbstractMarloDAO<CenterBeneficiaryType, Long>
+  implements ICenterBeneficiaryTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterBeneficiaryTypeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterBeneficiaryTypeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteBeneficiaryType(long beneficiaryTypeId) {
+  public void deleteBeneficiaryType(long beneficiaryTypeId) {
     CenterBeneficiaryType beneficiaryType = this.find(beneficiaryTypeId);
     beneficiaryType.setActive(false);
-    return this.save(beneficiaryType) > 0;
+    this.save(beneficiaryType);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterBeneficiaryTypeDAO implements ICenterBeneficiaryTypeDAO {
 
   @Override
   public CenterBeneficiaryType find(long id) {
-    return dao.find(CenterBeneficiaryType.class, id);
+    return super.find(CenterBeneficiaryType.class, id);
 
   }
 
   @Override
   public List<CenterBeneficiaryType> findAll() {
     String query = "from " + CenterBeneficiaryType.class.getName();
-    List<CenterBeneficiaryType> list = dao.findAll(query);
+    List<CenterBeneficiaryType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterBeneficiaryTypeDAO implements ICenterBeneficiaryTypeDAO {
   @Override
   public List<CenterBeneficiaryType> getBeneficiaryTypesByUserId(long userId) {
     String query = "from " + CenterBeneficiaryType.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterBeneficiaryType beneficiaryType) {
+  public CenterBeneficiaryType save(CenterBeneficiaryType beneficiaryType) {
     if (beneficiaryType.getId() == null) {
-      dao.save(beneficiaryType);
+      super.saveEntity(beneficiaryType);
     } else {
-      dao.update(beneficiaryType);
+      beneficiaryType = super.update(beneficiaryType);
     }
-    return beneficiaryType.getId();
+    return beneficiaryType;
   }
 
 

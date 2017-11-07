@@ -32,7 +32,7 @@ public interface MetadataElementDAO {
    * @param metadataElementId is the metadataElement identifier.
    * @return true if the metadataElement was successfully deleted, false otherwise.
    */
-  public boolean deleteMetadataElement(long metadataElementId);
+  public void deleteMetadataElement(long metadataElementId);
 
   /**
    * This method validate if the metadataElement identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface MetadataElementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(MetadataElement metadataElement);
+  public MetadataElement save(MetadataElement metadataElement);
 }

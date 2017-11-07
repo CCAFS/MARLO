@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CaseStudyMySQLDAO implements CaseStudyDAO {
+public class CaseStudyMySQLDAO extends AbstractMarloDAO<CaseStudy, Long> implements CaseStudyDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CaseStudyMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CaseStudyMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCaseStudy(long caseStudyId) {
+  public void deleteCaseStudy(long caseStudyId) {
     CaseStudy caseStudy = this.find(caseStudyId);
     caseStudy.setActive(false);
-    return this.save(caseStudy) > 0;
+    this.save(caseStudy);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CaseStudyMySQLDAO implements CaseStudyDAO {
 
   @Override
   public CaseStudy find(long id) {
-    return dao.find(CaseStudy.class, id);
+    return super.find(CaseStudy.class, id);
 
   }
 
   @Override
   public List<CaseStudy> findAll() {
     String query = "from " + CaseStudy.class.getName() + " where is_active=1";
-    List<CaseStudy> list = dao.findAll(query);
+    List<CaseStudy> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,27 +67,27 @@ public class CaseStudyMySQLDAO implements CaseStudyDAO {
   }
 
   @Override
-  public long save(CaseStudy caseStudy) {
+  public CaseStudy save(CaseStudy caseStudy) {
     if (caseStudy.getId() == null) {
-      dao.save(caseStudy);
+      super.saveEntity(caseStudy);
     } else {
-      dao.update(caseStudy);
+      caseStudy = super.update(caseStudy);
     }
 
 
-    return caseStudy.getId();
+    return caseStudy;
   }
 
   @Override
-  public long save(CaseStudy caseStudy, String section, List<String> relationsName) {
+  public CaseStudy save(CaseStudy caseStudy, String section, List<String> relationsName) {
     if (caseStudy.getId() == null) {
-      dao.save(caseStudy, section, relationsName);
+      super.saveEntity(caseStudy, section, relationsName);
     } else {
-      dao.update(caseStudy, section, relationsName);
+      caseStudy = super.update(caseStudy, section, relationsName);
     }
 
 
-    return caseStudy.getId();
+    return caseStudy;
   }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +32,7 @@ public interface PartnerRequestDAO {
    * @param partnerRequestId is the partnerRequest identifier.
    * @return true if the partnerRequest was successfully deleted, false otherwise.
    */
-  public boolean deletePartnerRequest(long partnerRequestId);
+  public void deletePartnerRequest(long partnerRequestId);
 
   /**
    * This method validate if the partnerRequest identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface PartnerRequestDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(PartnerRequest partnerRequest);
+  public PartnerRequest save(PartnerRequest partnerRequest);
 }

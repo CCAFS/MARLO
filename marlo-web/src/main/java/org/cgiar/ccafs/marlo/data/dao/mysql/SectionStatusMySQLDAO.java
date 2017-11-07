@@ -23,21 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SectionStatusMySQLDAO implements SectionStatusDAO {
+public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long> implements SectionStatusDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SectionStatusMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SectionStatusMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSectionStatus(long sectionStatusId) {
+  public void deleteSectionStatus(long sectionStatusId) {
     SectionStatus sectionStatus = this.find(sectionStatusId);
 
-    return dao.delete(sectionStatus);
+    super.delete(sectionStatus);
   }
 
   @Override
@@ -52,14 +52,14 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
 
   @Override
   public SectionStatus find(long id) {
-    return dao.find(SectionStatus.class, id);
+    return super.find(SectionStatus.class, id);
 
   }
 
   @Override
   public List<SectionStatus> findAll() {
     String query = "from " + SectionStatus.class.getName() + " ";
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -71,7 +71,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and case_study_id=" + caseStudyID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -83,7 +83,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and ip_liaison_id=" + ipLiaisonInstitutionID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -94,7 +94,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
       + "' and crp_program_id=" + crpProgramID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -105,7 +105,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and deliverable_id=" + deliverableID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -113,11 +113,11 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   }
 
   @Override
-  public SectionStatus getSectionStatusByFundingSource(long fundingSource, String cycle, Integer year,
+  public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and funding_source_id=" + fundingSource;
-    List<SectionStatus> list = dao.findAll(query);
+      + "' and funding_source_id=" + fundingSourceId;
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -128,7 +128,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and ip_program_id=" + ipProgramID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -139,7 +139,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and project_id=" + projectID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -150,7 +150,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and project_cofunded_id=" + projectID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -162,7 +162,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and highlight_id=" + projectHighlightID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -173,7 +173,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and project_outcome_id=" + projectID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -184,7 +184,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusBySynteshisMog(long ipProgramID, String cycle, int year, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
       + cycle + "' and year=" + year + " and ip_program_id=" + ipProgramID;
-    List<SectionStatus> list = dao.findAll(query);
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -192,14 +192,14 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   }
 
   @Override
-  public long save(SectionStatus sectionStatus) {
+  public SectionStatus save(SectionStatus sectionStatus) {
     if (sectionStatus.getId() == null) {
-      dao.save(sectionStatus);
+      super.saveEntity(sectionStatus);
     } else {
-      dao.update(sectionStatus);
+      sectionStatus = super.update(sectionStatus);
     }
 
 
-    return sectionStatus.getId();
+    return sectionStatus;
   }
 }

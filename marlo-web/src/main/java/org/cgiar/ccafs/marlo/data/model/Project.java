@@ -1577,7 +1577,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "Project [crp=" + crp + ", id=" + id + ", status=" + status + ", title=" + title + ", type=" + type + "]";
   }
 }
 

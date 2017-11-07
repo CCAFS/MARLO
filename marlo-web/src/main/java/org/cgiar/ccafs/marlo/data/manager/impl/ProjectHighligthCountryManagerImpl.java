@@ -41,9 +41,9 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   }
 
   @Override
-  public boolean deleteProjectHighligthCountry(long projectHighligthCountryId) {
+  public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
 
-    return projectHighligthCountryDAO.deleteProjectHighligthCountry(projectHighligthCountryId);
+    projectHighligthCountryDAO.deleteProjectHighligthCountry(projectHighligthCountryId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   }
 
   @Override
-  public long saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry) {
+  public ProjectHighlightCountry saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry) {
 
     return projectHighligthCountryDAO.save(projectHighlightCountry);
   }

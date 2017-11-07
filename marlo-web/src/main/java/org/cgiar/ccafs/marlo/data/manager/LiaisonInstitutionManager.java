@@ -34,7 +34,7 @@ public interface LiaisonInstitutionManager {
    * @param liaisonInstitutionId is the liaisonInstitution identifier.
    * @return true if the liaisonInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteLiaisonInstitution(long liaisonInstitutionId);
+  public void deleteLiaisonInstitution(long liaisonInstitutionId);
 
 
   /**
@@ -79,6 +79,6 @@ public interface LiaisonInstitutionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveLiaisonInstitution(LiaisonInstitution liaisonInstitution);
+  public LiaisonInstitution saveLiaisonInstitution(LiaisonInstitution liaisonInstitution);
 
 }

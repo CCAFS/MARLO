@@ -32,7 +32,7 @@ public interface ProjectCommunicationDAO {
    * @param projectCommunicationId is the projectCommunication identifier.
    * @return true if the projectCommunication was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCommunication(long projectCommunicationId);
+  public void deleteProjectCommunication(long projectCommunicationId);
 
   /**
    * This method validate if the projectCommunication identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectCommunicationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectCommunication projectCommunication);
+  public ProjectCommunication save(ProjectCommunication projectCommunication);
 }

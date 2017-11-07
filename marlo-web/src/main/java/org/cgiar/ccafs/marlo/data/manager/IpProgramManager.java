@@ -34,7 +34,7 @@ public interface IpProgramManager {
    * @param ipProgramId is the ipProgram identifier.
    * @return true if the ipProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgram(long ipProgramId);
+  public void deleteIpProgram(long ipProgramId);
 
 
   /**
@@ -71,7 +71,7 @@ public interface IpProgramManager {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long save(IpProgram ipProgram, String section, List<String> relationsName);
+  public IpProgram save(IpProgram ipProgram, String section, List<String> relationsName);
 
   /**
    * This method saves the information of the given ipProgram
@@ -81,7 +81,7 @@ public interface IpProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProgram(IpProgram ipProgram);
+  public IpProgram saveIpProgram(IpProgram ipProgram);
 
 
 }

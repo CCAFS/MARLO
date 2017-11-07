@@ -34,7 +34,7 @@ public interface ProjectCommunicationManager {
    * @param projectCommunicationId is the projectCommunication identifier.
    * @return true if the projectCommunication was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCommunication(long projectCommunicationId);
+  public void deleteProjectCommunication(long projectCommunicationId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectCommunicationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectCommunication(ProjectCommunication projectCommunication);
+  public ProjectCommunication saveProjectCommunication(ProjectCommunication projectCommunication);
 
 
 }

@@ -34,7 +34,7 @@ public interface CrpsSiteIntegrationManager {
    * @param crpsSiteIntegrationId is the crpsSiteIntegration identifier.
    * @return true if the crpsSiteIntegration was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpsSiteIntegration(long crpsSiteIntegrationId);
+  public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpsSiteIntegrationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpsSiteIntegration(CrpsSiteIntegration crpsSiteIntegration);
+  public CrpsSiteIntegration saveCrpsSiteIntegration(CrpsSiteIntegration crpsSiteIntegration);
 
 
 }

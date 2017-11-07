@@ -41,9 +41,9 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
-  public boolean deleteRole(long roleId) {
+  public void deleteRole(long roleId) {
 
-    return roleDAO.deleteRole(roleId);
+    roleDAO.deleteRole(roleId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
-  public long saveRole(Role role) {
+  public Role saveRole(Role role) {
 
     return roleDAO.save(role);
   }

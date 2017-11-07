@@ -44,16 +44,17 @@ public class CenterMilestone implements Serializable, IAuditLog {
   @Expose
   private String title;
 
-
   @Expose
   private Integer targetYear;
+
 
   @Expose
   private BigDecimal value;
 
-
   @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
   @Expose
@@ -138,6 +139,7 @@ public class CenterMilestone implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -188,7 +190,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
     return result;
   }
 
-
   /**
    * @return the active
    */
@@ -196,6 +197,7 @@ public class CenterMilestone implements Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
+
 
   public boolean isImpactPathway() {
     return impactPathway;
@@ -208,7 +210,6 @@ public class CenterMilestone implements Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -218,13 +219,13 @@ public class CenterMilestone implements Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   /**
    * @param id the id to set
    */
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setImpactPathway(boolean impactPathway) {
     this.impactPathway = impactPathway;
@@ -274,8 +275,14 @@ public class CenterMilestone implements Serializable, IAuditLog {
     this.title = title;
   }
 
+
   public void setValue(BigDecimal value) {
     this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterMilestone [id=" + id + ", title=" + title + ", targetYear=" + targetYear + ", value=" + value + "]";
   }
 
 

@@ -34,7 +34,7 @@ public interface CrpAssumptionManager {
    * @param crpAssumptionId is the crpAssumption identifier.
    * @return true if the crpAssumption was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpAssumption(long crpAssumptionId);
+  public void deleteCrpAssumption(long crpAssumptionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpAssumptionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpAssumption(CrpAssumption crpAssumption);
+  public CrpAssumption saveCrpAssumption(CrpAssumption crpAssumption);
 
 
 }

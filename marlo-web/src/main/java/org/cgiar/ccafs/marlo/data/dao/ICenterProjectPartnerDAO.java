@@ -32,7 +32,7 @@ public interface ICenterProjectPartnerDAO {
    * @param projectPartnerId is the projectPartner identifier.
    * @return true if the projectPartner was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartner(long projectPartnerId);
+  public void deleteProjectPartner(long projectPartnerId);
 
   /**
    * This method validate if the projectPartner identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterProjectPartnerDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectPartner projectPartner);
+  public CenterProjectPartner save(CenterProjectPartner projectPartner);
 }

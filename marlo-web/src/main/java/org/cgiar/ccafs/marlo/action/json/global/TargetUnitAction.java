@@ -79,10 +79,10 @@ public class TargetUnitAction extends BaseAction {
       targetUnit.setModifiedBy(this.getCurrentUser());
 
 
-      long newTargetUnitId = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
+      targetUnit = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
 
       newTargetUnit.put("status", true);
-      newTargetUnit.put("id", newTargetUnitId);
+      newTargetUnit.put("id", targetUnit.getId());
       newTargetUnit.put("name", queryParameter);
 
       return SUCCESS;

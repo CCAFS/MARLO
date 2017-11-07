@@ -104,7 +104,7 @@ public class UserRole implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return role.getAcronym().toString();
+    return "UserRole [id=" + id + ", role=" + role + ", user=" + user + "]";
   }
 }
 

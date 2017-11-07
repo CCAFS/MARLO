@@ -118,6 +118,7 @@ public class CenterImpactBeneficiary implements java.io.Serializable, IAuditLog 
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -184,6 +185,12 @@ public class CenterImpactBeneficiary implements java.io.Serializable, IAuditLog 
 
   public void setResearchRegion(CenterRegion researchRegion) {
     this.researchRegion = researchRegion;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterImpactBeneficiary [id=" + id + ", researchImpact=" + researchImpact + ", beneficiary=" + beneficiary
+      + "]";
   }
 
 }
