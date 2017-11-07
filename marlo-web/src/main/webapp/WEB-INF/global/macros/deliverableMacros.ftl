@@ -175,13 +175,26 @@
       [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/<b>collection/p15738coll5/id/5388</b>/rec/1" /]
       [#-- ILRI examples & instructions --]
       [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/<b>ccafsnyando</b>" /]
-      [#-- CIMMYT examples & instructions --]
+      [#-- CIMMYT Dataverse examples & instructions --]
       [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=<b>hdl:11529/10820</b>" /]
+      [#-- CIMMYT DSpace examples & instructions --]
+      [@channelExampleMacro name="cimmytDspace" url="http://repository.cimmyt.org/xmlui/handle/<b>10883/19062</b>" /]
     [/#if]
   </div>
 </div>
 
-[#assign channelsArray = ["cgspace","dataverse","other","ifpri","ilri","cimmyt"] /] 
+[#assign channelsArray = [] /] 
+<ul id="channelsList" style="display:none">
+  [#list channels?keys as channel]
+    [#if channel != "other"]
+      <li>
+        [#assign channelsArray = [ channel ] + channelsArray  /]
+        <span class="id">${channel}</span>
+        <span class="name">${channels.get(channel)}</span>
+      </li>
+    [/#if]
+  [/#list]
+</ul>
 <div id="disseminationUrl" style="display:[#if (channelsArray?seq_contains(deliverable.dissemination.disseminationChannel))!false ]block[#else]none[/#if];">
   <div class="form-group" > 
     <div class="url-field">

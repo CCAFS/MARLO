@@ -21,7 +21,8 @@ public enum ChannelEnum {
 
   //
   CGSPACE("cgspace", "CGSpace"), OTHER("other", "Other"), DATAVERSE("dataverse", "Dataverse (Harvard)"),
-  IFPRI("ifpri", "IFPRI E-BRARY"), ILRI("ilri", "ILRI Datasets"), CIMMYT("cimmyt", "CIMMYT Dataverse");
+  IFPRI("ifpri", "IFPRI E-BRARY"), ILRI("ilri", "ILRI Datasets"), CIMMYT("cimmyt", "CIMMYT Dataverse"),
+  CIMMYT_DSPACE("cimmytDspace", "CIMMYT DSpace");
 
   /**
    * Get ChannelEnum value from the id parameter
