@@ -15,11 +15,17 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -30,13 +36,17 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
 
   private ProjectBudgetDAO projectBudgetDAO;
+  private PhaseDAO phaseDAO;
+  private ProjectDAO projectDAO;
+
   // Managers
 
 
   @Inject
-  public ProjectBudgetManagerImpl(ProjectBudgetDAO projectBudgetDAO) {
+  public ProjectBudgetManagerImpl(ProjectBudgetDAO projectBudgetDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO) {
     this.projectBudgetDAO = projectBudgetDAO;
-
+    this.phaseDAO = phaseDAO;
+    this.projectDAO = projectDAO;
 
   }
 
@@ -46,10 +56,57 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     return projectBudgetDAO.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing, idPhase);
   }
 
+  public void cloneBudget(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
+    projectBudgetAdd.setActive(true);
+    projectBudgetAdd.setActiveSince(new Date());
+    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
+    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
+    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
+    projectBudgetAdd.setPhase(phase);
+    projectBudgetAdd.setProject(projectDAO.find(budget.getProject().getId()));
+    projectBudgetAdd.setAmount(budget.getAmount());
+    projectBudgetAdd.setBudgetType(budget.getBudgetType());
+    projectBudgetAdd.setFundingSource(budget.getFundingSource());
+    projectBudgetAdd.setGenderPercentage(budget.getGenderPercentage());
+    projectBudgetAdd.setGenderValue(budget.getGenderValue());
+    projectBudgetAdd.setInstitution(budget.getInstitution());
+    projectBudgetAdd.setYear(budget.getYear());
+
+
+  }
+
+  public void deletBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
+    Phase phase = phaseDAO.find(next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+        .collect(Collectors.toList());
+      for (ProjectBudget projectBudgetDB : budgets) {
+        projectBudgetDB.setActive(false);
+        projectBudgetDAO.save(projectBudgetDB);
+      }
+    }
+    if (phase.getNext() != null) {
+      this.deletBudgetPhase(phase.getNext(), projecID, projectBudget);
+
+    }
+  }
+
   @Override
   public boolean deleteProjectBudget(long projectBudgetId) {
 
-    return projectBudgetDAO.deleteProjectBudget(projectBudgetId);
+    boolean resultBudget = projectBudgetDAO.deleteProjectBudget(projectBudgetId);
+    ProjectBudget projectBudget = this.getProjectBudgetById(projectBudgetId);
+    Phase currentPhase = phaseDAO.find(projectBudget.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectBudget.getPhase().getNext() != null) {
+        this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
+      }
+    }
+    return resultBudget;
   }
 
   @Override
@@ -87,15 +144,49 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     return 0;
   }
 
+
   @Override
   public double getTotalBudget(long projetId, long phaseID, int type, int year) {
     return projectBudgetDAO.getTotalBudget(projetId, phaseID, type, year);
   }
 
+  public void saveBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
+    Phase phase = phaseDAO.find(next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+        .collect(Collectors.toList());
+      if (budgets.isEmpty()) {
+        ProjectBudget budgetAdd = new ProjectBudget();
+        this.cloneBudget(budgetAdd, projectBudget, phase);
+        projectBudgetDAO.save(budgetAdd);
+      } else {
+        ProjectBudget budgetAdd = budgets.get(0);
+        this.cloneBudget(budgetAdd, projectBudget, phase);
+        projectBudgetDAO.save(budgetAdd);
+      }
+
+    }
+    if (phase.getNext() != null) {
+      this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
+    }
+
+
+  }
 
   @Override
   public long saveProjectBudget(ProjectBudget projectBudget) {
 
-    return projectBudgetDAO.save(projectBudget);
+    long resultBudget = projectBudgetDAO.save(projectBudget);
+    Phase currentPhase = phaseDAO.find(projectBudget.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectBudget.getPhase().getNext() != null) {
+        this.saveBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
+      }
+    }
+    return resultBudget;
   }
 }

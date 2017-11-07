@@ -16,17 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetDAO;
-import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -102,57 +97,12 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
     return "0";
   }
 
-  public void cloneBudget(ProjectBudget projectBudgetAdd, ProjectBudget budget, Phase phase) {
-    projectBudgetAdd.setActive(true);
-    projectBudgetAdd.setActiveSince(new Date());
-    projectBudgetAdd.setModificationJustification(budget.getModificationJustification());
-    projectBudgetAdd.setModifiedBy(budget.getCreatedBy());
-    projectBudgetAdd.setCreatedBy(budget.getCreatedBy());
-    projectBudgetAdd.setPhase(phase);
-    projectBudgetAdd.setProject(dao.find(Project.class, budget.getProject().getId()));
-    projectBudgetAdd.setAmount(budget.getAmount());
-    projectBudgetAdd.setBudgetType(budget.getBudgetType());
-    projectBudgetAdd.setFundingSource(budget.getFundingSource());
-    projectBudgetAdd.setGenderPercentage(budget.getGenderPercentage());
-    projectBudgetAdd.setGenderValue(budget.getGenderValue());
-    projectBudgetAdd.setInstitution(budget.getInstitution());
-    projectBudgetAdd.setYear(budget.getYear());
-
-
-  }
-
-  public void deletBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
-          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
-        .collect(Collectors.toList());
-      for (ProjectBudget projectBudgetDB : budgets) {
-        projectBudgetDB.setActive(false);
-        dao.update(projectBudgetDB);
-      }
-    }
-    if (phase.getNext() != null) {
-      this.deletBudgetPhase(phase.getNext(), projecID, projectBudget);
-
-    }
-  }
 
   @Override
   public boolean deleteProjectBudget(long projectBudgetId) {
     ProjectBudget projectBudget = this.find(projectBudgetId);
     projectBudget.setActive(false);
     boolean result = dao.update(projectBudget);
-    Phase currentPhase = dao.find(Phase.class, projectBudget.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (projectBudget.getPhase().getNext() != null) {
-        this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
-      }
-    }
-
     return result;
 
   }
@@ -254,40 +204,8 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
     }
 
 
-    Phase currentPhase = dao.find(Phase.class, projectBudget.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (projectBudget.getPhase().getNext() != null) {
-        this.saveBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
-      }
-    }
     return projectBudget.getId();
   }
 
-  public void saveBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
-          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
-        .collect(Collectors.toList());
-      if (budgets.isEmpty()) {
-        ProjectBudget budgetAdd = new ProjectBudget();
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        dao.save(budgetAdd);
-      } else {
-        ProjectBudget budgetAdd = budgets.get(0);
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        dao.update(budgetAdd);
-      }
-
-    }
-    if (phase.getNext() != null) {
-      this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
-    }
-
-
-  }
 
 }

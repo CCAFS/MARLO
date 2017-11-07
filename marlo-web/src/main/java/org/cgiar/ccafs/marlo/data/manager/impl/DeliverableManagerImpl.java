@@ -15,12 +15,17 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
+import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -29,15 +34,20 @@ import com.google.inject.Inject;
  */
 public class DeliverableManagerImpl implements DeliverableManager {
 
+  private PhaseDAO phaseDAO;
 
   private DeliverableDAO deliverableDAO;
+  private DeliverableInfoDAO deliverableInfoDAO;
+
   // Managers
 
 
   @Inject
-  public DeliverableManagerImpl(DeliverableDAO deliverableDAO) {
+  public DeliverableManagerImpl(DeliverableDAO deliverableDAO, PhaseDAO phaseDAO,
+    DeliverableInfoDAO deliverableInfoDAO) {
     this.deliverableDAO = deliverableDAO;
-
+    this.phaseDAO = phaseDAO;
+    this.deliverableInfoDAO = deliverableInfoDAO;
 
   }
 
@@ -74,8 +84,33 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
   @Override
   public long saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
-    return deliverableDAO.save(deliverable, section, relationsName, phase);
+    long resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
+
+    Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+        this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+          deliverable);
+      }
+    }
+    return resultDeliverable;
   }
 
+  public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
+    Phase phase = phaseDAO.find(next.getId());
+    if (phase.getEditable() != null && phase.getEditable()) {
+      List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
+        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
+        .collect(Collectors.toList());
+      for (DeliverableInfo deliverableInfo : deliverablesInfo) {
+        deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+        deliverableInfoDAO.save(deliverableInfo);
+      }
 
+
+    }
+    if (phase.getNext() != null) {
+      this.saveDeliverablePhase(phase.getNext(), deliverableID, deliverable);
+    }
+  }
 }
