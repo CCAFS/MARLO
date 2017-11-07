@@ -32,7 +32,7 @@ public interface DeliverableMetadataElementDAO {
    * @param deliverableMetadataElementId is the deliverableMetadataElement identifier.
    * @return true if the deliverableMetadataElement was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableMetadataElement(long deliverableMetadataElementId);
+  public void deleteDeliverableMetadataElement(long deliverableMetadataElementId);
 
   /**
    * This method validate if the deliverableMetadataElement identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableMetadataElementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableMetadataElement deliverableMetadataElement);
+  public DeliverableMetadataElement save(DeliverableMetadataElement deliverableMetadataElement);
 }

@@ -41,9 +41,9 @@ public class ProjectOutcomePandrManagerImpl implements ProjectOutcomePandrManage
   }
 
   @Override
-  public boolean deleteProjectOutcomePandr(long projectOutcomePandrId) {
+  public void deleteProjectOutcomePandr(long projectOutcomePandrId) {
 
-    return projectOutcomePandrDAO.deleteProjectOutcomePandr(projectOutcomePandrId);
+    projectOutcomePandrDAO.deleteProjectOutcomePandr(projectOutcomePandrId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectOutcomePandrManagerImpl implements ProjectOutcomePandrManage
   }
 
   @Override
-  public long saveProjectOutcomePandr(ProjectOutcomePandr projectOutcomePandr) {
+  public ProjectOutcomePandr saveProjectOutcomePandr(ProjectOutcomePandr projectOutcomePandr) {
 
     return projectOutcomePandrDAO.save(projectOutcomePandr);
   }

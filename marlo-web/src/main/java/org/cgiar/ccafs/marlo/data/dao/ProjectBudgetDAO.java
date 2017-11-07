@@ -52,7 +52,7 @@ public interface ProjectBudgetDAO {
    * @param projectBudgetId is the projectBudget identifier.
    * @return true if the projectBudget was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectBudget(long projectBudgetId);
+  public void deleteProjectBudget(long projectBudgetId);
 
   /**
    * This method validate if the projectBudget identify with the given id exists in the system.
@@ -98,5 +98,5 @@ public interface ProjectBudgetDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectBudget projectBudget);
+  public ProjectBudget save(ProjectBudget projectBudget);
 }

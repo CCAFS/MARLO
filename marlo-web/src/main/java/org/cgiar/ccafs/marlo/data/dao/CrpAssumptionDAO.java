@@ -32,7 +32,7 @@ public interface CrpAssumptionDAO {
    * @param crpAssumptionId is the crpAssumption identifier.
    * @return true if the crpAssumption was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpAssumption(long crpAssumptionId);
+  public void deleteCrpAssumption(long crpAssumptionId);
 
   /**
    * This method validate if the crpAssumption identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpAssumptionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpAssumption crpAssumption);
+  public CrpAssumption save(CrpAssumption crpAssumption);
 }

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CaseStudyProjectMySQLDAO implements CaseStudyProjectDAO {
+public class CaseStudyProjectMySQLDAO extends AbstractMarloDAO<CaseStudyProject, Long> implements CaseStudyProjectDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CaseStudyProjectMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CaseStudyProjectMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCaseStudyProject(long caseStudyProjectId) {
+  public void deleteCaseStudyProject(long caseStudyProjectId) {
     CaseStudyProject caseStudyProject = this.find(caseStudyProjectId);
 
-    return dao.delete(caseStudyProject);
+    super.delete(caseStudyProject);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CaseStudyProjectMySQLDAO implements CaseStudyProjectDAO {
 
   @Override
   public CaseStudyProject find(long id) {
-    return dao.find(CaseStudyProject.class, id);
+    return super.find(CaseStudyProject.class, id);
 
   }
 
   @Override
   public List<CaseStudyProject> findAll() {
     String query = "from " + CaseStudyProject.class.getName() + " where is_active=1";
-    List<CaseStudyProject> list = dao.findAll(query);
+    List<CaseStudyProject> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class CaseStudyProjectMySQLDAO implements CaseStudyProjectDAO {
   }
 
   @Override
-  public long save(CaseStudyProject caseStudyProject) {
+  public CaseStudyProject save(CaseStudyProject caseStudyProject) {
     if (caseStudyProject.getId() == null) {
-      dao.save(caseStudyProject);
+      super.saveEntity(caseStudyProject);
     } else {
-      dao.update(caseStudyProject);
+      caseStudyProject = super.update(caseStudyProject);
     }
 
 
-    return caseStudyProject.getId();
+    return caseStudyProject;
   }
 
 

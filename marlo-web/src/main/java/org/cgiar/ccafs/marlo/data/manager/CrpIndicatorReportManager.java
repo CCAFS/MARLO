@@ -34,7 +34,7 @@ public interface CrpIndicatorReportManager {
    * @param crpIndicatorReportId is the crpIndicatorReport identifier.
    * @return true if the crpIndicatorReport was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpIndicatorReport(long crpIndicatorReportId);
+  public void deleteCrpIndicatorReport(long crpIndicatorReportId);
 
 
   /**
@@ -79,7 +79,7 @@ public interface CrpIndicatorReportManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpIndicatorReport(CrpIndicatorReport crpIndicatorReport);
+  public CrpIndicatorReport saveCrpIndicatorReport(CrpIndicatorReport crpIndicatorReport);
 
 
 }

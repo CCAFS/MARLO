@@ -34,7 +34,7 @@ public interface CrpTargetUnitManager {
    * @param crpTargetUnitId is the crpTargetUnit identifier.
    * @return true if the crpTargetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpTargetUnit(long crpTargetUnitId);
+  public void deleteCrpTargetUnit(long crpTargetUnitId);
 
 
   /**
@@ -79,7 +79,7 @@ public interface CrpTargetUnitManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpTargetUnit(CrpTargetUnit crpTargetUnit);
+  public CrpTargetUnit saveCrpTargetUnit(CrpTargetUnit crpTargetUnit);
 
 
 }

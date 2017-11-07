@@ -41,9 +41,9 @@ public class InstitutionLocationManagerImpl implements InstitutionLocationManage
   }
 
   @Override
-  public boolean deleteInstitutionLocation(long institutionLocationId) {
+  public void deleteInstitutionLocation(long institutionLocationId) {
 
-    return institutionLocationDAO.deleteInstitutionLocation(institutionLocationId);
+    institutionLocationDAO.deleteInstitutionLocation(institutionLocationId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class InstitutionLocationManagerImpl implements InstitutionLocationManage
   }
 
   @Override
-  public long saveInstitutionLocation(InstitutionLocation institutionLocation) {
+  public InstitutionLocation saveInstitutionLocation(InstitutionLocation institutionLocation) {
 
     return institutionLocationDAO.save(institutionLocation);
   }

@@ -32,7 +32,7 @@ public interface DeliverableLeaderDAO {
    * @param deliverableLeaderId is the deliverableLeader identifier.
    * @return true if the deliverableLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableLeader(long deliverableLeaderId);
+  public void deleteDeliverableLeader(long deliverableLeaderId);
 
   /**
    * This method validate if the deliverableLeader identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableLeaderDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableLeader deliverableLeader);
+  public DeliverableLeader save(DeliverableLeader deliverableLeader);
 }

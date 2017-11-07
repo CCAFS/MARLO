@@ -34,7 +34,7 @@ public interface ProjectLeverageManager {
    * @param projectLeverageId is the projectLeverage identifier.
    * @return true if the projectLeverage was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLeverage(long projectLeverageId);
+  public void deleteProjectLeverage(long projectLeverageId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectLeverageManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectLeverage(ProjectLeverage projectLeverage);
+  public ProjectLeverage saveProjectLeverage(ProjectLeverage projectLeverage);
 
 
 }

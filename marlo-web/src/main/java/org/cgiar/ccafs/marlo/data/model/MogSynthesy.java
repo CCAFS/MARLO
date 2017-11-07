@@ -30,6 +30,7 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
   @Expose
   private int year;
 
+
   @Expose
   private String synthesisReport;
 
@@ -47,7 +48,6 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     this.synthesisReport = synthesisReport;
     this.synthesisGender = synthesisGender;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -110,6 +110,7 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -153,7 +154,6 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     this.ipElement = ipElement;
   }
 
-
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
   }
@@ -171,6 +171,13 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "MogSynthesy [id=" + id + ", ipElement=" + ipElement + ", ipProgram=" + ipProgram + ", year=" + year
+      + ", synthesisReport=" + synthesisReport + ", synthesisGender=" + synthesisGender + "]";
   }
 
 

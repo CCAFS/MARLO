@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpElementType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpElementTypeMySQLDAO implements IpElementTypeDAO {
+public class IpElementTypeMySQLDAO extends AbstractMarloDAO<IpElementType, Long> implements IpElementTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpElementTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpElementTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpElementType(long ipElementTypeId) {
+  public void deleteIpElementType(long ipElementTypeId) {
     IpElementType ipElementType = this.find(ipElementTypeId);
-    return dao.delete(ipElementType);
+    super.delete(ipElementType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpElementTypeMySQLDAO implements IpElementTypeDAO {
 
   @Override
   public IpElementType find(long id) {
-    return dao.find(IpElementType.class, id);
+    return super.find(IpElementType.class, id);
 
   }
 
   @Override
   public List<IpElementType> findAll() {
     String query = "from " + IpElementType.class.getName() + " where is_active=1";
-    List<IpElementType> list = dao.findAll(query);
+    List<IpElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class IpElementTypeMySQLDAO implements IpElementTypeDAO {
   }
 
   @Override
-  public long save(IpElementType ipElementType) {
+  public IpElementType save(IpElementType ipElementType) {
     if (ipElementType.getId() == null) {
-      dao.save(ipElementType);
+      super.saveEntity(ipElementType);
     } else {
-      dao.update(ipElementType);
+      ipElementType = super.update(ipElementType);
     }
 
 
-    return ipElementType.getId();
+    return ipElementType;
   }
 
 

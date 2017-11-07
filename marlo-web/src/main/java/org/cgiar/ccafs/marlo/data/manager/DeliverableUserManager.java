@@ -34,7 +34,7 @@ public interface DeliverableUserManager {
    * @param deliverableUserId is the deliverableUser identifier.
    * @return true if the deliverableUser was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableUser(long deliverableUserId);
+  public void deleteDeliverableUser(long deliverableUserId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableUser(DeliverableUser deliverableUser);
+  public DeliverableUser saveDeliverableUser(DeliverableUser deliverableUser);
 
 
 }

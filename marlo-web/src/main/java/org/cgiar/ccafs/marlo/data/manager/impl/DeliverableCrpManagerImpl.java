@@ -41,9 +41,9 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   }
 
   @Override
-  public boolean deleteDeliverableCrp(long deliverableCrpId) {
+  public void deleteDeliverableCrp(long deliverableCrpId) {
 
-    return deliverableCrpDAO.deleteDeliverableCrp(deliverableCrpId);
+    deliverableCrpDAO.deleteDeliverableCrp(deliverableCrpId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   }
 
   @Override
-  public long saveDeliverableCrp(DeliverableCrp deliverableCrp) {
+  public DeliverableCrp saveDeliverableCrp(DeliverableCrp deliverableCrp) {
 
     return deliverableCrpDAO.save(deliverableCrp);
   }

@@ -32,7 +32,7 @@ public interface LiaisonInstitutionDAO {
    * @param liaisonInstitutionId is the liaisonInstitution identifier.
    * @return true if the liaisonInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteLiaisonInstitution(long liaisonInstitutionId);
+  public void deleteLiaisonInstitution(long liaisonInstitutionId);
 
   /**
    * This method validate if the liaisonInstitution identify with the given id exists in the system.
@@ -85,5 +85,5 @@ public interface LiaisonInstitutionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(LiaisonInstitution liaisonInstitution);
+  public LiaisonInstitution save(LiaisonInstitution liaisonInstitution);
 }

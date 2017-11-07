@@ -34,7 +34,7 @@ public interface ProjectClusterActivityManager {
    * @param projectClusterActivityId is the projectClusterActivity identifier.
    * @return true if the projectClusterActivity was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectClusterActivity(long projectClusterActivityId);
+  public void deleteProjectClusterActivity(long projectClusterActivityId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectClusterActivityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity);
+  public ProjectClusterActivity saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity);
 
 
 }

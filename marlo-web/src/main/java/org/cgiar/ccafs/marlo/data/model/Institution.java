@@ -373,7 +373,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "Institution [id=" + id + ", institutionType=" + institutionType + ", name=" + name + ", acronym=" + acronym
+      + ", programId=" + programId + "]";
   }
 }
 

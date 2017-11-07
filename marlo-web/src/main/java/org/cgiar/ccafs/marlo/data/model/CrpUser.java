@@ -116,6 +116,7 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -168,7 +169,7 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpUser [id=" + id + ", crp=" + crp + ", user=" + user + "]";
   }
 
 }

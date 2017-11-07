@@ -34,7 +34,7 @@ public interface ICenterParameterManager {
    * @param centerParameterId is the centerParameter identifier.
    * @return true if the centerParameter was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterParameter(long centerParameterId);
+  public void deleteCenterParameter(long centerParameterId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterParameter(CenterParameter centerParameter);
+  public CenterParameter saveCenterParameter(CenterParameter centerParameter);
 
   /**
    * This method saves the information of the given centerParameter
@@ -88,7 +88,7 @@ public interface ICenterParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterParameter(CenterParameter centerParameter, String actionName, List<String> relationsName);
+  public CenterParameter saveCenterParameter(CenterParameter centerParameter, String actionName, List<String> relationsName);
 
 
 }

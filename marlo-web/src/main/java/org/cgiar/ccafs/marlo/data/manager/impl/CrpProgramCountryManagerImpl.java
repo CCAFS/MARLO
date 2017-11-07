@@ -41,9 +41,9 @@ public class CrpProgramCountryManagerImpl implements CrpProgramCountryManager {
   }
 
   @Override
-  public boolean deleteCrpProgramCountry(long crpProgramCountryId) {
+  public void deleteCrpProgramCountry(long crpProgramCountryId) {
 
-    return crpProgramCountryDAO.deleteCrpProgramCountry(crpProgramCountryId);
+    crpProgramCountryDAO.deleteCrpProgramCountry(crpProgramCountryId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpProgramCountryManagerImpl implements CrpProgramCountryManager {
   }
 
   @Override
-  public long saveCrpProgramCountry(CrpProgramCountry crpProgramCountry) {
+  public CrpProgramCountry saveCrpProgramCountry(CrpProgramCountry crpProgramCountry) {
 
     return crpProgramCountryDAO.save(crpProgramCountry);
   }

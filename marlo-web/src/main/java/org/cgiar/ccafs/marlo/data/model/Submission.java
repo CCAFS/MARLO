@@ -162,7 +162,9 @@ public class Submission implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "Submission [id=" + id + ", crpProgram=" + crpProgram + ", user=" + user + ", dateTime=" + dateTime
+      + ", cycle=" + cycle + ", year=" + year + ", project=" + project + ", unSubmitUser=" + unSubmitUser
+      + ", unSubmit=" + unSubmit + ", unSubmitJustification=" + unSubmitJustification + "]";
   }
 }
 

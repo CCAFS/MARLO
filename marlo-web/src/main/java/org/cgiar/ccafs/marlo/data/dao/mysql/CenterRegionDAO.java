@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterRegion;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterRegionDAO implements ICenterRegionDAO {
+public class CenterRegionDAO extends AbstractMarloDAO<CenterRegion, Long> implements ICenterRegionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterRegionDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterRegionDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchRegion(long researchRegionId) {
+  public void deleteResearchRegion(long researchRegionId) {
     CenterRegion researchRegion = this.find(researchRegionId);
     researchRegion.setActive(false);
-    return this.save(researchRegion) > 0;
+    this.save(researchRegion);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterRegionDAO implements ICenterRegionDAO {
 
   @Override
   public CenterRegion find(long id) {
-    return dao.find(CenterRegion.class, id);
+    return super.find(CenterRegion.class, id);
 
   }
 
   @Override
   public List<CenterRegion> findAll() {
     String query = "from " + CenterRegion.class.getName();
-    List<CenterRegion> list = dao.findAll(query);
+    List<CenterRegion> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterRegionDAO implements ICenterRegionDAO {
   @Override
   public List<CenterRegion> getResearchRegionsByUserId(long userId) {
     String query = "from " + CenterRegion.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterRegion researchRegion) {
+  public CenterRegion save(CenterRegion researchRegion) {
     if (researchRegion.getId() == null) {
-      dao.save(researchRegion);
+      super.saveEntity(researchRegion);
     } else {
-      dao.update(researchRegion);
+      researchRegion = super.update(researchRegion);
     }
-    return researchRegion.getId();
+    return researchRegion;
   }
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterSubmissionDAO implements ICenterSubmissionDAO {
+public class CenterSubmissionDAO extends AbstractMarloDAO<CenterSubmission, Long> implements ICenterSubmissionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterSubmissionDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterSubmissionDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
     CenterSubmission submission = this.find(submissionId);
-    return dao.delete(submission);
+    super.delete(submission);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class CenterSubmissionDAO implements ICenterSubmissionDAO {
 
   @Override
   public CenterSubmission find(long id) {
-    return dao.find(CenterSubmission.class, id);
+    return super.find(CenterSubmission.class, id);
 
   }
 
   @Override
   public List<CenterSubmission> findAll() {
     String query = "from " + CenterSubmission.class.getName();
-    List<CenterSubmission> list = dao.findAll(query);
+    List<CenterSubmission> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,17 +68,17 @@ public class CenterSubmissionDAO implements ICenterSubmissionDAO {
   @Override
   public List<CenterSubmission> getSubmissionsByUserId(long userId) {
     String query = "from " + CenterSubmission.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterSubmission submission) {
+  public CenterSubmission save(CenterSubmission submission) {
     if (submission.getId() == null) {
-      dao.save(submission);
+      super.saveEntity(submission);
     } else {
-      dao.update(submission);
+      submission = super.update(submission);
     }
-    return submission.getId();
+    return submission;
   }
 
 

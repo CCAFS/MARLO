@@ -32,7 +32,7 @@ public interface FundingSourceInstitutionDAO {
    * @param fundingSourceInstitutionId is the fundingSourceInstitution identifier.
    * @return true if the fundingSourceInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceInstitution(long fundingSourceInstitutionId);
+  public void deleteFundingSourceInstitution(long fundingSourceInstitutionId);
 
   /**
    * This method validate if the fundingSourceInstitution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface FundingSourceInstitutionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(FundingSourceInstitution fundingSourceInstitution);
+  public FundingSourceInstitution save(FundingSourceInstitution fundingSourceInstitution);
 }

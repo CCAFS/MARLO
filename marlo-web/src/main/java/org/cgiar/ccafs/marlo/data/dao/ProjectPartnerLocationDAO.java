@@ -32,7 +32,7 @@ public interface ProjectPartnerLocationDAO {
    * @param projectPartnerLocationId is the projectPartnerLocation identifier.
    * @return true if the projectPartnerLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerLocation(long projectPartnerLocationId);
+  public void deleteProjectPartnerLocation(long projectPartnerLocationId);
 
   /**
    * This method validate if the projectPartnerLocation identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectPartnerLocationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectPartnerLocation projectPartnerLocation);
+  public ProjectPartnerLocation save(ProjectPartnerLocation projectPartnerLocation);
 }

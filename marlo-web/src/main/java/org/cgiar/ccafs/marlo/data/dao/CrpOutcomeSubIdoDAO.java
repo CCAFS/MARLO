@@ -32,7 +32,7 @@ public interface CrpOutcomeSubIdoDAO {
    * @param crpOutcomeSubIdoId is the crpOutcomeSubIdo identifier.
    * @return true if the crpOutcomeSubIdo was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId);
+  public void deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId);
 
   /**
    * This method validate if the crpOutcomeSubIdo identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpOutcomeSubIdoDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpOutcomeSubIdo crpOutcomeSubIdo);
+  public CrpOutcomeSubIdo save(CrpOutcomeSubIdo crpOutcomeSubIdo);
 }

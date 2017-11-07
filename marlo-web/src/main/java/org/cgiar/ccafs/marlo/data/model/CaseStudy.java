@@ -29,6 +29,8 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   @Expose
   private FileDB file;
+
+
   @Expose
   private User createdBy;
   @Expose
@@ -67,15 +69,14 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
-
   private Set<CaseStudyProject> caseStudyProjects = new HashSet<CaseStudyProject>(0);
 
   private List<CaseStudyProject> projects;
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
   private Set<CaseStudyIndicator> caseStudyIndicators = new HashSet<CaseStudyIndicator>(0);
   private List<CaseStudyIndicator> indicators;
   private List<String> caseStudyIndicatorsIds;
-
 
   public CaseStudy() {
   }
@@ -130,6 +131,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return caseStudyIndicators;
   }
 
+
   public List<String> getCaseStudyIndicatorsIds() {
     return caseStudyIndicatorsIds;
   }
@@ -137,7 +139,6 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   public Set<CaseStudyProject> getCaseStudyProjects() {
     return caseStudyProjects;
   }
-
 
   public String getComment() {
     return comment;
@@ -158,6 +159,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return explainIndicatorRelation;
   }
 
+
   public FileDB getFile() {
     return file;
   }
@@ -170,7 +172,6 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   public List<CaseStudyIndicator> getIndicators() {
     return indicators;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -403,6 +404,12 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public void setYear(Integer year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CaseStudy [id=" + id + ", title=" + title + "]";
   }
 
 

@@ -32,7 +32,7 @@ public interface ICenterMonitoringtOutcomeEvidenceDAO {
    * @param monitorignOutcomeEvidenceId is the monitorignOutcomeEvidence identifier.
    * @return true if the monitorignOutcomeEvidence was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId);
+  public void deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId);
 
   /**
    * This method validate if the monitorignOutcomeEvidence identify with the given id exists in the system.
@@ -76,5 +76,5 @@ public interface ICenterMonitoringtOutcomeEvidenceDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
+  public CenterMonitoringOutcomeEvidence save(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
 }

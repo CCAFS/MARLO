@@ -51,6 +51,7 @@ public class CenterProjectCrosscutingTheme implements java.io.Serializable, IAud
   @Expose
   private Boolean capacityDevelopment;
 
+
   @Expose
   private Boolean bigData;
 
@@ -114,7 +115,6 @@ public class CenterProjectCrosscutingTheme implements java.io.Serializable, IAud
     return createdBy;
   }
 
-
   public Boolean getGender() {
     return gender;
   }
@@ -139,6 +139,7 @@ public class CenterProjectCrosscutingTheme implements java.io.Serializable, IAud
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -174,6 +175,7 @@ public class CenterProjectCrosscutingTheme implements java.io.Serializable, IAud
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -223,18 +225,26 @@ public class CenterProjectCrosscutingTheme implements java.io.Serializable, IAud
     this.na = na;
   }
 
-
   public void setPoliciesInstitutions(Boolean policiesInstitutions) {
     this.policiesInstitutions = policiesInstitutions;
   }
+
 
   public void setProject(CenterProject project) {
     this.project = project;
   }
 
-
   public void setYouth(Boolean youth) {
     this.youth = youth;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectCrosscutingTheme [id=" + id + ", project=" + project + ", climateChange=" + climateChange
+      + ", gender=" + gender + ", youth=" + youth + ", policiesInstitutions=" + policiesInstitutions
+      + ", capacityDevelopment=" + capacityDevelopment + ", bigData=" + bigData + ", impactAssessment="
+      + impactAssessment + "]";
   }
 
 

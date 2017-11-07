@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpClusterActivityLeaderMySQLDAO implements CrpClusterActivityLeaderDAO {
+public class CrpClusterActivityLeaderMySQLDAO extends AbstractMarloDAO<CrpClusterActivityLeader, Long> implements CrpClusterActivityLeaderDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpClusterActivityLeaderMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpClusterActivityLeaderMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
+  public void deleteCrpClusterActivityLeader(long crpClusterActivityLeaderId) {
     CrpClusterActivityLeader crpClusterActivityLeader = this.find(crpClusterActivityLeaderId);
     crpClusterActivityLeader.setActive(false);
-    return this.save(crpClusterActivityLeader) > 0;
+    this.save(crpClusterActivityLeader);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpClusterActivityLeaderMySQLDAO implements CrpClusterActivityLeade
 
   @Override
   public CrpClusterActivityLeader find(long id) {
-    return dao.find(CrpClusterActivityLeader.class, id);
+    return super.find(CrpClusterActivityLeader.class, id);
 
   }
 
   @Override
   public List<CrpClusterActivityLeader> findAll() {
     String query = "from " + CrpClusterActivityLeader.class.getName() + " where is_active=1";
-    List<CrpClusterActivityLeader> list = dao.findAll(query);
+    List<CrpClusterActivityLeader> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class CrpClusterActivityLeaderMySQLDAO implements CrpClusterActivityLeade
   }
 
   @Override
-  public long save(CrpClusterActivityLeader crpClusterActivityLeader) {
+  public CrpClusterActivityLeader save(CrpClusterActivityLeader crpClusterActivityLeader) {
     if (crpClusterActivityLeader.getId() == null) {
-      dao.save(crpClusterActivityLeader);
+      super.saveEntity(crpClusterActivityLeader);
     } else {
-      dao.update(crpClusterActivityLeader);
+      crpClusterActivityLeader = super.update(crpClusterActivityLeader);
     }
 
 
-    return crpClusterActivityLeader.getId();
+    return crpClusterActivityLeader;
   }
 
 

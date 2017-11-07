@@ -33,6 +33,7 @@ public class IpProgramType implements java.io.Serializable, IAuditLog {
     this.name = name;
   }
 
+
   public IpProgramType(String name, Set<IpProgram> ipProgramses) {
     this.name = name;
     this.ipPrograms = ipProgramses;
@@ -71,7 +72,6 @@ public class IpProgramType implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
   @Override
   public boolean isActive() {
 
@@ -91,6 +91,12 @@ public class IpProgramType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpProgramType [id=" + id + ", name=" + name + "]";
   }
 
 

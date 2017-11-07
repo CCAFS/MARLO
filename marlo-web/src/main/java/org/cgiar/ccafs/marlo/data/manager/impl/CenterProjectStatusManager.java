@@ -42,9 +42,9 @@ public class CenterProjectStatusManager implements ICenterProjectStatusManager {
   }
 
   @Override
-  public boolean deleteProjectStatus(long projectStatusId) {
+  public void deleteProjectStatus(long projectStatusId) {
 
-    return projectStatusDAO.deleteProjectStatus(projectStatusId);
+    projectStatusDAO.deleteProjectStatus(projectStatusId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterProjectStatusManager implements ICenterProjectStatusManager {
   }
 
   @Override
-  public long saveProjectStatus(CenterProjectStatus projectStatus) {
+  public CenterProjectStatus saveProjectStatus(CenterProjectStatus projectStatus) {
 
     return projectStatusDAO.save(projectStatus);
   }

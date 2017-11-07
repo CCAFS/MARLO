@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterTopicDAO implements ICenterTopicDAO {
+public class CenterTopicDAO extends AbstractMarloDAO<CenterTopic, Long> implements ICenterTopicDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterTopicDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterTopicDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchTopic(long researchTopicId) {
+  public void deleteResearchTopic(long researchTopicId) {
     CenterTopic researchTopic = this.find(researchTopicId);
     researchTopic.setActive(false);
-    return this.save(researchTopic) > 0;
+    this.save(researchTopic);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterTopicDAO implements ICenterTopicDAO {
 
   @Override
   public CenterTopic find(long id) {
-    return dao.find(CenterTopic.class, id);
+    return super.find(CenterTopic.class, id);
 
   }
 
   @Override
   public List<CenterTopic> findAll() {
     String query = "from " + CenterTopic.class.getName();
-    List<CenterTopic> list = dao.findAll(query);
+    List<CenterTopic> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterTopicDAO implements ICenterTopicDAO {
   @Override
   public List<CenterTopic> getResearchTopicsByUserId(long userId) {
     String query = "from " + CenterTopic.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterTopic researchTopic) {
+  public CenterTopic save(CenterTopic researchTopic) {
     if (researchTopic.getId() == null) {
-      dao.save(researchTopic);
+      super.saveEntity(researchTopic);
     } else {
-      dao.update(researchTopic);
+      researchTopic = super.update(researchTopic);
     }
-    return researchTopic.getId();
+    return researchTopic;
   }
 
 

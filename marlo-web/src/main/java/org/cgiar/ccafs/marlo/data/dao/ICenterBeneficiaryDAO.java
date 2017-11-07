@@ -33,7 +33,7 @@ public interface ICenterBeneficiaryDAO {
    * @param beneficiaryId is the beneficiary identifier.
    * @return true if the beneficiary was successfully deleted, false otherwise.
    */
-  public boolean deleteBeneficiary(long beneficiaryId);
+  public void deleteBeneficiary(long beneficiaryId);
 
   /**
    * This method validate if the beneficiary identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface ICenterBeneficiaryDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterBeneficiary beneficiary);
+  public CenterBeneficiary save(CenterBeneficiary beneficiary);
 }

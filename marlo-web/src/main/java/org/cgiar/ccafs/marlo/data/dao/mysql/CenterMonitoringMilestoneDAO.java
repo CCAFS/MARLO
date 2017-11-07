@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterMonitoringMilestoneDAO implements ICenterMonitoringMilestoneDAO {
+public class CenterMonitoringMilestoneDAO extends AbstractMarloDAO<CenterMonitoringMilestone, Long>
+  implements ICenterMonitoringMilestoneDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterMonitoringMilestoneDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterMonitoringMilestoneDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteMonitoringMilestone(long monitoringMilestoneId) {
+  public void deleteMonitoringMilestone(long monitoringMilestoneId) {
     CenterMonitoringMilestone monitoringMilestone = this.find(monitoringMilestoneId);
     monitoringMilestone.setActive(false);
-    return this.save(monitoringMilestone) > 0;
+    this.save(monitoringMilestone);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterMonitoringMilestoneDAO implements ICenterMonitoringMilestoneD
 
   @Override
   public CenterMonitoringMilestone find(long id) {
-    return dao.find(CenterMonitoringMilestone.class, id);
+    return super.find(CenterMonitoringMilestone.class, id);
 
   }
 
   @Override
   public List<CenterMonitoringMilestone> findAll() {
     String query = "from " + CenterMonitoringMilestone.class.getName();
-    List<CenterMonitoringMilestone> list = dao.findAll(query);
+    List<CenterMonitoringMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterMonitoringMilestoneDAO implements ICenterMonitoringMilestoneD
   @Override
   public List<CenterMonitoringMilestone> getMonitoringMilestonesByUserId(long userId) {
     String query = "from " + CenterMonitoringMilestone.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterMonitoringMilestone monitoringMilestone) {
+  public CenterMonitoringMilestone save(CenterMonitoringMilestone monitoringMilestone) {
     if (monitoringMilestone.getId() == null) {
-      dao.save(monitoringMilestone);
+      super.saveEntity(monitoringMilestone);
     } else {
-      dao.update(monitoringMilestone);
+      monitoringMilestone = super.update(monitoringMilestone);
     }
-    return monitoringMilestone.getId();
+    return monitoringMilestone;
   }
 
 

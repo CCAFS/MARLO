@@ -18,6 +18,7 @@ public class IpProjectContribution implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = 1353643495837176430L;
+
   @Expose
   private Long id;
   @Expose
@@ -33,10 +34,8 @@ public class IpProjectContribution implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private Date activeSince;
-
   @Expose
   private String modificationJustification;
-
 
   public IpProjectContribution() {
   }
@@ -123,6 +122,7 @@ public class IpProjectContribution implements java.io.Serializable, IAuditLog {
     this.ipElementByMidOutcomeId = ipElementByMidOutcomeId;
   }
 
+
   public void setIpElementByMogId(IpElement ipElementByMogId) {
     this.ipElementByMogId = ipElementByMogId;
   }
@@ -135,9 +135,15 @@ public class IpProjectContribution implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpProjectContribution [id=" + id + ", ipElementByMogId=" + ipElementByMogId + ", ipElementByMidOutcomeId="
+      + ipElementByMidOutcomeId + ", project=" + project + "]";
   }
 
 

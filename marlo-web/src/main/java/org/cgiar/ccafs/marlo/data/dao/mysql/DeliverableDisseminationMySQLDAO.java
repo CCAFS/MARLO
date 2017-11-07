@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableDisseminationMySQLDAO implements DeliverableDisseminationDAO {
+public class DeliverableDisseminationMySQLDAO extends AbstractMarloDAO<DeliverableDissemination, Long> implements DeliverableDisseminationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableDisseminationMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableDisseminationMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableDissemination(long deliverableDisseminationId) {
+  public void deleteDeliverableDissemination(long deliverableDisseminationId) {
     DeliverableDissemination deliverableDissemination = this.find(deliverableDisseminationId);
-    return dao.delete(deliverableDissemination);
+    super.delete(deliverableDissemination);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableDisseminationMySQLDAO implements DeliverableDisseminatio
 
   @Override
   public DeliverableDissemination find(long id) {
-    return dao.find(DeliverableDissemination.class, id);
+    return super.find(DeliverableDissemination.class, id);
 
   }
 
   @Override
   public List<DeliverableDissemination> findAll() {
     String query = "from " + DeliverableDissemination.class.getName() + " where is_active=1";
-    List<DeliverableDissemination> list = dao.findAll(query);
+    List<DeliverableDissemination> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class DeliverableDisseminationMySQLDAO implements DeliverableDisseminatio
   }
 
   @Override
-  public long save(DeliverableDissemination deliverableDissemination) {
+  public DeliverableDissemination save(DeliverableDissemination deliverableDissemination) {
     if (deliverableDissemination.getId() == null) {
-      dao.save(deliverableDissemination);
+      super.saveEntity(deliverableDissemination);
     } else {
-      dao.update(deliverableDissemination);
+      deliverableDissemination = super.update(deliverableDissemination);
     }
 
 
-    return deliverableDissemination.getId();
+    return deliverableDissemination;
   }
 
 

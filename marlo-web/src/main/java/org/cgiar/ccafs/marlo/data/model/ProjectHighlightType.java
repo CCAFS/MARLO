@@ -24,6 +24,7 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
   @Expose
   private int idType;
 
+
   public ProjectHighlightType() {
   }
 
@@ -58,7 +59,6 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
   public int getIdType() {
     return idType;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -99,12 +99,12 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
 
     return true;
   }
-
 
   public void setId(Integer id) {
     this.id = id;
@@ -118,6 +118,12 @@ public class ProjectHighlightType implements java.io.Serializable, IAuditLog {
 
   public void setProjectHighligth(ProjectHighlight projectHighlight) {
     this.projectHighlight = projectHighlight;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectHighlightType [id=" + id + ", projectHighlight=" + projectHighlight + ", idType=" + idType + "]";
   }
 
 }

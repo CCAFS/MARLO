@@ -32,7 +32,7 @@ public interface LiaisonUserDAO {
    * @param liaisonUserId is the liaisonUser identifier.
    * @return true if the liaisonUser was successfully deleted, false otherwise.
    */
-  public boolean deleteLiaisonUser(long liaisonUserId);
+  public void deleteLiaisonUser(long liaisonUserId);
 
   /**
    * This method validate if the liaisonUser identify with the given id exists in the system.
@@ -82,5 +82,5 @@ public interface LiaisonUserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(LiaisonUser liaisonUser);
+  public LiaisonUser save(LiaisonUser liaisonUser);
 }

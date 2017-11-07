@@ -41,9 +41,9 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   }
 
   @Override
-  public boolean deleteLiaisonUser(long liaisonUserId) {
+  public void deleteLiaisonUser(long liaisonUserId) {
 
-    return liaisonUserDAO.deleteLiaisonUser(liaisonUserId);
+    liaisonUserDAO.deleteLiaisonUser(liaisonUserId);
   }
 
   @Override
@@ -76,7 +76,7 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   }
 
   @Override
-  public long saveLiaisonUser(LiaisonUser liaisonUser) {
+  public LiaisonUser saveLiaisonUser(LiaisonUser liaisonUser) {
 
     return liaisonUserDAO.save(liaisonUser);
   }

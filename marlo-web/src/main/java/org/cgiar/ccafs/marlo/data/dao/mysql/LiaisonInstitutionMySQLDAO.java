@@ -22,22 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
-
-  private StandardDAO dao;
+public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitution, Long>
+  implements LiaisonInstitutionDAO {
 
   @Inject
-  public LiaisonInstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LiaisonInstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteLiaisonInstitution(long liaisonInstitutionId) {
+  public void deleteLiaisonInstitution(long liaisonInstitutionId) {
     LiaisonInstitution liaisonInstitution = this.find(liaisonInstitutionId);
 
     liaisonInstitution.setActive(false);
-    return this.save(liaisonInstitution) > 0;
+    this.save(liaisonInstitution);
 
   }
 
@@ -53,14 +53,14 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
 
   @Override
   public LiaisonInstitution find(long id) {
-    return dao.find(LiaisonInstitution.class, id);
+    return super.find(LiaisonInstitution.class, id);
 
   }
 
   @Override
   public List<LiaisonInstitution> findAll() {
     String query = "from " + LiaisonInstitution.class.getName();
-    List<LiaisonInstitution> list = dao.findAll(query);
+    List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -71,7 +71,7 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   @Override
   public LiaisonInstitution findByAcronym(String acronym) {
     String query = "from " + LiaisonInstitution.class.getName() + " where acronym='" + acronym + "'";
-    List<LiaisonInstitution> list = dao.findAll(query);
+    List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -83,7 +83,7 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID) {
     String query = "from " + LiaisonInstitution.class.getName() + " where institution_id=" + institutionId
       + " and crp_id=" + crpID + " and is_active=1";
-    List<LiaisonInstitution> list = dao.findAll(query);
+    List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -91,16 +91,16 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   }
 
   @Override
-  public long save(LiaisonInstitution liaisonInstitution) {
+  public LiaisonInstitution save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       liaisonInstitution.setActive(true);
-      dao.save(liaisonInstitution);
+      super.saveEntity(liaisonInstitution);
     } else {
-      dao.update(liaisonInstitution);
+      liaisonInstitution = super.update(liaisonInstitution);
     }
 
 
-    return liaisonInstitution.getId();
+    return liaisonInstitution;
   }
 
 

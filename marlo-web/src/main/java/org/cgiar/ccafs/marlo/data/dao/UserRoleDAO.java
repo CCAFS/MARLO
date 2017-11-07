@@ -32,7 +32,7 @@ public interface UserRoleDAO {
    * @param userRoleId is the userRole identifier.
    * @return true if the userRole was successfully deleted, false otherwise.
    */
-  public boolean deleteUserRole(long userRoleId);
+  public void deleteUserRole(long userRoleId);
 
   /**
    * This method validate if the userRole identify with the given id exists in the system.
@@ -83,5 +83,5 @@ public interface UserRoleDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(UserRole userRole);
+  public UserRole save(UserRole userRole);
 }

@@ -42,9 +42,9 @@ public class CenterRegionManager implements ICenterRegionManager {
   }
 
   @Override
-  public boolean deleteResearchRegion(long researchRegionId) {
+  public void deleteResearchRegion(long researchRegionId) {
 
-    return researchRegionDAO.deleteResearchRegion(researchRegionId);
+    researchRegionDAO.deleteResearchRegion(researchRegionId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterRegionManager implements ICenterRegionManager {
   }
 
   @Override
-  public long saveResearchRegion(CenterRegion researchRegion) {
+  public CenterRegion saveResearchRegion(CenterRegion researchRegion) {
 
     return researchRegionDAO.save(researchRegion);
   }

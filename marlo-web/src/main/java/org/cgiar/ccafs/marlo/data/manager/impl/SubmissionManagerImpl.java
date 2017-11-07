@@ -41,9 +41,9 @@ public class SubmissionManagerImpl implements SubmissionManager {
   }
 
   @Override
-  public boolean deleteSubmission(long submissionId) {
+  public void deleteSubmission(long submissionId) {
 
-    return submissionDAO.deleteSubmission(submissionId);
+    submissionDAO.deleteSubmission(submissionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SubmissionManagerImpl implements SubmissionManager {
   }
 
   @Override
-  public long saveSubmission(Submission submission) {
+  public Submission saveSubmission(Submission submission) {
 
     return submissionDAO.save(submission);
   }

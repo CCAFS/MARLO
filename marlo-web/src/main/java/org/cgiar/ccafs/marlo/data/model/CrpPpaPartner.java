@@ -174,7 +174,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpPpaPartner [id=" + id + ", institution=" + institution + ", crp=" + crp + "]";
   }
 
 }

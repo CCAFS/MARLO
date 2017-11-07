@@ -24,7 +24,6 @@ public class CrpTargetUnit implements java.io.Serializable {
 
   private Crp crp;
 
-
   private SrfTargetUnit srfTargetUnit;
 
 
@@ -77,6 +76,7 @@ public class CrpTargetUnit implements java.io.Serializable {
     return modificationJustification;
   }
 
+
   public User getModifiedBy() {
     return modifiedBy;
   }
@@ -119,6 +119,11 @@ public class CrpTargetUnit implements java.io.Serializable {
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
+  }
+
+  @Override
+  public String toString() {
+    return "CrpTargetUnit [id=" + id + ", crp=" + crp + ", srfTargetUnit=" + srfTargetUnit + "]";
   }
 
 

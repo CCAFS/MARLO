@@ -34,7 +34,7 @@ public interface IpProgramElementManager {
    * @param ipProgramElementId is the ipProgramElement identifier.
    * @return true if the ipProgramElement was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramElement(long ipProgramElementId);
+  public void deleteIpProgramElement(long ipProgramElementId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpProgramElementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProgramElement(IpProgramElement ipProgramElement);
+  public IpProgramElement saveIpProgramElement(IpProgramElement ipProgramElement);
 
 
 }

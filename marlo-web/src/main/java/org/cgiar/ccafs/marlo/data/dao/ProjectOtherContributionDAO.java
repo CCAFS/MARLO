@@ -32,7 +32,7 @@ public interface ProjectOtherContributionDAO {
    * @param projectOtherContributionId is the projectOtherContribution identifier.
    * @return true if the projectOtherContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOtherContribution(long projectOtherContributionId);
+  public void deleteProjectOtherContribution(long projectOtherContributionId);
 
   /**
    * This method validate if the projectOtherContribution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectOtherContributionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectOtherContribution projectOtherContribution);
+  public ProjectOtherContribution save(ProjectOtherContribution projectOtherContribution);
 }

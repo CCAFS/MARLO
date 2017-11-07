@@ -41,9 +41,9 @@ public class LocGeopositionManagerImpl implements LocGeopositionManager {
   }
 
   @Override
-  public boolean deleteLocGeoposition(long locGeopositionId) {
+  public void deleteLocGeoposition(long locGeopositionId) {
 
-    return locGeopositionDAO.deleteLocGeoposition(locGeopositionId);
+    locGeopositionDAO.deleteLocGeoposition(locGeopositionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class LocGeopositionManagerImpl implements LocGeopositionManager {
   }
 
   @Override
-  public long saveLocGeoposition(LocGeoposition locGeoposition) {
+  public LocGeoposition saveLocGeoposition(LocGeoposition locGeoposition) {
 
     return locGeopositionDAO.save(locGeoposition);
   }
