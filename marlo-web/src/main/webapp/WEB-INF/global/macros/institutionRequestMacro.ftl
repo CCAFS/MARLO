@@ -145,8 +145,10 @@
                       <label class="checkbox-label" for="officeRequest-${officeRequest.id}">${officeRequest.locElement.name}</label>
                       <i class="pull-right flag-sm flag-sm-${(officeRequest.locElement.isoAlpha2?upper_case)!}"></i> 
                       [#-- It was muted, its better to show in the form --]
-                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
+                      [#-- Added Requested Source --]
+                      <br><strong>[@s.text name="Requested Source" /]:</strong> <i>${(officeRequest.requestSource)}</i>                    
                       <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym?html)!''}</i>
+                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
                       
                     </li>
                   [/#list]
