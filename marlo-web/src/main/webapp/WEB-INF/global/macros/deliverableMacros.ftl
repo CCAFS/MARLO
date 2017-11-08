@@ -157,7 +157,7 @@
   <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
   <div class="col-md-4">
     [#if editable]
-      [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+      [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=true   editable=editable/]
     [#else]
     <div class="input">
       <label for="disChannel" style="display:block;">Dissemination channel:</label>
@@ -167,30 +167,24 @@
   </div>
   <div class="col-md-8">
     [#if editable]
-      [#-- CGSpace examples & instructions --]
-      [@channelExampleMacro name="cgspace" url="https://cgspace.cgiar.org/handle/<b>10568/79435</b>" /]
-      [#-- Dataverse examples & instructions --]
-      [@channelExampleMacro name="dataverse" url="https://dataverse.harvard.edu/dataset.xhtml?persistentId=<b>doi:10.7910/DVN/0ZEXKC</b>" /]
-      [#-- IFPRI examples & instructions --]
-      [@channelExampleMacro name="ifpri" url="http://ebrary.ifpri.org/cdm/singleitem/<b>collection/p15738coll5/id/5388</b>/rec/1" /]
-      [#-- ILRI examples & instructions --]
-      [@channelExampleMacro name="ilri" url="http://data.ilri.org/portal/dataset/<b>ccafsnyando</b>" /]
-      [#-- CIMMYT Dataverse examples & instructions --]
-      [@channelExampleMacro name="cimmyt" url="http://data.cimmyt.org/dvn/dv/cimmytswdvn/faces/study/StudyPage.xhtml?globalId=<b>hdl:11529/10820</b>" /]
-      [#-- CIMMYT DSpace examples & instructions --]
-      [@channelExampleMacro name="cimmytDspace" url="http://repository.cimmyt.org/xmlui/handle/<b>10883/19062</b>" /]
+      [#list repositoryChannels  as channel]
+        [#if channel.shortName != "other"]
+          [#-- Examples & instructions --]
+          [@channelExampleMacro name=channel.shortName url=channel.urlExample /]
+        [/#if]
+      [/#list]
     [/#if]
   </div>
 </div>
 
 [#assign channelsArray = [] /] 
 <ul id="channelsList" style="display:none">
-  [#list channels?keys as channel]
-    [#if channel != "other"]
+  [#list repositoryChannels  as channel]
+    [#if channel.shortName != "other"]
       <li>
-        [#assign channelsArray = [ channel ] + channelsArray  /]
-        <span class="id">${channel}</span>
-        <span class="name">${channels.get(channel)}</span>
+        [#assign channelsArray = [ channel.shortName ] + channelsArray  /]
+        <span class="id">${channel.shortName}</span>
+        <span class="name">${channel.name}</span>
       </li>
     [/#if]
   [/#list]

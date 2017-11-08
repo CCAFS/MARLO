@@ -7,7 +7,7 @@ CREATE TABLE `repository_channel` (
 PRIMARY KEY (`id`));
 
 INSERT INTO `repository_channel` (`short_name`, `name`, `url_example`, `is_active`) VALUES 
-('cgspace', 'CGSpace', 'https://cgspace.cgiar.org/handle/<b>10568/79435', '1');
+('cgspace', 'CGSpace', 'https://cgspace.cgiar.org/handle/<b>10568/79435</b>', '1');
 INSERT INTO `repository_channel` (`short_name`, `name`, `url_example`, `is_active`) VALUES 
 ('dataverse', 'Dataverse (Harvard)', 'https://dataverse.harvard.edu/dataset.xhtml?persistentId=<b>doi:10.7910/DVN/0ZEXKC</b>', '1');
 INSERT INTO `repository_channel` (`short_name`, `name`, `url_example`, `is_active`) VALUES 
