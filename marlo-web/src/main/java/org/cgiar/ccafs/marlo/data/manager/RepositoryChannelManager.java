@@ -28,6 +28,7 @@ import com.google.inject.ImplementedBy;
  * @author avalencia - CCAFS
  * @date Nov 8, 2017
  * @time 9:09:19 AM: Manager Creation
+ * @time 10:22:12 AM: added getRepositoryChannelByShortName
  */
 @ImplementedBy(RepositoryChannelManagerImpl.class)
 public interface RepositoryChannelManager {
@@ -67,11 +68,20 @@ public interface RepositoryChannelManager {
   public RepositoryChannel getRepositoryChannelById(long repositoryChannelID);
 
   /**
+   * Get the RepositoryChannel identified by the specified shortName parameter.
+   * 
+   * @param shortName of the RepositoryChannel.
+   * @return RepositoryChannel object representing the RepositoryChannel identified by the shortName provided or Null if
+   *         the RepositoryChannel doesn't exist in the
+   *         database.
+   */
+  public RepositoryChannel getRepositoryChannelByShortName(String shortName);
+
+  /**
    * This method saves the information of the given repositoryChannels
    * 
    * @param repositoryChannel - is the repositoryChannel object with the new information to be added/updated.
    * @return a RepositoryChannel object successfully saved
    */
   public RepositoryChannel saveRepositoryChannel(RepositoryChannel repositoryChannel);
-
 }

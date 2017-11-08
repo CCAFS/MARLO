@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RepositoryChannelManagerImpl
@@ -29,9 +31,12 @@ import com.google.inject.Inject;
  * @author avalencia - CCAFS
  * @date Nov 8, 2017
  * @time 9:09:33 AM: Manager Impl creation
+ * @time 10:22:12 AM: added getRepositoryChannelByShortName
  */
 public class RepositoryChannelManagerImpl implements RepositoryChannelManager {
 
+  // Logger
+  private static final Logger LOG = LoggerFactory.getLogger(RepositoryChannelManagerImpl.class);
 
   private RepositoryChannelDAO repositoryChannelDAO;
   // Managers
@@ -65,10 +70,19 @@ public class RepositoryChannelManagerImpl implements RepositoryChannelManager {
   }
 
   @Override
+  public RepositoryChannel getRepositoryChannelByShortName(String shortName) {
+    RepositoryChannel repositoryChannel = repositoryChannelDAO.findbyShortName(shortName);
+    if (repositoryChannel != null) {
+      return repositoryChannel;
+    }
+    LOG.warn("Information related to the repositoryChannel {} wasn't found.", shortName);
+    return null;
+  }
+
+  @Override
   public RepositoryChannel saveRepositoryChannel(RepositoryChannel repositoryChannel) {
 
     return repositoryChannelDAO.save(repositoryChannel);
   }
-
 
 }

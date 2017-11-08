@@ -29,6 +29,7 @@ import com.google.inject.ImplementedBy;
  * @author avalencia - CCAFS
  * @date Nov 8, 2017
  * @time 9:09:08 AM: DAO creation
+ * @time 10:22:12 AM: added findByShortName
  */
 @ImplementedBy(RepositoryChannelMySQLDAO.class)
 public interface RepositoryChannelDAO {
@@ -49,7 +50,7 @@ public interface RepositoryChannelDAO {
   public boolean existRepositoryChannel(long repositoryChannelID);
 
   /**
-   * This method gets a RepositoryChannel object by a given activity identifier.
+   * This method gets a RepositoryChannel object by a given RepositoryChannel identifier.
    * 
    * @param id is the RepositoryChannel identifier.
    * @return a RepositoryChannel object.
@@ -62,6 +63,14 @@ public interface RepositoryChannelDAO {
    * @return a list from RepositoryChannel null if no exist records
    */
   public List<RepositoryChannel> findAll();
+
+  /**
+   * This method gets a RepositoryChannel object by a given RepositoryChannel shortName.
+   * 
+   * @param shortName is the RepositoryChannel shortName.
+   * @return a RepositoryChannel object.
+   */
+  public RepositoryChannel findbyShortName(String shortName);
 
 
   /**

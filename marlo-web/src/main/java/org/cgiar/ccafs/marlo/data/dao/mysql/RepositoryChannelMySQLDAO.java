@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.RepositoryChannelDAO;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
@@ -30,6 +31,7 @@ import org.hibernate.SessionFactory;
  * @author avalencia - CCAFS
  * @date Nov 8, 2017
  * @time 8:49:38 AM: MySQLDAO creation
+ * @time 10:22:12 AM: added findbyShortName
  */
 public class RepositoryChannelMySQLDAO extends AbstractMarloDAO<RepositoryChannel, Long>
   implements RepositoryChannelDAO {
@@ -72,6 +74,16 @@ public class RepositoryChannelMySQLDAO extends AbstractMarloDAO<RepositoryChanne
     }
     return null;
 
+  }
+
+  @Override
+  public RepositoryChannel findbyShortName(String shortName) {
+    String query = "select * from repository_channel  where is_active=1 AND short_name= '" + shortName + "'";
+    List<Map<String, Object>> repositoryChannels = super.findCustomQuery(query);
+    if (repositoryChannels.size() > 0) {
+      return this.find(Long.parseLong(repositoryChannels.get(0).get("id").toString()));
+    }
+    return null;
   }
 
   @Override
