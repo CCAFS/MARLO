@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -54,7 +54,8 @@ public class FundingSourceListAction extends BaseAction {
   private long institutionID;
 
   private int year;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
@@ -64,7 +65,7 @@ public class FundingSourceListAction extends BaseAction {
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    FundingSourceBudgetManager fundingSourceBudgetManager, CrpManager crpManager) {
+    FundingSourceBudgetManager fundingSourceBudgetManager, GlobalUnitManager crpManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
@@ -77,7 +78,7 @@ public class FundingSourceListAction extends BaseAction {
   public String execute() throws Exception {
     sources = new ArrayList<>();
     List<FundingSource> fundingSources;
-    Crp loggedCrp = crpManager.getCrpById(this.getCrpID());
+    GlobalUnit loggedCrp = crpManager.getGlobalUnitById(this.getCrpID());
     Institution institution = institutionManager.getInstitutionById(institutionID);
 
     Map<String, Object> source;

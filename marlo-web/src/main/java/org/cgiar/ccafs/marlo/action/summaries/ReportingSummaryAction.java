@@ -18,9 +18,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -47,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -135,7 +135,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
+
   private static final long serialVersionUID = -624982650510682813L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ReportingSummaryAction.class);
 
   public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -145,21 +148,23 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private Submission submission;
 
-
   // PDF bytes
   private byte[] bytesPDF;
-
 
   // Streams
   InputStream inputStream;
 
+
   // Parameters
   private long startTime;
 
-  private Crp loggedCrp;
+
+  private GlobalUnit loggedCrp;
 
   private HashMap<Long, String> targetUnitList;
+
   private SrfTargetUnitManager srfTargetUnitManager;
+
   private Project project;
   private Boolean hasW1W2Co;
   private Boolean hasGender;
@@ -170,17 +175,18 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
-
-
   private GenderTypeManager genderTypeManager;
   private InstitutionManager institutionManager;
+
+
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private IpElementManager ipElementManager;
 
   @Inject
-  public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
+  public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager) {
@@ -702,7 +708,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return String.valueOf(acumulative);
   }
 
-
   private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
     long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
@@ -930,7 +935,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return SUCCESS;
   }
 
-
   private void fillSubreport(SubReport subReport, String query, List<Object> args) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -1035,6 +1039,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     subReport.setDataFactory(cdf);
   }
 
+
   private TypedTableModel getActivitiesReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
@@ -1084,6 +1089,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -1741,14 +1747,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
@@ -2582,7 +2588,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       + "hightlightsImage" + File.separator;
   }
 
-
   private String getHightlightImagePath(long projectID) {
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
   }
@@ -2594,6 +2599,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return inputStream;
   }
+
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2673,7 +2679,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -3402,11 +3408,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
 
-
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "project_outcome" + File.separator;
   }
+
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
@@ -3605,8 +3611,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public void prepare() {
     // Get loggedCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -3670,7 +3676,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.hasW1W2Co = hasW1W2Co;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

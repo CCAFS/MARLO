@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
@@ -27,9 +27,9 @@ import org.cgiar.ccafs.marlo.data.manager.OtherContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCrpContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOtherContributionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
@@ -73,12 +73,15 @@ public class ProjectOtherContributionsAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -5094474965088380590L;
+
+
   /**
    * 
    */
 
   // Manager
   private ProjectManager projectManager;
+
   private InstitutionManager institutionManager;
   private CrpProgramManager crpProgrammManager;
   private ProjectCrpContributionManager projectCrpContributionManager;
@@ -92,17 +95,15 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private List<IpProgram> regions;
   private List<IpIndicator> otherIndicators;
   private HistoryComparator historyComparator;
-
-
   private long projectID;
-
-
   private Project project;
 
-  private CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private String transaction;
 
@@ -112,10 +113,11 @@ public class ProjectOtherContributionsAction extends BaseAction {
   @Inject
   public ProjectOtherContributionsAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
-    CrpManager crpManager, ProjectCrpContributionManager projectCrpContributionManager, CrpPandrManager crpPandrManager,
-    ProjectOtherContributionsValidator projectOtherContributionsValidator, IpIndicatorManager ipIndicatorManager,
-    OtherContributionManager otherContributionManager, ProjectOtherContributionManager projectOtherContributionManager,
-    IpProgramManager ipProgramManager, HistoryComparator historyComparator) {
+    GlobalUnitManager crpManager, ProjectCrpContributionManager projectCrpContributionManager,
+    CrpPandrManager crpPandrManager, ProjectOtherContributionsValidator projectOtherContributionsValidator,
+    IpIndicatorManager ipIndicatorManager, OtherContributionManager otherContributionManager,
+    ProjectOtherContributionManager projectOtherContributionManager, IpProgramManager ipProgramManager,
+    HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -132,6 +134,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.historyComparator = historyComparator;
 
   }
+
 
   @Override
   public String cancel() {
@@ -193,7 +196,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
-
   public void crpContributionsPreviousData(List<ProjectCrpContribution> crpContributions) {
     if (crpContributions != null) {
       crpContributions = new ArrayList<>();
@@ -214,7 +216,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -223,15 +224,15 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<CrpPandr> getCrps() {
     return crps;
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<IpIndicator> getOtherIndicators() {
     return otherIndicators;
@@ -242,19 +243,19 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public ProjectManager getProjectManager() {
     return projectManager;
   }
 
+
   public String getProjectRequest() {
     return APConstants.PROJECT_REQUEST_ID;
   }
-
 
   public List<IpProgram> getRegions() {
     return regions;
@@ -264,6 +265,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public String next() {
@@ -329,13 +331,12 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
-
   @Override
   public void prepare() throws Exception {
     super.prepare();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -404,13 +405,13 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (project.getCrpContributions() == null) {
 
@@ -494,6 +495,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
+
   public void projectOtherContributionsNewData(List<ProjectOtherContribution> projectOtherContributions) {
     if (projectOtherContributions != null) {
       for (ProjectOtherContribution projectOtherContribution : projectOtherContributions) {
@@ -529,7 +531,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -593,7 +594,8 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.crps = crps;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

@@ -17,13 +17,12 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -38,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -84,12 +84,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
 
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
-  private CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private CrpProgramManager programManager;
   private DeliverableManager deliverableManager;
   private GenderTypeManager genderTypeManager;
-
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -97,10 +100,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   private int year;
   private long startTime;
-  private Crp loggedCrp;
+
+  private GlobalUnit loggedCrp;
 
   @Inject
-  public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
+  public DeliverablesReportingExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
     GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
     super(config);
@@ -349,7 +353,6 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     }
   }
 
-
   public byte[] getBytesXLSX() {
     return bytesXLSX;
   }
@@ -369,6 +372,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     String upload = config.getDownloadURL();
     return upload + "/" + this.getDeliverableDataSharingFileRelativePath(projectID).replace('\\', '/');
   }
+
 
   private String getDeliverableDataSharingFileRelativePath(String projectID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
@@ -403,14 +407,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
@@ -1665,16 +1669,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     }
   }
 
-
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
-
 
   public String getHighlightsImagesUrlPath(String projectId) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -1684,7 +1687,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -1696,12 +1700,13 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     return model;
   }
 
+
   @Override
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -1743,7 +1748,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 }

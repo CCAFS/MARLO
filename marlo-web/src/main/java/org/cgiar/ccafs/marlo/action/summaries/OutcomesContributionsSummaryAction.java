@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -77,13 +77,14 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   private static Logger LOG = LoggerFactory.getLogger(OutcomesContributionsSummaryAction.class);
 
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private long startTime;
   private int year;
   private String cycle;
   private HashMap<Long, String> targetUnitList;
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private SrfTargetUnitManager srfTargetUnitManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -91,7 +92,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   InputStream inputStream;
 
   @Inject
-  public OutcomesContributionsSummaryAction(APConfig config, CrpManager crpManager,
+  public OutcomesContributionsSummaryAction(APConfig config, GlobalUnitManager crpManager,
     SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.crpManager = crpManager;
@@ -307,9 +308,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
@@ -426,8 +424,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -481,9 +479,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     this.cycle = cycle;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
 
   public void setYear(int year) {
     this.year = year;

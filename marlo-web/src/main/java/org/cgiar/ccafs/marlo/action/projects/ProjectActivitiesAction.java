@@ -19,16 +19,16 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -70,13 +70,15 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private ProjectActivitiesValidator activitiesValidator;
 
-
   private ActivityManager activityManager;
 
 
   private AuditLogManager auditLogManager;
 
-  private CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
 
   private DeliverableActivityManager deliverableActivityManager;
 
@@ -86,7 +88,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private ProjectPartnerManager projectPartnerManager;
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private List<ProjectPartnerPerson> partnerPersons;
 
@@ -103,7 +105,7 @@ public class ProjectActivitiesAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableActivityManager deliverableActivityManager, DeliverableManager deliverableManager,
     AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
@@ -120,7 +122,6 @@ public class ProjectActivitiesAction extends BaseAction {
     this.activitiesValidator = activitiesValidator;
     this.projectPartnerManager = projectPartnerManager;
   }
-
 
   public void activitiesNewData(List<Activity> activities) {
 
@@ -274,6 +275,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
+
   @Override
   public String cancel() {
 
@@ -297,7 +299,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public List<Activity> getActivities(boolean open) {
 
@@ -333,6 +334,7 @@ public class ProjectActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public int getIndexActivities(long id) {
     Activity activity = new Activity();
     activity.setId(id);
@@ -340,13 +342,14 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public Project getProject() {
     return project;
@@ -364,11 +367,10 @@ public class ProjectActivitiesAction extends BaseAction {
     return transaction;
   }
 
-
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
@@ -417,8 +419,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -455,7 +457,7 @@ public class ProjectActivitiesAction extends BaseAction {
          * }
          * }
          */
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -554,6 +556,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -607,9 +610,10 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;

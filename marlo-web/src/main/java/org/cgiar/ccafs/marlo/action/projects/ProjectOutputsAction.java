@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
@@ -65,34 +65,35 @@ public class ProjectOutputsAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 5027543384132820515L;
+
+
   // Manager
   private ProjectManager projectManager;
+
   private InstitutionManager institutionManager;
   private CrpProgramManager crpProgrammManager;
   private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
   private IpElementManager ipElementManager;
   private ProjectOutputsValidator projectOutputsValidator;
   private HistoryComparator historyComparator;
-
   private List<Integer> allYears;
-
-
   private long projectID;
-
 
   private Project project;
 
-  private CrpManager crpManager;
-  private Crp loggedCrp;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+
+  private GlobalUnit loggedCrp;
 
   private String transaction;
-
   private AuditLogManager auditLogManager;
-
 
   @Inject
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
-    CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
+    CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, GlobalUnitManager crpManager,
     IpProjectContributionOverviewManager ipProjectContributionOverviewManager, IpElementManager ipElementManager,
     ProjectOutputsValidator projectOutputsValidator, HistoryComparator historyComparator) {
     super(config);
@@ -132,10 +133,11 @@ public class ProjectOutputsAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
@@ -144,7 +146,6 @@ public class ProjectOutputsAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public int getIndex(int year, long mogID) {
     if (project.getOverviews() != null) {
@@ -167,7 +168,7 @@ public class ProjectOutputsAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -197,10 +198,10 @@ public class ProjectOutputsAction extends BaseAction {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public String next() {
@@ -211,7 +212,6 @@ public class ProjectOutputsAction extends BaseAction {
       return result;
     }
   }
-
 
   public void overViewsNewData(List<IpProjectContributionOverview> overviews) {
 
@@ -247,12 +247,13 @@ public class ProjectOutputsAction extends BaseAction {
 
   }
 
+
   @Override
   public void prepare() throws Exception {
     super.prepare();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -306,13 +307,13 @@ public class ProjectOutputsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (project.getOverviews() == null) {
 
@@ -372,7 +373,6 @@ public class ProjectOutputsAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -428,15 +428,14 @@ public class ProjectOutputsAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
+
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setProject(Project project) {
     this.project = project;

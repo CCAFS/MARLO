@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.json.crpadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -37,12 +37,13 @@ public class RequestTargetUnitAction extends BaseAction {
   private static final long serialVersionUID = 197365264899810106L;
 
   private String targetUnitName;
-  private CrpManager crpManager;
-  private Crp loggedCrp;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+  private GlobalUnit loggedCrp;
   private Map<String, Object> status;
 
   @Inject
-  public RequestTargetUnitAction(APConfig config, CrpManager crpManager) {
+  public RequestTargetUnitAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -50,8 +51,8 @@ public class RequestTargetUnitAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     status = new HashMap<>();
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();

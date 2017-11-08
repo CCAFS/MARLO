@@ -17,15 +17,15 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -79,35 +79,38 @@ import org.slf4j.LoggerFactory;
 
 public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
+
   private static Logger LOG = LoggerFactory.getLogger(SearchTermsSummaryAction.class);
+
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private long startTime;
+
   private String cycle;
   private int year;
   private Boolean hasW1W2Co;
   private Boolean hasRegions;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
-
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private CrpProgramManager programManager;
-  private PhaseManager phaseManager;
 
+  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
-
   // Streams
   InputStream inputStream;
 
   @Inject
-  public SearchTermsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
@@ -572,7 +575,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -603,6 +606,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, hasActivities});
     return model;
   }
+
 
   private TypedTableModel getProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -862,8 +866,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -908,9 +912,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
 }

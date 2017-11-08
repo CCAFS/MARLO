@@ -1231,8 +1231,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getCrpSession() {
     if (session != null && !session.isEmpty()) {
       try {
-        Crp crp =
-          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
+          ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         this.crpSession = crp.getAcronym();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
@@ -1826,8 +1826,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -2809,8 +2809,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isProjectSubmitted(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -3002,8 +3002,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3011,8 +3011,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
@@ -3021,7 +3021,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
+  public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
     if (this.isReportingActive()) {
@@ -3139,7 +3139,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
+  public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
     if (project.isProjectEditLeader() && !this.isProjectNew(project.getId())) {

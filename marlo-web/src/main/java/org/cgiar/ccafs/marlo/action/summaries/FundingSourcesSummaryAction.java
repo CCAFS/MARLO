@@ -17,17 +17,17 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -79,15 +79,20 @@ import org.slf4j.LoggerFactory;
 
 public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
+
   private static final Logger LOG = LoggerFactory.getLogger(FundingSourcesSummaryAction.class);
+
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
+
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private int year;
+
   private String cycle;
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
@@ -95,14 +100,15 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private Set<Project> fundingSourceProjects = new HashSet<>();
   private Set<Project> allProjects = new HashSet<>();
   private long startTime;
-
-
   private Boolean hasW1W2Co;
-
-
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+
   private CrpProgramManager programManager;
+
+
   private ProjectManager projectManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private PhaseManager phaseManager;
@@ -112,7 +118,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   InputStream inputStream;
 
   @Inject
-  public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     PhaseManager phaseManager) {
     super(config);
@@ -326,12 +332,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -358,6 +362,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return file;
   }
 
+
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -369,6 +374,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -391,7 +397,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
-
 
   private TypedTableModel getFundingSourcesNoProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -452,7 +457,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
-
 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -828,9 +832,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -840,7 +846,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -853,6 +859,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public Boolean getShowSheet3() {
     return showSheet3;
   }
@@ -861,13 +868,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return year;
   }
 
-
   @Override
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -914,11 +920,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
+
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

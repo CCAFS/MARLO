@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -47,25 +47,30 @@ import org.slf4j.LoggerFactory;
 
 public class InstitutionsLeadersSummaryAction extends BaseAction implements Summary {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(InstitutionsLeadersSummaryAction.class);
+
   // Parameters
   private long startTime;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private int year;
   private String cycle;
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
   @Inject
-  public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager) {
+  public InstitutionsLeadersSummaryAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -175,7 +180,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -183,12 +188,13 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return year;
   }
 
+
   @Override
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -222,7 +228,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     this.cycle = cycle;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

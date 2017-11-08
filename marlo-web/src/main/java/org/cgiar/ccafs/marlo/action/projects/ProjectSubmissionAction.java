@@ -18,16 +18,16 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -59,26 +59,27 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
   private static final long serialVersionUID = 4635459226337562141L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ProjectSubmissionAction.class);
 
   // Manager
   private SubmissionManager submissionManager;
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private SendMailS sendMail;
   private LiaisonUserManager liasonUserManager;
-  private Crp loggedCrp;
-
+  private GlobalUnit loggedCrp;
   private String cycleName;
   private RoleManager roleManager;
-
 
   private boolean complete;
   private Submission currentSubmission;
 
 
   private long projectID;
-
   private Project project;
 
 
@@ -87,7 +88,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -96,6 +97,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -126,15 +128,14 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
-
   public Submission getCurrentSubmission() {
     return currentSubmission;
   }
 
-
   public String getCycleName() {
     return cycleName;
   }
+
 
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -147,7 +148,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-  public Crp getLoggedCrp() {
+
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -160,15 +162,15 @@ public class ProjectSubmissionAction extends BaseAction {
     return projectID;
   }
 
+
   public boolean isComplete() {
     return complete;
   }
 
-
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -183,7 +185,7 @@ public class ProjectSubmissionAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     if (project != null) {
-      String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), project.getId() + ""};
+      String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
       // Initializing Section Statuses:
       // this.initializeProjectSectionStatuses(project, String.valueOf(this.getCurrentCycleYear()));
@@ -345,22 +347,24 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+
   public void setComplete(boolean complete) {
     this.complete = complete;
   }
-
 
   public void setCurrentSubmission(Submission currentSubmission) {
     this.currentSubmission = currentSubmission;
   }
 
+
   public void setCycleName(String cycleName) {
     this.cycleName = cycleName;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setProject(Project project) {
     this.project = project;

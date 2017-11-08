@@ -60,6 +60,12 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
   }
 
   @Override
+  public GlobalUnit findGlobalUnitByAcronym(String acronym) {
+
+    return globalUnitDAO.findGlobalUnitByAcronym(acronym);
+  }
+
+  @Override
   public GlobalUnit getGlobalUnitById(long globalUnitID) {
 
     return globalUnitDAO.find(globalUnitID);

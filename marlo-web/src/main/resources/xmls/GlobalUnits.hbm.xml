@@ -164,7 +164,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
         </set>
-        <set name="liaisonUsers" table="liaison_users" inverse="true" lazy="true" fetch="select">
+        <set name="liasonUsers" table="liaison_users" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="global_unit_id" />
             </key>

@@ -20,13 +20,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -36,12 +36,12 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -83,8 +83,8 @@ public class FundingSourceAction extends BaseAction {
 
   private static final long serialVersionUID = -3919022306156272887L;
 
-  private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
+  private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
   private AuditLogManager auditLogManager;
 
@@ -96,24 +96,25 @@ public class FundingSourceAction extends BaseAction {
   private List<BudgetType> budgetTypesList;
 
 
-  private CrpManager crpManager;
-
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private File file;
 
+
   private String fileContentType;
 
 
   private FileDBManager fileDBManager;
 
-
   private String fileFileName;
 
 
   private Integer fileID;
+
 
   private FundingSource fundingSource;
 
@@ -121,29 +122,31 @@ public class FundingSourceAction extends BaseAction {
   private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   private long fundingSourceID;
+
+
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
+
   private FundingSourceManager fundingSourceManager;
-
   private InstitutionManager institutionManager;
-
-
   private List<Institution> institutions;
 
   private List<Institution> institutionsDonors;
+
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   private List<LiaisonInstitution> liaisonInstitutions;
-
   private HistoryComparator historyComparator;
-
   private PartnerDivisionManager partnerDivisionManager;
-
 
   private List<PartnerDivision> divisions;
 
-  private Crp loggedCrp;
-  private Map<String, String> status;
-  private String transaction;
+  private GlobalUnit loggedCrp;
 
+
+  private Map<String, String> status;
+
+  private String transaction;
   private UserManager userManager;
   private FundingSourceValidator validator;
 
@@ -152,6 +155,7 @@ public class FundingSourceAction extends BaseAction {
    */
   private FundingSourceLocationsManager fundingSourceLocationsManager;
   private LocElementManager locElementManager;
+
   private LocElementTypeManager locElementTypeManager;
   private List<LocElement> regionLists;
   private List<LocElementType> scopeRegionLists;
@@ -161,7 +165,7 @@ public class FundingSourceAction extends BaseAction {
   private RoleManager userRoleManager;
 
   @Inject
-  public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
+  public FundingSourceAction(APConfig config, GlobalUnitManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
@@ -231,7 +235,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
     return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
@@ -243,6 +246,7 @@ public class FundingSourceAction extends BaseAction {
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -291,7 +295,6 @@ public class FundingSourceAction extends BaseAction {
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public File getFile() {
     return file;
@@ -354,6 +357,7 @@ public class FundingSourceAction extends BaseAction {
     return institutions;
   }
 
+
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
   }
@@ -362,19 +366,18 @@ public class FundingSourceAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
 
+
   public List<LocElementType> getScopeRegionLists() {
     return scopeRegionLists;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
@@ -393,8 +396,8 @@ public class FundingSourceAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     fundingSourceID =
       Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
@@ -902,6 +905,7 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   /**
    * Funding Source Locations
    * 
@@ -1058,7 +1062,6 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSource = fundingSource;
   }
 
-
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
   }
@@ -1068,16 +1071,17 @@ public class FundingSourceAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -60,12 +60,17 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
 
 
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
+
+
   // Managers
   private ProjectLeverageManager projectLeverageManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private int year;
   private String cycle;
   private long startTime;
@@ -75,7 +80,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   InputStream inputStream;
 
   @Inject
-  public LeveragesReportingSummaryAction(APConfig config, CrpManager crpManager,
+  public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectLeverageManager projectLeverageManager) {
     super(config);
     this.crpManager = crpManager;
@@ -104,7 +109,6 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
 
     return masterReport;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -172,6 +176,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
+
 
   /**
    * Get all subreports and store then in a hash map.
@@ -332,7 +337,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     return model;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -344,6 +349,7 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     return model;
   }
 
+
   public int getYear() {
     return year;
   }
@@ -352,8 +358,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -383,10 +389,10 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
-
   public void setBytesXLSX(byte[] bytesXLSX) {
     this.bytesXLSX = bytesXLSX;
   }
+
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
@@ -396,9 +402,10 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setYear(int year) {
     this.year = year;

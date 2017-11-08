@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
@@ -39,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
@@ -47,7 +47,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
@@ -68,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -116,10 +116,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DeliverableAction extends BaseAction {
 
+
   private static final long serialVersionUID = -4474372683580321612L;
 
-  private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
+  private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
   private List<DeliverableQualityAnswer> answers;
 
@@ -131,8 +132,8 @@ public class DeliverableAction extends BaseAction {
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
 
-  private CrpManager crpManager;
-
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
@@ -151,34 +152,35 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
 
+
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
+
 
   private DeliverableUserManager deliverableUserManager;
 
-
   private DeliverableCrpManager deliverableCrpManager;
 
-
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
+
+
   private CrpPandrManager crpPandrManager;
+
 
   private long deliverableID;
   private DeliverableManager deliverableManager;
 
   private HistoryComparator historyComparator;
-
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
+
   private InstitutionManager institutionManager;
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
-
-
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
-
   private DeliverableDisseminationManager deliverableDisseminationManager;
+
 
   private List<DeliverableType> deliverableSubTypes;
 
@@ -193,6 +195,7 @@ public class DeliverableAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
+
   private CrpProgramManager crpProgramManager;
 
   private GenderTypeManager genderTypeManager;
@@ -203,24 +206,24 @@ public class DeliverableAction extends BaseAction {
 
   private List<FundingSource> fundingSources;
 
-
   private List<GenderType> genderLevels;
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
-  private Crp loggedCrp;
+
+  private GlobalUnit loggedCrp;
+
   private MetadataElementManager metadataElementManager;
 
-
   private List<ProjectPartnerPerson> partnerPersons;
-
-
   private List<ProjectPartner> partners;
 
 
   private Project project;
 
+
   private long projectID;
+
 
   private ProjectManager projectManager;
 
@@ -230,31 +233,31 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
-
   private List<ProjectFocus> projectPrograms;
 
-
   private Map<String, String> status;
+
 
   private String transaction;
 
 
   private int indexTab;
 
-
   private PartnerDivisionManager partnerDivisionManager;
 
 
   private List<PartnerDivision> divisions;
 
+
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableManager deliverableManager,
-    CrpManager crpManager, ProjectManager projectManager, ProjectPartnerPersonManager projectPartnerPersonManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, AuditLogManager auditLogManager,
-    DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
-    FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
+    GlobalUnitManager crpManager, ProjectManager projectManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
+    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
+    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
+    DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
@@ -297,6 +300,7 @@ public class DeliverableAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
     this.partnerDivisionManager = partnerDivisionManager;
   }
+
 
   @Override
   public String cancel() {
@@ -350,11 +354,9 @@ public class DeliverableAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public Map<String, String> getChannels() {
     return channels;
   }
-
 
   public Map<String, String> getCrps() {
     return crps;
@@ -365,9 +367,11 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   /**
    * Get the DeliverablePartnership from the submitted form.
@@ -447,20 +451,20 @@ public class DeliverableAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
 
-
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
 
+
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   public List<GenderType> getGenderLevels() {
     return genderLevels;
@@ -474,8 +478,7 @@ public class DeliverableAction extends BaseAction {
     return keyOutputs;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -497,6 +500,7 @@ public class DeliverableAction extends BaseAction {
     return partnerPerson;
   }
 
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -505,21 +509,21 @@ public class DeliverableAction extends BaseAction {
     return partners;
   }
 
-
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
       projectPartnerPersonManager.findAllForProjectPartner(projectPartnerId);
     return projectPartnerPersons;
   }
 
+
   public Map<String, String> getPrograms() {
     return programs;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -573,7 +577,6 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
-
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
 
@@ -613,6 +616,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -649,7 +653,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -670,6 +673,7 @@ public class DeliverableAction extends BaseAction {
 
     return false;
   }
+
 
   public boolean isSelectedPerson(long projectPartnerPersonId, long projectPartner) {
     return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
@@ -722,8 +726,8 @@ public class DeliverableAction extends BaseAction {
 
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       deliverableID =
@@ -1165,7 +1169,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void removeDeliverablePartnerships(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -1205,6 +1208,7 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
+
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1882,15 +1886,14 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
-
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
 
+
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
-
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -1900,6 +1903,7 @@ public class DeliverableAction extends BaseAction {
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
+
 
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
@@ -1929,9 +1933,10 @@ public class DeliverableAction extends BaseAction {
     this.keyOutputs = keyOutputs;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;

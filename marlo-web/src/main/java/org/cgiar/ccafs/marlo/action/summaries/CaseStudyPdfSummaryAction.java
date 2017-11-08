@@ -18,11 +18,11 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -65,11 +65,14 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
 
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(CaseStudyPdfSummaryAction.class);
 
   // Managers
   private CaseStudyManager caseStudyManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   // XLSX bytes
   private byte[] bytesPDF;
@@ -79,10 +82,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   // Parameters
   private int year;
   private long startTime;
-  private Crp loggedCrp;
+
+  private GlobalUnit loggedCrp;
 
   @Inject
-  public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
+  public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager) {
     super(config);
     this.caseStudyManager = caseStudyManager;
     this.crpManager = crpManager;
@@ -380,7 +384,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
@@ -390,11 +393,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
       + File.separator;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
-
 
   @Override
   public String getContentType() {
@@ -408,6 +411,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -445,7 +449,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -462,8 +466,8 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -484,6 +488,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.loggedCrp.getAcronym());
   }
 
+
   public void setBytesPDF(byte[] bytesPDF) {
     this.bytesPDF = bytesPDF;
   }
@@ -492,7 +497,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

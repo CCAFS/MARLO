@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -82,44 +82,49 @@ import org.slf4j.LoggerFactory;
 
 public class BudgetPerPartnersSummaryAction extends BaseAction implements Summary {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
+
   private static Logger LOG = LoggerFactory.getLogger(BudgetPerPartnersSummaryAction.class);
+
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
+
   private int year;
   private String cycle;
   private Boolean hasW1W2Co;
   private long startTime;
   private Boolean hasGender;
-
-
   private PhaseManager phaseManager;
-
-
   // Store total projects
   Integer totalProjects = 0;
+
 
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
 
+
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-  private CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
-
   private InstitutionManager institutionManager;
   // XLSX bytes
   private byte[] bytesXLSX;
+
   // Streams
   InputStream inputStream;
 
   @Inject
-  public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
+  public BudgetPerPartnersSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     PhaseManager phaseManager) {
     super(config);
@@ -335,7 +340,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return masterReport;
   }
 
-
   private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
     long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
@@ -406,6 +410,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return SUCCESS;
   }
 
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -427,7 +432,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -490,6 +494,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     }
   }
 
+
   private TypedTableModel getBudgetPerPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
@@ -503,9 +508,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
     List<Project> projects = new ArrayList<>();
     Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-   
 
- if (phase != null) {
+
+    if (phase != null) {
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
         projects.add((projectPhase.getProject()));
       }
@@ -734,7 +739,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   }
 
-
   private TypedTableModel getBudgetPerProjectsTableModel() {
     // projectID,
     // projectTitle,totalw1w2,totalw1w2Co,totalw3bilateralcenter,totalw1w2Gender,genderBudgetW1W2Co,totalw1w2Gender,
@@ -789,7 +793,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return "application/xlsx";
   }
 
-
   public String getCycle() {
     return cycle;
   }
@@ -815,6 +818,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   }
 
+
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -832,6 +836,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       }
     }
   }
+
 
   public Boolean getHasGender() {
     return hasGender;
@@ -864,7 +869,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -887,6 +892,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       this.hasGender});
     return model;
   }
+
 
   private TypedTableModel getPartnersBudgetsSummaryTableModel() {
     TypedTableModel model =
@@ -953,7 +959,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
   }
-
 
   /**
    * Get gender amount per institution, year and budet type
@@ -1035,12 +1040,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return false;
   }
 
+
   @Override
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -1088,7 +1094,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     this.hasGender = hasGender;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

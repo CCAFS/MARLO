@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -54,30 +54,35 @@ import org.slf4j.LoggerFactory;
  */
 public class ExpectedDeliverablesSummaryAction extends BaseAction implements Summary {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
+
   private static Logger LOG = LoggerFactory.getLogger(ExpectedDeliverablesSummaryAction.class);
+
+
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
+
   private long startTime;
   private int year;
-
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   // XLS bytes
   private byte[] bytesXLSX;
+
   // Streams
   InputStream inputStream;
 
   @Inject
-  public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager) {
+  public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
-
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -170,6 +175,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   }
 
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
@@ -208,10 +214,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public int getYear() {
     return year;
@@ -222,8 +227,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   public void prepare() {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -244,7 +249,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

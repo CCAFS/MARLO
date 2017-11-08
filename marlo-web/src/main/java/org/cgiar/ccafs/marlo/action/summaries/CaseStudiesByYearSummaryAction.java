@@ -18,11 +18,11 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -69,12 +69,13 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
   // Managers
   private CaseStudyManager caseStudyManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   // Parameters
   private int year;
   private long startTime;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -82,7 +83,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   InputStream inputStream;
 
   @Inject
-  public CaseStudiesByYearSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
+  public CaseStudiesByYearSummaryAction(APConfig config, CaseStudyManager caseStudyManager,
+    GlobalUnitManager crpManager) {
     super(config);
     this.caseStudyManager = caseStudyManager;
     this.crpManager = crpManager;
@@ -446,9 +448,6 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -466,8 +465,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -493,10 +492,6 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
   public void setInputStream(InputStream inputStream) {
     this.inputStream = inputStream;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
   }
 
   public void setYear(int year) {

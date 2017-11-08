@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -65,7 +65,8 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsExcelSummaryAction.class);
   // Managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private ProjectHighligthManager projectHighLightManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -74,10 +75,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
   // Parameters
   private int year;
   private long startTime;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   @Inject
-  public ProjectHighlightsExcelSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager) {
     super(config);
     this.crpManager = crpManager;
@@ -300,9 +301,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
@@ -440,8 +438,8 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -469,8 +467,5 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
 
 }

@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -74,39 +74,40 @@ import org.slf4j.LoggerFactory;
 
 public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(budgetByCoAsSummaryAction.class);
 
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private int year;
+
   private String cycle;
   private long startTime;
-
-
   // Managers
-  private CrpManager crpManager;
-
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private PhaseManager phaseManager;
 
+
   private CrpProgramManager programManager;
+
   private ProjectBudgetManager projectBudgetManager;
+
   private InstitutionManager institutionManager;
-
-
   // XLSX bytes
   private byte[] bytesXLSX;
-
-
   // Streams
   InputStream inputStream;
 
 
   @Inject
-  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public budgetByCoAsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
@@ -115,6 +116,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
   }
+
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -169,6 +171,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
     return masterReport;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -322,7 +325,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return cycle;
   }
 
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -331,7 +333,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return file;
 
   }
-
 
   @Override
   public String getFileName() {
@@ -344,6 +345,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -372,9 +374,10 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
@@ -733,8 +736,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   @Override
   public void prepare() {
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -764,15 +767,14 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
         + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
   }
 
-
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setYear(int year) {
     this.year = year;

@@ -88,13 +88,14 @@ public class GlobalUnit implements java.io.Serializable {
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
-
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
 
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
 
-  private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
+
+  private Set<LiaisonUser> liasonUsers = new HashSet<LiaisonUser>(0);
+
 
   private Set<CenterUser> centerUsers = new HashSet<CenterUser>(0);
 
@@ -140,8 +141,7 @@ public class GlobalUnit implements java.io.Serializable {
     Set<CenterObjective> centerObjectives, Set<Phase> phases, Set<CenterCustomParameter> centerCustomParameters,
     Set<CenterProjectFundingSource> centerProjectFundingSources, Set<CenterRole> centerRoles, Set<CrpUser> crpUsers,
     Set<CrpsSiteIntegration> crpsSitesIntegrations, Set<CrpLocElementType> crpLocElementTypes,
-    Set<CustomParameter> customParameters, Set<LiaisonUser> liaisonUsers, Set<CenterUser> centerUsers,
-    Set<Role> roles) {
+    Set<CustomParameter> customParameters, Set<LiaisonUser> liasonUsers, Set<CenterUser> centerUsers, Set<Role> roles) {
     super();
     this.id = id;
     this.globalUnitType = globalUnitType;
@@ -174,7 +174,7 @@ public class GlobalUnit implements java.io.Serializable {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
     this.crpLocElementTypes = crpLocElementTypes;
     this.customParameters = customParameters;
-    this.liaisonUsers = liaisonUsers;
+    this.liasonUsers = liasonUsers;
     this.centerUsers = centerUsers;
     this.roles = roles;
   }
@@ -195,7 +195,6 @@ public class GlobalUnit implements java.io.Serializable {
     return centerCustomParameters;
   }
 
-
   public Set<CenterLeader> getCenterLeaders() {
     return centerLeaders;
   }
@@ -203,6 +202,7 @@ public class GlobalUnit implements java.io.Serializable {
   public Set<CenterObjective> getCenterObjectives() {
     return centerObjectives;
   }
+
 
   public Set<CenterProjectFundingSource> getCenterProjectFundingSources() {
     return centerProjectFundingSources;
@@ -292,14 +292,14 @@ public class GlobalUnit implements java.io.Serializable {
     return liaisonInstitutions;
   }
 
-  public Set<LiaisonUser> getLiaisonUsers() {
-    return liaisonUsers;
+  public Set<LiaisonUser> getLiasonUsers() {
+    return liasonUsers;
   }
-
 
   public List<LocElementType> getLocationCustomElementTypes() {
     return locationCustomElementTypes;
   }
+
 
   public List<LocElementType> getLocationElementTypes() {
     return locationElementTypes;
@@ -385,10 +385,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.centerAreas = centerAreas;
   }
 
-
   public void setCenterCustomParameters(Set<CenterCustomParameter> centerCustomParameters) {
     this.centerCustomParameters = centerCustomParameters;
   }
+
 
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
@@ -458,10 +458,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.deliverables = deliverables;
   }
 
-
   public void setDeliverablesList(List<Deliverable> deliverablesList) {
     this.deliverablesList = deliverablesList;
   }
+
 
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
@@ -491,9 +491,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLiaisonUsers(Set<LiaisonUser> liaisonUsers) {
-    this.liaisonUsers = liaisonUsers;
+  public void setLiasonUsers(Set<LiaisonUser> liasonUsers) {
+    this.liasonUsers = liasonUsers;
   }
+
 
   public void setLocationCustomElementTypes(List<LocElementType> locationCustomElementTypes) {
     this.locationCustomElementTypes = locationCustomElementTypes;

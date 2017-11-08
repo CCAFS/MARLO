@@ -17,12 +17,12 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -57,11 +57,15 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectLeveragesAction extends BaseAction {
 
+
   private static final long serialVersionUID = -3179251766947184219L;
+
 
   // Manager
   private ProjectManager projectManager;
+
   private InstitutionManager institutionManager;
+
   private IpProgramManager crpProgrammManager;
   private ProjectLeverageManager projectLeverageManager;
   private long projectID;
@@ -69,19 +73,18 @@ public class ProjectLeveragesAction extends BaseAction {
   private Map<String, String> allInstitutions;
   private Map<String, String> flagships;
   private List<ProjectLeverage> leveragesPreview;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private ProjectLeverageValidator projectLeverageValidator;
   private HistoryComparator historyComparator;
-  private Crp loggedCrp;
-
-
+  private GlobalUnit loggedCrp;
   private String transaction;
-
   private AuditLogManager auditLogManager;
+
 
   @Inject
   public ProjectLeveragesAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
-    IpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
+    IpProgramManager crpProgrammManager, AuditLogManager auditLogManager, GlobalUnitManager crpManager,
     ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator,
     HistoryComparator historyComparator) {
     super(config);
@@ -94,7 +97,6 @@ public class ProjectLeveragesAction extends BaseAction {
     this.historyComparator = historyComparator;
     this.projectLeverageValidator = projectLeverageValidator;
   }
-
 
   @Override
   public String cancel() {
@@ -138,13 +140,14 @@ public class ProjectLeveragesAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -158,10 +161,10 @@ public class ProjectLeveragesAction extends BaseAction {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public void leveragesNewData(List<ProjectLeverage> projectLeverages) {
 
@@ -229,13 +232,12 @@ public class ProjectLeveragesAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
     super.prepare();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -289,13 +291,13 @@ public class ProjectLeveragesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
@@ -353,6 +355,7 @@ public class ProjectLeveragesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -407,13 +410,12 @@ public class ProjectLeveragesAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
-
   public void setAllInstitutions(Map<String, String> allInstitutions) {
     this.allInstitutions = allInstitutions;
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -52,7 +52,8 @@ public class DeliverableListAction extends BaseAction {
 
   private List<Integer> allYears;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
 
   private long deliverableID;
@@ -65,7 +66,7 @@ public class DeliverableListAction extends BaseAction {
 
   private DeliverableTypeManager deliverableTypeManager;
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private Project project;
 
   private long projectID;
@@ -74,7 +75,7 @@ public class DeliverableListAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
 
   @Inject
-  public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager,
     SectionStatusManager sectionStatusManager) {
     super(config);
@@ -209,19 +210,21 @@ public class DeliverableListAction extends BaseAction {
 
       } else {
         if (this.isPlanningActive()) {
-          List<Deliverable> openA = deliverables.stream()
-            .filter(a -> a.isActive()
-              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
-            .collect(Collectors.toList());
+          List<Deliverable> openA =
+            deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getStatus() != null
+                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+              .collect(Collectors.toList());
 
           return openA;
         } else {
-          List<Deliverable> openA = deliverables.stream()
-            .filter(a -> a.isActive()
-              && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
-            .collect(Collectors.toList());
+          List<Deliverable> openA =
+            deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getStatus() != null
+                && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+              .collect(Collectors.toList());
           openA.removeAll(deliverables.stream()
             .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
               && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
@@ -271,8 +274,8 @@ public class DeliverableListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));

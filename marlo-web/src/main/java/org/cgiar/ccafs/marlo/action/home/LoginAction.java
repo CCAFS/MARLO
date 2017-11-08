@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -73,14 +73,15 @@ public class LoginAction extends BaseAction {
   // Managers
   private UserManager userManager;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private ICenterManager centerManager;
   private ICenterUserManager centerUsermanager;
   private CrpUserManager crpUserManager;
 
   @Inject
-  public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
-    ICenterManager centerManager, ICenterUserManager centerUsermanager) {
+  public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
+    CrpUserManager crpUserManager, ICenterManager centerManager, ICenterUserManager centerUsermanager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
@@ -278,7 +279,7 @@ public class LoginAction extends BaseAction {
   public String loginCrp(User loggedUser) {
 
     // Obtain the crp selected
-    GlobalUnit loggedCrp = crpManager.findCrpByAcronym(this.crp);
+    GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(this.crp);
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {

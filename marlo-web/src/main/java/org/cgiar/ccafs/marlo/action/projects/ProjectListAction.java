@@ -17,15 +17,17 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -45,7 +47,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,38 +55,42 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectListAction extends BaseAction {
 
+
   private static final long serialVersionUID = -793652591843623397L;
+
 
   private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
+  private GlobalUnit loggedCrp;
 
-  private Crp loggedCrp;
   @Inject
   private SectionStatusManager sectionStatusManager;
-  private long projectID;
 
+
+  private long projectID;
   // Managers
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
+  private GlobalUnitProjectManager globalUnitProjectManager;
   private PhaseManager phaseManager;
   private ProjectPhaseManager projectPhaseManager;
 
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
-
   private List<Project> closedProjects;
-
   private String filterBy;
 
-
   @Inject
-  public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager) {
+    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -93,8 +98,8 @@ public class ProjectListAction extends BaseAction {
     this.projectPhaseManager = projectPhaseManager;
     this.liaisonUserManager = liaisonUserManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
-
 
   public String addAdminProject() {
 
@@ -183,6 +188,7 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
+
   /**
    * This method validates if a project can be deleted or not.
    * Keep in mind that a project can be deleted if it was created in the current planning cycle.
@@ -213,6 +219,7 @@ public class ProjectListAction extends BaseAction {
     return false;
   }
 
+
   public boolean createProject(String type, LiaisonUser liaisonUser, LiaisonInstitution liaisonInstitution,
     boolean admin) {
 
@@ -229,7 +236,7 @@ public class ProjectListAction extends BaseAction {
       project.setLiaisonInstitution(liaisonInstitution);
       project.setScale(0);
       project.setCofinancing(false);
-      project.setCrp(loggedCrp);
+
       project.setCreateDate(new Date());
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
@@ -237,6 +244,13 @@ public class ProjectListAction extends BaseAction {
       project.setAdministrative(new Boolean(admin));
       project = projectManager.saveProject(project);
       projectID = project.getId();
+
+      // Setting the Global Unit Project
+      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+      globalUnitProject.setProject(project);
+      globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
+
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
@@ -274,7 +288,6 @@ public class ProjectListAction extends BaseAction {
       project.setType(type);
       project.setScale(0);
       project.setCofinancing(false);
-      project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
@@ -283,6 +296,12 @@ public class ProjectListAction extends BaseAction {
 
       project = projectManager.saveProject(project);
       projectID = project.getId();
+
+      // Setting the Global Unit Project
+      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+      globalUnitProject.setProject(project);
+      globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
@@ -311,7 +330,6 @@ public class ProjectListAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String delete() {
@@ -359,6 +377,7 @@ public class ProjectListAction extends BaseAction {
     return permission;
   }
 
+
   public List<Project> getAllProjects() {
     return allProjects;
   }
@@ -367,19 +386,23 @@ public class ProjectListAction extends BaseAction {
     return closedProjects;
   }
 
-
   public String getFilterBy() {
     return filterBy;
   }
+
+  public GlobalUnit getLoggedCrp() {
+    return loggedCrp;
+  }
+
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   /**
    * load the flagships and regions for each project on list
@@ -405,11 +428,10 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase =
       phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
     if (projectManager.findAll() != null) {
@@ -466,17 +488,22 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
   }
-
 
   public void setClosedProjects(List<Project> closedProjects) {
     this.closedProjects = closedProjects;
   }
 
+
   public void setFilterBy(String filterBy) {
     this.filterBy = filterBy;
+  }
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
   public void setMyProjects(List<Project> myProjects) {

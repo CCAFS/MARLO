@@ -18,15 +18,15 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -54,7 +54,8 @@ public class ImpactPathwayFullGraph extends BaseAction {
   private static final long serialVersionUID = 971011588781935964L;
   long crpID;
   @Inject
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
@@ -68,7 +69,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     elements = new HashMap<>();
 
     List<HashMap<String, Object>> dataNodes = new ArrayList<HashMap<String, Object>>();

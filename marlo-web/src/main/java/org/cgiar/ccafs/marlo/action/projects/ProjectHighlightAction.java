@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -69,33 +69,39 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectHighlightAction extends BaseAction {
 
+
   private static final long serialVersionUID = 6921586701429004011L;
+
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightAction.class);
-  private CrpManager crpManager;
 
 
-  private Crp loggedCrp;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
+  private GlobalUnit loggedCrp;
   private ProjectHighLightValidator highLightValidator;
+
+
   private String transaction;
+
   private HistoryComparator historyComparator;
-
-
   private AuditLogManager auditLogManager;
-
-
   // Manager
   private ProjectManager projectManager;
 
 
   private ProjectHighligthManager projectHighLightManager;
-  private ProjectHighligthTypeManager projectHighligthTypeManager;
-  private ProjectHighligthCountryManager projectHighligthCountryManager;
 
+
+  private ProjectHighligthTypeManager projectHighligthTypeManager;
+
+
+  private ProjectHighligthCountryManager projectHighligthCountryManager;
   private FileDBManager fileDBManager;
   private LocElementManager locElementManager;
+
   private String highlightsImagesUrl;
   private File file;
   // private ProjectHighLightValidator validator;
@@ -107,26 +113,23 @@ public class ProjectHighlightAction extends BaseAction {
   // Model for the front-end
   private long highlightID;
   private long projectID;
-
-
   private Map<String, String> highlightsTypes;
-
-
   private Map<String, String> statuses;
 
 
   private List<Integer> allYears;
 
-  private List<LocElement> countries;
-  private List<ProjectHighlightType> previewTypes;
 
+  private List<LocElement> countries;
+
+
+  private List<ProjectHighlightType> previewTypes;
 
   private List<ProjectHighlightCountry> previewCountries;
 
-
   @Inject
   public ProjectHighlightAction(APConfig config, ProjectManager projectManager,
-    ProjectHighligthManager highLightManager, LocElementManager locElementManager, CrpManager crpManager,
+    ProjectHighligthManager highLightManager, LocElementManager locElementManager, GlobalUnitManager crpManager,
     AuditLogManager auditLogManager, FileDBManager fileDBManager,
     ProjectHighligthCountryManager projectHighligthCountryManager,
     ProjectHighligthTypeManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator,
@@ -144,6 +147,7 @@ public class ProjectHighlightAction extends BaseAction {
     this.historyComparator = historyComparator;
 
   }
+
 
   @Override
   public String cancel() {
@@ -169,6 +173,7 @@ public class ProjectHighlightAction extends BaseAction {
     return SUCCESS;
   }
 
+
   @Override
   public List<Integer> getAllYears() {
     return allYears;
@@ -179,7 +184,6 @@ public class ProjectHighlightAction extends BaseAction {
       + "hightlihts" + File.separator;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = highlight.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -188,43 +192,42 @@ public class ProjectHighlightAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public String getContentType() {
     return contentType;
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public int getEndYear() {
     DateFormat dateFormat = new SimpleDateFormat("yyyy");
     return Integer.parseInt(dateFormat.format(project.getEndDate()));
   }
 
-
   public File getFile() {
     return file;
   }
-
 
   public String getFileFileName() {
     return fileFileName;
   }
 
+
   public ProjectHighlight getHighlight() {
     return highlight;
   }
+
 
   public long getHighlightID() {
     return highlightID;
   }
 
-
   public String getHighlightsImagesUrl() {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
-
 
   public String getHighlightsImagesUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
@@ -242,7 +245,7 @@ public class ProjectHighlightAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -288,8 +291,8 @@ public class ProjectHighlightAction extends BaseAction {
 
     super.prepare();
     previewTypes = new ArrayList<>();
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     highlightID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.HIGHLIGHT_REQUEST_ID)));
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -333,13 +336,13 @@ public class ProjectHighlightAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         highlight = (ProjectHighlight) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (highlight.getCountries() != null) {
           for (ProjectHighlightCountry projectHighlightCountry : highlight.getCountries()) {
@@ -579,14 +582,15 @@ public class ProjectHighlightAction extends BaseAction {
     this.allYears = allYears;
   }
 
+
   public void setContentType(String contentType) {
     this.contentType = contentType;
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
+
 
   public void setFile(File file) {
     this.file = file;
@@ -596,10 +600,10 @@ public class ProjectHighlightAction extends BaseAction {
     this.fileFileName = fileFileName;
   }
 
-
   public void setHighlight(ProjectHighlight highlight) {
     this.highlight = highlight;
   }
+
 
   public void setHighlightID(long highlightID) {
     this.highlightID = highlightID;
@@ -609,14 +613,15 @@ public class ProjectHighlightAction extends BaseAction {
     this.highlightsImagesUrl = highlightsImagesUrl;
   }
 
-
   public void setHighlightsTypes(Map<String, String> highlightsTypes) {
     this.highlightsTypes = highlightsTypes;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPreviewCountries(List<ProjectHighlightCountry> previewCountries) {
     this.previewCountries = previewCountries;

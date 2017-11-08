@@ -18,9 +18,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -40,14 +40,15 @@ public class SummaryListAction extends BaseAction {
 
   private List<Project> allProjects;
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private PhaseManager phaseManager;
 
   @Inject
-  public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {
+  public SummaryListAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
@@ -60,8 +61,8 @@ public class SummaryListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     allProjects = new ArrayList<Project>();
     Phase phase =
       phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());

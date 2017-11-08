@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -59,8 +59,9 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(OutcomeSynthesisReportingSummaryAction.class);
 
-  private CrpManager crpManager;
-  private Crp loggedCrp;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+  private GlobalUnit loggedCrp;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -71,7 +72,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
   private long startTime;
 
   @Inject
-  public OutcomeSynthesisReportingSummaryAction(APConfig config, CrpManager crpManager) {
+  public OutcomeSynthesisReportingSummaryAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -252,9 +253,6 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date, String year, Long idParam) {
     // Initialization of Model
@@ -272,8 +270,8 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
   public void prepare() throws Exception {
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -315,9 +313,6 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
     this.inputStream = inputStream;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
 
   public void setYear(int year) {
     this.year = year;
