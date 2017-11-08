@@ -382,17 +382,17 @@ public class ProjectListAction extends BaseAction {
     CenterProjectCrosscutingTheme crosscutingThemeSave =
       projectCrosscutingService.getProjectCrosscutingThemeById(centerProject.getProjectCrosscutingTheme().getId());
 
-    if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
+    if ((project.getCrossCuttingGender() != null) && project.getCrossCuttingGender()) {
       hasChanges = true;
       crosscutingThemeSave.setGender(true);
     }
 
-    if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
+    if ((project.getCrossCuttingYouth() != null) && project.getCrossCuttingYouth()) {
       hasChanges = true;
       crosscutingThemeSave.setYouth(true);
     }
 
-    if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
+    if ((project.getCrossCuttingCapacity() != null) && project.getCrossCuttingCapacity()) {
       hasChanges = true;
       crosscutingThemeSave.setCapacityDevelopment(true);
     }
@@ -415,8 +415,8 @@ public class ProjectListAction extends BaseAction {
   public void crpProjectLocation(Project project, CenterProject centerProject) {
 
     List<ProjectLocation> projectLocations = new ArrayList<>(project.getProjectLocations().stream()
-      .filter(pl -> pl.isActive()
-        && (pl.getLocElement().getLocElementType().getId() == 1 || pl.getLocElement().getLocElementType().getId() == 2))
+      .filter(pl -> pl.isActive() && ((pl.getLocElement().getLocElementType().getId() == 1)
+        || (pl.getLocElement().getLocElementType().getId() == 2)))
       .collect(Collectors.toList()));
 
     boolean haveRegion = false;
@@ -469,7 +469,7 @@ public class ProjectListAction extends BaseAction {
 
       // TODO fix the filter to work whit all centers (in the future)
       List<ProjectPartnerContribution> contributions = new ArrayList<>(projectPartner.getProjectPartnerContributions()
-        .stream().filter(pc -> pc.isActive() && pc.getProjectPartnerContributor().getInstitution().getId() == 46)
+        .stream().filter(pc -> pc.isActive() && (pc.getProjectPartnerContributor().getInstitution().getId() == 46))
         .collect(Collectors.toList()));
 
       for (ProjectPartnerContribution projectPartnerContribution : contributions) {
@@ -626,9 +626,8 @@ public class ProjectListAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream().filter(
+            rl -> rl.isActive() && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))
             .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
@@ -636,7 +635,7 @@ public class ProjectListAction extends BaseAction {
             // Check if the User is a Program Leader
             List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+                && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()))
               .collect(Collectors.toList()));
             if (!userProgramLeads.isEmpty()) {
               programID = userProgramLeads.get(0).getResearchProgram().getId();
@@ -644,7 +643,7 @@ public class ProjectListAction extends BaseAction {
               // Check if the User is a Scientist Leader
               List<CenterLeader> userScientistLeader = new ArrayList<>(user.getResearchLeaders().stream()
                 .filter(rl -> rl.isActive()
-                  && rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue())
+                  && (rl.getType().getId() == CenterLeaderTypeEnum.PROGRAM_SCIENTIST_LEADER_TYPE.getValue()))
                 .collect(Collectors.toList()));
               if (!userScientistLeader.isEmpty()) {
                 programID = userScientistLeader.get(0).getResearchProgram().getId();
@@ -661,7 +660,7 @@ public class ProjectListAction extends BaseAction {
         }
       }
 
-      if (areaID != -1 && programID == -1) {
+      if ((areaID != -1) && (programID == -1)) {
         selectedResearchArea = researchAreaService.find(areaID);
         researchPrograms = new ArrayList<>(
           selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
@@ -673,7 +672,7 @@ public class ProjectListAction extends BaseAction {
             User user = userService.getUser(this.getCurrentUser().getId());
             List<CenterLeader> userLeads = new ArrayList<>(user.getResearchLeaders().stream()
               .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+                && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue()))
               .collect(Collectors.toList()));
 
             if (!userLeads.isEmpty()) {

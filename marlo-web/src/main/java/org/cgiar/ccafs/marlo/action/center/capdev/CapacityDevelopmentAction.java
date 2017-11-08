@@ -73,6 +73,7 @@ public class CapacityDevelopmentAction extends BaseAction {
   public String add() {
 
     capdevCategory = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("capdevCategory")));
+    CapacityDevelopment capacityDevelopmentDB = new CapacityDevelopment();
     capdev = new CapacityDevelopment();
     capdev.setCategory(capdevCategory);
     capdev.setActive(true);
@@ -86,8 +87,14 @@ public class CapacityDevelopmentAction extends BaseAction {
      * if projectID > 0 the request come from projects section
      * else the request come from capacity development section.
      */
-    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
-    CenterProject projectDB = projectService.getCenterProjectById(projectID);
+    CenterProject projectDB = new CenterProject();
+    try {
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
+      projectDB = projectService.getCenterProjectById(projectID);
+    } catch (Exception e) {
+      projectID = -1;
+      projectDB = null;
+    }
     if (projectDB != null) {
       capdev.setProject(projectDB);
       CenterProgram program = projectDB.getResearchProgram();
@@ -97,8 +104,8 @@ public class CapacityDevelopmentAction extends BaseAction {
       capdev.setResearchProgram(program);
 
     }
-
-    capdevID = capdevService.saveCapacityDevelopment(capdev);
+    capacityDevelopmentDB = capdevService.saveCapacityDevelopment(capdev);
+    capdevID = capacityDevelopmentDB.getId();
     if (capdevID > 0) {
       return SUCCESS;
     } else {
@@ -158,6 +165,7 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    projectID = -1;
     if (capdevService.findAll() != null) {
 
       // se obtiene la lista actual de las capacitaciones activas

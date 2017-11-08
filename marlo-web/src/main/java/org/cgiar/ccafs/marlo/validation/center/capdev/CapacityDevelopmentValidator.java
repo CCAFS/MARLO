@@ -225,50 +225,53 @@ public class CapacityDevelopmentValidator extends BaseValidator {
   }
 
   public void validateParticipant(Participant participant, BaseAction baseAction) {
-    if (participant.getCode() == null) {
-      this.addMessage(baseAction.getText("capdev.action.participant.code"));
-      baseAction.getInvalidFields().put("input-capdev.participant.code", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if ((participant.getName() == null) || participant.getName().equalsIgnoreCase("")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.firstName"));
-      baseAction.getInvalidFields().put("input-capdev.participant.name", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if ((participant.getLastName() == null) || participant.getLastName().equalsIgnoreCase("")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.lastName"));
-      baseAction.getInvalidFields().put("input-capdev.participant.lastName", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if ((participant.getGender() == null) || participant.getGender().equalsIgnoreCase("-1")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.gender"));
-      baseAction.getInvalidFields().put("input-capdev.participant.gender", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if ((participant.getLocElementsByCitizenship() == null)
-      || (participant.getLocElementsByCitizenship().getId() == -1)) {
-      this.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
-      baseAction.getInvalidFields().put("input-capdev.participant.locElementsByCitizenship.id",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if ((participant.getPersonalEmail() == null) || participant.getPersonalEmail().equalsIgnoreCase("")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
-      baseAction.getInvalidFields().put("input-capdev.participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
-      final boolean validEmail = this.isValidEmail(participant.getPersonalEmail());
-      if (!validEmail) {
+    if (participant != null) {
+      if (participant.getCode() == null) {
+        this.addMessage(baseAction.getText("capdev.action.participant.code"));
+        baseAction.getInvalidFields().put("input-capdev.participant.code", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if ((participant.getName() == null) || participant.getName().equalsIgnoreCase("")) {
+        this.addMessage(baseAction.getText("capdev.action.participant.firstName"));
+        baseAction.getInvalidFields().put("input-capdev.participant.name", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if ((participant.getLastName() == null) || participant.getLastName().equalsIgnoreCase("")) {
+        this.addMessage(baseAction.getText("capdev.action.participant.lastName"));
+        baseAction.getInvalidFields().put("input-capdev.participant.lastName", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if ((participant.getGender() == null) || participant.getGender().equalsIgnoreCase("-1")) {
+        this.addMessage(baseAction.getText("capdev.action.participant.gender"));
+        baseAction.getInvalidFields().put("input-capdev.participant.gender", InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if ((participant.getLocElementsByCitizenship() == null)
+        || (participant.getLocElementsByCitizenship().getId() == -1)) {
+        this.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
+        baseAction.getInvalidFields().put("input-capdev.participant.locElementsByCitizenship.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if ((participant.getPersonalEmail() == null) || participant.getPersonalEmail().equalsIgnoreCase("")) {
         this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
-        baseAction.getInvalidFields().put("input-capdev.participant.personalEmail", InvalidFieldsMessages.WRONG_EMAIL);
+        baseAction.getInvalidFields().put("input-capdev.participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
       }
-    }
-
-    if (!participant.getEmail().equalsIgnoreCase("")) {
-      final boolean validEmail = this.isValidEmail(participant.getEmail());
-      if (!validEmail) {
-        baseAction.getInvalidFields().put("input-capdev.participant.email", InvalidFieldsMessages.WRONG_EMAIL);
+      if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
+        final boolean validEmail = this.isValidEmail(participant.getPersonalEmail());
+        if (!validEmail) {
+          this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
+          baseAction.getInvalidFields().put("input-capdev.participant.personalEmail",
+            InvalidFieldsMessages.WRONG_EMAIL);
+        }
       }
-    }
 
-    if ((participant.getSupervisor() == null) || participant.getSupervisor().equalsIgnoreCase("")) {
-      this.addMessage(baseAction.getText("capdev.action.participant.Supervisor"));
-      baseAction.getInvalidFields().put("input-capdev.participant.supervisor", InvalidFieldsMessages.EMPTYFIELD);
+      if (!participant.getEmail().equalsIgnoreCase("")) {
+        final boolean validEmail = this.isValidEmail(participant.getEmail());
+        if (!validEmail) {
+          baseAction.getInvalidFields().put("input-capdev.participant.email", InvalidFieldsMessages.WRONG_EMAIL);
+        }
+      }
+
+      if ((participant.getSupervisor() == null) || participant.getSupervisor().equalsIgnoreCase("")) {
+        this.addMessage(baseAction.getText("capdev.action.participant.Supervisor"));
+        baseAction.getInvalidFields().put("input-capdev.participant.supervisor", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
   }

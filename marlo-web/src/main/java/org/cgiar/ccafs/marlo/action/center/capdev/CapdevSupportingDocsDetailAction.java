@@ -118,12 +118,19 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
   }
 
   public String deleteDocumentLink() {
-    Map<String, Object> parameters = this.getParameters();
-    long documentID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long documentID = -1;
+    try {
+      documentID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("deliverableLink")));
+    } catch (Exception e) {
+      documentID = -1;
+    }
+
     CenterDeliverableDocument document = centerDeliverableDocService.getDeliverableDocumentById(documentID);
-    document.setActive(false);
-    document.setModifiedBy(this.getCurrentUser());
-    centerDeliverableDocService.saveDeliverableDocument(document);
+    if (document != null) {
+      document.setActive(false);
+      document.setModifiedBy(this.getCurrentUser());
+      centerDeliverableDocService.saveDeliverableDocument(document);
+    }
     return SUCCESS;
   }
 
@@ -264,10 +271,8 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         if (deliverable.getDocuments() != null) {
           List<CenterDeliverableDocument> documents = new ArrayList<>();
           for (CenterDeliverableDocument document : deliverable.getDocuments()) {
-            System.out.println(document.getLink());
             CenterDeliverableDocument doc = centerDeliverableDocService.getDeliverableDocumentById(document.getId());
             doc.setLink(document.getLink());
-            System.out.println(doc.getLink());
             documents.add(doc);
           }
           deliverable.setDocuments(documents);
@@ -304,6 +309,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       }
 
     }
+    if (this.isHttpPost()) {
+      deliverable.setDeliverableType(null);
+      deliverable.setDocuments(null);
+
+    }
+
 
   }
 
@@ -313,14 +324,23 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
     final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(deliverableID);
     supportingDocDB.setName(deliverable.getName());
 
-
-    if (deliverable.getDeliverableType().getDeliverableType() != null) {
-      if (deliverable.getDeliverableType().getDeliverableType().getId() != -1) {
-        CenterDeliverableType deliverableType =
-          centerDeliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
-        supportingDocDB.setDeliverableType(deliverableType);
+    if (deliverable.getDeliverableType() == null) {
+      supportingDocDB.setDeliverableType(null);
+    }
+    if (deliverable.getDeliverableType() != null) {
+      if (deliverable.getDeliverableType().getId() == null) {
+        supportingDocDB.setDeliverableType(null);
+      } else {
+        if (deliverable.getDeliverableType().getId().longValue() != -1) {
+          CenterDeliverableType deliverableType =
+            centerDeliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+          supportingDocDB.setDeliverableType(deliverableType);
+        } else {
+          supportingDocDB.setDeliverableType(null);
+        }
       }
     }
+
 
     supportingDocDB.setStartDate(deliverable.getStartDate());
     supportingDocDB.setEndDate(deliverable.getEndDate());
@@ -360,18 +380,6 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
 
   public void saveLinks(CenterDeliverable supportingDocDB) {
-
-
-    if ((supportingDocDB.getDeliverableDocuments() != null) && (supportingDocDB.getDeliverableDocuments().size() > 0)) {
-      List<CenterDeliverableDocument> documentsDB = new ArrayList<>(
-        supportingDocDB.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
-
-      for (CenterDeliverableDocument document : documentsDB) {
-        if (!deliverable.getDocuments().contains(document)) {
-          // capdevSuppDocsDocumentsService.deleteCapdevSuppDocsDocuments(document.getId());
-        }
-      }
-    }
 
     if (deliverable.getDocuments() != null) {
       if (!deliverable.getDocuments().isEmpty()) {

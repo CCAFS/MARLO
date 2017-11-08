@@ -42,9 +42,9 @@ public class ParticipantService implements IParticipantService {
   }
 
   @Override
-  public boolean deleteParticipant(long participantId) {
+  public void deleteParticipant(long participantId) {
 
-    return participantDAO.deleteParticipant(participantId);
+    participantDAO.deleteParticipant(participantId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class ParticipantService implements IParticipantService {
   }
 
   @Override
-  public long saveParticipant(Participant participant) {
+  public Participant saveParticipant(Participant participant) {
 
     return participantDAO.save(participant);
   }
 
   @Override
-  public long saveParticipant(Participant participant, String actionName, List<String> relationsName) {
+  public Participant saveParticipant(Participant participant, String actionName, List<String> relationsName) {
     return participantDAO.save(participant, actionName, relationsName);
   }
 

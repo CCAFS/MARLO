@@ -31,9 +31,8 @@ public interface ICapacityDevelopmentTypeDAO {
    * This method removes a specific capacityDevelopmentType value from the database.
    * 
    * @param capacityDevelopmentTypeId is the capacityDevelopmentType identifier.
-   * @return true if the capacityDevelopmentType was successfully deleted, false otherwise.
    */
-  public boolean deleteCapacityDevelopmentType(long capacityDevelopmentTypeId);
+  public void deleteCapacityDevelopmentType(long capacityDevelopmentTypeId);
 
   /**
    * This method validate if the capacityDevelopmentType identify with the given id exists in the system.
@@ -72,22 +71,17 @@ public interface ICapacityDevelopmentTypeDAO {
    * 
    * @param capacityDevelopmentType - is the capacityDevelopmentType object with the new information to be
    *        added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capacityDevelopmentType
-   *         was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapacityDevelopmentType capacityDevelopmentType);
+  public CapacityDevelopmentType save(CapacityDevelopmentType capacityDevelopmentType);
 
   /**
    * This method saves the information of the given capacityDevelopmentType
    * 
    * @param capacityDevelopmentType - is the capacityDevelopmentType object with the new information to be
    *        added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capacityDevelopmentType
-   *         was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapacityDevelopmentType capacityDevelopmentType, String actionName, List<String> relationsName);
+  public CapacityDevelopmentType save(CapacityDevelopmentType capacityDevelopmentType, String actionName,
+    List<String> relationsName);
 }

@@ -22,20 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevHighestDegreeMySQLDAO implements CapdevHighestDegreeDAO {
+public class CapdevHighestDegreeMySQLDAO extends AbstractMarloDAO<CapdevHighestDegree, Long>
+  implements CapdevHighestDegreeDAO {
 
-  private final StandardDAO dao;
 
   @Inject
-  public CapdevHighestDegreeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevHighestDegreeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
+
   }
 
   @Override
-  public boolean deleteCapdevHighestDegree(long capdevHighestDegreeId) {
+  public void deleteCapdevHighestDegree(long capdevHighestDegreeId) {
     final CapdevHighestDegree capdevHighestDegree = this.find(capdevHighestDegreeId);
-    return this.save(capdevHighestDegree) > 0;
+    this.save(capdevHighestDegree);
   }
 
   @Override
@@ -50,14 +52,14 @@ public class CapdevHighestDegreeMySQLDAO implements CapdevHighestDegreeDAO {
 
   @Override
   public CapdevHighestDegree find(long id) {
-    return dao.find(CapdevHighestDegree.class, id);
+    return super.find(CapdevHighestDegree.class, id);
 
   }
 
   @Override
   public List<CapdevHighestDegree> findAll() {
     final String query = "from " + CapdevHighestDegree.class.getName();
-    final List<CapdevHighestDegree> list = dao.findAll(query);
+    final List<CapdevHighestDegree> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +68,15 @@ public class CapdevHighestDegreeMySQLDAO implements CapdevHighestDegreeDAO {
   }
 
   @Override
-  public long save(CapdevHighestDegree capdevHighestDegree) {
+  public CapdevHighestDegree save(CapdevHighestDegree capdevHighestDegree) {
     if (capdevHighestDegree.getId() == null) {
-      dao.save(capdevHighestDegree);
+      super.saveEntity(capdevHighestDegree);
     } else {
-      dao.update(capdevHighestDegree);
+      super.update(capdevHighestDegree);
     }
 
 
-    return capdevHighestDegree.getId();
+    return capdevHighestDegree;
   }
 
 

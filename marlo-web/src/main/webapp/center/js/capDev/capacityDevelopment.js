@@ -449,7 +449,7 @@
   $(".removeCountry").on("click", removeCountry);
 
   //remove country action
-   $(".removeCountry-action").on("click", removeCountryAction);
+  // $(".removeCountry-action").on("click", removeCountryAction);
 
 
   

@@ -42,9 +42,9 @@ public class CapdevParticipantService implements ICapdevParticipantService {
   }
 
   @Override
-  public boolean deleteCapdevParticipant(long capdevParticipantId) {
+  public void deleteCapdevParticipant(long capdevParticipantId) {
 
-    return capdevParticipantDAO.deleteCapdevParticipant(capdevParticipantId);
+    capdevParticipantDAO.deleteCapdevParticipant(capdevParticipantId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CapdevParticipantService implements ICapdevParticipantService {
   }
 
   @Override
-  public long saveCapdevParticipant(CapdevParticipant capdevParticipant) {
+  public CapdevParticipant saveCapdevParticipant(CapdevParticipant capdevParticipant) {
 
     return capdevParticipantDAO.save(capdevParticipant);
   }
 
   @Override
-  public long saveCapdevParticipant(CapdevParticipant capdevParticipant, String actionName,
+  public CapdevParticipant saveCapdevParticipant(CapdevParticipant capdevParticipant, String actionName,
     List<String> relationsName) {
     return capdevParticipantDAO.save(capdevParticipant, actionName, relationsName);
   }

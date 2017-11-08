@@ -31,9 +31,8 @@ public interface ICapacityDevelopmentDAO {
    * This method removes a specific capacityDevelopment value from the database.
    * 
    * @param capacityDevelopmentId is the capacityDevelopment identifier.
-   * @return true if the capacityDevelopment was successfully deleted, false otherwise.
    */
-  public boolean deleteCapacityDevelopment(long capacityDevelopmentId);
+  public void deleteCapacityDevelopment(long capacityDevelopmentId);
 
   /**
    * This method validate if the capacityDevelopment identify with the given id exists in the system.
@@ -75,7 +74,7 @@ public interface ICapacityDevelopmentDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CapacityDevelopment capacityDevelopment);
+  public CapacityDevelopment save(CapacityDevelopment capacityDevelopment);
 
   /**
    * This method saves the information of the given capacityDevelopment
@@ -85,5 +84,6 @@ public interface ICapacityDevelopmentDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CapacityDevelopment capacityDevelopment, String actionName, List<String> relationsName);
+  public CapacityDevelopment save(CapacityDevelopment capacityDevelopment, String actionName,
+    List<String> relationsName);
 }

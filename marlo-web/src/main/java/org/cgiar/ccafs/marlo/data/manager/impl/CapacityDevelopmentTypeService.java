@@ -42,9 +42,9 @@ public class CapacityDevelopmentTypeService implements ICapacityDevelopmentTypeS
   }
 
   @Override
-  public boolean deleteCapacityDevelopmentType(long capacityDevelopmentTypeId) {
+  public void deleteCapacityDevelopmentType(long capacityDevelopmentTypeId) {
 
-    return capacityDevelopmentTypeDAO.deleteCapacityDevelopmentType(capacityDevelopmentTypeId);
+    capacityDevelopmentTypeDAO.deleteCapacityDevelopmentType(capacityDevelopmentTypeId);
   }
 
   @Override
@@ -72,14 +72,14 @@ public class CapacityDevelopmentTypeService implements ICapacityDevelopmentTypeS
   }
 
   @Override
-  public long saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType) {
+  public CapacityDevelopmentType saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType) {
 
     return capacityDevelopmentTypeDAO.save(capacityDevelopmentType);
   }
 
   @Override
-  public long saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType, String actionName,
-    List<String> relationsName) {
+  public CapacityDevelopmentType saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType,
+    String actionName, List<String> relationsName) {
     return capacityDevelopmentTypeDAO.save(capacityDevelopmentType, actionName, relationsName);
   }
 

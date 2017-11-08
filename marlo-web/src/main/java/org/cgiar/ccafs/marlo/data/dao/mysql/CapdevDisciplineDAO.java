@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevDiscipline;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevDisciplineDAO implements ICapdevDisciplineDAO {
+public class CapdevDisciplineDAO extends AbstractMarloDAO<CapdevDiscipline, Long> implements ICapdevDisciplineDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapdevDisciplineDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevDisciplineDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevDiscipline(long capdevDisciplineId) {
+  public void deleteCapdevDiscipline(long capdevDisciplineId) {
     CapdevDiscipline capdevDiscipline = this.find(capdevDisciplineId);
     capdevDiscipline.setActive(false);
-    return this.save(capdevDiscipline) > 0;
+    this.save(capdevDiscipline);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CapdevDisciplineDAO implements ICapdevDisciplineDAO {
 
   @Override
   public CapdevDiscipline find(long id) {
-    return dao.find(CapdevDiscipline.class, id);
+    return super.find(CapdevDiscipline.class, id);
 
   }
 
   @Override
   public List<CapdevDiscipline> findAll() {
     String query = "from " + CapdevDiscipline.class.getName();
-    List<CapdevDiscipline> list = dao.findAll(query);
+    List<CapdevDiscipline> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CapdevDisciplineDAO implements ICapdevDisciplineDAO {
   @Override
   public List<CapdevDiscipline> getCapdevDisciplinesByUserId(long userId) {
     String query = "from " + CapdevDiscipline.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CapdevDiscipline capdevDiscipline) {
+  public CapdevDiscipline save(CapdevDiscipline capdevDiscipline) {
     if (capdevDiscipline.getId() == null) {
-      dao.save(capdevDiscipline);
+      super.saveEntity(capdevDiscipline);
     } else {
-      dao.update(capdevDiscipline);
+      super.update(capdevDiscipline);
     }
-    return capdevDiscipline.getId();
+    return capdevDiscipline;
   }
 
   @Override
-  public long save(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName) {
+  public CapdevDiscipline save(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName) {
     if (capdevDiscipline.getId() == null) {
-      dao.save(capdevDiscipline, actionName, relationsName);
+      super.saveEntity(capdevDiscipline, actionName, relationsName);
     } else {
-      dao.update(capdevDiscipline, actionName, relationsName);
+      super.update(capdevDiscipline, actionName, relationsName);
     }
-    return capdevDiscipline.getId();
+    return capdevDiscipline;
   }
 
 

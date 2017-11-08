@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevTargetgroupDAO implements ICapdevTargetgroupDAO {
+public class CapdevTargetgroupDAO extends AbstractMarloDAO<CapdevTargetgroup, Long> implements ICapdevTargetgroupDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapdevTargetgroupDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevTargetgroupDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevTargetgroup(long capdevTargetgroupId) {
+  public void deleteCapdevTargetgroup(long capdevTargetgroupId) {
     CapdevTargetgroup capdevTargetgroup = this.find(capdevTargetgroupId);
     capdevTargetgroup.setActive(false);
-    return this.save(capdevTargetgroup) > 0;
+    this.save(capdevTargetgroup);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CapdevTargetgroupDAO implements ICapdevTargetgroupDAO {
 
   @Override
   public CapdevTargetgroup find(long id) {
-    return dao.find(CapdevTargetgroup.class, id);
+    return super.find(CapdevTargetgroup.class, id);
 
   }
 
   @Override
   public List<CapdevTargetgroup> findAll() {
     String query = "from " + CapdevTargetgroup.class.getName();
-    List<CapdevTargetgroup> list = dao.findAll(query);
+    List<CapdevTargetgroup> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CapdevTargetgroupDAO implements ICapdevTargetgroupDAO {
   @Override
   public List<CapdevTargetgroup> getCapdevTargetgroupsByUserId(long userId) {
     String query = "from " + CapdevTargetgroup.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CapdevTargetgroup capdevTargetgroup) {
+  public CapdevTargetgroup save(CapdevTargetgroup capdevTargetgroup) {
     if (capdevTargetgroup.getId() == null) {
-      dao.save(capdevTargetgroup);
+      super.saveEntity(capdevTargetgroup);
     } else {
-      dao.update(capdevTargetgroup);
+      super.update(capdevTargetgroup);
     }
-    return capdevTargetgroup.getId();
+    return capdevTargetgroup;
   }
 
   @Override
-  public long save(CapdevTargetgroup capdevTargetgroup, String actionName, List<String> relationsName) {
+  public CapdevTargetgroup save(CapdevTargetgroup capdevTargetgroup, String actionName, List<String> relationsName) {
     if (capdevTargetgroup.getId() == null) {
-      dao.save(capdevTargetgroup, actionName, relationsName);
+      super.saveEntity(capdevTargetgroup, actionName, relationsName);
     } else {
-      dao.update(capdevTargetgroup, actionName, relationsName);
+      super.update(capdevTargetgroup, actionName, relationsName);
     }
-    return capdevTargetgroup.getId();
+    return capdevTargetgroup;
   }
 
 

@@ -32,9 +32,8 @@ public interface CapdevSupportingDocsManager {
    * This method removes a specific capdevSupportingDocs value from the database.
    * 
    * @param capdevSupportingDocsId is the capdevSupportingDocs identifier.
-   * @return true if the capdevSupportingDocs was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevSupportingDocs(long capdevSupportingDocsId);
+  public void deleteCapdevSupportingDocs(long capdevSupportingDocsId);
 
 
   /**
@@ -66,14 +65,17 @@ public interface CapdevSupportingDocsManager {
    * This method saves the information of the given capdevSupportingDocs
    * 
    * @param capdevSupportingDocs - is the capdevSupportingDocs object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevSupportingDocs was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs);
+  public CapdevSupportingDocs saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs);
 
-
-  public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocst, String actionName,
+  /**
+   * This method saves the information of the given capdevSupportingDocs
+   * 
+   * @param capdevSupportingDocs - is the capdevSupportingDocs object with the new information to be added/updated.
+   * @return a object.
+   */
+  public CapdevSupportingDocs saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocst, String actionName,
     List<String> relationsName);
 
 

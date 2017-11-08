@@ -42,9 +42,9 @@ public class CapdevDisciplineService implements ICapdevDisciplineService {
   }
 
   @Override
-  public boolean deleteCapdevDiscipline(long capdevDisciplineId) {
+  public void deleteCapdevDiscipline(long capdevDisciplineId) {
 
-    return capdevDisciplineDAO.deleteCapdevDiscipline(capdevDisciplineId);
+    capdevDisciplineDAO.deleteCapdevDiscipline(capdevDisciplineId);
   }
 
   @Override
@@ -72,13 +72,14 @@ public class CapdevDisciplineService implements ICapdevDisciplineService {
   }
 
   @Override
-  public long saveCapdevDiscipline(CapdevDiscipline capdevDiscipline) {
+  public CapdevDiscipline saveCapdevDiscipline(CapdevDiscipline capdevDiscipline) {
 
     return capdevDisciplineDAO.save(capdevDiscipline);
   }
 
   @Override
-  public long saveCapdevDiscipline(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName) {
+  public CapdevDiscipline saveCapdevDiscipline(CapdevDiscipline capdevDiscipline, String actionName,
+    List<String> relationsName) {
     return capdevDisciplineDAO.save(capdevDiscipline, actionName, relationsName);
   }
 

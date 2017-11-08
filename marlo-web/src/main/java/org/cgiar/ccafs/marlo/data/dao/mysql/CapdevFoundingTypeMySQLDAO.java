@@ -22,20 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevFoundingType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevFoundingTypeMySQLDAO implements CapdevFoundingTypeDAO {
+public class CapdevFoundingTypeMySQLDAO extends AbstractMarloDAO<CapdevFoundingType, Long>
+  implements CapdevFoundingTypeDAO {
 
-  private final StandardDAO dao;
 
   @Inject
-  public CapdevFoundingTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevFoundingTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevFoundingType(long capdevFoundingTypeId) {
+  public void deleteCapdevFoundingType(long capdevFoundingTypeId) {
     final CapdevFoundingType capdevFoundingType = this.find(capdevFoundingTypeId);
-    return this.save(capdevFoundingType) > 0;
+    this.save(capdevFoundingType);
   }
 
   @Override
@@ -50,14 +51,14 @@ public class CapdevFoundingTypeMySQLDAO implements CapdevFoundingTypeDAO {
 
   @Override
   public CapdevFoundingType find(long id) {
-    return dao.find(CapdevFoundingType.class, id);
+    return super.find(CapdevFoundingType.class, id);
 
   }
 
   @Override
   public List<CapdevFoundingType> findAll() {
     final String query = "from " + CapdevFoundingType.class.getName();
-    final List<CapdevFoundingType> list = dao.findAll(query);
+    final List<CapdevFoundingType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +67,15 @@ public class CapdevFoundingTypeMySQLDAO implements CapdevFoundingTypeDAO {
   }
 
   @Override
-  public long save(CapdevFoundingType capdevFoundingType) {
+  public CapdevFoundingType save(CapdevFoundingType capdevFoundingType) {
     if (capdevFoundingType.getId() == null) {
-      dao.save(capdevFoundingType);
+      super.saveEntity(capdevFoundingType);
     } else {
-      dao.update(capdevFoundingType);
+      super.update(capdevFoundingType);
     }
 
 
-    return capdevFoundingType.getId();
+    return capdevFoundingType;
   }
 
 

@@ -33,13 +33,12 @@ public interface ICapdevDisciplineDAO {
    * @param capdevDisciplineId is the capdevDiscipline identifier.
    * @return true if the capdevDiscipline was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevDiscipline(long capdevDisciplineId);
+  public void deleteCapdevDiscipline(long capdevDisciplineId);
 
   /**
    * This method validate if the capdevDiscipline identify with the given id exists in the system.
    * 
    * @param capdevDisciplineID is a capdevDiscipline identifier.
-   * @return true if the capdevDiscipline exists, false otherwise.
    */
   public boolean existCapdevDiscipline(long capdevDisciplineID);
 
@@ -71,19 +70,15 @@ public interface ICapdevDisciplineDAO {
    * This method saves the information of the given capdevDiscipline
    * 
    * @param capdevDiscipline - is the capdevDiscipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevDiscipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapdevDiscipline capdevDiscipline);
+  public CapdevDiscipline save(CapdevDiscipline capdevDiscipline);
 
   /**
    * This method saves the information of the given capdevDiscipline
    * 
    * @param capdevDiscipline - is the capdevDiscipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevDiscipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName);
+  public CapdevDiscipline save(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName);
 }

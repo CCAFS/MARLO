@@ -644,7 +644,6 @@
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
 			method="deleteDiscipline">
 			<result type="json">
-				<param name="root">json</param>
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
 			</result>

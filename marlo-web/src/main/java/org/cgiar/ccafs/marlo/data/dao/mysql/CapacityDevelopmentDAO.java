@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapacityDevelopmentDAO implements ICapacityDevelopmentDAO {
+public class CapacityDevelopmentDAO extends AbstractMarloDAO<CapacityDevelopment, Long>
+  implements ICapacityDevelopmentDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapacityDevelopmentDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapacityDevelopmentDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapacityDevelopment(long capacityDevelopmentId) {
+  public void deleteCapacityDevelopment(long capacityDevelopmentId) {
     CapacityDevelopment capacityDevelopment = this.find(capacityDevelopmentId);
     capacityDevelopment.setActive(false);
-    return this.save(capacityDevelopment) > 0;
+    this.save(capacityDevelopment);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CapacityDevelopmentDAO implements ICapacityDevelopmentDAO {
 
   @Override
   public CapacityDevelopment find(long id) {
-    return dao.find(CapacityDevelopment.class, id);
+    return super.find(CapacityDevelopment.class, id);
 
   }
 
   @Override
   public List<CapacityDevelopment> findAll() {
     String query = "from " + CapacityDevelopment.class.getName();
-    List<CapacityDevelopment> list = dao.findAll(query);
+    List<CapacityDevelopment> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,28 +70,29 @@ public class CapacityDevelopmentDAO implements ICapacityDevelopmentDAO {
   @Override
   public List<CapacityDevelopment> getCapacityDevelopmentsByUserId(long userId) {
     String query = "from " + CapacityDevelopment.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CapacityDevelopment capacityDevelopment) {
+  public CapacityDevelopment save(CapacityDevelopment capacityDevelopment) {
     System.out.println(capacityDevelopment.getCategory());
     if (capacityDevelopment.getId() == null) {
-      dao.save(capacityDevelopment);
+      super.saveEntity(capacityDevelopment);
     } else {
-      dao.update(capacityDevelopment);
+      super.update(capacityDevelopment);
     }
-    return capacityDevelopment.getId();
+    return capacityDevelopment;
   }
 
   @Override
-  public long save(CapacityDevelopment capacityDevelopment, String actionName, List<String> relationsName) {
+  public CapacityDevelopment save(CapacityDevelopment capacityDevelopment, String actionName,
+    List<String> relationsName) {
     if (capacityDevelopment.getId() == null) {
-      dao.save(capacityDevelopment, actionName, relationsName);
+      super.saveEntity(capacityDevelopment, actionName, relationsName);
     } else {
-      dao.update(capacityDevelopment, actionName, relationsName);
+      super.update(capacityDevelopment, actionName, relationsName);
     }
-    return capacityDevelopment.getId();
+    return capacityDevelopment;
   }
 
 

@@ -18,7 +18,7 @@
 	  	<tbody >
 		  	[#if capdevs?has_content]
 			  	[#list capdevs as i]
-				  	[#local capdevUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+				  	[#local capdevUrl][@s.url namespace=namespace action=defaultAction][@s.param name='capdevID']${i.id?c}[/@s.param][@s.param name='projectID']${projectID?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
 				  	[#if i.active]
 
 

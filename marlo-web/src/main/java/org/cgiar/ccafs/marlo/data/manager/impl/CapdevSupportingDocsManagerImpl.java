@@ -41,9 +41,9 @@ public class CapdevSupportingDocsManagerImpl implements CapdevSupportingDocsMana
   }
 
   @Override
-  public boolean deleteCapdevSupportingDocs(long capdevSupportingDocsId) {
+  public void deleteCapdevSupportingDocs(long capdevSupportingDocsId) {
 
-    return capdevSupportingDocsDAO.deleteCapdevSupportingDocs(capdevSupportingDocsId);
+    capdevSupportingDocsDAO.deleteCapdevSupportingDocs(capdevSupportingDocsId);
   }
 
   @Override
@@ -67,13 +67,13 @@ public class CapdevSupportingDocsManagerImpl implements CapdevSupportingDocsMana
 
 
   @Override
-  public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs) {
+  public CapdevSupportingDocs saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs) {
 
     return capdevSupportingDocsDAO.save(capdevSupportingDocs);
   }
 
   @Override
-  public long saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs, String actionName,
+  public CapdevSupportingDocs saveCapdevSupportingDocs(CapdevSupportingDocs capdevSupportingDocs, String actionName,
     List<String> relationsName) {
     return capdevSupportingDocsDAO.save(capdevSupportingDocs, actionName, relationsName);
   }

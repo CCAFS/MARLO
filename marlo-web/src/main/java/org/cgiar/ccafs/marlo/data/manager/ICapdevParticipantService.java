@@ -32,9 +32,8 @@ public interface ICapdevParticipantService {
    * This method removes a specific capdevParticipant value from the database.
    * 
    * @param capdevParticipantId is the capdevParticipant identifier.
-   * @return true if the capdevParticipant was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevParticipant(long capdevParticipantId);
+  public void deleteCapdevParticipant(long capdevParticipantId);
 
 
   /**
@@ -74,21 +73,18 @@ public interface ICapdevParticipantService {
    * This method saves the information of the given capdevParticipant
    * 
    * @param capdevParticipant - is the capdevParticipant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevParticipant was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevParticipant(CapdevParticipant capdevParticipant);
+  public CapdevParticipant saveCapdevParticipant(CapdevParticipant capdevParticipant);
 
   /**
    * This method saves the information of the given capdevParticipant
    * 
    * @param capdevParticipant - is the capdevParticipant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevParticipant was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevParticipant(CapdevParticipant capdevParticipant, String actionName, List<String> relationsName);
+  public CapdevParticipant saveCapdevParticipant(CapdevParticipant capdevParticipant, String actionName,
+    List<String> relationsName);
 
 
 }

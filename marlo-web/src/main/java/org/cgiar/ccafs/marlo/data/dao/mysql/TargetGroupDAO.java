@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class TargetGroupDAO implements ITargetGroupDAO {
+public class TargetGroupDAO extends AbstractMarloDAO<TargetGroup, Long> implements ITargetGroupDAO {
 
-  private final StandardDAO dao;
 
   @Inject
-  public TargetGroupDAO(StandardDAO dao) {
-    this.dao = dao;
+  public TargetGroupDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteTargetGroup(long targetGroupId) {
+  public void deleteTargetGroup(long targetGroupId) {
     final TargetGroup targetGroup = this.find(targetGroupId);
     // targetGroup.setActive(false);
-    return this.save(targetGroup) > 0;
+    this.save(targetGroup);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class TargetGroupDAO implements ITargetGroupDAO {
 
   @Override
   public TargetGroup find(long id) {
-    return dao.find(TargetGroup.class, id);
+    return super.find(TargetGroup.class, id);
 
   }
 
   @Override
   public List<TargetGroup> findAll() {
     final String query = "from " + TargetGroup.class.getName();
-    final List<TargetGroup> list = dao.findAll(query);
+    final List<TargetGroup> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class TargetGroupDAO implements ITargetGroupDAO {
   @Override
   public List<TargetGroup> getTargetGroupsByUserId(long userId) {
     final String query = "from " + TargetGroup.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(TargetGroup targetGroup) {
+  public TargetGroup save(TargetGroup targetGroup) {
     if (targetGroup.getId() == null) {
-      dao.save(targetGroup);
+      super.saveEntity(targetGroup);
     } else {
-      dao.update(targetGroup);
+      super.update(targetGroup);
     }
-    return targetGroup.getId();
+    return targetGroup;
   }
 
   @Override
-  public long save(TargetGroup targetGroup, String actionName, List<String> relationsName) {
+  public TargetGroup save(TargetGroup targetGroup, String actionName, List<String> relationsName) {
     if (targetGroup.getId() == null) {
-      dao.save(targetGroup, actionName, relationsName);
+      super.saveEntity(targetGroup, actionName, relationsName);
     } else {
-      dao.update(targetGroup, actionName, relationsName);
+      super.update(targetGroup, actionName, relationsName);
     }
-    return targetGroup.getId();
+    return targetGroup;
   }
 
 

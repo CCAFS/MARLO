@@ -42,9 +42,9 @@ public class CapdevLocationsService implements ICapdevLocationsService {
   }
 
   @Override
-  public boolean deleteCapdevLocations(long capdevLocationsId) {
+  public void deleteCapdevLocations(long capdevLocationsId) {
 
-    return capdevLocationsDAO.deleteCapdevLocations(capdevLocationsId);
+    capdevLocationsDAO.deleteCapdevLocations(capdevLocationsId);
   }
 
   @Override
@@ -72,13 +72,14 @@ public class CapdevLocationsService implements ICapdevLocationsService {
   }
 
   @Override
-  public long saveCapdevLocations(CapdevLocations capdevLocations) {
+  public CapdevLocations saveCapdevLocations(CapdevLocations capdevLocations) {
 
     return capdevLocationsDAO.save(capdevLocations);
   }
 
   @Override
-  public long saveCapdevLocations(CapdevLocations capdevLocations, String actionName, List<String> relationsName) {
+  public CapdevLocations saveCapdevLocations(CapdevLocations capdevLocations, String actionName,
+    List<String> relationsName) {
     return capdevLocationsDAO.save(capdevLocations, actionName, relationsName);
   }
 

@@ -68,7 +68,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
     supportingDoc.setActiveSince(new Date());
     supportingDoc.setCreatedBy(this.getCurrentUser());
     supportingDoc.setModifiedBy(this.getCurrentUser());
-    deliverableID = centerDeliverableSErvice.saveDeliverable(supportingDoc);
+    deliverableID = centerDeliverableSErvice.saveDeliverable(supportingDoc).getId();
 
     return SUCCESS;
   }
@@ -76,7 +76,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public String delete() {
-    long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("supportingDocID")));
+    long supportingDocID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("deliverableID")));
     CenterDeliverable supportingDoc = centerDeliverableSErvice.getDeliverableById(supportingDocID);
     supportingDoc.setActive(false);
     supportingDoc.setModifiedBy(this.getCurrentUser());
@@ -112,6 +112,7 @@ public class CapdevSupportingDocsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    System.out.println(this.getRequest().getRequestURL());
     try {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));

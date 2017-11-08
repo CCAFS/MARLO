@@ -178,24 +178,29 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
   public String deleteCountry() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capDevCountryID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
-    capdev_country.setActive(false);
-    capdev_country.setModifiedBy(this.getCurrentUser());
-    capdevLocationService.saveCapdevLocations(capdev_country);
+    long capDevCountryID = -1;
+    try {
+      capDevCountryID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevCountry")));
+    } catch (Exception e) {
+      capDevCountryID = -1;
+    }
+    CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
+    if (capdev_country != null) {
+      capdev_country.setActive(false);
+      capdev_country.setModifiedBy(this.getCurrentUser());
+      capdevLocationService.saveCapdevLocations(capdev_country);
+    }
     return SUCCESS;
   }
 
   public String deleteListOfParticipants() throws Exception {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
-    final List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
+    List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
     for (final CapdevParticipant obj : listOfParticipants) {
       obj.setActive(false);
       obj.setModifiedBy(this.getCurrentUser());
       capdevParicipantService.saveCapdevParticipant(obj);
-      final Participant participant = obj.getParticipant();
+      Participant participant = obj.getParticipant();
       participant.setActive(false);
       participant.setModifiedBy(this.getCurrentUser());
       participantService.saveParticipant(participant);
@@ -211,13 +216,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
   public String deleteRegion() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capDevRegionID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
-    capdev_region.setActive(false);
-    capdev_region.setModifiedBy(this.getCurrentUser());
-    capdevLocationService.saveCapdevLocations(capdev_region);
+    long capDevRegionID = -1;
+    try {
+      capDevRegionID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevRegion")));
+    } catch (Exception e) {
+      capDevRegionID = -1;
+    }
+    CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
+    if (capdev_region != null) {
+      capdev_region.setActive(false);
+      capdev_region.setModifiedBy(this.getCurrentUser());
+      capdevLocationService.saveCapdevLocations(capdev_region);
+    }
     return SUCCESS;
   }
 
@@ -483,7 +493,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
     // genders
     genders = new ArrayList<>();
     for (final Genders gender : Genders.values()) {
@@ -574,8 +583,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         capdev = (CapacityDevelopment) autoSaveReader.readFromJson(jReader);
-        System.out.println("===>" + capdev.getsGlobal().equals(""));
-        System.out.println("==>" + capdev.getsRegional().equals(""));
+
         if (capdev.getsGlobal().equals("")) {
           capdev.setsGlobal(null);
         }
@@ -583,7 +591,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdev.setsRegional(null);
         }
         capdev.setGlobal(this.bolValue(capdev.getsGlobal()));
-        capdev.setRegional(this.bolValue(capdev.getsGlobal()));
+        capdev.setRegional(this.bolValue(capdev.getsRegional()));
+
+        System.out.println(capdev.getRegional());
 
 
         if (capdev.getCapDevCountries() != null) {
@@ -633,7 +643,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           if (capdev.getCtEmail() != null) {
             ctEmail = capdev.getCtEmail();
           }
-          contact = ctFirstName + ctLastName + " " + ctEmail;
+          contact = ctFirstName + " " + ctLastName + " " + ctEmail;
           final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
           capdev.setCapdevParticipant(capdevParticipants);
 
@@ -671,6 +681,13 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     }
 
+    if (this.isHttpPost()) {
+      capdev.setCapdevType(null);
+      capdev.setCapdevLocations(null);
+      capdev.setCapdevParticipant(null);
+      capdev.setParticipant(null);
+    }
+
   }
 
 
@@ -703,7 +720,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String save() {
-
     final Session session = SecurityUtils.getSubject().getSession();
 
     final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
@@ -721,9 +737,15 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     capdevDB.setTitle(capdev.getTitle());
 
-    if (capdev.getCapdevType().getId() != -1) {
-      capdevDB.setCapdevType(capdev.getCapdevType());
+
+    if (capdev.getCapdevType() != null) {
+      if (capdev.getCapdevType().getId() != -1) {
+        capdevDB.setCapdevType(capdev.getCapdevType());
+      } else {
+        capdevDB.setCapdevType(null);
+      }
     }
+
 
     if (capdev.getDurationUnit() != null) {
       if (!capdev.getDurationUnit().equals("-1")) {
@@ -735,6 +757,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if (capdevDB.getCategory() == 1) {
 
       participant = capdev.getParticipant();
+      participant.setHighestDegree(capdev.getParticipant().getHighestDegree());
 
       capdevDB.setNumParticipants(1);
       if (capdev.getParticipant().getGender().equals("Male")) {
@@ -750,10 +773,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       this.saveParticipant(capdev.getParticipant());
 
       // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
-      if (capdevDB.getCapdevParticipant().isEmpty()) {
+      if (capdevDB.getCapdevParticipant() == null) {
         this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
       }
-
     }
 
     // if capdev is group

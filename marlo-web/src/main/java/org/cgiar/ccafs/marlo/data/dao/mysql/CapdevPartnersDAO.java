@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevPartners;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevPartnersDAO implements ICapdevPartnersDAO {
+public class CapdevPartnersDAO extends AbstractMarloDAO<CapdevPartners, Long> implements ICapdevPartnersDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapdevPartnersDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevPartnersDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevPartners(long capdevPartnersId) {
+  public void deleteCapdevPartners(long capdevPartnersId) {
     CapdevPartners capdevPartners = this.find(capdevPartnersId);
     capdevPartners.setActive(false);
-    return this.save(capdevPartners) > 0;
+    this.save(capdevPartners);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CapdevPartnersDAO implements ICapdevPartnersDAO {
 
   @Override
   public CapdevPartners find(long id) {
-    return dao.find(CapdevPartners.class, id);
+    return super.find(CapdevPartners.class, id);
 
   }
 
   @Override
   public List<CapdevPartners> findAll() {
     String query = "from " + CapdevPartners.class.getName();
-    List<CapdevPartners> list = dao.findAll(query);
+    List<CapdevPartners> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CapdevPartnersDAO implements ICapdevPartnersDAO {
   @Override
   public List<CapdevPartners> getCapdevPartnerssByUserId(long userId) {
     String query = "from " + CapdevPartners.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CapdevPartners capdevPartners) {
+  public CapdevPartners save(CapdevPartners capdevPartners) {
     if (capdevPartners.getId() == null) {
-      dao.save(capdevPartners);
+      super.saveEntity(capdevPartners);
     } else {
-      dao.update(capdevPartners);
+      super.update(capdevPartners);
     }
-    return capdevPartners.getId();
+    return capdevPartners;
   }
 
   @Override
-  public long save(CapdevPartners capdevPartners, String actionName, List<String> relationsName) {
+  public CapdevPartners save(CapdevPartners capdevPartners, String actionName, List<String> relationsName) {
     if (capdevPartners.getId() == null) {
-      dao.save(capdevPartners, actionName, relationsName);
+      super.saveEntity(capdevPartners, actionName, relationsName);
     } else {
-      dao.update(capdevPartners, actionName, relationsName);
+      super.update(capdevPartners, actionName, relationsName);
     }
-    return capdevPartners.getId();
+    return capdevPartners;
   }
 
 

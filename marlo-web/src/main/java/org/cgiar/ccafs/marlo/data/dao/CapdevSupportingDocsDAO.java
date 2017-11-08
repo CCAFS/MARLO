@@ -30,9 +30,8 @@ public interface CapdevSupportingDocsDAO {
    * This method removes a specific capdevSupportingDocs value from the database.
    * 
    * @param capdevSupportingDocsId is the capdevSupportingDocs identifier.
-   * @return true if the capdevSupportingDocs was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevSupportingDocs(long capdevSupportingDocsId);
+  public void deleteCapdevSupportingDocs(long capdevSupportingDocsId);
 
   /**
    * This method validate if the capdevSupportingDocs identify with the given id exists in the system.
@@ -62,12 +61,11 @@ public interface CapdevSupportingDocsDAO {
    * This method saves the information of the given capdevSupportingDocs
    * 
    * @param capdevSupportingDocs - is the capdevSupportingDocs object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevSupportingDocs was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return CapdevSupportingDocs object
    */
-  public long save(CapdevSupportingDocs capdevSupportingDocs);
+  public CapdevSupportingDocs save(CapdevSupportingDocs capdevSupportingDocs);
 
 
-  public long save(CapdevSupportingDocs capdevSupportingDocs, String actionName, List<String> relationsName);
+  public CapdevSupportingDocs save(CapdevSupportingDocs capdevSupportingDocs, String actionName,
+    List<String> relationsName);
 }

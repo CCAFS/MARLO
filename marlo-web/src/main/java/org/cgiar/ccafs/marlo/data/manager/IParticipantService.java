@@ -32,9 +32,8 @@ public interface IParticipantService {
    * This method removes a specific participant value from the database.
    * 
    * @param participantId is the participant identifier.
-   * @return true if the participant was successfully deleted, false otherwise.
    */
-  public boolean deleteParticipant(long participantId);
+  public void deleteParticipant(long participantId);
 
 
   /**
@@ -74,21 +73,17 @@ public interface IParticipantService {
    * This method saves the information of the given participant
    * 
    * @param participant - is the participant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the participant was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveParticipant(Participant participant);
+  public Participant saveParticipant(Participant participant);
 
   /**
    * This method saves the information of the given participant
    * 
    * @param participant - is the participant object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the participant was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object
    */
-  public long saveParticipant(Participant participant, String actionName, List<String> relationsName);
+  public Participant saveParticipant(Participant participant, String actionName, List<String> relationsName);
 
 
 }

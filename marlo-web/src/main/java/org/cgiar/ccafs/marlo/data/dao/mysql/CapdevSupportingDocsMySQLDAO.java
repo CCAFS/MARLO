@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
-
-  private final StandardDAO dao;
+public class CapdevSupportingDocsMySQLDAO extends AbstractMarloDAO<CapdevSupportingDocs, Long>
+  implements CapdevSupportingDocsDAO {
 
   @Inject
-  public CapdevSupportingDocsMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevSupportingDocsMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevSupportingDocs(long capdevSupportingDocsId) {
+  public void deleteCapdevSupportingDocs(long capdevSupportingDocsId) {
     final CapdevSupportingDocs capdevSupportingDocs = this.find(capdevSupportingDocsId);
     capdevSupportingDocs.setActive(false);
-    return this.save(capdevSupportingDocs) > 0;
+    this.save(capdevSupportingDocs);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
 
   @Override
   public CapdevSupportingDocs find(long id) {
-    return dao.find(CapdevSupportingDocs.class, id);
+    return super.find(CapdevSupportingDocs.class, id);
 
   }
 
   @Override
   public List<CapdevSupportingDocs> findAll() {
     final String query = "from " + CapdevSupportingDocs.class.getName() + " where is_active=1";
-    final List<CapdevSupportingDocs> list = dao.findAll(query);
+    final List<CapdevSupportingDocs> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,25 +67,26 @@ public class CapdevSupportingDocsMySQLDAO implements CapdevSupportingDocsDAO {
   }
 
   @Override
-  public long save(CapdevSupportingDocs capdevSupportingDocs) {
+  public CapdevSupportingDocs save(CapdevSupportingDocs capdevSupportingDocs) {
     if (capdevSupportingDocs.getId() == null) {
-      dao.save(capdevSupportingDocs);
+      super.saveEntity(capdevSupportingDocs);
     } else {
-      dao.update(capdevSupportingDocs);
+      super.update(capdevSupportingDocs);
     }
 
 
-    return capdevSupportingDocs.getId();
+    return capdevSupportingDocs;
   }
 
   @Override
-  public long save(CapdevSupportingDocs capdevSupportingDocs, String actionName, List<String> relationsName) {
+  public CapdevSupportingDocs save(CapdevSupportingDocs capdevSupportingDocs, String actionName,
+    List<String> relationsName) {
     if (capdevSupportingDocs.getId() == null) {
-      dao.save(capdevSupportingDocs, actionName, relationsName);
+      super.saveEntity(capdevSupportingDocs, actionName, relationsName);
     } else {
-      dao.update(capdevSupportingDocs, actionName, relationsName);
+      super.update(capdevSupportingDocs, actionName, relationsName);
     }
-    return capdevSupportingDocs.getId();
+    return capdevSupportingDocs;
   }
 
 

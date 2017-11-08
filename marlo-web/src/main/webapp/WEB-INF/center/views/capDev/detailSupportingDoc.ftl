@@ -129,7 +129,8 @@
 									<div class="col-md-12 documents">
 								    	<input class="documentID" type="hidden" name="" value="${document.id}" />
 								    	[#if editable]
-									    	<div class="removeCapdevsupportDocument-action removeCapdevsupportDocument removeIcon" title="Remove document"></div>
+									    	<div></div>
+									    	<a  class="removeCapdevsupportDocument removeIcon" title="Remove document" href="[@s.url action='${centerSession}/deleteLink'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value=true /][@s.param name="deliverableLink" value=document.id /][/@s.url]"></a>
 								    	[/#if]
 										<div class="input input-" style="display:block;">
 											<input class="id" type="hidden"  value="${(document.id)!}" name="deliverable.documents[${document_index}].id" />

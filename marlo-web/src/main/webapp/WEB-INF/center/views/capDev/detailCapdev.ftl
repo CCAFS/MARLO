@@ -196,11 +196,11 @@
 										
 
 										<div class="col-md-12" style="margin-top: 10px;">
-										<div class="btnPreview">
+										<!-- <div class="btnPreview">
 											<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded" >
 												preview 
 											</button>
-										</div>
+										</div> -->
 
 										
 
@@ -375,7 +375,7 @@
 											[#list capdev.capDevRegions as region]
 												<li id="" class="capdevRegion  clearfix col-md-3">
 													[#if editable]
-														<div class="removeRegion-action removeRegion removeIcon" title="Remove region"></div>
+														<a class="removeCountry removeIcon" title="Remove country" href="[@s.url action='${centerSession}/deleteRegion'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevRegion" value=region.id /][/@s.url]"></a>
 													[/#if]
 													<input class="id" type="hidden" name="capdev.capDevRegions[${region_index}].id" value="${(region.id)!}" />
 													<input class="rId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
@@ -405,7 +405,7 @@
 											[#list capdev.capDevCountries as country]
 											<li id="" class="capdevCountry clearfix col-md-3">
 												[#if editable]
-													<div class="removeCountry-action removeCountry removeIcon" title="Remove country"></div>
+													<a class=" removeCountry removeIcon" title="Remove country" href="[@s.url action='${centerSession}/deleteCountry'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevCountry" value=country.id /][/@s.url]"></a>
 												[/#if]
 												<input class="id" type="hidden" name="capdev.capDevCountries[${country_index}].id" value="${(country.id)!}" />
 												<input class="cId" type="hidden" name="capdev.capDevCountries[${country_index}].locElement.id" value="${(country.locElement.id)!}" />

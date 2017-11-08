@@ -42,9 +42,9 @@ public class CapacityDevelopmentService implements ICapacityDevelopmentService {
   }
 
   @Override
-  public boolean deleteCapacityDevelopment(long capacityDevelopmentId) {
+  public void deleteCapacityDevelopment(long capacityDevelopmentId) {
 
-    return capacityDevelopmentDAO.deleteCapacityDevelopment(capacityDevelopmentId);
+    capacityDevelopmentDAO.deleteCapacityDevelopment(capacityDevelopmentId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CapacityDevelopmentService implements ICapacityDevelopmentService {
   }
 
   @Override
-  public long saveCapacityDevelopment(CapacityDevelopment capacityDevelopment) {
+  public CapacityDevelopment saveCapacityDevelopment(CapacityDevelopment capacityDevelopment) {
 
     return capacityDevelopmentDAO.save(capacityDevelopment);
   }
 
   @Override
-  public long saveCapacityDevelopment(CapacityDevelopment capacityDevelopment, String actionName,
+  public CapacityDevelopment saveCapacityDevelopment(CapacityDevelopment capacityDevelopment, String actionName,
     List<String> relationsName) {
     return capacityDevelopmentDAO.save(capacityDevelopment, actionName, relationsName);
   }

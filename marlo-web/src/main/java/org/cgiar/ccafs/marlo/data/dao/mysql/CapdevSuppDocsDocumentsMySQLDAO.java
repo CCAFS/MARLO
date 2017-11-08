@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevSuppDocsDocumentsMySQLDAO implements CapdevSuppDocsDocumentsDAO {
+public class CapdevSuppDocsDocumentsMySQLDAO extends AbstractMarloDAO<CapdevSuppDocsDocuments, Long>
+  implements CapdevSuppDocsDocumentsDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapdevSuppDocsDocumentsMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevSuppDocsDocumentsMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevSuppDocsDocuments(long capdevSuppDocsDocumentsId) {
+  public void deleteCapdevSuppDocsDocuments(long capdevSuppDocsDocumentsId) {
     CapdevSuppDocsDocuments capdevSuppDocsDocuments = this.find(capdevSuppDocsDocumentsId);
     capdevSuppDocsDocuments.setActive(false);
-    return this.save(capdevSuppDocsDocuments) > 0;
+    this.save(capdevSuppDocsDocuments);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CapdevSuppDocsDocumentsMySQLDAO implements CapdevSuppDocsDocumentsD
 
   @Override
   public CapdevSuppDocsDocuments find(long id) {
-    return dao.find(CapdevSuppDocsDocuments.class, id);
+    return super.find(CapdevSuppDocsDocuments.class, id);
 
   }
 
   @Override
   public List<CapdevSuppDocsDocuments> findAll() {
     String query = "from " + CapdevSuppDocsDocuments.class.getName() + " where is_active=1";
-    List<CapdevSuppDocsDocuments> list = dao.findAll(query);
+    List<CapdevSuppDocsDocuments> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,15 @@ public class CapdevSuppDocsDocumentsMySQLDAO implements CapdevSuppDocsDocumentsD
   }
 
   @Override
-  public long save(CapdevSuppDocsDocuments capdevSuppDocsDocuments) {
+  public CapdevSuppDocsDocuments save(CapdevSuppDocsDocuments capdevSuppDocsDocuments) {
     if (capdevSuppDocsDocuments.getId() == null) {
-      dao.save(capdevSuppDocsDocuments);
+      super.saveEntity(capdevSuppDocsDocuments);
     } else {
-      dao.update(capdevSuppDocsDocuments);
+      super.update(capdevSuppDocsDocuments);
     }
 
 
-    return capdevSuppDocsDocuments.getId();
+    return capdevSuppDocsDocuments;
   }
 
 

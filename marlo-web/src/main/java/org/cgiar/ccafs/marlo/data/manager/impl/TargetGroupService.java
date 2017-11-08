@@ -42,9 +42,9 @@ public class TargetGroupService implements ITargetGroupService {
   }
 
   @Override
-  public boolean deleteTargetGroup(long targetGroupId) {
+  public void deleteTargetGroup(long targetGroupId) {
 
-    return targetGroupDAO.deleteTargetGroup(targetGroupId);
+    targetGroupDAO.deleteTargetGroup(targetGroupId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class TargetGroupService implements ITargetGroupService {
   }
 
   @Override
-  public long saveTargetGroup(TargetGroup targetGroup) {
+  public TargetGroup saveTargetGroup(TargetGroup targetGroup) {
 
     return targetGroupDAO.save(targetGroup);
   }
 
   @Override
-  public long saveTargetGroup(TargetGroup targetGroup, String actionName, List<String> relationsName) {
+  public TargetGroup saveTargetGroup(TargetGroup targetGroup, String actionName, List<String> relationsName) {
     return targetGroupDAO.save(targetGroup, actionName, relationsName);
   }
 

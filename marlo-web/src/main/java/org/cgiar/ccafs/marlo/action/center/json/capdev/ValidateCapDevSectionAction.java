@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
+import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapDevDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapacityDevelopmentValidator;
@@ -275,8 +276,6 @@ public class ValidateCapDevSectionAction extends BaseAction {
       if (capdev.getCategory() == 1) {
         if (!participants.isEmpty()) {
           capdev.setParticipant(participants.get(0).getParticipant());
-        } else {
-          capdev.setParticipant(null);
         }
 
       }
@@ -295,9 +294,10 @@ public class ValidateCapDevSectionAction extends BaseAction {
         capdev.setCapDevCountries(countries);
 
       }
+      Participant participant = new Participant();
+      participant = capdev.getParticipant();
 
-
-      interventionValidator.validate(this, capdev, capdev.getParticipant(), null, null);;
+      interventionValidator.validate(this, capdev, participant, null, null);
 
 
     }

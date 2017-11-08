@@ -42,9 +42,9 @@ public class CapdevTargetgroupService implements ICapdevTargetgroupService {
   }
 
   @Override
-  public boolean deleteCapdevTargetgroup(long capdevTargetgroupId) {
+  public void deleteCapdevTargetgroup(long capdevTargetgroupId) {
 
-    return capdevTargetgroupDAO.deleteCapdevTargetgroup(capdevTargetgroupId);
+    capdevTargetgroupDAO.deleteCapdevTargetgroup(capdevTargetgroupId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CapdevTargetgroupService implements ICapdevTargetgroupService {
   }
 
   @Override
-  public long saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup) {
+  public CapdevTargetgroup saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup) {
 
     return capdevTargetgroupDAO.save(capdevTargetgroup);
   }
 
   @Override
-  public long saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup, String actionName,
+  public CapdevTargetgroup saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup, String actionName,
     List<String> relationsName) {
     return capdevTargetgroupDAO.save(capdevTargetgroup, actionName, relationsName);
   }

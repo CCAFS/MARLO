@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CapdevLocationsDAO implements ICapdevLocationsDAO {
+public class CapdevLocationsDAO extends AbstractMarloDAO<CapdevLocations, Long> implements ICapdevLocationsDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CapdevLocationsDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CapdevLocationsDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCapdevLocations(long capdevLocationsId) {
+  public void deleteCapdevLocations(long capdevLocationsId) {
     CapdevLocations capdevLocations = this.find(capdevLocationsId);
     capdevLocations.setActive(false);
-    return this.save(capdevLocations) > 0;
+    this.save(capdevLocations);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CapdevLocationsDAO implements ICapdevLocationsDAO {
 
   @Override
   public CapdevLocations find(long id) {
-    return dao.find(CapdevLocations.class, id);
+    return super.find(CapdevLocations.class, id);
 
   }
 
   @Override
   public List<CapdevLocations> findAll() {
     String query = "from " + CapdevLocations.class.getName();
-    List<CapdevLocations> list = dao.findAll(query);
+    List<CapdevLocations> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CapdevLocationsDAO implements ICapdevLocationsDAO {
   @Override
   public List<CapdevLocations> getCapdevLocationssByUserId(long userId) {
     String query = "from " + CapdevLocations.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CapdevLocations capdevLocations) {
+  public CapdevLocations save(CapdevLocations capdevLocations) {
     if (capdevLocations.getId() == null) {
-      dao.save(capdevLocations);
+      super.saveEntity(capdevLocations);
     } else {
-      dao.update(capdevLocations);
+      super.update(capdevLocations);
     }
-    return capdevLocations.getId();
+    return capdevLocations;
   }
 
   @Override
-  public long save(CapdevLocations capdevLocations, String actionName, List<String> relationsName) {
+  public CapdevLocations save(CapdevLocations capdevLocations, String actionName, List<String> relationsName) {
     if (capdevLocations.getId() == null) {
-      dao.save(capdevLocations, actionName, relationsName);
+      super.saveEntity(capdevLocations, actionName, relationsName);
     } else {
-      dao.update(capdevLocations, actionName, relationsName);
+      super.update(capdevLocations, actionName, relationsName);
     }
-    return capdevLocations.getId();
+    return capdevLocations;
   }
 
 

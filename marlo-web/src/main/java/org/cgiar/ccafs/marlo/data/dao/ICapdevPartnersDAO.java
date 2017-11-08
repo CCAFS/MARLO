@@ -30,10 +30,9 @@ public interface ICapdevPartnersDAO {
   /**
    * This method removes a specific capdevPartners value from the database.
    * 
-   * @param capdevPartnersId is the capdevPartners identifier.
-   * @return true if the capdevPartners was successfully deleted, false otherwise.
+   * @param capdevPartnersId is the capdevPartners identifier..
    */
-  public boolean deleteCapdevPartners(long capdevPartnersId);
+  public void deleteCapdevPartners(long capdevPartnersId);
 
   /**
    * This method validate if the capdevPartners identify with the given id exists in the system.
@@ -71,19 +70,15 @@ public interface ICapdevPartnersDAO {
    * This method saves the information of the given capdevPartners
    * 
    * @param capdevPartners - is the capdevPartners object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevPartners was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapdevPartners capdevPartners);
+  public CapdevPartners save(CapdevPartners capdevPartners);
 
   /**
    * This method saves the information of the given capdevPartners
    * 
    * @param capdevPartners - is the capdevPartners object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevPartners was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapdevPartners capdevPartners, String actionName, List<String> relationsName);
+  public CapdevPartners save(CapdevPartners capdevPartners, String actionName, List<String> relationsName);
 }

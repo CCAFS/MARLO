@@ -32,9 +32,8 @@ public interface ICapdevDisciplineService {
    * This method removes a specific capdevDiscipline value from the database.
    * 
    * @param capdevDisciplineId is the capdevDiscipline identifier.
-   * @return true if the capdevDiscipline was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevDiscipline(long capdevDisciplineId);
+  public void deleteCapdevDiscipline(long capdevDisciplineId);
 
 
   /**
@@ -74,21 +73,18 @@ public interface ICapdevDisciplineService {
    * This method saves the information of the given capdevDiscipline
    * 
    * @param capdevDiscipline - is the capdevDiscipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevDiscipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevDiscipline(CapdevDiscipline capdevDiscipline);
+  public CapdevDiscipline saveCapdevDiscipline(CapdevDiscipline capdevDiscipline);
 
   /**
    * This method saves the information of the given capdevDiscipline
    * 
    * @param capdevDiscipline - is the capdevDiscipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevDiscipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevDiscipline(CapdevDiscipline capdevDiscipline, String actionName, List<String> relationsName);
+  public CapdevDiscipline saveCapdevDiscipline(CapdevDiscipline capdevDiscipline, String actionName,
+    List<String> relationsName);
 
 
 }

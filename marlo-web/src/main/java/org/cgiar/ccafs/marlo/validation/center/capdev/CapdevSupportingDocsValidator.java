@@ -38,6 +38,12 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
     if (!baseAction.getFieldErrors().isEmpty()) {
       baseAction.addActionError(baseAction.getText("saving.fields.required"));
     }
+    if (deliverable.getDeliverableType() != null) {
+      if ((deliverable.getDeliverableType().getId() == null)
+        || (deliverable.getDeliverableType().getId().longValue() == -1)) {
+        deliverable.setDeliverableType(null);
+      }
+    }
 
     this.validateSupportingDocs(baseAction, deliverable);
     this.saveMissingFields(deliverable, deliverable.getCapdev(), "supportingDocs");

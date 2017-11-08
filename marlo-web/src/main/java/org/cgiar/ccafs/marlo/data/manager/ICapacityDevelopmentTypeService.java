@@ -32,9 +32,8 @@ public interface ICapacityDevelopmentTypeService {
    * This method removes a specific capacityDevelopmentType value from the database.
    * 
    * @param capacityDevelopmentTypeId is the capacityDevelopmentType identifier.
-   * @return true if the capacityDevelopmentType was successfully deleted, false otherwise.
    */
-  public boolean deleteCapacityDevelopmentType(long capacityDevelopmentTypeId);
+  public void deleteCapacityDevelopmentType(long capacityDevelopmentTypeId);
 
 
   /**
@@ -75,25 +74,19 @@ public interface ICapacityDevelopmentTypeService {
    * 
    * @param capacityDevelopmentType - is the capacityDevelopmentType object with the new information to be
    *        added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capacityDevelopmentType
-   *         was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType);
+  public CapacityDevelopmentType saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType);
 
   /**
    * This method saves the information of the given capacityDevelopmentType
    * 
    * @param capacityDevelopmentType - is the capacityDevelopmentType object with the new information to be
    *        added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capacityDevelopmentType
-   *         was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType, String actionName,
-    List<String> relationsName);
+  public CapacityDevelopmentType saveCapacityDevelopmentType(CapacityDevelopmentType capacityDevelopmentType,
+    String actionName, List<String> relationsName);
 
 
 }

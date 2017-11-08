@@ -33,7 +33,7 @@
 			<column name="is_capdev" />
 		</property>
 		<many-to-one name="deliverableType"
-			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select" >
 			<column name="type_id" />
 		</many-to-one>
 		<one-to-one name="deliverableCrosscutingTheme"

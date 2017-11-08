@@ -166,20 +166,21 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
   public String deleteDiscipline() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capdevDisciplineID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevDiscipline capdev_discipline = capdevDisciplineService.getCapdevDisciplineById(capdevDisciplineID);
+    // final long capdevDisciplineID =
+    // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long capdevDisciplineID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevDiscipline")));
+    CapdevDiscipline capdev_discipline = capdevDisciplineService.getCapdevDisciplineById(capdevDisciplineID);
     capdev_discipline.setActive(false);
+    capdev_discipline.setModifiedBy(this.getCurrentUser());
     capdevDisciplineService.saveCapdevDiscipline(capdev_discipline);
     return SUCCESS;
   }
 
   public String deleteOutput() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capdevoutputID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
+    // final long capdevoutputID =
+    // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long capdevoutputID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevOutput")));
+    CapdevOutputs capdev_output = capdevOutputService.getCapdevOutputsById(capdevoutputID);
     capdev_output.setActive(false);
     capdev_output.setModifiedBy(this.getCurrentUser());
     capdevOutputService.saveCapdevOutputs(capdev_output);
@@ -187,20 +188,20 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
   public String deletePartnert() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capdevpartnerID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevPartners capdev_partner = capdevPartnerService.getCapdevPartnersById(capdevpartnerID);
+    // final long capdevpartnerID =
+    // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long capdevpartnerID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevPartner")));
+    CapdevPartners capdev_partner = capdevPartnerService.getCapdevPartnersById(capdevpartnerID);
     capdev_partner.setActive(false);
     capdevPartnerService.saveCapdevPartners(capdev_partner);
     return SUCCESS;
   }
 
   public String deleteTargetGroup() {
-    final Map<String, Object> parameters = this.getParameters();
-    final long capdevtargetgroupID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    final CapdevTargetgroup capdev_targetgroup = capdevTargetgroupService.getCapdevTargetgroupById(capdevtargetgroupID);
+    // final long capdevtargetgroupID =
+    // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long capdevtargetgroupID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("capdevTargetGroup")));
+    CapdevTargetgroup capdev_targetgroup = capdevTargetgroupService.getCapdevTargetgroupById(capdevtargetgroupID);
     capdev_targetgroup.setActive(false);
     capdevTargetgroupService.saveCapdevTargetgroup(capdev_targetgroup);
     return SUCCESS;
@@ -353,18 +354,19 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevOutputs = new ArrayList<>();
 
     try {
+
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       capdevID = -1;
-      projectID = 0;
+      projectID = -1;
     }
 
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      final CapacityDevelopment history = (CapacityDevelopment) auditLogService.getHistory(transaction);
+      CapacityDevelopment history = (CapacityDevelopment) auditLogService.getHistory(transaction);
 
       if (history != null) {
         capdev = history;
@@ -436,6 +438,7 @@ public class CapdevDescriptionAction extends BaseAction {
           capdev.setCapdevDisciplineList(capdevDisciplines);
         }
 
+
         if (capdev.getCapdevTargetgroup() != null) {
           List<CapdevTargetgroup> capdevTargetGroups = new ArrayList<CapdevTargetgroup>(
             capdev.getCapdevTargetgroup().stream().filter(t -> t.isActive()).collect(Collectors.toList()));
@@ -458,6 +461,21 @@ public class CapdevDescriptionAction extends BaseAction {
 
     }
 
+    if (this.isHttpPost()) {
+      capdev.setResearchArea(null);
+      capdev.setResearchProgram(null);
+      capdev.setCrp(null);
+      capdev.setProject(null);
+      capdev.setCapdevDiscipline(null);
+      capdev.setCapdevDisciplineList(null);
+      capdev.setCapdevTargetgroup(null);
+      capdev.setCapdevTargetGroupList(null);
+      capdev.setCapdevPartners(null);
+      capdev.setCapdevPartnersList(null);
+      capdev.setCapdevOutputs(null);
+      capdev.setCapdevOutputsList(null);
+    }
+
 
   }
 
@@ -466,7 +484,7 @@ public class CapdevDescriptionAction extends BaseAction {
   public String save() {
 
 
-    final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+    CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
     capdevDB.setOtherDiscipline(capdev.getOtherDiscipline());
     capdevDB.setOtherTargetGroup(capdev.getOtherTargetGroup());
@@ -475,24 +493,34 @@ public class CapdevDescriptionAction extends BaseAction {
     capdevDB.setTargetGroupSuggested(capdev.getTargetGroupSuggested());
     capdevDB.setPartnerSuggested(capdev.getPartnerSuggested());
 
+    if (capdev.getResearchArea() != null) {
+      if (capdev.getResearchArea().getId() != -1) {
+        capdevDB.setResearchArea(capdev.getResearchArea());
 
-    if (capdev.getResearchArea().getId() > -1) {
-      capdevDB.setResearchArea(capdev.getResearchArea());
-
-      if (capdev.getResearchProgram() != null) {
-        if (capdev.getResearchProgram().getId() != -1) {
-          capdevDB.setResearchProgram(capdev.getResearchProgram());
+        if (capdev.getResearchProgram() != null) {
+          if (capdev.getResearchProgram().getId() != -1) {
+            capdevDB.setResearchProgram(capdev.getResearchProgram());
+          } else {
+            capdevDB.setResearchProgram(null);
+          }
         }
-      }
-      if (capdev.getProject() != null) {
-        if (capdev.getProject().getId() != -1) {
-          capdevDB.setProject(capdev.getProject());
+        if (capdev.getProject() != null) {
+          if (capdev.getProject().getId() != -1) {
+            capdevDB.setProject(capdev.getProject());
+          } else {
+            capdevDB.setProject(null);
+          }
         }
+      } else {
+        capdevDB.setResearchArea(null);
       }
     }
 
+
     if (capdev.getCrp().getId() > -1) {
       capdevDB.setCrp(capdev.getCrp());
+    } else {
+      capdevDB.setCrp(null);
     }
 
 

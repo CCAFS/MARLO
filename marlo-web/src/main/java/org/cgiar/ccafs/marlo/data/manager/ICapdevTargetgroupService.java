@@ -32,9 +32,8 @@ public interface ICapdevTargetgroupService {
    * This method removes a specific capdevTargetgroup value from the database.
    * 
    * @param capdevTargetgroupId is the capdevTargetgroup identifier.
-   * @return true if the capdevTargetgroup was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevTargetgroup(long capdevTargetgroupId);
+  public void deleteCapdevTargetgroup(long capdevTargetgroupId);
 
 
   /**
@@ -74,21 +73,18 @@ public interface ICapdevTargetgroupService {
    * This method saves the information of the given capdevTargetgroup
    * 
    * @param capdevTargetgroup - is the capdevTargetgroup object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevTargetgroup was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup);
+  public CapdevTargetgroup saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup);
 
   /**
    * This method saves the information of the given capdevTargetgroup
    * 
    * @param capdevTargetgroup - is the capdevTargetgroup object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevTargetgroup was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup, String actionName, List<String> relationsName);
+  public CapdevTargetgroup saveCapdevTargetgroup(CapdevTargetgroup capdevTargetgroup, String actionName,
+    List<String> relationsName);
 
 
 }

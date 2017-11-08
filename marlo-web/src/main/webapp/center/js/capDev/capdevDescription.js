@@ -657,7 +657,6 @@ function checkOutputList(block) {
    function addTargetGroup(option){
 
     var canAdd = true;
-    console.log(option);
     if(option.val() == "-1") {
       canAdd = false;
     }

@@ -32,9 +32,8 @@ public interface ITargetGroupService {
    * This method removes a specific targetGroup value from the database.
    * 
    * @param targetGroupId is the targetGroup identifier.
-   * @return true if the targetGroup was successfully deleted, false otherwise.
    */
-  public boolean deleteTargetGroup(long targetGroupId);
+  public void deleteTargetGroup(long targetGroupId);
 
 
   /**
@@ -74,21 +73,17 @@ public interface ITargetGroupService {
    * This method saves the information of the given targetGroup
    * 
    * @param targetGroup - is the targetGroup object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the targetGroup was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object
    */
-  public long saveTargetGroup(TargetGroup targetGroup);
+  public TargetGroup saveTargetGroup(TargetGroup targetGroup);
 
   /**
    * This method saves the information of the given targetGroup
    * 
    * @param targetGroup - is the targetGroup object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the targetGroup was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object
    */
-  public long saveTargetGroup(TargetGroup targetGroup, String actionName, List<String> relationsName);
+  public TargetGroup saveTargetGroup(TargetGroup targetGroup, String actionName, List<String> relationsName);
 
 
 }

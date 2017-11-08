@@ -30,10 +30,9 @@ public interface ICapdevOutputsDAO {
   /**
    * This method removes a specific capdevOutputs value from the database.
    * 
-   * @param capdevOutputsId is the capdevOutputs identifier.
-   * @return true if the capdevOutputs was successfully deleted, false otherwise.
+   * @param capdevOutputsId is the capdevOutputs identifier..
    */
-  public boolean deleteCapdevOutputs(long capdevOutputsId);
+  public void deleteCapdevOutputs(long capdevOutputsId);
 
   /**
    * This method validate if the capdevOutputs identify with the given id exists in the system.
@@ -71,19 +70,15 @@ public interface ICapdevOutputsDAO {
    * This method saves the information of the given capdevOutputs
    * 
    * @param capdevOutputs - is the capdevOutputs object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevOutputs was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a number object.
    */
-  public long save(CapdevOutputs capdevOutputs);
+  public CapdevOutputs save(CapdevOutputs capdevOutputs);
 
   /**
    * This method saves the information of the given capdevOutputs
    * 
    * @param capdevOutputs - is the capdevOutputs object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevOutputs was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(CapdevOutputs capdevOutputs, String actionName, List<String> relationsName);
+  public CapdevOutputs save(CapdevOutputs capdevOutputs, String actionName, List<String> relationsName);
 }

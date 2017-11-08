@@ -25,7 +25,8 @@ import java.util.Map;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus, Long> implements ICenterSectionStatusDAO {
+public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus, Long>
+  implements ICenterSectionStatusDAO {
 
 
   @Inject
@@ -93,7 +94,7 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
       + "' and capdev_id=" + capdevId + " and year=" + year;
-    List<CenterSectionStatus> list = dao.findAll(query);
+    List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }

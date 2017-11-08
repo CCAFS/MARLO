@@ -42,9 +42,9 @@ public class DisciplineService implements IDisciplineService {
   }
 
   @Override
-  public boolean deleteDiscipline(long disciplineId) {
+  public void deleteDiscipline(long disciplineId) {
 
-    return disciplineDAO.deleteDiscipline(disciplineId);
+    disciplineDAO.deleteDiscipline(disciplineId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class DisciplineService implements IDisciplineService {
   }
 
   @Override
-  public long saveDiscipline(Discipline discipline) {
+  public Discipline saveDiscipline(Discipline discipline) {
 
     return disciplineDAO.save(discipline);
   }
 
   @Override
-  public long saveDiscipline(Discipline discipline, String actionName, List<String> relationsName) {
+  public Discipline saveDiscipline(Discipline discipline, String actionName, List<String> relationsName) {
     return disciplineDAO.save(discipline, actionName, relationsName);
   }
 

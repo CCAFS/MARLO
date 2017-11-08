@@ -31,9 +31,8 @@ public interface IDisciplineDAO {
    * This method removes a specific discipline value from the database.
    * 
    * @param disciplineId is the discipline identifier.
-   * @return true if the discipline was successfully deleted, false otherwise.
    */
-  public boolean deleteDiscipline(long disciplineId);
+  public void deleteDiscipline(long disciplineId);
 
   /**
    * This method validate if the discipline identify with the given id exists in the system.
@@ -71,19 +70,15 @@ public interface IDisciplineDAO {
    * This method saves the information of the given discipline
    * 
    * @param discipline - is the discipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the discipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(Discipline discipline);
+  public Discipline save(Discipline discipline);
 
   /**
    * This method saves the information of the given discipline
    * 
    * @param discipline - is the discipline object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the discipline was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long save(Discipline discipline, String actionName, List<String> relationsName);
+  public Discipline save(Discipline discipline, String actionName, List<String> relationsName);
 }

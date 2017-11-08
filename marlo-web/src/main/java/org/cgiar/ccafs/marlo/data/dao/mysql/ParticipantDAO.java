@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.Participant;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ParticipantDAO implements IParticipantDAO {
+public class ParticipantDAO extends AbstractMarloDAO<Participant, Long> implements IParticipantDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ParticipantDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ParticipantDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteParticipant(long participantId) {
+  public void deleteParticipant(long participantId) {
     Participant participant = this.find(participantId);
     participant.setActive(false);
-    return this.save(participant) > 0;
+    this.save(participant);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ParticipantDAO implements IParticipantDAO {
 
   @Override
   public Participant find(long id) {
-    return dao.find(Participant.class, id);
+    return super.find(Participant.class, id);
 
   }
 
   @Override
   public List<Participant> findAll() {
     String query = "from " + Participant.class.getName();
-    List<Participant> list = dao.findAll(query);
+    List<Participant> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class ParticipantDAO implements IParticipantDAO {
   @Override
   public List<Participant> getParticipantsByUserId(long userId) {
     String query = "from " + Participant.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(Participant participant) {
+  public Participant save(Participant participant) {
     if (participant.getId() == null) {
-      dao.save(participant);
+      super.saveEntity(participant);
     } else {
-      dao.update(participant);
+      super.update(participant);
     }
-    return participant.getId();
+    return participant;
   }
 
   @Override
-  public long save(Participant participant, String actionName, List<String> relationsName) {
+  public Participant save(Participant participant, String actionName, List<String> relationsName) {
     if (participant.getId() == null) {
-      dao.save(participant, actionName, relationsName);
+      super.saveEntity(participant, actionName, relationsName);
     } else {
-      dao.update(participant, actionName, relationsName);
+      super.update(participant, actionName, relationsName);
     }
-    return participant.getId();
+    return participant;
   }
 
 

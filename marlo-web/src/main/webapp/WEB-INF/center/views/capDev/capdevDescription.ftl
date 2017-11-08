@@ -95,7 +95,7 @@
                 [#list capdev.capdevDisciplineList as discipline]
                 <li id="" class="discipline clearfix col-md-3">
                   [#if editable]
-                    <div class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline"></div>
+                    <a class="removeDiscipline-action removeDiscipline removeIcon" title="Remove discipline" href="[@s.url action='${centerSession}/deleteDiscipline'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevDiscipline" value=discipline.id /][/@s.url]"></a>
                   [/#if]
                   <input class="id" type="hidden"  value="${(discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].id" />
                   <input class="disciplineId" type="hidden"  value="${(discipline.discipline.id)!}" name="capdev.capdevDisciplineList[${discipline_index}].discipline.id" />
@@ -144,7 +144,7 @@
                 [#list capdev.capdevTargetGroupList as targetGroup]
                   <li id="" class="targetGroup clearfix col-md-3">
                     [#if editable]
-                      <div class="removeTargetGroup-action removeTargetGroup removeIcon" title="Remove targetGroup"></div>
+                      <a class=" removeTargetGroup removeIcon" title="Remove targetGroup" href="[@s.url action='${centerSession}/deleteTargetGroup'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevTargetGroup" value=targetGroup.id /][/@s.url]"></a>
                     [/#if]
                     <input class="id" type="hidden"  value="${(targetGroup.id)!}" name="capdev.capdevTargetGroupList[${targetGroup_index}].id" />
                     <input class="tgId" type="hidden"  value="${(targetGroup.targetGroups.id)!-1}" name="capdev.capdevTargetGroupList[${targetGroup_index}].targetGroups.id" />
@@ -221,7 +221,7 @@
                 [#list capdev.capdevPartnersList as partner]
                   <li id="" class="capdevPartner clearfix col-md-12">
                     [#if editable]
-                      <div class="removepartner-action removepartner removeIcon" title="Remove partner"></div>
+                      <a class="removepartner removeIcon" title="Remove partner" href="[@s.url action='${centerSession}/deletePartner'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevPartner" value=partner.id /][/@s.url]"></a>
                     [/#if]
                     <input class="id" type="hidden" name="capdev.capdevPartnersList[${partner_index}].id" value="${(partner.id)!}" />
                     <input class="partnerId" type="hidden" name="capdev.capdevPartnersList[${partner_index}].institution.id" value="${(partner.institution.id)!}" />
@@ -265,6 +265,7 @@
                   <li id="" class="capdevOutput clearfix col-md-12">
                     [#if editable]
                       <div class="removeOutput-action removeOutput removeIcon" title="Remove output"></div>
+                      <a class="removeOutput removeIcon" title="Remove output" href="[@s.url action='${centerSession}/deleteOutput'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevOutput" value=output.id /][/@s.url]"></a>
                     [/#if]
                     <input class="id" type="hidden" name="capdev.capdevOutputsList[${output_index}].id" value="${(output.id)!}" />
                     <input class="outputId" type="hidden" name="capdev.capdevOutputsList[${output_index}].researchOutputs.id" value="${(output.researchOutputs.id)!}" />

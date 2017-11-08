@@ -156,11 +156,9 @@ public class FilterListsAction extends BaseAction {
   }
 
   public String filterPartners_Outputs() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
+    Map<String, Object> parameters = this.getParameters();
     jsonPartners_output = new ArrayList<>();
-    final long projectID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
-    System.out.println("projectID --> " + projectID);
+    long projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
 
     List<CenterProjectPartner> projectPartners = new ArrayList<>();
     List<CenterProjectOutput> projectOutputs = new ArrayList<>();
@@ -189,28 +187,28 @@ public class FilterListsAction extends BaseAction {
     if (projectPartners.isEmpty()) {
       partners = institutionService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList());
       Collections.sort(partners, (r1, r2) -> r1.getName().compareTo(r2.getName()));
-      final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
-      for (final Institution partner : partners) {
-        final Map<String, Object> partnertMap = new HashMap<>();
+      List<Map<String, Object>> listpartnertMap = new ArrayList<>();
+      for (Institution partner : partners) {
+        Map<String, Object> partnertMap = new HashMap<>();
         partnertMap.put("idPartner", partner.getId());
         partnertMap.put("partnerName", partner.getName());
         partnertMap.put("partnerAcronym", partner.getAcronym());
         listpartnertMap.add(partnertMap);
       }
-      final Map<String, Object> map = new HashMap<>();
+      Map<String, Object> map = new HashMap<>();
       map.put("partners", listpartnertMap);
       jsonPartners_output.add(map);
     }
     if (!projectPartners.isEmpty()) {
-      final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
-      for (final CenterProjectPartner projectPartner : projectPartners) {
-        final Map<String, Object> projectPartnermap = new HashMap<>();
+      List<Map<String, Object>> listpartnertMap = new ArrayList<>();
+      for (CenterProjectPartner projectPartner : projectPartners) {
+        Map<String, Object> projectPartnermap = new HashMap<>();
         projectPartnermap.put("idPartner", projectPartner.getInstitution().getId());
         projectPartnermap.put("partnerName", projectPartner.getInstitution().getName());
         projectPartnermap.put("partnerAcronym", projectPartner.getInstitution().getAcronym());
         listpartnertMap.add(projectPartnermap);
       }
-      final Map<String, Object> map = new HashMap<>();
+      Map<String, Object> map = new HashMap<>();
       map.put("partners", listpartnertMap);
       jsonPartners_output.add(map);
     }
@@ -219,15 +217,15 @@ public class FilterListsAction extends BaseAction {
       outputs = researchOutputService.findAll().stream().filter(out -> out.isActive() && (out.getTitle() != null))
         .collect(Collectors.toList());
       Collections.sort(outputs, (r1, r2) -> r1.getTitle().compareTo(r2.getTitle()));
-      final List<Map<String, Object>> listpartnertMap = new ArrayList<>();
-      for (final CenterOutput researchOutput : outputs) {
-        final Map<String, Object> researchOutputMap = new HashMap<>();
+      List<Map<String, Object>> listpartnertMap = new ArrayList<>();
+      for (CenterOutput researchOutput : outputs) {
+        Map<String, Object> researchOutputMap = new HashMap<>();
         researchOutputMap.put("idOutput", researchOutput.getId());
         researchOutputMap.put("outputTitle", researchOutput.getTitle());
         researchOutputMap.put("outputShortName", researchOutput.getShortName());
         listpartnertMap.add(researchOutputMap);
       }
-      final Map<String, Object> map = new HashMap<>();
+      Map<String, Object> map = new HashMap<>();
       map.put("outputs", listpartnertMap);
       jsonPartners_output.add(map);
     }

@@ -32,9 +32,8 @@ public interface ICapdevPartnersService {
    * This method removes a specific capdevPartners value from the database.
    * 
    * @param capdevPartnersId is the capdevPartners identifier.
-   * @return true if the capdevPartners was successfully deleted, false otherwise.
    */
-  public boolean deleteCapdevPartners(long capdevPartnersId);
+  public void deleteCapdevPartners(long capdevPartnersId);
 
 
   /**
@@ -74,21 +73,18 @@ public interface ICapdevPartnersService {
    * This method saves the information of the given capdevPartners
    * 
    * @param capdevPartners - is the capdevPartners object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevPartners was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevPartners(CapdevPartners capdevPartners);
+  public CapdevPartners saveCapdevPartners(CapdevPartners capdevPartners);
 
   /**
    * This method saves the information of the given capdevPartners
    * 
    * @param capdevPartners - is the capdevPartners object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the capdevPartners was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a object.
    */
-  public long saveCapdevPartners(CapdevPartners capdevPartners, String actionName, List<String> relationsName);
+  public CapdevPartners saveCapdevPartners(CapdevPartners capdevPartners, String actionName,
+    List<String> relationsName);
 
 
 }

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.Discipline;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DisciplineDAO implements IDisciplineDAO {
+public class DisciplineDAO extends AbstractMarloDAO<Discipline, Long> implements IDisciplineDAO {
 
-  private final StandardDAO dao;
 
   @Inject
-  public DisciplineDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DisciplineDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDiscipline(long disciplineId) {
+  public void deleteDiscipline(long disciplineId) {
     final Discipline discipline = this.find(disciplineId);
     // discipline.setActive(false);
-    return this.save(discipline) > 0;
+    this.save(discipline);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DisciplineDAO implements IDisciplineDAO {
 
   @Override
   public Discipline find(long id) {
-    return dao.find(Discipline.class, id);
+    return super.find(Discipline.class, id);
 
   }
 
   @Override
   public List<Discipline> findAll() {
     final String query = "from " + Discipline.class.getName();
-    final List<Discipline> list = dao.findAll(query);
+    final List<Discipline> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class DisciplineDAO implements IDisciplineDAO {
   @Override
   public List<Discipline> getDisciplinesByUserId(long userId) {
     final String query = "from " + Discipline.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(Discipline discipline) {
+  public Discipline save(Discipline discipline) {
     if (discipline.getId() == null) {
-      dao.save(discipline);
+      super.saveEntity(discipline);
     } else {
-      dao.update(discipline);
+      super.update(discipline);
     }
-    return discipline.getId();
+    return discipline;
   }
 
   @Override
-  public long save(Discipline discipline, String actionName, List<String> relationsName) {
+  public Discipline save(Discipline discipline, String actionName, List<String> relationsName) {
     if (discipline.getId() == null) {
-      dao.save(discipline, actionName, relationsName);
+      super.saveEntity(discipline, actionName, relationsName);
     } else {
-      dao.update(discipline, actionName, relationsName);
+      super.update(discipline, actionName, relationsName);
     }
-    return discipline.getId();
+    return discipline;
   }
 
 
