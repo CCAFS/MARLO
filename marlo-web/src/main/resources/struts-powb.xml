@@ -126,5 +126,85 @@
       </result>
     </action>
     
+    
+    <!-- ########################################################################################################## -->
+    
+    <!-- Summary Highlighting -->
+    <action name="{crp}/summaryHighlight" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/summaryHighlight.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/summaryHighlight</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Planned outcomes and outputs -->
+    <action name="{crp}/plannedOutcomesOutputs" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/plannedOutcomesOutputs.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/plannedOutcomesOutputs</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Key outputs to be achieved -->
+    <action name="{crp}/keyOutputsAchieved" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/keyOutputsAchieved.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/keyOutputsAchieved</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Cross-CRP/Platform collaboration -->
+    <action name="{crp}/platformCollaboration" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/platformCollaboration.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/platformCollaboration</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Cross-CRP interactions -->
+    <action name="{crp}/interactions" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/interactions.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/interactions</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Adaptive management and learning -->
+    <action name="{crp}/adaptativeManagement" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/adaptativeManagement.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/adaptativeManagement</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <!-- Planned Budget -->
+    <action name="{crp}/plannedBudget" class="org.cgiar.ccafs.marlo.action.powb.DeliveryAction">
+      <interceptor-ref name="editSynthesisStack" />
+      <result name="input">/WEB-INF/crp/views/powb/plannedBudget.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/plannedBudget</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
   </package>
 </struts>

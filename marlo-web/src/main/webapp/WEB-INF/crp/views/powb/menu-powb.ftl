@@ -23,6 +23,30 @@
     { 'slug': 'expectedMilestonestable',  'name': 'powb.menu.expectedMilestonestable',  'action': 'expectedMilestonestable',  'active': true  },
     { 'slug': 'expectedKeyOutputstable',  'name': 'powb.menu.expectedKeyOutputstable',  'action': 'expectedKeyOutputstable',  'active': true  }
     ]
+  },
+  [#-- ---------------------------- --]
+  { 'title': 'Executive Summary', 'show': true,
+    'items': [
+    { 'slug': 'summaryHighlight',  'name': 'powb.menu.summaryHighlight',  'action': 'summaryHighlight',  'active': true  }
+    ]
+  },
+  { 'title': 'Planned Results', 'show': flagship,
+    'items': [
+    { 'slug': 'plannedOutcomesOutputs',  'name': 'powb.menu.plannedOutcomesOutputs',  'action': 'plannedOutcomesOutputs',  'active': true  },
+    { 'slug': 'keyOutputsAchieved',  'name': 'powb.menu.keyOutputsAchieved',  'action': 'keyOutputsAchieved',  'active': true  }
+    ]
+  },
+  { 'title': 'CRP Management', 'show': true,
+    'items': [
+    { 'slug': 'platformCollaboration',  'name': 'powb.menu.platformCollaboration',  'action': 'platformCollaboration',  'active': true  },
+    { 'slug': 'interactions',  'name': 'powb.menu.interactions',  'action': 'interactions',  'active': true  },
+    { 'slug': 'adaptativeManagement',  'name': 'powb.menu.adaptativeManagement',  'action': 'adaptativeManagement',  'active': PMU, 'show': PMU  }
+    ]
+  },
+  { 'title': 'Financial Plan', 'show': PMU,
+    'items': [
+    { 'slug': 'plannedBudget',  'name': 'powb.menu.plannedBudget',  'action': 'plannedBudget',  'active': true  }
+    ]
   }
 ]/]
 
