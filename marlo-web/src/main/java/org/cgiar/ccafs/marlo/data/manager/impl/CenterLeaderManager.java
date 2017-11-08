@@ -40,9 +40,9 @@ public class CenterLeaderManager implements ICenterLeaderManager {
   }
 
   @Override
-  public boolean deleteResearchLeader(long researchLeaderId) {
+  public void deleteResearchLeader(long researchLeaderId) {
 
-    return researchLeaderDAO.deleteResearchLeader(researchLeaderId);
+    researchLeaderDAO.deleteResearchLeader(researchLeaderId);
   }
 
 
@@ -66,7 +66,7 @@ public class CenterLeaderManager implements ICenterLeaderManager {
   }
 
   @Override
-  public long saveResearchLeader(CenterLeader researchLeader) {
+  public CenterLeader saveResearchLeader(CenterLeader researchLeader) {
 
     return researchLeaderDAO.save(researchLeader);
   }

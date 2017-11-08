@@ -97,7 +97,8 @@ public class ProjectCaseStudiesListAction extends BaseAction {
       caseStudy.setResearchPatern("");
       caseStudy.setTitle("");
       caseStudy.setYear(this.getCurrentCycleYear());
-      caseStudyID = caseStudyManager.saveCaseStudy(caseStudy);
+      caseStudy = caseStudyManager.saveCaseStudy(caseStudy);
+      caseStudyID = caseStudy.getId();
 
 
       if (caseStudyID > 0) {
@@ -147,6 +148,7 @@ public class ProjectCaseStudiesListAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }

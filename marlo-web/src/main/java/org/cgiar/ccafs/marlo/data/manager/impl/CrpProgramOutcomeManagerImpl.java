@@ -41,9 +41,9 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   }
 
   @Override
-  public boolean deleteCrpProgramOutcome(long crpProgramOutcomeId) {
+  public void deleteCrpProgramOutcome(long crpProgramOutcomeId) {
 
-    return crpProgramOutcomeDAO.deleteCrpProgramOutcome(crpProgramOutcomeId);
+    crpProgramOutcomeDAO.deleteCrpProgramOutcome(crpProgramOutcomeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   }
 
   @Override
-  public long saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
+  public CrpProgramOutcome saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
 
     return crpProgramOutcomeDAO.save(crpProgramOutcome);
   }

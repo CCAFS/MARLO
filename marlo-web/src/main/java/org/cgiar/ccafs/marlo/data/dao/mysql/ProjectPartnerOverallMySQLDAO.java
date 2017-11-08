@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerOverallMySQLDAO implements ProjectPartnerOverallDAO {
+public class ProjectPartnerOverallMySQLDAO extends AbstractMarloDAO<ProjectPartnerOverall, Long> implements ProjectPartnerOverallDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerOverallMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerOverallMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectPartnerOverall(long projectPartnerOverallId) {
+  public void deleteProjectPartnerOverall(long projectPartnerOverallId) {
     ProjectPartnerOverall projectPartnerOverall = this.find(projectPartnerOverallId);
 
-    return dao.delete(projectPartnerOverall);
+    super.delete(projectPartnerOverall);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectPartnerOverallMySQLDAO implements ProjectPartnerOverallDAO {
 
   @Override
   public ProjectPartnerOverall find(long id) {
-    return dao.find(ProjectPartnerOverall.class, id);
+    return super.find(ProjectPartnerOverall.class, id);
 
   }
 
   @Override
   public List<ProjectPartnerOverall> findAll() {
     String query = "from " + ProjectPartnerOverall.class.getName() + " where is_active=1";
-    List<ProjectPartnerOverall> list = dao.findAll(query);
+    List<ProjectPartnerOverall> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectPartnerOverallMySQLDAO implements ProjectPartnerOverallDAO {
   }
 
   @Override
-  public long save(ProjectPartnerOverall projectPartnerOverall) {
+  public ProjectPartnerOverall save(ProjectPartnerOverall projectPartnerOverall) {
     if (projectPartnerOverall.getId() == null) {
-      dao.save(projectPartnerOverall);
+      super.saveEntity(projectPartnerOverall);
     } else {
-      dao.update(projectPartnerOverall);
+      projectPartnerOverall = super.update(projectPartnerOverall);
     }
 
 
-    return projectPartnerOverall.getId();
+    return projectPartnerOverall;
   }
 
 

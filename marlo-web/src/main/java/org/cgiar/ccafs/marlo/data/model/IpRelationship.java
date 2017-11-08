@@ -58,6 +58,12 @@ public class IpRelationship implements java.io.Serializable {
     this.relationTypeId = relationTypeId;
   }
 
+  @Override
+  public String toString() {
+    return "IpRelationship [id=" + id + ", ipElementsByParentId=" + ipElementsByParentId + ", ipElementsByChildId="
+      + ipElementsByChildId + ", relationTypeId=" + relationTypeId + "]";
+  }
+
 
 }
 

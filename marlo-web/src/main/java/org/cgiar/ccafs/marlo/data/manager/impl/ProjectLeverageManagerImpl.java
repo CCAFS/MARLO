@@ -41,9 +41,9 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
   }
 
   @Override
-  public boolean deleteProjectLeverage(long projectLeverageId) {
+  public void deleteProjectLeverage(long projectLeverageId) {
 
-    return projectLeverageDAO.deleteProjectLeverage(projectLeverageId);
+    projectLeverageDAO.deleteProjectLeverage(projectLeverageId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
   }
 
   @Override
-  public long saveProjectLeverage(ProjectLeverage projectLeverage) {
+  public ProjectLeverage saveProjectLeverage(ProjectLeverage projectLeverage) {
 
     return projectLeverageDAO.save(projectLeverage);
   }

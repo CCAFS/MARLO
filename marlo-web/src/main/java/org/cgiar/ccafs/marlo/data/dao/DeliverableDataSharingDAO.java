@@ -32,7 +32,7 @@ public interface DeliverableDataSharingDAO {
    * @param deliverableDataSharingId is the deliverableDataSharing identifier.
    * @return true if the deliverableDataSharing was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDataSharing(long deliverableDataSharingId);
+  public void deleteDeliverableDataSharing(long deliverableDataSharingId);
 
   /**
    * This method validate if the deliverableDataSharing identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableDataSharingDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableDataSharing deliverableDataSharing);
+  public DeliverableDataSharing save(DeliverableDataSharing deliverableDataSharing);
 }

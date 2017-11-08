@@ -44,9 +44,9 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   }
 
   @Override
-  public boolean deleteSectionStatus(long sectionStatusId) {
+  public void deleteSectionStatus(long sectionStatusId) {
 
-    return sectionStatusDAO.deleteSectionStatus(sectionStatusId);
+    sectionStatusDAO.deleteSectionStatus(sectionStatusId);
   }
 
   @Override
@@ -133,7 +133,7 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   }
 
   @Override
-  public long saveSectionStatus(CenterSectionStatus sectionStatus) {
+  public CenterSectionStatus saveSectionStatus(CenterSectionStatus sectionStatus) {
 
     return sectionStatusDAO.save(sectionStatus);
   }

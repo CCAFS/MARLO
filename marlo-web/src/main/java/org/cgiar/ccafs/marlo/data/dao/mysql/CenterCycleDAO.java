@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterCycleDAO implements ICenterCycleDAO {
+public class CenterCycleDAO extends AbstractMarloDAO<CenterCycle, Long> implements ICenterCycleDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterCycleDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterCycleDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchCycle(long researchCycleId) {
+  public void deleteResearchCycle(long researchCycleId) {
     CenterCycle researchCycle = this.find(researchCycleId);
-    return dao.delete(researchCycle);
+    super.delete(researchCycle);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class CenterCycleDAO implements ICenterCycleDAO {
 
   @Override
   public CenterCycle find(long id) {
-    return dao.find(CenterCycle.class, id);
+    return super.find(CenterCycle.class, id);
 
   }
 
   @Override
   public List<CenterCycle> findAll() {
     String query = "from " + CenterCycle.class.getName();
-    List<CenterCycle> list = dao.findAll(query);
+    List<CenterCycle> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,17 +68,17 @@ public class CenterCycleDAO implements ICenterCycleDAO {
   @Override
   public List<CenterCycle> getResearchCyclesByUserId(long userId) {
     String query = "from " + CenterCycle.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterCycle researchCycle) {
+  public CenterCycle save(CenterCycle researchCycle) {
     if (researchCycle.getId() == null) {
-      dao.save(researchCycle);
+      super.saveEntity(researchCycle);
     } else {
-      dao.update(researchCycle);
+      researchCycle = super.update(researchCycle);
     }
-    return researchCycle.getId();
+    return researchCycle;
   }
 
 

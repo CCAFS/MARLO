@@ -32,7 +32,7 @@ public interface DeliverableDisseminationDAO {
    * @param deliverableDisseminationId is the deliverableDissemination identifier.
    * @return true if the deliverableDissemination was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDissemination(long deliverableDisseminationId);
+  public void deleteDeliverableDissemination(long deliverableDisseminationId);
 
   /**
    * This method validate if the deliverableDissemination identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableDisseminationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableDissemination deliverableDissemination);
+  public DeliverableDissemination save(DeliverableDissemination deliverableDissemination);
 }

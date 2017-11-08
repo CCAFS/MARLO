@@ -41,9 +41,9 @@ public class ProjectNextuserManagerImpl implements ProjectNextuserManager {
   }
 
   @Override
-  public boolean deleteProjectNextuser(long projectNextuserId) {
+  public void deleteProjectNextuser(long projectNextuserId) {
 
-    return projectNextuserDAO.deleteProjectNextuser(projectNextuserId);
+    projectNextuserDAO.deleteProjectNextuser(projectNextuserId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectNextuserManagerImpl implements ProjectNextuserManager {
   }
 
   @Override
-  public long saveProjectNextuser(ProjectNextuser projectNextuser) {
+  public ProjectNextuser saveProjectNextuser(ProjectNextuser projectNextuser) {
 
     return projectNextuserDAO.save(projectNextuser);
   }

@@ -41,9 +41,9 @@ public class BudgetTypeManagerImpl implements BudgetTypeManager {
   }
 
   @Override
-  public boolean deleteBudgetType(long budgetTypeId) {
+  public void deleteBudgetType(long budgetTypeId) {
 
-    return budgetTypeDAO.deleteBudgetType(budgetTypeId);
+    budgetTypeDAO.deleteBudgetType(budgetTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class BudgetTypeManagerImpl implements BudgetTypeManager {
   }
 
   @Override
-  public long saveBudgetType(BudgetType budgetType) {
+  public BudgetType saveBudgetType(BudgetType budgetType) {
 
     return budgetTypeDAO.save(budgetType);
   }

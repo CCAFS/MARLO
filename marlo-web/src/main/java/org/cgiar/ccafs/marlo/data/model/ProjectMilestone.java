@@ -148,7 +148,6 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getNarrativeAchieved() {
     return narrativeAchieved;
   }
@@ -243,12 +242,20 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     this.narrativeTarget = narrativeTarget;
   }
 
+
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectMilestone [id=" + id + ", crpMilestone=" + crpMilestone + ", projectOutcome=" + projectOutcome
+      + ", expectedValue=" + expectedValue + ", expectedUnit=" + expectedUnit + ", achievedValue=" + achievedValue
+      + ", narrativeTarget=" + narrativeTarget + ", year=" + year + "]";
   }
 
 }

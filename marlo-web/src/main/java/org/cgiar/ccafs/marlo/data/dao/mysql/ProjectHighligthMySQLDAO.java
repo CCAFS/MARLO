@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
+public class ProjectHighligthMySQLDAO extends AbstractMarloDAO<ProjectHighlight, Long> implements ProjectHighligthDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectHighligthMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectHighligthMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectHighligth(long projectHighligthId) {
+  public void deleteProjectHighligth(long projectHighligthId) {
     ProjectHighlight projectHighlight = this.find(projectHighligthId);
     projectHighlight.setActive(false);
-    return this.save(projectHighlight) > 0;
+    this.save(projectHighlight);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
 
   @Override
   public ProjectHighlight find(long id) {
-    return dao.find(ProjectHighlight.class, id);
+    return super.find(ProjectHighlight.class, id);
 
   }
 
   @Override
   public List<ProjectHighlight> findAll() {
     String query = "from " + ProjectHighlight.class.getName() + " where is_active=1";
-    List<ProjectHighlight> list = dao.findAll(query);
+    List<ProjectHighlight> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,25 +67,25 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
   }
 
   @Override
-  public long save(ProjectHighlight projectHighlight) {
+  public ProjectHighlight save(ProjectHighlight projectHighlight) {
     if (projectHighlight.getId() == null) {
-      dao.save(projectHighlight);
+      super.saveEntity(projectHighlight);
     } else {
-      dao.update(projectHighlight);
+      projectHighlight = super.update(projectHighlight);
     }
 
 
-    return projectHighlight.getId();
+    return projectHighlight;
   }
 
   @Override
-  public long save(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
+  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName) {
     if (projectHighlight.getId() == null) {
-      dao.save(projectHighlight, section, relationsName);
+      super.saveEntity(projectHighlight, section, relationsName);
     } else {
-      dao.update(projectHighlight, section, relationsName);
+      projectHighlight = super.update(projectHighlight, section, relationsName);
     }
-    return projectHighlight.getId();
+    return projectHighlight;
   }
 
 

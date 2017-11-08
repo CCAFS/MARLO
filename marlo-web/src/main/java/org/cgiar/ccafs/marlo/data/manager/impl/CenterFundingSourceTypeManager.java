@@ -42,9 +42,9 @@ public class CenterFundingSourceTypeManager implements ICenterFundingSourceTypeM
   }
 
   @Override
-  public boolean deleteFundingSourceType(long fundingSourceTypeId) {
+  public void deleteFundingSourceType(long fundingSourceTypeId) {
 
-    return fundingSourceTypeDAO.deleteFundingSourceType(fundingSourceTypeId);
+    fundingSourceTypeDAO.deleteFundingSourceType(fundingSourceTypeId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterFundingSourceTypeManager implements ICenterFundingSourceTypeM
   }
 
   @Override
-  public long saveFundingSourceType(CenterFundingSourceType fundingSourceType) {
+  public CenterFundingSourceType saveFundingSourceType(CenterFundingSourceType fundingSourceType) {
 
     return fundingSourceTypeDAO.save(fundingSourceType);
   }

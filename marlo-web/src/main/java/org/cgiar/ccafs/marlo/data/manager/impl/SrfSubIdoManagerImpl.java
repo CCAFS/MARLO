@@ -41,9 +41,9 @@ public class SrfSubIdoManagerImpl implements SrfSubIdoManager {
   }
 
   @Override
-  public boolean deleteSrfSubIdo(long srfSubIdoId) {
+  public void deleteSrfSubIdo(long srfSubIdoId) {
 
-    return srfSubIdoDAO.deleteSrfSubIdo(srfSubIdoId);
+    srfSubIdoDAO.deleteSrfSubIdo(srfSubIdoId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfSubIdoManagerImpl implements SrfSubIdoManager {
   }
 
   @Override
-  public long saveSrfSubIdo(SrfSubIdo srfSubIdo) {
+  public SrfSubIdo saveSrfSubIdo(SrfSubIdo srfSubIdo) {
 
     return srfSubIdoDAO.save(srfSubIdo);
   }

@@ -32,7 +32,7 @@ public interface ICenterImpactStatementDAO {
    * @param researchImpactStatementId is the researchImpactStatement identifier.
    * @return true if the researchImpactStatement was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpactStatement(long researchImpactStatementId);
+  public void deleteResearchImpactStatement(long researchImpactStatementId);
 
   /**
    * This method validate if the researchImpactStatement identify with the given id exists in the system.
@@ -76,7 +76,7 @@ public interface ICenterImpactStatementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterImpactStatement researchImpactStatement);
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement);
 
   /**
    * This method saves the information of the given researchImpactStatement
@@ -88,5 +88,5 @@ public interface ICenterImpactStatementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName);
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName);
 }

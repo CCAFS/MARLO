@@ -32,7 +32,7 @@ public interface CrpProgramCountryDAO {
    * @param crpProgramCountryId is the crpProgramCountry identifier.
    * @return true if the crpProgramCountry was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgramCountry(long crpProgramCountryId);
+  public void deleteCrpProgramCountry(long crpProgramCountryId);
 
   /**
    * This method validate if the crpProgramCountry identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpProgramCountryDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpProgramCountry crpProgramCountry);
+  public CrpProgramCountry save(CrpProgramCountry crpProgramCountry);
 }

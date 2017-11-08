@@ -34,7 +34,7 @@ public interface ProjectOtherContributionManager {
    * @param projectOtherContributionId is the projectOtherContribution identifier.
    * @return true if the projectOtherContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOtherContribution(long projectOtherContributionId);
+  public void deleteProjectOtherContribution(long projectOtherContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectOtherContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectOtherContribution(ProjectOtherContribution projectOtherContribution);
+  public ProjectOtherContribution saveProjectOtherContribution(ProjectOtherContribution projectOtherContribution);
 
 
 }

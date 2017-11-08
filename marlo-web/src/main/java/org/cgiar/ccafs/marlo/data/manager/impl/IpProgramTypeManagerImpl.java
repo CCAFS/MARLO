@@ -41,9 +41,9 @@ public class IpProgramTypeManagerImpl implements IpProgramTypeManager {
   }
 
   @Override
-  public boolean deleteIpProgramType(long ipProgramTypeId) {
+  public void deleteIpProgramType(long ipProgramTypeId) {
 
-    return ipProgramTypeDAO.deleteIpProgramType(ipProgramTypeId);
+    ipProgramTypeDAO.deleteIpProgramType(ipProgramTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpProgramTypeManagerImpl implements IpProgramTypeManager {
   }
 
   @Override
-  public long saveIpProgramType(IpProgramType ipProgramType) {
+  public IpProgramType saveIpProgramType(IpProgramType ipProgramType) {
 
     return ipProgramTypeDAO.save(ipProgramType);
   }

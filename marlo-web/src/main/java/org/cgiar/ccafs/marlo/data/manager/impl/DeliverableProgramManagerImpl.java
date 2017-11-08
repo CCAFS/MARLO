@@ -41,9 +41,9 @@ public class DeliverableProgramManagerImpl implements DeliverableProgramManager 
   }
 
   @Override
-  public boolean deleteDeliverableProgram(long deliverableProgramId) {
+  public void deleteDeliverableProgram(long deliverableProgramId) {
 
-    return deliverableProgramDAO.deleteDeliverableProgram(deliverableProgramId);
+    deliverableProgramDAO.deleteDeliverableProgram(deliverableProgramId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableProgramManagerImpl implements DeliverableProgramManager 
   }
 
   @Override
-  public long saveDeliverableProgram(DeliverableProgram deliverableProgram) {
+  public DeliverableProgram saveDeliverableProgram(DeliverableProgram deliverableProgram) {
 
     return deliverableProgramDAO.save(deliverableProgram);
   }

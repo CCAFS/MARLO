@@ -19,6 +19,8 @@ public class CrpIndicatorType implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = 8563848764680434854L;
+
+
   @Expose
   private Long id;
   @Expose
@@ -28,10 +30,10 @@ public class CrpIndicatorType implements java.io.Serializable, IAuditLog {
   public CrpIndicatorType() {
   }
 
-
   public CrpIndicatorType(String name) {
     this.name = name;
   }
+
 
   public CrpIndicatorType(String name, Set<CrpIndicator> crpIndicatorses) {
     this.name = name;
@@ -71,7 +73,6 @@ public class CrpIndicatorType implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
   @Override
   public boolean isActive() {
 
@@ -91,6 +92,12 @@ public class CrpIndicatorType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CrpIndicatorType [id=" + id + ", name=" + name + "]";
   }
 
 

@@ -37,9 +37,9 @@ public class CenterManager implements ICenterManager {
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
+  public void deleteCrp(long crpId) {
 
-    return crpDAO.deleteCrp(crpId);
+    crpDAO.deleteCrp(crpId);
   }
 
   @Override
@@ -67,7 +67,7 @@ public class CenterManager implements ICenterManager {
   }
 
   @Override
-  public long saveCrp(Center crp) {
+  public Center saveCrp(Center crp) {
 
     return crpDAO.save(crp);
   }

@@ -33,7 +33,7 @@ public interface ICenterFundingSourceTypeDAO {
    * @param fundingSourceTypeId is the fundingSourceType identifier.
    * @return true if the fundingSourceType was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceType(long fundingSourceTypeId);
+  public void deleteFundingSourceType(long fundingSourceTypeId);
 
   /**
    * This method validate if the fundingSourceType identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface ICenterFundingSourceTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterFundingSourceType fundingSourceType);
+  public CenterFundingSourceType save(CenterFundingSourceType fundingSourceType);
 }

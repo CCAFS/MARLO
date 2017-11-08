@@ -108,9 +108,10 @@ public class OutputsListAction extends BaseAction {
     output.setModifiedBy(this.getCurrentUser());
     output.setResearchOutcome(selectedResearchOutcome);
 
-    outputID = outputService.saveResearchOutput(output);
+    output = outputService.saveResearchOutput(output);
+    outputID = output.getId();
 
-    if (outcomeID > 0) {
+    if (outputID > 0) {
       return SUCCESS;
     } else {
       return INPUT;
@@ -270,13 +271,11 @@ public class OutputsListAction extends BaseAction {
           programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
-
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
-              .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(
+              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

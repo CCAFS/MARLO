@@ -45,6 +45,13 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
+/**
+ * ExpectedDeliverablesSummaryAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 2, 2017
+ * @time 9:13:34 AM: Added a new column to masterList called Project Managing Partners
+ */
 public class ExpectedDeliverablesSummaryAction extends BaseAction implements Summary {
 
   /**
@@ -106,6 +113,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
     masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
+    masterReport.getParameterValues().put("i8nProjectManaging", this.getText("deliverable.project.managing"));
 
     return masterReport;
   }
@@ -118,8 +126,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/deliverables_OutcomeIndicator.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables_20171102.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 

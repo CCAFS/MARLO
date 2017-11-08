@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectCrosscutingThemeDAO implements ICenterProjectCrosscutingThemeDAO {
+public class CenterProjectCrosscutingThemeDAO extends AbstractMarloDAO<CenterProjectCrosscutingTheme, Long>
+  implements ICenterProjectCrosscutingThemeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectCrosscutingThemeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectCrosscutingThemeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
+  public void deleteProjectCrosscutingTheme(long projectCrosscutingThemeId) {
     CenterProjectCrosscutingTheme projectCrosscutingTheme = this.find(projectCrosscutingThemeId);
     projectCrosscutingTheme.setActive(false);
-    return this.save(projectCrosscutingTheme) > 0;
+    this.save(projectCrosscutingTheme);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectCrosscutingThemeDAO implements ICenterProjectCrosscuti
 
   @Override
   public CenterProjectCrosscutingTheme find(long id) {
-    return dao.find(CenterProjectCrosscutingTheme.class, id);
+    return super.find(CenterProjectCrosscutingTheme.class, id);
 
   }
 
   @Override
   public List<CenterProjectCrosscutingTheme> findAll() {
     String query = "from " + CenterProjectCrosscutingTheme.class.getName();
-    List<CenterProjectCrosscutingTheme> list = dao.findAll(query);
+    List<CenterProjectCrosscutingTheme> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterProjectCrosscutingThemeDAO implements ICenterProjectCrosscuti
   @Override
   public List<CenterProjectCrosscutingTheme> getProjectCrosscutingThemesByUserId(long userId) {
     String query = "from " + CenterProjectCrosscutingTheme.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
+  public CenterProjectCrosscutingTheme save(CenterProjectCrosscutingTheme projectCrosscutingTheme) {
     if (projectCrosscutingTheme.getId() == null) {
-      dao.save(projectCrosscutingTheme);
+      super.saveEntity(projectCrosscutingTheme);
     } else {
-      dao.update(projectCrosscutingTheme);
+      projectCrosscutingTheme = super.update(projectCrosscutingTheme);
     }
-    return projectCrosscutingTheme.getId();
+    return projectCrosscutingTheme;
   }
 
 

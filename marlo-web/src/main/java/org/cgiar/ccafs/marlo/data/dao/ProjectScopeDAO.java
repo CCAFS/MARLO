@@ -32,7 +32,7 @@ public interface ProjectScopeDAO {
    * @param projectScopeId is the projectScope identifier.
    * @return true if the projectScope was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectScope(long projectScopeId);
+  public void deleteProjectScope(long projectScopeId);
 
   /**
    * This method validate if the projectScope identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectScopeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectScope projectScope);
+  public ProjectScope save(ProjectScope projectScope);
 }

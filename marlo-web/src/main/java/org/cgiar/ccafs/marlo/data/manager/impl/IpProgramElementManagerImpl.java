@@ -41,9 +41,9 @@ public class IpProgramElementManagerImpl implements IpProgramElementManager {
   }
 
   @Override
-  public boolean deleteIpProgramElement(long ipProgramElementId) {
+  public void deleteIpProgramElement(long ipProgramElementId) {
 
-    return ipProgramElementDAO.deleteIpProgramElement(ipProgramElementId);
+    ipProgramElementDAO.deleteIpProgramElement(ipProgramElementId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpProgramElementManagerImpl implements IpProgramElementManager {
   }
 
   @Override
-  public long saveIpProgramElement(IpProgramElement ipProgramElement) {
+  public IpProgramElement saveIpProgramElement(IpProgramElement ipProgramElement) {
 
     return ipProgramElementDAO.save(ipProgramElement);
   }

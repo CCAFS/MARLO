@@ -34,6 +34,7 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
+
   @Expose
   private boolean active;
 
@@ -55,7 +56,6 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public CenterProjectStatus(Long id, User modifiedBy, User createdBy, String name, boolean active, Date activeSince,
     String modificationJustification, Set<CenterProject> projects) {
     this.id = id;
@@ -68,10 +68,10 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
     this.projects = projects;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -88,6 +88,7 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -95,7 +96,7 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -110,6 +111,7 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
   public String getName() {
     return name;
   }
+
 
   public Set<CenterProject> getProjects() {
     return projects;
@@ -144,18 +146,23 @@ public class CenterProjectStatus implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setName(String name) {
     this.name = name;
   }
 
-
   public void setProjects(Set<CenterProject> projects) {
     this.projects = projects;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectStatus [id=" + id + ", name=" + name + "]";
   }
 
 }

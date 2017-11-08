@@ -34,7 +34,7 @@ public interface ProjectOutcomePandrManager {
    * @param projectOutcomePandrId is the projectOutcomePandr identifier.
    * @return true if the projectOutcomePandr was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOutcomePandr(long projectOutcomePandrId);
+  public void deleteProjectOutcomePandr(long projectOutcomePandrId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectOutcomePandrManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectOutcomePandr(ProjectOutcomePandr projectOutcomePandr);
+  public ProjectOutcomePandr saveProjectOutcomePandr(ProjectOutcomePandr projectOutcomePandr);
 
 
 }

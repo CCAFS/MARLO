@@ -41,9 +41,9 @@ public class CrpUserManagerImpl implements CrpUserManager {
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
 
-    return crpUserDAO.deleteCrpUser(crpUserId);
+    crpUserDAO.deleteCrpUser(crpUserId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class CrpUserManagerImpl implements CrpUserManager {
   }
 
   @Override
-  public long saveCrpUser(CrpUser crpUser) {
+  public CrpUser saveCrpUser(CrpUser crpUser) {
 
     return crpUserDAO.save(crpUser);
   }

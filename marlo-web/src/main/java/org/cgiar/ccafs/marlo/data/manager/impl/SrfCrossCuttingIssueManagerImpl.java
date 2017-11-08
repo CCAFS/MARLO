@@ -41,9 +41,9 @@ public class SrfCrossCuttingIssueManagerImpl implements SrfCrossCuttingIssueMana
   }
 
   @Override
-  public boolean deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
+  public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
 
-    return srfCrossCuttingIssueDAO.deleteSrfCrossCuttingIssue(srfCrossCuttingIssueId);
+    srfCrossCuttingIssueDAO.deleteSrfCrossCuttingIssue(srfCrossCuttingIssueId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfCrossCuttingIssueManagerImpl implements SrfCrossCuttingIssueMana
   }
 
   @Override
-  public long saveSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssue) {
+  public SrfCrossCuttingIssue saveSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssue) {
 
     return srfCrossCuttingIssueDAO.save(srfCrossCuttingIssue);
   }

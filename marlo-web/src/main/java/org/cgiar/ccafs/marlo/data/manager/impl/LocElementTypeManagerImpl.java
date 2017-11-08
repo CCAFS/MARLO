@@ -41,9 +41,9 @@ public class LocElementTypeManagerImpl implements LocElementTypeManager {
   }
 
   @Override
-  public boolean deleteLocElementType(long locElementTypeId) {
+  public void deleteLocElementType(long locElementTypeId) {
 
-    return locElementTypeDAO.deleteLocElementType(locElementTypeId);
+    locElementTypeDAO.deleteLocElementType(locElementTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class LocElementTypeManagerImpl implements LocElementTypeManager {
   }
 
   @Override
-  public long saveLocElementType(LocElementType locElementType) {
+  public LocElementType saveLocElementType(LocElementType locElementType) {
 
     return locElementTypeDAO.save(locElementType);
   }

@@ -41,9 +41,9 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   }
 
   @Override
-  public boolean deleteDeliverableActivity(long deliverableActivityId) {
+  public void deleteDeliverableActivity(long deliverableActivityId) {
 
-    return deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityId);
+    deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   }
 
   @Override
-  public long saveDeliverableActivity(DeliverableActivity deliverableActivity) {
+  public DeliverableActivity saveDeliverableActivity(DeliverableActivity deliverableActivity) {
 
     return deliverableActivityDAO.save(deliverableActivity);
   }

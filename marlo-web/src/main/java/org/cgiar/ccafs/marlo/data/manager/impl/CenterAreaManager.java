@@ -45,8 +45,8 @@ public class CenterAreaManager implements ICenterAreaManager {
    * @see org.cgiar.ccafs.marlo.data.service.ICenterAreaManager#deleteResearchArea(long)
    */
   @Override
-  public boolean deleteResearchArea(long researchAreaId) {
-    return researchAreaDao.deleteResearchArea(researchAreaId);
+  public void deleteResearchArea(long researchAreaId) {
+    researchAreaDao.deleteResearchArea(researchAreaId);
   }
 
   /*
@@ -94,7 +94,7 @@ public class CenterAreaManager implements ICenterAreaManager {
    * @see org.cgiar.ccafs.marlo.data.service.ICenterAreaManager#save(org.cgiar.ccafs.marlo.data.model.CenterArea)
    */
   @Override
-  public long save(CenterArea researchArea) {
+  public CenterArea save(CenterArea researchArea) {
 
     return researchAreaDao.save(researchArea);
   }

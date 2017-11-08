@@ -133,6 +133,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public CenterProject(User modifiedBy, User contactPerson, User projectLeader, User createdBy,
     CenterProjectStatus projectStatus, String name, Date startDate, Date endDate, boolean active, Date activeSince,
     String modificationJustification, Set<CenterProjectOutput> projectOutputs) {
@@ -236,7 +237,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {

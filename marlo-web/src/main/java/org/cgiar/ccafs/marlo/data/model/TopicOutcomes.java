@@ -46,4 +46,9 @@ public class TopicOutcomes implements Serializable {
     this.topic = topic;
   }
 
+  @Override
+  public String toString() {
+    return "TopicOutcomes [topic=" + topic + "]";
+  }
+
 }

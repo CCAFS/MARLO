@@ -140,6 +140,7 @@ public class CenterObjective implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -226,7 +227,7 @@ public class CenterObjective implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CenterObjective [id=" + id + ", objective=" + objective + ", researchCenter=" + researchCenter + "]";
   }
 
 }

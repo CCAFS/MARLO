@@ -30,12 +30,13 @@
             <h6>Project title</h6>
             <p>${(project.title)!"Title not defined"}</p>
           </div> 
+            [#assign lastSubmission =currentSubmission /]
           <div class="fullPartBlock">
               <h6>Submission date</h6>
-              [#if submission]
-                  [#assign lastSubmission =action.getProjectSubmissions(projectID)?last /]
+              [#if lastSubmission?has_content ]
+                   <p>${(lastSubmission.cycle)!} - ${(lastSubmission.year)!} - ${(lastSubmission.dateTime?date)!} by ${(lastSubmission.user.composedCompleteName)!}</p>
               [/#if]
-              <p>${(lastSubmission.cycle)!} - ${(lastSubmission.year)!} - ${(lastSubmission.dateTime?date)!} by ${(lastSubmission.user.composedCompleteName)!}</p>
+           
           </div> 
           <div class="fullPartBlock">
             <h6>Download Full Project Report</h6>

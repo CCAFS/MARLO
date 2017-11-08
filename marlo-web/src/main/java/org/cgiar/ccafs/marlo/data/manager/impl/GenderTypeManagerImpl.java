@@ -41,9 +41,9 @@ public class GenderTypeManagerImpl implements GenderTypeManager {
   }
 
   @Override
-  public boolean deleteGenderType(long genderTypeId) {
+  public void deleteGenderType(long genderTypeId) {
 
-    return genderTypeDAO.deleteGenderType(genderTypeId);
+    genderTypeDAO.deleteGenderType(genderTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class GenderTypeManagerImpl implements GenderTypeManager {
   }
 
   @Override
-  public long saveGenderType(GenderType genderType) {
+  public GenderType saveGenderType(GenderType genderType) {
 
     return genderTypeDAO.save(genderType);
   }

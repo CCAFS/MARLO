@@ -34,7 +34,7 @@ public interface ProjectHighligthCountryManager {
    * @param projectHighligthCountryId is the projectHighligthCountry identifier.
    * @return true if the projectHighligthCountry was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectHighligthCountry(long projectHighligthCountryId);
+  public void deleteProjectHighligthCountry(long projectHighligthCountryId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectHighligthCountryManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry);
+  public ProjectHighlightCountry saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry);
 
 
 }

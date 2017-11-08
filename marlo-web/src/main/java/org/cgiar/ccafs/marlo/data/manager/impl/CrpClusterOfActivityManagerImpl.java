@@ -41,9 +41,9 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
   }
 
   @Override
-  public boolean deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
+  public void deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
 
-    return crpClusterOfActivityDAO.deleteCrpClusterOfActivity(crpClusterOfActivityId);
+    crpClusterOfActivityDAO.deleteCrpClusterOfActivity(crpClusterOfActivityId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
   }
 
   @Override
-  public Long saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
+  public CrpClusterOfActivity saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
 
     return crpClusterOfActivityDAO.save(crpClusterOfActivity);
   }

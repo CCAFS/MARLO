@@ -34,7 +34,7 @@ public interface DeliverablePublicationMetadataManager {
    * @param deliverablePublicationMetadataId is the deliverablePublicationMetadata identifier.
    * @return true if the deliverablePublicationMetadata was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId);
+  public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverablePublicationMetadataManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata);
+  public DeliverablePublicationMetadata saveDeliverablePublicationMetadata(DeliverablePublicationMetadata deliverablePublicationMetadata);
 
 
 }

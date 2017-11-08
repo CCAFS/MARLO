@@ -34,7 +34,7 @@ public interface ActivityManager {
    * @param activityId is the activity identifier.
    * @return true if the activity was successfully deleted, false otherwise.
    */
-  public boolean deleteActivity(long activityId);
+  public void deleteActivity(long activityId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ActivityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveActivity(Activity activity);
+  public Activity saveActivity(Activity activity);
 
 
 }

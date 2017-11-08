@@ -41,9 +41,9 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   }
 
   @Override
-  public boolean deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId) {
+  public void deleteCrpOutcomeSubIdo(long crpOutcomeSubIdoId) {
 
-    return crpOutcomeSubIdoDAO.deleteCrpOutcomeSubIdo(crpOutcomeSubIdoId);
+    crpOutcomeSubIdoDAO.deleteCrpOutcomeSubIdo(crpOutcomeSubIdoId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   }
 
   @Override
-  public long saveCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo) {
+  public CrpOutcomeSubIdo saveCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo) {
 
     return crpOutcomeSubIdoDAO.save(crpOutcomeSubIdo);
   }

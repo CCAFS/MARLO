@@ -34,7 +34,7 @@ public interface ICenterBeneficiaryManager {
    * @param beneficiaryId is the beneficiary identifier.
    * @return true if the beneficiary was successfully deleted, false otherwise.
    */
-  public boolean deleteBeneficiary(long beneficiaryId);
+  public void deleteBeneficiary(long beneficiaryId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterBeneficiaryManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveBeneficiary(CenterBeneficiary beneficiary);
+  public CenterBeneficiary saveBeneficiary(CenterBeneficiary beneficiary);
 
 
 }

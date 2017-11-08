@@ -41,9 +41,9 @@ public class SrfSloIndicatorTargetManagerImpl implements SrfSloIndicatorTargetMa
   }
 
   @Override
-  public boolean deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
+  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
 
-    return srfSloIndicatorTargetDAO.deleteSrfSloIndicatorTarget(srfSloIndicatorTargetId);
+    srfSloIndicatorTargetDAO.deleteSrfSloIndicatorTarget(srfSloIndicatorTargetId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfSloIndicatorTargetManagerImpl implements SrfSloIndicatorTargetMa
   }
 
   @Override
-  public long saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
+  public SrfSloIndicatorTarget saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
 
     return srfSloIndicatorTargetDAO.save(srfSloIndicatorTarget);
   }

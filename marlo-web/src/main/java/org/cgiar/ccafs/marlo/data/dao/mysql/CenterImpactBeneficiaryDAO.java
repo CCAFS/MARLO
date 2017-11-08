@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterImpactBeneficiaryDAO implements ICenterImpactBeneficiaryDAO {
+public class CenterImpactBeneficiaryDAO extends AbstractMarloDAO<CenterImpactBeneficiary, Long>
+  implements ICenterImpactBeneficiaryDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterImpactBeneficiaryDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterImpactBeneficiaryDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId) {
+  public void deleteResearchImpactBeneficiary(long researchImpactBeneficiaryId) {
     CenterImpactBeneficiary researchImpactBeneficiary = this.find(researchImpactBeneficiaryId);
     researchImpactBeneficiary.setActive(false);
-    return this.save(researchImpactBeneficiary) > 0;
+    this.save(researchImpactBeneficiary);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterImpactBeneficiaryDAO implements ICenterImpactBeneficiaryDAO {
 
   @Override
   public CenterImpactBeneficiary find(long id) {
-    return dao.find(CenterImpactBeneficiary.class, id);
+    return super.find(CenterImpactBeneficiary.class, id);
 
   }
 
   @Override
   public List<CenterImpactBeneficiary> findAll() {
     String query = "from " + CenterImpactBeneficiary.class.getName();
-    List<CenterImpactBeneficiary> list = dao.findAll(query);
+    List<CenterImpactBeneficiary> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterImpactBeneficiaryDAO implements ICenterImpactBeneficiaryDAO {
   @Override
   public List<CenterImpactBeneficiary> getResearchImpactBeneficiarysByUserId(long userId) {
     String query = "from " + CenterImpactBeneficiary.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterImpactBeneficiary researchImpactBeneficiary) {
+  public CenterImpactBeneficiary save(CenterImpactBeneficiary researchImpactBeneficiary) {
     if (researchImpactBeneficiary.getId() == null) {
-      dao.save(researchImpactBeneficiary);
+      super.saveEntity(researchImpactBeneficiary);
     } else {
-      dao.update(researchImpactBeneficiary);
+      researchImpactBeneficiary = super.update(researchImpactBeneficiary);
     }
-    return researchImpactBeneficiary.getId();
+    return researchImpactBeneficiary;
   }
 
 

@@ -41,9 +41,9 @@ public class UserRoleManagerImpl implements UserRoleManager {
   }
 
   @Override
-  public boolean deleteUserRole(long userRoleId) {
+  public void deleteUserRole(long userRoleId) {
 
-    return userRoleDAO.deleteUserRole(userRoleId);
+    userRoleDAO.deleteUserRole(userRoleId);
   }
 
   @Override
@@ -76,7 +76,7 @@ public class UserRoleManagerImpl implements UserRoleManager {
   }
 
   @Override
-  public long saveUserRole(UserRole userRole) {
+  public UserRole saveUserRole(UserRole userRole) {
 
     return userRoleDAO.save(userRole);
   }

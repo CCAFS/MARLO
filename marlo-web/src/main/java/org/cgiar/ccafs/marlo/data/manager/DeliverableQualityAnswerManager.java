@@ -34,7 +34,7 @@ public interface DeliverableQualityAnswerManager {
    * @param deliverableQualityAnswerId is the deliverableQualityAnswer identifier.
    * @return true if the deliverableQualityAnswer was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableQualityAnswer(long deliverableQualityAnswerId);
+  public void deleteDeliverableQualityAnswer(long deliverableQualityAnswerId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableQualityAnswerManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableQualityAnswer(DeliverableQualityAnswer deliverableQualityAnswer);
+  public DeliverableQualityAnswer saveDeliverableQualityAnswer(DeliverableQualityAnswer deliverableQualityAnswer);
 
 
 }

@@ -34,7 +34,7 @@ public interface SubmissionManager {
    * @param submissionId is the submission identifier.
    * @return true if the submission was successfully deleted, false otherwise.
    */
-  public boolean deleteSubmission(long submissionId);
+  public void deleteSubmission(long submissionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SubmissionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSubmission(Submission submission);
+  public Submission saveSubmission(Submission submission);
 
 
 }

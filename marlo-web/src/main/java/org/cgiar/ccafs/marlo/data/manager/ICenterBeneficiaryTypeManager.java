@@ -34,7 +34,7 @@ public interface ICenterBeneficiaryTypeManager {
    * @param beneficiaryTypeId is the beneficiaryType identifier.
    * @return true if the beneficiaryType was successfully deleted, false otherwise.
    */
-  public boolean deleteBeneficiaryType(long beneficiaryTypeId);
+  public void deleteBeneficiaryType(long beneficiaryTypeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterBeneficiaryTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveBeneficiaryType(CenterBeneficiaryType beneficiaryType);
+  public CenterBeneficiaryType saveBeneficiaryType(CenterBeneficiaryType beneficiaryType);
 
 
 }

@@ -34,7 +34,7 @@ public interface SrfSloIdoManager {
    * @param srfSloIdoId is the srfSloIdo identifier.
    * @return true if the srfSloIdo was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSloIdo(long srfSloIdoId);
+  public void deleteSrfSloIdo(long srfSloIdoId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SrfSloIdoManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSrfSloIdo(SrfSloIdo srfSloIdo);
+  public SrfSloIdo saveSrfSloIdo(SrfSloIdo srfSloIdo);
 
 
 }

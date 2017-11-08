@@ -172,7 +172,7 @@ public class ProjectListAction extends BaseAction {
     project.setProjectCrosscutingTheme(projectCrosscutingTheme);
     projectCrosscutingTheme.setProject(project);
 
-    projectID = projectService.saveCenterProject(project);
+    projectID = projectService.saveCenterProject(project).getId();
 
     /**
      * Add Project sync information
@@ -626,11 +626,10 @@ public class ProjectListAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
-              .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(
+              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

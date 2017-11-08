@@ -53,7 +53,6 @@ public class CenterProjectType implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public Date getActiveSice() {
     return activeSice;
   }
@@ -78,6 +77,7 @@ public class CenterProjectType implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -88,6 +88,7 @@ public class CenterProjectType implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getName() {
     return name;
   }
@@ -97,10 +98,10 @@ public class CenterProjectType implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSice(Date activeSice) {
     this.activeSice = activeSice;
@@ -124,6 +125,11 @@ public class CenterProjectType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterProjectType [id=" + id + ", name=" + name + "]";
   }
 
 

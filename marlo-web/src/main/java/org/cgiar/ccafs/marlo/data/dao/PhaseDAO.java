@@ -32,7 +32,7 @@ public interface PhaseDAO {
    * @param phaseId is the phase identifier.
    * @return true if the phase was successfully deleted, false otherwise.
    */
-  public boolean deletePhase(long phaseId);
+  public void deletePhase(long phaseId);
 
   /**
    * This method validate if the phase identify with the given id exists in the system.
@@ -68,5 +68,5 @@ public interface PhaseDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Phase phase);
+  public Phase save(Phase phase);
 }

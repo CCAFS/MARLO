@@ -34,7 +34,7 @@ public interface ICenterDeliverableDocumentManager {
    * @param deliverableDocumentId is the deliverableDocument identifier.
    * @return true if the deliverableDocument was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDocument(long deliverableDocumentId);
+  public void deleteDeliverableDocument(long deliverableDocumentId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterDeliverableDocumentManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableDocument(CenterDeliverableDocument deliverableDocument);
+  public CenterDeliverableDocument saveDeliverableDocument(CenterDeliverableDocument deliverableDocument);
 
 
 }

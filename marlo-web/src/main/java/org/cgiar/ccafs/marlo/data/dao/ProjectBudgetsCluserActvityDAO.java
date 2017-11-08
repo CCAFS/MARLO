@@ -32,7 +32,7 @@ public interface ProjectBudgetsCluserActvityDAO {
    * @param projectBudgetsCluserActvityId is the projectBudgetsCluserActvity identifier.
    * @return true if the projectBudgetsCluserActvity was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId);
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId);
 
   /**
    * This method validate if the projectBudgetsCluserActvity identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectBudgetsCluserActvityDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity);
+  public ProjectBudgetsCluserActvity save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity);
 }
