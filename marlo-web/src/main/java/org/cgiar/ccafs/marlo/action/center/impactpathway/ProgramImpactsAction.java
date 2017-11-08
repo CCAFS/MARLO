@@ -279,10 +279,11 @@ public class ProgramImpactsAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -412,11 +413,21 @@ public class ProgramImpactsAction extends BaseAction {
                 List<CenterImpactBeneficiary> autoSaveIBeneficiaies = new ArrayList<>();
                 for (CenterImpactBeneficiary impactBeneficiary : impactBeneficiaries) {
 
-                  CenterRegion region =
-                    regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
+                  CenterRegion region;
+                  try {
+                    region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
+                  } catch (Exception e) {
+                    region = null;
+                  }
 
-                  CenterBeneficiary beneficiary =
-                    beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+
+                  CenterBeneficiary beneficiary;
+                  try {
+                    beneficiary = beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+                  } catch (Exception e) {
+                    beneficiary = null;
+                  }
+
 
                   CenterImpactBeneficiary autoSaveIBeneficiay = new CenterImpactBeneficiary();
 
@@ -616,7 +627,12 @@ public class ProgramImpactsAction extends BaseAction {
 
             }
 
-            SrfSubIdo srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
+            SrfSubIdo srfSubIdo;
+            try {
+              srfSubIdo = subIdoManager.getSrfSubIdoById(researchImpact.getSrfSubIdo().getId());
+            } catch (Exception e) {
+              srfSubIdo = null;
+            }
 
             if (srfSubIdo != null) {
               if (researchImpactRew.getSrfSubIdo() == null || !researchImpactRew.getSrfSubIdo().equals(srfSubIdo)) {
@@ -773,7 +789,12 @@ public class ProgramImpactsAction extends BaseAction {
 
           impactBeneficiaryNew.setResearchImpact(researchImpactSave);
 
-          CenterRegion region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
+          CenterRegion region;
+          try {
+            region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
+          } catch (IllegalArgumentException e) {
+            region = null;
+          }
 
           impactBeneficiaryNew.setResearchRegion(region);
 
@@ -791,9 +812,16 @@ public class ProgramImpactsAction extends BaseAction {
           CenterImpactBeneficiary impactBeneficiaryPrew =
             impactBeneficiaryService.getResearchImpactBeneficiaryById(impactBeneficiary.getId());
 
-          CenterRegion region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
-          CenterBeneficiary beneficiary =
+          CenterRegion region;
+          try {
+            region = regionService.getResearchRegionById(impactBeneficiary.getResearchRegion().getId());
+          } catch (Exception e) {
+            region = null;
+          }
+          CenterBeneficiary beneficiary = null;
+          if (impactBeneficiary.getBeneficiary().getId() != -1) {
             beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+          }
 
           if (impactBeneficiaryPrew.getResearchRegion() != null) {
             if (!impactBeneficiaryPrew.getResearchRegion().equals(region)) {
