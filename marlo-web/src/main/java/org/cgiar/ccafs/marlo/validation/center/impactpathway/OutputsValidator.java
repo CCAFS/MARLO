@@ -81,7 +81,13 @@ public class OutputsValidator extends BaseValidator {
     params.add(String.valueOf(i + 1));
 
     if (nextUser.getNextuserType() != null) {
-      if (nextUser.getNextuserType().getNextuserType().getId() == -1) {
+      if (nextUser.getNextuserType().getNextuserType().getId() != null) {
+        if (nextUser.getNextuserType().getNextuserType().getId() == -1) {
+          this.addMessage(baseAction.getText("output.action.nextusers.type", params));
+          baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.nextuserType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         this.addMessage(baseAction.getText("output.action.nextusers.type", params));
         baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.nextuserType.id",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -93,7 +99,13 @@ public class OutputsValidator extends BaseValidator {
     }
 
     if (nextUser.getNextuserType() != null) {
-      if (nextUser.getNextuserType().getId() == -1) {
+      if (nextUser.getNextuserType().getId() != null) {
+        if (nextUser.getNextuserType().getId() == -1) {
+          this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
+          baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
         baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
           InvalidFieldsMessages.EMPTYFIELD);
