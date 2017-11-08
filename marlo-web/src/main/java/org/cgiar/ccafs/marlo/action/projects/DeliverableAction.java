@@ -846,7 +846,12 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getQualityCheck() != null) {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+              FileDB db;
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileAssurance(db);
             }
           }
@@ -1267,6 +1272,12 @@ public class DeliverableAction extends BaseAction {
       Deliverable deliverableManagedState = this.updateDeliverable();
       this.updateDeliverableInReportingPhase(deliverableManagedState);
       this.updateDeliverableInPlanningPhase(deliverableManagedState);
+
+      if (deliverableManagedState.getCrpClusterKeyOutput() != null
+        && deliverableManagedState.getCrpClusterKeyOutput().getId() != null
+        && deliverableManagedState.getCrpClusterKeyOutput().getId().longValue() == -1) {
+        deliverableManagedState.setCrpClusterKeyOutput(null);
+      }
 
       // This gets a DeliverablePartnership entity in managed state.
       DeliverablePartnership partnershipResponsible = this.getDeliverablePartnership(deliverableManagedState);
@@ -1807,7 +1818,12 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileAssurance() != null) {
       if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+        FileDB fileDb;
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileAssurance(fileDb);
       } else {
         qualityCheck.setFileAssurance(null);
@@ -1824,7 +1840,12 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+        FileDB fileDb;
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileDictionary(fileDb);
       } else {
         qualityCheck.setFileDictionary(null);
@@ -1840,7 +1861,12 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileTools() != null) {
       if (deliverable.getQualityCheck().getFileTools().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+        FileDB fileDb;
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileTools(fileDb);
       } else {
         qualityCheck.setFileTools(null);
