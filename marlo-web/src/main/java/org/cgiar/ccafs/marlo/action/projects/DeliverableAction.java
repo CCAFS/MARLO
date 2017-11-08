@@ -118,6 +118,7 @@ import org.slf4j.LoggerFactory;
  * @author avalencia - CCAFS
  * @date Nov 8, 2017
  * @time 9:48:25 AM: Added repositoryChannel List from Database
+ * @time 1:36:16 PM: Fix -1 id error
  */
 public class DeliverableAction extends BaseAction {
 
@@ -847,6 +848,7 @@ public class DeliverableAction extends BaseAction {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
               FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
               try {
                 db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
               } catch (IllegalArgumentException e) {
@@ -1273,6 +1275,7 @@ public class DeliverableAction extends BaseAction {
       this.updateDeliverableInReportingPhase(deliverableManagedState);
       this.updateDeliverableInPlanningPhase(deliverableManagedState);
 
+      // Set CrpClusterKeyOutput to null if has an -1 id
       if (deliverableManagedState.getCrpClusterKeyOutput() != null
         && deliverableManagedState.getCrpClusterKeyOutput().getId() != null
         && deliverableManagedState.getCrpClusterKeyOutput().getId().longValue() == -1) {
@@ -1819,6 +1822,7 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getQualityCheck().getFileAssurance() != null) {
       if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
         FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
         try {
           fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
         } catch (IllegalArgumentException e) {
@@ -1841,6 +1845,7 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
         FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
         try {
           fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
         } catch (IllegalArgumentException e) {
@@ -1862,6 +1867,7 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getQualityCheck().getFileTools() != null) {
       if (deliverable.getQualityCheck().getFileTools().getId() != null) {
         FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
         try {
           fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
         } catch (IllegalArgumentException e) {
