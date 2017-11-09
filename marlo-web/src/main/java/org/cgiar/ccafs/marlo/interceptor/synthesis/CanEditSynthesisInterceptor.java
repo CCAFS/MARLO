@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
@@ -46,7 +46,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
 
   Map<String, Object> parameters;
   Map<String, Object> session;
-  Crp crp;
+  GlobalUnit crp;
 
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
   private IpProgramManager ipProgramManager;
@@ -64,7 +64,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
   public String intercept(ActionInvocation invocation) throws Exception {
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

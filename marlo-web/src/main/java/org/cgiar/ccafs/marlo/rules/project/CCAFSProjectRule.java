@@ -16,7 +16,10 @@
 
 package org.cgiar.ccafs.marlo.rules.project;
 
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
+
+import java.util.stream.Collectors;
 
 import org.easyrules.annotation.Action;
 import org.easyrules.annotation.Condition;
@@ -44,7 +47,11 @@ public class CCAFSProjectRule {
   @Condition
   public boolean checkCRP() {
 
-    return project.getCrp().getId().longValue() == crpID;
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
+    return globalUnitProject.getGlobalUnit().getId().longValue() == crpID;
   }
 
   public Project getProject() {

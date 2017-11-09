@@ -17,11 +17,11 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -45,16 +45,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long deliverableId = 0;
 
   private DeliverableManager deliverableManager;
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    CrpManager crpManager) {
+    GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.deliverableManager = deliverableManager;
@@ -65,8 +66,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

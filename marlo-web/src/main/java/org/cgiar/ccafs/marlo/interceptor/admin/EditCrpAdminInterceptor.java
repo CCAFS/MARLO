@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.interceptor.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
 
   public EditCrpAdminInterceptor() {
     super();
@@ -47,7 +47,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     /*
      * if (!baseAction.canEditCrpAdmin()) {
      * return BaseAction.NOT_AUTHORIZED;

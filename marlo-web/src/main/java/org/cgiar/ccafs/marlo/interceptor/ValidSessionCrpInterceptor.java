@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -43,14 +43,15 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = -3706764472200123669L;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private CrpUserManager crpUserManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private ICenterManager centerService;
 
 
   @Inject
-  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager,
+  public ValidSessionCrpInterceptor(GlobalUnitManager crpManager, CrpUserManager crpUserManager,
     ICenterManager centerService) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
@@ -76,17 +77,17 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Crp crp = crpManager.findCrpByAcronym(enteredCrp);
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
         // Change center to crp session; check if the user don't have crp session
         if (loggedCrp != null) {
-          loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+          loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
         } else {
           loggedCrp = crp;
 

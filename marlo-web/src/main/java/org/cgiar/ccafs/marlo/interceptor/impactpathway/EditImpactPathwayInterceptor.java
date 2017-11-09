@@ -17,12 +17,12 @@ package org.cgiar.ccafs.marlo.interceptor.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -42,18 +42,19 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 8294421978295446976L;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
 
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long crpProgramID = 0;
 
   @Inject
-  public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager,
+  public EditImpactPathwayInterceptor(GlobalUnitManager crpManager, UserManager userManager,
     CrpProgramManager crpProgramManager) {
     this.crpManager = crpManager;
     this.userManager = userManager;
@@ -64,9 +65,9 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     try {
       return Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
     } catch (Exception e) {
-      Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+      GlobalUnit loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
       User user = (User) session.get(APConstants.SESSION_USER);
       user = userManager.getUser(user.getId());
@@ -99,7 +100,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     crpProgramID = this.getCrpProgramId();
 
     if (!baseAction

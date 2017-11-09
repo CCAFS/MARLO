@@ -18,10 +18,10 @@ package org.cgiar.ccafs.marlo.interceptor.publication;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -38,14 +38,15 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long deliverableID = 0;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private DeliverableManager deliverableManager;
 
   @Inject
-  public PublicationInterceptor(CrpManager crpManager, DeliverableManager deliverableManager) {
+  public PublicationInterceptor(GlobalUnitManager crpManager, DeliverableManager deliverableManager) {
     this.crpManager = crpManager;
     this.deliverableManager = deliverableManager;
   }
@@ -55,8 +56,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

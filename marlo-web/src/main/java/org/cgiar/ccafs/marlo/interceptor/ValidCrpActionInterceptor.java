@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.Map;
 
@@ -36,11 +36,11 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = 2239276003694732851L;
 
-  // managers
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public ValidCrpActionInterceptor(CrpManager crpManager) {
+  public ValidCrpActionInterceptor(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
 
@@ -51,7 +51,7 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
     session.remove(APConstants.TEMP_CYCLE);
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Crp crp = crpManager.findCrpByAcronym(enteredCrp);
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
         return invocation.invoke();
       } else {

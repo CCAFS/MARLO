@@ -8,11 +8,7 @@
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
-		</id>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
-			fetch="select">
-			<column name="crp_id" not-null="true" />
-		</many-to-one>
+		</id>		
 		<many-to-one name="liaisonInstitution"
 			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
 			<column name="liaison_institution_id" />
@@ -348,11 +344,6 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.OtherContribution" />
         </set>
-		<set name="globalUnitProjects" table="global_unit_projects" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
-        </set>
+		
 	</class>
 </hibernate-mapping>

@@ -17,10 +17,11 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -46,17 +47,19 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long projectId = 0;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private ProjectManager projectManager;
   private Phase phase;
   private PhaseManager phaseManager;
 
   @Inject
-  public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager, PhaseManager phaseManager) {
+  public EditProjectInterceptor(ProjectManager projectManager, GlobalUnitManager crpManager,
+    PhaseManager phaseManager) {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
@@ -67,7 +70,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -80,8 +83,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
@@ -102,7 +105,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     Project project = projectManager.getProjectById(projectId);
 
-    if (project != null && project.isActive() && project.getCrp().equals(loggedCrp)) {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
+    if (project != null && project.isActive() && globalUnitProject.getGlobalUnit().equals(loggedCrp)) {
 
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};

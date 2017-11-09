@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -45,16 +45,17 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long highLightId = 0;
 
   private ProjectHighligthManager projectHighligthManager;
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public EditHighLightInterceptor(ProjectHighligthManager deliverableManager, ProjectManager projectManager,
-    CrpManager crpManager) {
+    GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.projectHighligthManager = deliverableManager;
@@ -65,8 +66,8 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

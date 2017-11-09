@@ -18,10 +18,10 @@ package org.cgiar.ccafs.marlo.interceptor.funding;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -39,14 +39,14 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long fundingSourceID = 0;
 
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private FundingSourceManager fundingSourceManager;
 
   @Inject
-  public FundingSourceInterceptor(CrpManager crpManager, FundingSourceManager fundingSourceManager) {
+  public FundingSourceInterceptor(GlobalUnitManager crpManager, FundingSourceManager fundingSourceManager) {
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
   }
@@ -56,8 +56,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.GlobalUnitDAO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 
 import java.util.List;
 
@@ -67,15 +66,6 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
 
   }
 
-  @Override
-  public GlobalUnitProject findByGlobalUnitID(String globalUnitID) {
-    String query = "from " + GlobalUnitProject.class.getName() + " where global_unit_id='" + globalUnitID + "'";
-    List<Crp> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
 
   @Override
   public GlobalUnit findGlobalUnitByAcronym(String acronym) {

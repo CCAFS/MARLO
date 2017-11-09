@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleStageInterceptor.class);
 
   private APConfig config;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   @Inject
   public AccessibleStageInterceptor(APConfig config) {
@@ -58,7 +58,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     Map<String, Object> session = invocation.getInvocationContext().getSession();
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     // Check what section is the user loading and
     // validate if it is active
     if (stageName.startsWith("/admin")) {

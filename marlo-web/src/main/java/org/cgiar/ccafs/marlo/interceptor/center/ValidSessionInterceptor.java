@@ -17,13 +17,13 @@ package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -45,12 +45,13 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
   private ICenterManager centerService;
   private ICenterUserManager userService;
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private Center looggedCenter;
 
 
   @Inject
-  public ValidSessionInterceptor(ICenterManager centerService, ICenterUserManager userService, CrpManager crpManager) {
+  public ValidSessionInterceptor(ICenterManager centerService, ICenterUserManager userService,
+    GlobalUnitManager crpManager) {
     this.centerService = centerService;
     this.userService = userService;
     this.crpManager = crpManager;
@@ -91,7 +92,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
           if (session.containsKey(APConstants.SESSION_CRP)) {
 
-            Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
+            GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
             // remove the crp parameters
             for (CustomParameter parameter : crp.getCustomParameters()) {

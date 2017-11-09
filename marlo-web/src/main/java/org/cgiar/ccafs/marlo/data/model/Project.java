@@ -103,8 +103,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Boolean reporting;
   @Expose
   private Boolean crossCuttingYouth;
-  @Expose
-  private Crp crp;
 
 
   private List<CrpClusterOfActivity> crpActivities;
@@ -317,14 +315,13 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Project() {
   }
 
-  public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
+  public Project(LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
     boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, FileDB workplanName,
     FileDB bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
     FileDB annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
     Set<ProjectLocation> projectLocations, Set<ProjectScope> projectScopes, Set<Deliverable> deliverables,
     Date createDate, boolean locationGlobal, Set<ProjectLocationElementType> projectLocationElementTypes) {
-    this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
     this.liaisonUser = liaisonUser;
     this.createdBy = usersByCreatedBy;
@@ -355,9 +352,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
-    Date activeSince, String modificationJustification) {
-    this.crp = crp;
+  public Project(User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive, Date activeSince,
+    String modificationJustification) {
     this.modifiedBy = usersByModifiedBy;
 
     this.cofinancing = isCofinancing;
@@ -555,11 +551,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
   }
-
-  public Crp getCrp() {
-    return crp;
-  }
-
 
   public List<CrpClusterOfActivity> getCrpActivities() {
     return crpActivities;
@@ -1217,11 +1208,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.crossCuttingYouth = crossCuttingYouth;
   }
 
-  public void setCrp(Crp crp) {
-    this.crp = crp;
-  }
-
-
   public void setCrpActivities(List<CrpClusterOfActivity> crpActivities) {
     this.crpActivities = crpActivities;
   }
@@ -1588,7 +1574,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "Project [crp=" + crp + ", id=" + id + ", status=" + status + ", title=" + title + ", type=" + type + "]";
+    return "Project [id=" + id + ", status=" + status + ", title=" + title + ", type=" + type + "]";
   }
 }
 

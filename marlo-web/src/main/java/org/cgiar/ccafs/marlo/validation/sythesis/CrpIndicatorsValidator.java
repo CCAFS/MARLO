@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.validation.sythesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -41,7 +41,8 @@ public class CrpIndicatorsValidator extends BaseValidator {
   BaseAction action;
 
   @Inject
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public CrpIndicatorsValidator() {
@@ -49,7 +50,7 @@ public class CrpIndicatorsValidator extends BaseValidator {
   }
 
   private Path getAutoSaveFilePath(IpLiaisonInstitution ipLiaisonInstitution, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = ipLiaisonInstitution.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.CRP_INDICATORS.getStatus().replace("/", "_");
     String autoSaveFile =
