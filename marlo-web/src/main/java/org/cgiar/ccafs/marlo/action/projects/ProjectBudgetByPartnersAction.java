@@ -709,6 +709,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public void saveBasicBudgets() {
+    List<ProjectBudget> budgets = project.getBudgets();
     Project projectDB = projectManager.getProjectById(projectID);
 
 
@@ -716,11 +717,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
-    for (ProjectBudget projectBudget : projectDB.getBudgets().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
+    for (ProjectBudget projectBudget : projectDB.getBudgets().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
-      if (project.getBudgets() == null) {
-        project.setBudgets(new ArrayList<>());
+      if (budgets == null) {
+        budgets = (new ArrayList<>());
       }
       if (projectBudget.getYear() == this.getCurrentCycleYear()) {
         if (!project.getBudgets().contains(projectBudget)) {
@@ -731,8 +732,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     }
 
-    if (project.getBudgets() != null) {
-      for (ProjectBudget projectBudget : project.getBudgets()) {
+    if (budgets != null) {
+      for (ProjectBudget projectBudget : budgets) {
         if (projectBudget != null) {
           if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
             this.saveBudget(projectBudget);
@@ -746,6 +747,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   public void saveBudget(ProjectBudget projectBudget) {
+
     if (projectBudget.getId() == null) {
       projectBudget.setCreatedBy(this.getCurrentUser());
 

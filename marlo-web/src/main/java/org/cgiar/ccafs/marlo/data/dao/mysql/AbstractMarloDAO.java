@@ -225,6 +225,17 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return this.sessionFactory;
   }
 
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @return
+   */
+  protected T refreshEntity(T entity) {
+    sessionFactory.getCurrentSession().refresh(entity);
+    return entity;
+  }
+
 
   /**
    * This method saves or update a record into the database.
@@ -236,7 +247,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     sessionFactory.getCurrentSession().persist(entity);
     return entity;
   }
-
 
   /**
    * This method persists record into the database.

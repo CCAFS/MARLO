@@ -273,16 +273,17 @@
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
     <input type="hidden" class="projectId institution-${(element.institution.id)!} year-${(selectedYear)!}" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
+    <input type="hidden"  name="${customName}.phase.id" value="${(element.phase.id)!}"/>
     
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
-          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!} 
-            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+          <span class="budgetTypeName">${(element.fundingSource.fundingSourceInfo.budgetType.name)!} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
           </span> 
-          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
+          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.fundingSourceInfo.budgetType.id)!}" />
         </div>
       </div>
       <div class="col-md-4">
