@@ -1148,7 +1148,7 @@ public class ProjectPartnerAction extends BaseAction {
           this.saveProjectPartnerPersons(projectPartner, db);
 
           this.saveProjectPartnerContributions(projectPartner, db);
-          this.saveLocations(projectPartner);
+          this.saveLocations(db);
 
         }
       }

@@ -1207,7 +1207,9 @@ public class DeliverableAction extends BaseAction {
             .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
             if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
               .equals(this.getActualPhase())) {
+               if (!keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
               keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+            }
             }
 
           }

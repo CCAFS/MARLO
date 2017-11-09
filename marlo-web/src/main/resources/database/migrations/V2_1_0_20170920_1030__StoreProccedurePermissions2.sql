@@ -9,6 +9,8 @@ DROP PROCEDURE IF EXISTS `getPermissions`;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getPermissions`(IN v_user_id bigint(20))
 BEGIN
+	DROP TABLE IF EXISTS `user_permission`;
+
 CREATE TEMPORARY TABLE user_permission (
   id VARCHAR (500),
   ro_acronym VARCHAR (500),
