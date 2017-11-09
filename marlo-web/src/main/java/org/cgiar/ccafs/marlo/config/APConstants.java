@@ -402,6 +402,7 @@ public final class APConstants {
   public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
   public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
   public static final String CAPDEV_ID = "capdevID";
+  public static final String CAPDEV_PARTICIPANT_CODE_SYNC = "syncParticipantCode";
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =

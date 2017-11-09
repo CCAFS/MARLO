@@ -69,8 +69,7 @@
       var email = $(this).parent().find(".email").text();
       var composedName = firstName +", " + lastName +" "+ email;
 
-      console.log(email)
-      console.log(composedName)
+      
       // Add user
       addUser(composedName, firstName, lastName, email);
     });
@@ -83,8 +82,7 @@
         var email = $(".ct_Email").val();
         var composedName = firstName +", " + lastName +" <"+ email+">";
 
-        console.log(email)
-        console.log(composedName)
+        
         // Add user
         addUser(composedName, firstName, lastName, "<" + email + ">");
     });
@@ -214,7 +212,9 @@
         $(".suggestInstitution").show();
       }
     })();
-  }
+
+    
+}
 
 
 
@@ -1020,3 +1020,59 @@ $(".button-label").on("click", function() {
 
 
   
+
+  //sync participant code to get HR information
+  $(".syncParticipant").on("click",function(){
+    var participant_code = $(".participant-code").val();
+
+     $.ajax({
+      'url': baseURL + '/syncParticipant.do',
+      'data': {
+        syncParticipantCode: participant_code
+      },
+      'dataType': "json",
+      beforeSend: function() {
+        $('.loading.syncBlock').show();
+      },
+      success: function(data) {
+        console.log(jQuery.isEmptyObject(data.json))
+        if(!jQuery.isEmptyObject(data.json)){
+          console.log(data.json)
+          setData(data);
+        }
+        
+      },
+      error: function() {
+      },
+      complete: function() {
+        $('.loading.syncBlock').hide();
+      }
+    })
+  })
+
+
+function setData(data){
+  $('.participant-name').val(data.json.firstName);
+  $('.participant-lastname').val(data.json.lastName);
+  $('.participant-pEmail').val(data.json.email);
+  $('.participant-supervisor').val(data.json.supervisor1);
+
+  
+  $(".pCitizenshipcountriesList select option").each(function() {
+      if($(this).html() == data.json.cityOfBirth){
+        $(this).attr( "selected" , "selected");
+        $('.pCitizenshipcountriesList .selection .select2-selection__rendered').html(data.json.cityOfBirth);
+      }
+  });
+
+  switch(data.json.gender){
+    case 'MALE':
+      $(".genderSelect select").val("Male");
+      $('.genderSelect .selection .select2-selection__rendered').html("Male");
+      break;
+    case 'FEMALE':
+      $(".genderSelect select").val("Female");
+      $('.genderSelect .selection .select2-selection__rendered').html("Female");
+      break;
+  }
+}

@@ -264,6 +264,7 @@
 
 				<!-- induvidual participant-->
 				<div style="display:${((capdev.category == 1)!false)?string('block','none')};">
+					<div class="loading syncBlock" style="display:none"></div>
 					<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
 						<div class="note  individualparticipantForm">
 							<p>Please complete the information of the trainee who received the individual capdev intervention </p>
@@ -273,14 +274,17 @@
 						<input type="hidden" name="capdev.participant.id" value="${(capdev.participant.id)!}" class="genderInput"/>
 						<!-- participant code -->
 						<div class="form-group row">
-							<div class="col-md-12">
+							<div class="col-md-9">
 								[@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
+							</div>
+							<div class="col-md-2">
+								<div class="checkButton syncParticipant" style="margin-top:21px;">[@s.text name="capdev.participant.code.sync" /]</div>
 							</div>
 						</div>
 						<!-- participant name and middle name -->
 						<div class="form-group row">
 							<div class="col-md-6">
-								[@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" required=true editable=editable/]
+								[@customForm.input name="capdev.participant.name" i18nkey="capdev.participant.firstName" type="text" className="participant-name" required=true editable=editable/]
 							</div>
 							<div class=" col-md-6">
 								[@customForm.input name="capdev.participant.middleName" i18nkey="capdev.participant.middleName" type="text"  editable=editable/]
@@ -289,7 +293,7 @@
 						<!-- participant last name and gender -->
 						<div class="form-group row ">
 							<div class="form-group col-md-6">
-								[@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" required=true editable=editable/]
+								[@customForm.input name="capdev.participant.lastName" i18nkey="capdev.participant.lastName" type="text" className="participant-lastname"  required=true editable=editable/]
 							</div>
 							<div class="form-group col-md-6 genderSelect">
 								<input type="hidden" name="" value="${(participant.gender)!}" class="genderInput"/>
@@ -308,7 +312,7 @@
 						<!-- participant personal email and job email -->
 						<div class="form-group row  ">
 							<div class="col-md-6">
-								[@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" required=true editable=editable/]
+								[@customForm.input name="capdev.participant.personalEmail" i18nkey="capdev.participant.personalEmail" type="text" className="participant-pEmail"  required=true editable=editable/]
 							</div>
 							<div class="col-md-6">
 								[@customForm.input name="capdev.participant.email" i18nkey="capdev.participant.Email" type="text" editable=editable /]
@@ -341,7 +345,7 @@
 						<!-- supervisor and funding type -->
 						<div class="form-group row">
 							<div class="col-md-6">
-								[@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" required=true editable=editable/]
+								[@customForm.input name="capdev.participant.supervisor" i18nkey="capdev.participant.Supervisor" type="text" className="participant-supervisor"  required=true editable=editable/]
 							</div>
 							<div class="col-md-6">
 								<!-- [@customForm.input name="participant.fellowship" i18nkey="capdev.participant.Fellowship" type="text" /] -->

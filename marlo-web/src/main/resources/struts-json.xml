@@ -619,6 +619,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="syncParticipant"
+			class="org.cgiar.ccafs.marlo.action.center.json.capdev.ResourceOCSServiceAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="deleteRegion"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"

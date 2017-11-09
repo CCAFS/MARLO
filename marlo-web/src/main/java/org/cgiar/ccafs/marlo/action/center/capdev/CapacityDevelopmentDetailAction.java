@@ -38,6 +38,8 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
+import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.ReadExcelFile;
@@ -124,6 +126,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private String transaction;
   private final AuditLogManager auditLogService;
 
+  // OCS Agreement Servcie Class
+  private MarloOcsClient ocsClient;
+  private ResourceInfoOCS resourceOCS;
+
 
   @Inject
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
@@ -131,7 +137,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     ICapdevLocationsService capdevLocationService, IParticipantService participantService,
     ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator,
     InstitutionManager institutionService, CapdevHighestDegreeManager capdevHighestDegreeService,
-    CapdevFoundingTypeManager capdevFoundingTypeService, AuditLogManager auditLogService) {
+    CapdevFoundingTypeManager capdevFoundingTypeService, AuditLogManager auditLogService, MarloOcsClient ocsClient) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
@@ -144,6 +150,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.capdevHighestDegreeService = capdevHighestDegreeService;
     this.capdevFoundingTypeService = capdevFoundingTypeService;
     this.auditLogService = auditLogService;
+    this.ocsClient = ocsClient;
   }
 
 
@@ -495,8 +502,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void prepare() throws Exception {
     // genders
     genders = new ArrayList<>();
-    for (final Genders gender : Genders.values()) {
-      final Map<String, Object> map = new HashMap<>();
+    for (Genders gender : Genders.values()) {
+      Map<String, Object> map = new HashMap<>();
       map.put("displayName", gender);
       map.put("value", gender);
       genders.add(map);
@@ -505,8 +512,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     // Unit duration
     durationUnit = new ArrayList<>();
-    for (final DurationUnits unit : DurationUnits.values()) {
-      final Map<String, Object> map = new HashMap<>();
+    for (DurationUnits unit : DurationUnits.values()) {
+      Map<String, Object> map = new HashMap<>();
       map.put("displayName", unit);
       map.put("value", unit);
       durationUnit.add(map);
@@ -717,7 +724,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     final Session session = SecurityUtils.getSubject().getSession();
@@ -770,11 +776,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
         capdevDB.setNumOther(1);
       }
 
+
       this.saveParticipant(capdev.getParticipant());
 
+
       // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
-      if (capdevDB.getCapdevParticipant() == null) {
-        this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
+      List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
+        .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevDB.getId()))
+        .collect(Collectors.toList());
+      System.out.println(participants.size());
+      if (participants != null) {
+        if (participants.isEmpty()) {
+          this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
+        }
       }
     }
 
@@ -863,7 +877,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public void saveCapDevCountries(List<CapdevLocations> capdevCountries, CapacityDevelopment capdev) {
     CapdevLocations capdevLocations = null;
@@ -1095,6 +1108,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setUploadFileName(String uploadFileName) {
     this.uploadFileName = uploadFileName;
+  }
+
+
+  public void syncParticipant() {
+    Map<String, Object> parameters = this.getParameters();
+    String resourceID = StringUtils.trim(((String[]) parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC))[0]);
+    resourceOCS = ocsClient.getHRInformation(resourceID);
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("firstName", resourceOCS.getFirstName());
+    json.add(map);
   }
 
 
