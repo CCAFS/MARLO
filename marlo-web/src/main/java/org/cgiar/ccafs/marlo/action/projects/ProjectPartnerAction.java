@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -461,6 +462,10 @@ public class ProjectPartnerAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     Project project = projectManager.getProjectById(this.projectID);
 
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     // TO will be the new user
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
@@ -507,7 +512,7 @@ public class ProjectPartnerAction extends BaseAction {
         } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
           && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+          List<CrpProgram> crpPrograms = globalUnitProject.getGlobalUnit().getCrpPrograms().stream()
             .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
@@ -582,6 +587,11 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the user role that stopped contributing (Project Leader or Project Coordinator).
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     // Send email to the new user and the P&R notification email.
     // TO
     String toEmail = userUnassigned.getEmail();
@@ -629,7 +639,7 @@ public class ProjectPartnerAction extends BaseAction {
         } else if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getCrpProgram() != null
           && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+          List<CrpProgram> crpPrograms = globalUnitProject.getGlobalUnit().getCrpPrograms().stream()
             .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
@@ -1045,7 +1055,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
- /**
+  /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
    * 
    * @param previouslyEnteredPartner
@@ -1077,7 +1087,6 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
   }
-
 
 
   @Override

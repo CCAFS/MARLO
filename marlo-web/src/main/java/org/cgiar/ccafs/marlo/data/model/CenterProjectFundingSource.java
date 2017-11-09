@@ -21,21 +21,19 @@ public class CenterProjectFundingSource implements java.io.Serializable {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
 
   @Expose
   private CenterFundingSyncType centerFundingSyncType;
 
-
   @Expose
   private CenterFundingSourceType centerFundingSourceType;
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
-  @Expose
-  private GlobalUnit globalUnit;
 
   @Expose
   private CenterProject centerProject;
@@ -134,7 +132,7 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     return createdBy;
   }
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -155,11 +153,6 @@ public class CenterProjectFundingSource implements java.io.Serializable {
 
   public Date getExtensionDate() {
     return extensionDate;
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
@@ -241,6 +234,7 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     this.autoFill = autoFill;
   }
 
+
   public void setCenterFundingSourceType(CenterFundingSourceType centerFundingSourceType) {
     this.centerFundingSourceType = centerFundingSourceType;
   }
@@ -261,9 +255,10 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -281,9 +276,6 @@ public class CenterProjectFundingSource implements java.io.Serializable {
     this.extensionDate = extensionDate;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
 
   public void setId(Long id) {
     this.id = id;

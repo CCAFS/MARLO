@@ -18,14 +18,14 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.MogSynthesyManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
@@ -79,40 +79,43 @@ public class SynthesisByMogAction extends BaseAction {
 
   private IpProjectContributionOverviewManager overviewManager;
 
-
   private MogSynthesyManager mogSynthesisManager;
 
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
 
   private AuditLogManager auditLogManager;
+
 
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
 
-
   private List<IpElement> mogs;
 
   private IpProgram program;
 
+
   private UserManager userManager;
+
   private List<MogSynthesy> synthesis;
 
   private Long liaisonInstitutionID;
-
-
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private SynthesisByMogValidator validator;
+
+
   private String transaction;
 
   @Inject
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
     UserManager userManager, IpProgramManager ipProgramManager, IpElementManager ipElementManager,
-    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager, CrpManager crpManager,
-    AuditLogManager auditLogManager, SynthesisByMogValidator validator) {
+    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager,
+    GlobalUnitManager crpManager, AuditLogManager auditLogManager, SynthesisByMogValidator validator) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
@@ -183,13 +186,14 @@ public class SynthesisByMogAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public List<IpElement> getMogs() {
     return mogs;
   }
+
 
   public IpProgram getProgram() {
     return program;
@@ -244,8 +248,8 @@ public class SynthesisByMogAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     // Get the list of liaison institutions.
     liaisonInstitutions = IpLiaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
@@ -331,8 +335,8 @@ public class SynthesisByMogAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -341,7 +345,7 @@ public class SynthesisByMogAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-      
+
       } else {
         synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
           .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
@@ -438,9 +442,10 @@ public class SynthesisByMogAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setMogs(List<IpElement> mogs) {
     this.mogs = mogs;

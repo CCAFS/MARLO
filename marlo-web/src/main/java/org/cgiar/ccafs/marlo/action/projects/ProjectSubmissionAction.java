@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -196,6 +197,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
   private void sendNotficationEmail(Submission submission) {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     // Send email to the user that is submitting the project.
     // TO
     String toEmail = this.getCurrentUser().getEmail();
@@ -213,7 +218,7 @@ public class ProjectSubmissionAction extends BaseAction {
       ccEmails.append(", ");
     } else if (project.getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
-      List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+      List<CrpProgram> crpPrograms = globalUnitProject.getGlobalUnit().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {

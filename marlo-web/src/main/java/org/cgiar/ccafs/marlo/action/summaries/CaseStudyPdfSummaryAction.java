@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -344,7 +345,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
               }
             }
 
-            if (caseStudyProject.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue()) {
+            // Get The Crp/Center/Platform where the project was created
+            GlobalUnitProject globalUnitProject = caseStudyProject.getProject().getGlobalUnitProjects().stream()
+              .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
+            if (globalUnitProject.getGlobalUnit().getId().longValue() == loggedCrp.getId().longValue()) {
               add = true;
             }
           }

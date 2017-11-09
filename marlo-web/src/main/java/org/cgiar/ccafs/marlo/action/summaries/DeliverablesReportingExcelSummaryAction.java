@@ -402,9 +402,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
       // get Reporting deliverables
       List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
-          && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && d.getProject().getReporting() != null && d.getProject().getReporting()
+          && d.getProject().getGlobalUnitProjects() != null
+          && d.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getStatus() != null
+          && ((d.getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
             || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())

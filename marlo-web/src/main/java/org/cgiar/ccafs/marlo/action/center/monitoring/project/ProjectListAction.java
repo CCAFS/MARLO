@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
@@ -240,12 +241,16 @@ public class ProjectListAction extends BaseAction {
 
     CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
 
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     fundingSource.setCenterProject(centerProject);
     fundingSource.setCode("P" + syncCode);
     fundingSource.setSync(true);
     fundingSource.setSyncDate(new Date());
     fundingSource.setAutoFill(true);
-    fundingSource.setCrp(project.getCrp());
+    fundingSource.setCrp(globalUnitProject.getGlobalUnit());
     fundingSource.setTitle(project.getTitle());
     fundingSource.setDescription(project.getSummary());
     fundingSource.setStartDate(project.getStartDate());
@@ -626,10 +631,11 @@ public class ProjectListAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {

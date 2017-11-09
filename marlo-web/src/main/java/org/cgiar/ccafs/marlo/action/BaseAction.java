@@ -66,7 +66,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -222,7 +221,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Variables
   private String crpSession;
 
-  private Crp currentCrp;
+  private GlobalUnit currentCrp;
 
 
   protected boolean dataSaved;
@@ -529,7 +528,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
         if (crpPpaPartner.getInstitution().getProjectPartners().stream()
-          .filter(c -> c.isActive() && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+          .filter(c -> c.isActive() && c.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getCrpID().longValue()))
+            .collect(Collectors.toList()).size() > 0)
           .collect(Collectors.toList()).size() > 0) {
           return false;
         }
@@ -568,7 +569,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         for (LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (!locElements.getProjectLocations().stream()
-            .filter(c -> c.isActive() && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+            .filter(c -> c.isActive() && c.getProject().getGlobalUnitProjects().stream()
+              .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getCrpID().longValue()))
+              .collect(Collectors.toList()).size() > 0)
             .collect(Collectors.toList()).isEmpty()) {
             return false;
           }
@@ -1190,8 +1193,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       if (session != null && !session.isEmpty()) {
         try {
-          Crp crp =
-            (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+          GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
+            ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
           this.crpID = crp.getId();
         } catch (Exception e) {
           LOG.warn("There was a problem trying to find the user crp in the session.");
@@ -1272,11 +1275,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public Crp getCurrentCrp() {
+  public GlobalUnit getCurrentCrp() {
     if (session != null && !session.isEmpty()) {
       try {
-        Crp crp =
-          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
+          ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         this.currentCrp = crp;
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
@@ -3053,7 +3056,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public void loadLessonsSynthesis(Crp crp, IpProgram program) {
+  public void loadLessonsSynthesis(GlobalUnit crp, IpProgram program) {
 
     if (this.isReportingActive()) {
 
@@ -3206,7 +3209,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void saveLessonsSynthesis(Crp crp, IpProgram ipProgram) {
+  public void saveLessonsSynthesis(GlobalUnit crp, IpProgram ipProgram) {
 
     String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 

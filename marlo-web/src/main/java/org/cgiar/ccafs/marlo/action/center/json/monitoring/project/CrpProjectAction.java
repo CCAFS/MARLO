@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.action.center.json.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,7 @@ public class CrpProjectAction extends BaseAction {
 
 
   private ProjectManager projectManager;
+
 
   private long projectID;
 
@@ -55,13 +58,18 @@ public class CrpProjectAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
 
     if (project != null) {
+
+      // Get The Crp/Center/Platform where the project was created
+      GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+        .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
       SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
       json.put("id", project.getId());
       json.put("description", project.getTitle());
       json.put("objectives", project.getSummary());
       json.put("startDate", sdf.parse(project.getStartDate().toString()));
       json.put("endDate", sdf.parse(project.getEndDate().toString()));
-      json.put("crp", project.getCrp().getId());
+      json.put("crp", globalUnitProject.getGlobalUnit().getId());
     }
 
     return SUCCESS;

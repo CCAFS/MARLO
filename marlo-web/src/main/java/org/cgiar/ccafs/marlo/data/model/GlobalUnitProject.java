@@ -15,7 +15,6 @@ public class GlobalUnitProject implements java.io.Serializable {
 
   private Long id;
 
-
   private User modifiedBy;
 
 
@@ -31,8 +30,10 @@ public class GlobalUnitProject implements java.io.Serializable {
   private boolean active;
 
 
-  private Date activeSince;
+  private boolean origin;
 
+
+  private Date activeSince;
 
   private String modificationJustification;
 
@@ -70,12 +71,18 @@ public class GlobalUnitProject implements java.io.Serializable {
     return modifiedBy;
   }
 
+
   public Project getProject() {
     return project;
   }
 
+
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isOrigin() {
+    return origin;
   }
 
   public void setActive(boolean active) {
@@ -104,6 +111,10 @@ public class GlobalUnitProject implements java.io.Serializable {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setOrigin(boolean origin) {
+    this.origin = origin;
   }
 
   public void setProject(Project project) {

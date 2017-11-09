@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -130,6 +131,11 @@ public class UnsubmitProjectAction extends BaseAction {
   }
 
   private void sendNotficationEmail(Project project) {
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     String toEmail = "";
     // Add project leader
     if (project.getLeaderPerson() != null
@@ -154,7 +160,7 @@ public class UnsubmitProjectAction extends BaseAction {
     } else if (project.getLiaisonInstitution().getCrpProgram() != null
       && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
-      List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+      List<CrpProgram> crpPrograms = globalUnitProject.getGlobalUnit().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
@@ -208,8 +214,9 @@ public class UnsubmitProjectAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    String crp = project.getCrp().getAcronym() != null && !project.getCrp().getAcronym().isEmpty()
-      ? project.getCrp().getAcronym() : project.getCrp().getName();
+    String crp = globalUnitProject.getGlobalUnit().getAcronym() != null
+      && !globalUnitProject.getGlobalUnit().getAcronym().isEmpty() ? globalUnitProject.getGlobalUnit().getAcronym()
+        : globalUnitProject.getGlobalUnit().getName();
     // subject
     String subject = this.getText("unsubmit.email.subject",
       new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});

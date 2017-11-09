@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -1742,9 +1743,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       // get Reporting deliverables
       List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getReporting() != null && d.getProject().getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.loggedCrp.getId()) && d.getStatus() != null
-          && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && d.getProject().getReporting() != null && d.getProject().getReporting()
+          && d.getProject().getGlobalUnitProjects() != null
+          && d.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getStatus() != null
+          && ((d.getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
             || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
@@ -2530,9 +2536,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public String getFileName() {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
     StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-");
-    fileName.append(project.getCrp().getName() + "-");
+    fileName.append(globalUnitProject.getGlobalUnit().getName() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.year + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
@@ -2766,7 +2775,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // centerURL = this.getBaseUrl() + "/global/images/crps/" + project.getCrp().getAcronym() + ".png";
     // Add center url to LOG
     // LOG.info("Center URL is: " + centerURL);
-    centerURL = project.getCrp().getAcronym();
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
     if (project.getAdministrative() != null) {

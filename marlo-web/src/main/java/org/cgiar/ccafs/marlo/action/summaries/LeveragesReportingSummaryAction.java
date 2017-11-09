@@ -306,8 +306,11 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class}, 0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(l -> l.isActive() && l.getYear() != null && l.getYear() == this.year && l.getProject() != null
-        && l.getProject().getCrp() != null && l.getProject().getCrp().getId().equals(this.loggedCrp.getId())
-        && l.getProject().isActive() && l.getProject().getReporting())
+        && l.getProject().getGlobalUnitProjects() != null
+        && l.getProject().getGlobalUnitProjects().stream()
+        .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.loggedCrp.getId()))
+        .collect(Collectors.toList()).size() > 0 && l.getProject().isActive()
+        && l.getProject().getReporting())
       .collect(Collectors.toList())) {
       String title = null, partnerName = null, flagship = null;
       Long projectID = null;

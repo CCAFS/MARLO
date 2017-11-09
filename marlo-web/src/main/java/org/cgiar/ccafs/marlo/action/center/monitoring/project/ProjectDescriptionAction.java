@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
@@ -48,7 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OutcomeOutputs;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
@@ -114,7 +114,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private CenterProjectDescriptionValidator validator;
 
 
-  private CrpManager crpService;
+  private GlobalUnitManager crpService;
 
   private ICenterProjectTypeManager projectTypeService;
 
@@ -149,7 +149,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<LocElement> countryLists;
 
 
-  private List<Crp> crps;
+  private List<GlobalUnit> crps;
   private List<CenterProjectType> projectTypes;
   private List<CenterProjectStatus> status;
   private boolean region;
@@ -167,7 +167,7 @@ public class ProjectDescriptionAction extends BaseAction {
     ICenterProjectOutputManager projectOutputService, ICenterProjectFundingSourceManager projectFundingSourceService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
     ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
-    AuditLogManager auditLogService, CrpManager crpService, ICenterProjectTypeManager projectTypeService,
+    AuditLogManager auditLogService, GlobalUnitManager crpService, ICenterProjectTypeManager projectTypeService,
     ICenterProjectStatusManager projectStatusService, CenterFundingSyncTypeManager centerFundingSyncTypeManager) {
     super(config);
     this.centerService = centerService;
@@ -235,7 +235,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return countryLists;
   }
 
-  public List<Crp> getCrps() {
+  public List<GlobalUnit> getCrps() {
     return crps;
   }
 
@@ -519,9 +519,9 @@ public class ProjectDescriptionAction extends BaseAction {
       fundingSourceTypes = new ArrayList<>(
         fundingSourceService.findAll().stream().filter(fst -> fst.isActive()).collect(Collectors.toList()));
 
+      // Global Type Id 1 == Crps
       crps = new ArrayList<>(crpService.findAll().stream()
-        .filter(c -> c.isActive() && /* TODO temporally when the crp have category value */c.getCategory() == 1)
-        .collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 1).collect(Collectors.toList()));
 
       projectTypes =
         new ArrayList<>(projectTypeService.findAll().stream().filter(pt -> pt.isActive()).collect(Collectors.toList()));
@@ -740,7 +740,7 @@ public class ProjectDescriptionAction extends BaseAction {
             .getCenterFundingSyncTypeById(projectFundingSource.getCenterFundingSyncType().getId());
 
           CenterProject project = projectService.getCenterProjectById(projectID);
-          Crp crp = crpService.getCrpById(projectFundingSource.getCrp().getId());
+          GlobalUnit crp = crpService.getGlobalUnitById(projectFundingSource.getCrp().getId());
 
           fundingSourceSave.setCenterProject(project);
           fundingSourceSave.setCrp(crp);
@@ -925,7 +925,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.countryLists = countryLists;
   }
 
-  public void setCrps(List<Crp> crps) {
+  public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 
