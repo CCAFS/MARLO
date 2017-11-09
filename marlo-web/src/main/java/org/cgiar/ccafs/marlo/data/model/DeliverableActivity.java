@@ -46,12 +46,12 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
   @Expose
   private String modificationJustification;
-
 
   @Expose
   private Phase phase;

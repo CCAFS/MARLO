@@ -34,7 +34,7 @@ public interface ICenterMonitoringOutcomeManager {
    * @param monitoringOutcomeId is the monitoringOutcome identifier.
    * @return true if the monitoringOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteMonitoringOutcome(long monitoringOutcomeId);
+  public void deleteMonitoringOutcome(long monitoringOutcomeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterMonitoringOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveMonitoringOutcome(CenterMonitoringOutcome monitoringOutcome);
+  public CenterMonitoringOutcome saveMonitoringOutcome(CenterMonitoringOutcome monitoringOutcome);
 
 
 }

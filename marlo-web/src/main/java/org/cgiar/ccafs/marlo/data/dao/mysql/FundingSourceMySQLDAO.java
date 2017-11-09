@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -27,22 +28,23 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
+public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long> implements FundingSourceDAO {
 
-public class FundingSourceMySQLDAO implements FundingSourceDAO {
-
-  private StandardDAO dao;
+  public FundingSourceInfoDAO fundingSourceInfoDAO;
 
   @Inject
-  public FundingSourceMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceMySQLDAO(SessionFactory sessionFactory, FundingSourceInfoDAO fundingSourceInfoDAO) {
+    super(sessionFactory);
+    this.fundingSourceInfoDAO = fundingSourceInfoDAO;
   }
 
   @Override
-  public boolean deleteFundingSource(long fundingSourceId) {
+  public void deleteFundingSource(long fundingSourceId) {
     FundingSource fundingSource = this.find(fundingSourceId);
     fundingSource.setActive(false);
-    return this.save(fundingSource) > 0;
+    this.save(fundingSource);
   }
 
   @Override
@@ -57,7 +59,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
   @Override
   public FundingSource find(long id) {
-    return dao.find(FundingSource.class, id);
+    return super.find(FundingSource.class, id);
 
   }
 
@@ -65,7 +67,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   @Override
   public List<FundingSource> findAll() {
     String query = "from " + FundingSource.class.getName() + " where is_active=1";
-    List<FundingSource> list = dao.findAll(query);
+    List<FundingSource> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -75,37 +77,38 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
   @Override
   public List<Map<String, Object>> getFundingSource(long userId, String crp) {
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
       + "' and permission_id = 438 and project_id is not null");
     List<Map<String, Object>> list =
-      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
 
     return list;
   }
 
   @Override
-  public long save(FundingSource fundingSource) {
+  public FundingSource save(FundingSource fundingSource) {
     if (fundingSource.getId() == null) {
-      dao.save(fundingSource);
+      super.saveEntity(fundingSource);
     } else {
-      dao.update(fundingSource);
+      fundingSource = super.update(fundingSource);
     }
 
 
-    return fundingSource.getId();
+    return fundingSource;
   }
 
   @Override
-  public long save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase) {
+  public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase) {
     if (fundingSource.getId() == null) {
-      dao.save(fundingSource, sectionName, relationsName, phase);
+      super.saveEntity(fundingSource, sectionName, relationsName, phase);
     } else {
-      dao.update(fundingSource, sectionName, relationsName, phase);
+      fundingSource = super.update(fundingSource, sectionName, relationsName, phase);
     }
 
 
-    return fundingSource.getId();
+    return fundingSource;
   }
 
   @Override
@@ -126,14 +129,13 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     q.append(" AND fsi.end_date IS NOT NULL");
     q.append(" AND " + year + " <= YEAR(fsi.end_date) ");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(q.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
 
     List<FundingSource> fundingSources = new ArrayList<>();
 
     if (rList != null) {
       for (Map<String, Object> map : rList) {
-        FundingSourceInfo fundingSourceInfo =
-          dao.find(FundingSourceInfo.class, Long.parseLong(map.get("id").toString()));
+        FundingSourceInfo fundingSourceInfo = fundingSourceInfoDAO.find(Long.parseLong(map.get("id").toString()));
         fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
         fundingSources.add(fundingSourceInfo.getFundingSource());
       }
@@ -149,7 +151,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     q.append(" where finance_code=" + ocsCode);
 
 
-    List<FundingSource> fundingSources = dao.findAll(q.toString());
+    List<FundingSource> fundingSources = super.findAll(q.toString());
     return fundingSources;
   }
 
@@ -173,14 +175,13 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     q.append(" AND fsi.end_date IS NOT NULL ");
     q.append("AND " + year + " <= YEAR(fsi.end_date) ");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(q.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
 
     List<FundingSource> fundingSources = new ArrayList<>();
 
     if (rList != null) {
       for (Map<String, Object> map : rList) {
-        FundingSourceInfo fundingSourceInfo =
-          dao.find(FundingSourceInfo.class, Long.parseLong(map.get("id").toString()));
+        FundingSourceInfo fundingSourceInfo = fundingSourceInfoDAO.find(Long.parseLong(map.get("id").toString()));
         fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
         fundingSources.add(fundingSourceInfo.getFundingSource());
       }
@@ -223,7 +224,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append("project_budgets.is_active = 1 AND  ");
     query.append("project_budgets.`year` =" + year);
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<FundingSource> fundingSources = new ArrayList<>();
 
@@ -257,7 +258,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     query.append("project_budgets.is_active = 1 AND  ");
     query.append("project_budgets.`year` =" + year);
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<FundingSource> fundingSources = new ArrayList<>();
 

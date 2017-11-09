@@ -37,6 +37,7 @@ public class ProjectOtherContribution implements java.io.Serializable, IAuditLog
   private String description;
   @Expose
   private String target;
+
   @Expose
   private boolean active;
   @Expose
@@ -173,6 +174,11 @@ public class ProjectOtherContribution implements java.io.Serializable, IAuditLog
 
   public void setTarget(String target) {
     this.target = target;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectOtherContribution [id=" + id + ", project=" + project + ", description=" + description + "]";
   }
 
 

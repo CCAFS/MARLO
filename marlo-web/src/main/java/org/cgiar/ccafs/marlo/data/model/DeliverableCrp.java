@@ -24,6 +24,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private IpProgram ipProgram;
 
+
   @Expose
   private Deliverable deliverable;
 
@@ -66,6 +67,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return crpPandr;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -86,6 +88,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -142,6 +145,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableCrp [id=" + id + ", crpPandr=" + crpPandr + ", ipProgram=" + ipProgram + ", deliverable="
+      + deliverable + "]";
   }
 
 

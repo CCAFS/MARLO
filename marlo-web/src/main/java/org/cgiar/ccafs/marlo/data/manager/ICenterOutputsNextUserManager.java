@@ -34,7 +34,7 @@ public interface ICenterOutputsNextUserManager {
    * @param researchOutputsNextUserId is the researchOutputsNextUser identifier.
    * @return true if the researchOutputsNextUser was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutputsNextUser(long researchOutputsNextUserId);
+  public void deleteResearchOutputsNextUser(long researchOutputsNextUserId);
 
 
   /**
@@ -80,7 +80,7 @@ public interface ICenterOutputsNextUserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchOutputsNextUser(CenterOutputsNextUser researchOutputsNextUser);
+  public CenterOutputsNextUser saveResearchOutputsNextUser(CenterOutputsNextUser researchOutputsNextUser);
 
 
 }

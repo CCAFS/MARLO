@@ -16,125 +16,29 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceLocationsDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO {
+public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSourceLocation, Long>
+  implements FundingSourceLocationsDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceLocationsMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceLocationsMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-
-  private void addFundingSouceLocationPhase(Phase next, long fundingSourceID,
-    FundingSourceLocation fundingSourceLocation) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    boolean hasLocElement = false;
-    if (fundingSourceLocation.getLocElementType() == null) {
-      hasLocElement = true;
-    }
-    List<FundingSourceLocation> locations = new ArrayList<FundingSourceLocation>();
-
-    if (hasLocElement) {
-      locations
-        .addAll(phase.getFundingSourceLocations().stream()
-          .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-            && c.getLocElement() != null
-            && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-        .collect(Collectors.toList()));
-    } else {
-      locations.addAll(phase.getFundingSourceLocations().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getLocElementType() != null
-          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
-        .collect(Collectors.toList()));
-    }
-
-
-    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
-      FundingSourceLocation fundingSourceLocationAdd = new FundingSourceLocation();
-      fundingSourceLocationAdd.setActive(true);
-      fundingSourceLocationAdd.setActiveSince(fundingSourceLocation.getActiveSince());
-      fundingSourceLocationAdd.setCreatedBy(fundingSourceLocation.getCreatedBy());
-      fundingSourceLocationAdd.setLocElement(fundingSourceLocation.getLocElement());
-      fundingSourceLocationAdd.setLocElementType(fundingSourceLocation.getLocElementType());
-      fundingSourceLocationAdd.setModificationJustification(fundingSourceLocation.getModificationJustification());
-      fundingSourceLocationAdd.setModifiedBy(fundingSourceLocation.getModifiedBy());
-      fundingSourceLocationAdd.setPhase(phase);
-      fundingSourceLocationAdd.setFundingSource(fundingSourceLocation.getFundingSource());
-      dao.save(fundingSourceLocationAdd);
-
-    }
-
-    if (phase.getNext() != null) {
-      this.addFundingSouceLocationPhase(phase.getNext(), fundingSourceID, fundingSourceLocation);
-    }
-
-
-  }
-
-
-  public void deleteFundingSourceLocationPhase(Phase next, long fundingSourceID,
-    FundingSourceLocation fundingSourceLocation) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    boolean hasLocElement = false;
-    if (fundingSourceLocation.getLocElementType() == null) {
-      hasLocElement = true;
-    }
-    if (phase.getEditable() != null && phase.getEditable()) {
-
-      List<FundingSourceLocation> locations = new ArrayList<FundingSourceLocation>();
-
-      if (hasLocElement) {
-        locations.addAll(phase.getFundingSourceLocations().stream()
-          .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-            && c.getLocElement() != null
-            && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-          .collect(Collectors.toList()));
-      } else {
-        locations.addAll(phase.getFundingSourceLocations().stream().filter(c -> c.isActive()
-          && c.getFundingSource().getId().longValue() == fundingSourceID && c.getLocElementType() != null
-          && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
-          .collect(Collectors.toList()));
-      }
-      for (FundingSourceLocation location : locations) {
-        location.setActive(false);
-        this.dao.update(location);
-      }
-    }
-    if (phase.getNext() != null) {
-      this.deleteFundingSourceLocationPhase(phase.getNext(), fundingSourceID, fundingSourceLocation);
-
-    }
-
-
-  }
 
   @Override
-  public boolean deleteFundingSourceLocations(long fundingSourceLocationsId) {
+  public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
     FundingSourceLocation fundingSourceLocations = this.find(fundingSourceLocationsId);
     fundingSourceLocations.setActive(false);
-    boolean result = dao.update(fundingSourceLocations);
-    Phase currentPhase = dao.find(Phase.class, fundingSourceLocations.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-
-      if (fundingSourceLocations.getPhase().getNext() != null) {
-        this.deleteFundingSourceLocationPhase(fundingSourceLocations.getPhase().getNext(),
-          fundingSourceLocations.getFundingSource().getId(), fundingSourceLocations);
-      }
-    }
-    return result;
+    super.update(fundingSourceLocations);
   }
 
   @Override
@@ -149,14 +53,14 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
 
   @Override
   public FundingSourceLocation find(long id) {
-    return dao.find(FundingSourceLocation.class, id);
+    return super.find(FundingSourceLocation.class, id);
 
   }
 
   @Override
   public List<FundingSourceLocation> findAll() {
     String query = "from " + FundingSourceLocation.class.getName() + " where is_active=1";
-    List<FundingSourceLocation> list = dao.findAll(query);
+    List<FundingSourceLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -165,21 +69,14 @@ public class FundingSourceLocationsMySQLDAO implements FundingSourceLocationsDAO
   }
 
   @Override
-  public long save(FundingSourceLocation fundingSourceLocations) {
+  public FundingSourceLocation save(FundingSourceLocation fundingSourceLocations) {
     if (fundingSourceLocations.getId() == null) {
-      dao.save(fundingSourceLocations);
+      super.saveEntity(fundingSourceLocations);
     } else {
-      dao.update(fundingSourceLocations);
-    }
-    Phase currentPhase = dao.find(Phase.class, fundingSourceLocations.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (fundingSourceLocations.getPhase().getNext() != null) {
-        this.addFundingSouceLocationPhase(fundingSourceLocations.getPhase().getNext(),
-          fundingSourceLocations.getFundingSource().getId(), fundingSourceLocations);
-      }
+      fundingSourceLocations = super.update(fundingSourceLocations);
     }
 
-    return fundingSourceLocations.getId();
+    return fundingSourceLocations;
   }
 
 }

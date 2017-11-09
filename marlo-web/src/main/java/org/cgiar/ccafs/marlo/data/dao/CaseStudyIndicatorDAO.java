@@ -32,7 +32,7 @@ public interface CaseStudyIndicatorDAO {
    * @param caseStudyIndicatorId is the caseStudyIndicator identifier.
    * @return true if the caseStudyIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudyIndicator(long caseStudyIndicatorId);
+  public void deleteCaseStudyIndicator(long caseStudyIndicatorId);
 
   /**
    * This method validate if the caseStudyIndicator identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CaseStudyIndicatorDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CaseStudyIndicator caseStudyIndicator);
+  public CaseStudyIndicator save(CaseStudyIndicator caseStudyIndicator);
 }

@@ -31,6 +31,7 @@ public class APConfig {
   public static final String MYSQL_PASSWORD = "mysql.password";
   public static final String MYSQL_DATABASE = "mysql.database";
   public static final String MYSQL_PORT = "mysql.port";
+  public static final String MYSQL_SHOW_SQL = "mysql.show_sql";
 
   private static final String EMAIL_USER = "email.user";
   private static final String EMAIL_NOTIFICATION = "email.notification";
@@ -63,7 +64,7 @@ public class APConfig {
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
 
-  private PropertiesManager properties;
+  private final PropertiesManager properties;
 
   @Inject
   public APConfig(PropertiesManager properties) {
@@ -378,6 +379,18 @@ public class APConfig {
     String variable = properties.getPropertiesAsString(PRODUCTION);
     if (variable == null) {
       LOG.error("There is not a production/testing mode active configured");
+      return false;
+    }
+    return variable.equals("true");
+  }
+
+  /**
+   * Allow sql statements to be logged
+   */
+  public boolean isShowSql() {
+    String variable = properties.getPropertiesAsString(MYSQL_SHOW_SQL);
+    if (variable == null) {
+      LOG.warn("The property: " + MYSQL_SHOW_SQL + ", has not been configured and therefore will be set to false.");
       return false;
     }
     return variable.equals("true");

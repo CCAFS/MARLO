@@ -145,6 +145,12 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
+  @Override
+  public String toString() {
+    return "DeliverableUser [id=" + id + ", deliverable=" + deliverable + ", firstName=" + firstName + ", lastName="
+      + lastName + ", elementId=" + elementId + "]";
+  }
+
 
 }
 

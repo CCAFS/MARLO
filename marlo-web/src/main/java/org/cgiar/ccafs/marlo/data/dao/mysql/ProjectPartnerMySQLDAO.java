@@ -28,10 +28,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
+public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
 
-  private StandardDAO dao;
   private LocElementDAO locElementDAO;
   private InstitutionLocationDAO institutionDAO;
 
@@ -72,12 +73,10 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
     ProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    boolean result = dao.update(projectPartner);
-
-    return result;
+    super.update(projectPartner);
   }
 
 
@@ -93,14 +92,14 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
   @Override
   public ProjectPartner find(long id) {
-    return dao.find(ProjectPartner.class, id);
+    return super.find(ProjectPartner.class, id);
 
   }
 
   @Override
   public List<ProjectPartner> findAll() {
     String query = "from " + ProjectPartner.class.getName() + " where is_active=1";
-    List<ProjectPartner> list = dao.findAll(query);
+    List<ProjectPartner> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -110,14 +109,39 @@ public class ProjectPartnerMySQLDAO implements ProjectPartnerDAO {
 
 
   @Override
-  public long save(ProjectPartner projectPartner) {
+  public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
+    String query = "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
+      + "where pp.id = :projectPartnerID";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerID", projectPartnerID);
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    projectPartner.getProjectPartnerLocations().size();
+    return projectPartner;
+  }
+
+  @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId) {
+
+    String query = "select distinct pp from ProjectPartner as pp inner join pp.project as project "
+      + "left join fetch pp.projectPartnerPersons as ppp where project.id = :projectId " + "and ppp.active = true";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", projectId);
+    List<ProjectPartner> projectPartners = createQuery.list();
+    return projectPartners;
+  }
+
+  @Override
+  public ProjectPartner save(ProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
-      dao.save(projectPartner);
+      super.saveEntity(projectPartner);
     } else {
-      dao.update(projectPartner);
+      projectPartner = super.update(projectPartner);
     }
 
-    return projectPartner.getId();
+    return projectPartner;
   }
 
 

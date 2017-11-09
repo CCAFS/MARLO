@@ -22,7 +22,6 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private User modifiedBy;
 
@@ -30,6 +29,8 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
   private User createdBy;
   @Expose
   private CenterNextuserType nextuserType;
+
+
   @Expose
   private String name;
   @Expose
@@ -48,9 +49,8 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
     this.name = name;
   }
 
-
-  public CenterNextuserType(User modifiedBy, User createdBy, CenterNextuserType nextuserType, String name, Date activeSince,
-    boolean active, String modificationJustification, Set<CenterNextuserType> nextuserTypes,
+  public CenterNextuserType(User modifiedBy, User createdBy, CenterNextuserType nextuserType, String name,
+    Date activeSince, boolean active, String modificationJustification, Set<CenterNextuserType> nextuserTypes,
     Set<CenterOutputsNextUser> researchOutputsNextUsers) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -111,6 +111,7 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -130,6 +131,7 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
   public CenterNextuserType getNextuserType() {
     return nextuserType;
   }
+
 
   public Set<CenterNextuserType> getNextuserTypes() {
     return nextuserTypes;
@@ -180,18 +182,23 @@ public class CenterNextuserType implements java.io.Serializable, IAuditLog {
     this.name = name;
   }
 
-
   public void setNextuserType(CenterNextuserType nextuserType) {
     this.nextuserType = nextuserType;
   }
+
 
   public void setNextuserTypes(Set<CenterNextuserType> nextuserTypes) {
     this.nextuserTypes = nextuserTypes;
   }
 
-
   public void setResearchOutputsNextUsers(Set<CenterOutputsNextUser> researchOutputsNextUsers) {
     this.researchOutputsNextUsers = researchOutputsNextUsers;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterNextuserType [id=" + id + ", nextuserType=" + nextuserType + ", name=" + name + "]";
   }
 
 

@@ -47,24 +47,27 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
 
+  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
+
+
   @Expose
   private CrpProgram crpProgram;
 
+
   @Expose
   private String description;
-
 
   @Expose
   private Long id;
 
   @Expose
   private Phase phase;
-
   @Expose
   private String identifier;
 
 
   private List<CrpClusterKeyOutput> keyOutputs;
+
 
   private List<CrpClusterActivityLeader> leaders;
 
@@ -186,6 +189,12 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   public Phase getPhase() {
     return phase;
   }
+  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
+    return projectBudgetsCluserActvities;
+  }
+  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
+    return projectBudgetsCluserActvities;
+  }
 
 
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
@@ -266,13 +275,18 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
+  public void setProjectBudgetsCluserActvities(Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities) {
+    this.projectBudgetsCluserActvities = projectBudgetsCluserActvities;
+  }
+
   public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
     this.projectClusterActivities = projectClusterActivities;
   }
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpClusterOfActivity [crpProgram=" + crpProgram + ", description=" + description + ", id=" + id
+      + ", identifier=" + identifier + "]";
   }
 
 

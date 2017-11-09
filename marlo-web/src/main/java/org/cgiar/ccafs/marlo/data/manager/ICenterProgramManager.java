@@ -34,7 +34,7 @@ public interface ICenterProgramManager {
    * @param programId is the CenterProgram identifier.
    * @return true if the CenterProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteProgram(long programId);
+  public void deleteProgram(long programId);
 
 
   /**
@@ -85,7 +85,7 @@ public interface ICenterProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProgram(CenterProgram researchProgram);
+  public CenterProgram saveProgram(CenterProgram researchProgram);
 
 
   /**
@@ -96,7 +96,7 @@ public interface ICenterProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProgram(CenterProgram researchProgram, String actionName, List<String> relationsName);
+  public CenterProgram saveProgram(CenterProgram researchProgram, String actionName, List<String> relationsName);
 
 
 }

@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
+import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
@@ -27,12 +28,14 @@ import com.google.inject.Inject;
 
 public class AuditLogManagerImp implements AuditLogManager {
 
+  private final AuditLogDao auditLogDao;
 
-  private AuditLogDao auditLogDao;
+  private final UserDAO userDao;
 
   @Inject
-  public AuditLogManagerImp(AuditLogDao auditLogDao) {
+  public AuditLogManagerImp(AuditLogDao auditLogDao, UserDAO userDao) {
     this.auditLogDao = auditLogDao;
+    this.userDao = userDao;
   }
 
   @Override
@@ -69,8 +72,17 @@ public class AuditLogManagerImp implements AuditLogManager {
 
   @Override
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName) {
-    return auditLogDao.listLogs(classAudit, id, actionName);
 
+    List<Auditlog> auditLogs = auditLogDao.findAllWithClassNameAndIdAndActionName(classAudit, id, actionName);
+
+    for (Auditlog auditlog : auditLogs) {
+      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
+    }
+
+    if (auditLogs.size() > 11) {
+      return auditLogs.subList(0, 11);
+    }
+    return auditLogs;
   }
 
   @Override

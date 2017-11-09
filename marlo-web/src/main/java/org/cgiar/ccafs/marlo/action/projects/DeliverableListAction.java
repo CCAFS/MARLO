@@ -183,7 +183,7 @@ public class DeliverableListAction extends BaseAction {
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
           return openA;
         } else {
 

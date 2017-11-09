@@ -34,7 +34,7 @@ public interface SrfTargetUnitManager {
    * @param srfTargetUnitId is the srfTargetUnit identifier.
    * @return true if the srfTargetUnit was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfTargetUnit(long srfTargetUnitId);
+  public void deleteSrfTargetUnit(long srfTargetUnitId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SrfTargetUnitManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSrfTargetUnit(SrfTargetUnit srfTargetUnit);
+  public SrfTargetUnit saveSrfTargetUnit(SrfTargetUnit srfTargetUnit);
 
 
 }

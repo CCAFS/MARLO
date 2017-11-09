@@ -14,6 +14,7 @@ public class CenterParameter implements java.io.Serializable {
 
   private Long id;
   private String key;
+
   private String description;
   private Integer format;
   private String defaultValue;
@@ -45,10 +46,10 @@ public class CenterParameter implements java.io.Serializable {
     return this.defaultValue;
   }
 
-
   public String getDescription() {
     return this.description;
   }
+
 
   public Integer getFormat() {
     return this.format;
@@ -70,10 +71,10 @@ public class CenterParameter implements java.io.Serializable {
     this.centerCustomParameters = centerCustomParameters;
   }
 
-
   public void setDefaultValue(String defaultValue) {
     this.defaultValue = defaultValue;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
@@ -89,6 +90,11 @@ public class CenterParameter implements java.io.Serializable {
 
   public void setKey(String key) {
     this.key = key;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterParameter [id=" + id + ", key=" + key + ", description=" + description + "]";
   }
 
 

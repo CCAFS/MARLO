@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryDAO {
+public class ProjectHighligthCountryMySQLDAO extends AbstractMarloDAO<ProjectHighlightCountry, Long>
+  implements ProjectHighligthCountryDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectHighligthCountryMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectHighligthCountryMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectHighligthCountry(long projectHighligthCountryId) {
+  public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
     ProjectHighlightCountry projectHighlightCountry = this.find(projectHighligthCountryId);
 
-    return this.dao.delete(projectHighlightCountry);
+    super.delete(projectHighlightCountry);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
 
   @Override
   public ProjectHighlightCountry find(long id) {
-    return dao.find(ProjectHighlightCountry.class, Integer.parseInt(String.valueOf(id)));
+    return super.find(ProjectHighlightCountry.class, id);
 
   }
 
   @Override
   public List<ProjectHighlightCountry> findAll() {
     String query = "from " + ProjectHighlightCountry.class.getName() + " where is_active=1";
-    List<ProjectHighlightCountry> list = dao.findAll(query);
+    List<ProjectHighlightCountry> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +68,15 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
   }
 
   @Override
-  public long save(ProjectHighlightCountry projectHighlightCountry) {
+  public ProjectHighlightCountry save(ProjectHighlightCountry projectHighlightCountry) {
     if (projectHighlightCountry.getId() == null) {
-      dao.save(projectHighlightCountry);
+      super.saveEntity(projectHighlightCountry);
     } else {
-      dao.update(projectHighlightCountry);
+      projectHighlightCountry = super.update(projectHighlightCountry);
     }
 
 
-    return projectHighlightCountry.getId();
+    return projectHighlightCountry;
   }
 
 

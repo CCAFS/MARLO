@@ -34,7 +34,7 @@ public interface DeliverableQualityCheckManager {
    * @param deliverableQualityCheckId is the deliverableQualityCheck identifier.
    * @return true if the deliverableQualityCheck was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableQualityCheck(long deliverableQualityCheckId);
+  public void deleteDeliverableQualityCheck(long deliverableQualityCheckId);
 
 
   /**
@@ -81,7 +81,7 @@ public interface DeliverableQualityCheckManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableQualityCheck(DeliverableQualityCheck deliverableQualityCheck);
+  public DeliverableQualityCheck saveDeliverableQualityCheck(DeliverableQualityCheck deliverableQualityCheck);
 
 
 }

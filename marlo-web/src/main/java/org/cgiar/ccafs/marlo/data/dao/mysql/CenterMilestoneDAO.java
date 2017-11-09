@@ -23,21 +23,24 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CenterMilestoneDAO implements ICenterMilestoneDAO {
+public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> implements ICenterMilestoneDAO {
 
-  private StandardDAO dao;
+  private static Logger LOG = LoggerFactory.getLogger(CenterMilestoneDAO.class);
 
   @Inject
-  public CenterMilestoneDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterMilestoneDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCenterMilestone(long centerMilestoneId) {
+  public void deleteCenterMilestone(long centerMilestoneId) {
     CenterMilestone centerMilestone = this.find(centerMilestoneId);
     centerMilestone.setActive(false);
-    return this.save(centerMilestone) > 0;
+    this.save(centerMilestone);
   }
 
   @Override
@@ -52,14 +55,14 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
 
   @Override
   public CenterMilestone find(long id) {
-    return dao.find(CenterMilestone.class, id);
+    return super.find(CenterMilestone.class, id);
 
   }
 
   @Override
   public List<CenterMilestone> findAll() {
     String query = "from " + CenterMilestone.class.getName();
-    List<CenterMilestone> list = dao.findAll(query);
+    List<CenterMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +73,7 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
   @Override
   public List<CenterMilestone> getCenterMilestonesByUserId(long userId) {
     String query = "from " + CenterMilestone.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
@@ -93,7 +96,7 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
     query.append("GROUP BY ");
     query.append("center_target_units.`name`  ");
 
-    return dao.findCustomQuery(query.toString());
+    return super.findCustomQuery(query.toString());
   }
 
 
@@ -156,30 +159,29 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
     query.append("center_milestones.id ASC,  ");
     query.append("center_monitoring_outcomes.`year` ASC  ");
 
+    LOG.debug(query.toString());
 
-    System.out.println(query.toString());
-
-    return dao.findCustomQuery(query.toString());
+    return super.findCustomQuery(query.toString());
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone) {
+  public CenterMilestone save(CenterMilestone centerMilestone) {
     if (centerMilestone.getId() == null) {
-      dao.save(centerMilestone);
+      super.saveEntity(centerMilestone);
     } else {
-      dao.update(centerMilestone);
+      centerMilestone = super.update(centerMilestone);
     }
-    return centerMilestone.getId();
+    return centerMilestone;
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
+  public CenterMilestone save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
     if (centerMilestone.getId() == null) {
-      dao.save(centerMilestone, actionName, relationsName);
+      super.saveEntity(centerMilestone, actionName, relationsName);
     } else {
-      dao.update(centerMilestone, actionName, relationsName);
+      centerMilestone = super.update(centerMilestone, actionName, relationsName);
     }
-    return centerMilestone.getId();
+    return centerMilestone;
   }
 
 

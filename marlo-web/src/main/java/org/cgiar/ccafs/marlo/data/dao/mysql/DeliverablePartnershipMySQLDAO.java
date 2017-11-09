@@ -16,107 +16,32 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePartnershipDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
-import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
-public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO {
+public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
+  implements DeliverablePartnershipDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverablePartnershipMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverablePartnershipMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-  /**
-   * clone or update the deliverable Partnership for next phases
-   * 
-   * @param next the next phase to clone
-   * @param deliverableID the deliverable id we are working
-   * @param deliverablePartnership the deliverable Partnership to clone
-   */
-  private void addDeliverablePartnershipPhase(Phase next, long deliverableID,
-    DeliverablePartnership deliverablePartnership) {
-    Phase phase = dao.find(Phase.class, next.getId());
-
-    List<DeliverablePartnership> deliverablePartnerships = phase.getDeliverablePartnerships().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
-        .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
-      .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && deliverablePartnerships.isEmpty()) {
-      DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
-      deliverablePartnershipAdd.setActive(true);
-      deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
-      deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
-      deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
-      deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
-      deliverablePartnershipAdd.setPhase(phase);
-      deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
-      deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
-      deliverablePartnershipAdd.setPartnerDivision(deliverablePartnership.getPartnerDivision());
-      deliverablePartnershipAdd
-        .setProjectPartnerPerson(this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()));
-      if (deliverablePartnershipAdd.getProjectPartnerPerson() != null) {
-        dao.save(deliverablePartnershipAdd);
-      }
-
-    }
-
-    if (phase.getNext() != null) {
-      this.addDeliverablePartnershipPhase(phase.getNext(), deliverableID, deliverablePartnership);
-    }
-
-
-  }
 
   @Override
-  public boolean deleteDeliverablePartnership(long deliverablePartnershipId) {
+  public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    boolean result = dao.update(deliverablePartnership);
-    Phase currentPhase = dao.find(Phase.class, deliverablePartnership.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (deliverablePartnership.getPhase().getNext() != null) {
-        this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
-          deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
-      }
-    }
-    return result;
-
+    super.update(deliverablePartnership);
   }
 
-  public void deleteDeliverablePartnership(Phase next, long deliverableID,
-    DeliverablePartnership deliverablePartnership) {
-    Phase phase = dao.find(Phase.class, next.getId());
-
-    if (phase.getEditable() != null && phase.getEditable()) {
-
-      List<DeliverablePartnership> partnerships = phase.getDeliverablePartnerships().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
-          .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
-        .collect(Collectors.toList());
-
-      for (DeliverablePartnership dePartnership : partnerships) {
-        dePartnership.setActive(false);
-        dao.update(dePartnership);
-
-      }
-    }
-    if (phase.getNext() != null) {
-      this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
-    }
-
-
-  }
 
   @Override
   public boolean existDeliverablePartnership(long deliverablePartnershipID) {
@@ -130,14 +55,14 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
 
   @Override
   public DeliverablePartnership find(long id) {
-    return dao.find(DeliverablePartnership.class, id);
+    return super.find(DeliverablePartnership.class, id);
 
   }
 
   @Override
   public List<DeliverablePartnership> findAll() {
     String query = "from " + DeliverablePartnership.class.getName() + " where is_active=1";
-    List<DeliverablePartnership> list = dao.findAll(query);
+    List<DeliverablePartnership> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -145,43 +70,44 @@ public class DeliverablePartnershipMySQLDAO implements DeliverablePartnershipDAO
 
   }
 
-  private ProjectPartnerPerson getPartnerPerson(Phase phase, ProjectPartnerPerson projectPartnerPerson) {
-    projectPartnerPerson = dao.find(ProjectPartnerPerson.class, projectPartnerPerson.getId());
-    StringBuilder query = new StringBuilder();
-    query.append(
-      "select ppp.id from project_partners pp INNER JOIN project_partner_persons ppp on ppp.project_partner_id=pp.id");
-    query.append(" where pp.is_active=1 and ppp.is_active=1 and  pp.institution_id=");
-    query.append(projectPartnerPerson.getProjectPartner().getInstitution());
-    query.append(" and pp.id_phase=");
-    query.append(phase.getId());
-    query.append(" and pp.project_id= ");
-    query.append(projectPartnerPerson.getProjectPartner().getProject().getId());
-    query.append(" and ppp.user_id= ");
-    query.append(projectPartnerPerson.getUser().getId());
-    List<Map<String, Object>> result = dao.findCustomQuery(query.toString());
-    if (result.size() > 0) {
-      Long id = Long.parseLong(result.get(0).get("id").toString());
-      return dao.find(ProjectPartnerPerson.class, id);
-    }
-    return null;
 
+  @Override
+  public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.deliverable as d "
+      + "where dp.active is true " + "and dp.partnerType = 'Other' " + "and d.id = :deliverableId ";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
   }
 
   @Override
-  public long save(DeliverablePartnership deliverablePartnership) {
+  public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
+    long projectPersonId) {
+    String query = "select dp from DeliverablePartnership as dp " + "inner join dp.projectPartnerPerson as ppp "
+      + "inner join dp.deliverable as d " + "where dp.active is true " + "and dp.partnerType = 'Other' "
+      + "and d.id = :deliverableId " + "and ppp.id = :projectPersonId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("projectPersonId", projectPersonId);
+
+    List<DeliverablePartnership> deliverablePartnerships = createQuery.list();
+
+    return deliverablePartnerships;
+  }
+
+  @Override
+  public DeliverablePartnership save(DeliverablePartnership deliverablePartnership) {
     if (deliverablePartnership.getId() == null) {
-      dao.save(deliverablePartnership);
+      super.saveEntity(deliverablePartnership);
     } else {
-      dao.update(deliverablePartnership);
+      deliverablePartnership = super.update(deliverablePartnership);
     }
-    Phase currentPhase = dao.find(Phase.class, deliverablePartnership.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (deliverablePartnership.getPhase().getNext() != null) {
-        this.addDeliverablePartnershipPhase(deliverablePartnership.getPhase().getNext(),
-          deliverablePartnership.getDeliverable().getId(), deliverablePartnership);
-      }
-    }
-    return deliverablePartnership.getId();
+    return deliverablePartnership;
   }
 
 

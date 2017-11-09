@@ -32,8 +32,8 @@
             [#if st_index == 0]
             <tr>
               <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-                  <td> ${st.name} </td>
-                  <td> ${(st.description)!}</td>
+              <td> ${st.name} </td>
+              <td> ${(st.description)!}</td>
             </tr>
             [#else]
             <tr>
@@ -52,7 +52,6 @@
       <div id="popup" class="helpMessage3">
         <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
       </div>
-      [#if crpSession == "ccafs"]<p><small>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</small></p>[/#if]
     </div>
     
      
@@ -60,7 +59,7 @@
   </div>
   
   
-   <div class="clearfix"></div>
+  <div class="clearfix"></div>
   [#-- Status and year expected selects --]
   <div class="${reportingActive?string('fieldFocus','')}">
   <div class="form-group row">
@@ -137,7 +136,10 @@
             [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-            <span title="${(element.fundingSource.fundingSourceInfo.composedName)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.fundingSourceInfo.composedName)!"undefined" maxPos=100 substr=" "/]</span>
+       <span class="name">
+              <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.budgetType.name)!} [#if (element.fundingSource.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
+              <span class="description">${(element.fundingSource.title)!}</span><br />
+            </span>
             <div class="clearfix"></div>
           </li>
         [/#list]
@@ -147,10 +149,23 @@
       [/#if]
       </ul>
       [#if editable ]
-        [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="fundingSource" editable=editable/]
+        [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
       [/#if] 
     </div>
   </div>
+  
+  [#-- Funding source List --]
+  <div style="display:none">
+    [#if fundingSources?has_content]
+      [#list fundingSources as element]
+        <span id="fundingSource-${(element.id)!}">
+          <strong>FS${(element.id)!} - ${(element.budgetType.name)!} [#if (element.w1w2)!false] (Co-Financing) [/#if]</strong> <br />
+          <span class="description">${(element.title)!}</span><br />
+        </span>
+      [/#list]
+    [/#if]
+  </div>
+  
   [/#if]
 </div>
 

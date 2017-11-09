@@ -718,7 +718,7 @@ public class ClusterActivitiesAction extends BaseAction {
             .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
               && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
             .collect(Collectors.toList());
-          if (submissions.isEmpty()) {
+          if (!submissions.isEmpty()) {
             this.setSubmission(submissions.get(0));
           }
 

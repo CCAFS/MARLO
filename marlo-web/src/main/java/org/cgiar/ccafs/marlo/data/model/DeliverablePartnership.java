@@ -50,6 +50,8 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   private Phase phase;
   @Expose
   private String partnerType;
+
+
   @Expose
   private boolean active;
 
@@ -107,7 +109,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
@@ -129,7 +130,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -227,6 +227,13 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
     this.projectPartnerPerson = projectPartnerPerson;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverablePartnership [id=" + id + ", deliverable=" + deliverable + ", partnerType=" + partnerType
+      + ", partnerDivision=" + partnerDivision + "]";
   }
 
 }

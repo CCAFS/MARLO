@@ -96,9 +96,9 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public boolean deleteProjectBudget(long projectBudgetId) {
+  public void deleteProjectBudget(long projectBudgetId) {
 
-    boolean resultBudget = projectBudgetDAO.deleteProjectBudget(projectBudgetId);
+      projectBudgetDAO.deleteProjectBudget(projectBudgetId);
     ProjectBudget projectBudget = this.getProjectBudgetById(projectBudgetId);
     Phase currentPhase = phaseDAO.find(projectBudget.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
@@ -106,7 +106,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
         this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
-    return resultBudget;
+  
   }
 
   @Override
@@ -178,9 +178,9 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
-  public long saveProjectBudget(ProjectBudget projectBudget) {
+  public ProjectBudget saveProjectBudget(ProjectBudget projectBudget) {
 
-    long resultBudget = projectBudgetDAO.save(projectBudget);
+    ProjectBudget resultBudget = projectBudgetDAO.save(projectBudget);
     Phase currentPhase = phaseDAO.find(projectBudget.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudget.getPhase().getNext() != null) {

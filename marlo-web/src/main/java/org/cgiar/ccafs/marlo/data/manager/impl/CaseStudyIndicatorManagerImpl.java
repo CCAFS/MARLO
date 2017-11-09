@@ -41,9 +41,9 @@ public class CaseStudyIndicatorManagerImpl implements CaseStudyIndicatorManager 
   }
 
   @Override
-  public boolean deleteCaseStudyIndicator(long caseStudyIndicatorId) {
+  public void deleteCaseStudyIndicator(long caseStudyIndicatorId) {
 
-    return caseStudyIndicatorDAO.deleteCaseStudyIndicator(caseStudyIndicatorId);
+    caseStudyIndicatorDAO.deleteCaseStudyIndicator(caseStudyIndicatorId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CaseStudyIndicatorManagerImpl implements CaseStudyIndicatorManager 
   }
 
   @Override
-  public long saveCaseStudyIndicator(CaseStudyIndicator caseStudyIndicator) {
+  public CaseStudyIndicator saveCaseStudyIndicator(CaseStudyIndicator caseStudyIndicator) {
 
     return caseStudyIndicatorDAO.save(caseStudyIndicator);
   }

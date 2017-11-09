@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
@@ -70,6 +72,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -78,6 +82,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ProjectDescriptionAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
   // Managers
   private ProjectManager projectManager;
@@ -90,6 +95,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
+  private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
+
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
   private ProjectScopeManager projectScopeManager;
@@ -147,7 +154,7 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager) {
+    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -168,6 +175,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
+    this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
   }
 
   /**
@@ -403,7 +411,11 @@ public class ProjectDescriptionAction extends BaseAction {
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse projectID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
     // We check that you have a TRANSACTION_ID to know if it is history version
@@ -493,11 +505,15 @@ public class ProjectDescriptionAction extends BaseAction {
         if (project.getProjectInfo().getLiaisonUser() != null) {
           project.getProjectInfo()
             .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
+        } else {
+          project.setLiaisonUser(null);
         }
         // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
             .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
+        } else {
+          project.setLiaisonInstitution(null);
         }
 
         // load fps value
@@ -508,7 +524,11 @@ public class ProjectDescriptionAction extends BaseAction {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               programs.add(program);
             } catch (Exception e) {
-
+              LOG.error("unable to add program to programs list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -521,13 +541,17 @@ public class ProjectDescriptionAction extends BaseAction {
               CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
               regions.add(program);
             } catch (Exception e) {
-
+              LOG.error("unable to add program to regions list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
         project.setFlagships(programs);
         project.setRegions(regions);
-      
+
 
         // We change this variable so that the user knows that he is working on a draft version
 
@@ -573,7 +597,8 @@ public class ProjectDescriptionAction extends BaseAction {
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
-
+          projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
+            .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
           projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);
@@ -664,6 +689,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getClusterActivities().clear();
 
       }
+
+      project.setLiaisonInstitution(null);
+      project.setLiaisonUser(null);
+
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingGender(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
@@ -822,6 +851,13 @@ public class ProjectDescriptionAction extends BaseAction {
           if (!project.getClusterActivities().contains(projectClusterActivity)) {
             projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
+            // Issue #1142 Might need to remove ProjectBudgetsCluserActvity (if any) that reference this CoA.
+
+            for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectClusterActivity
+              .getCrpClusterOfActivity().getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvity.getId());
+            }
           }
         }
         // Add Project Cluster Activities

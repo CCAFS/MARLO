@@ -34,7 +34,7 @@ public interface MetadataElementManager {
    * @param metadataElementId is the metadataElement identifier.
    * @return true if the metadataElement was successfully deleted, false otherwise.
    */
-  public boolean deleteMetadataElement(long metadataElementId);
+  public void deleteMetadataElement(long metadataElementId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface MetadataElementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveMetadataElement(MetadataElement metadataElement);
+  public MetadataElement saveMetadataElement(MetadataElement metadataElement);
 
 
 }

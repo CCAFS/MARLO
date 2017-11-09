@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterDeliverableOutputDAO implements ICenterDeliverableOutputDAO {
+public class CenterDeliverableOutputDAO extends AbstractMarloDAO<CenterDeliverableOutput, Long>
+  implements ICenterDeliverableOutputDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDeliverableOutputDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDeliverableOutputDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableOutput(long deliverableOutputId) {
+  public void deleteDeliverableOutput(long deliverableOutputId) {
     CenterDeliverableOutput deliverableOutput = this.find(deliverableOutputId);
     deliverableOutput.setActive(false);
-    return this.save(deliverableOutput) > 0;
+    this.save(deliverableOutput);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterDeliverableOutputDAO implements ICenterDeliverableOutputDAO {
 
   @Override
   public CenterDeliverableOutput find(long id) {
-    return dao.find(CenterDeliverableOutput.class, id);
+    return super.find(CenterDeliverableOutput.class, id);
 
   }
 
   @Override
   public List<CenterDeliverableOutput> findAll() {
     String query = "from " + CenterDeliverableOutput.class.getName();
-    List<CenterDeliverableOutput> list = dao.findAll(query);
+    List<CenterDeliverableOutput> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +70,27 @@ public class CenterDeliverableOutputDAO implements ICenterDeliverableOutputDAO {
   @Override
   public List<CenterDeliverableOutput> getDeliverableOutputsByUserId(long userId) {
     String query = "from " + CenterDeliverableOutput.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterDeliverableOutput deliverableOutput) {
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput) {
     if (deliverableOutput.getId() == null) {
-      dao.save(deliverableOutput);
+      super.saveEntity(deliverableOutput);
     } else {
-      dao.update(deliverableOutput);
+      deliverableOutput = super.update(deliverableOutput);
     }
-    return deliverableOutput.getId();
+    return deliverableOutput;
   }
 
   @Override
-  public long save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName) {
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName) {
     if (deliverableOutput.getId() == null) {
-      dao.save(deliverableOutput, actionName, relationsName);
+      super.saveEntity(deliverableOutput, actionName, relationsName);
     } else {
-      dao.update(deliverableOutput, actionName, relationsName);
+      deliverableOutput = super.update(deliverableOutput, actionName, relationsName);
     }
-    return deliverableOutput.getId();
+    return deliverableOutput;
   }
 
 

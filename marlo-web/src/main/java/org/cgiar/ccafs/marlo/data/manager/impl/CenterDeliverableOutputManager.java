@@ -42,9 +42,9 @@ public class CenterDeliverableOutputManager implements ICenterDeliverableOutputM
   }
 
   @Override
-  public boolean deleteDeliverableOutput(long deliverableOutputId) {
+  public void deleteDeliverableOutput(long deliverableOutputId) {
 
-    return deliverableOutputDAO.deleteDeliverableOutput(deliverableOutputId);
+    deliverableOutputDAO.deleteDeliverableOutput(deliverableOutputId);
   }
 
   @Override
@@ -72,13 +72,13 @@ public class CenterDeliverableOutputManager implements ICenterDeliverableOutputM
   }
 
   @Override
-  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput) {
+  public CenterDeliverableOutput saveDeliverableOutput(CenterDeliverableOutput deliverableOutput) {
 
     return deliverableOutputDAO.save(deliverableOutput);
   }
 
   @Override
-  public long saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName,
+  public CenterDeliverableOutput saveDeliverableOutput(CenterDeliverableOutput deliverableOutput, String actionName,
     List<String> relationsName) {
     return deliverableOutputDAO.save(deliverableOutput, actionName, relationsName);
   }

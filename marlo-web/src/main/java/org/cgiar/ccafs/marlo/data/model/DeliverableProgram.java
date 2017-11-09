@@ -20,10 +20,13 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
 
   private Deliverable deliverable;
+
+
   @Expose
   private Phase phase;
   @Expose
   private IpProgram ipProgram;
+
 
   public DeliverableProgram() {
   }
@@ -125,6 +128,11 @@ public class DeliverableProgram implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableProgram [id=" + id + ", deliverable=" + deliverable + ", ipProgram=" + ipProgram + "]";
   }
 
 

@@ -32,7 +32,7 @@ public interface ICenterNextuserTypeDAO {
    * @param nextuserTypeId is the nextuserType identifier.
    * @return true if the nextuserType was successfully deleted, false otherwise.
    */
-  public boolean deleteNextuserType(long nextuserTypeId);
+  public void deleteNextuserType(long nextuserTypeId);
 
   /**
    * This method validate if the nextuserType identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterNextuserTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterNextuserType nextuserType);
+  public CenterNextuserType save(CenterNextuserType nextuserType);
 }

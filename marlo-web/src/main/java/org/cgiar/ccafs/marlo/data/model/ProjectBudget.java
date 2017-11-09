@@ -39,12 +39,14 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private Institution institution;
 
+
   private Project project;
-  @Expose
-  private User createdBy;
 
   @Expose
+  private User createdBy;
+  @Expose
   private User modifiedBy;
+
   @Expose
   private Double amount;
   @Expose
@@ -61,7 +63,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private FundingSource fundingSource;
   @Expose
   private Date activeSince;
-
   @Expose
   private Phase phase;
 
@@ -124,6 +125,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
 
   public Institution getInstitution() {
     return institution;
@@ -227,7 +229,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -235,6 +236,13 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectBudget [id=" + id + ", institution=" + institution + ", project=" + project + ", amount=" + amount
+      + ", budgetType=" + budgetType + ", year=" + year + ", fundingSource=" + fundingSource + "]";
   }
 
 

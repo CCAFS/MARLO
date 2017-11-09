@@ -25,6 +25,7 @@ import java.util.Date;
 public class Auditlog implements java.io.Serializable {
 
   private static final long serialVersionUID = -5812698307148791654L;
+
   private Long auditLogId;
   private String action;
   private String detail;
@@ -40,13 +41,13 @@ public class Auditlog implements java.io.Serializable {
   private String modificationJustification;
   private Long phase;
 
-
   public Auditlog() {
   }
 
 
   public Auditlog(String action, String detail, Date createdDate, String entityId, String entityName, String entityJson,
-    Long userId, String transactionId, Long principal, String relationName, String modificationJustification) {
+    Long userId, String transactionId, Long principal, String relationName, String modificationJustification,
+    Long phase) {
     this.action = action;
     this.detail = detail;
     this.createdDate = createdDate;
@@ -58,6 +59,7 @@ public class Auditlog implements java.io.Serializable {
     this.main = principal;
     this.relationName = relationName;
     this.modificationJustification = modificationJustification;
+    this.phase = phase;
   }
 
 
@@ -183,6 +185,12 @@ public class Auditlog implements java.io.Serializable {
 
   public void setUserId(Long userId) {
     this.userId = userId;
+  }
+
+  @Override
+  public String toString() {
+    return "Auditlog [auditLogId=" + auditLogId + ", entityId=" + entityId + ", entityName=" + entityName
+      + ", transactionId=" + transactionId + "]";
   }
 
 

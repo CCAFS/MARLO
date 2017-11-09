@@ -43,7 +43,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String contactPersonEmail;
-
   @Expose
   private FileDB file;
 
@@ -89,6 +88,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date extensionDate;
+
+  @Expose
+  private Double grantAmount;
 
 
   public FundingSourceInfo() {
@@ -155,9 +157,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     }
   }
 
+
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
+
 
   public String getContactPersonName() {
     return contactPersonName;
@@ -167,11 +171,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return description;
   }
 
-
   public Institution getDirectDonor() {
     return directDonor;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -187,6 +189,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return file;
   }
 
+
   public String getFinanceCode() {
     return financeCode;
   }
@@ -196,15 +199,20 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return fundingSource;
   }
 
+  public Double getGrantAmount() {
+    return grantAmount;
+  }
+
+
   @Override
   public Long getId() {
     return id;
   }
 
-
   public Institution getInstitution() {
     return institution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -233,7 +241,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
-
   public Date getStartDate() {
     return startDate;
   }
@@ -242,6 +249,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public Integer getStatus() {
     return status;
   }
+
 
   public String getStatusName() {
     if (status != null && status.intValue() != -1) {
@@ -258,10 +266,10 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return synced;
   }
 
-
   public Date getSyncedDate() {
     return syncedDate;
   }
+
 
   public String getTitle() {
     return title;
@@ -284,7 +292,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public boolean isGlobal() {
     return global;
   }
@@ -298,6 +305,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setContactPersonEmail(String contactPersonEmail) {
     this.contactPersonEmail = contactPersonEmail;
   }
+
 
   public void setContactPersonName(String contactPersonName) {
     this.contactPersonName = contactPersonName;
@@ -314,7 +322,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
-
 
   public void setExtensionDate(Date extensionDate) {
     this.extensionDate = extensionDate;
@@ -338,6 +345,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   public void setGlobal(boolean global) {
     this.global = global;
+  }
+
+
+  public void setGrantAmount(Double grantAmount) {
+    this.grantAmount = grantAmount;
   }
 
   public void setId(Long id) {

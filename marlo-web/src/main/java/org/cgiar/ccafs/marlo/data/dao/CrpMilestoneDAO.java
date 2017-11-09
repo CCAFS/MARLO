@@ -32,7 +32,7 @@ public interface CrpMilestoneDAO {
    * @param crpMilestoneId is the crpMilestone identifier.
    * @return true if the crpMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpMilestone(long crpMilestoneId);
+  public void deleteCrpMilestone(long crpMilestoneId);
 
   /**
    * This method validate if the crpMilestone identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpMilestone crpMilestone);
+  public CrpMilestone save(CrpMilestone crpMilestone);
 }

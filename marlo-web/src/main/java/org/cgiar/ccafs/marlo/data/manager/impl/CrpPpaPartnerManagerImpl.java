@@ -37,8 +37,8 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
   }
 
   @Override
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId) {
-    return crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartnerId);
+  public void deleteCrpPpaPartner(long crpPpaPartnerId) {
+    crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartnerId);
   }
 
   @Override
@@ -57,7 +57,7 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
   }
 
   @Override
-  public long saveCrpPpaPartner(CrpPpaPartner crpPpaPartner) {
+  public CrpPpaPartner saveCrpPpaPartner(CrpPpaPartner crpPpaPartner) {
     return crpPpaPartnerDao.save(crpPpaPartner);
   }
 

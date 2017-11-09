@@ -32,7 +32,7 @@ public interface CaseStudyDAO {
    * @param caseStudyId is the caseStudy identifier.
    * @return true if the caseStudy was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudy(long caseStudyId);
+  public void deleteCaseStudy(long caseStudyId);
 
   /**
    * This method validate if the caseStudy identify with the given id exists in the system.
@@ -66,7 +66,7 @@ public interface CaseStudyDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CaseStudy caseStudy);
+  public CaseStudy save(CaseStudy caseStudy);
 
-  public long save(CaseStudy caseStudy, String section, List<String> relationsName);
+  public CaseStudy save(CaseStudy caseStudy, String section, List<String> relationsName);
 }

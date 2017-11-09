@@ -313,6 +313,8 @@ public class BaseValidator {
   protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName) {
     // Reporting missing fields into the database.
 
+    int a = 0;
+    LOG.debug("save MissingField :" + a);
     SectionStatus status =
       sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), cycle, year, sectionName);
     if (status == null) {
@@ -322,8 +324,7 @@ public class BaseValidator {
       status.setYear(year);
       status.setFundingSource(fundingSource);
       status.setSectionName(sectionName);
-
-
+      fundingSource.getSectionStatuses().add(status);
     }
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);

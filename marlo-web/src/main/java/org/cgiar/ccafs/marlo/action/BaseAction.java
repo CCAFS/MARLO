@@ -62,6 +62,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
@@ -440,6 +441,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == UserRole.class) {
         UserRole userRole = userRoleManager.getUserRoleById(id);
         long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+        /** Optimize this to a SQL query that takes the userId and the LiasionInstitutionId as parameters **/
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
           .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
             && c.getLiaisonInstitution().getId().longValue() == cuId)
@@ -831,6 +833,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -839,10 +842,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
+
 
   /* Override this method depending of the delete action. */
   public String delete() {
@@ -1266,7 +1269,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-
+      LOG.error(
+        "I'm not exactly sure what exception this is supposed to catch!  If this statement ever gets printed, I will be surprised!",
+        e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     return this.crpID;
   }
@@ -1279,7 +1288,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
-
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -1480,8 +1488,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public boolean getFundingSourceStatus(long fundingSourceID) {
-    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+  private boolean getFundingSourceStatus(FundingSource fundingSource) {
     fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
     List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
       .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
@@ -1498,10 +1505,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
 
       fundingSourceValidator.validate(this, fundingSource, false);
-      return this.getFundingSourceStatus(fundingSource.getId());
+      return this.getFundingSourceStatus(fundingSource);
     }
+  }
 
-
+  public boolean getFundingSourceStatus(long fundingSourceID) {
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    return this.getFundingSourceStatus(fundingSource);
   }
 
   /**
@@ -2004,6 +2014,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<>();
     }
     return submissions;
+  }
+
+  /**
+   ************************ CENTER METHOD *********************
+   * return true if the user can view the impactPathway
+   * *********************************************************
+   * Return the sync code if the center project has synchronized by another project
+   * 
+   * @param centerProjectID
+   * @return the Sync Code
+   */
+  public String getProjectSyncCode(long centerProjectID) {
+
+
+    CenterProject project = projectService.getCenterProjectById(centerProjectID);
+
+    if (project != null) {
+      if (project.isAutoFill()) {
+        CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
+          .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+        if (fundingSource != null) {
+          return fundingSource.getCode();
+        }
+      }
+    }
+
+    return "---";
   }
 
   public int getReportingYear() {
@@ -2573,7 +2610,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            return totalSections == 7;
+            if (project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+              .size() <= 1) {
+              return totalSections == 7;
+            } else {
+              return totalSections == 8;
+            }
+
+
           } else {
             return totalSections == 6;
           }
@@ -3313,18 +3357,54 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-      projectOutcome.getProjectComponentLesson().setActive(true);
-      projectOutcome.getProjectComponentLesson().setActiveSince(new Date());
-      projectOutcome.getProjectComponentLesson().setComponentName(actionName);
-      projectOutcome.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-      projectOutcome.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-      projectOutcome.getProjectComponentLesson().setModificationJustification("");
-      projectOutcome.getProjectComponentLesson().setProjectOutcome(projectOutcome);
-      projectOutcome.getProjectComponentLesson().setPhase(this.getActualPhase());
-      projectOutcome.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
-      projectOutcome.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
-      projectComponentLessonManager.saveProjectComponentLesson(projectOutcome.getProjectComponentLesson());
+      if (projectOutcome.getProjectComponentLesson() == null) {
+        LOG.debug("No lesson attached with projectOutcome");
+        return;
+
+      } else if (projectOutcome.getProjectComponentLesson().getId() == -1L) {
+        // Save a new entity
+
+        ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
+        projectComponenetLesson.setId(null);
+
+        projectComponenetLesson.setActive(true);
+        projectComponenetLesson.setActiveSince(new Date());
+        projectComponenetLesson.setComponentName(actionName);
+        projectComponenetLesson.setCreatedBy(this.getCurrentUser());
+        projectComponenetLesson.setModifiedBy(this.getCurrentUser());
+        projectComponenetLesson.setModificationJustification("");
+        projectComponenetLesson.setProjectOutcome(projectOutcome);
+        projectComponenetLesson.setPhase(this.getActualPhase());
+        projectComponenetLesson.setCycle(this.getActualPhase().getDescription());
+        projectComponenetLesson.setYear(this.getActualPhase().getYear());
+
+        projectComponenetLesson = projectComponentLessonManager.saveProjectComponentLesson(projectComponenetLesson);
+      } else {
+
+        ProjectComponentLesson projectComponenetLesson = projectOutcome.getProjectComponentLesson();
+
+        ProjectComponentLesson projectComponentDB =
+          projectComponentLessonManager.getProjectComponentLessonById(projectComponenetLesson.getId());;
+
+        projectComponentDB.setActive(true);
+        projectComponentDB.setComponentName(actionName);
+        projectComponentDB.setModifiedBy(this.getCurrentUser());
+        projectComponentDB.setModificationJustification("");
+
+        projectOutcome.getProjectComponentLesson().setPhase(this.getActualPhase());
+        projectOutcome.getProjectComponentLesson().setCycle(this.getActualPhase().getDescription());
+        projectOutcome.getProjectComponentLesson().setYear(this.getActualPhase().getYear());
+
+        projectComponentDB.setLessons(projectComponenetLesson.getLessons());
+        // project
+        // projectComponenetLesson.setComponentName(projectOutcome.getP);
+
+        projectComponentDB = projectComponentLessonManager.saveProjectComponentLesson(projectComponentDB);
+
+
+      }
     }
+
   }
 
 

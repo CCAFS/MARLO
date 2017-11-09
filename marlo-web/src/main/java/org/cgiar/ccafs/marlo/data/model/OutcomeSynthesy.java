@@ -34,6 +34,8 @@ public class OutcomeSynthesy implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String synthesisGender;
+
+
   @Expose
   private String discrepancy;
   @Expose
@@ -182,7 +184,6 @@ public class OutcomeSynthesy implements java.io.Serializable, IAuditLog {
     this.ipProgram = ipProgram;
   }
 
-
   public void setSynthesisAnual(String synthesisAnual) {
     this.synthesisAnual = synthesisAnual;
   }
@@ -195,6 +196,15 @@ public class OutcomeSynthesy implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "OutcomeSynthesy [id=" + id + ", ipElement=" + ipElement + ", ipIndicator=" + ipIndicator + ", ipProgram="
+      + ipProgram + ", year=" + year + ", achieved=" + achieved + ", synthesisAnual=" + synthesisAnual
+      + ", synthesisGender=" + synthesisGender + ", discrepancy=" + discrepancy + ", achievedExpected="
+      + achievedExpected + "]";
   }
 
 }

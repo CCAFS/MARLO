@@ -47,14 +47,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  */
 public class ProjectListAction extends BaseAction {
 
-
   private static final long serialVersionUID = -793652591843623397L;
+
+  private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
 
   private Crp loggedCrp;
@@ -229,7 +233,8 @@ public class ProjectListAction extends BaseAction {
       project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
       project.setModifiedBy(this.getCurrentUser());
-      projectID = projectManager.saveProject(project);
+      project = projectManager.saveProject(project);
+      projectID = project.getId();
 
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModifiedBy(this.getCurrentUser());
@@ -281,7 +286,8 @@ public class ProjectListAction extends BaseAction {
       project.setActiveSince(new Date());
       project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
-      projectID = projectManager.saveProject(project);
+      project = projectManager.saveProject(project);
+      projectID = project.getId();
 
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModifiedBy(this.getCurrentUser());
@@ -337,17 +343,19 @@ public class ProjectListAction extends BaseAction {
       if (permission) {
         Project project = projectManager.getProjectById(projectID);
         project.setActive(false);
-        boolean deleted = projectManager.deleteProject(project);
-
-
-        if (deleted) {
+        try {
+          projectManager.deleteProject(project);
           for (ProjectPhase projectPhase : project.getProjectPhases()) {
             projectPhaseManager.deleteProjectPhase(projectPhase.getId());
           }
           this.addActionMessage(
             "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
-        } else {
+        } catch (Exception e) {
+          logger.error("Unable to delete project", e);
           this.addActionError(this.getText("deleting.problem", new String[] {this.getText("project").toLowerCase()}));
+          /**
+           * Assume we don't need to re-throw the exception as this transaction is limited to deleting only.
+           */
         }
       } else {
         this.addActionError(this.getText("projects.cannotDelete"));

@@ -431,10 +431,12 @@ public class ValidateProjectSectionAction extends BaseAction {
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
           this.getActualPhase().getYear(), sectionName);
-        section = new HashMap<String, Object>();
+        if (sectionStatus != null) {
+          section = new HashMap<String, Object>();
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        }
 
-        section.put("sectionName", sectionStatus.getSectionName());
-        section.put("missingFields", sectionStatus.getMissingFields());
         break;
     }
 

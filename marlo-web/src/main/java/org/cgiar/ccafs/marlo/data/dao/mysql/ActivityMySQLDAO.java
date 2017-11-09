@@ -22,23 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ActivityMySQLDAO implements ActivityDAO {
+public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implements ActivityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ActivityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ActivityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
   @Override
-  public boolean deleteActivity(long activityId) {
+  public void deleteActivity(long activityId) {
     Activity activity = this.find(activityId);
     activity.setActive(false);
-    boolean result = dao.update(activity);
-    return result;
+    this.save(activity);
   }
 
   @Override
@@ -53,14 +52,14 @@ public class ActivityMySQLDAO implements ActivityDAO {
 
   @Override
   public Activity find(long id) {
-    return dao.find(Activity.class, id);
+    return super.find(Activity.class, id);
 
   }
 
   @Override
   public List<Activity> findAll() {
     String query = "from " + Activity.class.getName() + " where is_active=1";
-    List<Activity> list = dao.findAll(query);
+    List<Activity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,14 +68,14 @@ public class ActivityMySQLDAO implements ActivityDAO {
   }
 
   @Override
-  public long save(Activity activity) {
+  public Activity save(Activity activity) {
     if (activity.getId() == null) {
-      dao.save(activity);
+      activity = super.saveEntity(activity);
     } else {
-      dao.update(activity);
+      activity = super.update(activity);
     }
 
-    return activity.getId();
+    return activity;
   }
 
 

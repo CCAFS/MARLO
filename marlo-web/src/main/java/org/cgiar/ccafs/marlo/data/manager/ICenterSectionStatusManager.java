@@ -34,7 +34,7 @@ public interface ICenterSectionStatusManager {
    * @param sectionStatusId is the sectionStatus identifier.
    * @return true if the sectionStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteSectionStatus(long sectionStatusId);
+  public void deleteSectionStatus(long sectionStatusId);
 
 
   /**
@@ -153,7 +153,7 @@ public interface ICenterSectionStatusManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSectionStatus(CenterSectionStatus sectionStatus);
+  public CenterSectionStatus saveSectionStatus(CenterSectionStatus sectionStatus);
 
 
 }

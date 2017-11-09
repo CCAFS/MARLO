@@ -395,6 +395,10 @@ jQuery.fn.addOption = function(val,name) {
   }
 };
 
+jQuery.fn.addOptionFast = function(val,name) {
+  $(this).append("<option value='" + val + "'>" + name + "</option>");
+};
+
 function removeOption(select,val) {
   $(select).find('option[value=' + val + ']').remove();
 }
@@ -471,6 +475,16 @@ function urlify(text) {
   return text.replace(urlRegex, function(url) {
     var l = getLocation(url);
     return '<a href="' + url + '">' + l.hostname + '</a>';
+  })
+  // or alternatively
+  // return text.replace(urlRegex, '<a href="$1">$1</a>')
+}
+
+function urlifyComplete(text) {
+  var urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, function(url) {
+    var l = getLocation(url);
+    return '<a href="' + url + '">' + url + '</a>';
   })
   // or alternatively
   // return text.replace(urlRegex, '<a href="$1">$1</a>')

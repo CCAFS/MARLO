@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
@@ -110,6 +109,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -159,7 +159,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-      return id.toString();
+    return "CrpPpaPartner [id=" + id + ", institution=" + institution + ", crp=" + crp + "]";
   }
 
 }

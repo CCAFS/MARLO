@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,23 +20,26 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
-public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
+public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartnerPerson, Long>
+  implements ProjectPartnerPersonDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectPartnerPersonMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectPartnerPersonMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId) {
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId) {
     ProjectPartnerPerson projectPartnerPerson = this.find(projectPartnerPersonId);
     projectPartnerPerson.setActive(false);
-    return this.save(projectPartnerPerson) > 0;
+    this.save(projectPartnerPerson);
   }
 
   @Override
@@ -51,14 +54,14 @@ public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
 
   @Override
   public ProjectPartnerPerson find(long id) {
-    return dao.find(ProjectPartnerPerson.class, id);
+    return super.find(ProjectPartnerPerson.class, id);
 
   }
 
   @Override
   public List<ProjectPartnerPerson> findAll() {
     String query = "from " + ProjectPartnerPerson.class.getName() + " where is_active=1";
-    List<ProjectPartnerPerson> list = dao.findAll(query);
+    List<ProjectPartnerPerson> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +70,66 @@ public class ProjectPartnerPersonMySQLDAO implements ProjectPartnerPersonDAO {
   }
 
   @Override
-  public long save(ProjectPartnerPerson projectPartnerPerson) {
+  public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
+    long partnerId) {
+    String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
+      + "inner join projectPartnerPerson.projectPartner as projectPartner "
+      + "inner join projectPartnerPerson.deliverablePartnerships as deliverablePartnership "
+      + "inner join deliverablePartnership.deliverable as deliverable " + "where deliverablePartnership.active is true "
+      + "and deliverablePartnership.partnerType = 'Other' " + "and deliverable.id = :deliverableId "
+      + "and projectPartner.id = :partnerId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("deliverableId", deliverableId);
+    createQuery.setParameter("partnerId", partnerId);
+
+    List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
+
+    return projectPartnerPersons;
+
+  }
+
+  @Override
+  public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId) {
+    String query = "select projectPartnerPerson from ProjectPartnerPerson as projectPartnerPerson "
+      + "inner join projectPartnerPerson.projectPartner as projectPartner "
+      + "where projectPartnerPerson.active is true " + "and projectPartner.id = :projectPartnerId";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectPartnerId", projectPartnerId);
+
+    List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
+
+    return projectPartnerPersons;
+  }
+
+  @Override
+  public List<Map<String, Object>> findPartner(long institutionId, long phaseId, long projectId, long userId) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select ppp.id from project_partners pp INNER JOIN project_partner_persons ppp on ppp.project_partner_id=pp.id");
+    query.append(" where pp.is_active=1 and ppp.is_active=1 and  pp.institution_id=");
+    query.append(institutionId);
+    query.append(" and pp.id_phase=");
+    query.append(phaseId);
+    query.append(" and pp.project_id= ");
+    query.append(projectId);
+    query.append(" and ppp.user_id= ");
+    query.append(userId);
+    List<Map<String, Object>> result = super.findCustomQuery(query.toString());
+    return result;
+  }
+
+  @Override
+  public ProjectPartnerPerson save(ProjectPartnerPerson projectPartnerPerson) {
     if (projectPartnerPerson.getId() == null) {
-      dao.save(projectPartnerPerson);
+      super.saveEntity(projectPartnerPerson);
     } else {
-      dao.update(projectPartnerPerson);
+      projectPartnerPerson = super.update(projectPartnerPerson);
     }
 
 
-    return projectPartnerPerson.getId();
+    return projectPartnerPerson;
   }
 
 

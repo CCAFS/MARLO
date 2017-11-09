@@ -405,5 +405,10 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setYear(int year) {
     this.year = year;
   }
+
+  @Override
+  public String toString() {
+    return "Phase [id=" + id + ", crp=" + crp + ", description=" + description + ", year=" + year + "]";
+  }
 }
 

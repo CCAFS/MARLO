@@ -97,7 +97,8 @@ public class UploadDeliverableAction extends BaseAction {
     fileDatasharing.setDeliverable(deliverable);
 
     fileDatasharing.setTypeId(new Integer(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED));
-    fileID = deliverableFileManager.saveDeliverableDataSharingFile(fileDatasharing);
+    fileDatasharing = deliverableFileManager.saveDeliverableDataSharingFile(fileDatasharing);
+    fileID = fileDatasharing.getId();
     saved = (fileID != -1) && fileCopied ? true : false;
     fileInfo = new HashMap<String, Object>();
     fileInfo.put("fileSaved", saved);

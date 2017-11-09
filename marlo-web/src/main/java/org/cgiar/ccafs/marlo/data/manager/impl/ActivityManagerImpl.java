@@ -118,16 +118,15 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
-  public boolean deleteActivity(long activityId) {
-    boolean activityResult = this.deleteActivity(activityId);
-    Activity activity = this.getActivityById(activityId);
+  public void deleteActivity(long activityId) {
+    activityDAO.deleteActivity(activityId);
+       Activity activity = this.getActivityById(activityId);
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {
         this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
       }
     }
-    return activityResult;
   }
 
   @Override
@@ -151,9 +150,9 @@ public class ActivityManagerImpl implements ActivityManager {
 
 
   @Override
-  public long saveActivity(Activity activity) {
+  public Activity saveActivity(Activity activity) {
 
-    long resultActivity = activityDAO.save(activity);
+    Activity resultActivity = activityDAO.save(activity);
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {

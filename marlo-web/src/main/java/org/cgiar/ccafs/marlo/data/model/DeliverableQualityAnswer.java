@@ -161,12 +161,18 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   }
 
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableQualityAnswer [id=" + id + ", name=" + name + "]";
   }
 
 

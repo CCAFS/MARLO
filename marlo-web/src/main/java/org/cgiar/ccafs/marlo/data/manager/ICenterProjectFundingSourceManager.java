@@ -34,7 +34,7 @@ public interface ICenterProjectFundingSourceManager {
    * @param projectFundingSourceId is the projectFundingSource identifier.
    * @return true if the projectFundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectFundingSource(long projectFundingSourceId);
+  public void deleteProjectFundingSource(long projectFundingSourceId);
 
 
   /**
@@ -53,6 +53,14 @@ public interface ICenterProjectFundingSourceManager {
    */
   public List<CenterProjectFundingSource> findAll();
 
+
+  /**
+   * This method gets a list of projectFundingSource search by code (sync code)
+   * 
+   * @param code - the sync code
+   * @return CenterProjectFundingSource object
+   */
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code);
 
   /**
    * This method gets a projectFundingSource object by a given projectFundingSource identifier.
@@ -78,7 +86,7 @@ public interface ICenterProjectFundingSourceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectFundingSource(CenterProjectFundingSource projectFundingSource);
+  public CenterProjectFundingSource saveProjectFundingSource(CenterProjectFundingSource projectFundingSource);
 
 
 }

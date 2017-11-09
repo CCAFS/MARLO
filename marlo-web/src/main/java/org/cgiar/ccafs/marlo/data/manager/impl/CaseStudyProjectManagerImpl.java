@@ -41,9 +41,9 @@ public class CaseStudyProjectManagerImpl implements CaseStudyProjectManager {
   }
 
   @Override
-  public boolean deleteCaseStudyProject(long caseStudyProjectId) {
+  public void deleteCaseStudyProject(long caseStudyProjectId) {
 
-    return caseStudyProjectDAO.deleteCaseStudyProject(caseStudyProjectId);
+    caseStudyProjectDAO.deleteCaseStudyProject(caseStudyProjectId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CaseStudyProjectManagerImpl implements CaseStudyProjectManager {
   }
 
   @Override
-  public long saveCaseStudyProject(CaseStudyProject caseStudyProject) {
+  public CaseStudyProject saveCaseStudyProject(CaseStudyProject caseStudyProject) {
 
     return caseStudyProjectDAO.save(caseStudyProject);
   }

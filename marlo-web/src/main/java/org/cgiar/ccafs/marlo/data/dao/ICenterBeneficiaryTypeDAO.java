@@ -32,7 +32,7 @@ public interface ICenterBeneficiaryTypeDAO {
    * @param beneficiaryTypeId is the beneficiaryType identifier.
    * @return true if the beneficiaryType was successfully deleted, false otherwise.
    */
-  public boolean deleteBeneficiaryType(long beneficiaryTypeId);
+  public void deleteBeneficiaryType(long beneficiaryTypeId);
 
   /**
    * This method validate if the beneficiaryType identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterBeneficiaryTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterBeneficiaryType beneficiaryType);
+  public CenterBeneficiaryType save(CenterBeneficiaryType beneficiaryType);
 }

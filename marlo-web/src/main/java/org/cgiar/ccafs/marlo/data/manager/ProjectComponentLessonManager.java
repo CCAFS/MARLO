@@ -34,7 +34,7 @@ public interface ProjectComponentLessonManager {
    * @param projectComponentLessonId is the projectComponentLesson identifier.
    * @return true if the projectComponentLesson was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectComponentLesson(long projectComponentLessonId);
+  public void deleteProjectComponentLesson(long projectComponentLessonId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectComponentLessonManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectComponentLesson(ProjectComponentLesson projectComponentLesson);
+  public ProjectComponentLesson saveProjectComponentLesson(ProjectComponentLesson projectComponentLesson);
 
 
 }

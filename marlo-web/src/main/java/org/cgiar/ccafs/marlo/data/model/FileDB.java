@@ -31,6 +31,7 @@ public class FileDB implements java.io.Serializable, IAuditLog {
     this.tokenId = tokenId;
   }
 
+
   public String getFileName() {
     return this.fileName;
   }
@@ -51,12 +52,12 @@ public class FileDB implements java.io.Serializable, IAuditLog {
 
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -68,7 +69,6 @@ public class FileDB implements java.io.Serializable, IAuditLog {
   public String getTokenId() {
     return this.tokenId;
   }
-
 
   @Override
   public boolean isActive() {
@@ -89,6 +89,12 @@ public class FileDB implements java.io.Serializable, IAuditLog {
 
   public void setTokenId(String tokenId) {
     this.tokenId = tokenId;
+  }
+
+
+  @Override
+  public String toString() {
+    return "FileDB [id=" + id + ", fileName=" + fileName + ", tokenId=" + tokenId + "]";
   }
 
 

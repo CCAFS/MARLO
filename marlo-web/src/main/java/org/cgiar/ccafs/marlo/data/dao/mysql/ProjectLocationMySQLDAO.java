@@ -23,24 +23,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
+public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, Long> implements ProjectLocationDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectLocationMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectLocationMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
   @Override
-  public boolean deleteProjectLocation(long projectLocationId) {
+  public void deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    boolean result = dao.update(projectLocation);
-
-    return result;
+    super.update(projectLocation);
 
   }
 
@@ -57,14 +55,14 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
 
   @Override
   public ProjectLocation find(long id) {
-    return dao.find(ProjectLocation.class, id);
+    return super.find(ProjectLocation.class, id);
 
   }
 
   @Override
   public List<ProjectLocation> findAll() {
     String query = "from " + ProjectLocation.class.getName() + " where is_active=1";
-    List<ProjectLocation> list = dao.findAll(query);
+    List<ProjectLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -76,14 +74,14 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
   public List<Map<String, Object>> getParentLocations(long projectId, String parentField) {
     String query = "select DISTINCT " + parentField + " from project_locations where project_id=" + projectId
       + " and is_active = 1 and " + parentField + " is not null";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
   public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId) {
     String query = "from " + ProjectLocation.class.getName() + " where project_id='" + projectId
       + "' and loc_element_id='" + LocElementId + "'";
-    List<ProjectLocation> list = dao.findAll(query);
+    List<ProjectLocation> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -91,15 +89,15 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
   }
 
   @Override
-  public long save(ProjectLocation projectLocation) {
+  public ProjectLocation save(ProjectLocation projectLocation) {
     if (projectLocation.getId() == null) {
-      dao.save(projectLocation);
+      super.saveEntity(projectLocation);
     } else {
-      dao.update(projectLocation);
+      projectLocation = super.update(projectLocation);
     }
 
 
-    return projectLocation.getId();
+    return projectLocation;
 
   }
 }

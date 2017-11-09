@@ -17,80 +17,28 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectClusterActivityDAO;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO {
+public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClusterActivity, Long>
+  implements ProjectClusterActivityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectClusterActivityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectClusterActivityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-  public void addProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectCluster) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
-      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
-        .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
-      .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && clusters.isEmpty()) {
-
-      ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
-      projectClusterAdd.setActive(true);
-      projectClusterAdd.setActiveSince(projectCluster.getActiveSince());
-      projectClusterAdd.setCreatedBy(projectCluster.getCreatedBy());
-      projectClusterAdd.setCrpClusterOfActivity(projectCluster.getCrpClusterOfActivity());
-      projectClusterAdd.setModificationJustification(projectCluster.getModificationJustification());
-      projectClusterAdd.setModifiedBy(projectCluster.getModifiedBy());
-      projectClusterAdd.setPhase(phase);
-      projectClusterAdd.setProject(projectCluster.getProject());
-      this.save(projectClusterAdd);
-    } else {
-      if (phase.getNext() != null) {
-        this.addProjectClusterPhase(phase.getNext(), projecID, projectCluster);
-      }
-    }
-
-
-  }
 
   @Override
-  public boolean deleteProjectClusterActivity(long projectClusterActivityId) {
+  public void deleteProjectClusterActivity(long projectClusterActivityId) {
     ProjectClusterActivity projectClusterActivity = this.find(projectClusterActivityId);
     projectClusterActivity.setActive(false);
-    long result = this.save(projectClusterActivity);
-
-    if (projectClusterActivity.getPhase().getNext() != null) {
-      this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
-        projectClusterActivity.getProject().getId(), projectClusterActivity);
-    }
-    return result > 0;
-
-  }
-
-  public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectClusterActivity
-          .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
-        .collect(Collectors.toList());
-      for (ProjectClusterActivity clusterActivity : clusters) {
-        this.deleteProjectClusterActivity(clusterActivity.getId());
-      }
-    } else {
-      if (phase.getNext() != null) {
-        this.deletProjectClusterPhase(phase.getNext(), projecID, projectClusterActivity);
-      }
-    }
-
+    super.update(projectClusterActivity);
 
   }
 
@@ -107,14 +55,14 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
 
   @Override
   public ProjectClusterActivity find(long id) {
-    return dao.find(ProjectClusterActivity.class, id);
+    return super.find(ProjectClusterActivity.class, id);
 
   }
 
   @Override
   public List<ProjectClusterActivity> findAll() {
     String query = "from " + ProjectClusterActivity.class.getName() + " where is_active=1";
-    List<ProjectClusterActivity> list = dao.findAll(query);
+    List<ProjectClusterActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -123,19 +71,13 @@ public class ProjectClusterActivityMySQLDAO implements ProjectClusterActivityDAO
   }
 
   @Override
-  public long save(ProjectClusterActivity projectClusterActivity) {
+  public ProjectClusterActivity save(ProjectClusterActivity projectClusterActivity) {
     if (projectClusterActivity.getId() == null) {
-      dao.save(projectClusterActivity);
+      super.saveEntity(projectClusterActivity);
     } else {
-      dao.update(projectClusterActivity);
+      projectClusterActivity = super.update(projectClusterActivity);
     }
-
-    if (projectClusterActivity.getPhase().getNext() != null) {
-      this.addProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
-        projectClusterActivity.getProject().getId(), projectClusterActivity);
-    }
-
-    return projectClusterActivity.getId();
+    return projectClusterActivity;
   }
 
 

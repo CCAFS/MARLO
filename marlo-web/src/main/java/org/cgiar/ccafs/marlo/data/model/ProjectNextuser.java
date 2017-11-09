@@ -101,10 +101,10 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public String getComposeID() {
     return composeID;
@@ -228,8 +228,15 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
     this.projectOutcome = projectOutcome;
   }
 
+
   public void setStrategies(String strategies) {
     this.strategies = strategies;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectNextuser [id=" + id + ", projectOutcome=" + projectOutcome + ", nextUser=" + nextUser
+      + ", knowledge=" + knowledge + ", strategies=" + strategies + "]";
   }
 
 

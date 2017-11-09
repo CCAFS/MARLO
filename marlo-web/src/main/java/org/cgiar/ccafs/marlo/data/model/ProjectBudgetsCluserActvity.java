@@ -18,20 +18,21 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
    * 
    */
   private static final long serialVersionUID = -3935980813273192496L;
+
   @Expose
   private Long id;
-
   @Expose
   private BudgetType budgetType;
 
   @Expose
   private CrpClusterOfActivity crpClusterOfActivity;
+
   private Project project;
   @Expose
   private User modifiedBy;
-
   @Expose
   private User createdBy;
+
   @Expose
   private Double amount;
   @Expose
@@ -193,6 +194,13 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectBudgetsCluserActvity [id=" + id + ", budgetType=" + budgetType + ", crpClusterOfActivity="
+      + crpClusterOfActivity + ", project=" + project + ", amount=" + amount + ", year=" + year + ", genderPercentage="
+      + genderPercentage + "]";
   }
 
 

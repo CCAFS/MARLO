@@ -1261,4 +1261,27 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+<<<<<<< HEAD
 }
+=======
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+
+  public void setWorkplan(FileDB workplan) {
+    this.workplan = workplan;
+  }
+
+  @Override
+  public String toString() {
+    return "Project [crp=" + crp + ", id=" + id + ", status=" + status + ", title=" + title + ", type=" + type + "]";
+  }
+}
+
+>>>>>>> refs/heads/staging

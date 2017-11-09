@@ -41,9 +41,9 @@ public class ProjectLocationElementTypeManagerImpl implements ProjectLocationEle
   }
 
   @Override
-  public boolean deleteProjectLocationElementType(long projectLocationElementTypeId) {
+  public void deleteProjectLocationElementType(long projectLocationElementTypeId) {
 
-    return projectLocationElementTypeDAO.deleteProjectLocationElementType(projectLocationElementTypeId);
+    projectLocationElementTypeDAO.deleteProjectLocationElementType(projectLocationElementTypeId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ProjectLocationElementTypeManagerImpl implements ProjectLocationEle
   }
 
   @Override
-  public long saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType) {
+  public ProjectLocationElementType saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType) {
 
     return projectLocationElementTypeDAO.save(projectLocationElementType);
   }

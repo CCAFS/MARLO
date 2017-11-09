@@ -162,18 +162,23 @@ public class CenterFundingSourceType implements java.io.Serializable, IAuditLog 
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setName(String name) {
     this.name = name;
   }
 
-
   public void setProjectFundingSources(Set<CenterProjectFundingSource> projectFundingSources) {
     this.projectFundingSources = projectFundingSources;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterFundingSourceType [id=" + id + ", name=" + name + "]";
   }
 
 }

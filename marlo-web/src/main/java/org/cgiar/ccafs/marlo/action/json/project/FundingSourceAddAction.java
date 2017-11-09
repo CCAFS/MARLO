@@ -173,7 +173,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSourceInfo.setPhase(this.getActualPhase());
 
 
-    long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+    fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
     fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
     long fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo);
@@ -204,9 +204,6 @@ public class FundingSourceAddAction extends BaseAction {
 
     fundingSourceInstitution.setInstitution(institution);
     fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-
-
-    fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
     double remaining = 0;
     boolean hasYear = false;
@@ -259,10 +256,10 @@ public class FundingSourceAddAction extends BaseAction {
     }
 
 
-    if (fundingSourceID > 0)
+    if (fundingSource.getId() > 0)
 
     {
-      fsProp.put("id", fundingSourceID);
+      fsProp.put("id", fundingSource.getId());
       fsProp.put("title", fundingSourceInfo.getDescription());
       fsProp.put("ammount", remaining);
       fsProp.put("type", budgetType.getName());

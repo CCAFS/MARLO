@@ -23,58 +23,62 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class UserMySQLDAO implements UserDAO {
+public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDAO {
 
-  private StandardDAO dao;
+  public static Logger LOG = LoggerFactory.getLogger(UserMySQLDAO.class);
 
   @Inject
-  public UserMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public UserMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
   public List<Map<String, Object>> getCenterPermission(int userId, String centerId) {
     String query =
       "select * from center_user_permissions where id=" + userId + " and center_acronym='" + centerId + "'";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
   public String getEmailByUsername(String username) {
-    String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
-    String email = (String) dao.findSingleResult(String.class, query);
+    String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
+    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
+    String email = (String) query.uniqueResult();
     return email;
   }
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-    StringBuilder builder = new StringBuilder();
+   StringBuilder builder = new StringBuilder();
     builder.append(" select * from user_permission");
     List<Map<String, Object>> list =
-      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
     return list;
-
 
   }
 
 
   @Override
   public User getUser(Long id) {
-    return dao.find(User.class, id);
+    return super.find(User.class, id);
   }
 
   @Override
   public User getUser(String email) {
     // validate the email on lower charters
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
-    List<Map<String, Object>> users = dao.findCustomQuery(query);
+    List<Map<String, Object>> users = super.findCustomQuery(query);
     if (users.size() > 0) {
       return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
     }
@@ -84,21 +88,21 @@ public class UserMySQLDAO implements UserDAO {
   @Override
   public boolean saveLastLogin(User user) {
     if (user.getId() == null) {
-      dao.save(user);
+      super.saveEntity(user);
     } else {
-      dao.update(user);
+      user = super.update(user);
     }
     return true;
   }
 
   @Override
-  public Long saveUser(User user) {
+  public User saveUser(User user) {
     if (user.getId() == null) {
-      dao.save(user);
+      super.saveEntity(user);
     } else {
-      dao.update(user);
+      user = super.update(user);
     }
-    return user.getId();
+    return user;
   }
 
   @Override
@@ -124,7 +128,19 @@ public class UserMySQLDAO implements UserDAO {
     query.append("ELSE 9 ");
     query.append("END, email, last_name, first_name ");
 
-    return dao.findAll(query.toString());
+    return super.findAll(query.toString());
+  }
+
+  @Override
+  public boolean verifiyCredentials(String email, String password) {
+    String query = "from " + User.class.getName() + " where email= '" + email + "' and password= '" + password
+      + "' and is_active = 1";
+    List<User> users = super.findAll(query);
+    if (users.size() > 0) {
+      return true;
+    }
+    LOG.error("verifiyCredentials() > There was an error verifiying the credentials", email);
+    return false;
   }
 
 }

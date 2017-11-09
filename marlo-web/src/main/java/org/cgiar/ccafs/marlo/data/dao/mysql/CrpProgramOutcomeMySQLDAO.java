@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
+public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcome, Long> implements CrpProgramOutcomeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpProgramOutcomeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpProgramOutcomeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpProgramOutcome(long crpProgramOutcomeId) {
+  public void deleteCrpProgramOutcome(long crpProgramOutcomeId) {
     CrpProgramOutcome crpProgramOutcome = this.find(crpProgramOutcomeId);
     crpProgramOutcome.setActive(false);
-    return this.save(crpProgramOutcome) > 0;
+    this.save(crpProgramOutcome);
   }
 
   @Override
@@ -51,7 +51,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
   @Override
   public CrpProgramOutcome find(long id) {
-    return dao.find(CrpProgramOutcome.class, id);
+    return super.find(CrpProgramOutcome.class, id);
 
   }
 
@@ -59,7 +59,7 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
   @Override
   public List<CrpProgramOutcome> findAll() {
     String query = "from " + CrpProgramOutcome.class.getName() + " where is_active=1";
-    List<CrpProgramOutcome> list = dao.findAll(query);
+    List<CrpProgramOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,15 +69,15 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
 
   @Override
-  public long save(CrpProgramOutcome crpProgramOutcome) {
+  public CrpProgramOutcome save(CrpProgramOutcome crpProgramOutcome) {
     if (crpProgramOutcome.getId() == null) {
-      dao.save(crpProgramOutcome);
+      super.saveEntity(crpProgramOutcome);
     } else {
-      dao.update(crpProgramOutcome);
+      crpProgramOutcome = super.update(crpProgramOutcome);
     }
 
 
-    return crpProgramOutcome.getId();
+    return crpProgramOutcome;
   }
 
 

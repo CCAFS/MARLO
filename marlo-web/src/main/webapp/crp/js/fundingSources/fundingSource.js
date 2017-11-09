@@ -9,7 +9,7 @@ function init() {
   W1W2 = 1;
   ON_GOING = 2;
 
-  $fundingType = $(".type");
+  $fundingType = $(".fundingType");
 
   // Check if (crp_funding_source_extension_date) parameter is true
   allowExtensionDate = $('.allowExtensionDate').text() === "true";
@@ -18,7 +18,7 @@ function init() {
   dateFormat = "yy-mm-dd";
 
   // Dropdown
-  $('.dropdown-toggle').on('show.bs.dropdown', function () {
+  $('.dropdown-toggle').on('show.bs.dropdown', function() {
     console.log('dropdown-toggle');
   })
 
@@ -34,26 +34,28 @@ function init() {
   // Original Donor
   $(".donor").on("change", function() {
     var $option = $(this).find("option:selected");
+
     var selectedValue = $option.val();
     var count = 0;
 
-    if(selectedValue == "-1"){
-      return
+    if(selectedValue == "-1") {
+      return;
     }
 
     // Count repeated donors
-    $('select.donor').each(function(i, e){
-      if (e.value == selectedValue) {
+    $('select.donor').each(function(i,e) {
+      if(e.value == selectedValue) {
         count++;
       }
     });
+
     // Check if the donor is already selected
-    if (count > 1){
+    if(count > 1) {
       // Reset Select
-      $(this).val(-1);
+      $('.donor:eq(1)').val(-1);
       $(this).trigger('select2:change');
       // Noty Message
-      var message ="Donors must be different";
+      var message = "Donors must be different";
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = message;
       noty(notyOptions);
@@ -130,7 +132,7 @@ function init() {
       width: '100%'
   });
 
-  changeDonorByFundingType($fundingType.val(), $(".donor"))
+  changeDonorByFundingType($fundingType.val(), $(".donor:eq(0)"))
 
   // Check Funding type
   onChangeFundingType($fundingType.val());
@@ -142,11 +144,12 @@ function init() {
 
   // When select center as Funding Window
   var lastDonor = -1;
-  $("select.type").on("change", function() {
+  $("select.fundingType").on("change", function() {
     var $option = $(this).find("option:selected");
     var optionValue = $option.val();
     // Change Donor list
     getInstitutionsBudgetByType(optionValue);
+
     // Event on change
     onChangeFundingType(optionValue);
   });
@@ -221,7 +224,7 @@ function init() {
 /**
  * Validate the grand total amount doesn't exceed
  */
-function keyupBudgetYear(){
+function keyupBudgetYear() {
   var grantAmount = $('#grantTotalAmount input').val();
   var total = 0
   $('.currencyInput').each(function(i,e) {
@@ -230,16 +233,16 @@ function keyupBudgetYear(){
   $('#grantTotalAmount .remaining').text(setCurrencyFormat(grantAmount - total));
 
   // Validate total of agreement and budget type
-  if (grantAmount < total){
+  if(grantAmount < total) {
     $('#grantTotalAmount').addClass('fieldError').animateCss('shake');
-  }else{
+  } else {
     $('#grantTotalAmount').removeClass('fieldError');
   }
 }
 
 /**
  * Check Agreement status
- *
+ * 
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
@@ -271,7 +274,7 @@ function onChangeFundingType(typeID) {
 
 /**
  * This function initialize the contact person auto complete
- *
+ * 
  * @returns
  */
 function addContactAutoComplete() {
@@ -309,7 +312,7 @@ function addContactAutoComplete() {
 
 /**
  * Add a new lead partner element function
- *
+ * 
  * @param option means an option tag from the select
  * @returns
  */
@@ -353,7 +356,7 @@ function addLeadPartner(option) {
 
 /**
  * Remove lead partner function
- *
+ * 
  * @returns
  */
 function removeLeadPartner() {
@@ -375,7 +378,7 @@ function removeLeadPartner() {
 
 /**
  * Update indexes for "Managing partners" of funding source
- *
+ * 
  * @param $list List of lead partners
  * @returns
  */
@@ -394,7 +397,7 @@ function updateLeadPartner($list) {
 
 /**
  * Check if there is any lead partners and show a text message
- *
+ * 
  * @param block Container with lead partners elements
  * @returns
  */
@@ -402,14 +405,14 @@ function checkLeadPartnerItems(block) {
 
   // Check if CIAT is in the partners list
   var CIAT_ID = 46;
-  console.log(">> "+$('input.fId').val());
-  if($('input.fId[value="'+CIAT_ID+'"]').exists()){
+  console.log(">> " + $('input.fId').val());
+  if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
     allowExtensionDate = true;
-  }else{
+  } else {
     $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
     allowExtensionDate = false;
-    if(isSynced){
+    if(isSynced) {
       unSyncFundingSource();
     }
   }
@@ -426,12 +429,12 @@ function checkLeadPartnerItems(block) {
 
 /**
  * Add a new country to the Funding source locations
- *
+ * 
  * @param countryISO e.g CO
  * @param countryName e.g Colombia
  * @returns
  */
-function addCountry(countryISO,countryName, percentage) {
+function addCountry(countryISO,countryName,percentage) {
   var canAdd = true;
 
   if(countryISO == "-1") {
@@ -582,7 +585,7 @@ function checkRegionList(block) {
 
 /**
  * Set the JQuery UI Datepicker plugin for start, end and extension dates
- *
+ * 
  * @param start
  * @param end
  * @param extensionDate
@@ -601,7 +604,7 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
         if(budgetsConflicts(from.val().split('-')[0], inst.selectedYear - 1)) {
           $(this).datepicker("hide");
-          return
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
@@ -633,14 +636,14 @@ function settingDate(start,end,extensionDate) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         if(budgetsConflicts(inst.selectedYear + 1, to.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
         $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
-          if(allowExtensionDate){
+          if(allowExtensionDate) {
             $(extensionDate).datepicker("option", "minDate", selectedDate);
           }
         }
@@ -669,38 +672,38 @@ function settingDate(start,end,extensionDate) {
         console.log(selectedDate);
         if(budgetsConflicts(inst.selectedYear + 1, extension.val().split('-')[0])) {
           $(this).datepicker("hide");
-          return
+          return;
         }
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
         $(this).datepicker("hide");
         if(selectedDate != "") {
-           $(to).datepicker("option", "maxDate", selectedDate);
+          $(to).datepicker("option", "maxDate", selectedDate);
         }
-         refreshYears();
+        refreshYears();
       }
   }).on("change", function() {
     // The change event is used for Sync
-    if(this.value){
+    if(this.value) {
       $(this).parent().find('.dateLabel').html(getDateLabel(this));
     }
     refreshYears();
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
-       refreshYears();
+      refreshYears();
     }
   });
 
   // Event when a datelabel is clicked
-  $('.dateLabel').on('click', function(){
+  $('.dateLabel').on('click', function() {
     if(!isSynced) {
       $(this).parent().find('input').datepicker("show");
     }
   });
 
   // Clear Date
-  $('.clearDate').on('click', function(){
+  $('.clearDate').on('click', function() {
     if(!isSynced) {
       $(this).parent().find('input').val('');
       $(this).parent().find('.dateLabel').text('');
@@ -717,7 +720,7 @@ function settingDate(start,end,extensionDate) {
 
 /**
  * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
- *
+ * 
  * @param lowEnd
  * @param highEnd
  * @returns
@@ -753,7 +756,6 @@ function budgetsConflicts(lowEnd,highEnd) {
   return false;
 }
 
-
 /**
  * @returns
  */
@@ -761,9 +763,9 @@ function refreshYears() {
   var startYear, endYear, years;
 
   startYear = (from.val().split('-')[0]) || currentCycleYear;
-  if(allowExtensionDate){
+  if(allowExtensionDate) {
     endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
-  }else{
+  } else {
     endYear = (to.val().split('-')[0]) || startYear;
   }
 
@@ -787,13 +789,12 @@ function refreshYears() {
       // CustomName
       var customName = 'fundingSource.budgets[-1]';
       // Build Content
-      var content =  '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
+      var content = '<div class="tab-pane going" id="fundingYear-' + startYear + '">';
       content += '<div class="form-group row">';
       content += '<div class="col-md-4">';
       content += '<label for="">Budget for ' + startYear + ':</label>';
       content += '<input type="hidden" name="' + customName + '.year" value="' + startYear + '">';
-      content +=
-          '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
+      content += '<input type="text" name="' + customName + '.budget" class="currencyInput form-control input-sm" />';
       content += '</div>';
       content += '</div>';
       content += '</div>';
@@ -838,7 +839,7 @@ function refreshYears() {
 
 /**
  * Get date in format
- *
+ * 
  * @param element
  * @returns
  */
@@ -854,17 +855,17 @@ function getDate(element) {
 
 /**
  * Get date in MM yy format
- *
+ * 
  * @param element - An input with a Date value
  * @returns String e.g. May 2017
  */
-function getDateLabel(element){
+function getDateLabel(element) {
   var dateValue = $(element).val();
   var year = dateValue.split('-')[0];
   var month = dateValue.split('-')[1];
   var day = dateValue.split('-')[2];
   console.log($(element).val());
-  return $.datepicker.formatDate( "MM yy", new Date(year, month -1, day) );
+  return $.datepicker.formatDate("MM yy", new Date(year, month - 1, day));
 }
 
 /**
@@ -895,12 +896,13 @@ function addDataTable() {
 
 /**
  * Get from the back-end a list of institutions
- *
+ * 
  * @param budgetTypeID
  * @returns
  */
 function getInstitutionsBudgetByType(budgetTypeID) {
-  var $select = $(".donor");
+  // var $select = $(".donor");
+  var $donorSelectLists = $(".donor");
   var url = baseURL + "/institutionsByBudgetType.do";
   $.ajax({
       url: url,
@@ -912,27 +914,40 @@ function getInstitutionsBudgetByType(budgetTypeID) {
         $('.loading').show();
       },
       success: function(m) {
-        $select.empty();
-        $select.addOption("-1", "Select an option...");
+        $donorSelectLists.empty();
+        $donorSelectLists.addOption("-1", "Select an option...");
+
         $.each(m.institutions, function(i,e) {
-          $select.addOption(e.id, e.name);
+          $donorSelectLists.addOptionFast(e.id, e.name);
         });
-        changeDonorByFundingType(budgetTypeID, $select);
+
+        // Set CGIAR Consortium Office if applicable to the direct donor
+        changeDonorByFundingType(budgetTypeID, $(".donor:eq(0)"));
       },
       error: function(e) {
         console.log(e);
       },
       complete: function() {
         $('.loading').hide();
-        $select.trigger("change.select2");
+        $donorSelectLists.trigger("change.select2");
       }
   });
 }
 
-function changeDonorByFundingType(budgetType,$select) {
-  var donorId = $select.find("option:selected").val();
-  if((donorId == "-1") && (budgetType == "1")) {
-    $select.val($(".cgiarConsortium").text()).trigger("change");
+function changeDonorByFundingType(budgetType,$donorSelect) {
+  var currentDonorId = $donorSelect.find("option:selected").val();
+  var currentDonorName = $donorSelect.attr('name');
+  var cgConsortiumId = $(".cgiarConsortium").text();
+
+  // If budget type is W1W2 and the donor is not selected
+  if((currentDonorId == "-1") && (budgetType == W1W2)) {
+    // Set CGIAR System Organization
+    $donorSelect.val(cgConsortiumId).attr("disabled", true).trigger("change");
+    $donorSelect.parents('.select').parent().append(
+        '<input type="hidden" id="donorHiddenInput" name="' + currentDonorName + '" value="' + cgConsortiumId + '" />');
+  } else if(budgetType != W1W2) {
+    $donorSelect.attr("disabled", false).trigger("change");
+    $('#donorHiddenInput').remove();
   }
 }
 

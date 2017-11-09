@@ -24,6 +24,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Deliverable deliverable;
+
   @Expose
   private User createdBy;
   @Expose
@@ -36,13 +37,12 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
-
   private String nameGenderLevel;
+
   private String descriptionGenderLevel;
 
   @Expose
   private Phase phase;
-
   public DeliverableGenderLevel() {
   }
 
@@ -97,6 +97,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   public String getDescriptionGenderLevel() {
     return descriptionGenderLevel;
   }
+
 
   public long getGenderLevel() {
     return genderLevel;
@@ -206,6 +207,12 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableGenderLevel [id=" + id + ", deliverable=" + deliverable + ", genderLevel=" + genderLevel
+      + ", nameGenderLevel=" + nameGenderLevel + ", descriptionGenderLevel=" + descriptionGenderLevel + "]";
   }
 
 

@@ -107,7 +107,7 @@ public class OuputRequestAction extends BaseAction {
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {
-
+      LOG.error("unable to send mail", e);
     }
     Collection<String> messages = this.getActionMessages();
     this.addActionMessage("message:" + this.getText("saving.saved"));

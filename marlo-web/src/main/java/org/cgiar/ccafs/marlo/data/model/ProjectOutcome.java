@@ -76,9 +76,9 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
 
   private List<ProjectMilestone> milestones;
-
-
   private List<ProjectCommunication> communications;
+
+
   private List<ProjectNextuser> nextUsers;
 
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
@@ -222,7 +222,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public Phase getPhase() {
     return phase;
   }
-
   public Project getProject() {
     return project;
   }
@@ -405,6 +404,14 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setYouthComponent(String youthComponent) {
     this.youthComponent = youthComponent;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectOutcome [id=" + id + ", crpProgramOutcome=" + crpProgramOutcome + ", project=" + project
+      + ", expectedValue=" + expectedValue + ", expectedUnit=" + expectedUnit + ", achievedValue=" + achievedValue
+      + ", achievedUnit=" + achievedUnit + "]";
   }
 
 

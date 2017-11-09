@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,22 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
+public class LocElementTypeMySQLDAO extends AbstractMarloDAO<LocElementType, Long> implements LocElementTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public LocElementTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public LocElementTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteLocElementType(long locElementTypeId) {
+  public void deleteLocElementType(long locElementTypeId) {
     LocElementType locElementType = this.find(locElementTypeId);
     locElementType.setActive(false);
     locElementType.setHasCoordinates(false);
-    return this.save(locElementType) > 0;
+    this.save(locElementType);
   }
 
   @Override
@@ -52,14 +52,14 @@ public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
 
   @Override
   public LocElementType find(long id) {
-    return dao.find(LocElementType.class, id);
+    return super.find(LocElementType.class, id);
 
   }
 
   @Override
   public List<LocElementType> findAll() {
     String query = "from " + LocElementType.class.getName() + " where is_active=1";
-    List<LocElementType> list = dao.findAll(query);
+    List<LocElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,13 +68,13 @@ public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
   }
 
   @Override
-  public long save(LocElementType locElementType) {
+  public LocElementType save(LocElementType locElementType) {
     if (locElementType.getId() == null) {
-      dao.save(locElementType);
+      super.saveEntity(locElementType);
     } else {
-      dao.update(locElementType);
+      locElementType = super.update(locElementType);
     }
-    return locElementType.getId();
+    return locElementType;
   }
 
 

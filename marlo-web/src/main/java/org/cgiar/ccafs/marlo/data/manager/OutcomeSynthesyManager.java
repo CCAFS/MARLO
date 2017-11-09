@@ -34,7 +34,7 @@ public interface OutcomeSynthesyManager {
    * @param outcomeSynthesyId is the outcomeSynthesy identifier.
    * @return true if the outcomeSynthesy was successfully deleted, false otherwise.
    */
-  public boolean deleteOutcomeSynthesy(long outcomeSynthesyId);
+  public void deleteOutcomeSynthesy(long outcomeSynthesyId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface OutcomeSynthesyManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveOutcomeSynthesy(OutcomeSynthesy outcomeSynthesy);
+  public OutcomeSynthesy saveOutcomeSynthesy(OutcomeSynthesy outcomeSynthesy);
 
 
 }

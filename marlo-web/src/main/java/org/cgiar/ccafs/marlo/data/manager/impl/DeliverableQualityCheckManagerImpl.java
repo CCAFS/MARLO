@@ -41,9 +41,9 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
   }
 
   @Override
-  public boolean deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
+  public void deleteDeliverableQualityCheck(long deliverableQualityCheckId) {
 
-    return deliverableQualityCheckDAO.deleteDeliverableQualityCheck(deliverableQualityCheckId);
+    deliverableQualityCheckDAO.deleteDeliverableQualityCheck(deliverableQualityCheckId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
   }
 
   @Override
-  public long saveDeliverableQualityCheck(DeliverableQualityCheck deliverableQualityCheck) {
+  public DeliverableQualityCheck saveDeliverableQualityCheck(DeliverableQualityCheck deliverableQualityCheck) {
 
     return deliverableQualityCheckDAO.save(deliverableQualityCheck);
   }

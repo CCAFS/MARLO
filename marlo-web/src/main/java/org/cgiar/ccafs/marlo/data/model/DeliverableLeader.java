@@ -21,8 +21,8 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   private Deliverable deliverable;
+
 
   @Expose
   private Institution institution;
@@ -128,6 +128,11 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableLeader [id=" + id + ", deliverable=" + deliverable + ", institution=" + institution + "]";
   }
 
 

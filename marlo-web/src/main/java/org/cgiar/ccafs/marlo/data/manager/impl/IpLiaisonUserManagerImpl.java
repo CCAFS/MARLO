@@ -41,9 +41,9 @@ public class IpLiaisonUserManagerImpl implements IpLiaisonUserManager {
   }
 
   @Override
-  public boolean deleteIpLiaisonUser(long ipLiaisonUserId) {
+  public void deleteIpLiaisonUser(long ipLiaisonUserId) {
 
-    return ipLiaisonUserDAO.deleteIpLiaisonUser(ipLiaisonUserId);
+    ipLiaisonUserDAO.deleteIpLiaisonUser(ipLiaisonUserId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpLiaisonUserManagerImpl implements IpLiaisonUserManager {
   }
 
   @Override
-  public long saveIpLiaisonUser(IpLiaisonUser ipLiaisonUser) {
+  public IpLiaisonUser saveIpLiaisonUser(IpLiaisonUser ipLiaisonUser) {
 
     return ipLiaisonUserDAO.save(ipLiaisonUser);
   }

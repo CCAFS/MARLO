@@ -78,6 +78,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PublicationAction extends BaseAction {
 
@@ -85,6 +87,9 @@ public class PublicationAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -5176367401132626314L;
+
+  private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
+
   private Crp loggedCrp;
   private CrpManager crpManager;
   private long deliverableID;
@@ -296,7 +301,11 @@ public class PublicationAction extends BaseAction {
       deliverableID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID)));
     } catch (Exception e) {
-
+      LOG.error("unable to parse deliverableID", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
 
 
@@ -381,7 +390,11 @@ public class PublicationAction extends BaseAction {
               deliverableProgram.setIpProgram(program);
               programs.add(deliverableProgram);
             } catch (Exception e) {
-
+              LOG.error("unable to add deliverableProgram to programs list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -396,7 +409,11 @@ public class PublicationAction extends BaseAction {
               deliverableProgram.setIpProgram(program);
               regions.add(deliverableProgram);
             } catch (Exception e) {
-
+              LOG.error("unable to add delverable program to regions list", e);
+              /**
+               * Original code swallows the exception and didn't even log it. Now we at least log it,
+               * but we need to revisit to see if we should continue processing or re-throw the exception.
+               */
             }
           }
         }
@@ -475,7 +492,7 @@ public class PublicationAction extends BaseAction {
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
-        System.out.println(deliverable.getGenderLevels().size());
+        LOG.debug("Deliverable.getGenderLevels size = " + deliverable.getGenderLevels().size());
         this.setDraft(false);
       }
 

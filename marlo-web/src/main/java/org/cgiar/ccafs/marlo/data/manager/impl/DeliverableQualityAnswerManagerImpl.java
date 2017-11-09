@@ -41,9 +41,9 @@ public class DeliverableQualityAnswerManagerImpl implements DeliverableQualityAn
   }
 
   @Override
-  public boolean deleteDeliverableQualityAnswer(long deliverableQualityAnswerId) {
+  public void deleteDeliverableQualityAnswer(long deliverableQualityAnswerId) {
 
-    return deliverableQualityAnswerDAO.deleteDeliverableQualityAnswer(deliverableQualityAnswerId);
+    deliverableQualityAnswerDAO.deleteDeliverableQualityAnswer(deliverableQualityAnswerId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableQualityAnswerManagerImpl implements DeliverableQualityAn
   }
 
   @Override
-  public long saveDeliverableQualityAnswer(DeliverableQualityAnswer deliverableQualityAnswer) {
+  public DeliverableQualityAnswer saveDeliverableQualityAnswer(DeliverableQualityAnswer deliverableQualityAnswer) {
 
     return deliverableQualityAnswerDAO.save(deliverableQualityAnswer);
   }

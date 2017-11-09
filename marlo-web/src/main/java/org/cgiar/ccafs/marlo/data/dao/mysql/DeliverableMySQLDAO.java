@@ -23,21 +23,21 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableMySQLDAO implements DeliverableDAO {
+public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> implements DeliverableDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverable(long deliverableId) {
+  public void deleteDeliverable(long deliverableId) {
     Deliverable deliverable = this.find(deliverableId);
     deliverable.setActive(false);
-    return this.save(deliverable) > 0;
+    this.save(deliverable);
   }
 
   @Override
@@ -52,14 +52,14 @@ public class DeliverableMySQLDAO implements DeliverableDAO {
 
   @Override
   public Deliverable find(long id) {
-    return dao.find(Deliverable.class, id);
+    return super.find(Deliverable.class, id);
 
   }
 
   @Override
   public List<Deliverable> findAll() {
     String query = "from " + Deliverable.class.getName() + " where is_active=1";
-    List<Deliverable> list = dao.findAll(query);
+    List<Deliverable> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,27 +68,27 @@ public class DeliverableMySQLDAO implements DeliverableDAO {
   }
 
   @Override
-  public long save(Deliverable deliverable) {
+  public Deliverable save(Deliverable deliverable) {
     if (deliverable.getId() == null) {
-      dao.save(deliverable);
+      super.saveEntity(deliverable);
     } else {
-      dao.update(deliverable);
+      deliverable = super.update(deliverable);
     }
 
 
-    return deliverable.getId();
+    return deliverable;
   }
 
   @Override
-  public long save(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
+  public Deliverable save(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     if (deliverable.getId() == null) {
-      dao.save(deliverable, section, relationsName, phase);
+      deliverable = super.saveEntity(deliverable, section, relationsName, phase);
     } else {
-      dao.update(deliverable, section, relationsName, phase);
+      deliverable = super.update(deliverable, section, relationsName, phase);
     }
 
 
-    return deliverable.getId();
+    return deliverable;
   }
 
 

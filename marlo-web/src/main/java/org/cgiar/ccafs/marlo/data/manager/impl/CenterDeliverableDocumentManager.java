@@ -42,9 +42,9 @@ public class CenterDeliverableDocumentManager implements ICenterDeliverableDocum
   }
 
   @Override
-  public boolean deleteDeliverableDocument(long deliverableDocumentId) {
+  public void deleteDeliverableDocument(long deliverableDocumentId) {
 
-    return deliverableDocumentDAO.deleteDeliverableDocument(deliverableDocumentId);
+    deliverableDocumentDAO.deleteDeliverableDocument(deliverableDocumentId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterDeliverableDocumentManager implements ICenterDeliverableDocum
   }
 
   @Override
-  public long saveDeliverableDocument(CenterDeliverableDocument deliverableDocument) {
+  public CenterDeliverableDocument saveDeliverableDocument(CenterDeliverableDocument deliverableDocument) {
 
     return deliverableDocumentDAO.save(deliverableDocument);
   }

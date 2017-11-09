@@ -121,11 +121,8 @@ public class CountryFundingSources implements Serializable {
 
   @Override
   public String toString() {
-    try {
-      return this.getLocElement().getName();
-    } catch (Exception e) {
-      return this.getLocElementType().getName();
-    }
+    return "CountryFundingSources [locElement=" + locElement + ", locElementType=" + locElementType + ", selected="
+      + selected + "]";
   }
 
 }

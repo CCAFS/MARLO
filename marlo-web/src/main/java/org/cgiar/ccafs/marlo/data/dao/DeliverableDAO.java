@@ -33,7 +33,7 @@ public interface DeliverableDAO {
    * @param deliverableId is the deliverable identifier.
    * @return true if the deliverable was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverable(long deliverableId);
+  public void deleteDeliverable(long deliverableId);
 
   /**
    * This method validate if the deliverable identify with the given id exists in the system.
@@ -67,7 +67,7 @@ public interface DeliverableDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Deliverable deliverable);
+  public Deliverable save(Deliverable deliverable);
 
   /**
    * This method saves the information of the given deliverable and save the history in the auditlog
@@ -77,5 +77,5 @@ public interface DeliverableDAO {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long save(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
+  public Deliverable save(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
 }

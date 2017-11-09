@@ -305,7 +305,9 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "LocElement [id=" + id + ", crp=" + crp + ", isoAlpha2=" + isoAlpha2 + ", isoNumeric=" + isoNumeric
+      + ", locElementType=" + locElementType + ", locGeoposition=" + locGeoposition + ", name=" + name + ", locElement="
+      + locElement + ", isSiteIntegration=" + isSiteIntegration + "]";
   }
 }
 

@@ -24,6 +24,9 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -37,8 +40,16 @@ import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -72,8 +83,11 @@ public class ProjectListAction extends BaseAction {
   private String syncCode;
   private ICenterManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
+  private ICenterProjectLocationManager projectLocationService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
   private ICenterFundingSourceTypeManager centerFundingTypeManager;
+  private ICenterProjectPartnerManager partnerService;
+  private ICenterProjectPartnerPersonManager partnerPersonService;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
   private Center loggedCenter;
   private long programID;
@@ -101,7 +115,9 @@ public class ProjectListAction extends BaseAction {
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
-    CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager) {
+    CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
+    ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
+    ICenterProjectPartnerPersonManager partnerPersonService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -114,6 +130,10 @@ public class ProjectListAction extends BaseAction {
     this.centerProjectFudingSourceManager = centerProjectFudingSourceManager;
     this.fundingSyncTypeManager = fundingSyncTypeManager;
     this.centerFundingTypeManager = centerFundingTypeManager;
+    this.projectLocationService = projectLocationService;
+    this.partnerService = partnerService;
+    this.partnerPersonService = partnerPersonService;
+
   }
 
   @Override
@@ -128,6 +148,7 @@ public class ProjectListAction extends BaseAction {
     project.setDateCreated(new Date());
     project.setResearchProgram(selectedProgram);
     project.setProjectStatus(new CenterProjectStatus(new Long(2), true));
+    project.setAutoFill(false);
 
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
@@ -151,7 +172,7 @@ public class ProjectListAction extends BaseAction {
     project.setProjectCrosscutingTheme(projectCrosscutingTheme);
     projectCrosscutingTheme.setProject(project);
 
-    projectID = projectService.saveCenterProject(project);
+    projectID = projectService.saveCenterProject(project).getId();
 
     /**
      * Add Project sync information
@@ -238,6 +259,9 @@ public class ProjectListAction extends BaseAction {
     centerProject.setDescription(agreement.getDescription());
     centerProject.setStartDate(agreement.getStartDate());
     centerProject.setEndDate(agreement.getEndDate());
+    centerProject.setSync(true);
+    centerProject.setSyncDate(new Date());
+    centerProject.setAutoFill(true);
 
     projectService.saveCenterProject(centerProject);
 
@@ -247,6 +271,7 @@ public class ProjectListAction extends BaseAction {
     fundingSource.setCode(syncCode);
     fundingSource.setSync(true);
     fundingSource.setSyncDate(new Date());
+    fundingSource.setAutoFill(true);
 
     fundingSource.setTitle(agreement.getDescription());
     fundingSource.setDescription(agreement.getDescription());
@@ -290,21 +315,24 @@ public class ProjectListAction extends BaseAction {
     // Setting the budget Type
     String fundingType = agreement.getFundingType();
     long fundingtypeID = -1L;
-    switch (fundingType) {
-      case "BLR":
-        fundingtypeID = 3;
-        break;
-      case "W1/W2":
-        fundingtypeID = 1;
-        break;
-      case "W3R":
-        fundingtypeID = 2;
-        break;
-      case "W3U":
-        fundingtypeID = 2;
-        break;
-      default:
-        break;
+    if (fundingType != null) {
+      switch (fundingType) {
+        case "BLR":
+          fundingtypeID = 3;
+          break;
+        case "W1/W2":
+          fundingtypeID = 1;
+          break;
+        case "W3R":
+          fundingtypeID = 2;
+          break;
+        case "W3U":
+          fundingtypeID = 2;
+          break;
+        default:
+          fundingtypeID = -1L;
+          break;
+      }
     }
 
     CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
@@ -318,6 +346,159 @@ public class ProjectListAction extends BaseAction {
     centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
+
+
+  /**
+   * Add CRP project Cross-cutting information in the center project Created.
+   * 
+   * @param project
+   * @param centerProject
+   */
+
+  public void crpCrossCuttingInformation(Project project, CenterProject centerProject) {
+
+    boolean hasChanges = false;
+
+    CenterProjectCrosscutingTheme crosscutingThemeSave =
+      projectCrosscutingService.getProjectCrosscutingThemeById(centerProject.getProjectCrosscutingTheme().getId());
+
+    if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
+      hasChanges = true;
+      crosscutingThemeSave.setGender(true);
+    }
+
+    if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
+      hasChanges = true;
+      crosscutingThemeSave.setYouth(true);
+    }
+
+    if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
+      hasChanges = true;
+      crosscutingThemeSave.setCapacityDevelopment(true);
+    }
+
+    if (hasChanges) {
+      crosscutingThemeSave.setProject(centerProject);
+      projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
+    }
+
+
+  }
+
+  /**
+   * Add CRP project location information in the center project Created.
+   * 
+   * @param project
+   * @param centerProject
+   */
+
+  public void crpProjectLocation(Project project, CenterProject centerProject) {
+
+    List<ProjectLocation> projectLocations = new ArrayList<>(project.getProjectLocations().stream()
+      .filter(pl -> pl.isActive()
+        && (pl.getLocElement().getLocElementType().getId() == 1 || pl.getLocElement().getLocElementType().getId() == 2))
+      .collect(Collectors.toList()));
+
+    boolean haveRegion = false;
+
+
+    for (ProjectLocation projectLocation : projectLocations) {
+
+
+      CenterProjectLocation centerProjectLocation = new CenterProjectLocation();
+
+
+      centerProjectLocation.setActive(true);
+      centerProjectLocation.setActiveSince(new Date());
+      centerProjectLocation.setCreatedBy(this.getCurrentUser());
+      centerProjectLocation.setModifiedBy(this.getCurrentUser());
+      centerProjectLocation.setModificationJustification("");
+      centerProjectLocation.setProject(centerProject);
+
+      centerProjectLocation.setLocElement(projectLocation.getLocElement());
+
+      projectLocationService.saveProjectLocation(centerProjectLocation);
+
+      if (centerProjectLocation.getLocElement().getLocElementType().getId() == 1) {
+        haveRegion = true;
+      }
+
+    }
+
+    if (haveRegion) {
+      centerProject.setRegion(true);
+      projectService.saveCenterProject(centerProject);
+    }
+
+  }
+
+  /**
+   * Add CRP project partners information in the center project Created - Only the parters that collaborate by the
+   * center.
+   * 
+   * @param project
+   * @param centerProject
+   */
+  public void crpProjectPartners(Project project, CenterProject centerProject) {
+
+
+    List<ProjectPartner> projectPartners =
+      new ArrayList<>(project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+
+    for (ProjectPartner projectPartner : projectPartners) {
+
+      // TODO fix the filter to work whit all centers (in the future)
+      List<ProjectPartnerContribution> contributions = new ArrayList<>(projectPartner.getProjectPartnerContributions()
+        .stream().filter(pc -> pc.isActive() && pc.getProjectPartnerContributor().getInstitution().getId() == 46)
+        .collect(Collectors.toList()));
+
+      for (ProjectPartnerContribution projectPartnerContribution : contributions) {
+
+
+        CenterProjectPartner partnerNew = new CenterProjectPartner();
+        partnerNew.setActive(true);
+        partnerNew.setActiveSince(new Date());
+        partnerNew.setCreatedBy(this.getCurrentUser());
+        partnerNew.setModifiedBy(this.getCurrentUser());
+        partnerNew.setModificationJustification("");
+        partnerNew.setProject(centerProject);
+
+        Institution institution = new Institution();
+        institution.setId(projectPartnerContribution.getProjectPartner().getInstitution().getId());
+        partnerNew.setInstitution(institution);
+
+        partnerService.saveProjectPartner(partnerNew);
+
+
+        List<ProjectPartnerPerson> partnerPerson = new ArrayList<>(projectPartnerContribution.getProjectPartner()
+          .getProjectPartnerPersons().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+
+        for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
+
+          CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
+          partnerPersonNew.setActive(true);
+          partnerPersonNew.setActiveSince(new Date());
+          partnerPersonNew.setCreatedBy(this.getCurrentUser());
+          partnerPersonNew.setModifiedBy(this.getCurrentUser());
+          partnerPersonNew.setModificationJustification("");
+
+          partnerPersonNew.setProjectPartner(partnerNew);
+
+          User user = userService.getUser(projectPartnerPerson.getUser().getId());
+          partnerPersonNew.setUser(user);
+
+          partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+
+        }
+
+
+      }
+
+    }
+
+
+  }
+
 
   @Override
   public String delete() {

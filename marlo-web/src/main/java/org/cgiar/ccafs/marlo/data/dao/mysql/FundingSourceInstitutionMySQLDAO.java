@@ -16,67 +16,32 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceInstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutionDAO {
+public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO<FundingSourceInstitution, Long>
+  implements FundingSourceInstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceInstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceInstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
-  public void cloneFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitutionAdd,
-    FundingSourceInstitution fundingSourceInstitution, Phase phase) {
-    fundingSourceInstitutionAdd.setFundingSource(fundingSourceInstitution.getFundingSource());
-    fundingSourceInstitutionAdd.setInstitution(fundingSourceInstitution.getInstitution());
-    fundingSourceInstitutionAdd.setPhase(phase);
-
-  }
 
   @Override
-  public boolean deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
+  public void deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
     FundingSourceInstitution fundingSourceInstitution = this.find(fundingSourceInstitutionId);
-    boolean result = dao.delete(fundingSourceInstitution);
-    Phase currentPhase = dao.find(Phase.class, fundingSourceInstitution.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (fundingSourceInstitution.getPhase().getNext() != null) {
-        this.deletFundingSourceInstitutionPhase(fundingSourceInstitution.getPhase().getNext(),
-          fundingSourceInstitution.getFundingSource().getId(), fundingSourceInstitution);
-      }
-    }
-
-    return result;
+    super.delete(fundingSourceInstitution);
 
 
   }
 
-  public void deletFundingSourceInstitutionPhase(Phase next, long fundingSourceID,
-    FundingSourceInstitution fundingSourceInstitution) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
-        .collect(Collectors.toList());
-      for (FundingSourceInstitution fundingSourceInstitutionDB : institutions) {
-        dao.delete(fundingSourceInstitutionDB);
-      }
-    }
-    if (phase.getNext() != null) {
-      this.deletFundingSourceInstitutionPhase(phase.getNext(), fundingSourceID, fundingSourceInstitution);
-
-    }
-  }
 
   @Override
   public boolean existFundingSourceInstitution(long fundingSourceInstitutionID) {
@@ -90,14 +55,14 @@ public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutio
 
   @Override
   public FundingSourceInstitution find(long id) {
-    return dao.find(FundingSourceInstitution.class, id);
+    return super.find(FundingSourceInstitution.class, id);
 
   }
 
   @Override
   public List<FundingSourceInstitution> findAll() {
     String query = "from " + FundingSourceInstitution.class.getName() + " where is_active=1";
-    List<FundingSourceInstitution> list = dao.findAll(query);
+    List<FundingSourceInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -106,43 +71,16 @@ public class FundingSourceInstitutionMySQLDAO implements FundingSourceInstitutio
   }
 
   @Override
-  public long save(FundingSourceInstitution fundingSourceInstitution) {
+  public FundingSourceInstitution save(FundingSourceInstitution fundingSourceInstitution) {
     if (fundingSourceInstitution.getId() == null) {
-      dao.save(fundingSourceInstitution);
+      super.saveEntity(fundingSourceInstitution);
     } else {
-      dao.update(fundingSourceInstitution);
+      fundingSourceInstitution = super.update(fundingSourceInstitution);
     }
 
-    Phase currentPhase = dao.find(Phase.class, fundingSourceInstitution.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (fundingSourceInstitution.getPhase().getNext() != null) {
-        this.saveFundingSourceInstitutionPhase(fundingSourceInstitution.getPhase().getNext(),
-          fundingSourceInstitution.getFundingSource().getId(), fundingSourceInstitution);
-      }
-    }
 
-    return fundingSourceInstitution.getId();
+    return fundingSourceInstitution;
   }
 
-  public void saveFundingSourceInstitutionPhase(Phase next, long fundingSourceID,
-    FundingSourceInstitution fundingSourceInstitution) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
-        .collect(Collectors.toList());
-      if (institutions.isEmpty()) {
-        FundingSourceInstitution fundingSourceInstitutionAdd = new FundingSourceInstitution();
-        this.cloneFundingSourceInstitution(fundingSourceInstitutionAdd, fundingSourceInstitution, phase);
-        dao.save(fundingSourceInstitutionAdd);
-      }
 
-    }
-    if (phase.getNext() != null) {
-      this.saveFundingSourceInstitutionPhase(phase.getNext(), fundingSourceID, fundingSourceInstitution);
-    }
-
-
-  }
 }

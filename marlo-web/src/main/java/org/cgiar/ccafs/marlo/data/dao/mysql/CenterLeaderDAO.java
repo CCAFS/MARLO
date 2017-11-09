@@ -24,26 +24,26 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * Modified by @author nmatovu last on Oct 10, 2016
  */
-public class CenterLeaderDAO implements ICenterLeaderDAO {
+public class CenterLeaderDAO extends AbstractMarloDAO<CenterLeader, Long> implements ICenterLeaderDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterLeaderDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterLeaderDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
   @Override
-  public boolean deleteResearchLeader(long researchLeaderId) {
+  public void deleteResearchLeader(long researchLeaderId) {
     CenterLeader researchLeader = this.find(researchLeaderId);
     researchLeader.setActive(false);
-    return this.save(researchLeader) > 0;
+    this.save(researchLeader);
   }
 
 
@@ -59,13 +59,13 @@ public class CenterLeaderDAO implements ICenterLeaderDAO {
 
   @Override
   public CenterLeader find(long researchLeaderId) {
-    return dao.find(CenterLeader.class, researchLeaderId);
+    return super.find(CenterLeader.class, researchLeaderId);
   }
 
   @Override
   public List<CenterLeader> findAll() {
     String query = "from " + CenterLeader.class.getName() + " where is_active=1";
-    List<CenterLeader> list = dao.findAll(query);
+    List<CenterLeader> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -73,13 +73,13 @@ public class CenterLeaderDAO implements ICenterLeaderDAO {
   }
 
   @Override
-  public long save(CenterLeader researchLeader) {
+  public CenterLeader save(CenterLeader researchLeader) {
     if (researchLeader.getId() == null) {
-      dao.save(researchLeader);
+      super.saveEntity(researchLeader);
     } else {
-      dao.update(researchLeader);
+      researchLeader = super.update(researchLeader);
     }
-    return researchLeader.getId();
+    return researchLeader;
   }
 
 }

@@ -219,7 +219,7 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "ProjectFocus [id=" + id + ", crpProgram=" + crpProgram + ", project=" + project + "]";
   }
 
 

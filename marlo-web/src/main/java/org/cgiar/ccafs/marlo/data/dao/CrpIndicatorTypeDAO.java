@@ -32,7 +32,7 @@ public interface CrpIndicatorTypeDAO {
    * @param crpIndicatorTypeId is the crpIndicatorType identifier.
    * @return true if the crpIndicatorType was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpIndicatorType(long crpIndicatorTypeId);
+  public void deleteCrpIndicatorType(long crpIndicatorTypeId);
 
   /**
    * This method validate if the crpIndicatorType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpIndicatorTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpIndicatorType crpIndicatorType);
+  public CrpIndicatorType save(CrpIndicatorType crpIndicatorType);
 }

@@ -28,13 +28,13 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
   @Expose
   private String target;
 
-
   @Expose
   private String nextTarget;
 
 
   @Expose
   private String actual;
+
 
   @Expose
   private String supportLinks;
@@ -56,7 +56,6 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
     this.year = year;
     this.lastUpdate = lastUpdate;
   }
-
 
   public CrpIndicatorReport(CrpIndicator crpIndicator, IpLiaisonInstitution ipLiaisonInstitution, String target,
     String nextTarget, String actual, String supportLinks, String deviation, int year, Date lastUpdate) {
@@ -137,6 +136,7 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -189,15 +189,14 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution) {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
 
+
   public void setLastUpdate(Date lastUpdate) {
     this.lastUpdate = lastUpdate;
   }
-
 
   public void setNextTarget(String nextTarget) {
     this.nextTarget = nextTarget;
@@ -216,6 +215,13 @@ public class CrpIndicatorReport implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CrpIndicatorReport [id=" + id + ", crpIndicator=" + crpIndicator + ", ipLiaisonInstitution="
+      + ipLiaisonInstitution + ", year=" + year + "]";
   }
 
 }

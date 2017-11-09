@@ -17,81 +17,31 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectFocusDAO;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
+public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> implements ProjectFocusDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectFocusMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
-  }
-
-  public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
-      .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && projectFocuses.isEmpty()) {
-
-      ProjectFocus projectFocusAdd = new ProjectFocus();
-      projectFocusAdd.setActive(true);
-      projectFocusAdd.setActiveSince(projectFocus.getActiveSince());
-      projectFocusAdd.setCreatedBy(projectFocus.getCreatedBy());
-      projectFocusAdd.setCrpProgram(projectFocus.getCrpProgram());
-      projectFocusAdd.setModificationJustification(projectFocus.getModificationJustification());
-      projectFocusAdd.setModifiedBy(projectFocus.getModifiedBy());
-      projectFocusAdd.setPhase(phase);
-      projectFocusAdd.setProject(projectFocus.getProject());
-      this.save(projectFocusAdd);
-    } else {
-      if (phase.getNext() != null) {
-        this.addProjectFocusPhase(phase.getNext(), projecID, projectFocus);
-      }
-    }
-
-
+  public ProjectFocusMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
   @Override
-  public boolean deleteProjectFocus(long projectFocusId) {
+  public void deleteProjectFocus(long projectFocusId) {
     ProjectFocus projectFocus = this.find(projectFocusId);
     projectFocus.setActive(false);
-    long result = this.save(projectFocus);
-
-    if (projectFocus.getPhase().getNext() != null) {
-      this.deletProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
-    }
-    return result > 0;
-  }
-
-  public void deletProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
-        .collect(Collectors.toList());
-      for (ProjectFocus projectFocusDB : projectFocuses) {
-        this.deleteProjectFocus(projectFocusDB.getId());
-      }
-    } else {
-      if (phase.getNext() != null) {
-        this.deletProjectFocusPhase(phase.getNext(), projecID, projectFocus);
-      }
-    }
+    super.update(projectFocus);
 
 
   }
+
 
   @Override
   public boolean existProjectFocus(long projectFocusID) {
@@ -105,14 +55,14 @@ public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
 
   @Override
   public ProjectFocus find(long id) {
-    return dao.find(ProjectFocus.class, id);
+    return super.find(ProjectFocus.class, id);
 
   }
 
   @Override
   public List<ProjectFocus> findAll() {
     String query = "from " + ProjectFocus.class.getName() + " where is_active=1";
-    List<ProjectFocus> list = dao.findAll(query);
+    List<ProjectFocus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -121,17 +71,14 @@ public class ProjectFocusMySQLDAO implements ProjectFocusDAO {
   }
 
   @Override
-  public long save(ProjectFocus projectFocus) {
+  public ProjectFocus save(ProjectFocus projectFocus) {
     if (projectFocus.getId() == null) {
-      dao.save(projectFocus);
+      super.saveEntity(projectFocus);
     } else {
-      dao.update(projectFocus);
-    }
-    if (projectFocus.getPhase().getNext() != null) {
-      this.addProjectFocusPhase(projectFocus.getPhase().getNext(), projectFocus.getProject().getId(), projectFocus);
+      projectFocus = super.update(projectFocus);
     }
 
-    return projectFocus.getId();
+    return projectFocus;
   }
 
 

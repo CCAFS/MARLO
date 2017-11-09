@@ -24,6 +24,7 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private FundingSource fundingSource;
 
@@ -44,7 +45,6 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Phase phase;
-
 
   public FundingSourceBudget() {
   }
@@ -166,9 +166,15 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
-
   public void setYear(Integer year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "FundingSourceBudget [id=" + id + ", fundingSource=" + fundingSource + ", budget=" + budget + ", year="
+      + year + "]";
   }
 
 

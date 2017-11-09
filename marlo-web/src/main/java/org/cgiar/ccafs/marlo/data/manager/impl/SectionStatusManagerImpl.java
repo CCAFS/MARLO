@@ -41,9 +41,9 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
-  public boolean deleteSectionStatus(long sectionStatusId) {
+  public void deleteSectionStatus(long sectionStatusId) {
 
-    return sectionStatusDAO.deleteSectionStatus(sectionStatusId);
+    sectionStatusDAO.deleteSectionStatus(sectionStatusId);
   }
 
   @Override
@@ -124,7 +124,7 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
-  public long saveSectionStatus(SectionStatus sectionStatus) {
+  public SectionStatus saveSectionStatus(SectionStatus sectionStatus) {
 
     return sectionStatusDAO.save(sectionStatus);
   }

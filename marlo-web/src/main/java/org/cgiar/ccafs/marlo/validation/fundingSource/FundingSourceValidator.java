@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -149,6 +151,60 @@ public class FundingSourceValidator extends BaseValidator {
           }
 
         }
+      }
+    }
+
+    /**
+     * Validate Grant Amount only if the Funding source is Synced.
+     * If budgets are larger than the total amount, the funding source is pending for validation.
+     * A message is sent to the user indicating that there is something to modify. *
+     * 
+     * @author Julián Rodríguez CCAFS/CIAT
+     * @date 23/08/2017
+     * @update Added null field validation when you calculate de currentBudget
+     * @author Julián Rodríguez CCAFS/CIAT
+     * @date 25/08/2017
+     * @update Exclude the validation to W1W2
+     * @author Julián Rodríguez CCAFS/CIAT
+     * @date 06/09/2017
+     * @update Remove the validation to W1W2 *
+     * @author Julián Rodríguez
+     * @date 03/10/2017
+     */
+
+
+    if (fundingSource.getFundingSourceInfo().getSynced() != null) {
+      if (fundingSource.getFundingSourceInfo().getSynced()) {
+
+        // if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
+
+        Double grantAmount = fundingSource.getFundingSourceInfo().getGrantAmount();
+        List<FundingSourceBudget> budgets = fundingSource.getBudgets();
+        double currentBudget = 0;
+
+        for (FundingSourceBudget fundingSourceBudget : budgets) {
+          if (fundingSourceBudget.getBudget() != null) {
+            currentBudget += fundingSourceBudget.getBudget();
+          }
+
+        }
+
+        if (currentBudget > grantAmount) {
+
+
+          for (int i = 0; i < budgets.size(); i++) {
+            this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+            action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
+              InvalidFieldsMessages.WRONGVALUE);
+
+          }
+
+        }
+
+
+        // }
+
+
       }
     }
 

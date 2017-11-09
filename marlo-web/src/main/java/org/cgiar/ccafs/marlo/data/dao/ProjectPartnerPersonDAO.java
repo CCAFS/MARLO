@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectPartnerPersonMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -32,7 +33,7 @@ public interface ProjectPartnerPersonDAO {
    * @param projectPartnerPersonId is the projectPartnerPerson identifier.
    * @return true if the projectPartnerPerson was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId);
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId);
 
   /**
    * This method validate if the projectPartnerPerson identify with the given id exists in the system.
@@ -58,6 +59,14 @@ public interface ProjectPartnerPersonDAO {
   public List<ProjectPartnerPerson> findAll();
 
 
+  public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
+    long partnerId);
+
+
+  public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId);
+
+  public List<Map<String, Object>> findPartner(long institutionId, long phaseId, long projectId, long userId);
+
   /**
    * This method saves the information of the given projectPartnerPerson
    * 
@@ -66,5 +75,5 @@ public interface ProjectPartnerPersonDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectPartnerPerson projectPartnerPerson);
+  public ProjectPartnerPerson save(ProjectPartnerPerson projectPartnerPerson);
 }

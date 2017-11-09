@@ -34,7 +34,7 @@ public interface ICenterTopicManager {
    * @param researchTopicId is the researchTopic identifier.
    * @return true if the researchTopic was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchTopic(long researchTopicId);
+  public void deleteResearchTopic(long researchTopicId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterTopicManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchTopic(CenterTopic researchTopic);
+  public CenterTopic saveResearchTopic(CenterTopic researchTopic);
 
 
 }

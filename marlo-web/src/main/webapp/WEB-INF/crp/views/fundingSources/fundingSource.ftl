@@ -23,6 +23,8 @@
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
 [#assign hasInstitutions = fundingSource.institutions?has_content /]
 
+[#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
+[#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
     
 <section class="container">
   <article class="" id="mainInformation">
@@ -120,7 +122,7 @@
               [#-- Finance Input --]
               <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
-                <small>CIAT-OCS:</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
+                <small style="display:${hasCIAT?string('block', 'none')}">CIAT-OCS:</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
               [/#if]
             </div><!-- /input-group -->
             <span class="financeCode-message"></span>
@@ -147,13 +149,11 @@
           </div>
           <input type="hidden" class="fundingSourceSyncedDate" name="fundingSource.fundingSourceInfo.syncedDate" value="${(fundingSource.syncedDate?string["yyyy-MM-dd"])!'2017-06-30'}" />
         </div>
-        
-        
+
       </div>
       
     </div>
     <div class="borderBox">
-
       [#-- Loading --]
       <div class="loading" style="display:none"></div>
          <input class="" type="hidden" name="fundingSource.fundingSourceInfo.id" value="${fundingSource.fundingSourceInfo.id}" />
@@ -225,7 +225,9 @@
         <div class="row">
           [#-- Funding Window --]
           <div class="col-md-6 metadataElement-fundingTypeId">
-            [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
+
+          
+            [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')]
@@ -267,7 +269,7 @@
           <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-            [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
@@ -424,13 +426,13 @@
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. extensionYear as year]
+        [#list startYear .. endYear as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
       <div class="tab-content contributionContent">
-        [#list startYear .. extensionYear as year]
+        [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
           [#attempt]

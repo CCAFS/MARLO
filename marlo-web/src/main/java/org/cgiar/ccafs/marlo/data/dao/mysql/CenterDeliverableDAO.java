@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterDeliverableDAO implements ICenterDeliverableDAO {
+public class CenterDeliverableDAO extends AbstractMarloDAO<CenterDeliverable, Long> implements ICenterDeliverableDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDeliverableDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDeliverableDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverable(long deliverableId) {
+  public void deleteDeliverable(long deliverableId) {
     CenterDeliverable deliverable = this.find(deliverableId);
     deliverable.setActive(false);
-    return this.save(deliverable) > 0;
+    this.save(deliverable);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterDeliverableDAO implements ICenterDeliverableDAO {
 
   @Override
   public CenterDeliverable find(long id) {
-    return dao.find(CenterDeliverable.class, id);
+    return super.find(CenterDeliverable.class, id);
 
   }
 
   @Override
   public List<CenterDeliverable> findAll() {
     String query = "from " + CenterDeliverable.class.getName();
-    List<CenterDeliverable> list = dao.findAll(query);
+    List<CenterDeliverable> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CenterDeliverableDAO implements ICenterDeliverableDAO {
   @Override
   public List<CenterDeliverable> getDeliverablesByUserId(long userId) {
     String query = "from " + CenterDeliverable.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterDeliverable deliverable) {
+  public CenterDeliverable save(CenterDeliverable deliverable) {
     if (deliverable.getId() == null) {
-      dao.save(deliverable);
+      super.saveEntity(deliverable);
     } else {
-      dao.update(deliverable);
+      deliverable = super.update(deliverable);
     }
-    return deliverable.getId();
+    return deliverable;
   }
 
   @Override
-  public long save(CenterDeliverable deliverable, String actionName, List<String> relationsName) {
+  public CenterDeliverable save(CenterDeliverable deliverable, String actionName, List<String> relationsName) {
     if (deliverable.getId() == null) {
-      dao.save(deliverable, actionName, relationsName);
+      super.saveEntity(deliverable, actionName, relationsName);
     } else {
-      dao.update(deliverable, actionName, relationsName);
+      deliverable = super.update(deliverable, actionName, relationsName);
     }
-    return deliverable.getId();
+    return deliverable;
   }
 
 

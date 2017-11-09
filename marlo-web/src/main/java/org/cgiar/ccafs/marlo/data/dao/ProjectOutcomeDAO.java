@@ -33,7 +33,7 @@ public interface ProjectOutcomeDAO {
    * @param projectOutcomeId is the projectOutcome identifier.
    * @return true if the projectOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOutcome(long projectOutcomeId);
+  public void deleteProjectOutcome(long projectOutcomeId);
 
   /**
    * This method validate if the projectOutcome identify with the given id exists in the system.
@@ -67,7 +67,7 @@ public interface ProjectOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectOutcome projectOutcome);
+  public ProjectOutcome save(ProjectOutcome projectOutcome);
 
-  public long save(ProjectOutcome projectOutcome, String section, List<String> relationsName, Phase phase);
+  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName, Phase phase);
 }

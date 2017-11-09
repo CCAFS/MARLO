@@ -249,7 +249,8 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpMilestone [id=" + id + ", crpProgramOutcome=" + crpProgramOutcome + ", srfTargetUnit=" + srfTargetUnit
+      + ", title=" + title + ", index=" + index + ", year=" + year + ", value=" + value + "]";
   }
 
 

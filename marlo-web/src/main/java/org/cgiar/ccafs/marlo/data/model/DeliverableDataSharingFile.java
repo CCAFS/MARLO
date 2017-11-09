@@ -28,6 +28,7 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
   @Expose
   private Integer typeId;
 
+
   @Expose
   private String externalFile;
 
@@ -163,9 +164,15 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     this.phase = phase;
   }
 
-
   public void setTypeId(Integer typeId) {
     this.typeId = typeId;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableDataSharingFile [id=" + id + ", deliverable=" + deliverable + ", file=" + file + ", typeId="
+      + typeId + ", externalFile=" + externalFile + "]";
   }
 
 

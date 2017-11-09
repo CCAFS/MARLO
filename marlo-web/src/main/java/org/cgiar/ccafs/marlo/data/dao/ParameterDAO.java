@@ -32,7 +32,7 @@ public interface ParameterDAO {
    * @param parameterId is the parameter identifier.
    * @return true if the parameter was successfully deleted, false otherwise.
    */
-  public boolean deleteParameter(long parameterId);
+  public void deleteParameter(long parameterId);
 
   /**
    * This method validate if the parameter identify with the given id exists in the system.
@@ -67,5 +67,5 @@ public interface ParameterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Parameter parameter);
+  public Parameter save(Parameter parameter);
 }

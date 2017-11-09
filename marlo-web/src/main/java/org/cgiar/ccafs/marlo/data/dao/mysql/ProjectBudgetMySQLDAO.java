@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
+public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long> implements ProjectBudgetDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectBudgetMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectBudgetMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
         break;
     }
 
-    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    List<Map<String, Object>> list = super.findCustomQuery(query);
     if (list.size() > 0) {
       Map<String, Object> result = list.get(0);
       if (result.containsKey("amount")) {
@@ -85,7 +85,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
         + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
         + " where pb.funding_source_id= " + fundingSourceID + " and pb.year= " + year
         + " and pb.is_active=1 and pb.id_phase=" + idPhase;
-    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    List<Map<String, Object>> list = super.findCustomQuery(query);
     try {
       if (list.size() > 0) {
         Map<String, Object> result = list.get(0);
@@ -99,12 +99,11 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
 
 
   @Override
-  public boolean deleteProjectBudget(long projectBudgetId) {
+  public void deleteProjectBudget(long projectBudgetId) {
     ProjectBudget projectBudget = this.find(projectBudgetId);
     projectBudget.setActive(false);
-    boolean result = dao.update(projectBudget);
-    return result;
-
+		super.update(projectBudget);
+    
   }
 
   @Override
@@ -119,20 +118,21 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
 
   @Override
   public ProjectBudget find(long id) {
-    return dao.find(ProjectBudget.class, id);
+    return super.find(ProjectBudget.class, id);
 
   }
 
   @Override
   public List<ProjectBudget> findAll() {
     String query = "from " + ProjectBudget.class.getName() + " where is_active=1";
-    List<ProjectBudget> list = dao.findAll(query);
+    List<ProjectBudget> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
   }
+
 
   @Override
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
@@ -165,7 +165,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
     }
 
 
-    List<Map<String, Object>> pbList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> pbList = super.findCustomQuery(query.toString());
 
     List<ProjectBudget> projectBudgetList = new ArrayList<>();
 
@@ -196,15 +196,15 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   }
 
   @Override
-  public long save(ProjectBudget projectBudget) {
+  public ProjectBudget save(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
-      dao.save(projectBudget);
+      super.saveEntity(projectBudget);
     } else {
-      dao.update(projectBudget);
+      projectBudget = super.update(projectBudget);
     }
 
 
-    return projectBudget.getId();
+    return projectBudget;
   }
 
 

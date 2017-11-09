@@ -31,6 +31,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Double contribution;
+
   @Expose
   private User createdBy;
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
@@ -69,7 +70,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.deliverables = deliverables;
   }
-
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, User usersByCreatedBy,
     String keyOutput, boolean isActive, Date activeSince, String modificationJustification) {

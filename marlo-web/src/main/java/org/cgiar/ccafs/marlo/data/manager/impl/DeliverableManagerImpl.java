@@ -52,9 +52,9 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public boolean deleteDeliverable(long deliverableId) {
+  public void deleteDeliverable(long deliverableId) {
 
-    return deliverableDAO.deleteDeliverable(deliverableId);
+    deliverableDAO.deleteDeliverable(deliverableId);
   }
 
   @Override
@@ -77,14 +77,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public long saveDeliverable(Deliverable deliverable) {
+  public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);
   }
 
   @Override
-  public long saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
-    long resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
+  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
+    Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
 
     Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {

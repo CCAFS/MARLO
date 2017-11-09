@@ -22,25 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluserActvityDAO {
+public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<ProjectBudgetsCluserActvity, Long> implements ProjectBudgetsCluserActvityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectBudgetsCluserActvityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectBudgetsCluserActvityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
 
   @Override
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity = this.find(projectBudgetsCluserActvityId);
     projectBudgetsCluserActvity.setActive(false);
-    boolean result = dao.update(projectBudgetsCluserActvity);
-
-
-    return result;
+     super.update(projectBudgetsCluserActvity);
   }
 
   @Override
@@ -55,14 +52,14 @@ public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluser
 
   @Override
   public ProjectBudgetsCluserActvity find(long id) {
-    return dao.find(ProjectBudgetsCluserActvity.class, id);
+    return super.find(ProjectBudgetsCluserActvity.class, id);
 
   }
 
   @Override
   public List<ProjectBudgetsCluserActvity> findAll() {
     String query = "from " + ProjectBudgetsCluserActvity.class.getName() + " where is_active=1";
-    List<ProjectBudgetsCluserActvity> list = dao.findAll(query);
+    List<ProjectBudgetsCluserActvity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -71,15 +68,15 @@ public class ProjectBudgetsCluserActvityMySQLDAO implements ProjectBudgetsCluser
   }
 
   @Override
-  public long save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
+  public ProjectBudgetsCluserActvity save(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
     if (projectBudgetsCluserActvity.getId() == null) {
-      dao.save(projectBudgetsCluserActvity);
+      super.saveEntity(projectBudgetsCluserActvity);
     } else {
-      dao.update(projectBudgetsCluserActvity);
+      projectBudgetsCluserActvity = super.update(projectBudgetsCluserActvity);
     }
 
 
-    return projectBudgetsCluserActvity.getId();
+    return projectBudgetsCluserActvity;
   }
 
 

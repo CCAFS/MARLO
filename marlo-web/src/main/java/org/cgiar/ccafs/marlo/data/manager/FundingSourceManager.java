@@ -35,7 +35,7 @@ public interface FundingSourceManager {
    * @param fundingSourceId is the fundingSource identifier.
    * @return true if the fundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSource(long fundingSourceId);
+  public void deleteFundingSource(long fundingSourceId);
 
 
   /**
@@ -73,9 +73,9 @@ public interface FundingSourceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSource(FundingSource fundingSource);
+  public FundingSource saveFundingSource(FundingSource fundingSource);
 
-  public long saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
+  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName, Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

@@ -16,8 +16,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   private static final long serialVersionUID = 3873609958921714313L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private Deliverable deliverable;
   @Expose
@@ -48,8 +50,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   private Boolean synced;
   @Expose
   private Phase phase;
-
-
   private String type;
 
 
@@ -119,6 +119,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannelName;
   }
 
+
   public String getDisseminationUrl() {
     return disseminationUrl;
   }
@@ -133,6 +134,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return id;
   }
 
+
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
   }
@@ -146,13 +148,13 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return limitedExclusivity;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -281,9 +283,15 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     this.synced = synced;
   }
 
-
   public void setType(String type) {
     this.type = type;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableDissemination [id=" + id + ", deliverable=" + deliverable + ", isOpenAccess=" + isOpenAccess
+      + ", disseminationUrl=" + disseminationUrl + ", synced=" + synced + ", type=" + type + "]";
   }
 
 

@@ -32,7 +32,7 @@ public interface SrfCrossCuttingIssueDAO {
    * @param srfCrossCuttingIssueId is the srfCrossCuttingIssue identifier.
    * @return true if the srfCrossCuttingIssue was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId);
+  public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId);
 
   /**
    * This method validate if the srfCrossCuttingIssue identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface SrfCrossCuttingIssueDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(SrfCrossCuttingIssue srfCrossCuttingIssue);
+  public SrfCrossCuttingIssue save(SrfCrossCuttingIssue srfCrossCuttingIssue);
 }

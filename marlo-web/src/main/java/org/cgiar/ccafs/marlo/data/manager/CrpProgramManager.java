@@ -35,7 +35,7 @@ public interface CrpProgramManager {
    * @param crpProgramId is the crpProgram identifier.
    * @return true if the crpProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpProgram(long crpProgramId);
+  public void deleteCrpProgram(long crpProgramId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface CrpProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpProgram(CrpProgram crpProgram);
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram);
 
   /**
    * This method saves the information of the given crpProgram
@@ -88,7 +88,7 @@ public interface CrpProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName);
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName);
 
   public long saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase);
 

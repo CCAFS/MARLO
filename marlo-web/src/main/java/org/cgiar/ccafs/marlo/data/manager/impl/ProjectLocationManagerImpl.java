@@ -98,9 +98,9 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
-  public boolean deleteProjectLocation(long projectLocationId) {
+  public void deleteProjectLocation(long projectLocationId) {
 
-    boolean resultaDelete = projectLocationDAO.deleteProjectLocation(projectLocationId);
+    projectLocationDAO.deleteProjectLocation(projectLocationId);
     ProjectLocation projectLocation = this.getProjectLocationById(projectLocationId);
     Phase currentPhase = phaseMySQLDAO.find(projectLocation.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
@@ -110,7 +110,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
-    return resultaDelete;
+ 
   }
 
   public void deleteProjectLocationPhase(Phase next, long projectID, ProjectLocation projectLocation) {
@@ -178,9 +178,9 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
-  public long saveProjectLocation(ProjectLocation projectLocation) {
+  public ProjectLocation saveProjectLocation(ProjectLocation projectLocation) {
 
-    long resultProjectLocation = projectLocationDAO.save(projectLocation);
+    ProjectLocation resultProjectLocation = projectLocationDAO.save(projectLocation);
     Phase currentPhase = phaseMySQLDAO.find(projectLocation.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectLocation.getPhase().getNext() != null) {

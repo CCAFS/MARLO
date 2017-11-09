@@ -180,9 +180,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
 
-    boolean resultBoolean = projectPartnerDAO.deleteProjectPartner(projectPartnerId);
+    projectPartnerDAO.deleteProjectPartner(projectPartnerId);
     ProjectPartner projectPartner = this.getProjectPartnerById(projectPartnerId);
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
@@ -192,7 +192,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
-    return resultBoolean;
+   
 
   }
 
@@ -236,9 +236,19 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
-  public long saveProjectPartner(ProjectPartner projectPartner) {
+  public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
+    return projectPartnerDAO.getProjectPartnerByIdAndEagerFetchLocations(projectPartnerID);
+  }
 
-    long resultPartner = projectPartnerDAO.save(projectPartner);
+  @Override
+  public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId) {
+    return projectPartnerDAO.getProjectPartnersForProjectWithActiveProjectPartnerPersons(projectId);
+  }
+
+  @Override
+  public ProjectPartner saveProjectPartner(ProjectPartner projectPartner) {
+
+    ProjectPartner resultPartner = projectPartnerDAO.save(projectPartner);
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectPartner.getPhase().getNext() != null) {

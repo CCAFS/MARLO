@@ -34,7 +34,7 @@ public interface DeliverableProgramManager {
    * @param deliverableProgramId is the deliverableProgram identifier.
    * @return true if the deliverableProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableProgram(long deliverableProgramId);
+  public void deleteDeliverableProgram(long deliverableProgramId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableProgram(DeliverableProgram deliverableProgram);
+  public DeliverableProgram saveDeliverableProgram(DeliverableProgram deliverableProgram);
 
 
 }

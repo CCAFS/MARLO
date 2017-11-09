@@ -32,7 +32,7 @@ public interface SrfSloDAO {
    * @param srfSloId is the srfSlo identifier.
    * @return true if the srfSlo was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSlo(long srfSloId);
+  public void deleteSrfSlo(long srfSloId);
 
   /**
    * This method validate if the srfSlo identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface SrfSloDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(SrfSlo srfSlo);
+  public SrfSlo save(SrfSlo srfSlo);
 }

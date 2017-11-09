@@ -41,9 +41,9 @@ public class CrpProgramLeaderManagerImpl implements CrpProgramLeaderManager {
   }
 
   @Override
-  public boolean deleteCrpProgramLeader(long crpProgramLeaderId) {
+  public void deleteCrpProgramLeader(long crpProgramLeaderId) {
 
-    return crpProgramLeaderDAO.deleteCrpProgramLeader(crpProgramLeaderId);
+    crpProgramLeaderDAO.deleteCrpProgramLeader(crpProgramLeaderId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpProgramLeaderManagerImpl implements CrpProgramLeaderManager {
   }
 
   @Override
-  public long saveCrpProgramLeader(CrpProgramLeader crpProgramLeader) {
+  public CrpProgramLeader saveCrpProgramLeader(CrpProgramLeader crpProgramLeader) {
 
     return crpProgramLeaderDAO.save(crpProgramLeader);
   }

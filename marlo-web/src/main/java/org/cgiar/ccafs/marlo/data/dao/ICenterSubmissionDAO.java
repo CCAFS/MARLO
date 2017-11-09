@@ -32,7 +32,7 @@ public interface ICenterSubmissionDAO {
    * @param submissionId is the submission identifier.
    * @return true if the submission was successfully deleted, false otherwise.
    */
-  public boolean deleteSubmission(long submissionId);
+  public void deleteSubmission(long submissionId);
 
   /**
    * This method validate if the submission identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterSubmissionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterSubmission submission);
+  public CenterSubmission save(CenterSubmission submission);
 }

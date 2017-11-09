@@ -34,7 +34,7 @@ public interface ICenterSubmissionManager {
    * @param submissionId is the submission identifier.
    * @return true if the submission was successfully deleted, false otherwise.
    */
-  public boolean deleteSubmission(long submissionId);
+  public void deleteSubmission(long submissionId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterSubmissionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSubmission(CenterSubmission submission);
+  public CenterSubmission saveSubmission(CenterSubmission submission);
 
 
 }

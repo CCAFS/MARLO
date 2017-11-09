@@ -149,8 +149,8 @@ public class InstitutionLocation implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-
-    return this.getLocElement().getIsoAlpha2();
+    return "InstitutionLocation [id=" + id + ", institution=" + institution + ", locElement=" + locElement
+      + ", headquater=" + headquater + ", city=" + city + "]";
   }
 
 

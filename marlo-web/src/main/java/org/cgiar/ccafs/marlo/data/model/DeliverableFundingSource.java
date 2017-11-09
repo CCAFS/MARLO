@@ -30,6 +30,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   private User createdBy;
   @Expose
   private FundingSource fundingSource;
+
   @Expose
   private boolean active;
   @Expose
@@ -100,6 +101,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -179,6 +181,12 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableFundingSource [id=" + id + ", deliverable=" + deliverable + ", fundingSource=" + fundingSource
+      + "]";
   }
 
 

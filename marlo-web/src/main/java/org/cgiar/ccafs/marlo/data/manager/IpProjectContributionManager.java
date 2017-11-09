@@ -34,7 +34,7 @@ public interface IpProjectContributionManager {
    * @param ipProjectContributionId is the ipProjectContribution identifier.
    * @return true if the ipProjectContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProjectContribution(long ipProjectContributionId);
+  public void deleteIpProjectContribution(long ipProjectContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpProjectContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProjectContribution(IpProjectContribution ipProjectContribution);
+  public IpProjectContribution saveIpProjectContribution(IpProjectContribution ipProjectContribution);
 
 
 }

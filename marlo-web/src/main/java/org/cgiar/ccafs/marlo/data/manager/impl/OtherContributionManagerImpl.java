@@ -41,9 +41,9 @@ public class OtherContributionManagerImpl implements OtherContributionManager {
   }
 
   @Override
-  public boolean deleteOtherContribution(long otherContributionId) {
+  public void deleteOtherContribution(long otherContributionId) {
 
-    return otherContributionDAO.deleteOtherContribution(otherContributionId);
+    otherContributionDAO.deleteOtherContribution(otherContributionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class OtherContributionManagerImpl implements OtherContributionManager {
   }
 
   @Override
-  public long saveOtherContribution(OtherContribution otherContribution) {
+  public OtherContribution saveOtherContribution(OtherContribution otherContribution) {
 
     return otherContributionDAO.save(otherContribution);
   }

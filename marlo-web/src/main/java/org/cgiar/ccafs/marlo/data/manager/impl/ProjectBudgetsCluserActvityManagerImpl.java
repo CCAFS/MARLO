@@ -149,9 +149,9 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   }
 
   @Override
-  public long saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
+  public ProjectBudgetsCluserActvity saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
 
-    long resultProjectBudget = projectBudgetsCluserActvityDAO.save(projectBudgetsCluserActvity);
+    ProjectBudgetsCluserActvity resultProjectBudget = projectBudgetsCluserActvityDAO.save(projectBudgetsCluserActvity);
     Phase currentPhase = phaseDAO.find(projectBudgetsCluserActvity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudgetsCluserActvity.getPhase().getNext() != null) {
