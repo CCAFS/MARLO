@@ -16,11 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
@@ -30,14 +31,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectMySQLDAO implements ProjectDAO {
+public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
-  private StandardDAO dao;
+  private ProjectInfoDAO projectInfoDAO;
+  private CrpProgramDAO crpProgramDAO;
 
   @Inject
-  public ProjectMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO) {
+    super(sessionFactory);
+    this.projectInfoDAO = projectInfoDAO;
+
+    this.crpProgramDAO = crpProgramDAO;
   }
 
 
@@ -63,7 +69,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
       query.append("' ");
       //
 
-      List<Map<String, Object>> rsReferences = dao.findCustomQuery(query.toString());
+      List<Map<String, Object>> rsReferences = super.findCustomQuery(query.toString());
 
 
       String table, column;
@@ -81,7 +87,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
         query.append(table);
         query.append("' ");
         query.append("AND COLUMN_NAME = 'is_active'");
-        List<Map<String, Object>> rsColumnExist = dao.findCustomQuery(query.toString());
+        List<Map<String, Object>> rsColumnExist = super.findCustomQuery(query.toString());
         if (!rsColumnExist.isEmpty()) {
           query.setLength(0);
           query.append("UPDATE ");
@@ -92,7 +98,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
           query.append(column);
           query.append(" = '" + columnValue + "'");
 
-          dao.executeQuery(query.toString());
+          super.executeUpdateQuery(query.toString());
 
 
         }
@@ -112,12 +118,13 @@ public class ProjectMySQLDAO implements ProjectDAO {
   }
 
   @Override
-  public boolean deleteProject(Project project) {
+  public void deleteProject(Project project) {
 
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
-    return this.save(project) > 0;
+    project.setActive(false);
+    this.save(project);
   }
 
   @Override
@@ -133,14 +140,14 @@ public class ProjectMySQLDAO implements ProjectDAO {
 
   @Override
   public Project find(long id) {
-    return dao.find(Project.class, id);
+    return super.find(Project.class, id);
 
   }
 
   @Override
   public List<Project> findAll() {
     String query = "from " + Project.class.getName() + " where is_active=1";
-    List<Project> list = dao.findAll(query);
+    List<Project> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -157,12 +164,12 @@ public class ProjectMySQLDAO implements ProjectDAO {
     query.append(crpId);
     query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
       + ProjectStatusEnum.Complete.getStatusId() + " )");
-    List<Map<String, Object>> list = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
     List<Project> projects = new ArrayList<Project>();
     for (Map<String, Object> map : list) {
       Project project = this.find(Long.parseLong(map.get("projectId").toString()));
-      project.setProjectInfo(dao.find(ProjectInfo.class, Long.parseLong(map.get("info").toString())));
+      project.setProjectInfo(projectInfoDAO.find(Long.parseLong(map.get("info").toString())));
       projects.add(project);
     }
     return projects;
@@ -175,9 +182,9 @@ public class ProjectMySQLDAO implements ProjectDAO {
     builder.append(" where pf.project_id= " + projectID + " and pf.id_phase=" + idPhase + " and pr.program_type=" + type
       + " and pf.is_active=1");
     List<CrpProgram> list = new ArrayList<>();
-    List<Map<String, Object>> maps = dao.findCustomQuery(builder.toString());
+    List<Map<String, Object>> maps = super.findCustomQuery(builder.toString());
     for (Map<String, Object> map : maps) {
-      list.add(dao.find(CrpProgram.class, Long.parseLong(map.get("id").toString())));
+      list.add(crpProgramDAO.find(Long.parseLong(map.get("id").toString())));
 
     }
     return list;
@@ -190,7 +197,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id not in (438,462)");
     List<Map<String, Object>> list =
-      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     return list;
   }
 
@@ -201,46 +208,46 @@ public class ProjectMySQLDAO implements ProjectDAO {
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)");
     List<Map<String, Object>> list =
-      dao.excuteStoreProccedure(" call getPermissions(" + userId + ")", builder.toString());
+      super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     return list;
 
   }
 
   @Override
-  public long save(Project project) {
+  public Project save(Project project) {
     if (project.getId() == null) {
-      dao.save(project);
+      super.saveEntity(project);
     } else {
-      dao.update(project);
+      project = super.update(project);
     }
 
 
-    return project.getId();
+    return project;
+  }
+
+
+  @Override
+  public Project save(Project project, String sectionName, List<String> relationsName) {
+    if (project.getId() == null) {
+      project = super.saveEntity(project, sectionName, relationsName);
+    } else {
+      project = super.update(project, sectionName, relationsName);
+    }
+
+
+    return project;
   }
 
   @Override
-  public long save(Project project, String sectionName, List<String> relationsName) {
+  public Project save(Project project, String sectionName, List<String> relationsName, Phase phase) {
     if (project.getId() == null) {
-      dao.save(project, sectionName, relationsName);
+      project = super.saveEntity(project, sectionName, relationsName, phase);
     } else {
-      dao.update(project, sectionName, relationsName);
+      project = super.update(project, sectionName, relationsName, phase);
     }
 
 
-    return project.getId();
+    return project;
   }
-
-  @Override
-  public long save(Project project, String sectionName, List<String> relationsName, Phase phase) {
-    if (project.getId() == null) {
-      dao.save(project, sectionName, relationsName, phase);
-    } else {
-      dao.update(project, sectionName, relationsName, phase);
-    }
-
-
-    return project.getId();
-  }
-
 
 }

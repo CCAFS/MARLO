@@ -16,30 +16,27 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class FundingSourceInfoMySQLDAO implements FundingSourceInfoDAO {
+public class FundingSourceInfoMySQLDAO extends AbstractMarloDAO<FundingSourceInfo, Long>
+  implements FundingSourceInfoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public FundingSourceInfoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public FundingSourceInfoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteFundingSourceInfo(long fundingSourceInfoId) {
+  public void deleteFundingSourceInfo(long fundingSourceInfoId) {
     FundingSourceInfo fundingSourceInfo = this.find(fundingSourceInfoId);
-    return dao.delete(fundingSourceInfo);
+    super.delete(fundingSourceInfo);
   }
 
   @Override
@@ -54,14 +51,14 @@ public class FundingSourceInfoMySQLDAO implements FundingSourceInfoDAO {
 
   @Override
   public FundingSourceInfo find(long id) {
-    return dao.find(FundingSourceInfo.class, id);
+    return super.find(FundingSourceInfo.class, id);
 
   }
 
   @Override
   public List<FundingSourceInfo> findAll() {
     String query = "from " + FundingSourceInfo.class.getName();
-    List<FundingSourceInfo> list = dao.findAll(query);
+    List<FundingSourceInfo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,68 +67,15 @@ public class FundingSourceInfoMySQLDAO implements FundingSourceInfoDAO {
   }
 
   @Override
-  public long save(FundingSourceInfo fundingSourceInfo) {
+  public FundingSourceInfo save(FundingSourceInfo fundingSourceInfo) {
     if (fundingSourceInfo.getId() == null) {
-      dao.save(fundingSourceInfo);
+      fundingSourceInfo = super.saveEntity(fundingSourceInfo);
     } else {
-      dao.update(fundingSourceInfo);
-    }
-
-    if (fundingSourceInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
-      if (fundingSourceInfo.getPhase().getNext() != null) {
-        this.saveInfoPhase(fundingSourceInfo.getPhase().getNext(), fundingSourceInfo.getFundingSource().getId(),
-          fundingSourceInfo);
-      }
-    }
-
-    return fundingSourceInfo.getId();
-  }
-
-  public void saveInfoPhase(Phase next, long fundingSourceID, FundingSourceInfo fundingSourceInfo) {
-    Phase phase = dao.find(Phase.class, next.getId());
-    Calendar cal = Calendar.getInstance();
-    if (fundingSourceInfo.getEndDate() != null) {
-      cal.setTime(fundingSourceInfo.getEndDate());
+      fundingSourceInfo = super.update(fundingSourceInfo);
     }
 
 
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceInfo> fundingSourcesInfos = phase.getFundingSourceInfo().stream()
-        .filter(c -> c.getFundingSource().getId().longValue() == fundingSourceID).collect(Collectors.toList());
-      if (!fundingSourcesInfos.isEmpty()) {
-        for (FundingSourceInfo fundingSourceInfoPhase : fundingSourcesInfos) {
-          fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo);
-          if (fundingSourceInfo.getEndDate() != null) {
-            if (cal.get(Calendar.YEAR) < phase.getYear()) {
-
-              dao.delete(fundingSourceInfoPhase);
-            } else {
-              dao.update(fundingSourceInfoPhase);
-            }
-          }
-
-
-        }
-      } else {
-        if (fundingSourceInfo.getEndDate() != null) {
-
-          if (cal.get(Calendar.YEAR) >= phase.getYear()) {
-            FundingSourceInfo fundingSourceInfoAdd = new FundingSourceInfo();
-            fundingSourceInfoAdd.setFundingSource(fundingSourceInfo.getFundingSource());
-            fundingSourceInfoAdd.updateFundingSourceInfo(fundingSourceInfo);
-            fundingSourceInfoAdd.setPhase(phase);
-            dao.save(fundingSourceInfoAdd);
-
-          }
-
-
-        }
-      }
-
-    }
-    if (phase.getNext() != null) {
-      this.saveInfoPhase(phase.getNext(), fundingSourceID, fundingSourceInfo);
-    }
+    return fundingSourceInfo;
   }
 
 

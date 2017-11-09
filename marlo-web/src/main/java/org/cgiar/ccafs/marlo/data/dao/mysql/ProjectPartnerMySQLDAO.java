@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerLocationDAO;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -35,13 +36,15 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
 
   private LocElementDAO locElementDAO;
   private InstitutionLocationDAO institutionDAO;
-
+  private ProjectPartnerLocationDAO projectPartnerLocationDAO;
 
   @Inject
-  public ProjectPartnerMySQLDAO(StandardDAO dao, LocElementDAO locElementDAO, InstitutionLocationDAO institutionDAO) {
-    this.dao = dao;
+  public ProjectPartnerMySQLDAO(SessionFactory sessionFactory, LocElementDAO locElementDAO,
+    InstitutionLocationDAO institutionDAO, ProjectPartnerLocationDAO projectPartnerLocationDAO) {
+    super(sessionFactory);
     this.locElementDAO = locElementDAO;
     this.institutionDAO = institutionDAO;
+    this.projectPartnerLocationDAO = projectPartnerLocationDAO;
   }
 
   /**
@@ -66,7 +69,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
         partnerLocation.setModificationJustification(projectPartner.getModificationJustification());
         partnerLocation.setModifiedBy(projectPartner.getCreatedBy());
         partnerLocation.setProjectPartner(projectPartnerAdd);
-        dao.save(partnerLocation);
+        projectPartnerLocationDAO.save(partnerLocation);
       }
     }
   }

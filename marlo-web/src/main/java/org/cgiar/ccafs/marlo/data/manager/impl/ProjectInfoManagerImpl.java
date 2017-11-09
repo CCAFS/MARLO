@@ -51,9 +51,9 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   }
 
   @Override
-  public boolean deleteProjectInfo(long projectInfoId) {
+  public void deleteProjectInfo(long projectInfoId) {
 
-    return projectInfoDAO.deleteProjectInfo(projectInfoId);
+    projectInfoDAO.deleteProjectInfo(projectInfoId);
   }
 
   @Override
@@ -131,9 +131,9 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   }
 
   @Override
-  public long saveProjectInfo(ProjectInfo projectInfo) {
+  public ProjectInfo saveProjectInfo(ProjectInfo projectInfo) {
 
-    long resultProjectInfo = projectInfoDAO.save(projectInfo);
+    ProjectInfo resultProjectInfo = projectInfoDAO.save(projectInfo);
     if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
       if (projectInfo.getPhase().getNext() != null) {
         this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);

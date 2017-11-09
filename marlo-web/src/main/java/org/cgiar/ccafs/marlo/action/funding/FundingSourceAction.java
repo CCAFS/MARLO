@@ -739,12 +739,12 @@ public class FundingSourceAction extends BaseAction {
        * }
        */
 
-      fundingSource.setW1w2(null);
-      fundingSource.setFile(null);
-      fundingSource.setDirectDonor(null);
-      fundingSource.setInstitution(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setW1w2(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setFile(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setDirectDonor(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setInstitution(null);
       fundingSource.setBudgets(null);
-      fundingSource.setBudgetType(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setBudgetType(null);
       fundingSource.setFundingRegions(null);
       fundingSource.setFundingCountry(null);
 
@@ -764,7 +764,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setModifiedBy(this.getCurrentUser());
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
-      Institution institution = fundingSource.getInstitution();
+      Institution institution = fundingSource.getFundingSourceInfo(this.getActualPhase()).getInstitution();
 
       funginsSourceInfoDB.setModifiedBy(this.getCurrentUser());
       funginsSourceInfoDB.setModificationJustification("");

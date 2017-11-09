@@ -210,7 +210,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -379,10 +379,10 @@ public class ProjectSubmissionAction extends BaseAction {
     submission.setDateTime(new Date());
     submission.setProject(project);
 
-    long result = submissionManager.saveSubmission(submission);
+    submission = submissionManager.saveSubmission(submission);
     this.setSubmission(submission);
-    if (result > 0) {
-      submission.setId(result);
+    if (submission != null) {
+
       this.sendNotficationEmail();
 
     }

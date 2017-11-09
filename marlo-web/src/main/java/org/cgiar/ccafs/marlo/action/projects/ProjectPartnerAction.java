@@ -1073,16 +1073,20 @@ public class ProjectPartnerAction extends BaseAction {
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-
-      } else {
-        // Check to see if the user has priviliges for this crp
-        Institution inst = institutionManager.getInstitutionById(previouslyEnteredPartner.getInstitution().getId());
-        if (!inst.getCrpPpaPartners().stream()
-          .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
-          .collect(Collectors.toList()).isEmpty()) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
-        }
 
+
+        } else {
+          // Check to see if the user has priviliges for this crp
+          Institution inst = institutionManager.getInstitutionById(previouslyEnteredPartner.getInstitution().getId());
+          if (!inst.getCrpPpaPartners().stream()
+            .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
+            .collect(Collectors.toList()).isEmpty()) {
+            projectPartnerManager.deleteProjectPartner(previouslyEnteredPartner.getId());
+          }
+
+        }
       }
     }
   }
@@ -1095,15 +1099,16 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-          if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
-            projectPartnerManager.deleteProjectPartner(previousPartner.getId());
-
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
       previousProject = projectManager.getProjectById(projectID);
-      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons();
-      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson();
+      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons(this.getActualPhase());
+      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson(this.getActualPhase());
 
-      List<ProjectPartner> partners =
-        previousProject.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+      List<ProjectPartner> partners = previousProject.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
       for (ProjectPartner previousPartner : partners) {
         this.removeDeletedPartners(previousPartner);

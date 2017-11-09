@@ -116,8 +116,8 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and funding_source_id=" + fundingSource + " and year=" + year + " and cycle='" + cycle + "'";
-    List<SectionStatus> list = dao.findAll(query);
+      + "' and funding_source_id=" + fundingSourceId + " and year=" + year + " and cycle='" + cycle + "'";
+    List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }

@@ -1827,8 +1827,8 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
 
-      deliverableManagedState =
-        deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(), relationsName);
+      deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
+        relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

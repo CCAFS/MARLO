@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,9 +41,9 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
-  public boolean deleteDeliverableInfo(long deliverableInfoId) {
+  public void deleteDeliverableInfo(long deliverableInfoId) {
 
-    return deliverableInfoDAO.deleteDeliverableInfo(deliverableInfoId);
+    deliverableInfoDAO.deleteDeliverableInfo(deliverableInfoId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
-  public long saveDeliverableInfo(DeliverableInfo deliverableInfo) {
+  public DeliverableInfo saveDeliverableInfo(DeliverableInfo deliverableInfo) {
 
     return deliverableInfoDAO.save(deliverableInfo);
   }

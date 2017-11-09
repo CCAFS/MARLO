@@ -108,7 +108,7 @@ public class ProjectClusterActivity implements java.io.Serializable, IAuditLog {
   }
 
   @Override
-  @Override
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }

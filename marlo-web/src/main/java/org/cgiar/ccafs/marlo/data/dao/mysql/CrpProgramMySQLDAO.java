@@ -102,24 +102,15 @@ public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> imple
     return crpProgram;
   }
 
-  @Override
-  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName) {
-    if (crpProgram.getId() == null) {
-      super.saveEntity(crpProgram, actionName, relationsName);
-    } else {
-      crpProgram = super.update(crpProgram, actionName, relationsName);
-    }
-    return crpProgram;
-  }
 
   @Override
-  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
     if (crpProgram.getId() == null) {
-      dao.save(crpProgram, actionName, relationsName, phase);
+      super.saveEntity(crpProgram, actionName, relationsName, phase);
     } else {
-      dao.update(crpProgram, actionName, relationsName, phase);
+      crpProgram = super.update(crpProgram, actionName, relationsName, phase);
     }
-    return crpProgram.getId();
+    return crpProgram;
   }
 
 

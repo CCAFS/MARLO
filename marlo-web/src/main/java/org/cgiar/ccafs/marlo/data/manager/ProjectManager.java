@@ -93,6 +93,6 @@ public interface ProjectManager {
 
   public Project saveProject(Project project, String section, List<String> relationsName);
 
-  public long saveProject(Project project, String sectionName, List<String> relationsName, Phase phase);
+  public Project saveProject(Project project, String sectionName, List<String> relationsName, Phase phase);
 
 }

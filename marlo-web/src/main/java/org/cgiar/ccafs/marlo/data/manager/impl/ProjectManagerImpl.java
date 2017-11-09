@@ -125,7 +125,7 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
-  public long saveProject(Project project, String sectionName, List<String> relationsName, Phase phase) {
+  public Project saveProject(Project project, String sectionName, List<String> relationsName, Phase phase) {
 
     return projectDAO.save(project, sectionName, relationsName, phase);
   }

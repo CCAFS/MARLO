@@ -213,7 +213,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   @Override
   public CrpProgramOutcome saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
 
-    long resultDao = crpProgramOutcomeDAO.save(crpProgramOutcome);
+    CrpProgramOutcome resultDao = crpProgramOutcomeDAO.save(crpProgramOutcome);
     if (crpProgramOutcome.getPhase().getNext() != null) {
       this.addCrpPorgramOutcomePhase(crpProgramOutcome.getPhase().getNext(), crpProgramOutcome.getCrpProgram().getId(),
         crpProgramOutcome);

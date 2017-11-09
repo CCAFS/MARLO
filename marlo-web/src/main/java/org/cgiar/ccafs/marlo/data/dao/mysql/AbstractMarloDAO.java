@@ -45,6 +45,15 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
 
+  private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames) {
+    LOG.debug("Adding auditing fields to AuditLogContext");
+    AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+    auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
+    auditLogContext.setActionName(actionName);
+    auditLogContext.setRelationsNames(relationsNames);
+
+  }
+
   private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames,
     Phase phase) {
     LOG.debug("Adding auditing fields to AuditLogContext");
@@ -54,6 +63,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     auditLogContext.setRelationsNames(relationsNames);
     auditLogContext.setPhase(phase);
   }
+
 
   /**
    * This method deletes a record from the database.
@@ -235,6 +245,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
+  protected T saveEntity(T entity, String actionName, List<String> relationsName) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
+    sessionFactory.getCurrentSession().persist(entity);
+    return entity;
+  }
+
+  /**
+   * This method persists record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
   protected T saveEntity(T entity, String actionName, List<String> relationsName, Phase phase) {
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
     sessionFactory.getCurrentSession().persist(entity);
@@ -248,6 +271,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity) {
+    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    return entity;
+  }
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected T update(T entity, String actionName, List<String> relationsName) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }

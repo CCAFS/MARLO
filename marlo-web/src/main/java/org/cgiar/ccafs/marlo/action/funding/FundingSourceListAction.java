@@ -111,7 +111,7 @@ public class FundingSourceListAction extends BaseAction {
     fundingSourceID = fundingSource.getId();
 
     fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-    fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo);
+    fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
 
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());

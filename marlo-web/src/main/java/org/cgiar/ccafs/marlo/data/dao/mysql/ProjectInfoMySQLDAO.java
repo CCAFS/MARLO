@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
+public class ProjectInfoMySQLDAO extends AbstractMarloDAO<ProjectInfo, Long> implements ProjectInfoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectInfoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectInfoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectInfo(long projectInfoId) {
+  public void deleteProjectInfo(long projectInfoId) {
     ProjectInfo projectInfo = this.find(projectInfoId);
-    return dao.delete(projectInfo);
+    super.delete(projectInfo);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
 
   @Override
   public ProjectInfo find(long id) {
-    return dao.find(ProjectInfo.class, id);
+    return super.find(ProjectInfo.class, id);
 
   }
 
   @Override
   public List<ProjectInfo> findAll() {
     String query = "from " + ProjectInfo.class.getName() + "";
-    List<ProjectInfo> list = dao.findAll(query);
+    List<ProjectInfo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class ProjectInfoMySQLDAO implements ProjectInfoDAO {
   }
 
   @Override
-  public long save(ProjectInfo projectInfo) {
+  public ProjectInfo save(ProjectInfo projectInfo) {
     if (projectInfo.getId() == null) {
-      dao.save(projectInfo);
+      super.saveEntity(projectInfo);
     } else {
-      dao.update(projectInfo);
+      projectInfo = super.update(projectInfo);
     }
 
 
-    return projectInfo.getId();
+    return projectInfo;
   }
 
 

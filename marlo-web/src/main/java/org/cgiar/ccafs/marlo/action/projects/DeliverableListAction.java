@@ -103,7 +103,7 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setCreatedBy(this.getCurrentUser());
     deliverable.setActive(true);
     deliverable.setActiveSince(new Date());
-    deliverableID = deliverableManager.saveDeliverable(deliverable);
+    deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.setDeliverable(deliverable);
@@ -183,7 +183,7 @@ public class DeliverableListAction extends BaseAction {
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == -1))))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
           return openA;
         } else {
 

@@ -85,9 +85,8 @@ public interface CrpProgramDAO {
    *         or -1 is some error occurred.
    */
 
-  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName);
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase);
 
-  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase);
 
 }
 

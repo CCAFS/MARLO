@@ -25,7 +25,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long> implements CrpClusterOfActivityDAO {
+public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long>
+  implements CrpClusterOfActivityDAO {
 
 
   @Inject
@@ -73,10 +74,10 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
     StringBuilder query = new StringBuilder();
     query.append("from ");
     query.append(CrpClusterOfActivity.class.getName());
-    query.append(" where is_active=1 and crp_program_id = ?");
-    query.append(" and id_phase= ? ");
+    query.append(" where is_active=1 and crp_program_id =" + crpProgramID);
+    query.append(" and id_phase=" + phaseID);
     query.append(" order by identifier asc");
-    List<CrpClusterOfActivity> list = dao.findAll(query.toString(), crpProgramID, phaseID);
+    List<CrpClusterOfActivity> list = super.findAll(query.toString());
     return list;
 
   }
@@ -86,7 +87,7 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
     Phase phase) {
     String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1 and identifier='"
       + crpClusterOfActivityIdentefier + "' and id_phase=" + phase.getId();
-    List<CrpClusterOfActivity> list = dao.findAll(query);
+    List<CrpClusterOfActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }

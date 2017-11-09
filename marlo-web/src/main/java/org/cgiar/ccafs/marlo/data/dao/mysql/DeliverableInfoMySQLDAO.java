@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableInfoMySQLDAO implements DeliverableInfoDAO {
+public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, Long> implements DeliverableInfoDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableInfoMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableInfoMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableInfo(long deliverableInfoId) {
+  public void deleteDeliverableInfo(long deliverableInfoId) {
     DeliverableInfo deliverableInfo = this.find(deliverableInfoId);
-    return dao.delete(deliverableInfo);
+    super.delete(deliverableInfo);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableInfoMySQLDAO implements DeliverableInfoDAO {
 
   @Override
   public DeliverableInfo find(long id) {
-    return dao.find(DeliverableInfo.class, id);
+    return super.find(DeliverableInfo.class, id);
 
   }
 
   @Override
   public List<DeliverableInfo> findAll() {
     String query = "from " + DeliverableInfo.class.getName() + " where is_active=1";
-    List<DeliverableInfo> list = dao.findAll(query);
+    List<DeliverableInfo> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class DeliverableInfoMySQLDAO implements DeliverableInfoDAO {
   }
 
   @Override
-  public long save(DeliverableInfo deliverableInfo) {
+  public DeliverableInfo save(DeliverableInfo deliverableInfo) {
     if (deliverableInfo.getId() == null) {
-      dao.save(deliverableInfo);
+      super.saveEntity(deliverableInfo);
     } else {
-      dao.update(deliverableInfo);
+      deliverableInfo = super.update(deliverableInfo);
     }
 
 
-    return deliverableInfo.getId();
+    return deliverableInfo;
   }
 
 

@@ -178,9 +178,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
-  public boolean deleteProjectOutcome(long projectOutcomeId) {
+  public void deleteProjectOutcome(long projectOutcomeId) {
 
-   projectOutcomeDAO.deleteProjectOutcome(projectOutcomeId);
+    projectOutcomeDAO.deleteProjectOutcome(projectOutcomeId);
     ProjectOutcome projectOutcome = this.getProjectOutcomeById(projectOutcomeId);
     Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
@@ -189,7 +189,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectOutcome);
       }
     }
-   
+
   }
 
   public void deletProjectOutcomePhase(Phase next, long projecID, ProjectOutcome projectOutcome) {
@@ -234,7 +234,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   @Override
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
 
-    long resultProjectOutcome = projectOutcomeDAO.save(projectOutcome);
+    ProjectOutcome resultProjectOutcome = projectOutcomeDAO.save(projectOutcome);
 
     Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
@@ -247,7 +247,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
-  public long saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
     Phase phase) {
 
     return projectOutcomeDAO.save(projectOutcome, section, relationsName, phase);

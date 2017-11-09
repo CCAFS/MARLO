@@ -93,7 +93,7 @@ public class PublicationListAction extends BaseAction {
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverableID = deliverable.getId();
 
-      deliverableID = deliverableManager.saveDeliverable(deliverable);
+      deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
       DeliverableInfo deliverableInfo = new DeliverableInfo();
       deliverableInfo.setYear(this.getCurrentCycleYear());
       deliverableInfo.setModifiedBy(this.getCurrentUser());

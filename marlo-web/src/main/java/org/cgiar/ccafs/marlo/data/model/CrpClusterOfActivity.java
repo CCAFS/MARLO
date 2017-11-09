@@ -189,9 +189,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   public Phase getPhase() {
     return phase;
   }
-  public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
-    return projectBudgetsCluserActvities;
-  }
+
   public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
     return projectBudgetsCluserActvities;
   }

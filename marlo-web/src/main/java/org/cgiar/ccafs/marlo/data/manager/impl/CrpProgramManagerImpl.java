@@ -79,14 +79,10 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
 
 
   @Override
-  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName) {
-
-    return crpProgramDAO.save(crpProgram, actionName, relationsName);
-  }
-
-  @Override
-  public long saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
 
     return crpProgramDAO.save(crpProgram, actionName, relationsName, phase);
   }
+
+
 }

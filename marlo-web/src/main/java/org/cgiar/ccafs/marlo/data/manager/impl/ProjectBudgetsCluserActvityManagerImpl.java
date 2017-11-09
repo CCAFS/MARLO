@@ -87,10 +87,10 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   }
 
   @Override
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
 
-    boolean resultProjectBudget =
-      projectBudgetsCluserActvityDAO.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvityId);
+
+    projectBudgetsCluserActvityDAO.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvityId);
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity =
       this.getProjectBudgetsCluserActvityById(projectBudgetsCluserActvityId);
     Phase currentPhase = phaseDAO.find(projectBudgetsCluserActvity.getPhase().getId());
@@ -100,7 +100,7 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
           projectBudgetsCluserActvity.getProject().getId(), projectBudgetsCluserActvity);
       }
     }
-    return resultProjectBudget;
+
   }
 
   @Override
@@ -149,7 +149,8 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   }
 
   @Override
-  public ProjectBudgetsCluserActvity saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
+  public ProjectBudgetsCluserActvity
+    saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
 
     ProjectBudgetsCluserActvity resultProjectBudget = projectBudgetsCluserActvityDAO.save(projectBudgetsCluserActvity);
     Phase currentPhase = phaseDAO.find(projectBudgetsCluserActvity.getPhase().getId());

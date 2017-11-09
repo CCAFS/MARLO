@@ -154,7 +154,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
+    ProjectInfoManager projectInfoManagerManager,
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -469,8 +470,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         // instance class AutoSaveReader (made by US)
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -506,14 +507,14 @@ public class ProjectDescriptionAction extends BaseAction {
           project.getProjectInfo()
             .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
         } else {
-          project.setLiaisonUser(null);
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
         }
         // load LiaisonUser info
         if (project.getProjectInfo().getLiaisonInstitution() != null) {
           project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
             .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
         } else {
-          project.setLiaisonInstitution(null);
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
         }
 
         // load fps value
@@ -690,8 +691,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      project.setLiaisonInstitution(null);
-      project.setLiaisonUser(null);
+      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
 
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingGender(null);

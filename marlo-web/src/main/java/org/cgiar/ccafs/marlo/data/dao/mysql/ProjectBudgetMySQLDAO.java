@@ -102,8 +102,8 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   public void deleteProjectBudget(long projectBudgetId) {
     ProjectBudget projectBudget = this.find(projectBudgetId);
     projectBudget.setActive(false);
-		super.update(projectBudget);
-    
+    super.update(projectBudget);
+
   }
 
   @Override
@@ -183,7 +183,7 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   public double getTotalBudget(long projetId, long phaseID, int type, int year) {
     String query = "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId
       + " and pb.id_phase=" + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type;
-    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    List<Map<String, Object>> list = super.findCustomQuery(query);
     try {
       if (list.size() > 0) {
         Map<String, Object> result = list.get(0);

@@ -220,7 +220,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
   @Override
   public CrpClusterOfActivity saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
 
-    long resultCluster = crpClusterOfActivityDAO.save(crpClusterOfActivity);
+    CrpClusterOfActivity resultCluster = crpClusterOfActivityDAO.save(crpClusterOfActivity);
     if (crpClusterOfActivity.getPhase().getNext() != null) {
       this.addCrpClusterPhase(crpClusterOfActivity.getPhase().getNext(), crpClusterOfActivity.getCrpProgram().getId(),
         crpClusterOfActivity);

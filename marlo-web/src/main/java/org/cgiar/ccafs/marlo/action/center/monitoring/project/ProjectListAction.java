@@ -361,27 +361,24 @@ public class ProjectListAction extends BaseAction {
 
     CenterProjectCrosscutingTheme crosscutingThemeSave =
       projectCrosscutingService.getProjectCrosscutingThemeById(centerProject.getProjectCrosscutingTheme().getId());
-
-    if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
-      hasChanges = true;
-      crosscutingThemeSave.setGender(true);
-    }
-
-    if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
-      hasChanges = true;
-      crosscutingThemeSave.setYouth(true);
-    }
-
-    if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
-      hasChanges = true;
-      crosscutingThemeSave.setCapacityDevelopment(true);
-    }
-
-    if (hasChanges) {
-      crosscutingThemeSave.setProject(centerProject);
-      projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
-    }
-
+    /*
+     * if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setGender(true);
+     * }
+     * if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setYouth(true);
+     * }
+     * if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setCapacityDevelopment(true);
+     * }
+     * if (hasChanges) {
+     * crosscutingThemeSave.setProject(centerProject);
+     * projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
+     * }
+     */
 
   }
 
