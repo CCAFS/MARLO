@@ -132,13 +132,20 @@ public class ProgramImpactsValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (impactBeneficiary.getBeneficiary().getId() != null) {
-      if (impactBeneficiary.getBeneficiary().getBeneficiaryType().getId() == -1) {
-        this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
-        baseAction.getInvalidFields().put(
-          "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+    if (impactBeneficiary.getBeneficiary() != null) {
+      if (impactBeneficiary.getBeneficiary().getId() != null) {
+        if (impactBeneficiary.getBeneficiary().getBeneficiaryType().getId() == -1) {
+          this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+          baseAction.getInvalidFields().put(
+            "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
+    } else {
+      this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+      baseAction.getInvalidFields().put(
+        "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
