@@ -565,11 +565,14 @@ public class HibernateAuditLogListener
                         for (String nameAtrribute : propertyNamesRelation) {
                           if (nameAtrribute.equals("phase")) {
                             phaseObject = (Phase) classMetadata.getPropertyValue(obj, nameAtrribute);
-                            phaseObject =
-                              (Phase) sessionFactory.getCurrentSession().get(Phase.class, phaseObject.getId());
                             if (phaseObject != null) {
-                              hasPhase = true;
+                              phaseObject =
+                                (Phase) sessionFactory.getCurrentSession().get(Phase.class, phaseObject.getId());
+                              if (phaseObject != null) {
+                                hasPhase = true;
+                              }
                             }
+
 
                           }
                         }

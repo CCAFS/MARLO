@@ -1238,8 +1238,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   public void saveLocations(ProjectPartner partner) {
 
-    ProjectPartner projectPartnerBD =
-      projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(partner.getId());
+    ProjectPartner projectPartnerBD = projectPartnerManager.getProjectPartnerById(partner.getId());
     List<ProjectPartnerLocation> locationsPrev =
       projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {

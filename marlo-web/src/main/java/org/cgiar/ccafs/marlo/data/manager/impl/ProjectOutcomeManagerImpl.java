@@ -49,6 +49,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     ProjectMilestoneDAO projectMilestoneDAO, ProjectNextuserDAO projectNextuserDAO) {
     this.projectOutcomeDAO = projectOutcomeDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
+    this.projectMilestoneDAO = projectMilestoneDAO;
     this.projectNextuserDAO = projectNextuserDAO;
 
   }
@@ -64,22 +65,25 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-        ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
-        projectMilestoneAdd.setActive(true);
-        projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
-        projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
-        projectMilestoneAdd.setModificationJustification("");
-        projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
-        projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
-        projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-        projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
-        projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
-        projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-        projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
-        projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
-        projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
-        projectMilestoneAdd.setYear(projectMilestone.getYear());
-        projectMilestoneDAO.save(projectMilestoneAdd);
+        if (projectMilestone != null) {
+          ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
+          projectMilestoneAdd.setActive(true);
+          projectMilestoneAdd.setActiveSince(projectOutcome.getActiveSince());
+          projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
+          projectMilestoneAdd.setModificationJustification("");
+          projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
+          projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
+          projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+          projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
+          projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
+          projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
+          projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+          projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
+          projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
+          projectMilestoneAdd.setYear(projectMilestone.getYear());
+          projectMilestoneDAO.save(projectMilestoneAdd);
+        }
+
       }
     }
   }

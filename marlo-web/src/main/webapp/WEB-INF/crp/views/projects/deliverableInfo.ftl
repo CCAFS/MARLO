@@ -137,8 +137,8 @@
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
        <span class="name">
-              <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.budgetType.name)!} [#if (element.fundingSource.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
-              <span class="description">${(element.fundingSource.title)!}</span><br />
+              <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.fundingSourceInfo.budgetType.name)!} [#if (element.fundingSource.fundingSourceInfo.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
+              <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
             </span>
             <div class="clearfix"></div>
           </li>
@@ -159,8 +159,8 @@
     [#if fundingSources?has_content]
       [#list fundingSources as element]
         <span id="fundingSource-${(element.id)!}">
-          <strong>FS${(element.id)!} - ${(element.budgetType.name)!} [#if (element.w1w2)!false] (Co-Financing) [/#if]</strong> <br />
-          <span class="description">${(element.title)!}</span><br />
+          <strong>FS${(element.id)!} - ${(element.fundingSourceInfo.budgetType.name)!} [#if (element.w1w2)!false] (Co-Financing) [/#if]</strong> <br />
+          <span class="description">${(element.fundingSourceInfo.title)!}</span><br />
         </span>
       [/#list]
     [/#if]

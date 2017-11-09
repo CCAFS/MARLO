@@ -135,6 +135,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityNew.setModificationJustification("");
           activityNew.setActiveSince(new Date());
 
+
           Project project = projectManager.getProjectById(this.project.getId());
 
           activityNew.setProject(project);
@@ -204,10 +205,16 @@ public class ProjectActivitiesAction extends BaseAction {
           }
           activityUpdate.setActivityProgress(activity.getActivityProgress());
 
-          ProjectPartnerPerson partnerPerson =
-            projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
 
-          activityUpdate.setProjectPartnerPerson(partnerPerson);
+          if (activity.getProjectPartnerPerson() != null
+            && activity.getProjectPartnerPerson().getId().longValue() != -1) {
+            ProjectPartnerPerson partnerPerson =
+              projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+            activityUpdate.setProjectPartnerPerson(partnerPerson);
+          } else {
+            activityUpdate.setProjectPartnerPerson(null);
+          }
+
 
           activityUpdate = activityManager.saveActivity(activityUpdate);
 

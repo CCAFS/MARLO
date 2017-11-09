@@ -1028,6 +1028,10 @@ public class DeliverableAction extends BaseAction {
               && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
 
+        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+          deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+            deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+        }
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
@@ -1207,9 +1211,9 @@ public class DeliverableAction extends BaseAction {
             .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
             if (keyOutcome.getCrpClusterKeyOutput().getCrpClusterOfActivity().getPhase()
               .equals(this.getActualPhase())) {
-               if (!keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
-              keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
-            }
+              if (!keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
+                keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+              }
             }
 
           }
@@ -1828,7 +1832,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
-
+      deliverableManagedState.setActiveSince(new Date());
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
@@ -2572,7 +2576,8 @@ public class DeliverableAction extends BaseAction {
         if (deliverablePrew.getDeliverableFundingSources() != null
           && deliverablePrew.getDeliverableFundingSources().size() > 0) {
           List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
-            .filter(dp -> dp.isActive()).collect(Collectors.toList());
+            .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList());
 
 
           for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
@@ -2592,7 +2597,7 @@ public class DeliverableAction extends BaseAction {
             deliverableFundingSource.setModifiedBy(this.getCurrentUser());
             deliverableFundingSource.setModificationJustification("");
             deliverableFundingSource.setActiveSince(new Date());
-
+            deliverableFundingSource.setPhase(this.getActualPhase());
             deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
 
 
