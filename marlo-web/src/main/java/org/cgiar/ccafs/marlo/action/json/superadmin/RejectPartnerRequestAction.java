@@ -34,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author avalencia - CCAFS
  * @date Oct 31, 2017
  * @time 10:52:21 AM: Add sendEmail boolean parameter
+ * @date Nov 10, 2017
+ * @time 10:09:18 AM:Inactive parent partner request
  */
 public class RejectPartnerRequestAction extends BaseAction {
 
@@ -71,6 +73,11 @@ public class RejectPartnerRequestAction extends BaseAction {
       partnerRequest.setRejectedDate(new Date());
       partnerRequestManager.savePartnerRequest(partnerRequest);
       partnerRequestManager.deletePartnerRequest(partnerRequest.getId());
+      // inactive the parent partnerRequest
+      PartnerRequest partnerRequestParent =
+        partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+      partnerRequestParent.setActive(false);
+      partnerRequestManager.savePartnerRequest(partnerRequestParent);
       // Send notification email
       if (sendNotification) {
         this.sendRejectedNotficationEmail(partnerRequest);

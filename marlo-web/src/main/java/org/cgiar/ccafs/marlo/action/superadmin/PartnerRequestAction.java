@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author avalencia - CCAFS
  * @date Oct 18, 2017
  * @time 3:45:12 PM
+ * @date Nov 10, 2017
+ * @time 10:09:18 AM:Inactive parent partner request
  */
 public class PartnerRequestAction extends BaseAction {
 
@@ -188,6 +190,11 @@ public class PartnerRequestAction extends BaseAction {
     partnerRequest.setActive(false);
     partnerRequest.setModifiedBy(this.getCurrentUser());
     partnerRequestManager.savePartnerRequest(partnerRequest);
+    // inactive the parent partnerRequest
+    PartnerRequest partnerRequestParent =
+      partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+    partnerRequestParent.setActive(false);
+    partnerRequestManager.savePartnerRequest(partnerRequestParent);
 
     // Send notification email
     this.sendAcceptedNotficationEmail(partnerRequest);
