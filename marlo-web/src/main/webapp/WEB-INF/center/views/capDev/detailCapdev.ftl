@@ -278,7 +278,7 @@
 								[@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
 							</div>
 							<div class="col-md-2">
-								<div class="checkButton syncParticipant" style="margin-top:21px;">[@s.text name="capdev.participant.code.sync" /]</div>
+								<div id="syncBoton" class="checkButton syncParticipant" style="margin-top:21px;">[@s.text name="capdev.participant.code.sync" /]</div>
 							</div>
 						</div>
 						<!-- participant name and middle name -->
@@ -363,9 +363,17 @@
 				<div class=" newCapdevField form-group">
 					<div class="simpleBox">
 					
-						<div class="form-roup capdevDimension">[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal" value="${(capdev.sGlobal)!'-1'}" inverse=false  cssClass="global" editable=editable/] </div>
+						<div class="form-roup capdevDimension" >
+							<div listname="capdev.globalReach">
+								[@customForm.yesNoInput  label="capdev.globalDimensionQuestion" name="capdev.sGlobal" value="${(capdev.sGlobal)!'-1'}" inverse=false  cssClass="global" editable=editable/]
+							</div>
+						</div>
 
-						<div class="form-group capdevDimension">[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional" value="${(capdev.sRegional)!'-1'}" inverse=false  cssClass="regional" editable=editable/] </div>
+						<div class="form-group capdevDimension" >
+							<div listname="capdev.regionReach">
+								[@customForm.yesNoInput  label="capdev.regionDimensionQuestion" name="capdev.sRegional" value="${(capdev.sRegional)!'-1'}" inverse=false  cssClass="regional" editable=editable/] 
+							</div>
+						</div>
 
 						
 						<!-- regions-->

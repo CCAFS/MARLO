@@ -271,9 +271,12 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
         if (deliverable.getDocuments() != null) {
           List<CenterDeliverableDocument> documents = new ArrayList<>();
           for (CenterDeliverableDocument document : deliverable.getDocuments()) {
-            CenterDeliverableDocument doc = centerDeliverableDocService.getDeliverableDocumentById(document.getId());
-            doc.setLink(document.getLink());
-            documents.add(doc);
+            if (document.getId() != null) {
+              CenterDeliverableDocument doc = centerDeliverableDocService.getDeliverableDocumentById(document.getId());
+              doc.setLink(document.getLink());
+              documents.add(doc);
+            }
+
           }
           deliverable.setDocuments(documents);
         }

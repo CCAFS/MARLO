@@ -141,28 +141,31 @@ public class ReadExcelFile {
    */
   public Object[][] readExcelFile(File file) {
     Object[][] data = null;
-    try {
-      final InputStream fip = new FileInputStream(file);
-      final Workbook wb = WorkbookFactory.create(fip);
-      final Sheet sheet = wb.getSheetAt(0);
-      final Row firstRow = sheet.getRow(9);// fila del encabezado del template
-      final List<Row> rows = this.searchForEmptyRows(sheet);
-      // totalRows = (sheet.getLastRowNum() - firstRow.getRowNum());
-      totalRows = rows.size();
-      totalColumns = firstRow.getLastCellNum();
-      data = new Object[totalRows][totalColumns];
-      for (int fila = 0; fila < rows.size(); fila++) {
-        final Row row = rows.get(fila);
-        for (int col = 0; col < totalColumns; col++) {
-          final Cell cell = row.getCell(col);
-          data[fila][col] = this.getCellData(cell);
+    if (file != null) {
+      try {
+        InputStream fip = new FileInputStream(file);
+        Workbook wb = WorkbookFactory.create(fip);
+        Sheet sheet = wb.getSheetAt(0);
+        Row firstRow = sheet.getRow(9);// fila del encabezado del template
+        List<Row> rows = this.searchForEmptyRows(sheet);
+        // totalRows = (sheet.getLastRowNum() - firstRow.getRowNum());
+        totalRows = rows.size();
+        totalColumns = firstRow.getLastCellNum();
+        data = new Object[totalRows][totalColumns];
+        for (int fila = 0; fila < rows.size(); fila++) {
+          final Row row = rows.get(fila);
+          for (int col = 0; col < totalColumns; col++) {
+            final Cell cell = row.getCell(col);
+            data[fila][col] = this.getCellData(cell);
+          }
+
         }
 
+      } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+        e.printStackTrace();
       }
-
-    } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-      e.printStackTrace();
     }
+
 
     return data;
 
@@ -170,20 +173,23 @@ public class ReadExcelFile {
 
   public List<Row> searchForEmptyRows(Sheet sheet) {
     // Decide which rows to process
-    final List<Row> notEmptyRows = new ArrayList<>();
-    final Row firstRow = sheet.getRow(10);
-    final int rowStart = firstRow.getRowNum();
-    final int rowEnd = sheet.getLastRowNum();
+    List<Row> notEmptyRows = new ArrayList<>();
+    Row firstRow = sheet.getRow(10);
+    if (firstRow != null) {
+      int rowStart = firstRow.getRowNum();
+      int rowEnd = sheet.getLastRowNum();
 
-    for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
-      final Row r = sheet.getRow(rowNum);
-      if (r != null) {
-        notEmptyRows.add(r);
-        continue;
+      for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) {
+        Row r = sheet.getRow(rowNum);
+        if (r != null) {
+          notEmptyRows.add(r);
+          continue;
+        }
+
+
       }
-
-
     }
+
     return notEmptyRows;
   }
 
@@ -271,17 +277,20 @@ public class ReadExcelFile {
 
   public boolean validarExcelFileData(File file) {
     boolean rigthFile = true;
-    final Object[][] data = this.readExcelFile(file);
-    if (data.length > 0) {
-      for (final Object[] element : data) {
-        System.out.println(element[0]);
-        if ((element[0] == "") || (element[1] == "") || (element[2] == "")) {
-          rigthFile = false;
+    if (file != null) {
+      Object[][] data = this.readExcelFile(file);
+      if (data.length > 0) {
+        for (Object[] element : data) {
+          System.out.println(element[0]);
+          if ((element[0] == "") || (element[1] == "") || (element[2] == "")) {
+            rigthFile = false;
+          }
         }
+      } else {
+        rigthFile = false;
       }
-    } else {
-      rigthFile = false;
     }
+
     return rigthFile;
   }
 

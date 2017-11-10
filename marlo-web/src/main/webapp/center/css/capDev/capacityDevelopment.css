@@ -302,6 +302,7 @@
 }
 
 .capdevDimension{
+	position: relative;
 	border-bottom: 1px solid #E7E6E6;
 	margin: 2% 0 2% 0;
 }

@@ -213,7 +213,11 @@
       }
     })();
 
-    
+    $("#syncBoton").attr('disabled','disabled');
+
+    checkParticipantCode();
+    $(".participant-code").on("keyup",checkParticipantCode);
+    $(".participant-code").on("change",checkParticipantCode);
 }
 
 
@@ -1074,5 +1078,19 @@ function setData(data){
       $(".genderSelect select").val("Female");
       $('.genderSelect .selection .select2-selection__rendered').html("Female");
       break;
+  }
+}
+
+function checkParticipantCode(){
+  console.log("algo")
+  var participant_code = $(".participant-code").val();
+
+  if(participant_code == ""){
+    $("#syncBoton").css("pointer-events","none");
+    $("#syncBoton").css("background"," #d9d9d9");
+  }
+  else{
+    $("#syncBoton").css("pointer-events","");
+    $("#syncBoton").css("background"," #7FB06F");
   }
 }

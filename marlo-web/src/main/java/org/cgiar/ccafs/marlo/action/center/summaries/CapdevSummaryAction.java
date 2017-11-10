@@ -742,7 +742,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       throw e;
     }
 
-    capdev = capdevService.getCapacityDevelopmentById(capdevID);
+    // capdev = capdevService.getCapacityDevelopmentById(capdevID);
   }
 
 

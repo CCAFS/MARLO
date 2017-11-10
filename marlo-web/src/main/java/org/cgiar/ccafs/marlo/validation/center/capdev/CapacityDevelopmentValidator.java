@@ -100,11 +100,13 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     if (this.bolValue(capdev.getsGlobal()) == null) {
       this.addMessage(baseAction.getText("capdev.action.global"));
-      baseAction.getInvalidFields().put("input-capdev.sGlobal", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("list-capdev.globalReach",
+        baseAction.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {""}));
     }
     if (this.bolValue(capdev.getsRegional()) == null) {
       this.addMessage(baseAction.getText("capdev.action.region"));
-      baseAction.getInvalidFields().put("input-capdev.sRegional", InvalidFieldsMessages.EMPTYFIELD);
+      baseAction.getInvalidFields().put("list-capdev.regionReach",
+        baseAction.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {""}));
     }
 
 
@@ -149,17 +151,23 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     }
 
 
-    if (capdev.getCapDevRegions() == null) {
-      this.addMessage(baseAction.getText("capdev.action.regions"));
-      baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-        new String[] {"Capacity Development Intervention Regions"}));
-    } else {
-      if (capdev.getCapDevRegions().isEmpty()) {
-        this.addMessage(baseAction.getText("capdev.action.regions"));
-        baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
-          new String[] {"Capacity Development Intervention Regions"}));
+    if ((this.bolValue(capdev.getsRegional()) != null)) {
+      if (this.bolValue(capdev.getsRegional()) == true) {
+        if (capdev.getCapDevRegions() == null) {
+          this.addMessage(baseAction.getText("capdev.action.regions"));
+          baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+            new String[] {"Capacity Development Intervention Regions"}));
+        } else {
+          if (capdev.getCapDevRegions().isEmpty()) {
+            this.addMessage(baseAction.getText("capdev.action.regions"));
+            baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
+              new String[] {"Capacity Development Intervention Regions"}));
+          }
+        }
       }
+
     }
+
 
     if (capdev.getCategory() == 1) {
 
@@ -203,6 +211,15 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
       }
       if (capdev.getNumParticipants() != null) {
+        if (capdev.getNumMen() == null) {
+          capdev.setNumMen(0);
+        }
+        if (capdev.getNumWomen() == null) {
+          capdev.setNumWomen(0);
+        }
+        if (capdev.getNumOther() == null) {
+          capdev.setNumOther(0);
+        }
         int totalParticipants = capdev.getNumMen() + capdev.getNumWomen() + capdev.getNumOther();
         if ((capdev.getNumParticipants() < totalParticipants) || (capdev.getNumParticipants() > totalParticipants)) {
           baseAction.getInvalidFields().put("input-capdev.numParticipants", "The sum no match");
