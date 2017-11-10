@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
@@ -72,10 +71,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,6 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> programs;
   private Map<String, String> regions;
   private Map<String, String> institutions;
-  private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableManager deliverableManager;
 
   private PublicationValidator publicationValidator;
@@ -145,10 +144,9 @@ public class PublicationAction extends BaseAction {
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
-    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
-    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
-    IpProgramManager ipProgramManager) {
+    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
+    PublicationValidator publicationValidator, HistoryComparator historyComparator,
+    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -171,7 +169,6 @@ public class PublicationAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
-    this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.userManager = userManager;
   }
 
@@ -344,14 +341,14 @@ public class PublicationAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
         this.setDraft(true);
-      
+
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {

@@ -46,7 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -84,8 +85,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   private String cycle;
   private HashMap<Long, String> targetUnitList;
   // Managers
-  private CrpManager crpManager;
-  private SrfTargetUnitManager srfTargetUnitManager;
+  private final CrpManager crpManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams

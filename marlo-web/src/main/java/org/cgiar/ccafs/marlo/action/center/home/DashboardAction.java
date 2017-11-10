@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS

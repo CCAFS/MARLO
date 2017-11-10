@@ -29,7 +29,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class SummaryListAction extends BaseAction {
 
@@ -43,8 +43,8 @@ public class SummaryListAction extends BaseAction {
   private Crp loggedCrp;
 
 
-  private CrpManager crpManager;
-  private PhaseManager phaseManager;
+  private final CrpManager crpManager;
+  private final PhaseManager phaseManager;
 
   @Inject
   public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {

@@ -29,14 +29,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class CenterProjectDescriptionValidator extends BaseValidator {
 
-  private ICenterManager centerService;
+  private final ICenterManager centerService;
 
   @Inject
   public CenterProjectDescriptionValidator(ICenterManager centerService) {

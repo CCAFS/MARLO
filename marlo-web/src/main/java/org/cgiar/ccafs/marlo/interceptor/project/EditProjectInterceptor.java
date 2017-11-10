@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -50,11 +51,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private Crp crp;
   private long projectId = 0;
   private Crp loggedCrp;
-
-  private CrpManager crpManager;
-  private ProjectManager projectManager;
   private Phase phase;
-  private PhaseManager phaseManager;
+
+  private final CrpManager crpManager;
+  private final ProjectManager projectManager;
+  private final PhaseManager phaseManager;
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager, PhaseManager phaseManager) {

@@ -24,12 +24,14 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
 /**
  * Modified by @author nmatovu last on Oct 10, 2016
  */
+@Named
 public class CenterLeaderManager implements ICenterLeaderManager {
 
   private ICenterLeaderDAO researchLeaderDAO;

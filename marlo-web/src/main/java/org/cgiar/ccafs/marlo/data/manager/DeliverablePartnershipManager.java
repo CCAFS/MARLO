@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DeliverablePartnershipManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DeliverablePartnershipManagerImpl.class)
+
 public interface DeliverablePartnershipManager {
 
 

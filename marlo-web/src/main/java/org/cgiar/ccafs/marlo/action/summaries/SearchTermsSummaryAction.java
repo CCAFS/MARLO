@@ -55,7 +55,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -97,9 +98,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   List<String> keys = new ArrayList<String>();
 
   // Managers
-  private CrpManager crpManager;
-  private CrpProgramManager programManager;
-  private PhaseManager phaseManager;
+  private final CrpManager crpManager;
+  private final CrpProgramManager programManager;
+  private final PhaseManager phaseManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;

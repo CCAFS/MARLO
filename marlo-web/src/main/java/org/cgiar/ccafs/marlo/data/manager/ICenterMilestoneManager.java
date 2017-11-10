@@ -14,18 +14,16 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterMilestoneManager.class)
+
 public interface ICenterMilestoneManager {
 
 
@@ -103,6 +101,7 @@ public interface ICenterMilestoneManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterMilestone saveCenterMilestone(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
+  public CenterMilestone saveCenterMilestone(CenterMilestone centerMilestone, String actionName,
+    List<String> relationsName);
 
 }

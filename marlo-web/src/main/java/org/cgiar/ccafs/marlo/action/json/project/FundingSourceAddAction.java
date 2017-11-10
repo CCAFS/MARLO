@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -36,10 +35,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -69,36 +68,32 @@ public class FundingSourceAddAction extends BaseAction {
 
   private static String W1W2 = "w1w2";
 
-  private static String CENTER_TYPE = "cofundedMode";
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
   private static String FILE = "fileID";
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
-  private LiaisonUserManager liaisonUserManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
   private CrpManager crpManager;
   private FileDBManager fileDBManager;
-  private List<Map<String, Object>> fsCreated;
   private Map<String, Object> fsProp = new HashMap<>();
 
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
-    FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager,
-    FileDBManager fileDBManager, FundingSourceInstitutionManager fundingSourceInstitutionManager) {
+    FundingSourceBudgetManager fundingSourceBudgetManager, FileDBManager fileDBManager,
+    FundingSourceInstitutionManager fundingSourceInstitutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
     this.budgetTypeManager = budgetTypeManager;
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
-    this.liaisonUserManager = liaisonUserManager;
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }

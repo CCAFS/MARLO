@@ -31,7 +31,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -49,9 +50,9 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   private Crp crp;
   private long highLightId = 0;
 
-  private ProjectHighligthManager projectHighligthManager;
-  private ProjectManager projectManager;
-  private CrpManager crpManager;
+  private final ProjectHighligthManager projectHighligthManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
   public EditHighLightInterceptor(ProjectHighligthManager deliverableManager, ProjectManager projectManager,

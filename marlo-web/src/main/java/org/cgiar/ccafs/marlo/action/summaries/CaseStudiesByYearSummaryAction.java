@@ -40,7 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -69,8 +70,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   private static Logger LOG = LoggerFactory.getLogger(CaseStudiesByYearSummaryAction.class);
 
   // Managers
-  private CaseStudyManager caseStudyManager;
-  private CrpManager crpManager;
+  private final CaseStudyManager caseStudyManager;
+  private final CrpManager crpManager;
 
   // Parameters
   private int year;

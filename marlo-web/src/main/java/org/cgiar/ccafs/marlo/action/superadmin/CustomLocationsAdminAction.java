@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -26,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -40,20 +39,15 @@ public class CustomLocationsAdminAction extends BaseAction {
   private static final long serialVersionUID = -8068503147148935293L;
 
 
-  private LocElementTypeManager locElementTypeManager;
-  private CrpLocElementTypeManager crpLocElementTypeManager;
-
+  private final LocElementTypeManager locElementTypeManager;
 
   private List<LocElementType> locElementTypeList;
 
 
   @Inject
-  public CustomLocationsAdminAction(APConfig config, LocElementTypeManager locElementTypeManager,
-    CrpLocElementTypeManager crpLocElementTypeManager) {
+  public CustomLocationsAdminAction(APConfig config, LocElementTypeManager locElementTypeManager) {
     super(config);
     this.locElementTypeManager = locElementTypeManager;
-    this.crpLocElementTypeManager = crpLocElementTypeManager;
-
   }
 
 

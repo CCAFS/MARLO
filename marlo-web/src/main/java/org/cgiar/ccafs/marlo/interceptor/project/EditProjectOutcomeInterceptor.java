@@ -29,7 +29,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -47,8 +48,8 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   private Crp crp;
   private long projectOutcomeId = 0;
 
-  private ProjectOutcomeManager projectOutcomeManager;
-  private ProjectManager projectManager;
+  private final ProjectOutcomeManager projectOutcomeManager;
+  private final ProjectManager projectManager;
 
   @Inject
   public EditProjectOutcomeInterceptor(ProjectOutcomeManager projectOutcomeManager, ProjectManager projectManager) {

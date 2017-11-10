@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DeliverableActivityManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DeliverableActivityManagerImpl.class)
+
 public interface DeliverableActivityManager {
 
 

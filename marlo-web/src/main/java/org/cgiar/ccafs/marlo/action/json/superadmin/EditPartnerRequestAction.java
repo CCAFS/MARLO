@@ -27,7 +27,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -58,7 +59,6 @@ public class EditPartnerRequestAction extends BaseAction {
     this.partnerRequestManager = partnerRequestManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locElementManager = locElementManager;
-    // TODO Auto-generated constructor stub
   }
 
 

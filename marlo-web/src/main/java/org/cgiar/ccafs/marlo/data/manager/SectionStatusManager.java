@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.SectionStatusManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(SectionStatusManagerImpl.class)
+
 public interface SectionStatusManager {
 
 

@@ -28,7 +28,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -40,8 +41,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
   private static final long serialVersionUID = 8386352290491092445L;
 
-  private ICenterOutputManager outputService;
-  private ICenterProgramManager programService;
+  private final ICenterOutputManager outputService;
+  private final ICenterProgramManager programService;
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;

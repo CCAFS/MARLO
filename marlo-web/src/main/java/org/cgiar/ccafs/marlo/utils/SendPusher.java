@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.HashMap;
 
-import com.google.inject.Inject;
 import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
@@ -33,7 +32,6 @@ public class SendPusher {
   private String apiSecret;
   private APConfig config;
 
-  @Inject
   public SendPusher(APConfig config) {
     this.config = config;
     apiKey = config.getPushApiKey();

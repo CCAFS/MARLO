@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
@@ -54,10 +53,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -74,7 +74,6 @@ public class OutcomesAction extends BaseAction {
   private ICenterOutcomeManager outcomeService;
   private AuditLogManager auditLogService;
   private ICenterTargetUnitManager targetUnitService;
-  private ICenterTopicManager researchTopicService;
   private ICenterProgramManager programService;
   private ICenterImpactManager impactService;
   private ICenterMilestoneManager milestoneService;
@@ -103,14 +102,13 @@ public class OutcomesAction extends BaseAction {
 
   @Inject
   public OutcomesAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
-    ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
-    ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
-    OutcomesValidator validator, AuditLogManager auditLogService) {
+    ICenterTargetUnitManager targetUnitService, ICenterProgramManager programService,
+    ICenterImpactManager impactService, ICenterMilestoneManager milestoneService, OutcomesValidator validator,
+    AuditLogManager auditLogService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
     this.targetUnitService = targetUnitService;
-    this.researchTopicService = researchTopicService;
     this.programService = programService;
     this.impactService = impactService;
     this.milestoneService = milestoneService;
@@ -271,13 +269,13 @@ public class OutcomesAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         outcome = (CenterOutcome) autoSaveReader.readFromJson(jReader);
 
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);

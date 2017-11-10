@@ -39,30 +39,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.commons.collections.CollectionUtils;
 
 
 /**
  * @author Christian Garcia. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectBudgetsCoAValidator extends BaseValidator {
 
   private boolean hasErros;
 
-  private BudgetTypeManager budgetTypeManager;
-  private ProjectManager projectManager;
-
-
-  @Inject
-  private CrpManager crpManager;
+  private final BudgetTypeManager budgetTypeManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
   public ProjectBudgetsCoAValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
-    ProjectManager projectManager) {
+    ProjectManager projectManager, CrpManager crpManager) {
     super();
-
+    this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.budgetTypeManager = budgetTypeManager;
   }

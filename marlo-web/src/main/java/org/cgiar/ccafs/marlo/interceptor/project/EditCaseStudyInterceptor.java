@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -51,10 +52,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
   private Crp crp;
   private long caseStudyId = 0;
 
-  private CaseStudyManager caseStudyManager;
-  private CaseStudyProjectManager caseStudyProjectManager;
-  private ProjectManager projectManager;
-  private CrpManager crpManager;
+  private final CaseStudyManager caseStudyManager;
+  private final CaseStudyProjectManager caseStudyProjectManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
   public EditCaseStudyInterceptor(CaseStudyManager caseStudyManager, ProjectManager projectManager,

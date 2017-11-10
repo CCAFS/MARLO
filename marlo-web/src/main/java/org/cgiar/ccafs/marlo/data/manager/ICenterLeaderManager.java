@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterLeaderManager;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterLeaderManager.class)
+
 public interface ICenterLeaderManager {
 
 

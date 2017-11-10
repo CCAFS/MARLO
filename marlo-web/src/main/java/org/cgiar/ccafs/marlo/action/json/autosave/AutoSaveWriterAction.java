@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.json.autosave;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
@@ -47,9 +46,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -73,13 +73,9 @@ public class AutoSaveWriterAction extends BaseAction {
 
   private Map<String, Object> status;
 
-  private UserManager userManager;
-
   @Inject
-  public AutoSaveWriterAction(APConfig config, UserManager userManager) {
-
+  public AutoSaveWriterAction(APConfig config) {
     super(config);
-    this.userManager = userManager;
   }
 
 

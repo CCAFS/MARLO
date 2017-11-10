@@ -50,7 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -89,13 +90,13 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
 
   // Managers
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
-  private PhaseManager phaseManager;
+  private final PhaseManager phaseManager;
 
-  private CrpProgramManager programManager;
-  private ProjectBudgetManager projectBudgetManager;
-  private InstitutionManager institutionManager;
+  private final CrpProgramManager programManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final InstitutionManager institutionManager;
 
 
   // XLSX bytes

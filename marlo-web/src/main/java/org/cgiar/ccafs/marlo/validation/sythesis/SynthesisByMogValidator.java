@@ -31,21 +31,23 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class SynthesisByMogValidator extends BaseValidator {
 
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public SynthesisByMogValidator() {
-    // TODO Auto-generated constructor stub
+  public SynthesisByMogValidator(CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {

@@ -31,7 +31,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
@@ -67,7 +68,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   private int year;
 
   // Managers
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams

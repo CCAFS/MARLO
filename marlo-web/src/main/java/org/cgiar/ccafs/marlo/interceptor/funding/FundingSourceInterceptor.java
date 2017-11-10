@@ -29,7 +29,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -43,8 +44,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   private Crp crp;
   private long fundingSourceID = 0;
 
-  private CrpManager crpManager;
-  private FundingSourceManager fundingSourceManager;
+  private final CrpManager crpManager;
+  private final FundingSourceManager fundingSourceManager;
 
   @Inject
   public FundingSourceInterceptor(CrpManager crpManager, FundingSourceManager fundingSourceManager) {

@@ -39,7 +39,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -49,22 +50,21 @@ public class ImpactPathwayFullGraph extends BaseAction {
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ImpactPathwayFullGraph.class);
-  /**
-   * 
-   */
+
   private static final long serialVersionUID = 971011588781935964L;
   long crpID;
-  @Inject
+
   private CrpManager crpManager;
-  @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   private HashMap<String, Object> elements;
 
   @Inject
-  public ImpactPathwayFullGraph(APConfig config) {
+  public ImpactPathwayFullGraph(APConfig config, CrpManager crpManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config);
-
+    this.crpManager = crpManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   @Override

@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
 
 

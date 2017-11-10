@@ -1,12 +1,10 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.UserMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
@@ -29,7 +27,7 @@ import com.google.inject.ImplementedBy;
  * @author Christian Garcia - CIAT/CCAFS
  */
 
-@ImplementedBy(UserMySQLDAO.class)
+
 public interface UserDAO {
 
   /**

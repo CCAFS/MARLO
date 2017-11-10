@@ -55,7 +55,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -102,11 +103,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
   // Managers
-  private CrpManager crpManager;
-  private CrpProgramManager programManager;
-  private ProjectManager projectManager;
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
-  private PhaseManager phaseManager;
+  private final CrpManager crpManager;
+  private final CrpProgramManager programManager;
+  private final ProjectManager projectManager;
+  private final DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private final PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams

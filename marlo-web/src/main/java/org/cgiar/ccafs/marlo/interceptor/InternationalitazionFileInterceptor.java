@@ -19,8 +19,6 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 
@@ -28,7 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
@@ -44,23 +43,14 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    */
   private static final long serialVersionUID = -3807232981762261100L;
 
-  private UserManager userManager;
+  private final CrpManager crpManager;
 
-  private CrpManager crpManager;
-
-  private ICenterManager centerManager;
-
-
-  private CustomParameterManager crpParameterManager;
+  private final CustomParameterManager crpParameterManager;
 
   @Inject
-  public InternationalitazionFileInterceptor(UserManager userManager, CrpManager crpManager,
-    CustomParameterManager crpParameterManager, ICenterManager centerManager) {
-    this.userManager = userManager;
+  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager) {
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
-    this.centerManager = centerManager;
-
   }
 
   @Override

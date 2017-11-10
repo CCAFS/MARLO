@@ -28,7 +28,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -42,8 +43,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
   private Crp crp;
   private long deliverableID = 0;
 
-  private CrpManager crpManager;
-  private DeliverableManager deliverableManager;
+  private final CrpManager crpManager;
+  private final DeliverableManager deliverableManager;
 
   @Inject
   public PublicationInterceptor(CrpManager crpManager, DeliverableManager deliverableManager) {

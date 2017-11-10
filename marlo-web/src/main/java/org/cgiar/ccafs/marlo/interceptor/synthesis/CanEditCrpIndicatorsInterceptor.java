@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.interceptor.synthesis;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
@@ -31,7 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -50,15 +50,13 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
   Map<String, Object> session;
   Crp crp;
 
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
-  private IpProgramManager ipProgramManager;
-  private UserManager userManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final UserManager userManager;
 
   @Inject
   public CanEditCrpIndicatorsInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
-    UserManager userManager, IpProgramManager ipProgramManager) {
+    UserManager userManager) {
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
-    this.ipProgramManager = ipProgramManager;
     this.userManager = userManager;
   }
 

@@ -44,8 +44,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class ProjectListAction extends BaseAction {
 
 
   private Crp loggedCrp;
-  @Inject
+
   private SectionStatusManager sectionStatusManager;
   private long projectID;
 
@@ -85,7 +85,7 @@ public class ProjectListAction extends BaseAction {
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager) {
+    ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -93,6 +93,7 @@ public class ProjectListAction extends BaseAction {
     this.projectPhaseManager = projectPhaseManager;
     this.liaisonUserManager = liaisonUserManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
   }
 
 

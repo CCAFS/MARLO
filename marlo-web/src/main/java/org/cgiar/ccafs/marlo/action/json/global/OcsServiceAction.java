@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.model.CountryOCS;
@@ -34,7 +33,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -53,17 +53,14 @@ public class OcsServiceAction extends BaseAction {
    */
   private String ocsCode;
   private MarloOcsClient ocsClient;
-  private AgreementManager agreementManager;
 
   private AgreementOCS json;
 
 
   @Inject
-  public OcsServiceAction(APConfig config, MarloOcsClient ocsClient, AgreementManager agreementManager) {
+  public OcsServiceAction(APConfig config, MarloOcsClient ocsClient) {
     super(config);
     this.ocsClient = ocsClient;
-    this.agreementManager = agreementManager;
-
   }
 
 

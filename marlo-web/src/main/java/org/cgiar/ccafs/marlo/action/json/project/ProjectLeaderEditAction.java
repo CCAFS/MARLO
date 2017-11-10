@@ -28,7 +28,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.Action;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -39,19 +40,20 @@ import org.apache.struts2.dispatcher.Parameter;
 public class ProjectLeaderEditAction extends BaseAction {
 
   private static final long serialVersionUID = -7458726524471438475L;
-  @Inject
   private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
   private long projectId;
   private boolean projectStatus;
   private Map<String, Object> status;
-  @Inject
   private ValidateProjectSectionAction validateProject;
 
   @Inject
-  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager) {
+  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager,
+    SectionStatusManager sectionStatusManager, ValidateProjectSectionAction validateProject) {
     super(config);
+    this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
+    this.validateProject = validateProject;
   }
 
   @Override

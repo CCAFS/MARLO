@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -51,13 +52,13 @@ public class UnsubmitProjectAction extends BaseAction {
   private static final long serialVersionUID = 6328194359119346721L;
 
 
-  private ProjectManager projectManager;
+  private final ProjectManager projectManager;
 
-  private SubmissionManager submissionManager;
+  private final SubmissionManager submissionManager;
 
-  private RoleManager roleManager;
+  private final RoleManager roleManager;
 
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
 
   private long projectID;
   private String justification;

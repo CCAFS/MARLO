@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
@@ -45,7 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -60,25 +60,26 @@ public class ImpactPathwayGraph extends BaseAction {
    */
   private static final long serialVersionUID = 971011588781935964L;
   long crpProgramID;
-  @Inject
+
   private CrpProgramManager crpProgramManager;
 
-  @Inject
   private SrfSubIdoManager srfSubIdoManager;
-  @Inject
+
   private SrfIdoManager srfIdoManager;
-  @Inject
+
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-  @Inject
-  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
 
   private HashMap<String, Object> elements;
   private String sectionName;
 
   @Inject
-  public ImpactPathwayGraph(APConfig config) {
+  public ImpactPathwayGraph(APConfig config, CrpProgramManager crpProgramManager, SrfSubIdoManager srfSubIdoManager,
+    SrfIdoManager srfIdoManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config);
-
+    this.crpProgramManager = crpProgramManager;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.srfIdoManager = srfIdoManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   @Override
@@ -235,10 +236,10 @@ public class ImpactPathwayGraph extends BaseAction {
        * dataNodes.add(dataIdos);
        * }
        */ /*
-           * if (dataSlos.containsKey("data")) {
-           * dataNodes.add(dataSlos);
-           * }
-           */
+          * if (dataSlos.containsKey("data")) {
+          * dataNodes.add(dataSlos);
+          * }
+          */
 
       i++;
     }

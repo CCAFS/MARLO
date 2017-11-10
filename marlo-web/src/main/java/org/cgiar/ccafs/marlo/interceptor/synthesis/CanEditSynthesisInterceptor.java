@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -49,9 +50,9 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
   Map<String, Object> session;
   Crp crp;
 
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
-  private IpProgramManager ipProgramManager;
-  private UserManager userManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final IpProgramManager ipProgramManager;
+  private final UserManager userManager;
 
   @Inject
   public CanEditSynthesisInterceptor(IpLiaisonInstitutionManager IpLiaisonInstitutionManager, UserManager userManager,

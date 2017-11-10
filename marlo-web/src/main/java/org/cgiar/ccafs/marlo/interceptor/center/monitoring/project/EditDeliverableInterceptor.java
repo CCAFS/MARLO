@@ -29,7 +29,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.commons.lang3.StringUtils;
@@ -42,9 +43,9 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private static final long serialVersionUID = 1L;
 
-  private ICenterDeliverableManager deliverableService;
-  private ICenterProjectManager projectService;
-  private ICenterProgramManager programService;
+  private final ICenterDeliverableManager deliverableService;
+  private final ICenterProjectManager projectService;
+  private final ICenterProgramManager programService;
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;

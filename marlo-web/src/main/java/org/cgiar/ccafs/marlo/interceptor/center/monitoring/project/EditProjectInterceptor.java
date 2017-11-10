@@ -27,7 +27,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -41,8 +42,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
   private Map<String, Parameter> parameters;
-  private ICenterProjectManager projectService;
-  private ICenterProgramManager programService;
+  private final ICenterProjectManager projectService;
+  private final ICenterProgramManager programService;
   private Map<String, Object> session;
 
   private Center researchCenter;

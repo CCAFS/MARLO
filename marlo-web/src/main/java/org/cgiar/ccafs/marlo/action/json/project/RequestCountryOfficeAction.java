@@ -26,7 +26,8 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -48,18 +49,21 @@ public class RequestCountryOfficeAction extends BaseAction {
   private Long institutionID;
   private String[] countries;
 
-  private InstitutionManager institutionManager;
+  private final InstitutionManager institutionManager;
 
-  private LocElementManager locElementManager;
+  private final LocElementManager locElementManager;
+
+  private final SendMailS sendMail;
 
   private boolean messageSent;
 
   @Inject
   public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, SendMailS sendMail) {
     super(config);
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
+    this.sendMail = sendMail;
   }
 
 
@@ -102,7 +106,6 @@ public class RequestCountryOfficeAction extends BaseAction {
       message.append(".</br>");
       message.append("</br>");
       try {
-        SendMailS sendMail = new SendMailS(this.config);
         sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
           null, null, null, true);
       } catch (Exception e) {

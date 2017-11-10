@@ -67,10 +67,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -102,37 +104,35 @@ public class ClusterActivitiesAction extends BaseAction {
     return baos.toByteArray();
   }
 
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
+  private final CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
+  private final CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private final CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
+  private final CrpClusterOfActivityManager crpClusterOfActivityManager;
+  private final CrpManager crpManager;
+  private final CrpProgramManager crpProgramManager;
+  private final CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final CrpUserManager crpUserManager;
+  private final UserManager userManager;
+  private final UserRoleManager userRoleManager;
+  private final RoleManager roleManager;
+
+
+  private final HistoryComparator historyComparator;
+  private final ClusterActivitiesValidator validator;
+
+  // Util
+  private final SendMailS sendMail;
+
+  private long crpProgramID;
   private long clRol;
   private List<CrpClusterOfActivity> clusterofActivities;
-  private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
-  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
-  private CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private CrpManager crpManager;
-  private long crpProgramID;
-  private CrpProgramManager crpProgramManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
-  private CrpUserManager crpUserManager;
+  private String transaction;
   private Crp loggedCrp;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private Role roleCl;
-  private RoleManager roleManager;
   private CrpProgram selectedProgram;
-
-  private HistoryComparator historyComparator;
-
-  // Util
-  private SendMailS sendMail;
-
-
-  private String transaction;
-
-  private UserManager userManager;
-  private UserRoleManager userRoleManager;
-
-  private ClusterActivitiesValidator validator;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -787,7 +787,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
               List<UserRole> clUserRoles =
                 user.getUserRoles().stream().filter(ur -> ur.getRole().equals(roleCl)).collect(Collectors.toList());
-              if (clUserRoles != null || !clUserRoles.isEmpty()) {
+              if (CollectionUtils.isNotEmpty(clUserRoles)) {
                 for (UserRole userRole : clUserRoles) {
                   userRoleManager.deleteUserRole(userRole.getId());
                   this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpClusterOfActivityDetached);

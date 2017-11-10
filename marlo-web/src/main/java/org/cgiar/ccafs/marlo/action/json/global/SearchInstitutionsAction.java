@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -47,7 +48,6 @@ public class SearchInstitutionsAction extends BaseAction {
   private InstitutionManager institutionManager;
 
   // Parameters
-  private String actionName;
   private String queryParameter;
   private List<Map<String, Object>> institutions;
   private int withPPA;

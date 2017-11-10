@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -39,32 +38,32 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class DeliverableValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
-  @Inject
+  private final CrpManager crpManager;
   private ProjectManager projectManager;
-
-  @Inject
-  private InstitutionManager institutionManager;
-
-  @Inject
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
-  public DeliverableValidator() {
+  public DeliverableValidator(CrpManager crpManager, ProjectManager projectManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
+    this.crpManager = crpManager;
+    this.projectManager = projectManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {

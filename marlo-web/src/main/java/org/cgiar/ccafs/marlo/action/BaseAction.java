@@ -18,7 +18,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -132,9 +131,9 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -184,6 +183,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean add;
 
 
+  /**
+   * Use field injection in BaseAction only. Subclasses should use constructor injection.
+   */
   @Inject
   private AuditLogManager auditLogManager;
 
@@ -235,8 +237,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private SrfTargetUnitManager targetUnitManager;
   @Inject
   private LocElementTypeManager locElementTypeManager;
-  @Inject
-  private CrpLocElementTypeManager crpLocElementTypeManager;
 
   @Inject
   private UserManager userManager;
@@ -339,13 +339,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
 
-  @Inject
-  public BaseAction(APConfig config) {
-    this.config = config;
+  public BaseAction() {
     this.saveable = true;
     this.fullEditable = true;
     this.justification = "";
   }
+
+  public BaseAction(APConfig config) {
+    this();
+    this.config = config;
+  }
+
 
   /* Override this method depending of the save action. */
   public String add() {

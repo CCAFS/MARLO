@@ -57,7 +57,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -97,10 +98,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private long startTime;
   private Boolean hasGender;
 
-
-  private PhaseManager phaseManager;
-
-
   // Store total projects
   Integer totalProjects = 0;
 
@@ -109,11 +106,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-  private CrpManager crpManager;
-  private ProjectBudgetManager projectBudgetManager;
-  private CrpProgramManager programManager;
-
-  private InstitutionManager institutionManager;
+  // Managers
+  private final CrpManager crpManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final CrpProgramManager programManager;
+  private final PhaseManager phaseManager;
+  private final InstitutionManager institutionManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -504,9 +502,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
     List<Project> projects = new ArrayList<>();
     Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-   
 
- if (phase != null) {
+
+    if (phase != null) {
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
         projects.add((projectPhase.getProject()));
       }

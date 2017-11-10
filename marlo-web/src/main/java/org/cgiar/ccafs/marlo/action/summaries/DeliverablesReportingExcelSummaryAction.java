@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -59,7 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -86,10 +86,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(DeliverablesReportingExcelSummaryAction.class);
-  private CrpManager crpManager;
-  private CrpProgramManager programManager;
-  private DeliverableManager deliverableManager;
-  private GenderTypeManager genderTypeManager;
+  private final CrpManager crpManager;
+  private final CrpProgramManager programManager;
+  private final DeliverableManager deliverableManager;
+  private final GenderTypeManager genderTypeManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -102,8 +102,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
 
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
+    CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager) {
     super(config);
     this.crpManager = crpManager;
     this.genderTypeManager = genderTypeManager;
@@ -404,14 +403,14 @@ public class DeliverablesReportingExcelSummaryAction extends BaseAction implemen
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));

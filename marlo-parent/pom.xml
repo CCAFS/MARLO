@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.cgiar.ccafs</groupId>
+	<artifactId>marlo-parent</artifactId>
+	<version>4.2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>marlo-parent</name>
+	<description>Parent</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit.version>4.12</junit.version>
+		<logback-classic.version>1.1.7</logback-classic.version>
+		<janino.version>2.7.8</janino.version>
+		<org.springframework-version>4.3.10.RELEASE</org.springframework-version>
+		<javax.inject.version>1</javax.inject.version>
+    <javax-mail.version>1.5.5</javax-mail.version>
+    <com.sun.mail.version>1.5.5</com.sun.mail.version>
+    <log-properties>0.9.28</log-properties>
+	</properties>
+	<developers>
+		<developer>
+			<name>Christian David Garcia Oviedo</name>
+			<email>c.d.garcia@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Héctor F. Tobón R.</name>
+			<email>h.f.tobon@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Hernán D. Carvajal B.</name>
+			<email>h.d.carvajal@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Hermes Jimenez</name>
+			<email>h.jimenez@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Sebastian Amariles</name>
+			<email>s.amariles@cgiar.org</email>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Github issue tracker</system>
+		<url>https://github.com/CCAFS/marlo/issues</url>
+	</issueManagement>
+	<!-- Common dependencies go here. -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marlo-utils</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marlo-web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+			<!-- Logging Management -->
+			<!-- This dependency allows conditions in logger configuration -->
+			<!-- Spring dependencies -->
+			<dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-orm</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+			<dependency>
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${javax.inject.version}</version>
+    </dependency>
+    <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>javax.mail-api</artifactId>
+         <version>${javax-mail.version}</version>
+      </dependency>
+      <!-- Java Sun Mail API -->
+      <dependency>
+         <groupId>com.sun.mail</groupId>
+         <artifactId>javax.mail</artifactId>
+         <version>${com.sun.mail.version}</version>
+      </dependency>
+       <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <version>${log-properties}</version>
+      </dependency>
+		</dependencies>
+	</dependencyManagement>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	<build>
+		<plugins>
+			<plugin>
+				<!--To support checkstyle goals. For example: "mvn checkstyle:checkstyle" -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>configuration/marlo-checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<debug>true</debug>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.9.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>6.11.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+</project>

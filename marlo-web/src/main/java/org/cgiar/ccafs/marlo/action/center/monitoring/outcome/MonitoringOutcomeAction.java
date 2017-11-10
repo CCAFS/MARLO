@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.outcome;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringMilestoneManager;
@@ -27,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
@@ -60,10 +58,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -82,9 +81,7 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   private AuditLogManager auditLogService;
   private ICenterTargetUnitManager targetUnitService;
-  private ICenterTopicManager researchTopicService;
   private ICenterProgramManager programService;
-  private ICenterImpactManager impactService;
   private ICenterMilestoneManager milestoneService;
   private ICenterMonitoringOutcomeManager monitoringOutcomeService;
   private ICenterMonitoringMilestoneManager monitoringMilestoneService;
@@ -109,18 +106,16 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   @Inject
   public MonitoringOutcomeAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
-    ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
-    ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
-    AuditLogManager auditLogService, ICenterMonitoringOutcomeManager monitoringOutcomeService,
+    ICenterTargetUnitManager targetUnitService, ICenterProgramManager programService,
+    ICenterMilestoneManager milestoneService, AuditLogManager auditLogService,
+    ICenterMonitoringOutcomeManager monitoringOutcomeService,
     ICenterMonitoringMilestoneManager monitoringMilestoneService,
     ICenterMonitoringOutcomeEvidenceManager evidenceService) {
     super(config);
     this.centerService = centerService;
     this.outcomeService = outcomeService;
     this.targetUnitService = targetUnitService;
-    this.researchTopicService = researchTopicService;
     this.programService = programService;
-    this.impactService = impactService;
     this.milestoneService = milestoneService;
     this.auditLogService = auditLogService;
     this.evidenceService = evidenceService;

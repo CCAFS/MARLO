@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -44,18 +44,18 @@ public class PartnerRequestAction extends BaseAction {
 
   private static final long serialVersionUID = -4592281983603538935L;
 
-  private PartnerRequestManager partnerRequestManager;
-  private InstitutionManager institutionManager;
-  private InstitutionTypeManager institutionTypeManager;
-  private InstitutionLocationManager institutionLocationManager;
-  private LocElementManager locElementManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final InstitutionManager institutionManager;
+  private final InstitutionTypeManager institutionTypeManager;
+  private final InstitutionLocationManager institutionLocationManager;
+  private final LocElementManager locElementManager;
   private List<LocElement> countriesList;
   private List<InstitutionType> institutionTypesList;
 
 
   private List<PartnerRequest> partners;
   private long requestID;
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
 
   @Inject
   public PartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,

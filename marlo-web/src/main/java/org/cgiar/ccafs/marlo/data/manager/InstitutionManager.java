@@ -15,17 +15,15 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.InstitutionManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@ImplementedBy(InstitutionManagerImpl.class)
+
 public interface InstitutionManager {
 
   /**

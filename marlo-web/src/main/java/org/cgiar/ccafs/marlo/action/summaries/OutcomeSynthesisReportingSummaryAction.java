@@ -32,7 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -60,7 +61,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseAction implement
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(OutcomeSynthesisReportingSummaryAction.class);
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
   private Crp loggedCrp;
   // XLSX bytes
   private byte[] bytesXLSX;

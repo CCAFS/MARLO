@@ -20,11 +20,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfSloIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
@@ -49,7 +47,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -68,7 +67,6 @@ public class ImpactRelationAction extends BaseAction {
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
-  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private CrpProgramManager crpProgramManager;
 
 
@@ -77,7 +75,6 @@ public class ImpactRelationAction extends BaseAction {
   private String id;
   private List<HashMap<String, Object>> relations = new ArrayList<HashMap<String, Object>>();
   private SrfIdoManager srfIdoManager;
-  private SrfSloIdoManager srfSloIdoManager;
   private SrfSloManager srfSloManager;
 
   private SrfSubIdoManager srfSubIdoManager;
@@ -87,16 +84,13 @@ public class ImpactRelationAction extends BaseAction {
 
   @Inject
   public ImpactRelationAction(APConfig config, CrpProgramManager crpProgramManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    SrfSloIdoManager srfSloIdoManager, SrfSubIdoManager srfSubIdoManager, SrfIdoManager srfIdoManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager, SrfSubIdoManager srfSubIdoManager, SrfIdoManager srfIdoManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpClusterOfActivityManager crpClusterOfActivityManager,
     SrfSloManager srfSloManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
-    this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
     this.srfSubIdoManager = srfSubIdoManager;
-    this.srfSloIdoManager = srfSloIdoManager;
     this.srfSloManager = srfSloManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.srfIdoManager = srfIdoManager;

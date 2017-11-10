@@ -24,7 +24,8 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -35,19 +36,19 @@ public class RejectPartnerRequestAction extends BaseAction {
    */
   private static final long serialVersionUID = 821788435993637711L;
   // Managers
-  private PartnerRequestManager partnerRequestManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final SendMailS sendMail;
   // Variables
   private String requestID;
   private String justification;
   private boolean success;
-  private SendMailS sendMail;
+
 
   @Inject
   public RejectPartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager, SendMailS sendMail) {
     super(config);
     this.partnerRequestManager = partnerRequestManager;
     this.sendMail = sendMail;
-    // TODO Auto-generated constructor stub
   }
 
   @Override

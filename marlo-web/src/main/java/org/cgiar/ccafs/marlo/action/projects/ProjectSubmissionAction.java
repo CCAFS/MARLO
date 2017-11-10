@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
@@ -44,7 +43,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,15 +62,14 @@ public class ProjectSubmissionAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(ProjectSubmissionAction.class);
 
   // Manager
-  private SubmissionManager submissionManager;
-  private ProjectManager projectManager;
-  private CrpManager crpManager;
-  private SendMailS sendMail;
-  private LiaisonUserManager liasonUserManager;
+  private final SubmissionManager submissionManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
+  private final SendMailS sendMail;
   private Crp loggedCrp;
 
   private String cycleName;
-  private RoleManager roleManager;
+  private final RoleManager roleManager;
 
 
   private boolean complete;
@@ -81,20 +80,18 @@ public class ProjectSubmissionAction extends BaseAction {
 
   private Project project;
 
-
-  @Inject
-  ReportingSummaryAction reportingSummaryAction;
+  private final ReportingSummaryAction reportingSummaryAction;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    CrpManager crpManager, SendMailS sendMail, RoleManager roleManager, ReportingSummaryAction reportingSummaryAction) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
-    this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
+    this.reportingSummaryAction = reportingSummaryAction;
   }
 
   @Override

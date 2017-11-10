@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
@@ -47,10 +48,10 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1217563340228252130L;
-  private ICenterManager centerService;
-  private UserManager userService;
-  private ICenterProgramManager programService;
-  private ICenterAreaManager areaServcie;
+  private final ICenterManager centerService;
+  private final UserManager userService;
+  private final ICenterProgramManager programService;
+  private final ICenterAreaManager areaServcie;
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;

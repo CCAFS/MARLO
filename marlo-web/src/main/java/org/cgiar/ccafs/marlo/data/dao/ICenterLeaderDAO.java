@@ -18,18 +18,15 @@
  */
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterLeaderDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 
 import java.util.List;
-
-import com.google.inject.ImplementedBy;
 
 
 /**
  * Modified by @author nmatovu last on Oct 10, 2016
  */
-@ImplementedBy(CenterLeaderDAO.class)
+
 public interface ICenterLeaderDAO {
 
   /**

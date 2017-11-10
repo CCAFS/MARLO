@@ -40,9 +40,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -56,7 +57,6 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
   private static final long serialVersionUID = 2904862716714197942L;
-
 
   private String autoSave[];
 

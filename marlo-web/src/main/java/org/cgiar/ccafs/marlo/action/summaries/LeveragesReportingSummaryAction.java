@@ -35,7 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -63,8 +64,8 @@ public class LeveragesReportingSummaryAction extends BaseAction implements Summa
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(LeveragesReportingSummaryAction.class);
   // Managers
-  private ProjectLeverageManager projectLeverageManager;
-  private CrpManager crpManager;
+  private final ProjectLeverageManager projectLeverageManager;
+  private final CrpManager crpManager;
   // Parameters
   private Crp loggedCrp;
   private int year;

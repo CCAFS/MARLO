@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
-import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -27,7 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -39,19 +39,14 @@ public class GeopositionByLocElementAction extends BaseAction {
 
   private static final long serialVersionUID = -3927332195536071744L;
 
-
-  private LocGeopositionManager geopositionManager;
-
   private LocElementManager locElementManager;
 
   private long locElementID;
   private List<Map<String, Object>> geopositions;
 
   @Inject
-  public GeopositionByLocElementAction(APConfig config, LocGeopositionManager geopositionManager,
-    LocElementManager locElementManager) {
+  public GeopositionByLocElementAction(APConfig config, LocElementManager locElementManager) {
     super(config);
-    this.geopositionManager = geopositionManager;
     this.locElementManager = locElementManager;
   }
 

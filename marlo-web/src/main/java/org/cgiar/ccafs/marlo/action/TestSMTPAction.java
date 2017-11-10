@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -31,7 +32,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -48,8 +48,7 @@ public class TestSMTPAction extends BaseAction {
   private boolean fail;
 
   // Managers
-  private APConfig config;
-  private Message sendMail;
+  private final Message sendMail;
   private boolean sent;
 
   @Inject

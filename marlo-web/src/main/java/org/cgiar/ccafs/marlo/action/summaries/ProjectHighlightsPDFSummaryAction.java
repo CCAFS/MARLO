@@ -41,7 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
@@ -70,8 +71,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
   // Managers
-  private CrpManager crpManager;
-  private ProjectHighligthManager projectHighLightManager;
+  private final CrpManager crpManager;
+  private final ProjectHighligthManager projectHighLightManager;
   // Parameters
   private Crp loggedCrp;
   private long startTime;

@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -52,12 +53,13 @@ public class PublicationListAction extends BaseAction {
   private static final long serialVersionUID = -5176367401132626314L;
   private final Logger LOG = LoggerFactory.getLogger(PublicationListAction.class);
   private Crp loggedCrp;
-  private CrpManager crpManager;
   private long deliverableID;
-  private DeliverableManager deliverableManager;
-  private LiaisonUserManager liaisonUserManager;
-  private InstitutionManager institutionManager;
-  private DeliverableLeaderManager deliverableLeaderManager;
+
+  private final CrpManager crpManager;
+  private final DeliverableManager deliverableManager;
+  private final LiaisonUserManager liaisonUserManager;
+  private final InstitutionManager institutionManager;
+  private final DeliverableLeaderManager deliverableLeaderManager;
 
   @Inject
   public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,

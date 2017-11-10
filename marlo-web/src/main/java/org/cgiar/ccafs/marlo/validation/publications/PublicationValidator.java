@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.validation.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -34,22 +33,23 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class PublicationValidator extends BaseValidator {
 
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
-  @Inject
-  private ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public PublicationValidator() {
+  public PublicationValidator(CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {

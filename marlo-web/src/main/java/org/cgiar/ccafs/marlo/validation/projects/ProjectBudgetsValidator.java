@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -27,35 +26,31 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
-import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian Garcia. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectBudgetsValidator extends BaseValidator {
 
   private boolean hasErros;
-  private ProjectValidator projectValidator;
-  private InstitutionManager institutionManager;
+
+  private final CrpManager crpManager;
+  private final FundingSourceManager fundingSourceManager;
 
   @Inject
-  private CrpManager crpManager;
-  @Inject
-  private FundingSourceManager fundingSourceManager;
-
-  @Inject
-  public ProjectBudgetsValidator(ProjectValidator projectValidator, InstitutionManager institutionManager) {
+  public ProjectBudgetsValidator(CrpManager crpManager, FundingSourceManager fundingSourceManager) {
     super();
-    this.projectValidator = projectValidator;
-    this.institutionManager = institutionManager;
+    this.crpManager = crpManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
