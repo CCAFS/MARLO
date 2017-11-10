@@ -506,13 +506,19 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getLiaisonUser() != null) {
+        if (project.getLiaisonUser() != null && project.getLiaisonUser().getId() != null
+          && project.getLiaisonUser().getId().longValue() != -1) {
           project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
+        } else {
+          project.setLiaisonUser(null);
         }
         // load LiaisonUser info
-        if (project.getLiaisonInstitution() != null) {
+        if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getId() != null
+          && project.getLiaisonInstitution().getId().longValue() != -1) {
           project.setLiaisonInstitution(
             liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
+        } else {
+          project.setLiaisonInstitution(null);
         }
 
         // load fps value
