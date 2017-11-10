@@ -29,7 +29,7 @@
         [#-- CRPs List --]
         [#if action.canAccessSuperAdmin()]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
-          <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
+          <a href="[@s.url namespace="/" action="${(crpSession)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
             <span class="glyphicon glyphicon-chevron-down"></span> CRP/Center ([#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if])
           </a>
           <ul class="subMenu">
@@ -43,7 +43,7 @@
             [#list crpList as crp]
               [#if crp.login]
               <li class="[#if crpSession?? && crpSession == crp.acronym ]currentSection[/#if]" >
-                <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${crp.acronym}</a>
+                <a href="[@s.url namespace="/" action="${crp.acronym}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${crp.acronym}</a>
               </li>
               [/#if]
             [/#list]              
@@ -53,7 +53,7 @@
             [#list centersList as center]
               [#if center.login]
               <li class="[#if centerSession?? && centerSession == center.acronym ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.name}</a>
+                <a href="[@s.url namespace="/" action="${center.acronym}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.name}</a>
               </li>
               [/#if]
             [/#list]              
