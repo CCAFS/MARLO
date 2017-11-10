@@ -69,13 +69,15 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
 
   @Override
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
-    String query = "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
-      + "where pp.id = :projectPartnerID";
+    String query =
+      "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl left join fetch pp.projectPartnerPersons ppl2 "
+        + "where pp.id = :projectPartnerID";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerID", projectPartnerID);
     Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
 
     ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    super.refreshEntity(projectPartner);
     projectPartner.getProjectPartnerLocations().size();
     return projectPartner;
   }
@@ -100,7 +102,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
       projectPartner = super.update(projectPartner);
     }
 
-
+    projectPartner = super.refreshEntity(projectPartner);
     return projectPartner;
   }
 

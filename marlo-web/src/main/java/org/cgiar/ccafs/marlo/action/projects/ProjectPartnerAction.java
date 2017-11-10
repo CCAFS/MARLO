@@ -754,7 +754,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1192,8 +1192,13 @@ public class ProjectPartnerAction extends BaseAction {
    */
   public void saveLocations(ProjectPartner partner) {
 
-    ProjectPartner projectPartnerBD =
-      projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(partner.getId());
+    ProjectPartner projectPartnerBD = null;
+    try {
+      projectPartnerBD = projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(partner.getId());
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println(partner.getComposedName());
+    }
     List<ProjectPartnerLocation> locationsPrev =
       projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
@@ -1310,6 +1315,10 @@ public class ProjectPartnerAction extends BaseAction {
       partnerPerson.setModificationJustification("");
       partnerPerson.setActiveSince(new Date());
       partnerPerson.setProjectPartner(projectPartner);
+      if (partnerPerson.getUser() == null
+        || (partnerPerson.getUser().getId() == null || partnerPerson.getUser().getId().longValue() == -1)) {
+        partnerPerson.setUser(null);
+      }
       if (partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
         || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
         this.notifyNewUserCreated(partnerPerson.getUser());
@@ -1323,6 +1332,10 @@ public class ProjectPartnerAction extends BaseAction {
       dbPerson.setModifiedBy(this.getCurrentUser());
       dbPerson.setModificationJustification("");
       dbPerson.setContactType(partnerPerson.getContactType());
+      if (partnerPerson.getUser() == null
+        || (partnerPerson.getUser().getId() == null || partnerPerson.getUser().getId().longValue() == -1)) {
+        partnerPerson.setUser(null);
+      }
       dbPerson = projectPartnerPersonManager.saveProjectPartnerPerson(dbPerson);
     }
   }
@@ -1334,6 +1347,7 @@ public class ProjectPartnerAction extends BaseAction {
   private void saveProjectPartnerPersons(ProjectPartner projectPartner, ProjectPartner db) {
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
+
         this.saveProjectPartnerPerson(db, partnerPerson);
       }
 
