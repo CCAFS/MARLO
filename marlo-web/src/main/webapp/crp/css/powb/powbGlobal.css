@@ -32,3 +32,7 @@ table {
 }
 
 .outcomeStatement {float: left;}
+
+table ul {
+  padding: 2px;
+}

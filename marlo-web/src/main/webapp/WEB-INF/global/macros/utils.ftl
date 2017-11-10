@@ -17,11 +17,15 @@
   [/#if]
 [/#macro]
 
-[#macro helpBox name="" ]
+[#macro helpBox name="" param=""]
   <div class="container helpText viewMore-block">
     <div class="helpMessage infoText">
-      <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.jpg" />
-      <p class="col-md-10"> [@s.text name=name /] </p>
+      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+      [#if param?has_content]
+        <p class="col-md-10">[@s.text name=name][@s.param]${param}[/@s.param][/@s.text] </p>
+      [#else]
+        [@s.text name=name /]
+      [/#if]
     </div> 
     <div style="display:none" class="viewMore closed"></div>
   </div>
