@@ -146,7 +146,6 @@ public class ProjectPartnerAction extends BaseAction {
   private long projectID;
   private Crp loggedCrp;
 
-  private Project previousProject;
   private Project project;
   // Model for the view
   private List<InstitutionType> intitutionTypes;
@@ -754,7 +753,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1069,9 +1068,10 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-  private void removeProjectPartnerPersons(ProjectPartner projectPartner, ProjectPartner db) {
-    for (ProjectPartnerPerson partnerPerson : db.getProjectPartnerPersons()) {
-      if (projectPartner.getPartnerPersons() == null || !projectPartner.getPartnerPersons().contains(partnerPerson)) {
+  private void removeProjectPartnerPersons(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
+    for (ProjectPartnerPerson partnerPerson : projectPartnerDB.getProjectPartnerPersons()) {
+      if (projectPartnerClient.getPartnerPersons() == null
+        || !projectPartnerClient.getPartnerPersons().contains(partnerPerson)) {
         projectPartnerPersonManager.deleteProjectPartnerPerson(partnerPerson.getId());
       }
     }
@@ -1081,28 +1081,27 @@ public class ProjectPartnerAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      previousProject = projectManager.getProjectById(projectID);
-      List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons();
-      ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson();
+      Project projectDB = projectManager.getProjectById(projectID);
+      List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersons();
+      ProjectPartnerPerson previousLeader = projectDB.getLeaderPerson();
 
-      List<ProjectPartner> partners =
-        previousProject.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      List<ProjectPartner> partnersDB =
+        projectDB.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-      for (ProjectPartner previousPartner : partners) {
-        this.removeDeletedPartners(previousPartner);
+      for (ProjectPartner projectPartnerDB : partnersDB) {
+        this.removeDeletedPartners(projectPartnerDB);
       }
       if (project.getPartners() != null) {
 
         // Looping through the UI partner list
-        for (ProjectPartner projectPartner : project.getPartners()) {
-          this.saveProjectPartner(projectPartner);
-          ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+        for (ProjectPartner projectPartnerClient : project.getPartners()) {
+          ProjectPartner projectPartnerDB = this.saveProjectPartner(projectPartnerClient, projectDB);
 
-          this.removeProjectPartnerPersons(projectPartner, db);
-          this.saveProjectPartnerPersons(projectPartner, db);
+          this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
+          this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
 
-          this.saveProjectPartnerContributions(projectPartner, db);
-          this.saveLocations(db);
+          this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
+          this.saveLocations(projectPartnerClient, projectPartnerDB);
 
         }
       }
@@ -1190,36 +1189,35 @@ public class ProjectPartnerAction extends BaseAction {
   /**
    * @param partner - the projectPartner edited in the UI
    */
-  public void saveLocations(ProjectPartner partner) {
+  public void saveLocations(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
 
-    ProjectPartner projectPartnerBD = null;
-    try {
-      projectPartnerBD = projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(partner.getId());
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println(partner.getComposedName());
-    }
-    List<ProjectPartnerLocation> locationsPrev =
-      projectPartnerBD.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (ProjectPartnerLocation projectPartnerLocation : locationsPrev) {
-      String isoAlpha2 = projectPartnerLocation.getInstitutionLocation().getLocElement().getIsoAlpha2();
+    /**
+     * This is a small optimization to return the locations pre-fetched rather than get them one by one.
+     */
+    projectPartnerDB = projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(projectPartnerDB.getId());
+
+    List<ProjectPartnerLocation> projectPartnerLocationsDB =
+      projectPartnerDB.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (ProjectPartnerLocation projectPartnerLocationDB : projectPartnerLocationsDB) {
+      String isoAlpha2 = projectPartnerLocationDB.getInstitutionLocation().getLocElement().getIsoAlpha2();
       // Check to see if an element in the collection has the same isoAplha2 code
-      if (partner.getSelectedLocations().stream().filter(c -> c.getLocElement().getIsoAlpha2().equals(isoAlpha2))
-        .collect(Collectors.toList()).isEmpty()) {
+      if (projectPartnerClient.getSelectedLocations().stream()
+        .filter(c -> c.getLocElement().getIsoAlpha2().equals(isoAlpha2)).collect(Collectors.toList()).isEmpty()) {
         // The location does not exist anymore so delete it.
-        LOG.debug("Deleting : " + projectPartnerLocation);
-        projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocation.getId());
+        LOG.debug("Deleting : " + projectPartnerLocationDB);
+        projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocationDB.getId());
       }
     }
-    for (InstitutionLocation updatedInstitutionLocation : partner.getSelectedLocations()) {
-      String isoAlpha2 = updatedInstitutionLocation.getLocElement().getIsoAlpha2();
-      if (locationsPrev.stream()
+    for (InstitutionLocation updatedInstitutionLocationClient : projectPartnerClient.getSelectedLocations()) {
+      String isoAlpha2 = updatedInstitutionLocationClient.getLocElement().getIsoAlpha2();
+      // Check to see if the location is already saved by comparing the isoAplpha2 codes.
+      if (projectPartnerLocationsDB.stream()
         .filter(c -> c.isActive() && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()))
         .collect(Collectors.toList()).isEmpty()) {
         LocElement locElement =
-          locationManager.getLocElementByISOCode(updatedInstitutionLocation.getLocElement().getIsoAlpha2());
+          locationManager.getLocElementByISOCode(updatedInstitutionLocationClient.getLocElement().getIsoAlpha2());
         InstitutionLocation institutionLocation =
-          institutionLocationManager.findByLocation(locElement.getId(), partner.getInstitution().getId());
+          institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
         ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
         partnerLocation.setInstitutionLocation(institutionLocation);
         partnerLocation.setActive(true);
@@ -1227,7 +1225,7 @@ public class ProjectPartnerAction extends BaseAction {
         partnerLocation.setCreatedBy(this.getCurrentUser());
         partnerLocation.setModificationJustification("");
         partnerLocation.setModifiedBy(this.getCurrentUser());
-        partnerLocation.setProjectPartner(projectPartnerBD);
+        partnerLocation.setProjectPartner(projectPartnerDB);
         partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
         LOG.debug("Saving : " + partnerLocation);
       }
@@ -1236,122 +1234,130 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-  private void saveProjectPartner(ProjectPartner projectPartner) {
-    if (projectPartner.getId() == null) {
+  private ProjectPartner saveProjectPartner(ProjectPartner projectPartnerClient, Project projectDB) {
+    if (projectPartnerClient.getId() == null) {
       // New entity
-      projectPartner.setActive(true);
-      projectPartner.setCreatedBy(this.getCurrentUser());
-      projectPartner.setModifiedBy(this.getCurrentUser());
-      projectPartner.setModificationJustification("");
-      projectPartner.setActiveSince(new Date());
-      projectPartner.setProject(project);
+      projectPartnerClient.setActive(true);
+      projectPartnerClient.setCreatedBy(this.getCurrentUser());
+      projectPartnerClient.setModifiedBy(this.getCurrentUser());
+      projectPartnerClient.setModificationJustification("");
+      projectPartnerClient.setActiveSince(new Date());
+      projectPartnerClient.setProject(projectDB);
 
-      projectPartner = projectPartnerManager.saveProjectPartner(projectPartner);
+      projectPartnerClient = projectPartnerManager.saveProjectPartner(projectPartnerClient);
+
     } else {
       // Existing entity
-      ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+      ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
       projectPartnerDB.setActive(true);
-      projectPartnerDB.setProject(project);
+      projectPartnerDB.setProject(projectDB);
       projectPartnerDB.setModifiedBy(this.getCurrentUser());
       projectPartnerDB.setModificationJustification("");
-      projectPartnerDB.setResponsibilities(projectPartner.getResponsibilities());
+      projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
       projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
-
+      return projectPartnerDB;
     }
-
+    return projectPartnerClient;
   }
 
-  private void saveProjectPartnerContributions(ProjectPartner projectPartner, ProjectPartner db) {
+  private void saveProjectPartnerContributions(ProjectPartner projectPartnerClient, ProjectPartner projectPersonDB) {
 
     List<ProjectPartnerContribution> partnerContributions =
-      db.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      projectPersonDB.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     for (ProjectPartnerContribution partnerContribution : partnerContributions) {
-      if (projectPartner.getPartnerContributors() == null
-        || !projectPartner.getPartnerContributors().contains(partnerContribution)) {
+      if (projectPartnerClient.getPartnerContributors() == null
+        || !projectPartnerClient.getPartnerContributors().contains(partnerContribution)) {
         projectPartnerContributionManager.deleteProjectPartnerContribution(partnerContribution.getId());
       }
     }
-    if (projectPartner.getPartnerContributors() != null) {
+    if (projectPartnerClient.getPartnerContributors() != null) {
 
-      for (ProjectPartnerContribution partnerContribution : projectPartner.getPartnerContributors()) {
+      for (ProjectPartnerContribution partnerContributionClient : projectPartnerClient.getPartnerContributors()) {
         /**
          * Do nothing if the id is notn ull as we do not have the ability to update any details for the
          * PartnerContributors
          */
-        if (partnerContribution.getId() == null) {
-          partnerContribution.setActive(true);
+        if (partnerContributionClient.getId() == null) {
+          partnerContributionClient.setActive(true);
 
-          partnerContribution.setCreatedBy(this.getCurrentUser());
-          partnerContribution.setModifiedBy(this.getCurrentUser());
-          partnerContribution.setModificationJustification("");
-          partnerContribution.setActiveSince(new Date());
-          partnerContribution.setProjectPartner(projectPartner);
+          partnerContributionClient.setCreatedBy(this.getCurrentUser());
+          partnerContributionClient.setModifiedBy(this.getCurrentUser());
+          partnerContributionClient.setModificationJustification("");
+          partnerContributionClient.setActiveSince(new Date());
+          partnerContributionClient.setProjectPartner(projectPartnerClient);
           // This looks like we are setting the partnerContribution to the first PPA partner???
-          if (partnerContribution.getProjectPartnerContributor().getId() == null) {
-            Long institutionId = partnerContribution.getProjectPartnerContributor().getInstitution().getId();
+          if (partnerContributionClient.getProjectPartnerContributor().getId() == null) {
+            Long institutionId = partnerContributionClient.getProjectPartnerContributor().getInstitution().getId();
             List<ProjectPartner> partenerContributor = project.getPartners().stream()
               .filter(c -> c.getInstitution().getId().equals(institutionId)).collect(Collectors.toList());
             if (!partenerContributor.isEmpty()) {
-              partnerContribution.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
-              LOG.debug("User didn't select a ProjectPartnerContributor for projectPartner : " + db.getId()
+              partnerContributionClient.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
+              LOG.debug("User didn't select a ProjectPartnerContributor for projectPartner : " + projectPersonDB.getId()
                 + ", setting the projectPartnerContributor to projectPartner with id = "
                 + partenerContributor.get(0).getId());
             }
 
           }
-          partnerContribution = projectPartnerContributionManager.saveProjectPartnerContribution(partnerContribution);
+          partnerContributionClient =
+            projectPartnerContributionManager.saveProjectPartnerContribution(partnerContributionClient);
         }
       }
     }
   }
 
-  private void saveProjectPartnerPerson(ProjectPartner projectPartner, ProjectPartnerPerson partnerPerson) {
-    if (partnerPerson.getId() == null) {
-      partnerPerson.setActive(true);
+  private ProjectPartnerPerson saveProjectPartnerPerson(ProjectPartner projectPartnerDB,
+    ProjectPartnerPerson partnerPersonClient) {
+    if (partnerPersonClient.getId() == null) {
+      partnerPersonClient.setActive(true);
 
-      partnerPerson.setCreatedBy(this.getCurrentUser());
-      partnerPerson.setModifiedBy(this.getCurrentUser());
-      partnerPerson.setModificationJustification("");
-      partnerPerson.setActiveSince(new Date());
-      partnerPerson.setProjectPartner(projectPartner);
-      if (partnerPerson.getUser() == null
-        || (partnerPerson.getUser().getId() == null || partnerPerson.getUser().getId().longValue() == -1)) {
-        partnerPerson.setUser(null);
+      partnerPersonClient.setCreatedBy(this.getCurrentUser());
+      partnerPersonClient.setModifiedBy(this.getCurrentUser());
+      partnerPersonClient.setModificationJustification("");
+      partnerPersonClient.setActiveSince(new Date());
+      partnerPersonClient.setProjectPartner(projectPartnerDB);
+      if (partnerPersonClient.getUser() == null
+        || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
+        partnerPersonClient.setUser(null);
       }
-      if (partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
-        || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
-        this.notifyNewUserCreated(partnerPerson.getUser());
+      if (partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+        || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+        this.notifyNewUserCreated(partnerPersonClient.getUser());
       }
-      partnerPerson = projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
+      partnerPersonClient = projectPartnerPersonManager.saveProjectPartnerPerson(partnerPersonClient);
 
     } else {
 
-      ProjectPartnerPerson dbPerson = projectPartnerPersonManager.getProjectPartnerPersonById(partnerPerson.getId());
+      ProjectPartnerPerson dbPerson =
+        projectPartnerPersonManager.getProjectPartnerPersonById(partnerPersonClient.getId());
       dbPerson.setActive(true);
       dbPerson.setModifiedBy(this.getCurrentUser());
       dbPerson.setModificationJustification("");
-      dbPerson.setContactType(partnerPerson.getContactType());
-      if (partnerPerson.getUser() == null
-        || (partnerPerson.getUser().getId() == null || partnerPerson.getUser().getId().longValue() == -1)) {
-        partnerPerson.setUser(null);
+      dbPerson.setContactType(partnerPersonClient.getContactType());
+      if (partnerPersonClient.getUser() == null
+        || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
+        partnerPersonClient.setUser(null);
       }
       dbPerson = projectPartnerPersonManager.saveProjectPartnerPerson(dbPerson);
+      return dbPerson;
     }
+
+    return partnerPersonClient;
   }
 
   /**
-   * @param projectPartner - the projectPartner edited in the UI
-   * @param db - the projectPartner entity retrieved from the database.
+   * @param projectPartnerClient - the projectPartner edited in the UI
+   * @param projectPartnerDB - the projectPartner entity retrieved from the database.
    */
-  private void saveProjectPartnerPersons(ProjectPartner projectPartner, ProjectPartner db) {
-    if (projectPartner.getPartnerPersons() != null) {
-      for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
+  private void saveProjectPartnerPersons(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
+    if (projectPartnerClient.getPartnerPersons() != null) {
+      for (ProjectPartnerPerson partnerPersonClient : projectPartnerClient.getPartnerPersons()) {
 
-        this.saveProjectPartnerPerson(db, partnerPerson);
+        ProjectPartnerPerson projectPartnerPersonDB =
+          this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
       }
 
-      for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
+      for (ProjectPartnerPerson partnerPerson : projectPartnerClient.getPartnerPersons()) {
 
         if (partnerPerson.getUser() != null
           && (partnerPerson.getUser().getId() != null && partnerPerson.getUser().getId().longValue() != -1)) {
