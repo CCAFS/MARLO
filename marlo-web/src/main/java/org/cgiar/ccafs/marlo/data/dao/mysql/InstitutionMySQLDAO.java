@@ -73,7 +73,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   public List<Institution> findPPAInstitutions(long crpID) {
     StringBuilder query = new StringBuilder();
     query.append("select inst.id from institutions inst INNER JOIN crp_ppa_partners ppa on ppa.institution_id=inst.id");
-    query.append(" where ppa.crp_id=");
+    query.append(" where ppa.global_unit_id=");
     query.append(crpID);
     query.append("  and ppa.is_active=1");
     List<Institution> institutions = new ArrayList<>();

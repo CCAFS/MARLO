@@ -81,7 +81,7 @@ public class LiaisonUserMySQLDAO extends AbstractMarloDAO<LiaisonUser, Long> imp
 
   @Override
   public LiaisonUser findByUser(long id, long crpID) {
-    String query = "from " + LiaisonUser.class.getName() + " where user_id=" + id + " and crp_id=" + crpID + "";
+    String query = "from " + LiaisonUser.class.getName() + " where user_id=" + id + " and global_unit_id=" + crpID + "";
     List<LiaisonUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

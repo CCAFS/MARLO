@@ -82,8 +82,8 @@ public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> imple
 
   @Override
   public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
-    String query = "from " + CrpProgram.class.getName() + " where crp_id=" + id + " and program_type=" + programType
-      + " and is_active=1";
+    String query = "from " + CrpProgram.class.getName() + " where global_unit_id=" + id + " and program_type="
+      + programType + " and is_active=1";
     List<CrpProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;

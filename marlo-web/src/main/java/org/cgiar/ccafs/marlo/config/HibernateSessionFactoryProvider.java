@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 import java.net.URL;
 
 import com.google.inject.Provider;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -42,7 +43,7 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
 
   private final String path = "/hibernate.cfg.xml";
 
-  private final SessionFactory sessionFactory;
+  private SessionFactory sessionFactory;
 
   private final Logger LOG = LoggerFactory.getLogger(HibernateSessionFactoryProvider.class);
 
@@ -51,7 +52,12 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
     LOG.debug("Building the Hibernate SessionFactory using configuration at path " + path);
 
     URL url = HibernateSessionFactoryProvider.class.getResource(path);
-    Configuration hibernateConfig = new Configuration().configure(url);
+    Configuration hibernateConfig = null;
+    try {
+      hibernateConfig = new Configuration().configure(url);
+    } catch (HibernateException e) {
+      e.printStackTrace();
+    }
     PropertiesManager manager = new PropertiesManager();
 
     hibernateConfig.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
@@ -87,7 +93,12 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
 
     ServiceRegistry serviceRegistry =
       new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
-    this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
+    try {
+      this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
+    } catch (Exception e) {
+      e.printStackTrace();
+      this.sessionFactory = null;
+    }
 
     LOG.debug("Finished building the Hibernate SessionFactory");
 

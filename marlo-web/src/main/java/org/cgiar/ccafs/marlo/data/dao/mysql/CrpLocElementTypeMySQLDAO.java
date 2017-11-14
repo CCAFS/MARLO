@@ -24,7 +24,8 @@ import java.util.List;
 import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementType, Long> implements CrpLocElementTypeDAO {
+public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementType, Long>
+  implements CrpLocElementTypeDAO {
 
 
   @Inject
@@ -69,8 +70,8 @@ public class CrpLocElementTypeMySQLDAO extends AbstractMarloDAO<CrpLocElementTyp
 
   @Override
   public CrpLocElementType getByLocElementTypeAndCrpId(long crpId, long locElementTypeID) {
-    String query = "from " + CrpLocElementType.class.getName() + " where crp_id=" + crpId + " and loc_element_type_id="
-      + locElementTypeID;
+    String query = "from " + CrpLocElementType.class.getName() + " where global_unit_id=" + crpId
+      + " and loc_element_type_id=" + locElementTypeID;
     List<CrpLocElementType> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
