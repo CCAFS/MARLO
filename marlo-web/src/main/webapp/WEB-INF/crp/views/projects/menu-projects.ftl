@@ -132,7 +132,7 @@
   
  
   
-  [#if ((project.projectEditLeader)!false)]
+
   [#-- Check button --]
   [#if canEdit && !completed && !submission]
     <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
@@ -142,7 +142,7 @@
 
  
 
-[/#if]
+
  [#-- Submit button --]
   [#if canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]

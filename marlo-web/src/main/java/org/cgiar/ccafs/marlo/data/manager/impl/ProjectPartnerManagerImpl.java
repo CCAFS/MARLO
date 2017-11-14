@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerContributionDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
@@ -50,6 +52,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   private PhaseDAO phaseDAO;
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
   private ProjectPartnerLocationDAO projectPartnerLocationDAO;
+  private ProjectPartnerContributionDAO projectPartnerContributionDAO;
+
   private LocElementDAO locElementDAO;
   private LocElementManager locElementManager;
   private InstitutionLocationManager institutionLocationManager;
@@ -65,6 +69,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   public ProjectPartnerManagerImpl(ProjectPartnerDAO projectPartnerDAO, PhaseDAO phaseDAO,
     ProjectPartnerPersonDAO projectPartnerPersonDAO, ProjectPartnerLocationDAO projectPartnerLocationDAO,
     LocElementDAO locElementDAO, InstitutionLocationDAO institutionDAO, LocElementManager locElementManager,
+    ProjectPartnerContributionDAO projectPartnerContributionDAO,
     InstitutionLocationManager institutionLocationManager) {
     this.projectPartnerDAO = projectPartnerDAO;
     this.phaseDAO = phaseDAO;
@@ -73,7 +78,38 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     this.locElementDAO = locElementDAO;
     this.institutionDAO = institutionDAO;
     this.locElementManager = locElementManager;
+    this.projectPartnerContributionDAO = projectPartnerContributionDAO;
     this.institutionLocationManager = institutionLocationManager;
+  }
+
+  /**
+   * clone the contributors
+   * 
+   * @param projectPartner Partner original
+   * @param projectPartnerAdd Partner new
+   */
+
+  private void addContributors(ProjectPartner projectPartner, ProjectPartner projectPartnerAdd, Phase phase) {
+
+    if (projectPartner.getPartnerContributors() != null) {
+      for (ProjectPartnerContribution partnerContribution : projectPartner.getPartnerContributors()) {
+
+        ProjectPartnerContribution projectPartnerContribution = new ProjectPartnerContribution();
+        projectPartnerContribution.setProjectPartner(projectPartnerAdd);
+        projectPartnerContribution.setProjectPartnerContributor(projectPartnerDAO.getPartnerPhase(phase,
+          projectPartner.getProject(), partnerContribution.getProjectPartnerContributor().getInstitution()));
+        projectPartnerContribution.setActive(true);
+        projectPartnerContribution.setActiveSince(new Date());
+        projectPartnerContribution.setCreatedBy(projectPartner.getCreatedBy());
+        projectPartnerContribution.setModificationJustification(projectPartner.getModificationJustification());
+        projectPartnerContribution.setModifiedBy(projectPartner.getCreatedBy());
+
+
+        if (projectPartnerContribution.getProjectPartnerContributor() != null) {
+          projectPartnerContributionDAO.save(projectPartnerContribution);
+        }
+      }
+    }
   }
 
   /**
@@ -158,6 +194,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       if (projectPartnerAdd.getId() != null) {
         projectPartnerAdd = projectPartnerDAO.find(projectPartnerAdd.getId());
         this.addPersons(projectPartner, projectPartnerAdd);
+        this.addContributors(projectPartner, projectPartnerAdd, phase);
         this.addOffices(projectPartner, projectPartnerAdd);
       }
 
@@ -168,6 +205,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartnerDAO.save(projectPartnerPrev);
           this.updateUsers(projectPartnerPrev, projectPartner);
           this.updateLocations(projectPartnerPrev, projectPartner);
+          this.updateContributors(projectPartnerPrev, projectPartner, phase);
         }
       }
     }
@@ -192,7 +230,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           projectPartner);
       }
     }
-   
+
 
   }
 
@@ -266,6 +304,53 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
    * @param projectPartnerPrev partern to update
    * @param projectPartner partner modified
    */
+  private void updateContributors(ProjectPartner projectPartnerPrev, ProjectPartner projectPartner, Phase phase) {
+    for (ProjectPartnerContribution projectPartnerContribution : projectPartnerPrev.getProjectPartnerContributions()
+      .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (projectPartner.getPartnerContributors() == null || projectPartner.getPartnerContributors().stream()
+        .filter(c -> c.getProjectPartnerContributor().getInstitution().getId()
+          .equals(projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()))
+        .collect(Collectors.toList()).isEmpty()) {
+
+        ProjectPartnerContribution projectContributionDB =
+          projectPartnerContributionDAO.find(projectPartnerContribution.getId());
+        projectContributionDB.setActive(false);
+        projectPartnerContributionDAO.save(projectContributionDB);
+      }
+    }
+    if (projectPartner.getPartnerContributors() != null) {
+      for (ProjectPartnerContribution projectPartnerContribution : projectPartner.getPartnerContributors()) {
+
+        if (projectPartnerPrev.getProjectPartnerContributions().stream()
+          .filter(c -> c.isActive() && c.getProjectPartnerContributor().getInstitution().getId()
+            .equals(projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+          ProjectPartnerContribution projectPartnerContributionAdd = new ProjectPartnerContribution();
+          projectPartnerContributionAdd.setProjectPartner(projectPartnerPrev);
+          projectPartnerContributionAdd.setProjectPartnerContributor(projectPartnerDAO.getPartnerPhase(phase,
+            projectPartner.getProject(), projectPartnerContribution.getProjectPartnerContributor().getInstitution()));
+          projectPartnerContributionAdd.setActive(true);
+          projectPartnerContributionAdd.setActiveSince(new Date());
+          projectPartnerContributionAdd.setCreatedBy(projectPartner.getCreatedBy());
+          projectPartnerContributionAdd.setModificationJustification("");
+          projectPartnerContributionAdd.setModifiedBy(projectPartner.getModifiedBy());
+          if (projectPartnerContributionAdd.getProjectPartnerContributor() != null) {
+            projectPartnerContributionDAO.save(projectPartnerContributionAdd);
+          }
+
+        }
+      }
+    }
+  }
+
+
+  /**
+   * check the offices and updated
+   * 
+   * @param projectPartnerPrev partern to update
+   * @param projectPartner partner modified
+   */
   private void updateLocations(ProjectPartner projectPartnerPrev, ProjectPartner projectPartner) {
     for (ProjectPartnerLocation projectPartnerLocation : projectPartnerPrev.getProjectPartnerLocations().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -328,8 +413,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
         if (projectPartnerPrev.getProjectPartnerPersons().stream()
-          .filter(c -> c.isActive() && c.getUser().equals(partnerPerson.getUser())).collect(Collectors.toList())
-          .isEmpty()) {
+          .filter(c -> c.isActive() && c.getUser().getId().equals(partnerPerson.getUser().getId()))
+          .collect(Collectors.toList()).isEmpty()) {
 
           ProjectPartnerPerson partnerPersonAdd = new ProjectPartnerPerson();
           ProjectPartner partner = new ProjectPartner();

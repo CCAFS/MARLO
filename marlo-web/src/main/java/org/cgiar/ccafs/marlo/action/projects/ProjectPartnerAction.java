@@ -1066,7 +1066,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void removeDeletedPartners(ProjectPartner previouslyEnteredPartner) {
     if (project.getPartners() == null || !project.getPartners().contains(previouslyEnteredPartner)) {
-
+      Project previousProject = projectManager.getProjectById(project.getId());
       ProjectPartnerPerson previousLeader = previousProject.getLeaderPerson(this.getActualPhase());
       List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons(this.getActualPhase());
 
@@ -1103,12 +1103,11 @@ public class ProjectPartnerAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       Project projectDB = projectManager.getProjectById(projectID);
-      List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersonsDB();
-      ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB();
+      List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersonsDB(this.getActualPhase());
+      ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB(this.getActualPhase());
 
-      List<ProjectPartner> partnersDB =
-        projectDB.getProjectPartners().stream().filter(c -> c.isActive()&& c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
+      List<ProjectPartner> partnersDB = projectDB.getProjectPartners().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
       for (ProjectPartner projectPartnerDB : partnersDB) {
@@ -1117,39 +1116,41 @@ public class ProjectPartnerAction extends BaseAction {
       if (project.getPartners() != null) {
 
         // Looping through the UI partner list
-        for (ProjectPartner projectPartner : project.getPartners()) {
-          if (projectPartner.getId() == null) {
+        for (ProjectPartner projectPartnerClient : project.getPartners()) {
+          if (projectPartnerClient.getId() == null) {
 
 
-            projectPartner.setActive(true);
+            projectPartnerClient.setActive(true);
 
-            projectPartner.setCreatedBy(this.getCurrentUser());
-            projectPartner.setModifiedBy(this.getCurrentUser());
-            projectPartner.setModificationJustification("");
-            projectPartner.setActiveSince(new Date());
-            projectPartner.setProject(project);
-            projectPartner.setPhase(this.getActualPhase());
-            projectPartnerManager.saveProjectPartner(projectPartner);
+            projectPartnerClient.setCreatedBy(this.getCurrentUser());
+            projectPartnerClient.setModifiedBy(this.getCurrentUser());
+            projectPartnerClient.setModificationJustification("");
+            projectPartnerClient.setActiveSince(new Date());
+            projectPartnerClient.setProject(project);
+            projectPartnerClient.setPhase(this.getActualPhase());
+            projectPartnerManager.saveProjectPartner(projectPartnerClient);
           } else {
-            ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
-            projectPartner.setActive(true);
-            projectPartner.setProject(project);
-            projectPartner.setCreatedBy(projectPartnerDB.getCreatedBy());
-            projectPartner.setModifiedBy(this.getCurrentUser());
-            projectPartner.setModificationJustification("");
-            projectPartner.setPhase(projectPartnerDB.getPhase());
-            projectPartner.setActiveSince(projectPartnerDB.getActiveSince());
-            projectPartnerManager.saveProjectPartner(projectPartner);
+            ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
+            projectPartnerDB.setActive(true);
+            projectPartnerDB.setProject(project);
+            projectPartnerDB.setCreatedBy(projectPartnerDB.getCreatedBy());
+            projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
+            projectPartnerDB.setModifiedBy(this.getCurrentUser());
+            projectPartnerDB.setModificationJustification("");
+            projectPartnerDB.setPhase(projectPartnerDB.getPhase());
+            projectPartnerDB.setActiveSince(projectPartnerDB.getActiveSince());
+            projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
 
-          ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+          ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
 
           this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
 
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
+
 
         }
       }
@@ -1540,10 +1541,9 @@ public class ProjectPartnerAction extends BaseAction {
                 rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
               if (!rolesUser.isEmpty()) {
                 if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
-                  .filter(
-                    c -> c.isActive() && c.getContactType().equals(roleAcronym)
-                      && c.getProjectPartner().getProject().getId().longValue() != projectPartnerPerson
-                        .getProjectPartner().getProject().getId().longValue())
+                  .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym)
+                    && c.getProjectPartner().getProject() != null && c.getProjectPartner().getProject().getId()
+                      .longValue() != projectPartnerPerson.getProjectPartner().getProject().getId().longValue())
                   .collect(Collectors.toList()).size() == 0) {
                   userRoleManager.deleteUserRole(rolesUser.get(0).getId());
                   this.checkCrpUserByRole(projectPartnerPerson.getUser());

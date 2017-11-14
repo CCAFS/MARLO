@@ -20,12 +20,11 @@ import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerLocationDAO;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 
-import java.util.Date;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -47,33 +46,6 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     this.projectPartnerLocationDAO = projectPartnerLocationDAO;
   }
 
-  /**
-   * clone the offices
-   * 
-   * @param projectPartner Partner original
-   * @param projectPartnerAdd Partner new
-   */
-
-  private void addOffices(ProjectPartner projectPartner, ProjectPartner projectPartnerAdd) {
-
-    if (projectPartner.getSelectedLocations() != null) {
-      for (InstitutionLocation institutioLocation : projectPartner.getSelectedLocations()) {
-        LocElement locElement = locElementDAO.findISOCode(institutioLocation.getLocElement().getIsoAlpha2());
-        InstitutionLocation institutionLocationDB =
-          institutionDAO.findByLocation(locElement.getId(), projectPartner.getInstitution().getId());
-        ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
-        partnerLocation.setInstitutionLocation(institutionLocationDB);
-        partnerLocation.setActive(true);
-        partnerLocation.setActiveSince(new Date());
-        partnerLocation.setCreatedBy(projectPartner.getCreatedBy());
-        partnerLocation.setModificationJustification(projectPartner.getModificationJustification());
-        partnerLocation.setModifiedBy(projectPartner.getCreatedBy());
-        partnerLocation.setProjectPartner(projectPartnerAdd);
-        projectPartnerLocationDAO.save(partnerLocation);
-      }
-    }
-  }
-
 
   @Override
   public void deleteProjectPartner(long projectPartnerId) {
@@ -81,7 +53,6 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     projectPartner.setActive(false);
     super.update(projectPartner);
   }
-
 
   @Override
   public boolean existProjectPartner(long projectPartnerID) {
@@ -92,6 +63,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     return true;
 
   }
+
 
   @Override
   public ProjectPartner find(long id) {
@@ -110,6 +82,23 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
 
   }
 
+  @Override
+  public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution) {
+    String query = "select distinct pp from ProjectPartner pp "
+      + " where project.id = :projectId and institution.id= :institutionId and phase.id= :phaseId";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", project.getId());
+    createQuery.setParameter("institutionId", institution.getId());
+    createQuery.setParameter("phaseId", phase.getId());
+
+
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    projectPartner = super.refreshEntity(projectPartner);
+
+    return projectPartner;
+  }
+
 
   @Override
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
@@ -117,14 +106,12 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
       + "where pp.id = :projectPartnerID";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerID", projectPartnerID);
-<<<<<<< HEAD
+
     Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
     ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
     projectPartner = super.refreshEntity(projectPartner);
     // projectPartner.getProjectPartnerLocations().size();
-=======
-    ProjectPartner projectPartner = super.findSingleResult(ProjectPartner.class, createQuery);
->>>>>>> refs/remotes/origin/staging
+
     return projectPartner;
   }
 
@@ -147,10 +134,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     } else {
       projectPartner = super.update(projectPartner);
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/staging
     return projectPartner;
   }
 

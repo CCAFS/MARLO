@@ -7,7 +7,10 @@ CREATE TEMPORARY TABLE
 IF NOT EXISTS tablepartners AS (SELECT * FROM project_partners);
 
 
-
+CREATE TEMPORARY TABLE
+IF NOT EXISTS tablepartnersContributors( select ppc.*,pp.institution_id 'i1', pp2.institution_id 'i2',pp.project_id from project_partner_contributions ppc 
+INNER JOIN project_partners pp on ppc.project_partner_id=pp.id
+INNER JOIN project_partners pp2 on pp2.id=ppc.project_partner_contributor_id);
 CREATE TEMPORARY TABLE
 IF NOT EXISTS table_temp_persons AS (
 SELECT
@@ -32,7 +35,6 @@ IF NOT EXISTS table_deliverable_partnerships AS (select dp.*,pp.institution_id,p
 INNER JOIN project_partners pp on pp.id=ppp.project_partner_id
 inner join institutions inst on inst.id=pp.institution_id);
 
-TRUNCATE TABLE deliverable_partnerships;
 
 
 ALTER TABLE `deliverable_partnerships`
@@ -43,6 +45,8 @@ ALTER TABLE `deliverable_partnerships` ADD FOREIGN KEY (`id_phase`) REFERENCES `
 TRUNCATE TABLE project_partners;
 TRUNCATE TABLE project_partner_persons;
 TRUNCATE TABLE project_partner_locations;
+TRUNCATE TABLE project_partner_contributions;
+TRUNCATE TABLE deliverable_partnerships;
 
 
 ALTER TABLE `project_partners`
@@ -100,6 +104,29 @@ temp.modification_justification
 from table_temp_locations temp 
 INNER JOIN project_partners pp on pp.project_id=temp.project_id
 and pp.institution_id =temp.institution_id;
+
+-- project_partner_contributions
+insert into project_partner_contributions (project_partner_id,
+project_partner_contributor_id,
+is_active,
+active_since,
+created_by,
+modified_by,
+modification_justification
+
+)
+select distinct pp.id,
+pp2.id,
+temp.is_active,
+temp.active_since,
+temp.created_by,
+temp.modified_by,
+temp.modification_justification
+from tablepartnersContributors temp 
+INNER JOIN project_partners pp on pp.project_id=temp.project_id
+and pp.institution_id =temp.i1
+INNER JOIN project_partners pp2 on pp2.project_id=temp.project_id
+and pp2.institution_id =temp.i2 and pp2.id_phase=pp.id_phase;
 
 
 insert into project_partner_persons (project_partner_id,
