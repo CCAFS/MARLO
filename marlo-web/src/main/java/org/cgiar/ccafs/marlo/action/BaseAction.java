@@ -1822,8 +1822,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -1848,11 +1848,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (project != null) {
       if (project.isAutoFill()) {
-        CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
-          .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
-        if (fundingSource != null) {
-          return fundingSource.getCode();
+        try {
+          CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
+            .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+          if (fundingSource != null) {
+            return fundingSource.getCode();
+          }
+        } catch (Exception e) {
+          return "---";
         }
+
       }
     }
 
@@ -2805,8 +2810,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isProjectSubmitted(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -2998,8 +3003,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3007,8 +3012,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
