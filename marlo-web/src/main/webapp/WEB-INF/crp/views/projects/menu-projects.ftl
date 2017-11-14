@@ -120,21 +120,30 @@
 [/#if]
 
 
-[#if ((project.projectInfo.isProjectEditLeader())!false)]
+
+
 
   [#-- Submition message --]
   [#if !submission && completed && !canSubmit]
     <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
   [/#if]
   
+  
+  
+ 
+  
+  [#if ((project.projectEditLeader)!false)]
   [#-- Check button --]
   [#if canEdit && !completed && !submission]
     <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
     <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
   [/#if]
-  
-  [#-- Submit button --]
+
+ 
+
+[/#if]
+ [#-- Submit button --]
   [#if canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
     <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
@@ -148,11 +157,6 @@
       [@s.text name="form.buttons.unsubmit" /]
     </a>
   [/#if]
-  
-[#else]
- 
-
-[/#if]
 
 [#-- Justification --]
 <div id="unSubmit-justification" title="[@s.text name="form.buttons.unsubmit" /] justification" style="display:none"> 

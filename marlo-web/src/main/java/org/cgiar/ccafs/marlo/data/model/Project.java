@@ -395,6 +395,29 @@ public class Project implements java.io.Serializable, IAuditLog {
     return coreBudget;
   }
 
+  /**
+   * This method gets all the coordinators working for this project.
+   * 
+   * @return a list of PartnerPerson with the information requested.
+   */
+  public List<ProjectPartnerPerson> getCoordinatorPersonsDB() {
+    List<ProjectPartnerPerson> projectCoordinators = new ArrayList<>();
+
+    for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (partner.getProjectPartnerPersons() != null) {
+        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+
+          if (person.getContactType().equals("PC") && person.isActive()) {
+            projectCoordinators.add(person);
+          }
+        }
+      }
+
+
+    }
+    return projectCoordinators;
+  }
+
 
   public double getCoreBudget(int year) {
 
@@ -609,6 +632,29 @@ public class Project implements java.io.Serializable, IAuditLog {
       }
 
     }
+
+    return null;
+  }
+
+  /**
+   * This method returns the project partner person who is leading the project.
+   * 
+   * @return a PartnerPerson object with the information requested. Or null if the project doesn't have a leader.
+   */
+  public ProjectPartnerPerson getLeaderPersonDB() {
+
+
+    for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+        if (person.isActive()) {
+          if (person.getContactType().equals("PL")) {
+            return person;
+          }
+        }
+      }
+
+    }
+
 
     return null;
   }

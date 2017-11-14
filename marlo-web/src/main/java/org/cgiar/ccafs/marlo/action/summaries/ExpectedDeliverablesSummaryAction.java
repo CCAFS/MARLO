@@ -140,13 +140,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
     masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
     masterReport.getParameterValues().put("i8nIndividual", this.getText("deliverable.individual"));
-    masterReport.getParameterValues().put("i8nManaging", this.getText("deliverable.managing"));
+    masterReport.getParameterValues().put("i8nPartnersResponsible", this.getText("deliverable.managing"));
     masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
     masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
     masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
-    masterReport.getParameterValues().put("i8nProjectManaging", this.getText("deliverable.project.managing"));
+    masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
+    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
 
     return masterReport;
   }
