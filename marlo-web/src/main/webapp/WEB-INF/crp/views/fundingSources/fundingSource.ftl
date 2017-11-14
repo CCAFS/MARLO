@@ -193,8 +193,13 @@
         [#-- Extension Date --]
         <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${hasCIAT?string('block', 'none')}">
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
+          [#if hasCIAT]
+            [#assign extensionValue = (fundingSource.extensionDate?string["yyyy-MM-dd"])!'' /]
+          [#else]
+            [#assign extensionValue = '' /]
+          [/#if]
           [#if editable]
-            <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${(fundingSource.extensionDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue extensionDateInput">
+            <input id="fundingSource.extensionDate" type="hidden" name="fundingSource.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.extensionDate?string["MMMM yyyy"])!}</p>
             <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
           [#else]
