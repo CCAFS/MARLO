@@ -1020,7 +1020,16 @@ public class DeliverableAction extends BaseAction {
 
           for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
             .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
-            keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+
+            /*
+             * fix duplicate key output
+             * Julian Rodriguez
+             * 20171108
+             */
+            if (!keyOutputs.contains(keyOutcome.getCrpClusterKeyOutput())) {
+              keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+            }
+
           }
 
         }

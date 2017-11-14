@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -29,20 +30,33 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
+/**
+ * RejectPartnerRequestAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Oct 31, 2017
+ * @time 10:52:21 AM: Add sendEmail boolean parameter
+ * @date Nov 10, 2017
+ * @time 10:09:18 AM:Inactive parent partner request
+ */
 public class RejectPartnerRequestAction extends BaseAction {
+
 
   /**
    * 
    */
   private static final long serialVersionUID = 821788435993637711L;
+
+
   // Managers
   private final PartnerRequestManager partnerRequestManager;
-  private final SendMailS sendMail;
+
   // Variables
   private String requestID;
   private String justification;
   private boolean success;
-
+  private final SendMailS sendMail;
+  private boolean sendNotification;
 
   @Inject
   public RejectPartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager, SendMailS sendMail) {
@@ -56,12 +70,20 @@ public class RejectPartnerRequestAction extends BaseAction {
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
       partnerRequest.setAcepted(new Boolean(false));
-      partnerRequest.setModificationJustification(justification);
-      partnerRequest.setModifiedBy(this.getCurrentUser());
+      partnerRequest.setRejectJustification(justification);
+      partnerRequest.setRejectedBy(this.getCurrentUser());
+      partnerRequest.setRejectedDate(new Date());
       partnerRequestManager.savePartnerRequest(partnerRequest);
       partnerRequestManager.deletePartnerRequest(partnerRequest.getId());
+      // inactive the parent partnerRequest
+      PartnerRequest partnerRequestParent =
+        partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
+      partnerRequestParent.setActive(false);
+      partnerRequestManager.savePartnerRequest(partnerRequestParent);
       // Send notification email
-      this.sendRejectedNotficationEmail(partnerRequest);
+      if (sendNotification) {
+        this.sendRejectedNotficationEmail(partnerRequest);
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -84,7 +106,6 @@ public class RejectPartnerRequestAction extends BaseAction {
     return success;
   }
 
-
   @Override
   public void prepare() throws Exception {
     success = true;
@@ -92,37 +113,32 @@ public class RejectPartnerRequestAction extends BaseAction {
       Map<String, Parameter> parameters = this.getParameters();
       justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
       requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
+      sendNotification = Boolean.valueOf(
+        StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
     }
   }
 
-
   private void sendRejectedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";
     // ToEmail: User who requested the partner
     toEmail = partnerRequest.getCreatedBy().getEmail();
-
     // CC Email: User who rejected the request
     String ccEmail = this.getCurrentUser().getEmail();
-
     // BBC: Our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
     // subject
     String subject =
       this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
-
     // Building the email message
     StringBuilder message = new StringBuilder();
     message.append(this.getText("email.dear", new String[] {partnerRequest.getCreatedBy().getFirstName()}));
     message.append(this.getText("marloRequestInstitution.reject.email",
       new String[] {partnerRequest.getPartnerInfo(), justification}));
-
     message.append(this.getText("email.support.noCrpAdmins"));
     message.append(this.getText("email.bye"));
-
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 

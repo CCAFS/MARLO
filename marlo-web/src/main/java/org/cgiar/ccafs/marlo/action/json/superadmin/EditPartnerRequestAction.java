@@ -1,18 +1,3 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
 package org.cgiar.ccafs.marlo.action.json.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
@@ -25,6 +10,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -39,9 +25,9 @@ public class EditPartnerRequestAction extends BaseAction {
    */
   private static final long serialVersionUID = 821788435993637711L;
   // Managers
-  private PartnerRequestManager partnerRequestManager;
-  private InstitutionTypeManager institutionTypeManager;
-  private LocElementManager locElementManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final InstitutionTypeManager institutionTypeManager;
+  private final LocElementManager locElementManager;
   // Variables
   private String requestID;
   private String name;
@@ -49,6 +35,7 @@ public class EditPartnerRequestAction extends BaseAction {
   private String webPage;
   private String type;
   private String country;
+  private String modificationJustification;
   private boolean success;
 
 
@@ -67,18 +54,23 @@ public class EditPartnerRequestAction extends BaseAction {
     success = true;
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
+      boolean isEdited = false;
+
       if (name != null && !name.isEmpty()) {
         partnerRequest.setPartnerName(name);
+        isEdited = true;
       } else {
         partnerRequest.setPartnerName("");
       }
       if (acronym != null && !acronym.isEmpty()) {
         partnerRequest.setAcronym(acronym);
+        isEdited = true;
       } else {
         partnerRequest.setAcronym("");
       }
       if (webPage != null && !webPage.isEmpty()) {
         partnerRequest.setWebPage(webPage);
+        isEdited = true;
       } else {
         partnerRequest.setWebPage("");
       }
@@ -87,14 +79,25 @@ public class EditPartnerRequestAction extends BaseAction {
         if (typeID != null && typeID != 0) {
           InstitutionType institutionType = institutionTypeManager.getInstitutionTypeById(typeID);
           partnerRequest.setInstitutionType(institutionType);
+          isEdited = true;
         }
       }
       if (country != null && !country.isEmpty()) {
         LocElement locElement = locElementManager.getLocElementByISOCode(country);
         partnerRequest.setLocElement(locElement);
+        isEdited = true;
       }
-      partnerRequest.setModifiedBy(this.getCurrentUser());
-      partnerRequestManager.savePartnerRequest(partnerRequest);
+      if (modificationJustification != null && !modificationJustification.isEmpty()) {
+        partnerRequest.setModificationJustification(modificationJustification);
+        isEdited = true;
+      }
+      // If the PartnerRequest is edited, save it
+      if (isEdited) {
+        partnerRequest.setModifiedBy(this.getCurrentUser());
+        partnerRequest.setModified(true);
+        partnerRequest.setActiveSince(new Date());
+        partnerRequestManager.savePartnerRequest(partnerRequest);
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -110,6 +113,11 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public String getCountry() {
     return country;
+  }
+
+
+  public String getModificationJustification() {
+    return modificationJustification;
   }
 
 
@@ -137,6 +145,7 @@ public class EditPartnerRequestAction extends BaseAction {
     return success;
   }
 
+
   @Override
   public void prepare() throws Exception {
     success = true;
@@ -148,6 +157,8 @@ public class EditPartnerRequestAction extends BaseAction {
       webPage = StringUtils.trim(parameters.get("institutionWebPage").getMultipleValues()[0]);
       type = StringUtils.trim(parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID).getMultipleValues()[0]);
       country = StringUtils.trim(parameters.get(APConstants.COUNTRY_REQUEST_ID).getMultipleValues()[0]);
+      modificationJustification =
+        StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -160,6 +171,10 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
   }
 
   public void setName(String name) {

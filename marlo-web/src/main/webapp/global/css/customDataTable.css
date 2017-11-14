@@ -49,9 +49,8 @@ table.dataTable {
 }
 
 table.dataTable thead {
-   
-  background-color: #8ea786;
-  color: #fff;
+   background-color: #8ea786;
+   color: #fff;
 }
 
 table.dataTable tr.odd {

@@ -198,6 +198,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    Thread.sleep(200);
     if (existProject && validSection) {
       // getting the current section status.
       switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {

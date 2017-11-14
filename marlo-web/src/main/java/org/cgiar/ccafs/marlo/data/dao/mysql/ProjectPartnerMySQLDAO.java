@@ -75,10 +75,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
       + "where pp.id = :projectPartnerID";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerID", projectPartnerID);
-    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
-
-    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
-    projectPartner.getProjectPartnerLocations().size();
+    ProjectPartner projectPartner = super.findSingleResult(ProjectPartner.class, createQuery);
     return projectPartner;
   }
 
@@ -101,8 +98,6 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     } else {
       projectPartner = super.update(projectPartner);
     }
-
-
     return projectPartner;
   }
 

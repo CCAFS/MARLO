@@ -102,6 +102,8 @@ public class SearchInstitutionsAction extends BaseAction {
       institutionMap.put("acronym", institution.getAcronym());
       institutionMap.put("name", institution.getName());
       institutionMap.put("type", institution.getInstitutionType().getName());
+      institutionMap.put("countries", institution.getInstitutionsLocations().toString().substring(1,
+        institution.getInstitutionsLocations().toString().length() - 1));
 
 
       institutionMap.put("isPPA", institution.isPPA(this.getCrpID()));

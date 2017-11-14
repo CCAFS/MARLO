@@ -61,7 +61,12 @@ public class BeneficiaryListAction extends BaseAction {
 
     Map<String, Object> beneficiary;
 
-    CenterBeneficiaryType beneficiaryType = beneficiaryTypeService.getBeneficiaryTypeById(beneficiaryTypeID);
+
+    CenterBeneficiaryType beneficiaryType = null;
+    if (beneficiaryTypeID != -1) {
+      beneficiaryType = beneficiaryTypeService.getBeneficiaryTypeById(beneficiaryTypeID);
+    }
+
 
     if (beneficiaryType != null) {
 

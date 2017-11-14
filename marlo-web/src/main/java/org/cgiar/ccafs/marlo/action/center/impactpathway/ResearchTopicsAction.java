@@ -49,10 +49,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -200,11 +201,10 @@ public class ResearchTopicsAction extends BaseAction {
           User user = userService.getUser(this.getCurrentUser().getId());
 
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads =
-            new ArrayList<>(user.getResearchLeaders().stream()
-              .filter(rl -> rl.isActive()
-                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-              .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(
+              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -320,15 +320,14 @@ public class ResearchTopicsAction extends BaseAction {
           reader = new BufferedReader(new FileReader(path.toFile()));
           Gson gson = new GsonBuilder().create();
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+          reader.close();
           AutoSaveReader autoSaveReader = new AutoSaveReader();
 
           selectedProgram = (CenterProgram) autoSaveReader.readFromJson(jReader);
 
           topics = new ArrayList<>(selectedProgram.getTopics());
 
-        
+
           this.setDraft(true);
         } else {
           this.setDraft(false);
@@ -429,6 +428,7 @@ public class ResearchTopicsAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_PROGRAM_TOPIC_RELATION);
+      selectedProgram = programService.getProgramById(programID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       programService.saveProgram(selectedProgram, this.getActionName(), relationsName);

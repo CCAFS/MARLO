@@ -940,7 +940,7 @@ function changeDonorByFundingType(budgetType,$donorSelect) {
   var cgConsortiumId = $(".cgiarConsortium").text();
 
   // If budget type is W1W2 and the donor is not selected
-  if((currentDonorId == "-1") && (budgetType == W1W2)) {
+  if(((currentDonorId == "-1") || (currentDonorId == cgConsortiumId)) && (budgetType == W1W2)) {
     // Set CGIAR System Organization
     $donorSelect.val(cgConsortiumId).attr("disabled", true).trigger("change");
     $donorSelect.parents('.select').parent().append(
