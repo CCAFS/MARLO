@@ -45,6 +45,12 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
   public void validateCapdevDescription(BaseAction baseAction, CapacityDevelopment capdev) {
 
+    if (capdev.getCapdevDisciplineList() == null) {
+      this.addMessage(baseAction.getText("capdev.action.disciplines"));
+      baseAction.getInvalidFields().put("list-capdev.disciplines",
+        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
+    }
+
     if (capdev.getCapdevDisciplineList() != null) {
       if (capdev.getCapdevDisciplineList().isEmpty()) {
         this.addMessage(baseAction.getText("capdev.action.disciplines"));
@@ -53,12 +59,25 @@ public class CapDevDescriptionValidator extends BaseValidator {
       }
     }
 
+    if (capdev.getCapdevTargetGroupList() == null) {
+      this.addMessage(baseAction.getText("capdev.action.targetgroup"));
+      baseAction.getInvalidFields().put("list-capdev.targetgroup",
+        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
+    }
+
     if (capdev.getCapdevTargetGroupList() != null) {
       if (capdev.getCapdevTargetGroupList().isEmpty()) {
         this.addMessage(baseAction.getText("capdev.action.targetgroup"));
         baseAction.getInvalidFields().put("list-capdev.targetgroup",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
       }
+    }
+
+    if (capdev.getCapdevPartnersList() == null) {
+      this.addMessage(baseAction.getText("capdev.action.partners"));
+      baseAction.getInvalidFields().put("list-capdev.partners",
+        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+
     }
 
 
@@ -72,6 +91,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
     }
 
+
     if (capdev.getResearchArea() == null) {
       this.addMessage(baseAction.getText("capdev.action.researchArea"));
       baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
@@ -80,6 +100,12 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
     }
 
+
+    if (capdev.getCapdevOutputsList() == null) {
+      this.addMessage(baseAction.getText("capdev.action.outputs"));
+      baseAction.getInvalidFields().put("list-capdev.outputs",
+        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+    }
 
     if (capdev.getCapdevOutputsList() != null) {
       if (capdev.getCapdevOutputsList().isEmpty()) {

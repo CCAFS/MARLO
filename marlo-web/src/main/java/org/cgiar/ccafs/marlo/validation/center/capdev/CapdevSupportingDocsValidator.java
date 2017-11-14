@@ -51,9 +51,31 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
 
   public void validateSupportingDocs(BaseAction baseAction, CenterDeliverable deliverable) {
+
     if (deliverable.getName() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
       baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (deliverable.getName() != null) {
+      if (deliverable.getName().equals("")) {
+        this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
+        baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+    if (deliverable.getDeliverableType() == null) {
+      this.addMessage(baseAction.getText("capdev.action.supportingDocs.subtype"));
+      baseAction.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (deliverable.getDeliverableType() != null) {
+      if (deliverable.getDeliverableType().getId() == -1) {
+        this.addMessage(baseAction.getText("capdev.action.supportingDocs.type"));
+        baseAction.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
     }
 
 

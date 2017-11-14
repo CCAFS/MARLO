@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.ReadExcelFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,8 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class FilterListsAction extends BaseAction {
 
@@ -69,6 +72,11 @@ public class FilterListsAction extends BaseAction {
   private final ICapacityDevelopmentService capdevService;
   private final ICenterOutputManager researchOutputService;
   private final ICenterDeliverableTypeManager centerDeliverableService;
+
+  private List<Map<String, Object>> previewList;
+  private List<String> previewListHeader;
+  private List<Map<String, Object>> previewListContent;
+  private final ReadExcelFile reader = new ReadExcelFile();
 
   @Inject
   public FilterListsAction(APConfig config, ICenterProgramDAO researchProgramSercive,
@@ -277,7 +285,6 @@ public class FilterListsAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public String filterResearchProgram() throws Exception {
     final Map<String, Object> parameters = this.getParameters();
     final long researchAreaID =
@@ -303,10 +310,10 @@ public class FilterListsAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public List<Map<String, Object>> getJsonCapdevList() {
     return jsonCapdevList;
   }
-
 
   public List<Map<String, Object>> getJsonCountries() {
     return jsonCountries;
@@ -317,17 +324,59 @@ public class FilterListsAction extends BaseAction {
     return jsonDeliverableSubtypes;
   }
 
+
   public List<Map<String, Object>> getJsonPartners_output() {
     return jsonPartners_output;
   }
-
 
   public List<Map<String, Object>> getJsonProjects() {
     return jsonProjects;
   }
 
+
   public List<Map<String, Object>> getJsonResearchPrograms() {
     return jsonResearchPrograms;
+  }
+
+  public List<Map<String, Object>> getPreviewList() {
+    return previewList;
+  }
+
+
+  public List<Map<String, Object>> getPreviewListContent() {
+    return previewListContent;
+  }
+
+
+  public List<String> getPreviewListHeader() {
+    return previewListHeader;
+  }
+
+
+  /*
+   * This method is used to do a preview of excel file uploaded
+   * @return previewList is a JSON Object containing the data from excel file
+   */
+  public String previewExcelFile() throws Exception {
+
+    this.previewList = new ArrayList<>();
+    previewListHeader = new ArrayList<>();
+    previewListContent = new ArrayList<>();
+    Map<String, Object> previewMap = new HashMap<>();
+
+    Workbook wb = WorkbookFactory.create(this.getRequest().getInputStream());
+    boolean rightFile = reader.validarExcelFile(wb);
+    if (rightFile) {
+      previewListHeader = reader.getHeadersExcelFile(wb);
+      previewListContent = reader.getDataExcelFile(wb);
+      previewMap.put("headers", previewListHeader);
+      previewMap.put("content", previewListContent);
+
+      this.previewList.add(previewMap);
+
+    }
+    return SUCCESS;
+
   }
 
 
@@ -358,6 +407,21 @@ public class FilterListsAction extends BaseAction {
 
   public void setJsonResearchPrograms(List<Map<String, Object>> jsonResearchPrograms) {
     this.jsonResearchPrograms = jsonResearchPrograms;
+  }
+
+
+  public void setPreviewList(List<Map<String, Object>> previewList) {
+    this.previewList = previewList;
+  }
+
+
+  public void setPreviewListContent(List<Map<String, Object>> previewListContent) {
+    this.previewListContent = previewListContent;
+  }
+
+
+  public void setPreviewListHeader(List<String> previewListHeader) {
+    this.previewListHeader = previewListHeader;
   }
 
 

@@ -77,14 +77,23 @@
   
     //event when the user add a new contact person
     $dialogContent.find(".addContactPerson").on("click", function(){
+
        var firstName = $(".ct_FirstName").val();
         var lastName = $(".ct_LastName").val();
         var email = $(".ct_Email").val();
-        var composedName = firstName +", " + lastName +" <"+ email+">";
+        if(firstName != "" )
+        {
+          firstName += ", ";
+        }
+        if(email != email)
+        {
+          email = " <"+email+">";
+        }
+        var composedName = firstName + lastName + email;
 
         
         // Add user
-        addUser(composedName, firstName, lastName, "<" + email + ">");
+        addUser(composedName, firstName, lastName,  email );
     });
 
 

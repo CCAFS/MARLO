@@ -73,10 +73,18 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // if (capdev.getCapdevType().getId() == -1) {
-    // this.addMessage(baseAction.getText("capdev.action.type"));
-    // baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
-    // }
+    if (capdev.getCapdevType() == null) {
+      this.addMessage(baseAction.getText("capdev.action.type"));
+      baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (capdev.getCapdevType() != null) {
+      if (capdev.getCapdevType().getId() == -1) {
+        this.addMessage(baseAction.getText("capdev.action.type"));
+        baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
 
     if (capdev.getStartDate() == null) {
       this.addMessage(baseAction.getText("capdev.action.startDate"));

@@ -106,17 +106,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private File uploadFile;
   private String uploadFileName;
   private String uploadFileContentType;
-  private final ICapacityDevelopmentService capdevService;
-  private final ICapacityDevelopmentTypeDAO capdevTypeService;
-  private final LocElementManager locElementService;
-  private final InstitutionManager institutionService;
-  private final ICapdevLocationsService capdevLocationService;
-  private final IParticipantService participantService;
-  private final ICapdevParticipantService capdevParicipantService;
-  private final CapdevHighestDegreeManager capdevHighestDegreeService;
-  private final CapdevFoundingTypeManager capdevFoundingTypeService;
-  private final CapacityDevelopmentValidator validator;
-  private final ReadExcelFile reader = new ReadExcelFile();
+  private ICapacityDevelopmentService capdevService;
+  private ICapacityDevelopmentTypeDAO capdevTypeService;
+  private LocElementManager locElementService;
+  private InstitutionManager institutionService;
+  private ICapdevLocationsService capdevLocationService;
+  private IParticipantService participantService;
+  private ICapdevParticipantService capdevParicipantService;
+  private CapdevHighestDegreeManager capdevHighestDegreeService;
+  private CapdevFoundingTypeManager capdevFoundingTypeService;
+  private CapacityDevelopmentValidator validator;
+  private ReadExcelFile reader = new ReadExcelFile();
 
 
   private List<Map<String, Object>> previewList;
@@ -707,10 +707,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.previewList = new ArrayList<>();
     previewListHeader = new ArrayList<>();
     previewListContent = new ArrayList<>();
-    final Map<String, Object> previewMap = new HashMap<>();
+    Map<String, Object> previewMap = new HashMap<>();
 
-    final Workbook wb = WorkbookFactory.create(this.getRequest().getInputStream());
-    final boolean rightFile = reader.validarExcelFile(wb);
+    Workbook wb = WorkbookFactory.create(this.getRequest().getInputStream());
+    boolean rightFile = reader.validarExcelFile(wb);
     if (rightFile) {
       previewListHeader = reader.getHeadersExcelFile(wb);
       previewListContent = reader.getDataExcelFile(wb);

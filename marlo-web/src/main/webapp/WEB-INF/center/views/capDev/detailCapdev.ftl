@@ -196,11 +196,11 @@
 										
 
 										<div class="col-md-12" style="margin-top: 10px;">
-										<!-- <div class="btnPreview">
+										<div class="btnPreview">
 											<button type="button"  id="btnDisplay" class="capdevButtons" aria-label="Left Align" data-toggle="modal" data-target="#myModa"       title="Take a look to list of participants uploaded" >
 												preview 
 											</button>
-										</div> -->
+										</div>
 
 										
 

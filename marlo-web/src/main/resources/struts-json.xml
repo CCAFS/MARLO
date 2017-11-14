@@ -551,7 +551,7 @@
 		</action>
 
 		<action name="previewParticipants"
-			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"
 			method="previewExcelFile">
 			<result type="json">
 				<param name="root">previewList</param>
