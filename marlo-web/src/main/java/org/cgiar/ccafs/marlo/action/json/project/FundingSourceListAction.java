@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -159,7 +160,7 @@ public class FundingSourceListAction extends BaseAction {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
 
-    if (parameters.get(APConstants.INSTITUTION_REQUEST_ID) != null) {
+    if (parameters.get(APConstants.INSTITUTION_REQUEST_ID).isDefined()) {
       institutionID =
         // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0]));
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.INSTITUTION_REQUEST_ID).getMultipleValues()[0]));

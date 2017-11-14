@@ -182,7 +182,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       // TODO Validate is the project is new
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
         String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");

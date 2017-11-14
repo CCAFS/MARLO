@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -97,7 +98,7 @@ public class CrpClusterLeadersListAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
 
     // Verify if there is a programID parameter
-    if (parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID) == null) {
+    if (!parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID).isDefined()) {
       clusterId = "";
       return;
     }

@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -95,7 +96,7 @@ public class SubIDOListAction extends BaseAction {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
     // Verify if there is a programID parameter
-    if (parameters.get(APConstants.IDO_ID) == null) {
+    if (!parameters.get(APConstants.IDO_ID).isDefined()) {
       idoID = "";
       return;
     }

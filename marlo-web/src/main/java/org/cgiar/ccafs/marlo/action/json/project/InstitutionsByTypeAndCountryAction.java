@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -128,7 +129,7 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
     institutionTypeID =
       // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]));
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID).getMultipleValues()[0]));
-    if (parameters.get(APConstants.COUNTRY_REQUEST_ID) != null) {
+    if (parameters.get(APConstants.COUNTRY_REQUEST_ID).isDefined()) {
       // countryID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]));
       countryID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.COUNTRY_REQUEST_ID).getMultipleValues()[0]));

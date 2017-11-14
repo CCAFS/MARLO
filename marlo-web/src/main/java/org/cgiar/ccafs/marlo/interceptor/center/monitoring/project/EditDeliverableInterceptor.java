@@ -119,7 +119,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
             }
           }
 
-          if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+          if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
             // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
             String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
             editParameter = stringEditable.equals("true");
