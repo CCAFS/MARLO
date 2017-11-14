@@ -702,6 +702,24 @@
 
 		<!-- ************************************************************************************************************** -->
 
+<action name="acceptOfficesRequest" method="addCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="includeProperties">success</param>
+      </result>
+    </action>
+    
+     <action name="rejectOfficesRequest" method="rejectCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="includeProperties">success</param>
+      </result>
+    </action>
+    
 	</package>
 
 	<package name="json-planning" namespace="/impactPathway"

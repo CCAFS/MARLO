@@ -384,6 +384,13 @@
   </div>
 [/#macro]
 
+[#macro checkBoxFlat id name label="" disabled=false editable=true value="" checked=true cssClass=""]
+  <div class="inputsFlat">
+    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked[/#if] />
+    <label for="${id}" class="checkbox-label"> ${label} </label>
+  </div>
+[/#macro]
+
 
 [#function changedField name]
   [#if action.changedField(name)??]
