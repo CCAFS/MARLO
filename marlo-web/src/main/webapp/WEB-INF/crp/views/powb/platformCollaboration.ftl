@@ -90,12 +90,24 @@
 [#macro platformCollaboration element name index ]
   [#local customName = "${name}[${index}]"]
   <div class="simpleBox">
+    <div class="leftHead blue sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId">Platform Collaboration</span>
+    </div>
+    <br />
+    
     <div class="form-group row">
       <div class="col-md-8">
         [@customForm.input name="${customName}.name" i18nkey="${name}.name" required=true className="" editable=editable /]
       </div>
       <div class="col-md-4">
-        [@customForm.input name="${customName}.flagship" i18nkey="${name}.flagship" required=true className="" editable=editable && PMU /]
+        [#if PMU]
+          [@customForm.select name="${customName}.crpProgram.id" label="" i18nkey="${name}.flagship" listName="flafshipsList" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable/]
+        [#else]
+          <label for="">[@s.text name="${name}.flagship" /]</label>     
+          <p>${liaisonInstitution.composedName}</p>
+          <input type="hidden" name="${customName}.crpProgram.id" value="${liaisonInstitution.crpProgram.id}"/>
+        [/#if]
       </div>
     </div>
     <div class="form-group">
