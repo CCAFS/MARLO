@@ -384,8 +384,7 @@ public class ProjectListAction extends BaseAction {
 
     boolean hasChanges = false;
 
-    CenterProjectCrosscutingTheme crosscutingThemeSave =
-      projectCrosscutingService.getProjectCrosscutingThemeById(centerProject.getProjectCrosscutingTheme().getId());
+    CenterProjectCrosscutingTheme crosscutingThemeSave = centerProject.getProjectCrosscutingTheme();
 
     if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
       hasChanges = true;

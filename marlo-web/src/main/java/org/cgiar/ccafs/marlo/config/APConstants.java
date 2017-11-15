@@ -141,7 +141,7 @@ public final class APConstants {
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingInstitutions)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.FundingSource.fundingSourceInstitutions)";
 
 
   public static final String FUNDING_SOURCES_LOCATIONS_RELATION =
@@ -158,6 +158,7 @@ public final class APConstants {
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PARTNER_REQUEST_ID = "requestID";
+  public static final String PARTNER_REQUEST_SEND_NOTIFICATION = "sendNotification";
   public static final String IPLIAISON_INDICATORS_REPORT =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution.crpIndicatorReportses)";
   public static final String IPPROGRAM_LESSONS_RELATION =

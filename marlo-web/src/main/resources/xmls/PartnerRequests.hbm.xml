@@ -17,6 +17,10 @@
 			fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
+		<many-to-one name="rejectedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="rejected_by" />
+		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" />
@@ -46,5 +50,34 @@
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>
+		<property name="rejectJustification" type="string">
+			<column name="reject_justification" length="65535" />
+		</property>
+		<many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" not-null="false" />
+    </many-to-one>
+		<property name="office" type="boolean">
+      <column name="is_office" not-null="true" />
+    </property>		
+    <property name="requestSource" type="string">
+      <column name="request_source" length="65535" />
+    </property>    
+    <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
+      fetch="select">
+      <column name="global_unit_id" />
+    </many-to-one>
+    <many-to-one name="partnerRequest"
+      class="org.cgiar.ccafs.marlo.data.model.PartnerRequest" fetch="select">
+      <column name="partner_request_id" />
+    </many-to-one>
+    <property name="modified" type="boolean">
+      <column name="is_modified" not-null="false" />
+    </property>
+    <property name="aceptedDate" type="timestamp">
+      <column name="acepted_date" length="19" not-null="false" />
+    </property>
+    <property name="rejectedDate" type="timestamp">
+      <column name="rejected_date" length="19" not-null="false" />
+    </property>
 	</class>
 </hibernate-mapping>

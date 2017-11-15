@@ -1855,11 +1855,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (project != null) {
       if (project.isAutoFill()) {
-        CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
-          .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
-        if (fundingSource != null) {
-          return fundingSource.getCode();
+        try {
+          CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
+            .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+          if (fundingSource != null) {
+            return fundingSource.getCode();
+          }
+        } catch (Exception e) {
+          return "---";
         }
+
       }
     }
 
