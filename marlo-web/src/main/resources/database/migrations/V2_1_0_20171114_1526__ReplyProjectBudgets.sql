@@ -28,7 +28,7 @@ SELECT distinct
   pb.created_by,
   pb.modified_by,
   pb.modification_justification,
-ph.id
+pa.id
 FROM
   project_budgets pb
 INNER JOIN projects p ON p.id = pb.project_id

@@ -237,11 +237,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
 
-  protected T refreshEntity(T entity) {
-    sessionFactory.getCurrentSession().refresh(entity);
-    return entity;
-  }
-
   /**
    * This method saves or update a record into the database.
    * 
