@@ -64,7 +64,7 @@ function setPhaseID(phaseID) {
         $('.timeline-loader').fadeIn();
       },
       success: function(data) {
-        $('.timeline-loader').fadeOut();
+        // $('.timeline-loader').fadeOut();
         // location.reload();
         window.location.href = currentURL;
       },
