@@ -128,9 +128,10 @@ div#tl-adnyds {
 
 .example .forward, .example .backward {
   float: left;
-  width: 50px;
+  width: 5%;
   height: 100%;
   font-size: 30px;
+  padding: 0;
 }
 
 .example .forward {
@@ -139,7 +140,7 @@ div#tl-adnyds {
 
 .example .frame {
   margin: 0 auto;
-  width: 87%;
+  width: 90%;
   height: 53px;
   /* line-height: 200px; */
   overflow: hidden;
