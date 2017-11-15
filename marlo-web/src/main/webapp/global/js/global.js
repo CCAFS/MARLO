@@ -23,35 +23,6 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
-  // Change CRP Phase event
-  $('.changePhase').on('click', function() {
-    var phaseID = $(this).classParam('phase');
-    changePhase(phaseID);
-  });
-
-  /**
-   * Execute an AJAX thar change the phase in the session
-   * 
-   * @param phaseID
-   * @returns
-   */
-  function changePhase(phaseID) {
-    // Execute a change of phase
-    $.ajax({
-        url: baseURL + '/changePhase.do',
-        method: 'POST',
-        data: {
-          phaseID: phaseID
-        },
-        beforeSend: function() {
-        },
-        success: function(data) {
-        },
-        complete: function() {
-          location.reload();
-        }
-    });
-  }
 
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);
@@ -139,6 +110,23 @@ $(document).ready(function() {
         $('#mainMenu .menuContent').addClass('positionFixedTop');
       } else {
         $('#mainMenu .menuContent').removeClass('positionFixedTop');
+      }
+    });
+  }
+  
+  // Phase tag visible
+  if($('#phaseTag').exists()) {
+    var phaseTagPos = $('#timelineScroll').parent().position().top + 20;
+    
+    $('#phaseTag').find('span').css({
+      right: $(document).width() - ($('.phaseTag').offset().left + $('.phaseTag').width())
+    });
+    
+    $(window).scroll(function() {
+      if($(window).scrollTop() >= phaseTagPos) {
+        $('#phaseTag span').fadeIn();
+      } else {
+        $('#phaseTag span').hide();
       }
     });
   }

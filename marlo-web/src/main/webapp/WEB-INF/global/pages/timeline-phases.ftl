@@ -1,12 +1,10 @@
 [#ftl]  
 [#if phases??]
-
-
 <div class="container"> 
   <link rel="stylesheet" type="text/css" href="${baseUrl}/global/css/timeline-phases.css" />
     
     [#-- Timeline Scroll --]
-    <div id="example" class="example pagespan">
+    <div id="timelineScroll" class="example pagespan">
       <div class="loading timeline-loader" style="display:none"></div>
       <button class="backward"><span class="glyphicon glyphicon-chevron-left"></span></button>
       <button class="forward"><span class="glyphicon glyphicon-chevron-right"></span></button>
@@ -28,8 +26,12 @@
         </div>
       </div>
     </div>
+    
+    [#-- Phase floating tag --]
+    <div id="phaseTag" class="phaseTag">
+      <span class="${(actualPhase.isReporting())?string('reporting','planning')}" style="display:none;">${(actualPhase.description)!} ${(actualPhase.year)!}</span>
+    </div>
   </div>
-  
   <script>
     var currenPhaseIndex = ${currenPhaseIndex};
   </script>
@@ -37,5 +39,7 @@
   [#assign pageLibs = pageLibs + ["sly", "jsUri"] /]
   [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
 
-[/#if]
 </div>
+
+
+[/#if]
