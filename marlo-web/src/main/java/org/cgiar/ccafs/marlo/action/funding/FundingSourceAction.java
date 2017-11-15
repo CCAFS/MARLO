@@ -809,12 +809,14 @@ public class FundingSourceAction extends BaseAction {
       }
       funginsSourceInfoDB.setDescription(fundingSource.getFundingSourceInfo().getDescription());
 
-
-      if (fundingSource.getFundingSourceInfo().getFile().getId() == null) {
-        funginsSourceInfoDB.setFile(null);
-      } else {
-        funginsSourceInfoDB.setFile(fundingSource.getFundingSourceInfo().getFile());
+      if (fundingSource.getFundingSourceInfo().getFile() != null) {
+        if (fundingSource.getFundingSourceInfo().getFile().getId() == null) {
+          funginsSourceInfoDB.setFile(null);
+        } else {
+          funginsSourceInfoDB.setFile(fundingSource.getFundingSourceInfo().getFile());
+        }
       }
+
 
       fundingSourceDB.setModifiedBy(this.getCurrentUser());
       funginsSourceInfoDB.setModifiedBy(this.getCurrentUser());
@@ -1143,6 +1145,10 @@ public class FundingSourceAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      if (fundingSource.getFundingSourceInfo().getFile().getId() == null
+        || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
+        fundingSource.getFundingSourceInfo().setFile(null);
+      }
       validator.validate(this, fundingSource, true);
     }
   }

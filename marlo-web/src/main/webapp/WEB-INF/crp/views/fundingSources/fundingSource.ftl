@@ -183,7 +183,7 @@
         </div>
         [#-- End Date --]
         <div class="col-md-4 metadataElement-endDate">
-          <label for="fundingSource.endDate">[@s.text name="fundingSource.fundingSourceInfo.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
+          <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
             <input id="fundingSource.fundingSourceInfo.endDate" type="hidden" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>

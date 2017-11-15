@@ -36,6 +36,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.shiro.util.CollectionUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.LazyInitializationException;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.hibernate.action.spi.BeforeTransactionCompletionProcess;
@@ -215,13 +216,16 @@ public class HibernateAuditLogListener
               LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
             } else {
               if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
-                IAuditLog entityRelation = this.unProxyIAuditLogObject(propertyValue, sessionFactory);
-                if (level == 2) {
-                  entityRelation = this.loadRelations(entityRelation, false, 3, sessionFactory);
+                try {
+                  IAuditLog entityRelation = this.unProxyIAuditLogObject(propertyValue, sessionFactory);
+                  if (level == 2) {
+                    entityRelation = this.loadRelations(entityRelation, false, 3, sessionFactory);
+                  }
+                  classMetadata.setPropertyValue(entity, name, entityRelation);
+                  LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
+                } catch (LazyInitializationException e) {
+                  LOG.error(e.getMessage());
                 }
-
-                classMetadata.setPropertyValue(entity, name, entityRelation);
-                LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
               }
             }
 

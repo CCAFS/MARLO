@@ -83,15 +83,12 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
   @Override
   public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget) {
 
-    String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= "
-      + fundingSourceBudget.getFundingSource().getId() + " and year= " + fundingSourceBudget.getYear()
-      + " and is_active=1";
-    List<FundingSourceBudget> list = super.findAll(query);
-    if (list.size() > 0) {
-      fundingSourceBudget.setId(list.get(0).getId());
-      fundingSourceBudget = super.update(fundingSourceBudget);
-    } else {
+
+    if (fundingSourceBudget.getId() == null) {
       super.saveEntity(fundingSourceBudget);
+
+    } else {
+      fundingSourceBudget = super.update(fundingSourceBudget);
     }
 
     return fundingSourceBudget;
