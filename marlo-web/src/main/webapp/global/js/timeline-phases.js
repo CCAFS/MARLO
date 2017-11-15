@@ -9,8 +9,8 @@ $(document).ready(function() {
       activateMiddle: 1,
       smart: 1,
       activateOn: 'click',
-      mouseDragging: 1,
-      touchDragging: 1,
+      mouseDragging: 0,
+      touchDragging: 0,
       releaseSwing: 1,
       startAt: currenPhaseIndex,
       scrollBar: $example.find('.scrollbar'),
@@ -33,8 +33,10 @@ $(document).ready(function() {
       nextPage: $example.find('.nextPage')
   }).init();
 
-  $example.sly('on', 'load move', function() {
-    console.log($(this));
+  sly.on('active', function(eventName) {
+    var phaseID = $frame.find('li.active').attr('id').split('-')[1];
+    setPhaseID(phaseID);
+
   });
 
 });
@@ -44,6 +46,10 @@ function init_slide_menu(data) {
   console.log('EVENT=' + data.type, data);
   var phaseID = (data.unique_id).split('-')[1];
 
+  setPhaseID(phaseID);
+}
+
+function setPhaseID(phaseID) {
   var currentURL = new Uri(window.location.href);
   console.log(currentURL.deleteQueryParam('phaseID').addQueryParam('phaseID', phaseID));
 
