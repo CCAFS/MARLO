@@ -14,7 +14,7 @@ $(document).ready(function() {
       releaseSwing: 1,
       startAt: currenPhaseIndex,
       scrollBar: $example.find('.scrollbar'),
-      scrollBy: 1,
+      scrollBy: 0,
       pagesBar: $example.find('.pages'),
       activatePageOn: 'click',
       speed: 200,
@@ -34,9 +34,14 @@ $(document).ready(function() {
   }).init();
 
   sly.on('active', function(eventName) {
+    console.log('active');
     var phaseID = $frame.find('li.active').attr('id').split('-')[1];
     setPhaseID(phaseID);
+  });
 
+  $('.phaseBox').on('click', function(e) {
+    console.log(e.which);
+    var phaseID = $(this).attr('id').split('-')[1];
   });
 
 });

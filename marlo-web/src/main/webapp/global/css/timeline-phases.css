@@ -139,8 +139,8 @@ div#tl-adnyds {
 
 .example .frame {
   margin: 0 auto;
-  width: 80%;
-  height: 58px;
+  width: 87%;
+  height: 53px;
   /* line-height: 200px; */
   overflow: hidden;
   text-shadow: none;
@@ -156,7 +156,7 @@ div#tl-adnyds {
 
 .example .frame ul li {
   float: left;
-  width: 300px;
+  width: 320px;
   height: 100%;
   margin: 0 1px 0 0;
   padding: 0px 11px;
@@ -185,7 +185,7 @@ div#tl-adnyds {
 }
 
 .example .frame ul li h4 {
-  margin: 7px 0 3px 0px;
+  margin: 7px 0 1px 0px;
 }
 
 .example .scrollbar {
