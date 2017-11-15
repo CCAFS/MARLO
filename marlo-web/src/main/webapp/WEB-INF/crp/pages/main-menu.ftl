@@ -98,7 +98,7 @@
 [#if logged?? && logged]
 <div class="form-group">
   [#attempt]
-    [#include "/WEB-INF/global/pages/timeline.ftl" /]
+    [#include "/WEB-INF/global/pages/timeline-phases.ftl" /]
   [#recover]
     
   [/#attempt]

@@ -8,7 +8,9 @@
   display: none !important;
 }
 
-.tl-slidenav-content-container {width: 506px;}
+.tl-slidenav-content-container {
+  width: 506px;
+}
 
 .tl-slidenav-description {
   display: none;
@@ -22,7 +24,7 @@
   /* margin-top: 0.2em; */
 }
 
-.tl-text h2.tl-headline-title, .tl-text h2.tl-headline{
+.tl-text h2.tl-headline-title, .tl-text h2.tl-headline {
   font-size: 1.4em;
   margin: 0;
 }
@@ -67,7 +69,8 @@ span.tl-icon-goback {
   /* display: none; */
 }
 
-div#tl-adnyds {}
+div#tl-adnyds {
+}
 
 .tl-menubar {
   /* display: none; */
@@ -92,7 +95,8 @@ div#tl-adnyds {}
   height: 35px;
 }
 
-.tl-timenav-line {}
+.tl-timenav-line {
+}
 
 .tl-timegroup-message {
   font-size: 0.9em;
@@ -100,4 +104,161 @@ div#tl-adnyds {}
 
 .tl-attribution {
   display: none;
+}
+
+/* ******************************************************************************* */
+/* Header example */
+.example {
+}
+
+.example button, .example button {
+  background: transparent;
+  border: 0;
+  color: #7b7676;
+  opacity: .5;
+}
+
+.example button:hover, .example button:hover {
+  opacity: 1;
+}
+
+.example button:disabled, .example button:disabled {
+  opacity: .2;
+}
+
+.example .forward, .example .backward {
+  float: left;
+  width: 50px;
+  height: 100%;
+  font-size: 30px;
+}
+
+.example .forward {
+  float: right;
+}
+
+.example .frame {
+  margin: 0 auto;
+  width: 80%;
+  height: 58px;
+  /* line-height: 200px; */
+  overflow: hidden;
+  text-shadow: none;
+}
+
+.example .frame ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 1em;
+}
+
+.example .frame ul li {
+  float: left;
+  width: 300px;
+  height: 100%;
+  margin: 0 1px 0 0;
+  padding: 0px 11px;
+  background: #eee;
+  color: #3a3c47;
+  /* text-align: center; */
+  cursor: pointer;
+  /* background-color: #eee !important; */
+  /* opacity: 0.2; */
+  color: #7d7d7d;
+  border-top: 0px solid;
+}
+
+.example .frame ul li.active {
+  color: #fff;
+}
+
+.example .frame ul li.active.planning {
+  color: #fff;
+  background-color: #337ab7;
+
+}
+
+.example .frame ul li.active.reporting {
+  background-color: #777;
+}
+
+.example .frame ul li h4 {
+  margin: 7px 0 3px 0px;
+}
+
+.example .scrollbar {
+  margin: 10px auto 0px;
+  width: 940px;
+  height: 2px;
+  line-height: 0;
+}
+
+.example .scrollbar .handle {
+  width: 100px;
+  height: 100%;
+  background: #eee;
+  cursor: pointer;
+}
+
+.example .scrollbar .handle .mousearea {
+  position: absolute;
+  top: -9px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.example .pages {
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+  text-align: center;
+}
+
+.example .pages li {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 4px;
+  text-indent: -999px;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+}
+
+.example .pages li:hover {
+  background: #aaa;
+}
+
+.example .pages li.active {
+  background: #666;
+}
+
+.example .controls {
+  margin: 50px 0 0;
+  text-align: center;
+}
+
+.example .controls .divider {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.example .controls button {
+  line-height: 32px;
+  vertical-align: middle;
+  font-family: Novecento, sans-serif;
+}
+
+.example .controls button i {
+  position: relative;
+  top: -2px;
+  margin: 5px;
+  padding: 0;
+  font-size: 32px;
+  vertical-align: middle;
 }

@@ -13,7 +13,8 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "docs"
   ],
   "dependencies": {
     "jquery": "^1.12.3",
@@ -44,7 +45,8 @@
     "qtip2": "^2.2.1",
     "jquery-pretty-text-diff": "^1.0.5",
     "TimelineJS3": "^3.3.9",
-    "jquery-tag-editor": "^1.0.20"
+    "jquery-tag-editor": "^1.0.20",
+    "sly": "https://github.com/darsain/sly.git#^1.6.1"
   },
   "overrides": {
     "jquery": {
@@ -101,6 +103,11 @@
       "main": [
         "jquery.tag-editor.min.js",
         "jquery.tag-editor.css"
+      ]
+    },
+    "sly": {
+      "main": [
+        "dist/sly.min.js"
       ]
     }
   }

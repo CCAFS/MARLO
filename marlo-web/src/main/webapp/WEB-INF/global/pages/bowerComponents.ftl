@@ -60,5 +60,6 @@
   [#if libraryName="TimelineJS3"]<script src="${baseUrl}/global/bower_components/TimelineJS3/compiled/js/timeline.js"></script>[/#if]
   [#if libraryName="caret"]<script src="${baseUrl}/global/bower_components/caret/jquery.caret.js"></script>[/#if]
   [#if libraryName="jquery-tag-editor"]<script src="${baseUrl}/global/bower_components/jquery-tag-editor/jquery.tag-editor.min.js"></script>[/#if]
+  [#if libraryName="sly"]<script src="${baseUrl}/global/bower_components/sly/dist/sly.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

@@ -27,7 +27,7 @@
     width: 100%;
     margin: 10px 0 0 0;
     overflow: hidden;
-    background: url('./../../global/images/backgroundTimeline.png') left 45px repeat-x;
+    background: url('../../../global/images/backgroundTimeline.png') left 45px repeat-x;
     background-size: 0.5% 0.5%;
     height: 360px;
 }
@@ -39,7 +39,7 @@
     }
 
 #dates li {
-  background: url('./../../global/images/backgroundTimeline.png') center bottom no-repeat;
+  background: url('../../../global/images/backgroundTimeline.png') center bottom no-repeat;
   background-size: 16% 30%;
   list-style: none;
   float: left;
