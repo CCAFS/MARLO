@@ -168,6 +168,9 @@
             <div class="col-md-8 capdevDeliverable">
               [@customForm.select name="deliverable.capdev.id" listName="capdevs" keyFieldName="id" displayFieldName="title"  i18nkey="capdev.list"  placeholder="capdev.select" required=true editable=editable disabled=!editable className="capdevDeliverableSelect"/]
             </div>
+            <div class="col-md-12 note" style="margin-top: 10px;">
+              <p>if you do not find the intervention in the list, you need add it at Capacity Development section above</p>
+            </div>
           </div>
 
         </div>

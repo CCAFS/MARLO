@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import org.cgiar.ciat.auth.ADConexion;
 import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
@@ -34,7 +35,22 @@ public class ContactPersonAction extends BaseAction {
 
   private static final long serialVersionUID = 1L;
 
-  public static String getADFilter(String criteria) {
+  private List<Map<String, Object>> users;
+
+
+  @Inject
+  public ContactPersonAction(APConfig config) {
+    super(config);
+  }
+
+
+  @Override
+  public String execute() throws Exception {
+    return super.execute();
+  }
+
+
+  public String getADFilter(String criteria) {
     String ldapFilterString = "(&(|" + "(sAMAccountName=*" + criteria + "*)" + "(cn=*" + criteria + "*)" + "(sn=*"
       + criteria + "*)" + "(mailNickname=*" + criteria + "*)" + "(givenName=*" + criteria + "*))"
       + "(&(!(objectClass=computer))" + "(!(objectClass=contact))" + "(!(objectClass=printQueue))"
@@ -50,23 +66,6 @@ public class ContactPersonAction extends BaseAction {
   }
 
 
-  private List<Map<String, Object>> users;
-
-
-  @Inject
-  public ContactPersonAction(APConfig config) {
-    super(config);
-    // TODO Auto-generated constructor stub
-  }
-
-
-  @Override
-  public String execute() throws Exception {
-    // TODO Auto-generated method stub
-    return super.execute();
-  }
-
-
   public List<Map<String, Object>> getUsers() {
     return users;
   }
@@ -74,7 +73,6 @@ public class ContactPersonAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // TODO Auto-generated method stub
     super.prepare();
   }
 
@@ -82,12 +80,20 @@ public class ContactPersonAction extends BaseAction {
     Map<String, Object> parameters = this.getParameters();
     LDAPService service = new LDAPService();
     String queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
-    List<LDAPUser> users = service.searchUsers(queryParameter);
+    String genericUser = APConstants.GENERICUSER_AD;
+    String genericPassword = APConstants.GENERICPASSWORD_AD;
+    String hostName = APConstants.HOSTNAME_AD;
+    String port = APConstants.PORT_AD;
+
+    ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
+
+    queryParameter = queryParameter.trim();
+    List<LDAPUser> ad_users = adConection.searchUsers(this.getADFilter(queryParameter), "OU=CIATHUB,DC=CGIARAD,DC=ORG");
     this.users = new ArrayList<>();
 
 
     int idUser = 0;
-    for (LDAPUser user : users) {
+    for (LDAPUser user : ad_users) {
       idUser++;
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("idUser", idUser);
@@ -97,8 +103,13 @@ public class ContactPersonAction extends BaseAction {
       this.users.add(userMap);
 
     }
-    return SUCCESS;
 
+
+    // List<LDAPUser> users = adConection.searchUsers("(sAMAccountName=*)", "DC=CGIARAD,DC=ORG");
+
+    // List<LDAPUser> users = service.searchUsers(queryParameter);
+
+    return SUCCESS;
 
   }
 

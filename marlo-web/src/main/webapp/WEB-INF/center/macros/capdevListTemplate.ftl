@@ -81,39 +81,43 @@
 					    </td>
 					    <td class="removeCol">
 					    	[#if action.centerCanBeDeleted(i.id, i.class.name)!false]
-					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url namespace='/capdev' action='${centerSession}/deleteCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev">
+					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url namespace='/capdev' action='${centerSession}/deleteCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev-${i.id}">
 				               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            </a>
+
+				            <div class="modal fade" id="confirm-delete-capdev-${i.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						        <div class="modal-dialog">
+						            <div class="modal-content">
+						            
+						                <div class="modal-header">
+						                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+						                </div>
+						            
+						                <div class="modal-body">
+						                    <p>You are about to delete the track <b>C${i.id} - [#if i.title?has_content]${i.title}[#else]Not defined[/#if]</b>, this procedure is irreversible.</p>
+						                    <p>Do you want to proceed?</p>
+						                    <p class="debug-url"></p>
+						                </div>
+						                
+						                <div class="modal-footer">
+						                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						                    <a class="btn btn-danger btn-ok">Delete</a>
+						                </div>
+						            </div>
+						        </div>
+					    	</div>
 				            [#else]
 				            
 				            	<img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            [/#if]
+
+
 					    	
 					    </td>
 					  </tr>
 
-					   <div class="modal fade" id="confirm-delete-capdev" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-					        <div class="modal-dialog">
-					            <div class="modal-content">
-					            
-					                <div class="modal-header">
-					                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
-					                </div>
-					            
-					                <div class="modal-body">
-					                    <p>You are about to delete one track, this procedure is irreversible.</p>
-					                    <p>Do you want to proceed?</p>
-					                    <p class="debug-url"></p>
-					                </div>
-					                
-					                <div class="modal-footer">
-					                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					                    <a class="btn btn-danger btn-ok">Delete</a>
-					                </div>
-					            </div>
-					        </div>
-					    </div>
+					  
 				  	[/#if]
 			  	[/#list]
 		  	[/#if]

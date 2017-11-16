@@ -11,7 +11,7 @@
 			</div>	
 
 			
-			<!-- <div class="col-md-12 searchFields">
+			 <div class="col-md-12 searchFields">
 				<div class="searchcontact-content clearfix">
 					<div class="col-md- searchcontact-input">
 						[@customForm.input name="" showTitle=false type="text"  className='contact' placeholder="capdev.adUsersplaceHolder"/]
@@ -56,9 +56,9 @@
 						</div>
 					</div>
 				</div>
-			</div>-->
+			</div>
 
-			<div class="panel-heading">
+			<!-- <div class="panel-heading">
 		      <h4 class="panel-title">
 		        <a data-toggle="collapse" href="#collapse1">Add contact person</a>
 		      </h4>
@@ -79,7 +79,7 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 
       	</div>

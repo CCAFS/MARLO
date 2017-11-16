@@ -405,6 +405,13 @@ public final class APConstants {
   public static final String CAPDEV_ID = "capdevID";
   public static final String CAPDEV_PARTICIPANT_CODE_SYNC = "syncParticipantCode";
 
+  // parameters used to connect to the active directory to get users by capdev
+  public static final String GENERICUSER_AD = "ldapuser";
+  public static final String GENERICPASSWORD_AD = "ldap2005";
+  public static final String HOSTNAME_AD = "ciatroot1.ciat.cgiarad.org";
+  public static final String PORT_AD = "3268";
+
+
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterProgram.researchImpacts)";
