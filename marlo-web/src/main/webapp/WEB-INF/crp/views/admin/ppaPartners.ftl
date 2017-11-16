@@ -87,7 +87,7 @@
 [#-- Institutions array --]
 <ul style="display:none">
 [#list institutions as institution]
-  <li id="institutionArray-${(institution)!}">${(institution.composedName?html)!}</li>
+  <li id="institutionArray-${(institution.id)!}">${(institution.composedName?html)!}</li>
 [/#list]
 </ul>
 
