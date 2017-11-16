@@ -123,6 +123,14 @@
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
     </set>
     
+    <set name="partnerRequest" table="partner_requests" inverse="true"
+      order-by="id" lazy="true" fetch="select">
+      <key>
+        <column name="crp_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.PartnerRequest" />
+    </set>
+    
     <set name="crpTargetUnits" table="crp_target_units" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="crp_id" />

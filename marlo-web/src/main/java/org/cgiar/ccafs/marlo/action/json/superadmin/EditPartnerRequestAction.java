@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -47,6 +48,7 @@ public class EditPartnerRequestAction extends BaseAction {
   private String webPage;
   private String type;
   private String country;
+  private String modificationJustification;
   private boolean success;
 
 
@@ -57,7 +59,6 @@ public class EditPartnerRequestAction extends BaseAction {
     this.partnerRequestManager = partnerRequestManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locElementManager = locElementManager;
-    // TODO Auto-generated constructor stub
   }
 
 
@@ -66,18 +67,23 @@ public class EditPartnerRequestAction extends BaseAction {
     success = true;
     try {
       PartnerRequest partnerRequest = partnerRequestManager.getPartnerRequestById(Long.parseLong(requestID));
+      boolean isEdited = false;
+
       if (name != null && !name.isEmpty()) {
         partnerRequest.setPartnerName(name);
+        isEdited = true;
       } else {
         partnerRequest.setPartnerName("");
       }
       if (acronym != null && !acronym.isEmpty()) {
         partnerRequest.setAcronym(acronym);
+        isEdited = true;
       } else {
         partnerRequest.setAcronym("");
       }
       if (webPage != null && !webPage.isEmpty()) {
         partnerRequest.setWebPage(webPage);
+        isEdited = true;
       } else {
         partnerRequest.setWebPage("");
       }
@@ -86,14 +92,25 @@ public class EditPartnerRequestAction extends BaseAction {
         if (typeID != null && typeID != 0) {
           InstitutionType institutionType = institutionTypeManager.getInstitutionTypeById(typeID);
           partnerRequest.setInstitutionType(institutionType);
+          isEdited = true;
         }
       }
       if (country != null && !country.isEmpty()) {
         LocElement locElement = locElementManager.getLocElementByISOCode(country);
         partnerRequest.setLocElement(locElement);
+        isEdited = true;
       }
-      partnerRequest.setModifiedBy(this.getCurrentUser());
-      partnerRequestManager.savePartnerRequest(partnerRequest);
+      if (modificationJustification != null && !modificationJustification.isEmpty()) {
+        partnerRequest.setModificationJustification(modificationJustification);
+        isEdited = true;
+      }
+      // If the PartnerRequest is edited, save it
+      if (isEdited) {
+        partnerRequest.setModifiedBy(this.getCurrentUser());
+        partnerRequest.setModified(true);
+        partnerRequest.setActiveSince(new Date());
+        partnerRequestManager.savePartnerRequest(partnerRequest);
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -109,6 +126,11 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public String getCountry() {
     return country;
+  }
+
+
+  public String getModificationJustification() {
+    return modificationJustification;
   }
 
 
@@ -136,6 +158,7 @@ public class EditPartnerRequestAction extends BaseAction {
     return success;
   }
 
+
   @Override
   public void prepare() throws Exception {
     success = true;
@@ -147,6 +170,7 @@ public class EditPartnerRequestAction extends BaseAction {
       webPage = StringUtils.trim(((String[]) parameters.get("institutionWebPage"))[0]);
       type = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]);
       country = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]);
+      modificationJustification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
@@ -159,6 +183,10 @@ public class EditPartnerRequestAction extends BaseAction {
 
   public void setCountry(String country) {
     this.country = country;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
   }
 
   public void setName(String name) {

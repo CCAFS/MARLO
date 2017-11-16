@@ -145,7 +145,8 @@ td {
 }
 
 .partnerRequestItem p {
-  line-height: 0.5em;
+  /* line-height: 0.5em; */
+  margin: 5px 0px;
 }
 
 .partnerRequestItem .flag-sm{
