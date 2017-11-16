@@ -1144,16 +1144,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Center> getCentersList() {
-
-    User user = this.getCurrentUser();
-    user = userManager.getUser(user.getId());
-    List<CenterUser> users =
-      new ArrayList<>(user.getCenterUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
     List<Center> centers = new ArrayList<>();
-    for (CenterUser crpUser : users) {
-      if (crpUser.getResearchCenter().isActive()) {
-        centers.add(crpUser.getResearchCenter());
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CenterUser> users =
+        new ArrayList<>(user.getCenterUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CenterUser crpUser : users) {
+        if (crpUser.getResearchCenter().isActive()) {
+          centers.add(crpUser.getResearchCenter());
+        }
       }
+    } else {
+      centers = centerService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     }
     return centers;
   }
@@ -1228,16 +1232,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<Crp> getCrpList() {
-    User user = this.getCurrentUser();
-    user = userManager.getUser(user.getId());
-    List<CrpUser> users =
-      new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
     List<Crp> crps = new ArrayList<>();
-    for (CrpUser crpUser : users) {
-      if (crpUser.getCrp().isActive()) {
-        crps.add(crpUser.getCrp());
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        if (crpUser.getCrp().isActive()) {
+          crps.add(crpUser.getCrp());
+        }
       }
+    } else {
+      crps = this.getCrpCategoryList("1");
     }
+
     return crps;
   }
 
