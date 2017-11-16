@@ -68,17 +68,14 @@
     </div>
     <div class="col-md-4 form-group">
       [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
-      [#assign canNotEditYear = (deliverable.deliverableInfo.status??) && ( ( !action.isDeliverableNew(deliverable.id) && (deliverable.deliverableInfo.year??) && (deliverable.deliverableInfo.year == currentCycleYear)) || (deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5) ) /]
+      [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
       [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.allYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
+      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
       [#if !editable]${(deliverable.deliverableInfo.year)!}[/#if]
     </div>
     [#-- New Expected Year - Extended = 4 --]
-    [#if reportingActive]
-      [#assign canViewNewExpectedYear = (deliverable.deliverableInfo.status??) && ((deliverable.deliverableInfo.status == 4)  ||  ( (deliverable.deliverableInfo.status == 3) &&  deliverable.deliverableInfo.newExpectedYear?has_content  )) /]
-    [#else]
-      [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.deliverableInfo.year) && (deliverable.deliverableInfo.status??) && ((deliverable.deliverableInfo.status == 4)  ||  ( (deliverable.deliverableInfo.status == 3) &&  deliverable.deliverableInfo.newExpectedYear?has_content  )) /]
-    [/#if]
+     [#assign canViewNewExpectedYear =action.candEditExpectedYear(deliverable.id) /]
+    
     <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
       [#if editable]
         [#if reportingActive]
@@ -103,12 +100,12 @@
     [#assign justificationRequired = (deliverable.deliverableInfo.year??) && (deliverable.deliverableInfo.status??) &&  ((deliverable.deliverableInfo.status == 4)  || (deliverable.deliverableInfo.status == 5)) ]
     <div class="form-group">
       <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
-        [@customForm.textArea name="deliverable.deliverableInfo.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.deliverableInfo.statusJustification.status${(deliverable.deliverableInfo.status)!'NotSelected'}" editable=editable/]
+        [@customForm.textArea name="deliverable.deliverableInfo.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.deliverableInfo.status)!'NotSelected'}" editable=editable/]
         <div id="statusesLabels" style="display:none">
-          <div id="status-2">[@s.text name="deliverable.deliverableInfo.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
-          <div id="status-3">[@s.text name="deliverable.deliverableInfo.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
-          <div id="status-4">[@s.text name="deliverable.deliverableInfo.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
-          <div id="status-5">[@s.text name="deliverable.deliverableInfo.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
+          <div id="status-2">[@s.text name="deliverable.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
+          <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
+          <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
+          <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
         </div>
       </div>
     </div>

@@ -327,6 +327,83 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
+  public Boolean candEditExpectedYear(long deliverableID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == null) {
+      return false;
+    }
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+      .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      return true;
+    }
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
+      return true;
+    }
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
+      return true;
+    }
+    return false;
+
+  }
+
+  public Boolean candEditYear(long deliverableID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == null) {
+      return true;
+    }
+    if (this.isReportingActive()) {
+      try {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+          return false;
+        }
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+    } else {
+
+
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
+        return true;
+      }
+
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        return false;
+      }
+      Date reportingDate = null;
+      try {
+        reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+      } catch (ParseException e) {
+
+        e.printStackTrace();
+      }
+
+      if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+        return true;
+      } else {
+        return false;
+      }
+
+    }
+
+  }
+
   /**
    * Delete Deliverable Gender Levels if there is no cross cutting gender component.
    * 
@@ -346,6 +423,7 @@ public class DeliverableAction extends BaseAction {
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
+
 
   private Path getAutoSaveFilePath() {
 
@@ -371,7 +449,6 @@ public class DeliverableAction extends BaseAction {
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -455,6 +532,7 @@ public class DeliverableAction extends BaseAction {
     return deliverableTypeParent;
   }
 
+
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
@@ -464,7 +542,6 @@ public class DeliverableAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
-
 
   public List<PartnerDivision> getDivisions() {
     return divisions;
@@ -482,10 +559,10 @@ public class DeliverableAction extends BaseAction {
     return indexTab;
   }
 
+
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -513,10 +590,10 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
+
   public List<ProjectPartner> getPartners() {
     return partners;
   }
-
 
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
@@ -524,10 +601,10 @@ public class DeliverableAction extends BaseAction {
     return projectPartnerPersons;
   }
 
+
   public Map<String, String> getPrograms() {
     return programs;
   }
-
 
   public Project getProject() {
     return project;
@@ -584,10 +661,10 @@ public class DeliverableAction extends BaseAction {
     return status;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
@@ -614,6 +691,9 @@ public class DeliverableAction extends BaseAction {
     } else {
       try {
         Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        // System.out.println(deliverable.getCreateDate());
+        // System.out.println(reportingDate);
+
         if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
@@ -1149,8 +1229,9 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           // OLD Deliverable
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getReportingYear()) {
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
             status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+
           }
         }
       } else {
@@ -1227,7 +1308,7 @@ public class DeliverableAction extends BaseAction {
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList())) {
-        if (partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+        if (!partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList())
           .isEmpty()) {
           partners.add(partner);
         }

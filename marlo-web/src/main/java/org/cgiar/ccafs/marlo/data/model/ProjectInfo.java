@@ -128,11 +128,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  /**
-   * This method calculates all the years between the start date and the end date.
-   * 
-   * @return a List of numbers representing all the years, or an empty list if nothing found.
-   */
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
     if (startDate != null && endDate != null) {
@@ -143,7 +138,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
       while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
         // Adding the year to the list.
+
         allYears.add(calendarStart.get(Calendar.YEAR));
+
+
         // Adding a year (365 days) to the start date.
         calendarStart.add(Calendar.YEAR, 1);
       }
@@ -152,6 +150,33 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+  /**
+   * This method calculates all the years between the start date and the end date.
+   * 
+   * @return a List of numbers representing all the years, or an empty list if nothing found.
+   */
+  public List<Integer> getAllYearsPhase() {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+      Calendar calendarStart = Calendar.getInstance();
+      calendarStart.setTime(startDate);
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+        // Adding the year to the list.
+        if (calendarStart.get(Calendar.YEAR) >= phase.getYear()) {
+          allYears.add(calendarStart.get(Calendar.YEAR));
+        }
+
+
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
+    }
+
+    return allYears;
+  }
 
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
