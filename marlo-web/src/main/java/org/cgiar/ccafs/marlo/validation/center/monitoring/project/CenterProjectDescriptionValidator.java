@@ -185,6 +185,17 @@ public class CenterProjectDescriptionValidator extends BaseValidator {
     if (project.getProjectLeader() == null) {
       this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
       baseAction.getInvalidFields().put("input-project.projectLeader.composedName", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (project.getProjectLeader().getId() != null) {
+        if (project.getProjectLeader().getId() != null || project.getProjectLeader().getId() != -1) {
+          this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
+          baseAction.getInvalidFields().put("input-project.projectLeader.composedName",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
+        baseAction.getInvalidFields().put("input-project.projectLeader.composedName", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     /*
