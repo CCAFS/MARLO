@@ -3,196 +3,199 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Oct 30, 2017 10:01:52 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.GlobalUnit" table="global_units" optimistic-lock="version">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="globalUnitType" class="org.cgiar.ccafs.marlo.data.model.GlobalUnitType" fetch="select">
-            <column name="global_unit_type_id" not-null="true" />
-        </many-to-one>
-        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" />
-        </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
-        </many-to-one>
-        <property name="name" type="string">
-            <column name="name" length="65535" not-null="true" />
-        </property>
-        <property name="acronym" type="string">
-            <column name="acronym" length="50" not-null="true" />
-        </property>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
-        </property>
-        <property name="marlo" type="boolean">
-            <column name="is_marlo" not-null="true" />
-        </property>
-        <property name="login" type="boolean">
-            <column name="login" not-null="true" />
-        </property>
-        <set name="centerLeaders" table="center_leaders" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterLeader" />
-        </set>
-        <set name="crpPrograms" table="crp_programs" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
-        </set>
-        <set name="projects" table="projects" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
-        </set>
-        <set name="crpTargetUnits" table="crp_target_units" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
-        </set>
-        <set name="centerAreas" table="center_areas" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterArea" />
-        </set>
-        <set name="deliverableTypes" table="deliverable_types" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableType" />
-        </set>
-        <set name="locElementTypes" table="loc_element_types" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElementType" />
-        </set>
-        <set name="locElements" table="loc_elements" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
-        </set>
-        <set name="crpPpaPartners" table="crp_ppa_partners" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
-        </set>
-        <set name="crpSubIdosContributions" table="crp_sub_idos_contributions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpSubIdosContribution" />
-        </set>
-        <set name="liaisonInstitutions" table="liaison_institutions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
-        </set>
-        <set name="centerObjectives" table="center_objectives" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterObjective" />
-        </set>
-        <set name="phases" table="phases" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Phase" />
-        </set>
-        <set name="centerCustomParameters" table="center_custom_parameters" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterCustomParameter" />
-        </set>
-        <set name="centerProjectFundingSources" table="center_project_funding_sources" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource" />
-        </set>
-        <set name="fundingSources" table="funding_sources" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
-        </set>
-        <set name="centerRoles" table="center_roles" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterRole" />
-        </set>
-        <set name="crpUsers" table="crp_users" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
-        </set>
-        <set name="crpLocElementTypes" table="crp_loc_element_types" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
-        </set>
-        <set name="customParameters" table="custom_parameters" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
-        </set>
-        <set name="crpsSitesIntegrations" table="crps_sites_integration" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
-        </set>
-        <set name="liasonUsers" table="liaison_users" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
-        </set>
-        <set name="centerUsers" table="center_users" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterUser" />
-        </set>
-        <set name="roles" table="roles" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
-        </set>
-        <set name="globalUnitProjects" table="global_unit_projects" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
-        </set>
-        <set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="global_unit_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
-        </set>
-    </class>
+	<class name="org.cgiar.ccafs.marlo.data.model.GlobalUnit" table="global_units"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="globalUnitType"
+			class="org.cgiar.ccafs.marlo.data.model.GlobalUnitType" fetch="select">
+			<column name="global_unit_type_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<property name="name" type="string">
+			<column name="name" length="65535" not-null="true" />
+		</property>
+		<property name="acronym" type="string">
+			<column name="acronym" length="50" not-null="true" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<property name="marlo" type="boolean">
+			<column name="is_marlo" not-null="true" />
+		</property>
+		<property name="login" type="boolean">
+			<column name="login" not-null="true" />
+		</property>
+		<set name="centerLeaders" table="center_leaders" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterLeader" />
+		</set>
+		<set name="crpPrograms" table="crp_programs" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
+		</set>
+		<set name="crpTargetUnits" table="crp_target_units" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
+		</set>
+		<set name="centerAreas" table="center_areas" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterArea" />
+		</set>
+		<set name="deliverableTypes" table="deliverable_types" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableType" />
+		</set>
+		<set name="locElementTypes" table="loc_element_types" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElementType" />
+		</set>
+		<set name="locElements" table="loc_elements" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
+		</set>
+		<set name="crpPpaPartners" table="crp_ppa_partners" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
+		</set>
+		<set name="crpSubIdosContributions" table="crp_sub_idos_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.CrpSubIdosContribution" />
+		</set>
+		<set name="liaisonInstitutions" table="liaison_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
+		</set>
+		<set name="centerObjectives" table="center_objectives" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterObjective" />
+		</set>
+		<set name="phases" table="phases" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Phase" />
+		</set>
+		<set name="centerProjectFundingSources" table="center_project_funding_sources"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource" />
+		</set>
+		<set name="fundingSources" table="funding_sources" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
+		</set>
+		<set name="crpUsers" table="crp_users" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
+		</set>
+		<set name="crpLocElementTypes" table="crp_loc_element_types"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
+		</set>
+		<set name="customParameters" table="custom_parameters" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
+		</set>
+		<set name="crpsSitesIntegrations" table="crps_sites_integration"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
+		</set>
+		<set name="liasonUsers" table="liaison_users" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
+		</set>
+		<set name="roles" table="roles" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
+		</set>
+		<set name="globalUnitProjects" table="global_unit_projects"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="global_unit_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
+		</set>
+		<set name="deliverables" table="deliverables" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="global_unit_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+		</set>
+	</class>
 </hibernate-mapping>

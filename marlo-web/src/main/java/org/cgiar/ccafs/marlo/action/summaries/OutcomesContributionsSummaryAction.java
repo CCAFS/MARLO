@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -371,13 +372,21 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   }
 
   private TypedTableModel getProjectsOutcomesTableModel() {
+
+    // Get all Global Unit Projects
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects());
+    List<Project> guProjects = new ArrayList<>();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      guProjects.add(globalUnitProject.getProject());
+    }
+
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
         "expected_narrative", "project_url", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
         String.class, String.class},
       0);
-    for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
+    for (Project project : guProjects.stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(po -> po.isActive())
         .collect(Collectors.toList())) {

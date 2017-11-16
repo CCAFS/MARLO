@@ -373,7 +373,6 @@ public final class APConstants {
   public static Integer CENTER_END_YEAR = 2022;
 
 
-  public static final String SESSION_CENTER = "current_center";
   public static final String SESSION_RESEARCH_AREA = "current_research_area";
   public static final String SESSION_RESEARCH_PROGRAM = "current_research_program";
 

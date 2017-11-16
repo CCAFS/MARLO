@@ -21,17 +21,17 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -67,7 +67,8 @@ public class ResearchTopicsAction extends BaseAction {
 
 
   // Services (Managers)
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
 
@@ -77,7 +78,7 @@ public class ResearchTopicsAction extends BaseAction {
   private UserManager userService;
   private ResearchTopicsValidator validator;
   // Local Variables
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
 
   private List<CenterArea> researchAreas;
   private List<CenterTopic> topics;
@@ -90,7 +91,7 @@ public class ResearchTopicsAction extends BaseAction {
 
 
   @Inject
-  public ResearchTopicsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public ResearchTopicsAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService, UserManager userService,
     ResearchTopicsValidator validator, AuditLogManager auditLogService) {
     super(config);
@@ -139,9 +140,6 @@ public class ResearchTopicsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public long getProgramID() {
     return programID;
@@ -181,11 +179,11 @@ public class ResearchTopicsAction extends BaseAction {
     areaID = -1;
     programID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -472,9 +470,6 @@ public class ResearchTopicsAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setProgramID(long programID) {
     this.programID = programID;

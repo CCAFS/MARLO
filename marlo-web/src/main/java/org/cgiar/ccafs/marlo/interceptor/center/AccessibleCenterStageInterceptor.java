@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleCenterStageInterceptor.class);
 
   private APConfig config;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
 
   @Inject
   public AccessibleCenterStageInterceptor(APConfig config) {
@@ -58,7 +58,7 @@ public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
 
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     Map<String, Object> session = invocation.getInvocationContext().getSession();
-    loggedCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    loggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     // Check what section is the user loading and
     // validate if it is active
     if (stageName.startsWith("/centerImpactPathway")) {
@@ -85,9 +85,9 @@ public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
   }
 
   public String sectionActive(String section) {
-    List<CenterCustomParameter> parameters =
-      loggedCenter.getCenterCustomParameters().stream().filter(p -> p.getCenterParameter().getKey().equals(section)
-        && p.isActive() && p.getResearchCenter().getId().equals(loggedCenter.getId())).collect(Collectors.toList());
+    List<CustomParameter> parameters = loggedCenter.getCustomParameters().stream().filter(
+      p -> p.getParameter().getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCenter.getId()))
+      .collect(Collectors.toList());
 
     if (parameters.size() == 0) {
       return "false";

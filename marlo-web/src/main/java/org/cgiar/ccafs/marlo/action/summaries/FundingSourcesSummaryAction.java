@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -189,6 +190,12 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = loggedCrp.getAcronym();
 
+      // Get all Global Unit Projects
+      List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects());
+      List<Project> guProjects = new ArrayList<>();
+      for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+        guProjects.add(globalUnitProject.getProject());
+      }
 
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
@@ -230,7 +237,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
       }
       if (allProjects.isEmpty()) {
-        allProjects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toSet());
+        allProjects = guProjects.stream().filter(c -> c.isActive()).collect(Collectors.toSet());
       }
       // delete projects with FS
       for (Project project : fundingSourceProjects) {

@@ -18,15 +18,15 @@ package org.cgiar.ccafs.marlo.action.center.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterAllTypesManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -43,18 +43,23 @@ import com.google.inject.Inject;
  */
 public class ResearchManagementAction extends BaseAction {
 
+
   private static final long serialVersionUID = -8241378443798479147L;
 
-  private ICenterManager centerService;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
   private ICenterAreaManager centerAreaService;
+
   private ICenterProgramManager centerProgramService;
   private ICenterLeaderManager centerLeaderService;
   private CenterAllTypesManager centerAllTypesService;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private List<CenterArea> centerAreas;
 
   @Inject
-  public ResearchManagementAction(APConfig config, ICenterManager centerService, ICenterAreaManager areaService,
+  public ResearchManagementAction(APConfig config, GlobalUnitManager centerService, ICenterAreaManager areaService,
     ICenterProgramManager programService, ICenterLeaderManager centerLeaderService,
     CenterAllTypesManager centerAllTypesService) {
     super(config);
@@ -263,7 +268,6 @@ public class ResearchManagementAction extends BaseAction {
 
   }
 
-
   /*
    * Check if center area, programs and/or leaders were deleted
    */
@@ -344,20 +348,20 @@ public class ResearchManagementAction extends BaseAction {
     }
   }
 
-
   public List<CenterArea> getCenterAreas() {
     return centerAreas;
   }
 
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
+
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     String params[] = {loggedCenter.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.CENTER_ADMIN_BASE_PERMISSION, params));
@@ -386,6 +390,7 @@ public class ResearchManagementAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -403,8 +408,9 @@ public class ResearchManagementAction extends BaseAction {
     this.centerAreas = centerAreas;
   }
 
-
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
+
 }

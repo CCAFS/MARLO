@@ -16,11 +16,11 @@
 package org.cgiar.ccafs.marlo.validation.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -38,15 +38,17 @@ import com.google.inject.Inject;
  */
 public class ProgramImpactsValidator extends BaseValidator {
 
-  ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
 
   @Inject
-  public ProgramImpactsValidator(ICenterManager centerService) {
+  public ProgramImpactsValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }
 
   private Path getAutoSaveFilePath(CenterProgram program, long centerID) {
-    Center center = centerService.getCrpById(centerID);
+    GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.PROGRAM_IMPACT.getStatus().replace("/", "_");
     String autoSaveFile =

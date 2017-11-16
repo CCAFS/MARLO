@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
@@ -32,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
@@ -84,7 +82,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private static final long serialVersionUID = 3034101967516313023L;
 
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProjectManager projectService;
 
@@ -129,7 +128,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private CenterProgram selectedProgram;
 
 
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
 
   private List<CenterArea> researchAreas;
 
@@ -161,8 +160,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectDescriptionAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
-    UserManager userService, ICenterFundingSourceTypeManager fundingSourceService,
+  public ProjectDescriptionAction(APConfig config, GlobalUnitManager centerService,
+    ICenterProjectManager projectService, UserManager userService, ICenterFundingSourceTypeManager fundingSourceService,
     CenterProjectDescriptionValidator validator, ICenterOutputManager outputService,
     ICenterProjectOutputManager projectOutputService, ICenterProjectFundingSourceManager projectFundingSourceService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
@@ -243,9 +242,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return fundingSourceTypes;
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public List<OutcomeOutputs> getOutputs() {
     return outputs;
@@ -343,11 +339,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
     region = false;
 
     // Regions List
@@ -933,9 +929,6 @@ public class ProjectDescriptionAction extends BaseAction {
     this.fundingSourceTypes = fundingSourceTypes;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setOutputs(List<OutcomeOutputs> outputs) {
     this.outputs = outputs;

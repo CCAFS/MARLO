@@ -21,12 +21,11 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputsNextUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
@@ -35,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -69,22 +69,27 @@ public class OutputsAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
 
   private AuditLogManager auditLogService;
 
 
   private ICenterProgramManager programService;
+
+
   private ICenterOutputManager outputService;
+
+
   private ICenterNextuserTypeManager nextUserService;
   private ICenterOutputsNextUserManager outputNextUserService;
   // Front Variables
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
-
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
+
   private CenterProgram selectedProgram;
   private CenterOutcome selectedResearchOutcome;
   private CenterOutput output;
@@ -105,7 +110,7 @@ public class OutputsAction extends BaseAction {
    * @param config
    */
   @Inject
-  public OutputsAction(APConfig config, ICenterManager centerService, AuditLogManager auditLogService,
+  public OutputsAction(APConfig config, GlobalUnitManager centerService, AuditLogManager auditLogService,
     ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
     ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService) {
     super(config);
@@ -118,12 +123,10 @@ public class OutputsAction extends BaseAction {
     this.outputNextUserService = outputNextUserService;
   }
 
-
   public String addNextUsers() {
 
     return SUCCESS;
   }
-
 
   @Override
   public String cancel() {
@@ -149,9 +152,11 @@ public class OutputsAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public long getAreaID() {
     return areaID;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = output.getClass().getSimpleName();
@@ -165,14 +170,14 @@ public class OutputsAction extends BaseAction {
     return contacPersons;
   }
 
-
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
   public long getNextUserID() {
     return nextUserTypeID;
   }
+
 
   public List<CenterNextuserType> getNextuserTypes() {
     return nextuserTypes;
@@ -194,15 +199,14 @@ public class OutputsAction extends BaseAction {
     return programID;
   }
 
-
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
 
+
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
@@ -213,6 +217,7 @@ public class OutputsAction extends BaseAction {
     return selectedResearchArea;
   }
 
+
   public CenterOutcome getSelectedResearchOutcome() {
     return selectedResearchOutcome;
   }
@@ -220,7 +225,6 @@ public class OutputsAction extends BaseAction {
   public CenterTopic getSelectedResearchTopic() {
     return selectedResearchTopic;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -232,8 +236,8 @@ public class OutputsAction extends BaseAction {
     areaID = -1;
     programID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       outputID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTPUT_ID)));
@@ -256,8 +260,8 @@ public class OutputsAction extends BaseAction {
     } else {
       output = outputService.getResearchOutputById(outputID);
     }
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
     if (researchAreas != null && output != null) {
@@ -345,6 +349,7 @@ public class OutputsAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -467,17 +472,16 @@ public class OutputsAction extends BaseAction {
 
   }
 
-
   public void setAreaID(long areaID) {
     this.areaID = areaID;
   }
+
 
   public void setContacPersons(List<CenterLeader> contacPersons) {
     this.contacPersons = contacPersons;
   }
 
-
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
 

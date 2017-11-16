@@ -18,18 +18,18 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.center.impactpathway.IPSubmissionAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -51,31 +51,36 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectSubmissionAction extends BaseAction {
 
+
   private static final long serialVersionUID = -2125910181556052879L;
+
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(IPSubmissionAction.class);
 
+
   // Managers
   private ICenterSubmissionManager submissionService;
+
   private ICenterProjectManager projectService;
+
   private ICenterSectionStatusManager sectionStatusService;
   private ICenterCycleManager cycleService;
-  private ICenterManager centerService;
-
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
   // Parameters
   private SendMail sendMail;
   private CenterProject project;
-  private CenterCycle cycle;
-  private Center loggedCenter;
 
+  private CenterCycle cycle;
+  private GlobalUnit loggedCenter;
   private long projectID;
   private boolean isSubmited = false;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
     ICenterProjectManager projectService, ICenterSectionStatusManager sectionStatusService,
-    ICenterCycleManager cycleService, ICenterManager centerService, SendMail sendMail) {
+    ICenterCycleManager cycleService, GlobalUnitManager centerService, SendMail sendMail) {
     super(config);
     this.submissionService = submissionService;
     this.projectService = projectService;
@@ -127,7 +132,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
@@ -135,11 +140,12 @@ public class ProjectSubmissionAction extends BaseAction {
     return projectID;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
@@ -251,9 +257,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;

@@ -18,9 +18,9 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
@@ -44,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -82,7 +82,8 @@ public class ProjectListAction extends BaseAction {
 
 
   private String syncCode;
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
   private ICenterProjectLocationManager projectLocationService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
@@ -90,7 +91,7 @@ public class ProjectListAction extends BaseAction {
   private ICenterProjectPartnerManager partnerService;
   private ICenterProjectPartnerPersonManager partnerPersonService;
   private CenterFundingSyncTypeManager fundingSyncTypeManager;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private long programID;
   private ICenterProgramManager programService;
   private ProjectManager projectManager;
@@ -112,7 +113,7 @@ public class ProjectListAction extends BaseAction {
   private AgreementOCS agreement;
 
   @Inject
-  public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public ProjectListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
     ICenterProjectCrosscutingThemeManager projectCrosscutingService, MarloOcsClient ocsClient,
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
@@ -557,9 +558,6 @@ public class ProjectListAction extends BaseAction {
     return justification;
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public long getProgramID() {
     return programID;
@@ -611,11 +609,11 @@ public class ProjectListAction extends BaseAction {
     areaID = -1;
     programID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -728,10 +726,6 @@ public class ProjectListAction extends BaseAction {
     this.justification = justification;
   }
 
-
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setProgramID(long programID) {
     this.programID = programID;

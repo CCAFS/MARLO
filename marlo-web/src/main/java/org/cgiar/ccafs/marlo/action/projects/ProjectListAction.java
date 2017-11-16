@@ -467,7 +467,14 @@ public class ProjectListAction extends BaseAction {
         this.loadFlagshipgsAndRegions(allProjects);
       }
     }
-    closedProjects = loggedCrp.getProjects().stream()
+    // Get all Global Unit Projects
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects());
+    List<Project> guProjects = new ArrayList<>();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      guProjects.add(globalUnitProject.getProject());
+    }
+
+    closedProjects = guProjects.stream()
       .filter(
         c -> c.isActive() && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
           || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())))

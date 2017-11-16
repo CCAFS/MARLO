@@ -16,11 +16,11 @@
 package org.cgiar.ccafs.marlo.validation.center.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -38,15 +38,16 @@ import com.google.inject.Inject;
  */
 public class ProjectPartnerValidator extends BaseValidator {
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   @Inject
-  public ProjectPartnerValidator(ICenterManager centerService) {
+  public ProjectPartnerValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }
 
   private Path getAutoSaveFilePath(CenterProject project, long centerID) {
-    Center center = centerService.getCrpById(centerID);
+    GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionsEnum.PARTNERS.getStatus().replace("/", "_");
     String autoSaveFile =

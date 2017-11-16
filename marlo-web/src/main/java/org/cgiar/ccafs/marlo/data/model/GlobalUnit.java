@@ -47,9 +47,6 @@ public class GlobalUnit implements java.io.Serializable {
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
-  private Set<Project> projects = new HashSet<Project>(0);
-
-
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
   private Set<CenterArea> centerAreas = new HashSet<CenterArea>(0);
@@ -75,12 +72,8 @@ public class GlobalUnit implements java.io.Serializable {
   private Set<Phase> phases = new HashSet<Phase>(0);
 
 
-  private Set<CenterCustomParameter> centerCustomParameters = new HashSet<CenterCustomParameter>(0);
-
   private Set<CenterProjectFundingSource> centerProjectFundingSources = new HashSet<CenterProjectFundingSource>(0);
 
-
-  private Set<CenterRole> centerRoles = new HashSet<CenterRole>(0);
 
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
 
@@ -93,9 +86,6 @@ public class GlobalUnit implements java.io.Serializable {
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
 
   private Set<LiaisonUser> liasonUsers = new HashSet<LiaisonUser>(0);
-
-
-  private Set<CenterUser> centerUsers = new HashSet<CenterUser>(0);
 
 
   private Set<Role> roles = new HashSet<Role>(0);
@@ -134,14 +124,13 @@ public class GlobalUnit implements java.io.Serializable {
 
   public GlobalUnit(Long id, GlobalUnitType globalUnitType, User modifiedBy, User createdBy, String name,
     String acronym, boolean active, Date activeSince, String modificationJustification, boolean marlo, boolean login,
-    Set<CenterLeader> centerLeaders, Set<CrpProgram> crpPrograms, Set<Project> projects,
-    Set<CrpTargetUnit> crpTargetUnits, Set<CenterArea> centerAreas, Set<DeliverableType> deliverableTypes,
-    Set<LocElementType> locElementTypes, Set<LocElement> locElements, Set<CrpPpaPartner> crpPpaPartners,
-    Set<CrpSubIdosContribution> crpSubIdosContributions, Set<LiaisonInstitution> liaisonInstitutions,
-    Set<CenterObjective> centerObjectives, Set<Phase> phases, Set<CenterCustomParameter> centerCustomParameters,
-    Set<CenterProjectFundingSource> centerProjectFundingSources, Set<CenterRole> centerRoles, Set<CrpUser> crpUsers,
+    Set<CenterLeader> centerLeaders, Set<CrpProgram> crpPrograms, Set<CrpTargetUnit> crpTargetUnits,
+    Set<CenterArea> centerAreas, Set<DeliverableType> deliverableTypes, Set<LocElementType> locElementTypes,
+    Set<LocElement> locElements, Set<CrpPpaPartner> crpPpaPartners, Set<CrpSubIdosContribution> crpSubIdosContributions,
+    Set<LiaisonInstitution> liaisonInstitutions, Set<CenterObjective> centerObjectives, Set<Phase> phases,
+    Set<CenterProjectFundingSource> centerProjectFundingSources, Set<CrpUser> crpUsers,
     Set<CrpsSiteIntegration> crpsSitesIntegrations, Set<CrpLocElementType> crpLocElementTypes,
-    Set<CustomParameter> customParameters, Set<LiaisonUser> liasonUsers, Set<CenterUser> centerUsers, Set<Role> roles) {
+    Set<CustomParameter> customParameters, Set<LiaisonUser> liasonUsers, Set<Role> roles) {
     super();
     this.id = id;
     this.globalUnitType = globalUnitType;
@@ -156,7 +145,6 @@ public class GlobalUnit implements java.io.Serializable {
     this.login = login;
     this.centerLeaders = centerLeaders;
     this.crpPrograms = crpPrograms;
-    this.projects = projects;
     this.crpTargetUnits = crpTargetUnits;
     this.centerAreas = centerAreas;
     this.deliverableTypes = deliverableTypes;
@@ -167,15 +155,15 @@ public class GlobalUnit implements java.io.Serializable {
     this.liaisonInstitutions = liaisonInstitutions;
     this.centerObjectives = centerObjectives;
     this.phases = phases;
-    this.centerCustomParameters = centerCustomParameters;
+
     this.centerProjectFundingSources = centerProjectFundingSources;
-    this.centerRoles = centerRoles;
+
     this.crpUsers = crpUsers;
     this.crpsSitesIntegrations = crpsSitesIntegrations;
     this.crpLocElementTypes = crpLocElementTypes;
     this.customParameters = customParameters;
     this.liasonUsers = liasonUsers;
-    this.centerUsers = centerUsers;
+
     this.roles = roles;
   }
 
@@ -210,9 +198,6 @@ public class GlobalUnit implements java.io.Serializable {
     return centerAreas;
   }
 
-  public Set<CenterCustomParameter> getCenterCustomParameters() {
-    return centerCustomParameters;
-  }
 
   public Set<CenterLeader> getCenterLeaders() {
     return centerLeaders;
@@ -226,14 +211,6 @@ public class GlobalUnit implements java.io.Serializable {
     return centerProjectFundingSources;
   }
 
-
-  public Set<CenterRole> getCenterRoles() {
-    return centerRoles;
-  }
-
-  public Set<CenterUser> getCenterUsers() {
-    return centerUsers;
-  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -356,9 +333,6 @@ public class GlobalUnit implements java.io.Serializable {
     return programManagmenTeam;
   }
 
-  public Set<Project> getProjects() {
-    return projects;
-  }
 
   public Set<Role> getRoles() {
     return roles;
@@ -412,10 +386,6 @@ public class GlobalUnit implements java.io.Serializable {
     this.centerAreas = centerAreas;
   }
 
-  public void setCenterCustomParameters(Set<CenterCustomParameter> centerCustomParameters) {
-    this.centerCustomParameters = centerCustomParameters;
-  }
-
 
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
@@ -429,13 +399,6 @@ public class GlobalUnit implements java.io.Serializable {
     this.centerProjectFundingSources = centerProjectFundingSources;
   }
 
-  public void setCenterRoles(Set<CenterRole> centerRoles) {
-    this.centerRoles = centerRoles;
-  }
-
-  public void setCenterUsers(Set<CenterUser> centerUsers) {
-    this.centerUsers = centerUsers;
-  }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -571,9 +534,6 @@ public class GlobalUnit implements java.io.Serializable {
     this.programManagmenTeam = programManagmenTeam;
   }
 
-  public void setProjects(Set<Project> projects) {
-    this.projects = projects;
-  }
 
   public void setRoles(Set<Role> roles) {
     this.roles = roles;

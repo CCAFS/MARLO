@@ -18,14 +18,13 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
@@ -33,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -70,21 +70,25 @@ public class OutcomesAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
   private ICenterOutcomeManager outcomeService;
+
+
   private AuditLogManager auditLogService;
   private ICenterTargetUnitManager targetUnitService;
   private ICenterTopicManager researchTopicService;
   private ICenterProgramManager programService;
   private ICenterImpactManager impactService;
   private ICenterMilestoneManager milestoneService;
-
   // Front Variables
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
 
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
+
   private CenterProgram selectedProgram;
   private CenterOutcome outcome;
   private List<CenterTopic> researchTopics;
@@ -97,12 +101,11 @@ public class OutcomesAction extends BaseAction {
   private long topicID;
   private long outcomeID;
   private String transaction;
-
   // Validator
   private OutcomesValidator validator;
 
   @Inject
-  public OutcomesAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
+  public OutcomesAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
     ICenterTargetUnitManager targetUnitService, ICenterTopicManager researchTopicService,
     ICenterProgramManager programService, ICenterImpactManager impactService, ICenterMilestoneManager milestoneService,
     OutcomesValidator validator, AuditLogManager auditLogService) {
@@ -154,7 +157,7 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
@@ -166,6 +169,7 @@ public class OutcomesAction extends BaseAction {
   public long getOutcomeID() {
     return outcomeID;
   }
+
 
   public long getProgramID() {
     return programID;
@@ -186,7 +190,6 @@ public class OutcomesAction extends BaseAction {
   public List<CenterTopic> getResearchTopics() {
     return researchTopics;
   }
-
 
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
@@ -224,8 +227,8 @@ public class OutcomesAction extends BaseAction {
     programID = -1;
     topicID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       outcomeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTCOME_ID)));
@@ -250,8 +253,8 @@ public class OutcomesAction extends BaseAction {
       outcome = outcomeService.getResearchOutcomeById(outcomeID);
     }
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -338,6 +341,7 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -497,9 +501,10 @@ public class OutcomesAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
   public void setOutcome(CenterOutcome outcome) {
     this.outcome = outcome;

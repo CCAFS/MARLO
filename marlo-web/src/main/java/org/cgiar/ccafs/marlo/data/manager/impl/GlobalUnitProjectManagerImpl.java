@@ -60,6 +60,11 @@ public class GlobalUnitProjectManagerImpl implements GlobalUnitProjectManager {
   }
 
   @Override
+  public GlobalUnitProject findByProjectAndGlobalUnitId(long projectId, long globalUnitId) {
+    return globalUnitProjectDAO.findByProjectAndGlobalUnitId(projectId, globalUnitId);
+  }
+
+  @Override
   public GlobalUnitProject getGlobalUnitProjectById(long globalUnitProjectID) {
 
     return globalUnitProjectDAO.find(globalUnitProjectID);

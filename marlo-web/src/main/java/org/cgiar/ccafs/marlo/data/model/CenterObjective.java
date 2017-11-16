@@ -50,22 +50,20 @@ public class CenterObjective implements Serializable, IAuditLog {
   @Expose
   private String objective;
 
-  @Expose
-  private Center researchCenter;
 
   @Expose
-  private GlobalUnit globalUnit;
-
+  private GlobalUnit researchCenter;
 
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
+
   @Expose
   private User createdBy;
-
 
   @Expose
   private User modifiedBy;
@@ -90,7 +88,7 @@ public class CenterObjective implements Serializable, IAuditLog {
    * @param researchCenter
    * @param entityType
    */
-  public CenterObjective(String objective, Center researchCenter) {
+  public CenterObjective(String objective, GlobalUnit researchCenter) {
     super();
     this.objective = objective;
     this.researchCenter = researchCenter;
@@ -123,13 +121,8 @@ public class CenterObjective implements Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
-  }
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
@@ -141,12 +134,14 @@ public class CenterObjective implements Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -162,16 +157,14 @@ public class CenterObjective implements Serializable, IAuditLog {
     return objective;
   }
 
-  /**
-   * @return the researchCenter
-   */
-  public Center getResearchCenter() {
+  public GlobalUnit getResearchCenter() {
     return researchCenter;
   }
 
   public Set<CenterImpactObjective> getResearchImpactObjectives() {
     return researchImpactObjectives;
   }
+
 
   @Override
   public int hashCode() {
@@ -198,11 +191,6 @@ public class CenterObjective implements Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
-
-
   /**
    * @param id the id to set
    */
@@ -225,10 +213,8 @@ public class CenterObjective implements Serializable, IAuditLog {
     this.objective = objective;
   }
 
-  /**
-   * @param researchCenter the researchCenter to set
-   */
-  public void setResearchCenter(Center researchCenter) {
+
+  public void setResearchCenter(GlobalUnit researchCenter) {
     this.researchCenter = researchCenter;
   }
 

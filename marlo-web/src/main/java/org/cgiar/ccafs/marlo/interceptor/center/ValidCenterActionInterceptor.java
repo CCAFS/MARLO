@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
@@ -34,10 +34,12 @@ public class ValidCenterActionInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = 2239276003694732851L;
 
   // managers
-  private ICenterManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
 
   @Inject
-  public ValidCenterActionInterceptor(ICenterManager crpManager) {
+  public ValidCenterActionInterceptor(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
 
@@ -46,7 +48,7 @@ public class ValidCenterActionInterceptor extends AbstractInterceptor {
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Center crp = crpManager.findCrpByAcronym(enteredCrp);
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
         return invocation.invoke();
       } else {

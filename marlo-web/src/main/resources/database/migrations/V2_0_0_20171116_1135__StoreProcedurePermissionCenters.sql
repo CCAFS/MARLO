@@ -1535,6 +1535,436 @@ UNION
                                       AND (
                                         `cp`.`global_unit_type_id` = 1
                                       )
-                                      AND u.id = v_user_id ;
-                                      END;;
+                                      AND u.id = v_user_id
+                                      UNION
+                                        SELECT
+                                          `u`.`id` AS `id`,
+                                          `r`.`acronym` AS `ro_acronym`,
+                                          `r`.`id` AS `role_id`,
+                                          REPLACE (
+                                            `p`.`permission`,
+                                            '{0}',
+                                            `cp`.`acronym`
+                                          ) AS `permission`,
+                                          NULL AS `project_id`,
+                                          `cp`.`acronym` AS `center_acronym`,
+                                          `p`.`id` AS `permission_id`
+                                        FROM
+                                          (
+                                            (
+                                              (
+                                                (
+                                                  (
+                                                    `users` `u`
+                                                    LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                  )
+                                                  JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                )
+                                                JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                              )
+                                              JOIN `permissions` `p` ON (
+                                                (
+                                                  `p`.`id` = `rp`.`permission_id`
+                                                )
+                                              )
+                                            )
+                                            JOIN `global_units` `cp`
+                                          )
+                                        WHERE
+                                          (
+                                            (`p`.`type` = 0)
+                                            AND (`r`.`id` = 136)
+                                            AND (
+                                              `cp`.`global_unit_type_id` = 2
+                                            )
+                                          )
+                                        AND u.id = v_user_id
+                                        UNION
+                                          SELECT
+                                            `u`.`id` AS `id`,
+                                            `r`.`acronym` AS `ro_acronym`,
+                                            `r`.`id` AS `role_id`,
+                                            REPLACE (
+                                              `p`.`permission`,
+                                              '{0}',
+                                              `cp`.`acronym`
+                                            ) AS `permission`,
+                                            NULL AS `project_id`,
+                                            `cp`.`acronym` AS `center_acronym`,
+                                            `p`.`id` AS `permission_id`
+                                          FROM
+                                            (
+                                              (
+                                                (
+                                                  (
+                                                    (
+                                                      `users` `u`
+                                                      LEFT JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                    )
+                                                    JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                  )
+                                                  JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                )
+                                                JOIN `permissions` `p` ON (
+                                                  (
+                                                    `p`.`id` = `rp`.`permission_id`
+                                                  )
+                                                )
+                                              )
+                                              JOIN `global_units` `cp`
+                                            )
+                                          WHERE
+                                            (
+                                              (`p`.`type` = 0)
+                                              AND (`r`.`acronym` = 'Admin')
+                                              AND (
+                                                `cp`.`global_unit_type_id` = 2
+                                              )
+                                            )
+                                          AND u.id = v_user_id
+                                          UNION
+                                            SELECT
+                                              `u`.`id` AS `id`,
+                                              `r`.`acronym` AS `acronym`,
+                                              `r`.`id` AS `rolid`,
+                                              REPLACE (
+                                                REPLACE (
+                                                  `p`.`permission`,
+                                                  '{0}',
+                                                  `cp`.`acronym`
+                                                ),
+                                                '{1}',
+                                                `ar`.`id`
+                                              ) AS `permission`,
+                                              NULL AS `project_id`,
+                                              `cp`.`acronym` AS `crp_acronym`,
+                                              `p`.`id` AS `permission_id`
+                                            FROM
+                                              (
+                                                (
+                                                  (
+                                                    (
+                                                      (
+                                                        (
+                                                          (
+                                                            `users` `u`
+                                                            JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                          )
+                                                          JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                        )
+                                                        JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                      )
+                                                      JOIN `permissions` `p` ON (
+                                                        (
+                                                          `p`.`id` = `rp`.`permission_id`
+                                                        )
+                                                      )
+                                                    )
+                                                    JOIN `crp_users` `crp` ON (
+                                                      (
+                                                        (`u`.`id` = `crp`.`user_id`)
+                                                        AND (
+                                                          `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                  JOIN `global_units` `cp` ON (
+                                                    (
+                                                      `cp`.`id` = `crp`.`global_unit_id`
+                                                    )
+                                                  )
+                                                )
+                                                JOIN `center_areas` `ar` ON (
+                                                  (
+                                                    (
+                                                      `ar`.`global_unit_id` = `cp`.`id`
+                                                    )
+                                                    AND (`ar`.`is_active` = 1)
+                                                  )
+                                                )
+                                              )
+                                            WHERE
+                                              (
+                                                (`p`.`type` = 0)
+                                                AND (`r`.`acronym` = 'Coord')
+                                                AND (
+                                                  `cp`.`global_unit_type_id` = 2
+                                                )
+                                              )
+                                            AND u.id = v_user_id
+                                            UNION
+                                              SELECT
+                                                `u`.`id` AS `id`,
+                                                `r`.`acronym` AS `acronym`,
+                                                `r`.`id` AS `rolid`,
+                                                REPLACE (
+                                                  REPLACE (
+                                                    `p`.`permission`,
+                                                    '{0}',
+                                                    `cp`.`acronym`
+                                                  ),
+                                                  '{1}',
+                                                  `ar`.`id`
+                                                ) AS `permission`,
+                                                NULL AS `project_id`,
+                                                `cp`.`acronym` AS `crp_acronym`,
+                                                `p`.`id` AS `permission_id`
+                                              FROM
+                                                (
+                                                  (
+                                                    (
+                                                      (
+                                                        (
+                                                          (
+                                                            (
+                                                              (
+                                                                `users` `u`
+                                                                JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                              )
+                                                              JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                            )
+                                                            JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                          )
+                                                          JOIN `permissions` `p` ON (
+                                                            (
+                                                              `p`.`id` = `rp`.`permission_id`
+                                                            )
+                                                          )
+                                                        )
+                                                        JOIN `crp_users` `crp` ON (
+                                                          (
+                                                            (`u`.`id` = `crp`.`user_id`)
+                                                            AND (
+                                                              `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                            )
+                                                          )
+                                                        )
+                                                      )
+                                                      JOIN `global_units` `cp` ON (
+                                                        (
+                                                          `cp`.`id` = `crp`.`global_unit_id`
+                                                        )
+                                                      )
+                                                    )
+                                                    JOIN `center_areas` `ar` ON (
+                                                      (
+                                                        (
+                                                          `ar`.`global_unit_id` = `cp`.`id`
+                                                        )
+                                                        AND (`ar`.`is_active` = 1)
+                                                      )
+                                                    )
+                                                  )
+                                                  JOIN `center_leaders` `cprog` ON (
+                                                    (
+                                                      (`cprog`.`user_id` = `u`.`id`)
+                                                      AND (`cprog`.`is_active` = 1)
+                                                      AND (
+                                                        `cprog`.`research_area_id` = `ar`.`id`
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              WHERE
+                                                (
+                                                  (`p`.`type` = 0)
+                                                  AND (`r`.`acronym` = 'RAD')
+                                                  AND (
+                                                    `cp`.`global_unit_type_id` = 2
+                                                  )
+                                                )
+                                              AND u.id = v_user_id
+                                              UNION
+                                                SELECT
+                                                  `u`.`id` AS `id`,
+                                                  `r`.`acronym` AS `acronym`,
+                                                  `r`.`id` AS `rolid`,
+                                                  REPLACE (
+                                                    REPLACE (
+                                                      REPLACE (
+                                                        `p`.`permission`,
+                                                        '{0}',
+                                                        `cp`.`acronym`
+                                                      ),
+                                                      '{1}',
+                                                      `ar`.`id`
+                                                    ),
+                                                    '{2}',
+                                                    `rprog`.`id`
+                                                  ) AS `permission`,
+                                                  NULL AS `project_id`,
+                                                  `cp`.`acronym` AS `crp_acronym`,
+                                                  `p`.`id` AS `permission_id`
+                                                FROM
+                                                  (
+                                                    (
+                                                      (
+                                                        (
+                                                          (
+                                                            (
+                                                              (
+                                                                (
+                                                                  (
+                                                                    `users` `u`
+                                                                    JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                  )
+                                                                  JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                                )
+                                                                JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                              )
+                                                              JOIN `permissions` `p` ON (
+                                                                (
+                                                                  `p`.`id` = `rp`.`permission_id`
+                                                                )
+                                                              )
+                                                            )
+                                                            JOIN `crp_users` `crp` ON (
+                                                              (
+                                                                (`u`.`id` = `crp`.`user_id`)
+                                                                AND (
+                                                                  `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                                )
+                                                              )
+                                                            )
+                                                          )
+                                                          JOIN `global_units` `cp` ON (
+                                                            (
+                                                              `cp`.`id` = `crp`.`global_unit_id`
+                                                            )
+                                                          )
+                                                        )
+                                                        JOIN `center_areas` `ar` ON (
+                                                          (
+                                                            (
+                                                              `ar`.`global_unit_id` = `cp`.`id`
+                                                            )
+                                                            AND (`ar`.`is_active` = 1)
+                                                          )
+                                                        )
+                                                      )
+                                                      JOIN `center_programs` `rprog` ON (
+                                                        (
+                                                          (
+                                                            `rprog`.`research_area_id` = `ar`.`id`
+                                                          )
+                                                          AND (`ar`.`is_active` = 1)
+                                                        )
+                                                      )
+                                                    )
+                                                    JOIN `center_leaders` `cprog` ON (
+                                                      (
+                                                        (`cprog`.`user_id` = `u`.`id`)
+                                                        AND (`cprog`.`is_active` = 1)
+                                                        AND (
+                                                          `cprog`.`research_program_id` = `rprog`.`id`
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                WHERE
+                                                  (
+                                                    (`p`.`type` = 0)
+                                                    AND (`r`.`acronym` = 'RPL')
+                                                    AND (
+                                                      `cp`.`global_unit_type_id` = 2
+                                                    )
+                                                  )
+                                                AND u.id = v_user_id
+                                                UNION
+                                                  SELECT
+                                                    `u`.`id` AS `id`,
+                                                    `r`.`acronym` AS `acronym`,
+                                                    `r`.`id` AS `rolid`,
+                                                    REPLACE (
+                                                      REPLACE (
+                                                        REPLACE (
+                                                          `p`.`permission`,
+                                                          '{0}',
+                                                          `cp`.`acronym`
+                                                        ),
+                                                        '{1}',
+                                                        `ar`.`id`
+                                                      ),
+                                                      '{2}',
+                                                      `rprog`.`id`
+                                                    ) AS `permission`,
+                                                    NULL AS `project_id`,
+                                                    `cp`.`acronym` AS `crp_acronym`,
+                                                    `p`.`id` AS `permission_id`
+                                                  FROM
+                                                    (
+                                                      (
+                                                        (
+                                                          (
+                                                            (
+                                                              (
+                                                                (
+                                                                  (
+                                                                    (
+                                                                      `users` `u`
+                                                                      JOIN `user_roles` `ro` ON ((`ro`.`user_id` = `u`.`id`))
+                                                                    )
+                                                                    JOIN `roles` `r` ON ((`r`.`id` = `ro`.`role_id`))
+                                                                  )
+                                                                  JOIN `role_permissions` `rp` ON ((`rp`.`role_id` = `r`.`id`))
+                                                                )
+                                                                JOIN `permissions` `p` ON (
+                                                                  (
+                                                                    `p`.`id` = `rp`.`permission_id`
+                                                                  )
+                                                                )
+                                                              )
+                                                              JOIN `crp_users` `crp` ON (
+                                                                (
+                                                                  (`u`.`id` = `crp`.`user_id`)
+                                                                  AND (
+                                                                    `crp`.`global_unit_id` = `r`.`global_unit_id`
+                                                                  )
+                                                                )
+                                                              )
+                                                            )
+                                                            JOIN `global_units` `cp` ON (
+                                                              (
+                                                                `cp`.`id` = `crp`.`global_unit_id`
+                                                              )
+                                                            )
+                                                          )
+                                                          JOIN `center_areas` `ar` ON (
+                                                            (
+                                                              (
+                                                                `ar`.`global_unit_id` = `cp`.`id`
+                                                              )
+                                                              AND (`ar`.`is_active` = 1)
+                                                            )
+                                                          )
+                                                        )
+                                                        JOIN `center_programs` `rprog` ON (
+                                                          (
+                                                            (
+                                                              `rprog`.`research_area_id` = `ar`.`id`
+                                                            )
+                                                            AND (`ar`.`is_active` = 1)
+                                                          )
+                                                        )
+                                                      )
+                                                      JOIN `center_leaders` `cprog` ON (
+                                                        (
+                                                          (`cprog`.`user_id` = `u`.`id`)
+                                                          AND (`cprog`.`is_active` = 1)
+                                                          AND (
+                                                            `cprog`.`research_program_id` = `rprog`.`id`
+                                                          )
+                                                        )
+                                                      )
+                                                    )
+                                                  WHERE
+                                                    (
+                                                      (`p`.`type` = 0)
+                                                      AND (`r`.`acronym` = 'SL')
+                                                      AND (
+                                                        `cp`.`global_unit_type_id` = 2
+                                                      )
+                                                    ) ;
+                                                  END;;
 DELIMITER ;

@@ -49,20 +49,15 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private String acronym;
 
-
   @Expose
-  private Center researchCenter;
+  private GlobalUnit researchCenter;
 
-
-  @Expose
-  private GlobalUnit globalUnit;
 
   @Expose
   private boolean active;
 
   @Expose
   private Date activeSince;
-
 
   @Expose
   private User createdBy;
@@ -84,7 +79,6 @@ public class CenterArea implements Serializable, IAuditLog {
 
 
   private List<CenterProgram> programs;
-
 
   private List<CenterLeader> leaders;
 
@@ -143,6 +137,7 @@ public class CenterArea implements Serializable, IAuditLog {
     return true;
   }
 
+
   /**
    * @return the acronym
    */
@@ -150,10 +145,10 @@ public class CenterArea implements Serializable, IAuditLog {
     return acronym;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public String getColor() {
     return color;
@@ -161,11 +156,6 @@ public class CenterArea implements Serializable, IAuditLog {
 
   public User getCreatedBy() {
     return createdBy;
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
@@ -178,7 +168,6 @@ public class CenterArea implements Serializable, IAuditLog {
     return leaders;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -190,6 +179,7 @@ public class CenterArea implements Serializable, IAuditLog {
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -207,16 +197,14 @@ public class CenterArea implements Serializable, IAuditLog {
     return programs;
   }
 
-  /**
-   * @return the researchCenter
-   */
-  public Center getResearchCenter() {
+  public GlobalUnit getResearchCenter() {
     return researchCenter;
   }
 
   public Set<CenterLeader> getResearchLeaders() {
     return researchLeaders;
   }
+
 
   /**
    * @return the researchPrograms
@@ -249,7 +237,6 @@ public class CenterArea implements Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -262,16 +249,6 @@ public class CenterArea implements Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
-  }
-
-
-  /*
-   * (non-Javadoc)
-   * @see org.cgiar.ccafs.marlo.data.IAuditLog#getId()
-   */
-
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
   }
 
 
@@ -311,10 +288,7 @@ public class CenterArea implements Serializable, IAuditLog {
   }
 
 
-  /**
-   * @param researchCenter the researchCenter to set
-   */
-  public void setResearchCenter(Center researchCenter) {
+  public void setResearchCenter(GlobalUnit researchCenter) {
     this.researchCenter = researchCenter;
   }
 

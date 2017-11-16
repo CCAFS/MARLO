@@ -17,15 +17,15 @@ package org.cgiar.ccafs.marlo.interceptor.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -46,19 +46,21 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1217563340228252130L;
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
   private UserManager userService;
   private ICenterProgramManager programService;
   private ICenterAreaManager areaServcie;
 
   private Map<String, Object> parameters;
   private Map<String, Object> session;
-  private Center researchCenter;
+  private GlobalUnit researchCenter;
   private long programID = -1;
   private long areaID = -1;
 
   @Inject
-  public EditImpactPathwayInterceptor(ICenterManager centerService, UserManager userService,
+  public EditImpactPathwayInterceptor(GlobalUnitManager centerService, UserManager userService,
     ICenterProgramManager programService, ICenterAreaManager areaServcie) {
     this.centerService = centerService;
     this.userService = userService;
@@ -70,8 +72,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     try {
       programID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]);
     } catch (Exception e) {
-      Center loggedCenter = (Center) session.get(APConstants.SESSION_CENTER);
-      loggedCenter = centerService.getCrpById(loggedCenter.getId());
+      GlobalUnit loggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+      loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
       User user = (User) session.get(APConstants.SESSION_USER);
       user = userService.getUser(user.getId());
 
@@ -102,7 +104,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
             programID = userScientistLeader.get(0).getResearchProgram().getId();
           } else {
             List<CenterArea> ras =
-              loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
+              loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList());
             Collections.sort(ras, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
             List<CenterProgram> rps =
               ras.get(0).getResearchPrograms().stream().filter(r -> r.isActive()).collect(Collectors.toList());
@@ -123,7 +125,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     this.getprogramId();
 
     try {

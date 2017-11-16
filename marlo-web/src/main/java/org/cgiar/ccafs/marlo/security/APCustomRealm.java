@@ -20,8 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
-import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -179,7 +177,6 @@ public class APCustomRealm extends AuthorizingRealm {
     User user = userManager.getUser((Long) principals.getPrimaryPrincipal());
 
     GlobalUnit crp = (GlobalUnit) session.getAttribute(APConstants.SESSION_CRP);
-    Center center = (Center) session.getAttribute(APConstants.SESSION_CENTER);
 
     /*
      * Check
@@ -192,14 +189,6 @@ public class APCustomRealm extends AuthorizingRealm {
       return authorizationInfo;
     }
 
-    if (center != null) {
-      for (CenterUserRole userRole : user.getCenterUserRoles()) {
-        authorizationInfo.addRole(userRole.getRole().getAcronym());
-      }
-      authorizationInfo
-        .addStringPermissions(userManager.getCenterPermission(user.getId().intValue(), center.getAcronym()));
-      return authorizationInfo;
-    }
 
     return null;
 

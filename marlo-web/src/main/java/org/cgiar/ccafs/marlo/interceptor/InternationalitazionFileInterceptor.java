@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -48,19 +47,14 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
-  private ICenterManager centerManager;
-
-
   private CustomParameterManager crpParameterManager;
 
   @Inject
   public InternationalitazionFileInterceptor(UserManager userManager, GlobalUnitManager crpManager,
-    CustomParameterManager crpParameterManager, ICenterManager centerManager) {
+    CustomParameterManager crpParameterManager) {
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
-    this.centerManager = centerManager;
 
   }
 
@@ -93,7 +87,7 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       }
     }
 
-    if (session.containsKey(APConstants.SESSION_CENTER)) {
+    if (session.containsKey(APConstants.SESSION_CRP)) {
       if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
 

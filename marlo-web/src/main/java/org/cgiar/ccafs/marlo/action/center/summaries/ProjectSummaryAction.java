@@ -17,9 +17,8 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
@@ -28,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -73,16 +73,17 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   private byte[] bytesPDF;
   // Parameters
   private long startTime;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private CenterProject project;
   // Front-end
   private long projectID;
   // Services
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
   private ICenterProjectManager projectService;
 
   @Inject
-  public ProjectSummaryAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService) {
+  public ProjectSummaryAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
@@ -649,8 +650,8 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
 
   @Override
   public void prepare() {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -415,6 +416,14 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       centerPerGender = 0.0;
 
     List<Project> projects = new ArrayList<>();
+
+    // Get all Global Unit Projects
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects());
+    List<Project> guProjects = new ArrayList<>();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      guProjects.add(globalUnitProject.getProject());
+    }
+
     Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
     if (phase != null) {
       for (ProjectPhase projectPhase : phase.getProjectPhases()) {
@@ -422,7 +431,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
       }
     }
     if (projects.isEmpty()) {
-      projects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      projects = guProjects.stream().filter(c -> c.isActive()).collect(Collectors.toList());
     }
     for (Project project : projects) {
 

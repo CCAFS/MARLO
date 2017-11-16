@@ -18,18 +18,18 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -69,19 +69,23 @@ public class ProjectPartnersAction extends BaseAction {
 
 
   // Services - Managers
-  private ICenterManager centerService;
-
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProjectManager projectService;
+
+
   private AuditLogManager auditLogService;
+
+
   private ICenterProjectPartnerManager partnerService;
   private ICenterProjectPartnerPersonManager partnerPersonService;
   private InstitutionManager institutionService;
   private UserManager userService;
-
   // Front Variables
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private CenterArea selectedResearchArea;
+
   private CenterProgram selectedProgram;
   private List<CenterArea> researchAreas;
   private List<CenterProgram> researchPrograms;
@@ -89,18 +93,17 @@ public class ProjectPartnersAction extends BaseAction {
   private List<CenterProjectPartner> projectPartners;
   private HashMap<Boolean, String> partnerModes;
   private CenterProject project;
-
   // Parameter Variables
   private long programID;
   private long areaID;
+
   private long projectID;
   private String transaction;
-
   // Validator
   private ProjectPartnerValidator validator;
 
   @Inject
-  public ProjectPartnersAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
+  public ProjectPartnersAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService,
     ICenterProjectPartnerManager partnerService, ICenterProjectPartnerPersonManager partnerPersonService,
     InstitutionManager institutionService, UserManager userService, ProjectPartnerValidator validator,
     AuditLogManager auditLogService) {
@@ -151,14 +154,14 @@ public class ProjectPartnersAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
+
 
   public HashMap<Boolean, String> getPartnerModes() {
     return partnerModes;
@@ -168,6 +171,7 @@ public class ProjectPartnersAction extends BaseAction {
   public long getProgramID() {
     return programID;
   }
+
 
   public CenterProject getProject() {
     return project;
@@ -203,11 +207,11 @@ public class ProjectPartnersAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
@@ -256,8 +260,8 @@ public class ProjectPartnersAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
-        
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (CenterProject) autoSaveReader.readFromJson(jReader);
@@ -473,18 +477,19 @@ public class ProjectPartnersAction extends BaseAction {
 
   }
 
-
   public void setAreaID(long areaID) {
     this.areaID = areaID;
   }
+
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
   public void setPartnerModes(HashMap<Boolean, String> partnerModes) {
     this.partnerModes = partnerModes;

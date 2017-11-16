@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -360,22 +361,30 @@ public class ProjectCaseStudyAction extends BaseAction {
 
     project = projectManager.getProjectById(projectID);
 
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
+
+    // Get all Global Unit Projects
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(loggedCrp.getGlobalUnitProjects());
+    List<Project> guProjects = new ArrayList<>();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      guProjects.add(globalUnitProject.getProject());
+    }
 
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects =
-          loggedCrp.getProjects().stream()
+          guProjects.stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
             .collect(Collectors.toList());
         myProjects.remove(project);
       } else {
-        myProjects = loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
-          .collect(Collectors.toList());
+        myProjects =
+          guProjects.stream().filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+            .collect(Collectors.toList());
 
         myProjects.remove(project);
       }
