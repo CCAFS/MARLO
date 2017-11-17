@@ -128,9 +128,10 @@ div#tl-adnyds {
 
 .example .forward, .example .backward {
   float: left;
-  width: 50px;
+  width: 5%;
   height: 100%;
   font-size: 30px;
+  padding: 0;
 }
 
 .example .forward {
@@ -139,11 +140,12 @@ div#tl-adnyds {
 
 .example .frame {
   margin: 0 auto;
-  width: 80%;
-  height: 58px;
+  width: 90%;
+  height: 53px;
   /* line-height: 200px; */
   overflow: hidden;
   text-shadow: none;
+  background: #f5f5f5;
 }
 
 .example .frame ul {
@@ -156,28 +158,29 @@ div#tl-adnyds {
 
 .example .frame ul li {
   float: left;
-  width: 300px;
+  width: 260px;
   height: 100%;
-  margin: 0 1px 0 0;
+  margin: 0 4px 0 0;
   padding: 0px 11px;
-  background: #eee;
+  background: #f3f0f0;
   color: #3a3c47;
   /* text-align: center; */
   cursor: pointer;
   /* background-color: #eee !important; */
   /* opacity: 0.2; */
-  color: #7d7d7d;
+  color: #949494;
   border-top: 0px solid;
+  border: 1px dashed #d8d8d8;
 }
 
 .example .frame ul li.active {
+  border: none;
   color: #fff;
 }
 
 .example .frame ul li.active.planning {
   color: #fff;
   background-color: #337ab7;
-
 }
 
 .example .frame ul li.active.reporting {
@@ -185,7 +188,7 @@ div#tl-adnyds {
 }
 
 .example .frame ul li h4 {
-  margin: 7px 0 3px 0px;
+  margin: 7px 0 1px 0px;
 }
 
 .example .scrollbar {
@@ -261,4 +264,28 @@ div#tl-adnyds {
   padding: 0;
   font-size: 32px;
   vertical-align: middle;
+}
+
+.phaseTag {
+  
+}
+
+.phaseTag span {
+  background: #eee;
+  padding: 2px 12px;
+  position: fixed;
+  top: 35px;
+  /* font-weight: bold; */
+  color: #fff;
+  z-index: 100;
+  border-radius: 0px 0px 2px 2px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.phaseTag span.planning {
+  background-color: #337ab7;
+}
+
+.phaseTag span.reporting {
+  background-color: #777;
 }

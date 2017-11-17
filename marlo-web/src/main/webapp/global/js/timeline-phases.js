@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var $example = $('#example');
+  var $example = $('#timelineScroll');
   var $frame = $example.find('.frame');
   window.frr = $frame;
   var sly = new Sly($frame, {
@@ -14,7 +14,7 @@ $(document).ready(function() {
       releaseSwing: 1,
       startAt: currenPhaseIndex,
       scrollBar: $example.find('.scrollbar'),
-      scrollBy: 1,
+      scrollBy: 0,
       pagesBar: $example.find('.pages'),
       activatePageOn: 'click',
       speed: 200,
@@ -34,21 +34,19 @@ $(document).ready(function() {
   }).init();
 
   sly.on('active', function(eventName) {
+    console.log('active');
     var phaseID = $frame.find('li.active').attr('id').split('-')[1];
     setPhaseID(phaseID);
-
   });
 
 });
 
-// Build slide_id menu
-function init_slide_menu(data) {
-  console.log('EVENT=' + data.type, data);
-  var phaseID = (data.unique_id).split('-')[1];
-
-  setPhaseID(phaseID);
-}
-
+/**
+ * Execute an AJAX that change the phase in the session
+ * 
+ * @param phaseID
+ * @returns
+ */
 function setPhaseID(phaseID) {
   var currentURL = new Uri(window.location.href);
   console.log(currentURL.deleteQueryParam('phaseID').addQueryParam('phaseID', phaseID));
