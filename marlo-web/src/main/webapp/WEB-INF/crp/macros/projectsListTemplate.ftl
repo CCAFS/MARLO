@@ -187,6 +187,7 @@
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">
           [#if action.hasProgramnsRegions()]
@@ -226,6 +227,10 @@
           [#-- Project Leader --]
           <td class=""> 
             [#if project.leader?has_content]${(project.leader.institution.acronym)!project.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+          </td>
+          [#-- Project Person Leader --]
+          <td class=""> 
+            [#if project.leader?has_content]${(project.leaderPerson.composedCompleteName)!'Not defined'}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
           <td>
