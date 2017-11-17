@@ -154,6 +154,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         }
         if (phase.getDescription().equals(APConstants.REPORTING)) {
           canEdit = false;
+          baseAction.setCanEditPhase(false);
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
@@ -175,6 +176,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         // Set the variable that indicates if the user can edit the section
         baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
         baseAction.setCanEdit(canEdit);
+
       } else {
         throw new NullPointerException();
       }

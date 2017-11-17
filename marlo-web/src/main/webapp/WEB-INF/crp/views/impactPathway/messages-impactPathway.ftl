@@ -25,8 +25,12 @@
   [/#if]
   
   [#-- Privileges Message --]
-  [#if !canEdit && !(transaction??) && !(submission?has_content) ]
+  [#if !canEdit && canEditPhase &&  !(transaction??) && !(submission?has_content) ]
     <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [/#if] 
+  
+  [#if !canEditPhase ]
+        <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
   [/#if] 
   
   [#-- Program completed Message--]
