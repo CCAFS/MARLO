@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="4">General Information</th>
+        <th colspan="5">General Information</th>
         [#if !reportingActive]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
@@ -14,6 +14,7 @@
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
+        <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">
           [#if action.hasProgramnsRegions()]
@@ -58,9 +59,13 @@
               </a>
             [/#if]
           </td>
-          [#-- Project Leader --]
+          [#-- Project Institution Leader --]
           <td class=""> 
             [#if project.leader?has_content]${(project.leader.institution.acronym)!project.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+          </td>
+          [#-- Project Person Leader --]
+          <td class=""> 
+            [#if project.leader?has_content]${(project.leaderPerson.composedCompleteName)!'Not defined'}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Project Type 
           <td>
