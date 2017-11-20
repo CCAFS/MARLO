@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 public class APGuiceContextListener extends GuiceServletContextListener {
 
   public static Logger LOG = LoggerFactory.getLogger(APGuiceContextListener.class);
+  private static Class clazz = APGuiceContextListener.class;
+  public static final String KEY_NAME = clazz.getName();
   private ServletContext servletContext;
 
   @Override
@@ -55,8 +57,9 @@ public class APGuiceContextListener extends GuiceServletContextListener {
   protected Injector getInjector() {
 
     LOG.info("creating Guice Injector");
-
-    return Guice.createInjector(new MarloGuiceServletModule(), new APShiroWebModule(this.servletContext),
+    Injector injector = Guice.createInjector(new MarloGuiceServletModule(), new APShiroWebModule(this.servletContext),
       ShiroWebModule.guiceFilterModule(), new Struts2GuicePluginModule(), new APModule());
+    servletContext.setAttribute(KEY_NAME, injector);
+    return injector;
   }
 }

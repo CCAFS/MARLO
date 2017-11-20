@@ -90,8 +90,6 @@ public class ContactPersonAction extends BaseAction {
     queryParameter = queryParameter.trim();
     List<LDAPUser> ad_users = adConection.searchUsers(this.getADFilter(queryParameter), "OU=CIATHUB,DC=CGIARAD,DC=ORG");
     this.users = new ArrayList<>();
-
-
     int idUser = 0;
     for (LDAPUser user : ad_users) {
       idUser++;
@@ -101,13 +99,8 @@ public class ContactPersonAction extends BaseAction {
       userMap.put("lastName", user.getLastName());
       userMap.put("email", user.getEmail());
       this.users.add(userMap);
-
     }
 
-
-    // List<LDAPUser> users = adConection.searchUsers("(sAMAccountName=*)", "DC=CGIARAD,DC=ORG");
-
-    // List<LDAPUser> users = service.searchUsers(queryParameter);
 
     return SUCCESS;
 
