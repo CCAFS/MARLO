@@ -66,12 +66,14 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CenterUser;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -1142,7 +1144,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Center> getCentersList() {
-    return centerService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    List<Center> centers = new ArrayList<>();
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CenterUser> users =
+        new ArrayList<>(user.getCenterUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CenterUser crpUser : users) {
+        if (crpUser.getResearchCenter().isActive()) {
+          centers.add(crpUser.getResearchCenter());
+        }
+      }
+    } else {
+      centers = centerService.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    }
+    return centers;
   }
 
   public CenterSubmission getCenterSubmission() {
@@ -1215,7 +1232,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<Crp> getCrpList() {
-    return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
+    List<Crp> crps = new ArrayList<>();
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        if (crpUser.getCrp().isActive()) {
+          crps.add(crpUser.getCrp());
+        }
+      }
+    } else {
+      crps = this.getCrpCategoryList("1");
+    }
+
+    return crps;
   }
 
   /**
@@ -1822,8 +1855,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -1848,11 +1881,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (project != null) {
       if (project.isAutoFill()) {
-        CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
-          .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
-        if (fundingSource != null) {
-          return fundingSource.getCode();
+        try {
+          CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
+            .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+          if (fundingSource != null) {
+            return fundingSource.getCode();
+          }
+        } catch (Exception e) {
+          return "---";
         }
+
       }
     }
 
@@ -2805,8 +2843,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isProjectSubmitted(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project
-      .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
@@ -2998,8 +3036,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
@@ -3007,8 +3045,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = projectDB
-        .getProjectComponentLessons().stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
           && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {

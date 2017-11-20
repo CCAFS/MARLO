@@ -60,7 +60,10 @@ public class NextUserListAction extends BaseAction {
 
     Map<String, Object> nextUser;
 
-    CenterNextuserType nextUserType = nextUserService.getNextuserTypeById(nextUserID);
+    CenterNextuserType nextUserType = null;
+    if (nextUserID != -1) {
+      nextUserType = nextUserService.getNextuserTypeById(nextUserID);
+    }
 
     if (nextUserType != null) {
       List<CenterNextuserType> nextUserChilds = new ArrayList<>(

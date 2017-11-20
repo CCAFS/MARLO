@@ -1,12 +1,13 @@
-var requesIDSelected;
+var requestID, institutionOfficeRequestId;
 $(document).ready(function() {
   var $modal = $('#myModal');
+  var $rejectOfficeRequest = $('#rejectOfficeRequest');
 
   // Reject Request popup Event
   $('a.rejectRequest').on('click', function(e) {
     e.preventDefault();
-    var requestID = $(this).classParam('partnerRequestId');
-    requesIDSelected = requestID;
+    requestID = $(this).classParam('partnerRequestId');
+
     var $request = $(this).parents('.partnerRequestItem');
     $modal.find('.requestInfo').html($request.find('.requestInfo').clone(true).addClass('grayBox'));
     $modal.modal('show');
@@ -14,12 +15,24 @@ $(document).ready(function() {
 
   // Reject Request button Event
   $modal.find('.rejectButton').on('click', function() {
-    var $request = $('#partnerRequestItem-' + requesIDSelected);
+    var $request = $('#partnerRequestItem-' + requestID);
+    
+    var justificationText = $modal.find('textarea').val();
+    
+    if(!justificationText){
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'The justification field is required';
+      noty(notyOptions);
+      return
+    }
+    
+    
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
         data: {
-            requestID: requesIDSelected,
-            justification: $modal.find('textarea').val(),
+            requestID: requestID,
+            justification: justificationText,
+            sendNotification : ($modal.find('.sendEmailInput').is(':checked'))? true : false
         },
         beforeSend: function() {
           $modal.find('.loading').fadeIn();
@@ -50,11 +63,12 @@ $(document).ready(function() {
     var $request = $(this).parents('.partnerRequestItem');
 
     // Validate fields
-    var name = $('input[name="name"]').val();
-    var typeValue = $('select#type').val();
-    var countryValue = $('select#country').val();
-    
-    if(!name || (typeValue == "-1") || (countryValue == "-1")){
+    var name = $request.find('input[name="name"]').val();
+    var typeValue = $request.find('select#type').val();
+    var countryValue = $request.find('select#country').val();
+    var modificationJustification = $request.find('textarea[name="modificationJustification"]').val();
+
+    if(!name || !modificationJustification || (typeValue == "-1") || (countryValue == "-1")) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'The required(*) fields needs to be filled';
       noty(notyOptions);
@@ -90,6 +104,113 @@ $(document).ready(function() {
     $request.find('.btn-group').slideDown();
   });
 
+// Open reject request popup Event
+  $('a.openRejectOfficeRequest').on('click', function(e) {
+    e.preventDefault();
+    institutionOfficeRequestId = $(this).classParam('institutionOfficeRequestId');
+    console.log(institutionOfficeRequestId);
+    var $request = $(this).parents('.officesRequestItem');
+    var $countriesSelected = $request.find('.officeRequest:checked').map(function() {
+      return $(this).parent().clone(true).find('label').text();
+    }).get().join(', ');
+    
+    // Validate if there are countries selected
+    if($request.find('.officeRequest:checked').length == 0) {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please select at least a country';
+      noty(notyOptions);
+      
+      return
+    }else{
+      $rejectOfficeRequest.modal('show');
+    }
+    
+    $rejectOfficeRequest.find('.requestInfo').html($countriesSelected);
+  });
+
+  // Reject office request
+  $('a.rejectOfficesRequest').on('click', function(e) {
+    e.preventDefault();
+    var $request = $('#officesRequestItem-' + institutionOfficeRequestId)
+    var countriesSelected = $request.find('.officeRequest:checked');
+    var formData = {
+        'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
+        'justification': $rejectOfficeRequest.find('textarea.modificationJustification').val(),
+        'sendNotification' : ($rejectOfficeRequest.find('.sendEmailInput').is(':checked'))? true : false,
+        'countryOfficePOJO.ids': countriesSelected.map(function() {
+          return this.value;
+        }).get().join()
+    }
+    
+    // Validate if there are countries selected
+    if(!formData.justification) {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please fill out the justification field';
+      noty(notyOptions);
+      return
+    }
+    $.ajax({
+        url: baseURL + '/rejectOfficesRequest.do',
+        data: formData,
+        beforeSend: function() {
+          $rejectOfficeRequest.find('.loading').fadeIn();
+        },
+        success: function(data) {
+          if(data.success) {
+            location.reload();
+          }
+        },
+        complete: function() {
+          $rejectOfficeRequest.find('.loading').fadeOut();
+          $rejectOfficeRequest.find('textarea.modificationJustification').val('')
+        }
+    });
+  });
+
+  // Accept office request
+  $('a.acceptOfficesRequest').on('click', function(e) {
+    e.preventDefault();
+    
+    institutionOfficeRequestId = $(this).classParam('institutionOfficeRequestId');
+    var $request = $('#officesRequestItem-' + institutionOfficeRequestId)
+    var countriesSelected = $request.find('.officeRequest:checked');
+    var formData = {
+        'countryOfficePOJO.institution.id': $request.find('input.institutionID').val(),
+        'countryOfficePOJO.ids': countriesSelected.map(function() {
+          return this.value;
+        }).get().join()
+    }
+    // Validate if there are countries selected
+    if(countriesSelected.length == 0) {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Please select at least a country';
+      noty(notyOptions);
+      return
+    }
+    
+    // Confirm Alert
+    if (!confirm('Are you sure you want to accept this request?')) {
+      return
+    }
+    
+    $.ajax({
+        url: baseURL + '/acceptOfficesRequest.do',
+        data: formData,
+        beforeSend: function() {
+          $request.find('.loading').fadeIn();
+        },
+        success: function(data) {
+          if(data.success) {
+            location.reload();
+          }
+        },
+        complete: function() {
+          $request.find('.loading').fadeOut();
+        }
+    });
+  });
+
+  // Find Sameness for each partners
   findSameness();
 });
 
@@ -113,12 +234,10 @@ function findSameness() {
               var $li = $('<li title="' + partner.composedName + '">' + partner.composedName + '</li>');
               $(e).find('.sameness ul').append($li);
               // Text Difference
-              $li.prettyTextDiff({
-                  cleanup: false,
-                  originalContent: $(e).find('h4').text(),
-                  changedContent: partner.composedName,
-                  diffContainer: $li
-              });
+              /*
+               * $li.prettyTextDiff({ cleanup: false, originalContent: $(e).find('h4').text(), changedContent:
+               * partner.composedName, diffContainer: $li });
+               */
             });
           }
         },
