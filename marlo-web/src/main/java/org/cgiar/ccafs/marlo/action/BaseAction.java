@@ -197,7 +197,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean cancel;
 
   private boolean canEdit; // If user is able to edit the form.
-  private boolean avilabePhase = true; // If user is able to edit the form.
+  private boolean availabePhase = true; // If user is able to edit the form.
 
 
   private boolean canEditPhase = true; // If user is able to edit the form.
@@ -2321,8 +2321,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
-  public boolean isAvilabePhase() {
-    return avilabePhase;
+  public boolean isAvailabePhase() {
+    return availabePhase;
   }
 
 
@@ -3461,8 +3461,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void setAvilabePhase(boolean avilabePhase) {
-    this.avilabePhase = avilabePhase;
+  public void setAvailabePhase(boolean avilabePhase) {
+    this.availabePhase = avilabePhase;
   }
 
 

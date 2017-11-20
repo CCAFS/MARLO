@@ -140,7 +140,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         List<FundingSourceInfo> infos =
           fundingSource.getFundingSourceInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        baseAction.setAvilabePhase(false);
+        baseAction.setAvailabePhase(false);
         // baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
 
       }

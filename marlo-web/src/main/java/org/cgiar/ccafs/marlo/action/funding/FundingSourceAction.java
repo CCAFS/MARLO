@@ -823,7 +823,7 @@ public class FundingSourceAction extends BaseAction {
       funginsSourceInfoDB.setModifiedBy(this.getCurrentUser());
 
       fundingSourceDB = fundingSourceManager.saveFundingSource(fundingSourceDB);
-      fundingSourceInfoManager.saveFundingSourceInfo(funginsSourceInfoDB);
+      funginsSourceInfoDB = fundingSourceInfoManager.saveFundingSourceInfo(funginsSourceInfoDB);
       /*
        * if (file != null) {
        * fundingSourceDB
