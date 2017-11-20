@@ -113,6 +113,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       this.getText("summaries.outcomesContributions.titleOutcomes"));
     masterReport.getParameterValues().put("i8nMilestonesTitle",
       this.getText("summaries.outcomesContributions.titleMilestones"));
+    masterReport.getParameterValues().put("i8nOutcomeIndicator", this.getText("outcome.inidicator.readText"));
     return masterReport;
   }
 
@@ -245,14 +246,14 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class},
       0);
-    for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream().filter(cp -> cp.isActive())
-      .collect(Collectors.toList())) {
+    for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream()
+      .filter(cp -> cp.isActive() && cp.getCrp().equals(this.getLoggedCrp())).collect(Collectors.toList())) {
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
-        .filter(cpo -> cpo.isActive() && cpo.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+        .filter(cpo -> cpo.isActive() && cpo.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
         for (CrpMilestone crpMilestone : crpProgramOutcome.getCrpMilestones().stream().filter(cm -> cm.isActive())
           .collect(Collectors.toList())) {
           for (ProjectMilestone projectMilestone : crpMilestone.getProjectMilestones().stream()
-            .filter(pm -> pm.isActive() && pm.getProjectOutcome().getPhase().equals(this.getActualPhase()))
+            .filter(pm -> pm.isActive() && pm.getProjectOutcome().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
 
             if (projectMilestone.getProjectOutcome().isActive()) {
@@ -260,8 +261,11 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                 expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
               Long expectedValue = -1L;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
-              title =
-                projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase()).getTitle();
+              if (projectMilestone.getProjectOutcome().getProject()
+                .getProjecInfoPhase(this.getSelectedPhase()) != null) {
+                title = projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
+                  .getTitle();
+              }
               flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
               outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
               if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
@@ -291,15 +295,14 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private TypedTableModel getProjectsOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
-        "expected_narrative", "project_url"},
+        "expected_narrative", "project_url", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     for (Project project : this.getLoggedCrp().getProjects().stream()
       .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
       .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
-        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2
-        && p.getProjecInfoPhase(this.getSelectedPhase()).equals(this.getSelectedPhase()))
+        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
@@ -309,6 +312,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         String title = "";
         String flagship = "";
         String outcome = "";
+        String outcomeIndicator = null;
         BigDecimal expectedValue = new BigDecimal(-1);
         String expectedUnit = "";
         String expectedNarrative = "";
@@ -320,6 +324,11 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
             outcome = projectOutcome.getCrpProgramOutcome().getDescription();
+            if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
+              && projectOutcome.getCrpProgramOutcome().getIndicator() != null
+              && !projectOutcome.getCrpProgramOutcome().getIndicator().isEmpty()) {
+              outcomeIndicator = projectOutcome.getCrpProgramOutcome().getIndicator();
+            }
           }
           expectedValue = projectOutcome.getExpectedValue();
           if (projectOutcome.getExpectedUnit() != null) {
@@ -328,7 +337,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
         model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
-          projectUrl});
+          projectUrl, outcomeIndicator});
       }
     }
     return model;
