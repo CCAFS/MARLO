@@ -270,7 +270,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     for (CrpMilestone crpMilestone : programOutcomePrev.getCrpMilestones().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
       if (programOutcome.getMilestones() == null || programOutcome.getMilestones().stream()
-        .filter(c -> c.getComposeID().equals(crpMilestone.getComposeID())).collect(Collectors.toList()).isEmpty()) {
+        .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpMilestone.getComposeID()))
+        .collect(Collectors.toList()).isEmpty()) {
         crpMilestone.setActive(false);
         crpMilestoneDAO.save(crpMilestone);
       }
