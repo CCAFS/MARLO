@@ -1,5 +1,5 @@
 [#ftl]
-
+[#if action.canAccessSuperAdmin() || action.canAcessCrpAdmin()]
   [#assign superAdminMenu =[
      { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
      
@@ -27,7 +27,7 @@
           [/#if]
         [/#list]
         [#-- CRPs List --]
-
+        [#if action.canAccessSuperAdmin()]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
             <span class="glyphicon glyphicon-chevron-down"></span> CRP/Center ([#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if])
@@ -53,14 +53,12 @@
               [/#if]
             [/#list]              
           [/#if]
-          </ul>
-          
-        </li>
- 
-         
- 
+          </ul>          
+        </li>         
+         [/#if]
          <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
         <div class="clearfix"></div>
       </ul>
     </div>
   </div>
+[/#if]
