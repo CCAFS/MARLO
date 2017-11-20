@@ -446,8 +446,13 @@ public class ProgramImpactsAction extends BaseAction {
 
               if (impact.getResearchImpactStatement() != null) {
 
-                CenterImpactStatement impactStatement =
-                  statementService.getResearchImpactStatementById(impact.getResearchImpactStatement().getId());
+                CenterImpactStatement impactStatement = null;
+
+
+                if (impact.getResearchImpactStatement().getId() != -1) {
+                  impactStatement =
+                    statementService.getResearchImpactStatementById(impact.getResearchImpactStatement().getId());
+                }
 
                 impact.setResearchImpactStatement(impactStatement);
 
@@ -571,8 +576,11 @@ public class ProgramImpactsAction extends BaseAction {
           researchImpactNew.setModifiedBy(this.getCurrentUser());
 
 
-          CenterImpactStatement impactStatement =
-            statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+          CenterImpactStatement impactStatement = null;
+          if (researchImpact.getResearchImpactStatement().getId() != -1) {
+            impactStatement =
+              statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+          }
 
 
           if (impactStatement != null) {
@@ -614,8 +622,12 @@ public class ProgramImpactsAction extends BaseAction {
           CenterImpact researchImpactRew = impactService.getResearchImpactById(researchImpact.getId());
 
 
-          CenterImpactStatement impactStatement =
-            statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+          CenterImpactStatement impactStatement = null;
+          if (researchImpact.getResearchImpactStatement().getId() != -1) {
+            impactStatement =
+              statementService.getResearchImpactStatementById(researchImpact.getResearchImpactStatement().getId());
+          }
+
 
           if (impactStatement != null) {
             if (researchImpactRew.getResearchImpactStatement() == null
@@ -714,6 +726,7 @@ public class ProgramImpactsAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_PROGRAM_IMPACT_RELATION);
+      selectedProgram = programService.getProgramById(programID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       programService.saveProgram(selectedProgram, this.getActionName(), relationsName);
@@ -798,8 +811,13 @@ public class ProgramImpactsAction extends BaseAction {
 
           impactBeneficiaryNew.setResearchRegion(region);
 
-          CenterBeneficiary beneficiary =
-            beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+          CenterBeneficiary beneficiary = null;
+
+          if (impactBeneficiary.getBeneficiary().getId() != null) {
+            if (impactBeneficiary.getBeneficiary().getId() != -1) {
+              beneficiary = beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+            }
+          }
 
           impactBeneficiaryNew.setBeneficiary(beneficiary);
 
@@ -818,10 +836,15 @@ public class ProgramImpactsAction extends BaseAction {
           } catch (Exception e) {
             region = null;
           }
+
           CenterBeneficiary beneficiary = null;
-          if (impactBeneficiary.getBeneficiary().getId() != -1) {
-            beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+
+          if (impactBeneficiary.getBeneficiary().getId() != null) {
+            if (impactBeneficiary.getBeneficiary().getId() != -1) {
+              beneficiary = beneficiaryService.getBeneficiaryById(impactBeneficiary.getBeneficiary().getId());
+            }
           }
+
 
           if (impactBeneficiaryPrew.getResearchRegion() != null) {
             if (!impactBeneficiaryPrew.getResearchRegion().equals(region)) {
