@@ -860,14 +860,26 @@ public class DeliverableAction extends BaseAction {
 
           if (deliverable.getQualityCheck().getFileDictionary() != null) {
             if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+              FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileDictionary(db);
             }
           }
 
           if (deliverable.getQualityCheck().getFileTools() != null) {
             if (deliverable.getQualityCheck().getFileTools().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+              FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileTools(db);
             }
           }
