@@ -1048,12 +1048,7 @@ $(".button-label").on("click", function() {
         $('.loading.syncBlock').show();
       },
       success: function(data) {
-        console.log(jQuery.isEmptyObject(data.json))
-        if(!jQuery.isEmptyObject(data.json)){
-          console.log(data.json)
-          setData(data);
-        }
-        
+       setData(data);
       },
       error: function() {
       },
@@ -1065,29 +1060,43 @@ $(".button-label").on("click", function() {
 
 
 function setData(data){
-  $('.participant-name').val(data.json.firstName);
-  $('.participant-lastname').val(data.json.lastName);
-  $('.participant-pEmail').val(data.json.email);
-  $('.participant-supervisor').val(data.json.supervisor1);
+  if(!jQuery.isEmptyObject(data.json)){
+    $('.participant-name').val(data.json.firstName);
+    $('.participant-lastname').val(data.json.lastName);
+    $('.participant-pEmail').val(data.json.email);
+    $('.participant-supervisor').val(data.json.supervisor1);
 
-  
-  $(".pCitizenshipcountriesList select option").each(function() {
-      if($(this).html() == data.json.cityOfBirth){
-        $(this).attr( "selected" , "selected");
-        $('.pCitizenshipcountriesList .selection .select2-selection__rendered').html(data.json.cityOfBirth);
-      }
-  });
+    
+    $(".pCitizenshipcountriesList select option").each(function() {
+        if($(this).html() == data.json.cityOfBirth){
+          $(this).attr( "selected" , "selected");
+          $('.pCitizenshipcountriesList .selection .select2-selection__rendered').html(data.json.cityOfBirth);
+        }
+    });
 
-  switch(data.json.gender){
-    case 'MALE':
-      $(".genderSelect select").val("Male");
-      $('.genderSelect .selection .select2-selection__rendered').html("Male");
-      break;
-    case 'FEMALE':
-      $(".genderSelect select").val("Female");
-      $('.genderSelect .selection .select2-selection__rendered').html("Female");
-      break;
+    switch(data.json.gender){
+      case 'MALE':
+        $(".genderSelect select").val("Male");
+        $('.genderSelect .selection .select2-selection__rendered').html("Male");
+        break;
+      case 'FEMALE':
+        $(".genderSelect select").val("Female");
+        $('.genderSelect .selection .select2-selection__rendered').html("Female");
+        break;
+    }
+  }else{
+    $('.participant-name').val("");
+    $('.participant-lastname').val("");
+    $('.participant-pEmail').val("");
+    $('.participant-supervisor').val("");
+    $('.pCitizenshipcountriesList .selection .select2-selection__rendered').html("");
+    $(".genderSelect select").val("");
+    $('.genderSelect .selection .select2-selection__rendered').html("");
+    $(".genderSelect select").val("");
+    $('.genderSelect .selection .select2-selection__rendered').html("");
+
   }
+  
 }
 
 function checkParticipantCode(){

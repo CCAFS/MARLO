@@ -4117,6 +4117,7 @@ margin: 0;}
   padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
+  text-align: center;
 }
 .checkButton:hover{
   background-color: #749E66;

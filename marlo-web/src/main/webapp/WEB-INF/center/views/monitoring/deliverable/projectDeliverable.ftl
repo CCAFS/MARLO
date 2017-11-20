@@ -159,17 +159,19 @@
 
           <div class="borderBox">
             <div class="col-md-6">
-              <label for="">Is this a capacity development intervention:<span class="red">*</span></label>
+              <label for="">Is this a capacity development intervention<span class="red">*</span></label>
             </div>
             <div class="col-md-3">
-              <label class = "full" for="yes-radio" title="Yes">Yes </label><input type="radio" class="capdevDeliverableRadio" id="yes-radio" name="deliverable.capdevD" value="true"  [#if is_capdev == "true"]checked[/#if]/>
-              <label class = "full" for="no-radio" title="No">No</label><input type="radio" class="capdevDeliverableRadio" id="no-radio" name="deliverable.capdevD" value="false" [#if is_capdev == "false"]checked[/#if]/>
+              <label class = "full" for="yes-radio" title="Yes">Yes </label><input type="radio" class="capdevDeliverableRadio" id="yes-radio" name="deliverable.capdevD" value="true"  [#if is_capdev == "true"]checked[/#if] [#if !editable]disabled="true"[/#if] style="margin-left: 5px;" />
+              <label class = "full" for="no-radio" title="No">No</label><input type="radio" class="capdevDeliverableRadio" id="no-radio" name="deliverable.capdevD" value="false" [#if is_capdev == "false"]checked[/#if] [#if !editable]disabled="true"[/#if] style="margin-left: 5px;"/>
+
+
             </div>
             <div class="col-md-8 capdevDeliverable">
               [@customForm.select name="deliverable.capdev.id" listName="capdevs" keyFieldName="id" displayFieldName="title"  i18nkey="capdev.list"  placeholder="capdev.select" required=true editable=editable disabled=!editable className="capdevDeliverableSelect"/]
             </div>
             <div class="col-md-12 note" style="margin-top: 10px;">
-              <p>if you do not find the intervention in the list, you need add it at Capacity Development section above</p>
+              <p>If you do not find the intervention in the list,  add it at Capacity Development section in the project menu.</p>
             </div>
           </div>
 

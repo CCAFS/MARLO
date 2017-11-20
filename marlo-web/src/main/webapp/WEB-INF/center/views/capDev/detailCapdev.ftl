@@ -277,9 +277,11 @@
 							<div class="col-md-9">
 								[@customForm.input name="capdev.participant.code" i18nkey="capdev.participant.code" type="text" required=true className="participant-code"  help="capdev.help.participant.code" editable=editable/]
 							</div>
+							[#if editable]
 							<div class="col-md-2">
 								<div id="syncBoton" class="checkButton syncParticipant" style="margin-top:21px;">[@s.text name="capdev.participant.code.sync" /]</div>
 							</div>
+							[/#if]
 						</div>
 						<!-- participant name and middle name -->
 						<div class="form-group row">
