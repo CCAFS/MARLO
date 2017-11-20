@@ -288,7 +288,8 @@ public class ProjectDeliverableAction extends BaseAction {
 
       is_capdev = String.valueOf(deliverable.isCapdevD());
       capdevs = capdevService.findAll().stream()
-        .filter(c -> (c.getProject() != null) && (c.getProject().getId() == project.getId()) && c.isActive())
+        .filter(
+          c -> (c.getProject() != null) && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
         .collect(Collectors.toList());
       Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
       Path path = this.getAutoSaveFilePath();
