@@ -49,7 +49,7 @@ public class CapacityDevelopmentAction extends BaseAction {
 
   private List<CapacityDevelopment> capDevs = new ArrayList<CapacityDevelopment>();
 
-  private final ICapacityDevelopmentService capdevService;
+  private ICapacityDevelopmentService capdevService;
   private ICenterProjectManager projectService;
 
 

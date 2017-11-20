@@ -70,30 +70,30 @@ public class ProjectDeliverableAction extends BaseAction {
   private static final long serialVersionUID = 6553033204498654741L;
 
 
-  private final ICenterDeliverableManager deliverableService;
+  private ICenterDeliverableManager deliverableService;
 
 
-  private final ICenterDeliverableTypeManager deliverableTypeService;
+  private ICenterDeliverableTypeManager deliverableTypeService;
 
 
-  private final ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService;
+  private ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService;
 
-  private final ICenterDeliverableOutputManager deliverableOutputService;
-
-
-  private final ICenterOutputManager outputService;
-
-  private final ICenterDeliverableDocumentManager deliverableDocumentService;
+  private ICenterDeliverableOutputManager deliverableOutputService;
 
 
-  private final ICenterManager centerService;
+  private ICenterOutputManager outputService;
 
-  private final ICenterProjectManager projectService;
+  private ICenterDeliverableDocumentManager deliverableDocumentService;
 
-  private final ICapacityDevelopmentService capdevService;
 
-  private final AuditLogManager auditLogService;
-  private final CenterDeliverableValidator validator;
+  private ICenterManager centerService;
+
+  private ICenterProjectManager projectService;
+
+  private ICapacityDevelopmentService capdevService;
+
+  private AuditLogManager auditLogService;
+  private CenterDeliverableValidator validator;
   private long deliverableID;
   private long projectID;
   private long programID;
@@ -430,25 +430,35 @@ public class ProjectDeliverableAction extends BaseAction {
 
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverableID);
 
-      System.out.println("capdevD " + deliverable.isCapdevD());
 
       deliverableDB.setName(deliverable.getName());
       deliverableDB.setStartDate(deliverable.getStartDate());
       deliverableDB.setEndDate(deliverable.getEndDate());
 
       deliverableDB.setCapdevD(deliverable.isCapdevD());
-      if (!deliverable.isCapdevD()) {
-        deliverableDB.setCapdev(null);
-      } else {
-        deliverableDB.setCapdev(deliverable.getCapdev());
+      if (deliverable.isCapdevD() != null) {
+        if (!deliverable.isCapdevD()) {
+          deliverableDB.setCapdev(null);
+        }
       }
 
-
-      if (deliverable.getDeliverableType().getId() != null) {
-        final CenterDeliverableType deliverableType =
-          deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
-        deliverableDB.setDeliverableType(deliverableType);
+      if (deliverable.getCapdev() != null) {
+        if (deliverable.getCapdev().getId() != -1) {
+          CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(deliverable.getCapdev().getId());
+          deliverableDB.setCapdev(capdevDB);
+        } else {
+          deliverableDB.setCapdev(null);
+        }
       }
+
+      if (deliverable.getDeliverableType() != null) {
+        if (deliverable.getDeliverableType().getId() != -1) {
+          CenterDeliverableType deliverableType =
+            deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+          deliverableDB.setDeliverableType(deliverableType);
+        }
+      }
+
 
       deliverableDB = deliverableService.saveDeliverable(deliverableDB);
 
