@@ -284,25 +284,14 @@ public class ProjectDeliverableAction extends BaseAction {
 
 
     if (deliverable != null) {
-      final CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
-      projectID = deliverableDB.getProject().getId();
-      project = projectService.getCenterProjectById(projectID);
-
-      selectedProgram = project.getResearchProgram();
-      programID = selectedProgram.getId();
-      selectedResearchArea = selectedProgram.getResearchArea();
-      areaID = selectedResearchArea.getId();
-      researchPrograms = new ArrayList<>(
-        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
+      CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
 
       is_capdev = String.valueOf(deliverable.isCapdevD());
       capdevs = capdevService.findAll().stream()
         .filter(c -> (c.getProject() != null) && (c.getProject().getId() == project.getId()) && c.isActive())
         .collect(Collectors.toList());
       Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
-
-
-      final Path path = this.getAutoSaveFilePath();
+      Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
         BufferedReader reader = null;
@@ -364,6 +353,18 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+
+      deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
+      projectID = deliverableDB.getProject().getId();
+      project = projectService.getCenterProjectById(projectID);
+      deliverable.setProject(project);
+
+      selectedProgram = project.getResearchProgram();
+      programID = selectedProgram.getId();
+      selectedResearchArea = selectedProgram.getResearchArea();
+      areaID = selectedResearchArea.getId();
+      researchPrograms = new ArrayList<>(
+        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
 
 
       if (deliverable.getDeliverableType() != null) {
