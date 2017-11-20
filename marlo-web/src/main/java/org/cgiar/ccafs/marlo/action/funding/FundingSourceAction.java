@@ -892,6 +892,10 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceInstitution =
               fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
+          } else {
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(
+              fundingSourceInstitutionManager.getFundingSourceInstitutionById(fundingSourceInstitution.getId()));
+
           }
 
         }
@@ -1014,6 +1018,10 @@ public class FundingSourceAction extends BaseAction {
           }
 
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+        } else {
+          fundingSourceLocationsManager.saveFundingSourceLocations(
+            fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId()));
+
         }
       }
 
@@ -1054,6 +1062,10 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationSave.setLocElement(locElement);
 
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
+        } else {
+          fundingSourceLocationsManager.saveFundingSourceLocations(
+            fundingSourceLocationsManager.getFundingSourceLocationsById(fundingSourceLocation.getId()));
+
         }
       }
 
