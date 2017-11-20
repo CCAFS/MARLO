@@ -591,6 +591,13 @@
 		<version>2.1.5</version>
 	</dependency>
 
+<!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
+<dependency>
+  <groupId>net.gpedro.integrations.slack</groupId>
+  <artifactId>slack-webhook</artifactId>
+  <version>1.3.0</version>
+</dependency>
+
   </dependencies>
 
 

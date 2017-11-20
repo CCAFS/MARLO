@@ -753,7 +753,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1082,8 +1082,8 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(projectID);
-      List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersons();
-      ProjectPartnerPerson previousLeader = projectDB.getLeaderPerson();
+      List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersonsDB();
+      ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB();
 
       List<ProjectPartner> partnersDB =
         projectDB.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1319,6 +1319,8 @@ public class ProjectPartnerAction extends BaseAction {
       if (partnerPersonClient.getUser() == null
         || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
         partnerPersonClient.setUser(null);
+      } else {
+        partnerPersonClient.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
       }
       if (partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
         || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
@@ -1336,7 +1338,13 @@ public class ProjectPartnerAction extends BaseAction {
       dbPerson.setContactType(partnerPersonClient.getContactType());
       if (partnerPersonClient.getUser() == null
         || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
-        partnerPersonClient.setUser(null);
+        dbPerson.setUser(null);
+      } else {
+        dbPerson.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
+      }
+      if (dbPerson.getUser() != null && partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+        || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+        this.notifyNewUserCreated(dbPerson.getUser());
       }
       dbPerson = projectPartnerPersonManager.saveProjectPartnerPerson(dbPerson);
       return dbPerson;
