@@ -172,8 +172,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         List<ProjectInfo> infos =
           project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        baseAction.setActualPhase(infos.get(0).getPhase());
-        System.out.println(baseAction.getActualPhase().getDescription());
+        // baseAction.setActualPhase(infos.get(0).getPhase());
+        baseAction.setAvilabePhase(false);
       }
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;

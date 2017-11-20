@@ -25,10 +25,16 @@
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
-      <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-    [/#if]
-  [/#if]
+      [#if !canEditPhase ]
+        <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
+        [#else]
+          <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [/#if] 
   
+    
+    
+  [/#if]
+    [/#if]
   
   [#-- Concurrence Message --]
   <div id="concurrenceMessage" class="text-center" style="display:none">

@@ -79,7 +79,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
-
+    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = phaseManager.getPhaseById(phase.getId());
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -113,7 +114,10 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         }
       }
 
-
+      if (phase.getDescription().equals(APConstants.REPORTING)) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
         String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
         editParameter = stringEditable.equals("true");
@@ -136,7 +140,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         List<FundingSourceInfo> infos =
           fundingSource.getFundingSourceInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+        baseAction.setAvilabePhase(false);
+        // baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
 
       }
 
