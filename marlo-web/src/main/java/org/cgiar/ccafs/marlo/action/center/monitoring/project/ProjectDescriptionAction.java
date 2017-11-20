@@ -632,10 +632,12 @@ public class ProjectDescriptionAction extends BaseAction {
         projectDB.setProjectStatus(projectStatus);;
       }
 
-      if (project.getProjectLeader().getId() != null) {
-        if (project.getProjectLeader().getId() != -1) {
-          User projectLeader = userService.getUser(project.getProjectLeader().getId());
-          projectDB.setProjectLeader(projectLeader);
+      if (project.getProjectLeader() != null) {
+        if (project.getProjectLeader().getId() != null) {
+          if (project.getProjectLeader().getId() != -1) {
+            User projectLeader = userService.getUser(project.getProjectLeader().getId());
+            projectDB.setProjectLeader(projectLeader);
+          }
         }
       }
 
