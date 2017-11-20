@@ -25,7 +25,11 @@
 
 [#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
 [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
-    
+
+   
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
   <article class="" id="mainInformation">
   
@@ -518,6 +522,7 @@
   [/@s.form] 
   </article>
 </section>
+[/#if]
 
 [#-- Funding Source list template --]
 <ul style="display:none">

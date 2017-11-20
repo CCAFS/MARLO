@@ -2,12 +2,7 @@
 [#assign title = "Project Outcome Contribution to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js", 
-  "${baseUrl}/global/js/autoSave.js",
-  "${baseUrl}/global/js/fieldsValidation.js"
-  ] 
-/]  
+[#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionCrp.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#--  --]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
@@ -19,24 +14,26 @@
 ] /]
 
 
-[#include "/WEB-INF/crp/pages/header.ftl" /]
-[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
-[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
+[#assign startYear = (project.startDate?string.yyyy)?number /]
+[#assign endYear = (project.endDate?string.yyyy)?number /]
 
 
-    
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
-        [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
+        [#include "/WEB-INF/views/projects/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
+        [#include "/WEB-INF/views/projects/messages-projectOutcomes.ftl" /]
         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
@@ -60,12 +57,7 @@
           
           
             <div class="col-md-12">
-              [#-- Program Acronym - Outcome Year : Outcome Description --]
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
-              [#-- Outcome Indicator --]
-              [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-                [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<p><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No indicator'}</p>[/#if]
-              [/#if]
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
@@ -145,15 +137,15 @@
             [/#if]
             
             [#-- Cross-cutting contributions --]
-            [#if ((project.projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
+            [#if ((project.crossCuttingGender)!false) || ((project.crossCuttingYouth)!false)]
             <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
             <div class="form-group">
-              [#if (project.projectInfo.crossCuttingGender)!false]
+              [#if (project.crossCuttingGender)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
                 </div>
               [/#if]
-              [#if (project.projectInfo.crossCuttingYouth)!false]
+              [#if (project.crossCuttingYouth)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
                 </div> 
@@ -202,7 +194,7 @@
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                     [#assign comunication = action.loadProjectCommunication(year) /]
                     [#assign comunicationIndex = action.getIndexCommunication(year) /]
-                   
+                    <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
                     <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
                     <div class="communicationsBlock form-group">
                       <div class="form-group">
@@ -269,12 +261,13 @@
           [/#if]
           
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projectOutcomes.ftl" /]
+          [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
 
         [/@s.form] 
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Milestone Template --]
 [@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
@@ -282,7 +275,7 @@
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
   
-[#include "/WEB-INF/crp/pages/footer.ftl"]
+[#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 [#macro milestoneMacro element name index isTemplate=false]
@@ -377,10 +370,8 @@
       <span class="index">${index+1}</span>
       <span class="elementId"> Project Next User </span>
     </div>
-    
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
      
     <div class="form-group">
       [#-- Title --]

@@ -1,4 +1,5 @@
 [#ftl]
+
 [#-- Projects data information --]
 [#include "/WEB-INF/crp/views/projects/dataInfo-projects.ftl" /]
 

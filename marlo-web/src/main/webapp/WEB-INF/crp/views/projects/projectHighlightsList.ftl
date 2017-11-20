@@ -28,7 +28,10 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -65,7 +68,8 @@
       
     </div>  
 </section>
-  
+[/#if]
+
 [@customForm.confirmJustification action="${crpSession}/deleteHighLight.do" namespace="/projects" nameId="higlightID" projectID="${projectID}" title="Remove project highlights" /]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]

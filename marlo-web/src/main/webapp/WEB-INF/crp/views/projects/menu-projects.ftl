@@ -69,7 +69,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu <br /><small> [#if project.projectInfo.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
+  <p>Project Menu <br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
@@ -106,7 +106,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || project.projectInfo.isProjectEditLeader()) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || (project.projectInfo.isProjectEditLeader())!false) && !crpClosed]
   [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  

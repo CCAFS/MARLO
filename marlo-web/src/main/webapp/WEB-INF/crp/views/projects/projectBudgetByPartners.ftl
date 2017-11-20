@@ -31,7 +31,10 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 [/#if]
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -123,6 +126,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Budget tab index --]
 <span id="budgetIndex" style="display:none">${budgetIndex+1}</span>

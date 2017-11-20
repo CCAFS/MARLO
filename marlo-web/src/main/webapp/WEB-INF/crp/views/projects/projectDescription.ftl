@@ -17,7 +17,6 @@
   {"label":"projectDescription", "nameSpace":"/projects", "action":""}
 ] /]
 
-
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
@@ -26,8 +25,8 @@
     [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10"> 
-      [#if project.projectInfo.isProjectEditLeader()]
-        [#if reportingActive] 
+      [#if (project.projectInfo.isProjectEditLeader())!false]
+        [#if (reportingActive)!false] 
           [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
         [#else] 
           [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
@@ -40,6 +39,9 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
     
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -50,7 +52,7 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
-      
+
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
@@ -244,10 +246,11 @@
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
              
          
-          [/@s.form] 
+          [/@s.form]
       </div>
     </div>  
 </section>
+[/#if]
 
 
 <span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
