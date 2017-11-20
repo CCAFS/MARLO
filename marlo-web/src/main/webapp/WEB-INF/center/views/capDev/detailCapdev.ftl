@@ -267,7 +267,9 @@
 					<div class="loading syncBlock" style="display:none"></div>
 					<h4 class="headTitle newCapdevField individualparticipantForm">Participant Information</h4>
 						<div class="note  individualparticipantForm">
-							<p>Please complete the information of the trainee who received the individual capdev intervention </p>
+							<p>Please complete the information of the trainee who received the individual capdev intervention. </p>
+
+							<p>For visiting researchers or practicum students enter the CIAT employee number and press the green button to syncronize information</p>
 						</div>
 					<div class="row  individualparticipantForm simpleBox" style="display:none;">
 
