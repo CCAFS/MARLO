@@ -60,6 +60,7 @@ public class LDAPAuthenticator implements Authenticator {
       // connection issue
 
       service.setInternalConnection(true);
+      System.out.println("############################################################");
       System.out.println("LOG Conexion en " + service.isInternalConnection());
 
       con = service.authenticateUser(email, password);
