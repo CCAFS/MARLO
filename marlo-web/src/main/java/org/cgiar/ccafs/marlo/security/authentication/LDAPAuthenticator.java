@@ -56,12 +56,11 @@ public class LDAPAuthenticator implements Authenticator {
     try {
       ADConexion con = null;
       LDAPService service = new LDAPService();
-      if (config.isProduction()) {
-        service.setInternalConnection(true); // TODO Temporally change while CGNET resolve the external LDAP
-                                             // connection issue
-      } else {
-        service.setInternalConnection(true);
-      }
+      // TODO Temporally change while CGNET resolve the external LDAP
+      // connection issue
+
+      service.setInternalConnection(true);
+
 
       con = service.authenticateUser(email, password);
 
