@@ -51,6 +51,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -75,13 +76,10 @@ public class ProjectListAction extends BaseAction {
 
   private static final long serialVersionUID = -5994329141897042670L;
 
-
   private long areaID;
-
   private long syncTypeID;
-
-
   private String syncCode;
+
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
@@ -97,17 +95,17 @@ public class ProjectListAction extends BaseAction {
   private ProjectManager projectManager;
   private long projectID;
   private List<CenterFundingSyncType> syncTypes;
-  private List<CenterProject> projects;
-
+  private List<Project> projects;
   private CenterProjectManager projectService;
   private List<CenterArea> researchAreas;
+
+
   private ICenterAreaManager researchAreaService;
   private List<CenterProgram> researchPrograms;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
   private UserManager userService;
   private String justification;
-
   // OCS Agreement Servcie Class
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
@@ -141,40 +139,40 @@ public class ProjectListAction extends BaseAction {
   @Override
   public String add() {
 
-    CenterProject project = new CenterProject();
-    project.setActive(true);
-    project.setActiveSince(new Date());
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setStartDate(new Date());
-    project.setDateCreated(new Date());
-    project.setResearchProgram(selectedProgram);
-    project.setProjectStatus(new CenterProjectStatus(new Long(2), true));
-    project.setAutoFill(false);
-
-
-    CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
-
-
-    projectCrosscutingTheme.setActive(true);
-    projectCrosscutingTheme.setActiveSince(new Date());
-    projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModificationJustification("");
-
-    projectCrosscutingTheme.setClimateChange(false);
-    projectCrosscutingTheme.setGender(false);
-    projectCrosscutingTheme.setYouth(false);
-    projectCrosscutingTheme.setPoliciesInstitutions(false);
-    projectCrosscutingTheme.setCapacityDevelopment(false);
-    projectCrosscutingTheme.setBigData(false);
-    projectCrosscutingTheme.setImpactAssessment(false);
-    projectCrosscutingTheme.setNa(false);
-
-    project.setProjectCrosscutingTheme(projectCrosscutingTheme);
-    projectCrosscutingTheme.setProject(project);
-
-    projectID = projectService.saveCenterProject(project).getId();
+    // CenterProject project = new CenterProject();
+    // project.setActive(true);
+    // project.setActiveSince(new Date());
+    // project.setCreatedBy(this.getCurrentUser());
+    // project.setModifiedBy(this.getCurrentUser());
+    // project.setStartDate(new Date());
+    // project.setDateCreated(new Date());
+    // project.setResearchProgram(selectedProgram);
+    // project.setProjectStatus(new CenterProjectStatus(new Long(2), true));
+    // project.setAutoFill(false);
+    //
+    //
+    // CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
+    //
+    //
+    // projectCrosscutingTheme.setActive(true);
+    // projectCrosscutingTheme.setActiveSince(new Date());
+    // projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
+    // projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
+    // projectCrosscutingTheme.setModificationJustification("");
+    //
+    // projectCrosscutingTheme.setClimateChange(false);
+    // projectCrosscutingTheme.setGender(false);
+    // projectCrosscutingTheme.setYouth(false);
+    // projectCrosscutingTheme.setPoliciesInstitutions(false);
+    // projectCrosscutingTheme.setCapacityDevelopment(false);
+    // projectCrosscutingTheme.setBigData(false);
+    // projectCrosscutingTheme.setImpactAssessment(false);
+    // projectCrosscutingTheme.setNa(false);
+    //
+    // project.setProjectCrosscutingTheme(projectCrosscutingTheme);
+    // projectCrosscutingTheme.setProject(project);
+    //
+    // projectID = projectService.saveCenterProject(project).getId();
 
     /**
      * Add Project sync information
@@ -193,6 +191,9 @@ public class ProjectListAction extends BaseAction {
           syncCode = syncCode.toUpperCase().replaceFirst("P", "");
         }
         this.addCrpProjectInformation(projectID);
+        break;
+      default:
+        this.createEmptyProject();
         break;
     }
 
@@ -373,6 +374,64 @@ public class ProjectListAction extends BaseAction {
 
   }
 
+  /**
+   * Create a No Sync Project
+   */
+  public void createEmptyProject() {
+
+    Project project = new Project();
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("New expected Project created");
+    project.setActive(true);
+    project.setActiveSince(new Date());
+    project.setScale(0);
+    project.setCofinancing(false);
+    project.setCreateDate(new Date());
+    project.setProjectEditLeader(false);
+    project.setPresetDate(new Date());
+    project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    project.setAdministrative(new Boolean(false));
+    project = projectManager.saveProject(project);
+    projectID = project.getId();
+
+
+    CenterProject centerProject = new CenterProject();
+    centerProject.setActive(true);
+    centerProject.setActiveSince(new Date());
+    centerProject.setCreatedBy(this.getCurrentUser());
+    centerProject.setModifiedBy(this.getCurrentUser());
+    centerProject.setStartDate(new Date());
+    centerProject.setDateCreated(new Date());
+    centerProject.setResearchProgram(selectedProgram);
+    centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
+    centerProject.setAutoFill(false);
+
+
+    CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
+
+
+    projectCrosscutingTheme.setActive(true);
+    projectCrosscutingTheme.setActiveSince(new Date());
+    projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
+    projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
+    projectCrosscutingTheme.setModificationJustification("");
+
+    projectCrosscutingTheme.setClimateChange(false);
+    projectCrosscutingTheme.setGender(false);
+    projectCrosscutingTheme.setYouth(false);
+    projectCrosscutingTheme.setPoliciesInstitutions(false);
+    projectCrosscutingTheme.setCapacityDevelopment(false);
+    projectCrosscutingTheme.setBigData(false);
+    projectCrosscutingTheme.setImpactAssessment(false);
+    projectCrosscutingTheme.setNa(false);
+
+    project.setProjectCrosscutingTheme(projectCrosscutingTheme);
+    projectCrosscutingTheme.setProject(project);
+
+    projectID = projectService.b(project).getId();
+
+  }
 
   /**
    * Add CRP project Cross-cutting information in the center project Created.
@@ -457,6 +516,7 @@ public class ProjectListAction extends BaseAction {
 
   }
 
+
   /**
    * Add CRP project partners information in the center project Created - Only the parters that collaborate by the
    * center.
@@ -524,7 +584,6 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-
   @Override
   public String delete() {
     Map<String, Object> parameters = this.getParameters();
@@ -548,10 +607,10 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public long getAreaID() {
     return areaID;
   }
+
 
   @Override
   public String getJustification() {
@@ -567,13 +626,15 @@ public class ProjectListAction extends BaseAction {
     return projectID;
   }
 
-  public List<CenterProject> getProjects() {
+
+  public List<Project> getProjects() {
     return projects;
   }
 
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
   }
+
 
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
@@ -582,7 +643,6 @@ public class ProjectListAction extends BaseAction {
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
   }
-
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
@@ -597,6 +657,7 @@ public class ProjectListAction extends BaseAction {
   public long getSyncTypeID() {
     return syncTypeID;
   }
+
 
   public List<CenterFundingSyncType> getSyncTypes() {
     return syncTypes;
@@ -704,8 +765,14 @@ public class ProjectListAction extends BaseAction {
 
       }
 
-      projects =
+      List<CenterProject> centerProjects =
         new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+
+      projects = new ArrayList<>();
+
+      for (CenterProject centerProject : centerProjects) {
+        projects.add(centerProject.getProject());
+      }
 
       syncTypes = new ArrayList<>(
         fundingSyncTypeManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
@@ -726,18 +793,19 @@ public class ProjectListAction extends BaseAction {
     this.justification = justification;
   }
 
-
   public void setProgramID(long programID) {
     this.programID = programID;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
 
-  public void setProjects(List<CenterProject> projects) {
+  public void setProjects(List<Project> projects) {
     this.projects = projects;
   }
+
 
   public void setResearchAreas(List<CenterArea> researchAreas) {
     this.researchAreas = researchAreas;

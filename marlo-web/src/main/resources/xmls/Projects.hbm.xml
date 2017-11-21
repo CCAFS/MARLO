@@ -8,7 +8,7 @@
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
-		</id>		
+		</id>
 		<many-to-one name="liaisonInstitution"
 			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
 			<column name="liaison_institution_id" />
@@ -66,8 +66,8 @@
 			<column name="administrative" />
 		</property>
 		<property name="reporting" type="java.lang.Boolean">
-      <column name="reporting" />
-    </property>
+			<column name="reporting" />
+		</property>
 		<property name="crossCuttingYouth" type="java.lang.Boolean">
 			<column name="cross_cutting_youth" />
 		</property>
@@ -93,8 +93,8 @@
 			<column name="is_location_global" />
 		</property>
 		<property name="locationRegional" type="java.lang.Boolean">
-      <column name="is_location_regional" />
-    </property>
+			<column name="is_location_regional" />
+		</property>
 		<property name="noRegional" type="java.lang.Boolean">
 			<column name="no_regional" />
 		</property>
@@ -231,12 +231,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
 		</set>
-		       <set name="projectPhases" table="project_phases" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPhase" />
-        </set>
+		<set name="projectPhases" table="project_phases" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPhase" />
+		</set>
 		<set name="projectBudgets" order-by="id" table="project_budgets"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -330,27 +331,37 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" />
 		</set>
-		
-		<set name="projectOutcomesPandr" table="project_outcomes_pandr" order-by="id" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr" />
-        </set>
-        
-         <set name="otherContributions" table="other_contributions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.OtherContribution" />
-        </set>
-        
-         <set name="globalUnitProjects" table="global_unit_projects" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
-        </set>
-		
+
+		<set name="projectOutcomesPandr" table="project_outcomes_pandr"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr" />
+		</set>
+
+		<set name="otherContributions" table="other_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.OtherContribution" />
+		</set>
+
+		<set name="globalUnitProjects" table="global_unit_projects"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
+		</set>
+		<set name="centerProjects" table="center_projects" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProject" />
+		</set>
+
 	</class>
 </hibernate-mapping>

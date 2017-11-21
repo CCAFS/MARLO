@@ -1965,6 +1965,7 @@ UNION
                                                       AND (
                                                         `cp`.`global_unit_type_id` = 2
                                                       )
+                                                      AND u.id = v_user_id
                                                     ) ;
                                                   END;;
 DELIMITER ;
