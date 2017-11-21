@@ -415,6 +415,8 @@ public class ProjectDescriptionAction extends BaseAction {
             if (project.getProjectLeader().getId() != null || project.getProjectLeader().getId() != -1) {
               User user = userService.getUser(project.getProjectLeader().getId());
               project.setProjectLeader(user);
+            } else {
+              project.setProjectLeader(null);
             }
           }
         }
@@ -630,9 +632,13 @@ public class ProjectDescriptionAction extends BaseAction {
         projectDB.setProjectStatus(projectStatus);;
       }
 
-      if (project.getProjectLeader().getId() != null) {
-        User projectLeader = userService.getUser(project.getProjectLeader().getId());
-        projectDB.setProjectLeader(projectLeader);
+      if (project.getProjectLeader() != null) {
+        if (project.getProjectLeader().getId() != null) {
+          if (project.getProjectLeader().getId() != -1) {
+            User projectLeader = userService.getUser(project.getProjectLeader().getId());
+            projectDB.setProjectLeader(projectLeader);
+          }
+        }
       }
 
       projectDB = projectService.saveCenterProject(projectDB);
