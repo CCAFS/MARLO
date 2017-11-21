@@ -60,7 +60,6 @@
     </script>
   </head>
   <body >
-    [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
     [#if !(avoidHeader!false)]
       <header class="clearfix" style="display: ${((includeHeader)??)?string('none','block')}">
         [#-- MARLO Admin Menu --]
