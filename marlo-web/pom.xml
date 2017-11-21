@@ -164,7 +164,7 @@
     <dependency>
       <groupId>org.cgiar.ciat.auth</groupId>
       <artifactId>adauth</artifactId>
-      <version>1.8t</version>
+      <version>1.8</version>
     </dependency>
     <dependency> 
       <groupId>org.pentaho</groupId>
