@@ -111,32 +111,32 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   @Override
   public String execute() throws Exception {
     ClassicEngineBoot.getInstance().start();
-    final ByteArrayOutputStream os = new ByteArrayOutputStream();
-    final ResourceManager manager = new ResourceManager();
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    ResourceManager manager = new ResourceManager();
     // (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
     manager.registerDefaults();
     try {
 
-      final Resource reportResource =
+      Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/centerDeliverables.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
       // Get details band
-      final ItemBand masteritemBand = masterReport.getItemBand();
+      ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
-      final HashMap<String, Element> hm = new HashMap<String, Element>();
+      HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
-      final String masterQueryName = "main";
-      final CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-      final TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      final TypedTableModel model = this.getMasterTableModel();
+      String masterQueryName = "main";
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      TypedTableModel model = this.getMasterTableModel();
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
       // Set i8n for pentaho
@@ -166,8 +166,8 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   }
 
   private void fillSubreport(SubReport subReport, String query) {
-    final CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
-    final TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
+    CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
+    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "details":
@@ -189,9 +189,9 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
    * @param itemBand details section in pentaho
    */
   private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
-    final int elementCount = itemBand.getElementCount();
+    int elementCount = itemBand.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      final Element e = itemBand.getElement(i);
+      Element e = itemBand.getElement(i);
       // verify if the item is a SubReport
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
@@ -218,9 +218,9 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
    * @param band
    */
   private void getBandSubreports(HashMap<String, Element> hm, Band band) {
-    final int elementCount = band.getElementCount();
+    int elementCount = band.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      final Element e = band.getElement(i);
+      Element e = band.getElement(i);
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
         // If report footer is not null check for subreports
@@ -304,10 +304,10 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getDeliverablesSummaryTableModel() {
     // Initialization of Model
-    final TypedTableModel model =
+    TypedTableModel model =
       new TypedTableModel(new String[] {"namePercentage", "countCategory"}, new Class[] {String.class, Integer.class});
 
-    for (final String deliverableType : deliverablesCategory.keySet()) {
+    for (String deliverableType : deliverablesCategory.keySet()) {
       model.addRow(new Object[] {deliverableType + " - "
         + ((deliverablesCategory.get(deliverableType) * 100) / deliverablesCategoryTotal) + " %",
         deliverablesCategory.get(deliverableType)});
@@ -317,17 +317,17 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getDeliverablesTableModel() {
     // Initialization of Model
-    final TypedTableModel model = new TypedTableModel(
+    TypedTableModel model = new TypedTableModel(
       new String[] {"deliverableId", "title", "type", "subType", "startDate", "endDate", "crossCutting",
         "deliverableOutputs", "supportingDocuments", "projectId", "projectTitle"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class});
 
-    for (final CenterProject centerProject : researchProgram.getProjects().stream().filter(p -> p.isActive())
+    for (CenterProject centerProject : researchProgram.getProjects().stream().filter(p -> p.isActive())
       .collect(Collectors.toList())) {
-      for (final CenterDeliverable centerDeliverable : centerProject.getDeliverables().stream()
-        .filter(d -> d.isActive()).collect(Collectors.toList())) {
-        final String deliverableId = centerDeliverable.getId().toString();
+      for (CenterDeliverable centerDeliverable : centerProject.getDeliverables().stream().filter(d -> d.isActive())
+        .collect(Collectors.toList())) {
+        String deliverableId = centerDeliverable.getId().toString();
         String title = null;
         if ((centerDeliverable.getName() != null) && !centerDeliverable.getName().trim().isEmpty()) {
           title = centerDeliverable.getName();
@@ -344,7 +344,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
           }
         }
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
         String startDate = null;
         if (centerDeliverable.getStartDate() != null) {
           startDate = formatter.format(centerDeliverable.getStartDate());
@@ -362,7 +362,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         }
 
         String deliverableOutputs = "";
-        for (final CenterDeliverableOutput centerDeliverableOutput : centerDeliverable.getDeliverableOutputs().stream()
+        for (CenterDeliverableOutput centerDeliverableOutput : centerDeliverable.getDeliverableOutputs().stream()
           .filter(devo -> devo.isActive()).collect(Collectors.toList())) {
           deliverableOutputs += "●    " + centerDeliverableOutput.getResearchOutput().getComposedName() + "\n";
         }
@@ -372,8 +372,8 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         }
 
         String supportingDocuments = "";
-        for (final CenterDeliverableDocument centerDeliverableDocument : centerDeliverable.getDeliverableDocuments()
-          .stream().filter(dd -> dd.isActive()).collect(Collectors.toList())) {
+        for (CenterDeliverableDocument centerDeliverableDocument : centerDeliverable.getDeliverableDocuments().stream()
+          .filter(dd -> dd.isActive()).collect(Collectors.toList())) {
           supportingDocuments += "●    " + centerDeliverableDocument.getLink() + "\n";
         }
         if (supportingDocuments.trim().isEmpty()) {
@@ -393,7 +393,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         centerDeliverablesSet.add(centerDeliverable.getId());
         centerProjectsSet.add(centerProject.getId());
         if ((type != null) && !type.isEmpty()) {
-          final Integer deliverablesCategoryCount =
+          Integer deliverablesCategoryCount =
             deliverablesCategory.containsKey(type) ? deliverablesCategory.get(type) : 0;
           deliverablesCategory.put(type, deliverablesCategoryCount + 1);
           deliverablesCategoryTotal++;
@@ -409,14 +409,14 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
-    final ClassLoader classLoader = this.getClass().getClassLoader();
-    final File file = new File(classLoader.getResource(fileName).getFile());
+    ClassLoader classLoader = this.getClass().getClassLoader();
+    File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
 
   @Override
   public String getFileName() {
-    final StringBuffer fileName = new StringBuffer();
+    StringBuffer fileName = new StringBuffer();
     fileName.append("Deliverables_report-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
@@ -425,9 +425,9 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   }
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-    final int elementCount = reportFooter.getElementCount();
+    int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      final Element e = reportFooter.getElement(i);
+      Element e = reportFooter.getElement(i);
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
