@@ -70,10 +70,10 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
   private Workbook wb;
 
   private List<Map<String, Object>> previewList;
-  private final LocElementManager locElementService;
-  private final InstitutionManager institutionService;
-  private final CapdevFoundingTypeManager capdevFoundingTypeService;
-  private final CapdevHighestDegreeManager capdevHighestDegreeService;
+  private LocElementManager locElementService;
+  private InstitutionManager institutionService;
+  private CapdevFoundingTypeManager capdevFoundingTypeService;
+  private CapdevHighestDegreeManager capdevHighestDegreeService;
 
 
   @Inject
@@ -122,74 +122,72 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
   public String dowmloadTemplate() {
     try {
-      final String path = new File(".").getCanonicalPath();
-      // searchable
-      final String filePath = path + "/src/main/resources/template/participants-template.xlsm";
-      final File file = new File(filePath);
-      final FileInputStream fileInput = new FileInputStream(file);
-      final XSSFWorkbook wb = new XSSFWorkbook(fileInput);
+      ClassLoader classLoader = this.getClass().getClassLoader();
+      File file = new File(classLoader.getResource("template/participants-template.xlsm").getFile());
+      FileInputStream fileInput = new FileInputStream(file);
+      XSSFWorkbook wb = new XSSFWorkbook(fileInput);
 
       DataValidation dataValidationCountryOfInstitutions = null;
 
-      final DataValidationConstraint constraintCountries = null;
-      final DataValidationConstraint constraintInstitutions = null;
+      DataValidationConstraint constraintCountries = null;
+      DataValidationConstraint constraintInstitutions = null;
       DataValidationConstraint constraintCountryOfInstitutions = null;
-      final DataValidationConstraint constraintHighestDegree = null;
-      final DataValidationConstraint constraintFundingType = null;
+      DataValidationConstraint constraintHighestDegree = null;
+      DataValidationConstraint constraintFundingType = null;
       DataValidationHelper validationHelper = null;
 
-      final Sheet sheet1 = wb.getSheetAt(0);
-      final XSSFSheet sheet2 = wb.getSheet("countries");
-      final XSSFSheet sheet3 = wb.getSheet("institutions");
-      final XSSFSheet sheet4 = wb.getSheet("highest_degree");
-      final XSSFSheet sheet5 = wb.getSheet("funding_type");
+      Sheet sheet1 = wb.getSheetAt(0);
+      XSSFSheet sheet2 = wb.getSheet("countries");
+      XSSFSheet sheet3 = wb.getSheet("institutions");
+      XSSFSheet sheet4 = wb.getSheet("highest_degree");
+      XSSFSheet sheet5 = wb.getSheet("funding_type");
 
-      final String dataValidationCountryName = "countriesLis";
-      final String dataValidationInstitutionName = "institutionsList";
-      final String dataValidationHighestDegreeName = "highestDegreeList";
-      final String dataValidationFundingTypeName = "fundingTypeList";
+      String dataValidationCountryName = "countriesLis";
+      String dataValidationInstitutionName = "institutionsList";
+      String dataValidationHighestDegreeName = "highestDegreeList";
+      String dataValidationFundingTypeName = "fundingTypeList";
 
       // se traen los datos desde la DB con los que se desean crear las listas para los data validator y se rellenan los
       // arreglos que permitaran escribir los datos en el template
-      final List<LocElement> countryList = new ArrayList<>(locElementService.findAll().stream()
+      List<LocElement> countryList = new ArrayList<>(locElementService.findAll().stream()
         .filter(le -> le.isActive() && (le.getLocElementType() != null) && (le.getLocElementType().getId() == 2))
         .collect(Collectors.toList()));
       Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
       // arreglo usado para escribir la data de countries al template
-      final String[] countries = new String[countryList.size()];
+      String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
         countries[i] = countryList.get(i).getName() + " - " + countryList.get(i).getIsoAlpha2();
       }
 
-      final List<Institution> institutionsList =
+      List<Institution> institutionsList =
         new ArrayList<>(institutionService.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList()));
       Collections.sort(institutionsList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
       // arreglo usado para escribir la data de institutions al template
-      final String[] institutions = new String[institutionsList.size()];
+      String[] institutions = new String[institutionsList.size()];
       for (int i = 0; i < institutionsList.size(); i++) {
         institutions[i] = institutionsList.get(i).getName() + " - " + institutionsList.get(i).getId();
       }
 
-      final List<CapdevHighestDegree> highestDegreeList = new ArrayList<>(
+      List<CapdevHighestDegree> highestDegreeList = new ArrayList<>(
         capdevHighestDegreeService.findAll().stream().filter(h -> h.getName() != null).collect(Collectors.toList()));
       Collections.sort(highestDegreeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
       // arreglo usado para escribir la data de highest degree al template
-      final String[] highestDegree = new String[highestDegreeList.size()];
+      String[] highestDegree = new String[highestDegreeList.size()];
       for (int i = 0; i < highestDegreeList.size(); i++) {
         highestDegree[i] = highestDegreeList.get(i).getId() + "- " + highestDegreeList.get(i).getName() + " ("
           + highestDegreeList.get(i).getAcronym() + ")";
       }
 
 
-      final List<CapdevFoundingType> fundingTypeList = new ArrayList<>(
+      List<CapdevFoundingType> fundingTypeList = new ArrayList<>(
         capdevFoundingTypeService.findAll().stream().filter(f -> f.getName() != null).collect(Collectors.toList()));
       Collections.sort(fundingTypeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
       // arreglo usado para escribir la data de funding type al template
-      final String[] fundingtypes = new String[fundingTypeList.size()];
+      String[] fundingtypes = new String[fundingTypeList.size()];
       for (int i = 0; i < fundingTypeList.size(); i++) {
         fundingtypes[i] = fundingTypeList.get(i).getId() + "- " + fundingTypeList.get(i).getName();
       }
@@ -197,12 +195,12 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       validationHelper = sheet1.getDataValidationHelper();
 
       // se configuran las coordenas donde se desea pegar el data validator en la sheet1 del template
-      final CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 4, 4);
-      final CellRangeAddressList addressListInstitution = new CellRangeAddressList(10, 1000, 6, 6);
-      final CellRangeAddressList addressListHighestDegree = new CellRangeAddressList(10, 1000, 5, 5);
-      final CellRangeAddressList addressListFundingType = new CellRangeAddressList(10, 1000, 10, 10);
+      CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 4, 4);
+      CellRangeAddressList addressListInstitution = new CellRangeAddressList(10, 1000, 6, 6);
+      CellRangeAddressList addressListHighestDegree = new CellRangeAddressList(10, 1000, 5, 5);
+      CellRangeAddressList addressListFundingType = new CellRangeAddressList(10, 1000, 10, 10);
 
-      final CellRangeAddressList addressListCountryOfInstitution = new CellRangeAddressList(10, 1000, 7, 7);
+      CellRangeAddressList addressListCountryOfInstitution = new CellRangeAddressList(10, 1000, 7, 7);
 
       constraintCountryOfInstitutions = validationHelper.createFormulaListConstraint(dataValidationCountryName);
       dataValidationCountryOfInstitutions =
@@ -222,17 +220,17 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       this.createDataValidator(wb, sheet5, fundingtypes, dataValidationFundingTypeName);
 
       // se configuran y pegan cada uno de los data validator
-      final DataValidation dataValidationCountry =
+      DataValidation dataValidationCountry =
         this.setDataValidator(dataValidationCountryName, validationHelper, addressListCountry, constraintCountries);
 
-      final DataValidation dataValidationInstitutions = this.setDataValidator(dataValidationInstitutionName,
-        validationHelper, addressListInstitution, constraintInstitutions);
+      DataValidation dataValidationInstitutions = this.setDataValidator(dataValidationInstitutionName, validationHelper,
+        addressListInstitution, constraintInstitutions);
 
-      final DataValidation dataValidationHigehestDegree = this.setDataValidator(dataValidationHighestDegreeName,
+      DataValidation dataValidationHigehestDegree = this.setDataValidator(dataValidationHighestDegreeName,
         validationHelper, addressListHighestDegree, constraintHighestDegree);
 
-      final DataValidation dataValidationFundingType = this.setDataValidator(dataValidationFundingTypeName,
-        validationHelper, addressListFundingType, constraintFundingType);
+      DataValidation dataValidationFundingType = this.setDataValidator(dataValidationFundingTypeName, validationHelper,
+        addressListFundingType, constraintFundingType);
 
 
       // set de cada data davilidator al sheet1 del template
@@ -243,15 +241,15 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       sheet1.addValidationData(dataValidationFundingType);
 
 
-      final ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
+      ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
       wb.write(fileOut);
       wb.close();
 
       inputStream = new ByteArrayInputStream(fileOut.toByteArray());
 
-    } catch (final FileNotFoundException e) {
+    } catch (FileNotFoundException e) {
       e.printStackTrace();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
     }
 
@@ -287,19 +285,19 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
     request = ServletActionContext.getRequest();
 
     try {
-      final InputStream input = request.getInputStream();
+      InputStream input = request.getInputStream();
 
       wb = WorkbookFactory.create(input);
 
-      final Sheet sheet = wb.getSheetAt(0);
-      final Row firstRow = sheet.getRow(0);
-      final int totalRows = sheet.getLastRowNum();
-      final int totalColumns = firstRow.getLastCellNum();
+      Sheet sheet = wb.getSheetAt(0);
+      Row firstRow = sheet.getRow(0);
+      int totalRows = sheet.getLastRowNum();
+      int totalColumns = firstRow.getLastCellNum();
 
       input.close();
 
 
-    } catch (final IOException | EncryptedDocumentException | InvalidFormatException e) {
+    } catch (IOException | EncryptedDocumentException | InvalidFormatException e) {
       e.printStackTrace();
     }
 
