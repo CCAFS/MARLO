@@ -57,7 +57,8 @@ public class LDAPAuthenticator implements Authenticator {
       ADConexion con = null;
       LDAPService service = new LDAPService();
       if (config.isProduction()) {
-        service.setInternalConnection(false);
+        service.setInternalConnection(true); // TODO Temporally change while CGNET resolve the external LDAP
+                                             // connection issue
       } else {
         service.setInternalConnection(true);
       }
