@@ -33,8 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -126,13 +124,15 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
     try {
       ClassLoader classLoader = this.getClass().getClassLoader();
       File file = new File(this.getClass().getResource("/template/participants-template.xlsm").getFile());
+
+
       String path = new File(".").getCanonicalPath();
       String real_path = path + "/src/main/resources/template/participants-template.xlsm";
-      Path path_ = Paths.get(path + "/src/main/resources/template/participants-template.xlsm");
+      String path_ = config.getUploadsBaseFolder() + "participants-template.xlsm";
 
-      System.out.println(path_);
+      System.out.println(real_path);
 
-      FileInputStream fileInput = new FileInputStream(real_path);
+      FileInputStream fileInput = new FileInputStream(path_);
       XSSFWorkbook wb = new XSSFWorkbook(fileInput);
 
       DataValidation dataValidationCountryOfInstitutions = null;
