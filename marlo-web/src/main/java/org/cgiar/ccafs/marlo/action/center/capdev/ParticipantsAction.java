@@ -123,7 +123,8 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
   public String dowmloadTemplate() {
     try {
       ClassLoader classLoader = this.getClass().getClassLoader();
-      File file = new File(classLoader.getResource("template/participants-template.xlsm").getFile());
+      File file = new File(this.getClass().getResource("/template/participants-template.xlsm").getFile());
+
       FileInputStream fileInput = new FileInputStream(file);
       XSSFWorkbook wb = new XSSFWorkbook(fileInput);
 
