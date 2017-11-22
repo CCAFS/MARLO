@@ -162,7 +162,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             projectInfoPhaseAdd.setProject(projectInfo.getProject());
             projectInfoPhaseAdd.setPhase(phase);
             // projectInfoPhaseAdd.setProjectEditLeader(false);
-            projectInfoPhaseAdd.setProjectEditLeader(true);
+            projectInfoPhaseAdd.setProjectEditLeader(projectInfo.getProjectEditLeader());
 
             projectInfoPhaseAdd.updateProjectInfo(projectInfo);
             projectInfoDAO.save(projectInfoPhaseAdd);
