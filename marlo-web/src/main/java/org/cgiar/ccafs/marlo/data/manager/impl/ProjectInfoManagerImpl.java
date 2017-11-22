@@ -169,7 +169,8 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             }
 
             List<DeliverableInfo> deliverableInfos = projectInfoPhase.getPhase().getDeliverableInfos().stream()
-              .filter(c -> c.getDeliverable().getProject().equals(projectInfoPhase.getProject()) && c.isActive()
+              .filter(c -> c.getDeliverable().getProject() != null
+                && c.getDeliverable().getProject().equals(projectInfoPhase.getProject()) && c.isActive()
                 && c.getPhase().equals(projectInfoPhase.getPhase()))
               .collect(Collectors.toList());
             for (DeliverableInfo deliverableInfo : deliverableInfos) {
@@ -237,11 +238,14 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             for (ProjectLocation projectLocation : projectLocations) {
               projectLocationManager.copyProjectLocation(projectLocation, phase);
             }
-            List<DeliverableInfo> deliverableInfos = projectInfo.getPhase().getDeliverableInfos().stream()
-              .filter(c -> c.getDeliverable().getProject().equals(projectInfo.getProject()) && c.isActive()
+            Phase phaseDb = phaseMySQLDAO.find(projectInfo.getPhase().getId());
+            List<DeliverableInfo> deliverableInfos = phaseDb.getDeliverableInfos().stream()
+              .filter(c -> c.getDeliverable().getProject() != null
+                && c.getDeliverable().getProject().equals(projectInfo.getProject()) && c.isActive()
                 && c.getPhase().equals(projectInfo.getPhase()))
               .collect(Collectors.toList());
             for (DeliverableInfo deliverableInfo : deliverableInfos) {
+              deliverableInfo.getDeliverable().setDeliverableInfo(deliverableInfo);
               deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
             }
             List<ProjectOutcome> outcomes = projectInfo.getProject().getProjectOutcomes().stream()
