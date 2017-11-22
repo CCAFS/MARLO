@@ -81,7 +81,7 @@
 					    </td>
 					    <td class="removeCol">
 					    	[#if action.centerCanBeDeleted(i.id, i.class.name)!false]
-					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#" data-href="[@s.url namespace='/capdev' action='${centerSession}/deleteCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" data-toggle="modal" data-target="#confirm-delete-capdev-${i.id}">
+					    	<a id="removeCapdev-${i.id}" class="removeCapdev" href="#"  data-toggle="modal" data-target="#confirm-delete-capdev-${i.id}">
 				               <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="capdev.removeCapdev" /]" /> 
 				            </a>
 
@@ -102,7 +102,7 @@
 						                
 						                <div class="modal-footer">
 						                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						                    <a class="btn btn-danger btn-ok">Delete</a>
+						                    <a class="btn btn-danger btn-ok" href="[@s.url namespace='/capdev' action='${centerSession}/deleteCapdev'][@s.param name='projectID']${projectID}[/@s.param][@s.param name='capdevID']${i.id}[/@s.param] [/@s.url]" >Delete</a>
 						                </div>
 						            </div>
 						        </div>
