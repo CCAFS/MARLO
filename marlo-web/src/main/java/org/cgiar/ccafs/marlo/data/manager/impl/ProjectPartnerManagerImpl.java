@@ -264,7 +264,23 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   public void deleteProjectPartner(long projectPartnerId) {
 
     projectPartnerDAO.deleteProjectPartner(projectPartnerId);
+
     ProjectPartner projectPartner = this.getProjectPartnerById(projectPartnerId);
+    for (ProjectPartnerContribution projectPartnerContribution : projectPartner.getProjectPartnerContributions()
+      .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      projectPartnerContribution.setActive(false);
+      projectPartnerContributionDAO.save(projectPartnerContribution);
+    }
+    for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      projectPartnerPerson.setActive(false);
+      projectPartnerPersonDAO.save(projectPartnerPerson);
+    }
+    for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      projectPartnerLocation.setActive(false);
+      projectPartnerLocationDAO.save(projectPartnerLocation);
+    }
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 

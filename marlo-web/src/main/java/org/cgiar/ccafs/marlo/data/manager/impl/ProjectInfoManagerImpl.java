@@ -19,16 +19,21 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPhaseDAO;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
@@ -55,11 +60,16 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   private ProjectPartnerManager projectPartnerManager;
   private ProjectLocationManager projectLocationManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
+  private ProjectOutcomeManager projectOutcomeManager;
+  private DeliverableInfoManager deliverableInfoManager;
+  private DeliverableManager deliverableManager;
 
   @Inject
   public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
     ProjectFocusManager projectFocusManager, ProjectClusterActivityManager projectClusterActivityManager,
-    ProjectPartnerManager projectPartnerManager, ProjectLocationManager projectLocationManager) {
+    ProjectPartnerManager projectPartnerManager, ProjectLocationManager projectLocationManager,
+    ProjectOutcomeManager projectOutcomeManager, DeliverableInfoManager deliverableInfoManager,
+    DeliverableManager deliverableManager) {
     this.projectInfoDAO = projectInfoDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
     this.projectPhaseDAO = projectPhaseDAO;
@@ -67,6 +77,10 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     this.projectPartnerManager = projectPartnerManager;
     this.projectLocationManager = projectLocationManager;
     this.projectFocusManager = projectFocusManager;
+    this.projectOutcomeManager = projectOutcomeManager;
+    this.deliverableInfoManager = deliverableInfoManager;
+    this.deliverableManager = deliverableManager;
+
 
   }
 
@@ -147,8 +161,20 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             for (ProjectLocation projectLocation : locations) {
               projectLocationManager.deleteProjectLocation(projectLocation.getId());
             }
+            List<ProjectOutcome> outcomes = projectInfoPhase.getProject().getProjectOutcomes().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (ProjectOutcome outcome : outcomes) {
+              projectOutcomeManager.deleteProjectOutcome(outcome.getId());
+            }
 
-
+            List<DeliverableInfo> deliverableInfos = projectInfoPhase.getPhase().getDeliverableInfos().stream()
+              .filter(c -> c.getDeliverable().getProject().equals(projectInfoPhase.getProject()) && c.isActive()
+                && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (DeliverableInfo deliverableInfo : deliverableInfos) {
+              deliverableInfoManager.deleteDeliverableInfo(deliverableInfo.getId());
+            }
           } else {
             projectInfoDAO.save(projectInfoPhase);
           }
@@ -211,7 +237,26 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             for (ProjectLocation projectLocation : projectLocations) {
               projectLocationManager.copyProjectLocation(projectLocation, phase);
             }
+            List<DeliverableInfo> deliverableInfos = projectInfo.getPhase().getDeliverableInfos().stream()
+              .filter(c -> c.getDeliverable().getProject().equals(projectInfo.getProject()) && c.isActive()
+                && c.getPhase().equals(projectInfo.getPhase()))
+              .collect(Collectors.toList());
+            for (DeliverableInfo deliverableInfo : deliverableInfos) {
+              deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
+            }
+            List<ProjectOutcome> outcomes = projectInfo.getProject().getProjectOutcomes().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectOutcome projectOutcome : outcomes) {
+              projectOutcome.setMilestones(
+                projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+              projectOutcome.setCommunications(projectOutcome.getProjectCommunications().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList()));
+              projectOutcome.setNextUsers(
+                projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+              projectOutcomeManager.copyProjectOutcome(projectOutcome, phase);
+            }
           }
         }
       }

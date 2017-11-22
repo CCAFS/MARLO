@@ -14,11 +14,11 @@
 ] /]
 
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
 
 
 [#if (!availabePhase)!false]
@@ -28,12 +28,12 @@
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
-        [#include "/WEB-INF/views/projects/menu-projects.ftl" /]
+        [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#include "/WEB-INF/views/projects/messages-projectOutcomes.ftl" /]
+        [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
@@ -261,7 +261,7 @@
           [/#if]
           
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
+          [#include "/WEB-INF/crp/views/projects/buttons-projectOutcomes.ftl" /]
 
         [/@s.form] 
       </div>
@@ -275,7 +275,7 @@
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
   
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#include "/WEB-INF/crp/pages/footer.ftl"]
 
 
 [#macro milestoneMacro element name index isTemplate=false]

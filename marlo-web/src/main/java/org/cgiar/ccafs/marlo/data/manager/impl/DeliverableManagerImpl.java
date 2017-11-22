@@ -52,6 +52,17 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  public Deliverable copyDeliverable(Deliverable deliverable, Phase phase) {
+
+
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+    deliverableInfo.setPhase(phase);
+    deliverableInfoDAO.save(deliverableInfo);
+    return deliverableInfo.getDeliverable();
+  }
+
+  @Override
   public void deleteDeliverable(long deliverableId) {
 
     deliverableDAO.deleteDeliverable(deliverableId);

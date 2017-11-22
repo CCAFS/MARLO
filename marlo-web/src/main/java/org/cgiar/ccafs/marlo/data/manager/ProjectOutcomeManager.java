@@ -29,6 +29,9 @@ import com.google.inject.ImplementedBy;
 public interface ProjectOutcomeManager {
 
 
+  public ProjectOutcome copyProjectOutcome(ProjectOutcome projectOutcome, Phase phase);
+
+
   /**
    * This method removes a specific projectOutcome value from the database.
    * 
@@ -53,7 +56,6 @@ public interface ProjectOutcomeManager {
    * @return a list from ProjectOutcome null if no exist records
    */
   public List<ProjectOutcome> findAll();
-
 
   /**
    * This method gets a projectOutcome object by a given projectOutcome identifier.

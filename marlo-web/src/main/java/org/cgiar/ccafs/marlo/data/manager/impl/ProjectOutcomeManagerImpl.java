@@ -182,6 +182,48 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   @Override
+  public ProjectOutcome copyProjectOutcome(ProjectOutcome projectOutcome, Phase phase) {
+
+    return this.copyProjectOutcomePhase(phase, projectOutcome.getProject().getId(), projectOutcome);
+
+  }
+
+  private ProjectOutcome copyProjectOutcomePhase(Phase next, long projectID, ProjectOutcome projectOutcome) {
+    Phase phase = phaseMySQLDAO.find(next.getId());
+    List<ProjectOutcome> projectOutcomes = phase.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
+        && c.getCrpProgramOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId()))
+      .collect(Collectors.toList());
+    if (phase.getEditable() != null && phase.getEditable() && projectOutcomes.isEmpty()) {
+      ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
+      projectOutcomeAdd.setActive(true);
+      projectOutcomeAdd.setActiveSince(projectOutcome.getActiveSince());
+      projectOutcomeAdd.setCreatedBy(projectOutcome.getCreatedBy());
+      projectOutcomeAdd.setModificationJustification(projectOutcome.getModificationJustification());
+      projectOutcomeAdd.setModifiedBy(projectOutcome.getModifiedBy());
+      projectOutcomeAdd.setPhase(phase);
+      projectOutcomeAdd.setAchievedUnit(projectOutcome.getAchievedUnit());
+      projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
+      projectOutcomeAdd.setCrpProgramOutcome(projectOutcome.getCrpProgramOutcome());
+      projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
+      projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
+      projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+      projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+      projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+      projectOutcomeAdd.setProject(projectOutcome.getProject());
+      projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
+      projectOutcomeDAO.save(projectOutcomeAdd);
+      this.addMilestones(projectOutcome, projectOutcomeAdd);
+      this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
+      return projectOutcomeAdd;
+    }
+
+    return null;
+
+
+  }
+
+  @Override
   public void deleteProjectOutcome(long projectOutcomeId) {
 
     projectOutcomeDAO.deleteProjectOutcome(projectOutcomeId);
