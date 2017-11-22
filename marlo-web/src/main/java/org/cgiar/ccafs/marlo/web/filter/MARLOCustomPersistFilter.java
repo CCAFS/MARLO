@@ -94,6 +94,7 @@ public class MARLOCustomPersistFilter implements Filter {
 
       sessionFactory.getCurrentSession().getTransaction().commit();
 
+
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");
       LOG.error("Your application will not work until you add compensation actions!");

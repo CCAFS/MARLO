@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.ProjectLocationManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 
 import java.util.List;
@@ -27,6 +28,9 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(ProjectLocationManagerImpl.class)
 public interface ProjectLocationManager {
+
+
+  public ProjectLocation copyProjectLocation(ProjectLocation projectLocation, Phase phase);
 
 
   /**
@@ -53,7 +57,6 @@ public interface ProjectLocationManager {
    * @return a list from ProjectLocation null if no exist records
    */
   public List<ProjectLocation> findAll();
-
 
   /**
    * return the parents of project locations data

@@ -85,7 +85,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   @Override
   public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution) {
     String query = "select distinct pp from ProjectPartner pp "
-      + " where project.id = :projectId and institution.id= :institutionId and phase.id= :phaseId";
+      + " where project.id = :projectId and institution.id= :institutionId and phase.id= :phaseId and active=true";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectId", project.getId());
     createQuery.setParameter("institutionId", institution.getId());

@@ -97,6 +97,62 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
   }
 
+
+  /**
+   * clone or update the location for next phases
+   * 
+   * @param next the next phase to clone
+   * @param projecID the project id we are working
+   * @param projectLocation the project location to clone
+   */
+  private ProjectLocation copyProjectLoactionsDAO(Phase next, long projecID, ProjectLocation projectLocation) {
+    Phase phase = phaseMySQLDAO.find(next.getId());
+    boolean hasLocElement = false;
+    if (projectLocation.getLocElement() != null) {
+      hasLocElement = true;
+    }
+    List<ProjectLocation> locations = new ArrayList<ProjectLocation>();
+
+    if (hasLocElement) {
+      locations.addAll(phase.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElement() != null
+          && projectLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
+        .collect(Collectors.toList()));
+    } else {
+      locations.addAll(phase.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && c.getLocElementType() != null
+          && projectLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+        .collect(Collectors.toList()));
+    }
+
+
+    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
+      ProjectLocation projectLocationAdd = new ProjectLocation();
+      projectLocationAdd.setActive(true);
+      projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
+      projectLocationAdd.setCreatedBy(projectLocation.getCreatedBy());
+      projectLocationAdd.setLocElement(projectLocation.getLocElement());
+      projectLocationAdd.setLocElementType(projectLocation.getLocElementType());
+      projectLocationAdd.setModificationJustification(projectLocation.getModificationJustification());
+      projectLocationAdd.setModifiedBy(projectLocation.getModifiedBy());
+      projectLocationAdd.setPhase(phase);
+      projectLocationAdd.setProject(projectLocation.getProject());
+      projectLocationDAO.save(projectLocationAdd);
+      return projectLocationAdd;
+    }
+
+    return null;
+  }
+
+  @Override
+  public ProjectLocation copyProjectLocation(ProjectLocation projectLocation, Phase phase) {
+
+
+    return this.copyProjectLoactionsDAO(phase, projectLocation.getProject().getId(), projectLocation);
+
+
+  }
+
   @Override
   public void deleteProjectLocation(long projectLocationId) {
 
@@ -110,7 +166,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
           projectLocation);
       }
     }
- 
+
   }
 
   public void deleteProjectLocationPhase(Phase next, long projectID, ProjectLocation projectLocation) {

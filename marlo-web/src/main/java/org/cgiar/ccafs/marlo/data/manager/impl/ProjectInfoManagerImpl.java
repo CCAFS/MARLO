@@ -19,11 +19,22 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPhaseDAO;
+import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +51,22 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   // Managers
   private PhaseDAO phaseMySQLDAO;
   private ProjectPhaseDAO projectPhaseDAO;
+  private ProjectFocusManager projectFocusManager;
+  private ProjectPartnerManager projectPartnerManager;
+  private ProjectLocationManager projectLocationManager;
+  private ProjectClusterActivityManager projectClusterActivityManager;
 
   @Inject
-  public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO,
-    ProjectPhaseDAO projectPhaseDAO) {
+  public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
+    ProjectFocusManager projectFocusManager, ProjectClusterActivityManager projectClusterActivityManager,
+    ProjectPartnerManager projectPartnerManager, ProjectLocationManager projectLocationManager) {
     this.projectInfoDAO = projectInfoDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
     this.projectPhaseDAO = projectPhaseDAO;
+    this.projectClusterActivityManager = projectClusterActivityManager;
+    this.projectPartnerManager = projectPartnerManager;
+    this.projectLocationManager = projectLocationManager;
+    this.projectFocusManager = projectFocusManager;
 
   }
 
@@ -77,12 +97,16 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
 
   public void saveInfoPhase(Phase next, long projecID, ProjectInfo projectInfo) {
     Phase phase = phaseMySQLDAO.find(next.getId());
+
     Calendar cal = Calendar.getInstance();
+
+
     if (projectInfo.getEndDate() != null) {
       cal.setTime(projectInfo.getEndDate());
     }
 
-    if (phase.getEditable() != null && phase.getEditable()) {
+    if (phase.getEditable() != null && phase.getEditable()
+      && projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
       List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
       if (!projectInfos.isEmpty()) {
@@ -98,6 +122,33 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             if (!projectPhases.isEmpty()) {
               projectPhaseDAO.deleteProjectPhase(projectPhases.get(0).getId());
             }
+            List<ProjectFocus> projectFocus = projectInfoPhase.getProject().getProjectFocuses().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (ProjectFocus projectFocusDB : projectFocus) {
+              projectFocusManager.deleteProjectFocus(projectFocusDB.getId());
+            }
+            List<ProjectClusterActivity> projectClusterActivities =
+              projectInfoPhase.getProject().getProjectClusterActivities().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+                .collect(Collectors.toList());
+            for (ProjectClusterActivity clusterActivity : projectClusterActivities) {
+              projectClusterActivityManager.deleteProjectClusterActivity(clusterActivity.getId());
+            }
+            List<ProjectPartner> projectPartners = projectInfoPhase.getProject().getProjectPartners().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (ProjectPartner projectPartner : projectPartners) {
+              projectPartnerManager.deleteProjectPartner(projectPartner.getId());
+            }
+            List<ProjectLocation> locations = projectInfoPhase.getProject().getProjectLocations().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (ProjectLocation projectLocation : locations) {
+              projectLocationManager.deleteProjectLocation(projectLocation.getId());
+            }
+
+
           } else {
             projectInfoDAO.save(projectInfoPhase);
           }
@@ -110,13 +161,57 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
             ProjectInfo projectInfoPhaseAdd = new ProjectInfo();
             projectInfoPhaseAdd.setProject(projectInfo.getProject());
             projectInfoPhaseAdd.setPhase(phase);
-            projectInfoPhaseAdd.setProjectEditLeader(false);
+            // projectInfoPhaseAdd.setProjectEditLeader(false);
+            projectInfoPhaseAdd.setProjectEditLeader(true);
+
             projectInfoPhaseAdd.updateProjectInfo(projectInfo);
             projectInfoDAO.save(projectInfoPhaseAdd);
             ProjectPhase projectPhase = new ProjectPhase();
             projectPhase.setPhase(phase);
             projectPhase.setProject(projectInfo.getProject());
             projectPhaseDAO.save(projectPhase);
+            List<ProjectFocus> projectFocus = projectInfo.getProject().getProjectFocuses().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectFocus projectFocusDB : projectFocus) {
+              projectFocusManager.saveProjectFocus(projectFocusDB);
+            }
+
+            List<ProjectClusterActivity> projectClusters =
+              projectInfo.getProject().getProjectClusterActivities().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectClusterActivity projectClusterActivity : projectClusters) {
+              projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+            }
+
+            List<ProjectPartner> projectPartners = projectInfo.getProject().getProjectPartners().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectPartner projectPartner : projectPartners) {
+              projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList()));
+              List<ProjectPartnerContribution> contributors = new ArrayList<>();
+
+
+              List<ProjectPartnerContribution> partnerContributions = projectPartner.getProjectPartnerContributions()
+                .stream().filter(c -> c.isActive()).collect(Collectors.toList());
+              for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
+                contributors.add(projectPartnerContribution);
+              }
+              projectPartner.setSelectedLocations(new ArrayList<>());
+              for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList())) {
+                projectPartner.getSelectedLocations().add(projectPartnerLocation.getInstitutionLocation());
+              }
+              projectPartner.setPartnerContributors(contributors);
+              projectPartner.setPartnerPersons(projectPartner.getProjectPartnerPersons().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList()));
+              projectPartnerManager.copyPartner(projectPartner, phase);
+            }
+            List<ProjectLocation> projectLocations = projectInfo.getProject().getProjectLocations().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectLocation projectLocation : projectLocations) {
+              projectLocationManager.copyProjectLocation(projectLocation, phase);
+            }
+
           }
         }
       }
