@@ -1,3 +1,4 @@
+
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -103,6 +104,7 @@ public class CenterDeliverableValidator extends BaseValidator {
 
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
+        deliverable.setDeliverableType(null);
         this.addMessage(baseAction.getText("deliverable.action.deliverablesType"));
         baseAction.getInvalidFields().put("input-deliverable.deliverableType", InvalidFieldsMessages.EMPTYFIELD);
       }

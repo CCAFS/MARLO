@@ -52,10 +52,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -269,15 +270,6 @@ public class ProjectDeliverableAction extends BaseAction {
 
     if (deliverable != null) {
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
-      projectID = deliverableDB.getProject().getId();
-      project = projectService.getCenterProjectById(projectID);
-
-      selectedProgram = project.getResearchProgram();
-      programID = selectedProgram.getId();
-      selectedResearchArea = selectedProgram.getResearchArea();
-      areaID = selectedResearchArea.getId();
-      researchPrograms = new ArrayList<>(
-        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
 
 
       Path path = this.getAutoSaveFilePath();
@@ -287,11 +279,12 @@ public class ProjectDeliverableAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
+
 
         if (deliverable.getOutputs() != null) {
           List<CenterDeliverableOutput> outputs = new ArrayList<>();
@@ -317,7 +310,7 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverable.setOutputs(new ArrayList<>(outputs));
         }
 
-      
+
         this.setDraft(true);
 
       } else {
@@ -339,6 +332,17 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+      deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
+      projectID = deliverableDB.getProject().getId();
+      project = projectService.getCenterProjectById(projectID);
+      deliverable.setProject(project);
+
+      selectedProgram = project.getResearchProgram();
+      programID = selectedProgram.getId();
+      selectedResearchArea = selectedProgram.getResearchArea();
+      areaID = selectedResearchArea.getId();
+      researchPrograms = new ArrayList<>(
+        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
 
 
       if (deliverable.getDeliverableType() != null) {
@@ -406,11 +410,14 @@ public class ProjectDeliverableAction extends BaseAction {
       deliverableDB.setStartDate(deliverable.getStartDate());
       deliverableDB.setEndDate(deliverable.getEndDate());
 
-
-      if (deliverable.getDeliverableType().getId() != null) {
-        CenterDeliverableType deliverableType =
-          deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
-        deliverableDB.setDeliverableType(deliverableType);
+      if (deliverable.getDeliverableType() != null) {
+        if (deliverable.getDeliverableType().getId() != null) {
+          if (deliverable.getDeliverableType().getId() != -1) {
+            CenterDeliverableType deliverableType =
+              deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+            deliverableDB.setDeliverableType(deliverableType);
+          }
+        }
       }
 
       deliverableDB = deliverableService.saveDeliverable(deliverableDB);
