@@ -315,12 +315,6 @@
       <groupId>jfree</groupId>
       <artifactId>jcommon</artifactId>
     </dependency>
-    <!-- easy rules -->
-    <dependency>
-      <groupId>org.easyrules</groupId>
-      <artifactId>easyrules-core</artifactId>
-    </dependency>
-
     <!-- library to ws client -->
     <dependency>
       <groupId>org.apache.axis</groupId>

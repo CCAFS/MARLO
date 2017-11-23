@@ -16,12 +16,8 @@
       org.cgiar.ccafs.marlo.security.SessionCounter
     </listener-class>
   </listener>
-    
-     <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.RulesListener</listener-class>
-  </listener>
   
-    <listener>
+  <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
 

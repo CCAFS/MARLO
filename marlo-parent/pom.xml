@@ -497,13 +497,6 @@
         <artifactId>jcommon</artifactId>
         <version>${jcommon.version}</version>
       </dependency>
-      <!-- easy rules -->
-      <dependency>
-        <groupId>org.easyrules</groupId>
-        <artifactId>easyrules-core</artifactId>
-        <version>${easyrules-core.version}</version>
-      </dependency>
-
       <!-- library to ws client -->
       <dependency>
         <groupId>org.apache.axis</groupId>
@@ -592,6 +585,12 @@
           <groupId>com.samaxes.maven</groupId>
           <artifactId>minify-maven-plugin</artifactId>
           <version>1.7.4</version>
+        </plugin>
+        <plugin>
+          <!-- Ensure we can analyze java 8 code -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.0.2</version>
         </plugin>
 			</plugins>
 		</pluginManagement>
