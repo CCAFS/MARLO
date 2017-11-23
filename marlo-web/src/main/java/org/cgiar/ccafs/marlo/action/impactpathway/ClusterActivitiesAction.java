@@ -469,8 +469,9 @@ public class ClusterActivitiesAction extends BaseAction {
         ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
       }
     }
+
     // Also crp program Leaders
-    for (CrpProgramLeader crpProgramLeader : crpClusterOfActivity.getCrpProgram().getCrpProgramLeaders().stream()
+    for (CrpProgramLeader crpProgramLeader : selectedProgram.getCrpProgramLeaders().stream()
       .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
       if (ccEmail.isEmpty()) {
         ccEmail += crpProgramLeader.getUser().getEmail();

@@ -30,10 +30,12 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CenterProjectDescriptionValidator extends BaseValidator {
 
   private final ICenterManager centerService;
@@ -185,6 +187,19 @@ public class CenterProjectDescriptionValidator extends BaseValidator {
     if (project.getProjectLeader() == null) {
       this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
       baseAction.getInvalidFields().put("input-project.projectLeader.composedName", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      if (project.getProjectLeader().getId() != null) {
+        if (project.getProjectLeader().getId() == -1) {
+          project.setProjectLeader(null);
+          this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
+          baseAction.getInvalidFields().put("input-project.projectLeader.composedName",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        project.setProjectLeader(null);
+        this.addMessage(baseAction.getText("projectDescription.action.projectLeader"));
+        baseAction.getInvalidFields().put("input-project.projectLeader.composedName", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     /*
