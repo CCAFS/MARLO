@@ -28,9 +28,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -76,6 +79,8 @@ import org.slf4j.LoggerFactory;
  * @author avalencia - CCAFS
  * @date Nov 2, 2017
  * @time 9:13:34 AM: Added a new column to masterList called Project Managing Partners
+ * @date Nov 23, 2017
+ * @time 9:24:44 AM: Add project partner leader and managing responsible
  */
 public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction implements Summary {
 
@@ -241,11 +246,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
-        "projectClusterActivities", "flagships", "regions", "individual", "ppaRespondible", "shared", "FS", "fsWindows",
-        "outcomes"},
+        "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "FS",
+        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     for (Deliverable deliverable : deliverableManager.findAll().stream()
@@ -258,7 +263,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
           || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
-
+      if (deliverable.getId() == 1016) {
+        System.out.println("Delete this comment");
+      }
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
 
       Long deliverableId = deliverable.getId();
@@ -374,6 +381,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         ? deliverableInfo.getNewExpectedYear() : null;
       Long projectID = null;
       String projectTitle = null;
+      String projectLeadPartner = null;
 
       if (deliverable.getProject() != null) {
         projectID = deliverable.getProject().getId();
@@ -381,6 +389,18 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && deliverable.getProject().getProjectInfo().getTitle() != null
           && !deliverable.getProject().getProjectInfo().getTitle().trim().isEmpty()) {
           projectTitle = deliverable.getProject().getProjectInfo().getTitle();
+        }
+        // Get project leader
+        if (deliverable.getProject().getLeader(this.getSelectedPhase()) != null) {
+          ProjectPartner leader = deliverable.getProject().getLeader(this.getSelectedPhase());
+          if (leader.getInstitution() != null) {
+            if (leader.getInstitution().getAcronym() != null
+              && !leader.getInstitution().getAcronym().trim().isEmpty()) {
+              projectLeadPartner = leader.getInstitution().getAcronym();
+            } else {
+              projectLeadPartner = leader.getInstitution().getName();
+            }
+          }
         }
       }
       String projectClusterActivities = "";
@@ -443,6 +463,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // Store Institution
       String ppaRespondible = "";
       Set<String> ppaResponsibleList = new HashSet<>();
+      Set<Institution> institutionsResponsibleList = new HashSet<>();
+
       int managingCount = 0;
       // Get partner responsible
 
@@ -464,6 +486,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
           if (responsibleppp.getProjectPartner() != null) {
             if (responsibleppp.getProjectPartner().getInstitution() != null) {
+              institutionsResponsibleList.add(responsibleppp.getProjectPartner().getInstitution());
               if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
                 && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                 individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
@@ -503,6 +526,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             ProjectPartnerPerson responsibleppp = deliverablePartnership.getProjectPartnerPerson();
             if (responsibleppp.getProjectPartner() != null) {
               if (responsibleppp.getProjectPartner().getInstitution() != null) {
+                institutionsResponsibleList.add(responsibleppp.getProjectPartner().getInstitution());
                 if (responsibleppp.getProjectPartner().getInstitution().getAcronym() != null
                   && !responsibleppp.getProjectPartner().getInstitution().getAcronym().isEmpty()) {
                   individual += responsibleppp.getProjectPartner().getInstitution().getAcronym() + " - ";
@@ -530,7 +554,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       if (individual.isEmpty()) {
         individual = null;
       }
-
+      Set<Institution> managingResponsibleList = new HashSet<>();
       for (String ppaOher : ppaResponsibleList) {
         managingCount++;
         if (ppaRespondible.isEmpty()) {
@@ -539,6 +563,34 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           ppaRespondible += ", <span style='font-family: Segoe UI;font-size: 10'>" + ppaOher + "</span>";
         }
       }
+
+      for (Institution partnerResponsible : institutionsResponsibleList) {
+        // Check if is ppa
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId())) {
+          managingResponsibleList.add(partnerResponsible);
+        } else {
+          // If is not a ppa, get the crp linked to the partner
+          List<ProjectPartner> projectPartners = deliverable
+            .getProject().getProjectPartners().stream().filter(pp -> pp.isActive()
+              && pp.getInstitution().equals(partnerResponsible) && pp.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+          if (projectPartners != null && projectPartners.size() > 0) {
+            if (projectPartners.size() > 1) {
+              LOG.warn("Two or more partners have the same institution for Project ("
+                + deliverable.getProject().toString() + ") and institution (" + partnerResponsible.toString() + ")");
+            }
+            ProjectPartner projectPartner = projectPartners.get(0);
+            if (projectPartner.getProjectPartnerContributions() != null
+              && projectPartner.getProjectPartnerContributions().size() > 0) {
+              for (ProjectPartnerContribution projectPartnerContribution : projectPartner
+                .getProjectPartnerContributions().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())) {
+                managingResponsibleList.add(projectPartnerContribution.getProjectPartnerContributor().getInstitution());
+              }
+            }
+          }
+        }
+      }
+
       if (ppaRespondible.isEmpty()) {
         ppaRespondible = null;
       }
@@ -552,6 +604,25 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       if (managingCount > 1) {
         shared = "Yes";
       }
+
+      String managingResponsible = "";
+      for (Institution managingInstitution : managingResponsibleList) {
+        String institution = "";
+        if (managingInstitution.getAcronym() != null && !managingInstitution.getAcronym().trim().isEmpty()) {
+          institution = managingInstitution.getAcronym();
+        } else {
+          institution = managingInstitution.getName();
+        }
+        if (managingResponsible.isEmpty()) {
+          managingResponsible += "<span style='font-family: Segoe UI;font-size: 10'>" + institution + "</span>";
+        } else {
+          managingResponsible += ", <span style='font-family: Segoe UI;font-size: 10'>" + institution + "</span>";
+        }
+      }
+      if (managingResponsible.isEmpty()) {
+        managingResponsible = null;
+      }
+
 
       String FS = "";
       Set<String> fsWindowsSet = new HashSet<String>();
@@ -590,7 +661,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
-        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows, outcomes});
+        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows, outcomes,
+        projectLeadPartner, managingResponsible});
 
       if (completionYear != null) {
         if (deliverablePerYearList.containsKey(completionYear)) {
