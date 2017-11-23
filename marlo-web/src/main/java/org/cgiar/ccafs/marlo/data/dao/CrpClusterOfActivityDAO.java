@@ -67,9 +67,9 @@ public interface CrpClusterOfActivityDAO {
    */
   public List<CrpClusterOfActivity> findClusterProgramPhase(long crpProgramID, long phaseID);
 
+
   public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
     Phase phase);
-
 
   /**
    * This method saves the information of the given crpClusterOfActivity
@@ -80,4 +80,5 @@ public interface CrpClusterOfActivityDAO {
    *         or -1 is some error occurred.
    */
   public CrpClusterOfActivity save(CrpClusterOfActivity crpClusterOfActivity);
+
 }

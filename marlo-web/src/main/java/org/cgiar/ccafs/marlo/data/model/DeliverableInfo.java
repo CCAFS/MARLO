@@ -426,6 +426,11 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     this.setStatus(update.getStatus());
     this.setTitle(update.getTitle());
     this.setTypeOther(update.getTypeOther());
+    this.setDeliverableType(update.getDeliverableType());
+    this.setCrossCuttingGender(update.getCrossCuttingGender());
+    this.setYear(update.getYear());
+    this.setStatusDescription(update.getStatusDescription());
+
 
   }
 

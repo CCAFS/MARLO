@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.CrpProgramOutcomeMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -58,6 +59,8 @@ public interface CrpProgramOutcomeDAO {
   public List<CrpProgramOutcome> findAll();
 
 
+  public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase);
+
   /**
    * This method saves the information of the given crpProgramOutcome
    * 
@@ -67,4 +70,5 @@ public interface CrpProgramOutcomeDAO {
    *         or -1 is some error occurred.
    */
   public CrpProgramOutcome save(CrpProgramOutcome crpProgramOutcome);
+
 }

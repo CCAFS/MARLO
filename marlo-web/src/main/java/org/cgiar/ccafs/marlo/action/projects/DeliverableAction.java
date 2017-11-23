@@ -1308,8 +1308,9 @@ public class DeliverableAction extends BaseAction {
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList())) {
-        if (!partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-          .isEmpty()) {
+        List<ProjectPartnerPerson> persons =
+          partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (!persons.isEmpty()) {
           partners.add(partner);
         }
 

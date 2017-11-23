@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -479,6 +478,7 @@ public class ProjectListAction extends BaseAction {
       for (Project project : myProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
       }
+
 
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);

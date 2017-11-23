@@ -16,18 +16,25 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPhaseDAO;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -63,12 +70,18 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   private ProjectOutcomeManager projectOutcomeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private DeliverableManager deliverableManager;
+  private DeliverablePartnershipManager deliverablePartnershipManager;
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private DeliverableDAO deliverableDAO;
+
 
   @Inject
   public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
     ProjectFocusManager projectFocusManager, ProjectClusterActivityManager projectClusterActivityManager,
     ProjectPartnerManager projectPartnerManager, ProjectLocationManager projectLocationManager,
     ProjectOutcomeManager projectOutcomeManager, DeliverableInfoManager deliverableInfoManager,
+    DeliverablePartnershipManager deliverablePartnershipManager,
+    DeliverableFundingSourceManager deliverableFundingSourceManager, DeliverableDAO deliverableDAO,
     DeliverableManager deliverableManager) {
     this.projectInfoDAO = projectInfoDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
@@ -80,6 +93,9 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     this.projectOutcomeManager = projectOutcomeManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableManager = deliverableManager;
+    this.deliverableDAO = deliverableDAO;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+    this.deliverablePartnershipManager = deliverablePartnershipManager;
 
 
   }
@@ -107,6 +123,35 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   public ProjectInfo getProjectInfoById(long projectInfoID) {
 
     return projectInfoDAO.find(projectInfoID);
+  }
+
+  public List<DeliverablePartnership> otherPartners(Deliverable deliverable, Phase phase) {
+    try {
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList());
+
+
+      return list;
+    } catch (Exception e) {
+      return null;
+    }
+
+
+  }
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable, Phase phase) {
+    try {
+      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+      return partnership;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public void saveInfoPhase(Phase next, long projecID, ProjectInfo projectInfo) {
@@ -173,8 +218,34 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
                 && c.getDeliverable().getProject().equals(projectInfoPhase.getProject()) && c.isActive()
                 && c.getPhase().equals(projectInfoPhase.getPhase()))
               .collect(Collectors.toList());
+            Phase myPhase = phaseMySQLDAO.find(projectInfoPhase.getPhase().getId());
             for (DeliverableInfo deliverableInfo : deliverableInfos) {
+
               deliverableInfoManager.deleteDeliverableInfo(deliverableInfo.getId());
+              Deliverable deliverable = deliverableInfo.getDeliverable();
+              deliverable.getDeliverableInfo(projectInfo.getPhase());
+              deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, myPhase));
+              deliverable.setOtherPartners(this.otherPartners(deliverable, myPhase));
+              if (deliverable.getResponsiblePartner() != null) {
+                deliverablePartnershipManager.deleteDeliverablePartnership(deliverable.getResponsiblePartner().getId());
+
+              }
+
+              for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+                deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+
+              }
+              deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
+                .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(projectInfo.getPhase())
+                  && c.getFundingSource().getFundingSourceInfo(myPhase) != null)
+                .collect(Collectors.toList()));
+
+              for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+                deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+
+              }
+
+
             }
           } else {
             projectInfoDAO.save(projectInfoPhase);
@@ -239,14 +310,43 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
               projectLocationManager.copyProjectLocation(projectLocation, phase);
             }
             Phase phaseDb = phaseMySQLDAO.find(projectInfo.getPhase().getId());
-            List<DeliverableInfo> deliverableInfos = phaseDb.getDeliverableInfos().stream()
-              .filter(c -> c.getDeliverable().getProject() != null
-                && c.getDeliverable().getProject().equals(projectInfo.getProject()) && c.isActive()
-                && c.getPhase().equals(projectInfo.getPhase()))
-              .collect(Collectors.toList());
-            for (DeliverableInfo deliverableInfo : deliverableInfos) {
-              deliverableInfo.getDeliverable().setDeliverableInfo(deliverableInfo);
-              deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
+            List<Deliverable> deliverableInfos = projectInfo.getProject().getDeliverables().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList());
+            for (Deliverable deliverableDB : deliverableInfos) {
+              DeliverableInfo deliverableInfo = deliverableDB.getDeliverableInfo(phaseDb);
+
+              if (deliverableInfo != null) {
+                Deliverable deliverable = new Deliverable();
+                deliverable = deliverableDAO.find(deliverableDB.getId());
+                deliverableInfo.setDeliverable(deliverable);
+                deliverable.getDeliverableInfo(projectInfo.getPhase());
+                deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, phaseDb));
+                deliverable.setOtherPartners(this.otherPartners(deliverable, phaseDb));
+                deliverableInfo.getDeliverable().setDeliverableInfo(deliverableInfo);
+
+                deliverableManager.copyDeliverable(deliverableInfo.getDeliverable(), phase);
+
+                if (deliverable.getResponsiblePartner() != null) {
+                  deliverablePartnershipManager.copyDeliverablePartnership(deliverable.getResponsiblePartner(), phase);
+                }
+
+
+                for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+                  deliverablePartnershipManager.copyDeliverablePartnership(deliverablePartnership, phase);
+
+                }
+                deliverable.setFundingSources(deliverable
+                  .getDeliverableFundingSources().stream().filter(c -> c.isActive() && c.getPhase() != null
+                    && c.getPhase().equals(phaseDb) && c.getFundingSource().getFundingSourceInfo(phaseDb) != null)
+                  .collect(Collectors.toList()));
+
+                for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+                  deliverableFundingSourceManager.copyDeliverableFundingSource(deliverableFundingSource, phase);
+
+                }
+              }
+
+
             }
             List<ProjectOutcome> outcomes = projectInfo.getProject().getProjectOutcomes().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());

@@ -94,6 +94,27 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   }
 
   @Override
+  public DeliverablePartnership copyDeliverablePartnership(DeliverablePartnership deliverablePartnership, Phase phase) {
+    DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
+    deliverablePartnershipAdd.setActive(true);
+    deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
+    deliverablePartnershipAdd.setCreatedBy(deliverablePartnership.getCreatedBy());
+    deliverablePartnershipAdd.setModificationJustification(deliverablePartnership.getModificationJustification());
+    deliverablePartnershipAdd.setModifiedBy(deliverablePartnership.getModifiedBy());
+    deliverablePartnershipAdd.setPhase(phase);
+    deliverablePartnershipAdd.setDeliverable(deliverablePartnership.getDeliverable());
+    deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
+    deliverablePartnershipAdd.setPartnerDivision(deliverablePartnership.getPartnerDivision());
+    deliverablePartnershipAdd
+      .setProjectPartnerPerson(this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()));
+    if (deliverablePartnershipAdd.getProjectPartnerPerson() != null) {
+      deliverablePartnershipDAO.save(deliverablePartnershipAdd);
+      return deliverablePartnershipAdd;
+    }
+    return null;
+  }
+
+  @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
     deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
@@ -164,8 +185,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     projectPartnerPerson = partnerPersonDao.find(projectPartnerPerson.getId());
 
     List<Map<String, Object>> result =
-      partnerPersonDao.findPartner(projectPartnerPerson.getProjectPartner().getInstitution().getId(),
-        projectPartnerPerson.getProjectPartner().getPhase().getId(),
+      partnerPersonDao.findPartner(projectPartnerPerson.getProjectPartner().getInstitution().getId(), phase.getId(),
         projectPartnerPerson.getProjectPartner().getProject().getId(), projectPartnerPerson.getUser().getId());
     if (result.size() > 0) {
       Long id = Long.parseLong(result.get(0).get("id").toString());

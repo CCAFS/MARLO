@@ -94,7 +94,10 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
 
     Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
     ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
-    projectPartner = super.refreshEntity(projectPartner);
+    if (projectPartner != null) {
+      projectPartner = super.refreshEntity(projectPartner);
+    }
+
 
     return projectPartner;
   }

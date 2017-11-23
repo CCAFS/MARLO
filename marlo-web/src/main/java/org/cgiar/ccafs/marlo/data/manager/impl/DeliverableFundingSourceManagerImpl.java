@@ -83,6 +83,22 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   }
 
   @Override
+  public DeliverableFundingSource copyDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource,
+    Phase phase) {
+    DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
+    deliverableFundingSourceAdd.setActive(true);
+    deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
+    deliverableFundingSourceAdd.setCreatedBy(deliverableFundingSource.getCreatedBy());
+    deliverableFundingSourceAdd.setModificationJustification(deliverableFundingSource.getModificationJustification());
+    deliverableFundingSourceAdd.setModifiedBy(deliverableFundingSource.getModifiedBy());
+    deliverableFundingSourceAdd.setPhase(phase);
+    deliverableFundingSourceAdd.setDeliverable(deliverableFundingSource.getDeliverable());
+    deliverableFundingSourceAdd.setFundingSource(deliverableFundingSource.getFundingSource());
+    deliverableFundingSourceDAO.save(deliverableFundingSourceAdd);
+    return deliverableFundingSourceAdd;
+  }
+
+  @Override
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
     deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSourceId);

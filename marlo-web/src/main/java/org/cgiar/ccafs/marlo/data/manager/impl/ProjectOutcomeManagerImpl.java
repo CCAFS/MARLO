@@ -16,6 +16,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectNextuserDAO;
@@ -43,15 +45,19 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   private ProjectNextuserDAO projectNextuserDAO;
   private ProjectMilestoneDAO projectMilestoneDAO;
 
+  private CrpProgramOutcomeDAO crpProgramOutcomeDAO;
+  private CrpMilestoneDAO crpMilestoneDAO;
 
   @Inject
   public ProjectOutcomeManagerImpl(ProjectOutcomeDAO projectOutcomeDAO, PhaseDAO phaseMySQLDAO,
-    ProjectMilestoneDAO projectMilestoneDAO, ProjectNextuserDAO projectNextuserDAO) {
+    ProjectMilestoneDAO projectMilestoneDAO, ProjectNextuserDAO projectNextuserDAO, CrpMilestoneDAO crpMilestoneDAO,
+    CrpProgramOutcomeDAO crpProgramOutcomeDAO) {
     this.projectOutcomeDAO = projectOutcomeDAO;
+    this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
     this.projectMilestoneDAO = projectMilestoneDAO;
     this.projectNextuserDAO = projectNextuserDAO;
-
+    this.crpMilestoneDAO = crpMilestoneDAO;
   }
 
   /**
@@ -72,7 +78,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
           projectMilestoneAdd.setModificationJustification("");
           projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
-          projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
+          projectMilestoneAdd.setCrpMilestone(crpMilestoneDAO.getCrpMilestone(
+            projectMilestone.getCrpMilestone().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
+
           projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
           projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
           projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
@@ -81,7 +89,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectMilestoneAdd.setNarrativeTarget(projectMilestone.getNarrativeTarget());
           projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
           projectMilestoneAdd.setYear(projectMilestone.getYear());
-          projectMilestoneDAO.save(projectMilestoneAdd);
+          if (projectMilestoneAdd.getCrpMilestone() != null) {
+            projectMilestoneDAO.save(projectMilestoneAdd);
+          }
+
         }
 
       }
@@ -145,7 +156,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcomeAdd.setPhase(phase);
       projectOutcomeAdd.setAchievedUnit(projectOutcome.getAchievedUnit());
       projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
-      projectOutcomeAdd.setCrpProgramOutcome(projectOutcome.getCrpProgramOutcome());
+      projectOutcomeAdd.setCrpProgramOutcome(
+        crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
+
       projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
       projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
       projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
@@ -153,9 +166,12 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
       projectOutcomeAdd.setProject(projectOutcome.getProject());
       projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
-      projectOutcomeDAO.save(projectOutcomeAdd);
-      this.addMilestones(projectOutcome, projectOutcomeAdd);
-      this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
+      if (projectOutcomeAdd.getCrpProgramOutcome() != null) {
+        projectOutcomeDAO.save(projectOutcomeAdd);
+        this.addMilestones(projectOutcome, projectOutcomeAdd);
+        this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
+      }
+
     } else {
       if (phase.getEditable() != null && phase.getEditable()) {
         for (ProjectOutcome projectOutcomeAdd : projectOutcomes) {
@@ -204,7 +220,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcomeAdd.setPhase(phase);
       projectOutcomeAdd.setAchievedUnit(projectOutcome.getAchievedUnit());
       projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
-      projectOutcomeAdd.setCrpProgramOutcome(projectOutcome.getCrpProgramOutcome());
+      projectOutcomeAdd.setCrpProgramOutcome(
+        crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
       projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
       projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
       projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
@@ -212,10 +229,13 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
       projectOutcomeAdd.setProject(projectOutcome.getProject());
       projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
-      projectOutcomeDAO.save(projectOutcomeAdd);
-      this.addMilestones(projectOutcome, projectOutcomeAdd);
-      this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
-      return projectOutcomeAdd;
+      if (projectOutcomeAdd.getCrpProgramOutcome() != null) {
+        projectOutcomeDAO.save(projectOutcomeAdd);
+        this.addMilestones(projectOutcome, projectOutcomeAdd);
+        this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
+        return projectOutcomeAdd;
+      }
+
     }
 
     return null;

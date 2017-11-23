@@ -16,10 +16,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterKeyOutputDAO;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -38,16 +42,20 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
   private DeliverableDAO deliverableDAO;
   private DeliverableInfoDAO deliverableInfoDAO;
+  private CrpClusterOfActivityDAO crpClusterOfActivityDAO;
+  private CrpClusterKeyOutputDAO crpClusterKeyOutputDAO;
 
   // Managers
 
 
   @Inject
-  public DeliverableManagerImpl(DeliverableDAO deliverableDAO, PhaseDAO phaseDAO,
-    DeliverableInfoDAO deliverableInfoDAO) {
+  public DeliverableManagerImpl(DeliverableDAO deliverableDAO, PhaseDAO phaseDAO, DeliverableInfoDAO deliverableInfoDAO,
+    CrpClusterOfActivityDAO crpClusterOfActivityDAO, CrpClusterKeyOutputDAO crpClusterKeyOutputDAO) {
     this.deliverableDAO = deliverableDAO;
     this.phaseDAO = phaseDAO;
     this.deliverableInfoDAO = deliverableInfoDAO;
+    this.crpClusterOfActivityDAO = crpClusterOfActivityDAO;
+    this.crpClusterKeyOutputDAO = crpClusterKeyOutputDAO;
 
   }
 
@@ -57,6 +65,20 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+
+    if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+      CrpClusterKeyOutput crpClusterKeyOutput =
+        crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+      CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
+        .getCrpClusterOfActivityByIdentifierPhase(crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+      List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+        .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+        .collect(Collectors.toList());
+      if (!clusterKeyOutputs.isEmpty()) {
+        deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+      }
+    }
+
     deliverableInfo.setPhase(phase);
     deliverableInfoDAO.save(deliverableInfo);
     return deliverableInfo.getDeliverable();
@@ -115,6 +137,21 @@ public class DeliverableManagerImpl implements DeliverableManager {
         .collect(Collectors.toList());
       for (DeliverableInfo deliverableInfo : deliverablesInfo) {
         deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+        if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+          CrpClusterKeyOutput crpClusterKeyOutput =
+            crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+          CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
+            crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+          List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+            .filter(
+              c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+            .collect(Collectors.toList());
+          if (!clusterKeyOutputs.isEmpty()) {
+            deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+          }
+        }
+
+        deliverableInfo.setPhase(phase);
         deliverableInfoDAO.save(deliverableInfo);
       }
 

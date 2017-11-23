@@ -147,7 +147,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
    * @param projectPartnerAdd Partner new
    */
 
-  private void addPersons(ProjectPartner projectPartner, ProjectPartner projectPartnerAdd) {
+  private void addPersons(ProjectPartner projectPartner, Long newPartern) {
 
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
@@ -157,10 +157,11 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         projectPartnerPersonAdd.setCreatedBy(projectPartner.getCreatedBy());
         projectPartnerPersonAdd.setModificationJustification(projectPartner.getModificationJustification());
         projectPartnerPersonAdd.setModifiedBy(projectPartner.getCreatedBy());
-        projectPartnerPersonAdd.setProjectPartner(projectPartnerAdd);
+        projectPartnerPersonAdd.setProjectPartner(projectPartnerDAO.find(newPartern));
         projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
-        projectPartnerPersonDAO.save(projectPartnerPersonAdd);
+        projectPartnerPersonAdd = projectPartnerPersonDAO.save(projectPartnerPersonAdd);
+        int a = 0;
       }
     }
   }
@@ -194,7 +195,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
       if (projectPartnerAdd.getId() != null) {
 
-        this.addPersons(projectPartner, projectPartnerAdd);
+        this.addPersons(projectPartner, projectPartnerAdd.getId());
         this.addContributors(projectPartner, projectPartnerAdd, phase);
         this.addOffices(projectPartner, projectPartnerAdd);
       }
@@ -240,12 +241,11 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       projectPartnerAdd.setProject(projectPartner.getProject());
       projectPartnerAdd = projectPartnerDAO.save(projectPartnerAdd);
 
-      if (projectPartnerAdd.getId() != null) {
 
-        this.addPersons(projectPartner, projectPartnerAdd);
-        this.addContributors(projectPartner, projectPartnerAdd, phase);
-        this.addOffices(projectPartner, projectPartnerAdd);
-      }
+      this.addPersons(projectPartner, projectPartnerAdd.getId());
+      this.addContributors(projectPartner, projectPartnerAdd, phase);
+      this.addOffices(projectPartner, projectPartnerAdd);
+
       return projectPartnerAdd;
     }
     return null;
@@ -263,25 +263,26 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   @Override
   public void deleteProjectPartner(long projectPartnerId) {
 
-    projectPartnerDAO.deleteProjectPartner(projectPartnerId);
 
     ProjectPartner projectPartner = this.getProjectPartnerById(projectPartnerId);
+    projectPartnerDAO.deleteProjectPartner(projectPartnerId);
     for (ProjectPartnerContribution projectPartnerContribution : projectPartner.getProjectPartnerContributions()
       .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      projectPartnerContribution.setActive(false);
-      projectPartnerContributionDAO.save(projectPartnerContribution);
+
+      projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
     }
     for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getProjectPartnerPersons().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       projectPartnerPerson.setActive(false);
-      projectPartnerPersonDAO.save(projectPartnerPerson);
+      projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
     }
     for (ProjectPartnerLocation projectPartnerLocation : projectPartner.getProjectPartnerLocations().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      projectPartnerLocation.setActive(false);
-      projectPartnerLocationDAO.save(projectPartnerLocation);
+
+      projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
     }
     Phase currentPhase = phaseDAO.find(projectPartner.getPhase().getId());
+
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
       if (projectPartner.getPhase().getNext() != null) {
@@ -302,24 +303,24 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
         .collect(Collectors.toList());
       for (ProjectPartner partner : partners) {
-        partner.setActive(false);
+
         for (ProjectPartnerContribution projectPartnerContribution : partner.getProjectPartnerContributions().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           projectPartnerContribution.setActive(false);
-          projectPartnerContributionDAO.save(projectPartnerContribution);
+          projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
         }
         for (ProjectPartnerPerson projectPartnerPerson : partner.getProjectPartnerPersons().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           projectPartnerPerson.setActive(false);
-          projectPartnerPersonDAO.save(projectPartnerPerson);
+          projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
         }
         for (ProjectPartnerLocation projectPartnerLocation : partner.getProjectPartnerLocations().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           projectPartnerLocation.setActive(false);
-          projectPartnerLocationDAO.save(projectPartnerLocation);
+          projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
         }
 
-        projectPartnerDAO.save(partner);
+        projectPartnerDAO.deleteProjectPartner(partner.getId());
       }
     }
     if (phase.getNext() != null) {
