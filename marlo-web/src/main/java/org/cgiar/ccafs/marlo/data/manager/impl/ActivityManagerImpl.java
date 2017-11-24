@@ -20,14 +20,17 @@ import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -44,16 +47,18 @@ public class ActivityManagerImpl implements ActivityManager {
   private ProjectDAO projectDAO;
   private DeliverableActivityDAO deliverableActivityDAO;
 
+  private ProjectPartnerPersonDAO projectPartnerPersonDAO;
   // Managers
 
 
   @Inject
   public ActivityManagerImpl(ActivityDAO activityDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO,
-    DeliverableActivityDAO deliverableActivityDAO) {
+    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO) {
     this.activityDAO = activityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
     this.deliverableActivityDAO = deliverableActivityDAO;
+    this.projectPartnerPersonDAO = projectPartnerPersonDAO;
   }
 
   /**
@@ -76,7 +81,7 @@ public class ActivityManagerImpl implements ActivityManager {
     activityAdd.setModifiedBy(activity.getCreatedBy());
     activityAdd.setPhase(phase);
     activityAdd.setProject(projectDAO.find(activity.getProject().getId()));
-    activityAdd.setProjectPartnerPerson(activity.getProjectPartnerPerson());
+    activityAdd.setProjectPartnerPerson(this.getPartnerPerson(phase, activity.getProjectPartnerPerson()));
     activityAdd.setStartDate(activity.getStartDate());
     activityAdd.setTitle(activity.getTitle());
   }
@@ -90,14 +95,37 @@ public class ActivityManagerImpl implements ActivityManager {
    * @param activityAdd the new activity base
    */
   public void cloneDeliverableActivity(DeliverableActivity deliverableActivityAdd,
-    DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd) {
-    deliverableActivityAdd.setActive(false);
+    DeliverableActivity deliverableActivity, Activity activity, Activity activityAdd, Phase phase) {
+    deliverableActivityAdd.setActive(true);
     deliverableActivityAdd.setActiveSince(activity.getActiveSince());
     deliverableActivityAdd.setActivity(activityAdd);
     deliverableActivityAdd.setCreatedBy(activity.getCreatedBy());
     deliverableActivityAdd.setDeliverable(deliverableActivity.getDeliverable());
     deliverableActivityAdd.setModificationJustification(activity.getModificationJustification());
     deliverableActivityAdd.setModifiedBy(activity.getModifiedBy());
+    deliverableActivityAdd.setPhase(phase);
+  }
+
+  @Override
+  public Activity copyActivity(Activity activity, Phase phase) {
+
+    Activity activityAdd = new Activity();
+    this.cloneActivity(activityAdd, activity, phase);
+    activityAdd = activityDAO.save(activityAdd);
+    if (activityAdd.getComposeID() == null) {
+      activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
+      activityAdd.setComposeID(activity.getComposeID());
+
+      activityAdd = activityDAO.save(activityAdd);
+    }
+    if (activity.getDeliverables() != null) {
+      for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+        DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
+        this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
+        deliverableActivityDAO.save(deliverableActivityAdd);
+      }
+    }
+    return activityAdd;
   }
 
   public void deletActivityPhase(Phase next, long projecID, Activity activity) {
@@ -119,8 +147,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
   @Override
   public void deleteActivity(long activityId) {
-    activityDAO.deleteActivity(activityId);
-       Activity activity = this.getActivityById(activityId);
+
+    Activity activity = this.getActivityById(activityId);
+    activity.setActive(false);
+    activity = activityDAO.save(activity);
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (activity.getPhase().getNext() != null) {
@@ -146,6 +176,23 @@ public class ActivityManagerImpl implements ActivityManager {
   public Activity getActivityById(long activityID) {
 
     return activityDAO.find(activityID);
+  }
+
+  private ProjectPartnerPerson getPartnerPerson(Phase phase, ProjectPartnerPerson projectPartnerPerson) {
+    if (projectPartnerPerson != null) {
+      projectPartnerPerson = projectPartnerPersonDAO.find(projectPartnerPerson.getId());
+
+      List<Map<String, Object>> result = projectPartnerPersonDAO.findPartner(
+        projectPartnerPerson.getProjectPartner().getInstitution().getId(), phase.getId(),
+        projectPartnerPerson.getProjectPartner().getProject().getId(), projectPartnerPerson.getUser().getId());
+      if (result.size() > 0) {
+        Long id = Long.parseLong(result.get(0).get("id").toString());
+        return projectPartnerPersonDAO.find(id);
+      }
+    }
+
+    return null;
+
   }
 
 
@@ -180,7 +227,7 @@ public class ActivityManagerImpl implements ActivityManager {
         if (activity.getDeliverables() != null) {
           for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
             DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd);
+            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
             deliverableActivityDAO.save(deliverableActivityAdd);
           }
         }
@@ -196,7 +243,7 @@ public class ActivityManagerImpl implements ActivityManager {
             .filter(c -> c.isActive() && c.getDeliverable().equals(deliverableActivity.getDeliverable()))
             .collect(Collectors.toList()).isEmpty()) {
             DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd);
+            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
             deliverableActivityDAO.save(deliverableActivityAdd);
           }
         }
