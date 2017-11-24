@@ -33,11 +33,6 @@
             <span class="glyphicon glyphicon-chevron-down"></span> CRP/Center ([#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if])
           </a>
           <ul class="subMenu">
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
           [#if crpList?has_content]
             <li text-align:center> -- CRPs -- </li>
             [#list crpList as crp]
@@ -58,11 +53,8 @@
               [/#if]
             [/#list]              
           [/#if]
-          </ul>
-          
-        </li>
-         
-         
+          </ul>          
+        </li>         
          [/#if]
          <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
         <div class="clearfix"></div>
