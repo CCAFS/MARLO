@@ -39,7 +39,8 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    super.update(deliverablePartnership);
+    super.delete(deliverablePartnership);
+
   }
 
 

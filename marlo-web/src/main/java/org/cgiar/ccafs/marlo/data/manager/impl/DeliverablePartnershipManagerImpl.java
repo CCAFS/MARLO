@@ -117,9 +117,11 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
 
-    deliverablePartnershipDAO.deleteDeliverablePartnership(deliverablePartnershipId);
+
     DeliverablePartnership deliverablePartnership = this.getDeliverablePartnershipById(deliverablePartnershipId);
     Phase currentPhase = phaseDAO.find(deliverablePartnership.getPhase().getId());
+    deliverablePartnership.setActive(false);
+    deliverablePartnershipDAO.save(deliverablePartnership);
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (deliverablePartnership.getPhase().getNext() != null) {
         this.deleteDeliverablePartnership(deliverablePartnership.getPhase().getNext(),
