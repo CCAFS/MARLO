@@ -325,7 +325,7 @@
 						<!-- intitucion and country of institution -->
 						<div class="form-group row">
 							<div class="col-md-6">
-								[@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="name" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
+								[@customForm.select name="capdev.participant.institutions.id" listName="institutions" keyFieldName="id" displayFieldName="composedName" help="" i18nkey="capdev.participant.Institution" className="" multiple=false placeholder="capdev.select" editable=editable /]
 
 								[#if editable]
 									<div class="note participantMessage">
