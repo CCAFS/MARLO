@@ -75,6 +75,14 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
   }
 
+  @Override
+  public ProjectBudget copyProjectBudget(ProjectBudget projectBudget, Phase phase) {
+    ProjectBudget budgetAdd = new ProjectBudget();
+    this.cloneBudget(budgetAdd, projectBudget, phase);
+    budgetAdd = projectBudgetDAO.save(budgetAdd);
+    return budgetAdd;
+  }
+
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
     if (phase.getEditable() != null && phase.getEditable()) {
@@ -98,15 +106,17 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   @Override
   public void deleteProjectBudget(long projectBudgetId) {
 
-      projectBudgetDAO.deleteProjectBudget(projectBudgetId);
+
     ProjectBudget projectBudget = this.getProjectBudgetById(projectBudgetId);
+    projectBudget.setActive(false);
+    projectBudgetDAO.save(projectBudget);
     Phase currentPhase = phaseDAO.find(projectBudget.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectBudget.getPhase().getNext() != null) {
         this.deletBudgetPhase(projectBudget.getPhase().getNext(), projectBudget.getProject().getId(), projectBudget);
       }
     }
-  
+
   }
 
   @Override

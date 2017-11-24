@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.ProjectBudgetManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
 import java.util.List;
@@ -42,6 +43,9 @@ public interface ProjectBudgetManager {
     long idPhase);
 
 
+  public ProjectBudget copyProjectBudget(ProjectBudget projectBudget, Phase phase);
+
+
   /**
    * This method removes a specific projectBudget value from the database.
    * 
@@ -58,7 +62,6 @@ public interface ProjectBudgetManager {
    * @return true if the projectBudget exists, false otherwise.
    */
   public boolean existProjectBudget(long projectBudgetID);
-
 
   /**
    * This method gets a list of projectBudget that are active
@@ -108,4 +111,5 @@ public interface ProjectBudgetManager {
    *         or -1 is some error occurred.
    */
   public ProjectBudget saveProjectBudget(ProjectBudget projectBudget);
+
 }

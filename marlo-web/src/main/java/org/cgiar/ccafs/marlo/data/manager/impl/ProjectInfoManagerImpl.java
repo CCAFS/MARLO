@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -77,9 +79,9 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   private DeliverablePartnershipManager deliverablePartnershipManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private DeliverableDAO deliverableDAO;
-
   private DeliverableActivityDAO deliverableActivityDAO;
   private ActivityManager activityManager;
+  private ProjectBudgetManager projectBudgetManager;
 
   @Inject
   public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
@@ -89,7 +91,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     DeliverablePartnershipManager deliverablePartnershipManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager, DeliverableDAO deliverableDAO,
     DeliverableActivityDAO deliverableActivityDAO, DeliverableManager deliverableManager,
-    ActivityManager activityManager) {
+    ActivityManager activityManager, ProjectBudgetManager projectBudgetManager) {
     this.projectInfoDAO = projectInfoDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
     this.projectPhaseDAO = projectPhaseDAO;
@@ -106,6 +108,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.activityManager = activityManager;
     this.deliverableActivityDAO = deliverableActivityDAO;
+    this.projectBudgetManager = projectBudgetManager;
 
   }
 
@@ -222,6 +225,12 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
               projectOutcomeManager.deleteProjectOutcome(outcome.getId());
             }
 
+            List<ProjectBudget> budgets = projectInfoPhase.getProject().getProjectBudgets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
+              .collect(Collectors.toList());
+            for (ProjectBudget projectBudget : budgets) {
+              projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+            }
             List<Activity> activities = projectInfoPhase.getProject().getActivities().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
               .collect(Collectors.toList());
@@ -335,6 +344,11 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
               activity.setDeliverables(
                 activity.getDeliverableActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
               activityManager.copyActivity(activity, phase);
+            }
+            List<ProjectBudget> budgets = projectInfo.getProject().getProjectBudgets().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(projectInfo.getPhase())).collect(Collectors.toList());
+            for (ProjectBudget projectBudget : budgets) {
+              projectBudgetManager.copyProjectBudget(projectBudget, phase);
             }
             Phase phaseDb = phaseMySQLDAO.find(projectInfo.getPhase().getId());
             List<Deliverable> deliverableInfos = projectInfo.getProject().getDeliverables().stream()
