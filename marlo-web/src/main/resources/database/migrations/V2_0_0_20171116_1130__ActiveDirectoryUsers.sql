@@ -1,9 +1,9 @@
 CREATE TABLE `ad_user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `login` varchar(100) NULL,
-  `first_name` varchar(45) NULL,
-  `middle_name` varchar(45) NULL,
-  `last_name` varchar(45) NULL,
+  `login` varchar(200) NULL,
+  `first_name` varchar(200) NULL,
+  `middle_name` varchar(200) NULL,
+  `last_name` varchar(200) NULL,
   `email` varchar(100) NULL,
   `is_active` tinyint(1) NULL,
   `created_by` bigint(20) NULL,

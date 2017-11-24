@@ -10,16 +10,16 @@
 			<generator class="identity" />
 		</id>
 		<property name="login" type="string">
-			<column name="login" />
+			<column name="login" length="200"/>
 		</property>
 		<property name="firstName" type="string">
-			<column name="first_name" length="45" />
+			<column name="first_name" length="200" />
 		</property>
 		<property name="middleName" type="string">
-			<column name="middle_name" length="45" />
+			<column name="middle_name" length="200" />
 		</property>
 		<property name="lastName" type="string">
-			<column name="last_name" length="45" />
+			<column name="last_name" length="200" />
 		</property>
 		<property name="email" type="string">
 			<column name="email" length="100" />
