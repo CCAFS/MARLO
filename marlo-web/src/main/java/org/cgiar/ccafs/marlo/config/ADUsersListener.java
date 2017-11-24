@@ -48,7 +48,7 @@ public class ADUsersListener implements ServletContextListener {
 
 
       Trigger trigger = TriggerBuilder.newTrigger().withIdentity("anyTriggerName", "group1")
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 0/10 * * * ?")).build();
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 0/60 * * * ?")).build();
 
       Scheduler scheduler = new StdSchedulerFactory().getScheduler();
       scheduler.getContext().put("injector", injector);
