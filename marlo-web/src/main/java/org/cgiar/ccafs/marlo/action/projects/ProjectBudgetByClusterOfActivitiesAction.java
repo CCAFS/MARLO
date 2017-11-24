@@ -385,7 +385,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
         project.setBudgetsCluserActvities(project.getProjectBudgetsCluserActvities().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
@@ -494,64 +494,62 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
-    for (ProjectBudgetsCluserActvity projectBudgetCluserActivityDB : projectDB.getProjectBudgetsCluserActvities()) {
-
-      projectDB.setBudgetsCluserActvities(projectDB.getProjectBudgetsCluserActvities().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+    projectDB.setBudgetsCluserActvities(projectDB.getProjectBudgetsCluserActvities().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
 
-      for (ProjectBudgetsCluserActvity projectBudget : projectDB.getBudgetsCluserActvities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+    for (ProjectBudgetsCluserActvity projectBudget : projectDB.getBudgetsCluserActvities().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        if (project.getBudgetsCluserActvities() == null) {
-          project.setBudgetsCluserActvities(new ArrayList<>());
-        }
-        if (projectBudget.getYear() == this.getCurrentCycleYear()) {
-          if (!project.getBudgetsCluserActvities().contains(projectBudget)) {
-            projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudget.getId());
-
-          }
-
-        }
-
-        if (project.getBudgetsCluserActvities() != null) {
-          for (ProjectBudgetsCluserActvity projectBudgetCluserActivityUI : project.getBudgetsCluserActvities()) {
-            if (projectBudgetCluserActivityUI != null) {
-              if (projectBudgetCluserActivityUI.getId() == null) {
-                projectBudgetCluserActivityUI.setCreatedBy(this.getCurrentUser());
-
-                projectBudgetCluserActivityUI.setActiveSince(new Date());
-                projectBudgetCluserActivityUI.setActive(true);
-                projectBudgetCluserActivityUI.setProject(project);
-                projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
-                projectBudgetCluserActivityUI.setModificationJustification("");
-                projectBudget.setPhase(this.getActualPhase());
-                projectBudgetCluserActivityUI =
-                  projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
-
-              } else {
-                ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
-                  .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
-
-                ProjectBudgetDB.setActive(true);
-                ProjectBudgetDB.setProject(project);
-                ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
-                ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-                ProjectBudgetDB.setModifiedBy(this.getCurrentUser());
-                ProjectBudgetDB.setModificationJustification("");
-                projectBudget.setPhase(this.getActualPhase());
-                ProjectBudgetDB = projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(ProjectBudgetDB);
-              }
-
-              if (projectBudget.getYear() >= this.getActualPhase().getYear()) {
-                projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudget);
-              }
-
-            }
-
-          }
-        }
+      if (project.getBudgetsCluserActvities() == null) {
+        project.setBudgetsCluserActvities(new ArrayList<>());
       }
+      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
+        if (!project.getBudgetsCluserActvities().contains(projectBudget)) {
+          projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudget.getId());
+
+        }
+
+      }
+    }
+    if (project.getBudgetsCluserActvities() != null) {
+      for (ProjectBudgetsCluserActvity projectBudgetCluserActivityUI : project.getBudgetsCluserActvities()) {
+        if (projectBudgetCluserActivityUI != null) {
+          if (projectBudgetCluserActivityUI.getId() == null) {
+            projectBudgetCluserActivityUI.setCreatedBy(this.getCurrentUser());
+
+            projectBudgetCluserActivityUI.setActiveSince(new Date());
+            projectBudgetCluserActivityUI.setActive(true);
+            projectBudgetCluserActivityUI.setProject(project);
+            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
+            projectBudgetCluserActivityUI.setModificationJustification("");
+            projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
+            projectBudgetCluserActivityUI =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+
+          } else {
+            ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
+              .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
+
+            ProjectBudgetDB.setActive(true);
+            ProjectBudgetDB.setProject(project);
+            ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
+            ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
+            ProjectBudgetDB.setModifiedBy(this.getCurrentUser());
+            ProjectBudgetDB.setModificationJustification("");
+            projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
+            ProjectBudgetDB = projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(ProjectBudgetDB);
+          }
+
+          if (projectBudgetCluserActivityUI.getYear() >= this.getActualPhase().getYear()) {
+            projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+          }
+
+        }
+
+
+      }
+
     }
   }
 

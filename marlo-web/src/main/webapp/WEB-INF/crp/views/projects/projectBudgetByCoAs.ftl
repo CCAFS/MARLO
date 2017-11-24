@@ -20,16 +20,7 @@
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
-[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
-[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
-[#assign budgetCounter = 0 /]
-[#assign type = { 
-  'w1w2': 'w1w2',
-  'w3': '2',
-  'bilateral': '3',
-  'centerFunds': 'centerFunds'
-} /]
+
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -43,6 +34,16 @@
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
+[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+[#assign budgetCounter = 0 /]
+[#assign type = { 
+  'w1w2': 'w1w2',
+  'w3': '2',
+  'bilateral': '3',
+  'centerFunds': 'centerFunds'
+} /]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]

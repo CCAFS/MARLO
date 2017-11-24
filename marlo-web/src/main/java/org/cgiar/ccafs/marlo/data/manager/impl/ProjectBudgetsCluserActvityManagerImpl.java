@@ -67,6 +67,17 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
   }
 
+  @Override
+  public ProjectBudgetsCluserActvity
+    copyProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity, Phase phase) {
+    ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
+    this.cloneBudget(budgetAdd, projectBudgetsCluserActvity, phase);
+    budgetAdd = projectBudgetsCluserActvityDAO.save(budgetAdd);
+    return budgetAdd;
+
+
+  }
+
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudgetsCluserActvity projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
     if (phase.getEditable() != null && phase.getEditable()) {
