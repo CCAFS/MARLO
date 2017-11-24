@@ -60,8 +60,8 @@ public class AdUserManagerImpl implements AdUserManager {
   }
 
   @Override
-  public AdUser findByUserLogin(String login) {
-    return adUserDAO.findByLogin(login);
+  public AdUser findByUserEmail(String email) {
+    return adUserDAO.findByEmail(email);
   }
 
   @Override
@@ -74,6 +74,11 @@ public class AdUserManagerImpl implements AdUserManager {
   public AdUser saveAdUser(AdUser adUser) {
 
     return adUserDAO.save(adUser);
+  }
+
+  @Override
+  public List<AdUser> searchUsers(String parameter) {
+    return adUserDAO.searchUsers(parameter);
   }
 
 

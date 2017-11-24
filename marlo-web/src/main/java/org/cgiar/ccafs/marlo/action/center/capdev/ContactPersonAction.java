@@ -17,11 +17,12 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AdUserManager;
+import org.cgiar.ccafs.marlo.data.model.AdUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.ADConexion;
 import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,11 +37,13 @@ public class ContactPersonAction extends BaseAction {
   private static final long serialVersionUID = 1L;
 
   private List<Map<String, Object>> users;
+  private AdUserManager adUsermanager;
 
 
   @Inject
-  public ContactPersonAction(APConfig config) {
+  public ContactPersonAction(APConfig config, AdUserManager adUsermanager) {
     super(config);
+    this.adUsermanager = adUsermanager;
   }
 
 
@@ -88,10 +91,14 @@ public class ContactPersonAction extends BaseAction {
     ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
 
     queryParameter = queryParameter.trim();
-    List<LDAPUser> ad_users = adConection.searchUsers(this.getADFilter(queryParameter), "OU=CIATHUB,DC=CGIARAD,DC=ORG");
+    // List<LDAPUser> ad_users = adConection.searchUsers(this.getADFilter(queryParameter),
+    // "OU=CIATHUB,DC=CGIARAD,DC=ORG");
+
+    List<AdUser> ad_users = adUsermanager.searchUsers(queryParameter);
+
     this.users = new ArrayList<>();
     int idUser = 0;
-    for (LDAPUser user : ad_users) {
+    for (AdUser user : ad_users) {
       idUser++;
       Map<String, Object> userMap = new HashMap<>();
       userMap.put("idUser", idUser);

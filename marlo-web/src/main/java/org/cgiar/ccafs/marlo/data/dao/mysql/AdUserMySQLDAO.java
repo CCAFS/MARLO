@@ -68,8 +68,8 @@ public class AdUserMySQLDAO extends AbstractMarloDAO<AdUser, Long> implements Ad
 
 
   @Override
-  public AdUser findByLogin(String login) {
-    String query = "from " + AdUser.class.getName() + " where login='" + login + "'";
+  public AdUser findByEmail(String email) {
+    String query = "from " + AdUser.class.getName() + " where email='" + email + "'";
     AdUser obj = super.findSingleResult(AdUser.class, query);
     if (obj != null) {
       return obj;
@@ -87,6 +87,17 @@ public class AdUserMySQLDAO extends AbstractMarloDAO<AdUser, Long> implements Ad
 
 
     return adUser;
+  }
+
+  @Override
+  public List<AdUser> searchUsers(String parameter) {
+    String query = "from " + AdUser.class.getName() + " where is_active=1 and first_name like '" + parameter
+      + "%' or last_name like '" + parameter + "%' or middle_name like '" + parameter + "%'";
+    List<AdUser> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
 

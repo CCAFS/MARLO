@@ -63,7 +63,7 @@ public interface AdUserDAO {
    * @param adUserID is the adUser identification.
    * @return a AdUser object.
    */
-  public AdUser findByLogin(String login);
+  public AdUser findByEmail(String login);
 
 
   /**
@@ -75,4 +75,12 @@ public interface AdUserDAO {
    *         or -1 is some error occurred.
    */
   public AdUser save(AdUser adUser);
+
+
+  /**
+   * This method gets a list of adUser that are active and match with the parameter
+   * 
+   * @return a list from AdUser null if no exist records
+   */
+  public List<AdUser> searchUsers(String parameter);
 }

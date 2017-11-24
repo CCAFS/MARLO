@@ -17,12 +17,14 @@ package org.cgiar.ccafs.marlo.quartz;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AdUserManager;
+import org.cgiar.ccafs.marlo.data.model.AdUser;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
 import org.cgiar.ciat.auth.ADConexion;
 import org.cgiar.ciat.auth.LDAPUser;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.inject.Injector;
@@ -69,36 +71,34 @@ public class ADUsersJob implements Job {
 
     ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
     List<LDAPUser> users = adConection.searchUsers("(sAMAccountName=*)", "DC=CGIARAD,DC=ORG");
-    // LDAPService service = new LDAPService();
-    // List<LDAPUser> users = service.searchUsers("(sAMAccountName=*)");
-    // LDAPUser user = service.searchUserByEmail("l.o.gonzalez@cgiar.org");
-    // LDAPUser user = adConection.searchUserByEmail("l.o.gonzalez@cgiar.org");
-    System.out.println("=======> users size== " + users.size());
-
 
     for (LDAPUser user : users) {
       if (user != null) {
         AuditLogContextProvider.push(new AuditLogContext());
-        System.out.println("Login ===>" + user.getLogin());
-        // try {
-        // AdUser adUser = adUsermanager.findByUserLogin(user.getLogin());
-        // if (adUser == null) {
-        // adUser = new AdUser();
-        // adUser.setLogin(user.getLogin());
-        // adUser.setFirstName(user.getFirstName());
-        // adUser.setMiddleName(user.getMiddleName());
-        // adUser.setLastName(user.getLastName());
-        // adUser.setEmail(user.getEmail());
-        // adUser.setActive(true);
-        // adUser.setActiveSince(new Date());
-        // adUser.setCreatedBy(null);
-        // adUser.setModifiedBy(null);
-        // adUsermanager.saveAdUser(adUser);
-        // }
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // LOG.error("Could not save entity!" + user.getLogin());
-        // }
+        if (user.getEmail() != null) {
+          if (!user.getEmail().equals("")) {
+            try {
+              AdUser adUser = adUsermanager.findByUserEmail(user.getEmail());
+              if (adUser == null) {
+                adUser = new AdUser();
+                adUser.setLogin(user.getLogin());
+                adUser.setFirstName(user.getFirstName());
+                adUser.setMiddleName(user.getMiddleName());
+                adUser.setLastName(user.getLastName());
+                adUser.setEmail(user.getEmail());
+                adUser.setActive(true);
+                adUser.setActiveSince(new Date());
+                adUser.setCreatedBy(null);
+                adUser.setModifiedBy(null);
+                adUsermanager.saveAdUser(adUser);
+              }
+            } catch (Exception e) {
+              e.printStackTrace();
+              LOG.error("Could not save entity!" + user.getLogin());
+            }
+          }
+        }
+
       }
     }
     sessionFactory.getCurrentSession().getTransaction().commit();

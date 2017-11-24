@@ -59,7 +59,7 @@ public interface AdUserManager {
    * 
    * @return a list from AdUser null if no exist records
    */
-  public AdUser findByUserLogin(String login);
+  public AdUser findByUserEmail(String email);
 
 
   /**
@@ -79,6 +79,14 @@ public interface AdUserManager {
    *         or -1 is some error occurred.
    */
   public AdUser saveAdUser(AdUser adUser);
+
+
+  /**
+   * This method gets a list of adUser that are active and macth with the parameter
+   * 
+   * @return a list from AdUser null if no exist records
+   */
+  public List<AdUser> searchUsers(String parameter);
 
 
 }
