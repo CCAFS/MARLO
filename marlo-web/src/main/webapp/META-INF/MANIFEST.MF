@@ -1,10 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: marlo-web
-Implementation-Version: 4.1.8-SNAPSHOT
+Implementation-Version: 4.2.0-SNAPSHOT
 Built-By: hjimenez
 Specification-Title: marlo-web
 Implementation-Vendor-Id: org.cgiar.ccafs
 Created-By: Apache Maven 3.3.9
 Build-Jdk: 1.8.0_131
-Specification-Version: 4.1.8-SNAPSHOT
-
+Specification-Version: 4.2.0-SNAPSHOT
