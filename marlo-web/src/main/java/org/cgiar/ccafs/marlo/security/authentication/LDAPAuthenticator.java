@@ -61,7 +61,6 @@ public class LDAPAuthenticator implements Authenticator {
       } else {
         service.setInternalConnection(true);
       }
-
       con = service.authenticateUser(email, password);
 
       if (con != null) {
