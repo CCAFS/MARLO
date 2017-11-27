@@ -81,7 +81,9 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   private int totalMen = 0;
   private int totalWomen = 0;
   private int totalOther = 0;
-  private long researchAreaID;
+  private Long researchAreaID;
+  private Long researchProgramID;
+  private Long isFrom;
   private int year;
 
   @Inject
@@ -605,6 +607,11 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   }
 
 
+  public Long getIsFrom() {
+    return isFrom;
+  }
+
+
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(new String[] {"title"}, new Class[] {String.class});
@@ -619,7 +626,6 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getOutputTypeTableModel() {
     // Initialization of Model
     final TypedTableModel model = new TypedTableModel(
@@ -630,6 +636,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
+
 
   private TypedTableModel getProgramsTableModel() {
     // Initialization of Model
@@ -646,8 +653,13 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   }
 
 
-  public long getResearchAreaID() {
+  public Long getResearchAreaID() {
     return researchAreaID;
+  }
+
+
+  public Long getResearchProgramID() {
+    return researchProgramID;
   }
 
 
@@ -688,10 +700,20 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   public void prepare() throws Exception {
     capDevs = new ArrayList<CapacityDevelopment>();
     try {
-      researchAreaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("raID")));
+      researchAreaID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("researchAreaID")));
+      researchProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("researchProgramID")));
       year = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter("year")));
+      isFrom = Long.parseLong(StringUtils.trim(this.getRequest().getParameter("isFrom")));
+
+    } catch (Exception e) {
+
+      LOG.error("Failed to get capdev from Database. Exception: " + e.getMessage());
+      throw e;
+
+    }
 
 
+    if (isFrom == 1) {
       if ((researchAreaID != -1) && (year == 0)) {
         capDevs = capdevService.findAll().stream().filter(
           cdl -> cdl.isActive() && (cdl.getResearchArea() != null) && (cdl.getResearchArea().getId() == researchAreaID))
@@ -709,38 +731,67 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
             capDevs.add(capdev);
           }
         }
-        System.out.println(capDevs.size());
       }
       if ((researchAreaID != -1) && (year != 0)) {
         List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
           .filter(cdl -> cdl.isActive() && (cdl.getResearchArea() != null)
             && ((cdl.getResearchArea().getId() == researchAreaID) && (cdl.getStartDate() != null)))
           .collect(Collectors.toList());
-        System.out.println(capdevs.size());
         for (CapacityDevelopment capdev : capdevs) {
-          System.out.println(capdev.getStartDate());
           Calendar startDate = Calendar.getInstance();
           startDate.setTime(capdev.getStartDate());
           int anio = startDate.get(Calendar.YEAR);
-          System.out.println(anio);
           if (anio == year) {
             capDevs.add(capdev);
           }
         }
-        System.out.println(capDevs.size());
 
       }
       if ((researchAreaID == -1) && (year == 0)) {
         capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
       }
-
-
-      Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-
-    } catch (final Exception e) {
-      LOG.error("Failed to get capdev from Database. Exception: " + e.getMessage());
-      throw e;
     }
+
+    if (isFrom == 2) {
+      if ((researchProgramID != -1) && (year == 0)) {
+        capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive() && (cdl.getResearchProgram() != null)
+          && (cdl.getResearchProgram().getId() == researchProgramID)).collect(Collectors.toList());
+      }
+
+      if ((researchProgramID == -1) && (year != 0)) {
+        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
+          .filter(cdl -> cdl.isActive() && (cdl.getStartDate() != null)).collect(Collectors.toList());
+        for (CapacityDevelopment capdev : capdevs) {
+          Calendar startDate = Calendar.getInstance();
+          startDate.setTime(capdev.getStartDate());
+          int anio = startDate.get(Calendar.YEAR);
+          if (anio == year) {
+            capDevs.add(capdev);
+          }
+        }
+      }
+      if ((researchProgramID != -1) && (year != 0)) {
+        List<CapacityDevelopment> capdevs = capdevService.findAll().stream()
+          .filter(cdl -> cdl.isActive() && (cdl.getResearchProgram() != null)
+            && ((cdl.getResearchProgram().getId() == researchProgramID) && (cdl.getStartDate() != null)))
+          .collect(Collectors.toList());
+        for (CapacityDevelopment capdev : capdevs) {
+          Calendar startDate = Calendar.getInstance();
+          startDate.setTime(capdev.getStartDate());
+          int anio = startDate.get(Calendar.YEAR);
+          if (anio == year) {
+            capDevs.add(capdev);
+          }
+        }
+
+      }
+      if ((researchProgramID == -1) && (year == 0)) {
+        capDevs = capdevService.findAll().stream().filter(cdl -> cdl.isActive()).collect(Collectors.toList());
+      }
+    }
+
+
+    Collections.sort(capDevs, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
     // capdev = capdevService.getCapacityDevelopmentById(capdevID);
   }
@@ -771,8 +822,18 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   }
 
 
-  public void setResearchAreaID(long researchAreaID) {
+  public void setIsFrom(Long isFrom) {
+    this.isFrom = isFrom;
+  }
+
+
+  public void setResearchAreaID(Long researchAreaID) {
     this.researchAreaID = researchAreaID;
+  }
+
+
+  public void setResearchProgramID(Long researchProgramID) {
+    this.researchProgramID = researchProgramID;
   }
 
 

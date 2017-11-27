@@ -133,7 +133,7 @@ public class Clone {
      */
 
 
-    String[] model = {"AdUser"};
+    String[] model = {"CapdevRangeAge"};
     for (String element : model) {
       generateDao(element);
       generateMysqlDao(element);

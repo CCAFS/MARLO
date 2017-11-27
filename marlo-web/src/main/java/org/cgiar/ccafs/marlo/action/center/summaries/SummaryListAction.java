@@ -51,11 +51,11 @@ public class SummaryListAction extends BaseAction {
   private List<CenterArea> researchAreas;
 
   private Center loggedCenter;
-  private final ICenterManager centerService;
+  private ICenterManager centerService;
 
-  private final ICenterProgramManager programService;
-  private final ICenterProjectManager projectService;
-  private final ICenterAreaManager researchAreaService;
+  private ICenterProgramManager programService;
+  private ICenterProjectManager projectService;
+  private ICenterAreaManager researchAreaService;
 
   @Inject
   public SummaryListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,

@@ -17,5 +17,19 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 public enum RangeAgeEnum {
+  Range_1("Under 12"), Range_2("12-17");
+
+  private String range;
+
+
+  private RangeAgeEnum(String range) {
+    this.range = range;
+  }
+
+
+  public String getRange() {
+    return range;
+  }
+
 
 }

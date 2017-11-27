@@ -44,6 +44,10 @@
 		<property name="gender" type="string">
 			<column name="gender"  length="10"/>
 		</property>
+		<many-to-one name="age" class="org.cgiar.ccafs.marlo.data.model.CapdevRangeAge"
+			fetch="select">
+			<column name="age" not-null="true" />
+		</many-to-one>
 		<many-to-one name="highestDegree"
 			class="org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree" fetch="select">
 			<column name="highest_degree" />
