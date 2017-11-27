@@ -47,6 +47,9 @@ public class Participant implements java.io.Serializable, IAuditLog {
   private String gender;
 
   @Expose
+  private CapdevRangeAge age;
+
+  @Expose
   private LocElement locElementsByCountryOfInstitucion;
 
   @Expose
@@ -110,10 +113,11 @@ public class Participant implements java.io.Serializable, IAuditLog {
   }
 
   public Participant(User modifiedBy, User createdBy, Long code, String name, String middleName, String lastName,
-    String gender, LocElement locElementsByCountryOfInstitucion, Institution institutions, String otherInstitution,
-    String institutionsSuggested, LocElement locElementsByCitizenship, CapdevHighestDegree highestDegree, String email,
-    String personalEmail, String reference, String supervisor, CapdevFoundingType fellowship, boolean active,
-    Date aciveSince, String modificationJustification, Set<CapdevParticipant> capdevParticipants) {
+    String gender, CapdevRangeAge age, LocElement locElementsByCountryOfInstitucion, Institution institutions,
+    String otherInstitution, String institutionsSuggested, LocElement locElementsByCitizenship,
+    CapdevHighestDegree highestDegree, String email, String personalEmail, String reference, String supervisor,
+    CapdevFoundingType fellowship, boolean active, Date aciveSince, String modificationJustification,
+    Set<CapdevParticipant> capdevParticipants) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.code = code;
@@ -121,6 +125,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
+    this.age = age;
     this.locElementsByCitizenship = locElementsByCitizenship;
     this.locElementsByCountryOfInstitucion = locElementsByCountryOfInstitucion;
     this.highestDegree = highestDegree;
@@ -142,6 +147,11 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return this.aciveSince;
   }
 
+  public CapdevRangeAge getAge() {
+    return age;
+  }
+
+
   public Set<CapdevParticipant> getCapdevParticipants() {
     return this.capdevParticipants;
   }
@@ -150,7 +160,6 @@ public class Participant implements java.io.Serializable, IAuditLog {
   public Long getCode() {
     return this.code;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -168,10 +177,10 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return this.gender;
   }
 
+
   public CapdevHighestDegree getHighestDegree() {
     return this.highestDegree;
   }
-
 
   @Override
   public Long getId() {
@@ -194,6 +203,7 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return locElementsByCitizenship;
   }
 
+
   public LocElement getLocElementsByCountryOfInstitucion() {
     return locElementsByCountryOfInstitucion;
   }
@@ -211,7 +221,6 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return middleName;
   }
 
-
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
@@ -222,10 +231,10 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
   }
-
 
   public String getOtherInstitution() {
     return otherInstitution;
@@ -235,14 +244,15 @@ public class Participant implements java.io.Serializable, IAuditLog {
     return personalEmail;
   }
 
+
   public String getReference() {
     return this.reference;
   }
 
-
   public String getSupervisor() {
     return this.supervisor;
   }
+
 
   @Override
   public boolean isActive() {
@@ -260,6 +270,11 @@ public class Participant implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setAge(CapdevRangeAge age) {
+    this.age = age;
+  }
+
+
   public void setCapdevParticipants(Set<CapdevParticipant> capdevParticipants) {
     this.capdevParticipants = capdevParticipants;
   }
@@ -274,11 +289,9 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setEmail(String email) {
     this.email = email;
   }
-
 
   public void setFellowship(CapdevFoundingType fellowship) {
     this.fellowship = fellowship;
@@ -292,9 +305,11 @@ public class Participant implements java.io.Serializable, IAuditLog {
     this.highestDegree = highestDegree;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setInstitutions(Institution institutions) {
     this.institutions = institutions;

@@ -304,6 +304,14 @@
 								[@customForm.select name="capdev.participant.gender" value="'${(capdev.participant.gender)!}'" listName="genders" keyFieldName="value" displayFieldName="displayName" help="" i18nkey="capdev.participant.gender"  placeholder="capdev.select" required=true editable=editable className=""/]
 							</div>
 						</div>
+
+						<!-- age -->
+						<div class="form-group row">
+							<div class="col-md-6">
+								[@customForm.select name="capdev.participant.age.id"  listName="rangeAgeList" keyFieldName="id" displayFieldName="range" help="" i18nkey="Range age"  placeholder="capdev.select" required=false editable=editable className=""/]
+							</div>
+						</div>
+						
 						<!-- participant citizenship and highest degree -->
 						<div class="form-group row">
 							<div class="col-md-6 pCitizenshipcountriesList">

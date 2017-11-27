@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.dao.ICapacityDevelopmentTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevFoundingTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CapdevHighestDegreeManager;
+import org.cgiar.ccafs.marlo.data.manager.CapdevRangeAgeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevLocationsService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevParticipantService;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.CapdevFoundingType;
 import org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree;
 import org.cgiar.ccafs.marlo.data.model.CapdevLocations;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
+import org.cgiar.ccafs.marlo.data.model.CapdevRangeAge;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Participant;
@@ -84,6 +86,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   private static final long serialVersionUID = 1L;
 
+
   private long capdevID;
   private int capdevCategory;
   private long projectID;
@@ -96,6 +99,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private List<CapdevFoundingType> foundingTypeList;
   private List<Long> capdevCountries;
   private List<Long> capdevRegions;
+  private List<CapdevRangeAge> rangeAgeList;
   private Participant participant;
   private List<Participant> participantList;
   private List<Map<String, Object>> genders;
@@ -112,6 +116,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private InstitutionManager institutionService;
   private ICapdevLocationsService capdevLocationService;
   private IParticipantService participantService;
+  private CapdevRangeAgeManager capdevRangeAgeService;
   private ICapdevParticipantService capdevParicipantService;
   private CapdevHighestDegreeManager capdevHighestDegreeService;
   private CapdevFoundingTypeManager capdevFoundingTypeService;
@@ -135,15 +140,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public CapacityDevelopmentDetailAction(APConfig config, ICapacityDevelopmentService capdevService,
     ICapacityDevelopmentTypeDAO capdevTypeService, LocElementManager locElementService,
     ICapdevLocationsService capdevLocationService, IParticipantService participantService,
-    ICapdevParticipantService capdevParicipantService, CapacityDevelopmentValidator validator,
-    InstitutionManager institutionService, CapdevHighestDegreeManager capdevHighestDegreeService,
-    CapdevFoundingTypeManager capdevFoundingTypeService, AuditLogManager auditLogService, MarloOcsClient ocsClient) {
+    CapdevRangeAgeManager capdevRangeAgeService, ICapdevParticipantService capdevParicipantService,
+    CapacityDevelopmentValidator validator, InstitutionManager institutionService,
+    CapdevHighestDegreeManager capdevHighestDegreeService, CapdevFoundingTypeManager capdevFoundingTypeService,
+    AuditLogManager auditLogService, MarloOcsClient ocsClient) {
     super(config);
     this.capdevService = capdevService;
     this.capdevTypeService = capdevTypeService;
     this.locElementService = locElementService;
     this.capdevLocationService = capdevLocationService;
     this.participantService = participantService;
+    this.capdevRangeAgeService = capdevRangeAgeService;
     this.capdevParicipantService = capdevParicipantService;
     this.validator = validator;
     this.institutionService = institutionService;
@@ -401,14 +408,19 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   }
 
 
+  public List<CapdevRangeAge> getRangeAgeList() {
+    return rangeAgeList;
+  }
+
+
   public List<LocElement> getRegionsList() {
     return regionsList;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public File getUploadFile() {
     return uploadFile;
@@ -476,16 +488,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       participant.setEmail((String) data[i][8]);
       participant.setReference((String) data[i][9]);
 
-      if (reader.sustraerId((String) data[i][10]) != null) {
-        if (capdevFoundingTypeService
-          .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))) != null) {
-          participant.setFellowship(capdevFoundingTypeService
-            .getCapdevFoundingTypeById(Long.parseLong((String) reader.sustraerId((String) data[i][10]))));
-        }
 
-      }
-
-      participant.setInstitutionsSuggested((String) data[i][11]);
+      participant.setInstitutionsSuggested((String) data[i][10]);
 
 
       participant.setActive(true);
@@ -546,6 +550,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     foundingTypeList = new ArrayList<>(
       capdevFoundingTypeService.findAll().stream().filter(f -> f.getName() != null).collect(Collectors.toList()));
     Collections.sort(foundingTypeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+
+    // range Age
+    rangeAgeList = capdevRangeAgeService.findAll().stream().filter(age -> age.isActive()).collect(Collectors.toList());
 
     participantList = new ArrayList<>();
     capdevCountries = new ArrayList<>();
@@ -697,7 +704,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   }
 
-
   /*
    * This method is used to do a preview of excel file uploaded
    * @return previewList is a JSON Object containing the data from excel file
@@ -726,11 +732,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String save() {
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
 
-    final CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+    CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
 
     capdevDB.setCreatedBy(currentUser);
@@ -878,6 +884,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void saveCapDevCountries(List<CapdevLocations> capdevCountries, CapacityDevelopment capdev) {
     CapdevLocations capdevLocations = null;
     Session session = SecurityUtils.getSubject().getSession();
@@ -949,6 +956,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     if (participant.getGender().equals("-1")) {
       participant.setGender(null);
+    }
+    if (participant.getAge().equals("-1")) {
+      participant.setAge(null);
     }
     if ((participant.getLocElementsByCitizenship() == null)
       || (participant.getLocElementsByCitizenship().getId() == -1)) {
@@ -1083,6 +1093,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setRangeAgeList(List<CapdevRangeAge> rangeAgeList) {
+    this.rangeAgeList = rangeAgeList;
   }
 
 
