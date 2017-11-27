@@ -110,7 +110,7 @@ public class FundingSourceListAction extends BaseAction {
     hs.addAll(fundingSources);
     fundingSources.clear();
     fundingSources.addAll(hs);
-
+    fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (FundingSource fundingSource : fundingSources) {
       if (fundingSource.isActive()) {
         source = new HashMap<>();
