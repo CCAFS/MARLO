@@ -90,7 +90,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectMilestoneAdd.setProjectOutcome(projectOutcomeAdd);
           projectMilestoneAdd.setYear(projectMilestone.getYear());
           if (projectMilestoneAdd.getCrpMilestone() != null) {
-            projectMilestoneDAO.save(projectMilestoneAdd);
+            if (projectMilestoneAdd.getCrpMilestone().getYear() >= projectOutcome.getPhase().getYear()) {
+              projectMilestoneDAO.save(projectMilestoneAdd);
+            }
+
           }
 
         }
