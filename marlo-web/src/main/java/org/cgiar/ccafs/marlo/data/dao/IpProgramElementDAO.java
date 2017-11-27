@@ -32,7 +32,7 @@ public interface IpProgramElementDAO {
    * @param ipProgramElementId is the ipProgramElement identifier.
    * @return true if the ipProgramElement was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramElement(long ipProgramElementId);
+  public void deleteIpProgramElement(long ipProgramElementId);
 
   /**
    * This method validate if the ipProgramElement identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface IpProgramElementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProgramElement ipProgramElement);
+  public IpProgramElement save(IpProgramElement ipProgramElement);
 }

@@ -13,7 +13,7 @@
       <column name="is_active" not-null="true" />
     </property>
     <property name="activeSince" type="timestamp">
-      <column name="active_since" length="19" not-null="true" />
+      <column name="active_since" length="19"/>
     </property>
     <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
@@ -29,15 +29,15 @@
     </property>
 		<many-to-one name="researchProgram"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
-			<column name="research_program_id" not-null="true" />
+			<column name="research_program_id"/>
 		</many-to-one>
 		<many-to-one name="researchArea"
       class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
-      <column name="research_area_id" not-null="true" />
+      <column name="research_area_id" />
     </many-to-one>
     <many-to-one name="researchCenter"
       class="org.cgiar.ccafs.marlo.data.model.Center" fetch="select">
-      <column name="research_center_id" not-null="true" />
+      <column name="research_center_id"/>
     </many-to-one>
 		<many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">

@@ -42,9 +42,9 @@ public class CenterMonitoringOutcomeEvidenceManager implements ICenterMonitoring
   }
 
   @Override
-  public boolean deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId) {
+  public void deleteMonitorignOutcomeEvidence(long monitorignOutcomeEvidenceId) {
 
-    return monitorignOutcomeEvidenceDAO.deleteMonitorignOutcomeEvidence(monitorignOutcomeEvidenceId);
+    monitorignOutcomeEvidenceDAO.deleteMonitorignOutcomeEvidence(monitorignOutcomeEvidenceId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterMonitoringOutcomeEvidenceManager implements ICenterMonitoring
   }
 
   @Override
-  public long saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence) {
+  public CenterMonitoringOutcomeEvidence saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence) {
 
     return monitorignOutcomeEvidenceDAO.save(monitorignOutcomeEvidence);
   }

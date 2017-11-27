@@ -76,21 +76,21 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
-    if (projectParameter == null) {
-      throw new NullPointerException();
+    String fundingSourceParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
+    if (fundingSourceParameter == null) {
+      throw new IllegalArgumentException("fundingSourceParameter must not be null!");
     }
-    fundingSourceID = Long.parseLong(projectParameter);
+    fundingSourceID = Long.parseLong(fundingSourceParameter);
 
-    FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-    if (project != null) {
-      String params[] = {crp.getAcronym(), project.getId() + ""};
+    if (fundingSource != null) {
+      String params[] = {crp.getAcronym(), fundingSource.getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
-        List<FundingSource> projects = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && (baseAction
+        List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
+        if (fundingSources.contains(fundingSource) && (baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
           || baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)))) {
@@ -129,7 +129,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       baseAction.setCanEdit(canEdit);
 
     } else {
-      throw new NullPointerException();
+      throw new IllegalArgumentException(
+        "FundingSource with fundingSourceID: " + fundingSourceID + " , could not be found");
     }
   }
 

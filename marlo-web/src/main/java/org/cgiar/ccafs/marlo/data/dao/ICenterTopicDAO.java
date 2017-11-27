@@ -32,7 +32,7 @@ public interface ICenterTopicDAO {
    * @param researchTopicId is the researchTopic identifier.
    * @return true if the researchTopic was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchTopic(long researchTopicId);
+  public void deleteResearchTopic(long researchTopicId);
 
   /**
    * This method validate if the researchTopic identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterTopicDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterTopic researchTopic);
+  public CenterTopic save(CenterTopic researchTopic);
 }

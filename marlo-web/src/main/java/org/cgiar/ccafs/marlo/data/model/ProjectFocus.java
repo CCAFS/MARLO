@@ -130,6 +130,7 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -194,7 +195,7 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "ProjectFocus [id=" + id + ", crpProgram=" + crpProgram + ", project=" + project + "]";
   }
 
 

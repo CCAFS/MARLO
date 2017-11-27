@@ -34,7 +34,7 @@ public interface ICenterRoleManager {
    * @param roleId is the role identifier.
    * @return true if the role was successfully deleted, false otherwise.
    */
-  public boolean deleteRole(long roleId);
+  public void deleteRole(long roleId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterRoleManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveRole(CenterRole role);
+  public CenterRole saveRole(CenterRole role);
 
   /**
    * This method saves the information of the given role
@@ -88,7 +88,7 @@ public interface ICenterRoleManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveRole(CenterRole role, String actionName, List<String> relationsName);
+  public CenterRole saveRole(CenterRole role, String actionName, List<String> relationsName);
 
 
 }

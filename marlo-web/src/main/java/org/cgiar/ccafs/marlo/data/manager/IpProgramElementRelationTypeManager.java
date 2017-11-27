@@ -34,7 +34,7 @@ public interface IpProgramElementRelationTypeManager {
    * @param ipProgramElementRelationTypeId is the ipProgramElementRelationType identifier.
    * @return true if the ipProgramElementRelationType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId);
+  public void deleteIpProgramElementRelationType(long ipProgramElementRelationTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpProgramElementRelationTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProgramElementRelationType(IpProgramElementRelationType ipProgramElementRelationType);
+  public IpProgramElementRelationType saveIpProgramElementRelationType(IpProgramElementRelationType ipProgramElementRelationType);
 
 
 }

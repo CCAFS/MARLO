@@ -74,7 +74,7 @@
         <div class="col-sm-12">
           [#-- Image --]
           <div class="form-group text-center">
-            <img id="crpSelectedImage"  width="300px" src="${baseUrlMedia}/images/global/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
+            <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(crpSession)!'default'}.png" alt="${(crpSession)!}" />
           </div>
           [#-- CRP Session --]
           <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
@@ -110,6 +110,6 @@
 
 [#macro crpItem element]
   <li id="crp-${element.acronym}" class="loginOption ${element.login?string('enabled', 'disabled')} [#if crpSession?? && (element.acronym == crpSession)]selected[/#if]" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrlMedia}/images/global/crps/${element.acronym}.png" alt="${element.name}" />
+    <img class="${element.login?string('animated bounceIn', '')} " src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
   </li>
 [/#macro]

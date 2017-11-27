@@ -21,25 +21,25 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-public class CenterDAO implements ICenterDAO {
+public class CenterDAO extends AbstractMarloDAO<Center, Long> implements ICenterDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
+  public void deleteCrp(long crpId) {
     Center center = this.find(crpId);
     center.setActive(false);
-    return this.save(center) > 0;
+    this.save(center);
   }
 
   @Override
@@ -54,14 +54,14 @@ public class CenterDAO implements ICenterDAO {
 
   @Override
   public Center find(long id) {
-    return dao.find(Center.class, id);
+    return super.find(Center.class, id);
 
   }
 
   @Override
   public List<Center> findAll() {
     String query = "from " + Center.class.getName() + " where is_active=1";
-    List<Center> list = dao.findAll(query);
+    List<Center> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -72,7 +72,7 @@ public class CenterDAO implements ICenterDAO {
   @Override
   public Center findCrpByAcronym(String acronym) {
     String query = "from " + Center.class.getName() + " where acronym='" + acronym + "'";
-    List<Center> list = dao.findAll(query);
+    List<Center> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -80,12 +80,12 @@ public class CenterDAO implements ICenterDAO {
   }
 
   @Override
-  public long save(Center crp) {
+  public Center save(Center crp) {
     if (crp.getId() == null) {
-      dao.save(crp);
+      super.saveEntity(crp);
     } else {
-      dao.update(crp);
+      crp = super.update(crp);
     }
-    return crp.getId();
+    return crp;
   }
 }

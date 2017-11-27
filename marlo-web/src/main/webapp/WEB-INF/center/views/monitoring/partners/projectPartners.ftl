@@ -2,8 +2,17 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js", "${baseUrlMedia}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrl}/global/js/fieldsValidation.js", 
+  "${baseUrl}/global/js/autoSave.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectPartners" /]
 
@@ -12,13 +21,13 @@
   {"label":"projectPartners", "nameSpace":"/monitoring", "action":""}]/]
   
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="projectPartner.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -30,12 +39,11 @@
     
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/monitoring/project/menu-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/menu-projects.ftl" /]
       </div>
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#-- Projects data information --]
-        [#include "/WEB-INF/center//views/monitoring/project/dataInfo-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
 
         <span id="programSelected" class="hidden">${(selectedProgram.id)!}</span>
@@ -53,7 +61,7 @@
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>
-        <h3 class="headTitle"> Project Partners </h3>
+        <h3 class="headTitle">${selectedProgram.name} - Project Partners </h3>
         <div class="parntersBlock">
           <div class="partnersList" listname="partners">
             [#if project.partners?has_content]
@@ -86,7 +94,7 @@
 </section>
 
 [#-- Search users Interface --]
-[#import "/WEB-INF/center//global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
 [#-- Partner Template --]
@@ -95,7 +103,7 @@
 [#-- UserItem Template --]
 [@userItem element={} name="project.partners[-1].users" index="-1" template=true /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro partnerMacro element name index isTemplate=false]
   <div id="partner-${isTemplate?string('template', index)}" class="partner borderBox" style="display:${isTemplate?string('none','block')}">
@@ -110,7 +118,6 @@
     
     [#-- Partner Title --]    
     <div class="form-group">
-      <div class="pull-right">[#if editable][@s.radio label="projectPartner.mode" name="${customName}.internal" list="partnerModes" value="${(element.internal?c)!}" /][#else]${(element.internal?string("Internal","External"))!} Partner[/#if]</div>
       <h5 class="sectionSubTitle title">${(element.institution.composedName)!'Undefined'}</h5> 
       <div class="clearfix"></div>
     </div>

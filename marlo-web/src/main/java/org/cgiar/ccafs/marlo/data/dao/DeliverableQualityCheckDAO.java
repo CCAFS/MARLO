@@ -32,7 +32,7 @@ public interface DeliverableQualityCheckDAO {
    * @param deliverableQualityCheckId is the deliverableQualityCheck identifier.
    * @return true if the deliverableQualityCheck was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableQualityCheck(long deliverableQualityCheckId);
+  public void deleteDeliverableQualityCheck(long deliverableQualityCheckId);
 
   /**
    * This method validate if the deliverableQualityCheck identify with the given id exists in the system.
@@ -76,5 +76,5 @@ public interface DeliverableQualityCheckDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableQualityCheck deliverableQualityCheck);
+  public DeliverableQualityCheck save(DeliverableQualityCheck deliverableQualityCheck);
 }

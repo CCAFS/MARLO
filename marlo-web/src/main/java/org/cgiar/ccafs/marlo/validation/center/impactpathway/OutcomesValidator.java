@@ -64,7 +64,7 @@ public class OutcomesValidator extends BaseValidator {
       Path path = this.getAutoSaveFilePath(outcome, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("outcome.action.draft");
+        this.addMissingField(baseAction.getText("outcome.action.draft"));
       }
     }
 

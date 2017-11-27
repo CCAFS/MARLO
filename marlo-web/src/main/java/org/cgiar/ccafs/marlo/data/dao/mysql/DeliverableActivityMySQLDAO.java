@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableActivityMySQLDAO implements DeliverableActivityDAO {
+public class DeliverableActivityMySQLDAO extends AbstractMarloDAO<DeliverableActivity, Long> implements DeliverableActivityDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableActivityMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableActivityMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableActivity(long deliverableActivityId) {
+  public void deleteDeliverableActivity(long deliverableActivityId) {
     DeliverableActivity deliverableActivity = this.find(deliverableActivityId);
     deliverableActivity.setActive(false);
-    return this.save(deliverableActivity) > 0;
+    this.save(deliverableActivity);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableActivityMySQLDAO implements DeliverableActivityDAO {
 
   @Override
   public DeliverableActivity find(long id) {
-    return dao.find(DeliverableActivity.class, id);
+    return super.find(DeliverableActivity.class, id);
 
   }
 
   @Override
   public List<DeliverableActivity> findAll() {
     String query = "from " + DeliverableActivity.class.getName() + " where is_active=1";
-    List<DeliverableActivity> list = dao.findAll(query);
+    List<DeliverableActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class DeliverableActivityMySQLDAO implements DeliverableActivityDAO {
   public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId) {
     String query = "from " + DeliverableActivity.class.getName() + " where deliverable_id= " + deliverableId
       + " and activity_id= " + activityId;
-    List<DeliverableActivity> list = dao.findAll(query);
+    List<DeliverableActivity> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,15 +78,15 @@ public class DeliverableActivityMySQLDAO implements DeliverableActivityDAO {
   }
 
   @Override
-  public long save(DeliverableActivity deliverableActivity) {
+  public DeliverableActivity save(DeliverableActivity deliverableActivity) {
     if (deliverableActivity.getId() == null) {
-      dao.save(deliverableActivity);
+      super.saveEntity(deliverableActivity);
     } else {
-      dao.update(deliverableActivity);
+      deliverableActivity = super.update(deliverableActivity);
     }
 
 
-    return deliverableActivity.getId();
+    return deliverableActivity;
   }
 
 

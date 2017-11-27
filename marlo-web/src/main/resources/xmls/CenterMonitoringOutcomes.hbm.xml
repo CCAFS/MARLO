@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 16, 2017 9:21:01 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome"
@@ -24,9 +24,15 @@
 		<property name="year" type="int">
 			<column name="year" precision="4" scale="0" not-null="true" />
 		</property>
-		<property name="narrative" type="string">
-			<column name="narrative" length="65535" />
+		<property name="statusQuo" type="string">
+			<column name="status_quo" length="65535" />
 		</property>
+		<property name="ciatRole" type="string">
+      <column name="ciat_role" length="65535" />
+    </property>
+    <property name="whatChanged" type="string">
+      <column name="what_changed" length="65535" />
+    </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

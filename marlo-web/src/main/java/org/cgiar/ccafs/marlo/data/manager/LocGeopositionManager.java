@@ -34,7 +34,7 @@ public interface LocGeopositionManager {
    * @param locGeopositionId is the locGeoposition identifier.
    * @return true if the locGeoposition was successfully deleted, false otherwise.
    */
-  public boolean deleteLocGeoposition(long locGeopositionId);
+  public void deleteLocGeoposition(long locGeopositionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface LocGeopositionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveLocGeoposition(LocGeoposition locGeoposition);
+  public LocGeoposition saveLocGeoposition(LocGeoposition locGeoposition);
 
 
 }

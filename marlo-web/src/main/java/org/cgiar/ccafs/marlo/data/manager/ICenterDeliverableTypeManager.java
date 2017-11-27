@@ -34,7 +34,7 @@ public interface ICenterDeliverableTypeManager {
    * @param deliverableTypeId is the deliverableType identifier.
    * @return true if the deliverableType was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableType(long deliverableTypeId);
+  public void deleteDeliverableType(long deliverableTypeId);
 
 
   /**
@@ -86,7 +86,7 @@ public interface ICenterDeliverableTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableType(CenterDeliverableType deliverableType);
+  public CenterDeliverableType saveDeliverableType(CenterDeliverableType deliverableType);
 
 
 }

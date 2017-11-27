@@ -41,9 +41,9 @@ public class CaseStudyManagerImpl implements CaseStudyManager {
   }
 
   @Override
-  public boolean deleteCaseStudy(long caseStudyId) {
+  public void deleteCaseStudy(long caseStudyId) {
 
-    return caseStudyDAO.deleteCaseStudy(caseStudyId);
+    caseStudyDAO.deleteCaseStudy(caseStudyId);
   }
 
   @Override
@@ -66,13 +66,13 @@ public class CaseStudyManagerImpl implements CaseStudyManager {
   }
 
   @Override
-  public long saveCaseStudy(CaseStudy caseStudy) {
+  public CaseStudy saveCaseStudy(CaseStudy caseStudy) {
 
     return caseStudyDAO.save(caseStudy);
   }
 
   @Override
-  public long saveCaseStudy(CaseStudy caseStudy, String section, List<String> relationsName) {
+  public CaseStudy saveCaseStudy(CaseStudy caseStudy, String section, List<String> relationsName) {
     return caseStudyDAO.save(caseStudy, section, relationsName);
   }
 

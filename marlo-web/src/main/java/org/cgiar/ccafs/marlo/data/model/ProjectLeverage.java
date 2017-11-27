@@ -28,12 +28,14 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   private IpProgram crpProgram;
   @Expose
   private Institution institution;
+
+
   private Project project;
   @Expose
   private User createdBy;
-
   @Expose
   private User modifiedBy;
+
   @Expose
   private String title;
   @Expose
@@ -76,7 +78,6 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -242,6 +243,13 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
   public void setYear(Integer year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectLeverage [id=" + id + ", crpProgram=" + crpProgram + ", institution=" + institution + ", project="
+      + project + ", title=" + title + ", year=" + year + ", budget=" + budget + "]";
   }
 
 

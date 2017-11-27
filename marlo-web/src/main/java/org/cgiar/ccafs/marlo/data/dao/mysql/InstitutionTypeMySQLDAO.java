@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
+public class InstitutionTypeMySQLDAO extends AbstractMarloDAO<InstitutionType, Long> implements InstitutionTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public InstitutionTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public InstitutionTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteInstitutionType(long institutionTypeId) {
+  public void deleteInstitutionType(long institutionTypeId) {
     InstitutionType institutionType = this.find(institutionTypeId);
 
-    return dao.delete(institutionType);
+    super.delete(institutionType);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
 
   @Override
   public InstitutionType find(long id) {
-    return dao.find(InstitutionType.class, id);
+    return super.find(InstitutionType.class, id);
 
   }
 
   @Override
   public List<InstitutionType> findAll() {
     String query = "from " + InstitutionType.class.getName() + "";
-    List<InstitutionType> list = dao.findAll(query);
+    List<InstitutionType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
   }
 
   @Override
-  public long save(InstitutionType institutionType) {
+  public InstitutionType save(InstitutionType institutionType) {
     if (institutionType.getId() == null) {
-      dao.save(institutionType);
+      super.saveEntity(institutionType);
     } else {
-      dao.update(institutionType);
+      institutionType = super.update(institutionType);
     }
 
 
-    return institutionType.getId();
+    return institutionType;
   }
 
 

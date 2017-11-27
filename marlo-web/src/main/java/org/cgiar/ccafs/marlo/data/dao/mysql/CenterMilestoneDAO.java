@@ -20,23 +20,27 @@ import org.cgiar.ccafs.marlo.data.dao.ICenterMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CenterMilestoneDAO implements ICenterMilestoneDAO {
+public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> implements ICenterMilestoneDAO {
 
-  private StandardDAO dao;
+  private static Logger LOG = LoggerFactory.getLogger(CenterMilestoneDAO.class);
 
   @Inject
-  public CenterMilestoneDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterMilestoneDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCenterMilestone(long centerMilestoneId) {
+  public void deleteCenterMilestone(long centerMilestoneId) {
     CenterMilestone centerMilestone = this.find(centerMilestoneId);
     centerMilestone.setActive(false);
-    return this.save(centerMilestone) > 0;
+    this.save(centerMilestone);
   }
 
   @Override
@@ -51,14 +55,14 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
 
   @Override
   public CenterMilestone find(long id) {
-    return dao.find(CenterMilestone.class, id);
+    return super.find(CenterMilestone.class, id);
 
   }
 
   @Override
   public List<CenterMilestone> findAll() {
     String query = "from " + CenterMilestone.class.getName();
-    List<CenterMilestone> list = dao.findAll(query);
+    List<CenterMilestone> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +73,115 @@ public class CenterMilestoneDAO implements ICenterMilestoneDAO {
   @Override
   public List<CenterMilestone> getCenterMilestonesByUserId(long userId) {
     String query = "from " + CenterMilestone.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone) {
-    if (centerMilestone.getId() == null) {
-      dao.save(centerMilestone);
-    } else {
-      dao.update(centerMilestone);
-    }
-    return centerMilestone.getId();
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT  ");
+    query.append("center_target_units.`name` AS targetUnit,  ");
+    query.append("Count(center_milestones.id) AS count  ");
+    query.append("FROM  ");
+    query.append("center_milestones  ");
+    query.append("INNER JOIN center_target_units ON center_milestones.target_unit_id = center_target_units.id  ");
+    query.append("INNER JOIN center_outcomes ON center_milestones.impact_outcome_id = center_outcomes.id  ");
+    query.append("INNER JOIN center_topics ON center_outcomes.research_topic_id = center_topics.id  ");
+    query.append("WHERE  ");
+    query.append("center_topics.research_program_id = " + programID + " AND ");
+    query.append("center_milestones.is_active = 1 AND  ");
+    query.append("center_target_units.is_active = 1 AND ");
+    query.append("center_outcomes.is_active = 1 ");
+    query.append("GROUP BY ");
+    query.append("center_target_units.`name`  ");
+
+    return super.findCustomQuery(query.toString());
+  }
+
+
+  @Override
+  public List<Map<String, Object>> getMonitoringMilestones(long programID) {
+    StringBuilder query = new StringBuilder();
+
+    query.append("SELECT  ");
+    query.append("center_milestones.id AS milestoneId,  ");
+    query.append("(  ");
+    query.append("CASE  ");
+    query.append("WHEN center_milestones.title IS NULL  ");
+    query.append("OR center_milestones.title = '' THEN  ");
+    query.append("'<Not Defined>'  ");
+    query.append("ELSE  ");
+    query.append("center_milestones.title  ");
+    query.append("END  ");
+    query.append(") AS milestoneTitle,  ");
+    query.append("center_outcomes.id AS outcomeId,  ");
+    query.append("(  ");
+    query.append("CASE  ");
+    query.append("WHEN center_outcomes.description IS NULL  ");
+    query.append("OR center_outcomes.description = '' THEN  ");
+    query.append("'<Not Defined>'  ");
+    query.append("ELSE  ");
+    query.append("center_outcomes.description  ");
+    query.append("END  ");
+    query.append(") AS outcomeDesc,  ");
+
+
+    query.append("center_target_units.`name` AS milestoneTargetUnit,  ");
+    query.append("center_monitoring_outcomes.`year` AS monitoringYear,  ");
+
+    query.append("(  ");
+    query.append("CASE  ");
+    query.append("WHEN center_monitoring_milestones.narrative IS NULL  ");
+    query.append("OR center_monitoring_milestones.narrative = '' THEN  ");
+    query.append("'<Not Defined>'  ");
+    query.append("ELSE  ");
+    query.append("center_monitoring_milestones.narrative  ");
+    query.append("END  ");
+    query.append(") AS monitoringProgress  ");
+
+    query.append("FROM  ");
+    query.append("center_milestones  ");
+    query.append("INNER JOIN center_target_units ON center_milestones.target_unit_id = center_target_units.id  ");
+    query.append("INNER JOIN center_outcomes ON center_milestones.impact_outcome_id = center_outcomes.id  ");
+    query.append(
+      "INNER JOIN center_monitoring_milestones ON center_monitoring_milestones.milestone_id = center_milestones.id  ");
+    query.append(
+      "INNER JOIN center_monitoring_outcomes ON center_monitoring_outcomes.outcome_id = center_outcomes.id AND center_monitoring_milestones.monitoring_outcome_id = center_monitoring_outcomes.id  ");
+    query.append("INNER JOIN center_topics ON center_outcomes.research_topic_id = center_topics.id  ");
+
+    query.append("WHERE  ");
+    query.append("center_topics.research_program_id = " + programID + "  ");
+    query.append("AND center_milestones.is_active = 1  ");
+    query.append("AND center_outcomes.is_active = 1  ");
+    query.append("AND center_monitoring_milestones.is_active = 1  ");
+    query.append("ORDER BY  ");
+    query.append("center_milestones.id ASC,  ");
+    query.append("center_monitoring_outcomes.`year` ASC  ");
+
+    LOG.debug(query.toString());
+
+    return super.findCustomQuery(query.toString());
   }
 
   @Override
-  public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
+  public CenterMilestone save(CenterMilestone centerMilestone) {
     if (centerMilestone.getId() == null) {
-      dao.save(centerMilestone, actionName, relationsName);
+      super.saveEntity(centerMilestone);
     } else {
-      dao.update(centerMilestone, actionName, relationsName);
+      centerMilestone = super.update(centerMilestone);
     }
-    return centerMilestone.getId();
+    return centerMilestone;
+  }
+
+  @Override
+  public CenterMilestone save(CenterMilestone centerMilestone, String actionName, List<String> relationsName) {
+    if (centerMilestone.getId() == null) {
+      super.saveEntity(centerMilestone, actionName, relationsName);
+    } else {
+      centerMilestone = super.update(centerMilestone, actionName, relationsName);
+    }
+    return centerMilestone;
   }
 
 

@@ -32,7 +32,7 @@ public interface ProjectHighligthTypeDAO {
    * @param projectHighligthTypeId is the projectHighligthType identifier.
    * @return true if the projectHighligthType was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectHighligthType(long projectHighligthTypeId);
+  public void deleteProjectHighligthType(long projectHighligthTypeId);
 
   /**
    * This method validate if the projectHighligthType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectHighligthTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectHighlightType projectHighlightType);
+  public ProjectHighlightType save(ProjectHighlightType projectHighlightType);
 }

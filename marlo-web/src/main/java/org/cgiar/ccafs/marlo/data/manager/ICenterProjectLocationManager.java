@@ -34,7 +34,7 @@ public interface ICenterProjectLocationManager {
    * @param projectLocationId is the projectLocation identifier.
    * @return true if the projectLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLocation(long projectLocationId);
+  public void deleteProjectLocation(long projectLocationId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectLocationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectLocation(CenterProjectLocation projectLocation);
+  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation);
 
   /**
    * This method saves the information of the given projectLocation
@@ -88,7 +88,7 @@ public interface ICenterProjectLocationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectLocation(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
+  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
 
 
 }

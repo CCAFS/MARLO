@@ -34,7 +34,7 @@ public interface ICenterNextuserTypeManager {
    * @param nextuserTypeId is the nextuserType identifier.
    * @return true if the nextuserType was successfully deleted, false otherwise.
    */
-  public boolean deleteNextuserType(long nextuserTypeId);
+  public void deleteNextuserType(long nextuserTypeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterNextuserTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveNextuserType(CenterNextuserType nextuserType);
+  public CenterNextuserType saveNextuserType(CenterNextuserType nextuserType);
 
 
 }

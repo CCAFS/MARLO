@@ -41,9 +41,9 @@ public class IpElementTypeManagerImpl implements IpElementTypeManager {
   }
 
   @Override
-  public boolean deleteIpElementType(long ipElementTypeId) {
+  public void deleteIpElementType(long ipElementTypeId) {
 
-    return ipElementTypeDAO.deleteIpElementType(ipElementTypeId);
+    ipElementTypeDAO.deleteIpElementType(ipElementTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IpElementTypeManagerImpl implements IpElementTypeManager {
   }
 
   @Override
-  public long saveIpElementType(IpElementType ipElementType) {
+  public IpElementType saveIpElementType(IpElementType ipElementType) {
 
     return ipElementTypeDAO.save(ipElementType);
   }

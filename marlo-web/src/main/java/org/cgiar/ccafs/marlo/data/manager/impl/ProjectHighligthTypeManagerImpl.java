@@ -41,9 +41,9 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
   }
 
   @Override
-  public boolean deleteProjectHighligthType(long projectHighligthTypeId) {
+  public void deleteProjectHighligthType(long projectHighligthTypeId) {
 
-    return projectHighligthTypeDAO.deleteProjectHighligthType(projectHighligthTypeId);
+    projectHighligthTypeDAO.deleteProjectHighligthType(projectHighligthTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
   }
 
   @Override
-  public long saveProjectHighligthType(ProjectHighlightType projectHighlightType) {
+  public ProjectHighlightType saveProjectHighligthType(ProjectHighlightType projectHighlightType) {
 
     return projectHighligthTypeDAO.save(projectHighlightType);
   }

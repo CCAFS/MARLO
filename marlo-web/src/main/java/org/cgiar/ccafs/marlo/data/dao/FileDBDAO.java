@@ -32,7 +32,7 @@ public interface FileDBDAO {
    * @param fileDBId is the fileDB identifier.
    * @return true if the fileDB was successfully deleted, false otherwise.
    */
-  public boolean deleteFileDB(long fileDBId);
+  public void deleteFileDB(long fileDBId);
 
   /**
    * This method validate if the fileDB identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface FileDBDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(FileDB fileDB);
+  public FileDB save(FileDB fileDB);
 }

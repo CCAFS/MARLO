@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -27,11 +28,13 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -45,6 +48,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,27 +91,36 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
   private String cycle;
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
+  private Boolean showSheet3;
+  private Set<Project> fundingSourceProjects = new HashSet<>();
+  private Set<Project> allProjects = new HashSet<>();
   private long startTime;
+
+
   private Boolean hasW1W2Co;
+
+
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private PhaseManager phaseManager;
   // XLSX bytes
   private byte[] bytesXLSX;
-
   // Streams
   InputStream inputStream;
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager) {
+    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
+    PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.programManager = programManager;
     this.projectManager = projectManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+    this.phaseManager = phaseManager;
   }
 
   /**
@@ -144,6 +157,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     masterReport.getParameterValues().put("i8nRegionalDimension", this.getText("fundingSource.regionalDimension"));
     masterReport.getParameterValues().put("i8nSpecificCountries",
       this.getText("projectCofunded.listCountries.readText"));
+    masterReport.getParameterValues().put("i8nSheet3Title", this.getText("summaries.fundingSource.sheet3Title"));
+    masterReport.getParameterValues().put("i8nSheet3Description",
+      this.getText("summaries.fundingSource.sheet3Description", new String[] {String.valueOf(year)}));
 
 
     // Funding Sources by Projects
@@ -198,6 +214,27 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
+      // Add parameter to show or not the sheet 3
+
+      // Add all projects
+      Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
+      if (phase != null) {
+        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          allProjects.add((projectPhase.getProject()));
+        }
+      }
+      if (allProjects.isEmpty()) {
+        allProjects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toSet());
+      }
+      // delete projects with FS
+      for (Project project : fundingSourceProjects) {
+        allProjects.remove(project);
+      }
+      this.setShowSheet3(!allProjects.isEmpty() ? true : false);
+      masterReport.getParameterValues().put("showSheet3", this.getShowSheet3());
+      if (this.getShowSheet3()) {
+        this.fillSubreport((SubReport) hm.get("funding_sources_no_projects"), "funding_sources_no_projects");
+      }
 
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesXLSX = os.toByteArray();
@@ -216,7 +253,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -228,12 +264,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       case "funding_sources_projects":
         model = this.getFundingSourcesProjectsTableModel();
         break;
+      case "funding_sources_no_projects":
+        model = this.getFundingSourcesNoProjectsTableModel();
+        break;
 
     }
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -263,7 +301,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
     }
   }
-
 
   /**
    * Get all subreports in the band.
@@ -295,14 +332,17 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return bytesXLSX.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
 
+
   public String getCycle() {
     return cycle;
   }
+
 
   /**
    * This method is used to get the file from resources. In this case the Pentaho *.prpt
@@ -318,7 +358,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return file;
   }
 
-
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -330,7 +369,6 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
-
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -350,10 +388,71 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
+
+
+  private TypedTableModel getFundingSourcesNoProjectsTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"project_id", "title", "summary", "start_date", "end_date", "coas", "flagships"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      0);
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
+    for (Project project : allProjects.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId()))
+      .collect(Collectors.toList())) {
+      String projectId = project.getId().toString();
+      String projectTitle =
+        project.getTitle() != null && !project.getTitle().trim().isEmpty() ? project.getTitle() : null;
+      String projectSummary =
+        project.getSummary() != null && !project.getSummary().trim().isEmpty() ? project.getSummary() : null;
+      String startDate = project.getStartDate() != null ? dateFormatter.format(project.getStartDate()) : null;
+      String endDate = project.getEndDate() != null ? dateFormatter.format(project.getEndDate()) : null;
+      // set flagships and coas
+      String flagships = null;
+      String coas = null;
+      List<String> flagshipsList = new ArrayList<String>();
+      List<String> coasList = new ArrayList<String>();
+      // get Flagships related to the project sorted by acronym
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        flagshipsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym());
+      }
+      // get CoAs related to the project sorted by acronym
+      if (project.getProjectClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          coasList.add(projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+        }
+      }
+
+      // Remove duplicates
+      Set<String> flagshipsHash = new LinkedHashSet<String>(flagshipsList);
+      Set<String> coasHash = new LinkedHashSet<String>(coasList);
+
+      // Add flagships
+      for (String flagshipString : flagshipsHash.stream().collect(Collectors.toList())) {
+        if (flagships == null || flagships.isEmpty()) {
+          flagships = flagshipString;
+        } else {
+          flagships += "\n " + flagshipString;
+        }
+      }
+      // Add coas
+      for (String coaString : coasHash.stream().collect(Collectors.toList())) {
+        if (coas == null || coas.isEmpty()) {
+          coas = coaString;
+        } else {
+          coas += "\n " + coaString;
+        }
+      }
+      model.addRow(new Object[] {projectId, projectTitle, projectSummary, startDate, endDate, coas, flagships});
+    }
+    return model;
+  }
+
 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -392,6 +491,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         String coas = null;
 
         projectId = projectBudget.getProject().getId().toString();
+        // add to list of projects
+        fundingSourceProjects.add(projectBudget.getProject());
         if (projectId != null && !projectId.isEmpty()) {
           // get Flagships related to the project sorted by acronym
           for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
@@ -428,6 +529,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         totalBudget = projectBudget.getAmount();
 
         String directDonor = "";
+        if (fundingSource.getDirectDonor() != null) {
+          directDonor = fundingSource.getDirectDonor().getComposedName();
+        }
 
         // Funding sources locations
         String globalDimension = null;
@@ -456,7 +560,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         }
 
         if (regionalDimension.isEmpty()) {
-          regionalDimension = null;
+          regionalDimension = "No";
         }
 
         String specificCountries = "";
@@ -481,6 +585,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getFundingSourcesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -544,10 +649,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
           leadPartner = fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
           if (this.showIfpriDivision) {
-
-
-            if (fsIns.getInstitution().getAcronym().equals("IFPRI") && fundingSource.getPartnerDivision() != null
-              && fundingSource.getPartnerDivision().getName() != null
+            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
+              && fundingSource.getPartnerDivision() != null && fundingSource.getPartnerDivision().getName() != null
               && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
               leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
             }
@@ -556,7 +659,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
           leadPartner += ", \n" + fsIns.getInstitution().getComposedName();
           // Check IFPRI Division
           if (this.showIfpriDivision) {
-            if (fsIns.getInstitution().getAcronym().equals("IFPRI")
+            if (fsIns.getInstitution().getAcronym() != null && fsIns.getInstitution().getAcronym().equals("IFPRI")
               && fundingSource.getPartnerDivision().getName() != null
               && !fundingSource.getPartnerDivision().getName().trim().isEmpty()) {
               leadPartner += " (" + fundingSource.getPartnerDivision().getName() + ")";
@@ -667,6 +770,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
 
       String directDonor = "";
+      if (fundingSource.getDirectDonor() != null) {
+        directDonor = fundingSource.getDirectDonor().getComposedName();
+      }
 
       // Funding sources locations
       String globalDimension = null;
@@ -696,7 +802,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       }
 
       if (regionalDimension.isEmpty()) {
-        regionalDimension = null;
+        regionalDimension = "No";
       }
 
       String specificCountries = "";
@@ -747,10 +853,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  public Boolean getShowSheet3() {
+    return showSheet3;
+  }
 
   public int getYear() {
     return year;
   }
+
 
   @Override
   public void prepare() {
@@ -808,9 +918,13 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     this.cycle = cycle;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setShowSheet3(Boolean showSheet3) {
+    this.showSheet3 = showSheet3;
   }
 
 

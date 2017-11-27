@@ -243,7 +243,8 @@ public class ProjectDeliverableAction extends BaseAction {
       loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
-      deliverableID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.DELIVERABLE_ID)));
+      deliverableID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_DELIVERABLE_ID)));
     } catch (Exception e) {
       deliverableID = -1;
       projectID = -1;
@@ -268,15 +269,6 @@ public class ProjectDeliverableAction extends BaseAction {
 
     if (deliverable != null) {
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
-      projectID = deliverableDB.getProject().getId();
-      project = projectService.getCenterProjectById(projectID);
-
-      selectedProgram = project.getResearchProgram();
-      programID = selectedProgram.getId();
-      selectedResearchArea = selectedProgram.getResearchArea();
-      areaID = selectedResearchArea.getId();
-      researchPrograms = new ArrayList<>(
-        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
 
 
       Path path = this.getAutoSaveFilePath();
@@ -286,9 +278,12 @@ public class ProjectDeliverableAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
+
 
         if (deliverable.getOutputs() != null) {
           List<CenterDeliverableOutput> outputs = new ArrayList<>();
@@ -314,7 +309,7 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverable.setOutputs(new ArrayList<>(outputs));
         }
 
-        reader.close();
+
         this.setDraft(true);
 
       } else {
@@ -336,18 +331,31 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+      deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
+      projectID = deliverableDB.getProject().getId();
+      project = projectService.getCenterProjectById(projectID);
+      deliverable.setProject(project);
+
+      selectedProgram = project.getResearchProgram();
+      programID = selectedProgram.getId();
+      selectedResearchArea = selectedProgram.getResearchArea();
+      areaID = selectedResearchArea.getId();
+      researchPrograms = new ArrayList<>(
+        selectedResearchArea.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList()));
+
+
+      if (deliverable.getDeliverableType() != null) {
+        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+        deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
+          .collect(Collectors.toList()));
+      }
     }
 
     deliverableTypeParent = new ArrayList<>(deliverableTypeService.findAll().stream()
       .filter(dt -> dt.isActive() && dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-    if (deliverable.getDeliverableType() != null) {
-      Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
-
-      deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
-        .collect(Collectors.toList()));
-    }
 
     this.getProgramOutputs();
 
@@ -401,16 +409,17 @@ public class ProjectDeliverableAction extends BaseAction {
       deliverableDB.setStartDate(deliverable.getStartDate());
       deliverableDB.setEndDate(deliverable.getEndDate());
 
-
-      if (deliverable.getDeliverableType().getId() != null) {
-        CenterDeliverableType deliverableType =
-          deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
-        deliverableDB.setDeliverableType(deliverableType);
+      if (deliverable.getDeliverableType() != null) {
+        if (deliverable.getDeliverableType().getId() != null) {
+          if (deliverable.getDeliverableType().getId() != -1) {
+            CenterDeliverableType deliverableType =
+              deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+            deliverableDB.setDeliverableType(deliverableType);
+          }
+        }
       }
 
-      long deliverableSaveID = deliverableService.saveDeliverable(deliverableDB);
-
-      deliverableDB = deliverableService.getDeliverableById(deliverableSaveID);
+      deliverableDB = deliverableService.saveDeliverable(deliverableDB);
 
       if (deliverable.getDeliverableCrosscutingTheme() != null) {
         this.saveCrossCuting(deliverableDB);
@@ -433,17 +442,27 @@ public class ProjectDeliverableAction extends BaseAction {
         path.toFile().delete();
       }
 
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
-
-      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }

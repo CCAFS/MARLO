@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.CenterMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -33,7 +34,7 @@ public interface ICenterMilestoneDAO {
    * @param centerMilestoneId is the centerMilestone identifier.
    * @return true if the centerMilestone was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterMilestone(long centerMilestoneId);
+  public void deleteCenterMilestone(long centerMilestoneId);
 
   /**
    * This method validate if the centerMilestone identify with the given id exists in the system.
@@ -58,7 +59,6 @@ public interface ICenterMilestoneDAO {
    */
   public List<CenterMilestone> findAll();
 
-
   /**
    * This method gets a list of centerMilestones belongs of the user
    * 
@@ -67,15 +67,20 @@ public interface ICenterMilestoneDAO {
    */
   public List<CenterMilestone> getCenterMilestonesByUserId(long userId);
 
+
   /**
-   * This method saves the information of the given centerMilestone
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
    * 
-   * @param centerMilestone - is the centerMilestone object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the centerMilestone was
-   *         updated
-   *         or -1 is some error occurred.
+   * @return a list of report of Impact Pathway Outcomes
    */
-  public long save(CenterMilestone centerMilestone);
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
+   * This method gets a report of Monitoring Milestones by research program
+   * 
+   * @return a list of report of Monitoring Milestones
+   */
+  public List<Map<String, Object>> getMonitoringMilestones(long programID);
 
   /**
    * This method saves the information of the given centerMilestone
@@ -85,5 +90,15 @@ public interface ICenterMilestoneDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
+  public CenterMilestone save(CenterMilestone centerMilestone);
+
+  /**
+   * This method saves the information of the given centerMilestone
+   * 
+   * @param centerMilestone - is the centerMilestone object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the centerMilestone was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public CenterMilestone save(CenterMilestone centerMilestone, String actionName, List<String> relationsName);
 }

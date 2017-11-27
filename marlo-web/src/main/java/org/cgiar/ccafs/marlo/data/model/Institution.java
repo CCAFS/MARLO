@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +43,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String acronym;
-  private LocElement locElement;
 
 
   @Expose
@@ -66,17 +64,17 @@ public class Institution implements java.io.Serializable, IAuditLog {
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
-
-
-  private Set<Institution> branches = new HashSet<Institution>(0);
+  private Set<FundingSource> fundingSourcesDirectDonor = new HashSet<FundingSource>(0);
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
 
   private Set<InstitutionLocation> institutionsLocations = new HashSet<InstitutionLocation>(0);
+  private Set<Institution> branches = new HashSet<Institution>(0);
 
 
   private List<InstitutionLocation> locations;
+
 
   public Institution() {
   }
@@ -87,10 +85,9 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
   }
 
-
   public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
     Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
-    Set<FundingSource> fundingSources) {
+    Set<FundingSource> fundingSources, Set<FundingSource> fundingSourcesDirectDonor) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -102,6 +99,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
     this.projectPartnerPersons = projectPartnerPersons;
     this.fundingSources = fundingSources;
+    this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
   }
 
 
@@ -134,31 +132,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.added;
   }
 
+
   public Set<Institution> getBranches() {
     return branches;
   }
-  /*
-   * public String getBranchName() {
-   * try {
-   * String composedAcronym = this.acronym != null ? this.acronym : "";
-   * if (this.headquarter == null) {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return "HQ: " + composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-   * }
-   * return "HQ: " + composedAcronym + " - " + this.locElement.getName();
-   * } else {
-   * // Verify if there exist a city to show
-   * if (this.city != null && this.city != "") {
-   * return composedAcronym + " - " + this.city + ", " + this.locElement.getName();
-   * }
-   * return composedAcronym + " - " + this.locElement.getName();
-   * }
-   * } catch (Exception e) {
-   * return this.name;
-   * }
-   * }
-   */
 
   public String getComposedName() {
     if (this.getAcronym() != null) {
@@ -175,6 +152,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
 
   }
+
 
   public String getComposedNameLoc() {
     if (this.getAcronym() != null) {
@@ -195,8 +173,27 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return crpPpaPartners;
   }
 
+
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
+  }
+
+  public Set<FundingSource> getFundingSourcesDirectDonor() {
+    return fundingSourcesDirectDonor;
+  }
+
+  @Override
+  public Long getId() {
+    return this.id;
+  }
+
+
+  public Set<InstitutionLocation> getInstitutionsLocations() {
+    return institutionsLocations;
+  }
+
+  public InstitutionType getInstitutionType() {
+    return institutionType;
   }
 
   /*
@@ -221,38 +218,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
    * }
    */
 
-  @Override
-  public Long getId() {
-    return this.id;
-  }
-
-  public Set<InstitutionLocation> getInstitutionsLocations() {
-    return institutionsLocations;
-  }
-
-  public InstitutionType getInstitutionType() {
-    return institutionType;
-  }
-
-  public List<Institution> getInstitutuionsBranches() {
-    List<Institution> list = new ArrayList<Institution>();
-    list.add(this);
-    list.addAll(this.getBranches());
-    return list;
-  }
-
-
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
   public List<InstitutionLocation> getLocations() {
     return locations;
-  }
-
-
-  public LocElement getLocElement() {
-    return locElement;
   }
 
   @Override
@@ -280,7 +251,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   public String getName() {
     return this.name;
   }
@@ -290,13 +260,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.programId;
   }
 
+
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
 
+
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
+
 
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
@@ -339,14 +312,19 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.branches = branches;
   }
 
+
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
   }
 
-
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
+
+  public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {
+    this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -368,11 +346,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public void setLocations(List<InstitutionLocation> locations) {
     this.locations = locations;
   }
-
-  public void setLocElement(LocElement locElement) {
-    this.locElement = locElement;
-  }
-
 
   public void setName(String name) {
     this.name = name;
@@ -400,7 +373,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "Institution [id=" + id + ", institutionType=" + institutionType + ", name=" + name + ", acronym=" + acronym
+      + ", programId=" + programId + "]";
   }
 }
 

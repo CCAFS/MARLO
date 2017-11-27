@@ -164,19 +164,17 @@ public class DeliverableValidator extends BaseValidator {
           this.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
           action.getInvalidFields().put("input-deliverable.newExpectedYear", InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (!action.isReportingActive()) {
-          if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-            if (deliverable.getCrpClusterKeyOutput() != null) {
-              if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
-                this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-                action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            } else {
+
+        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          if (deliverable.getCrpClusterKeyOutput() != null) {
+            if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
               this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
               action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+          } else {
+            this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+            action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
@@ -191,7 +189,8 @@ public class DeliverableValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
 
           } else {
-            if (deliverable.getResponsiblePartner() != null) {
+            if (deliverable.getResponsiblePartner() != null
+              && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
 
 
               if (projectPartnerPersonManager

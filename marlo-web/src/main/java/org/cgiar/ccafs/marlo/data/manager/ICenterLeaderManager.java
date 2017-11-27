@@ -34,7 +34,7 @@ public interface ICenterLeaderManager {
    * @param researchLeaderId is the CenterLeader identifier.
    * @return true if the CenterLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchLeader(long researchLeaderId);
+  public void deleteResearchLeader(long researchLeaderId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ICenterLeaderManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchLeader(CenterLeader researchLeader);
+  public CenterLeader saveResearchLeader(CenterLeader researchLeader);
 
 
 }

@@ -32,7 +32,7 @@ public interface CrpsSiteIntegrationDAO {
    * @param crpsSiteIntegrationId is the crpsSiteIntegration identifier.
    * @return true if the crpsSiteIntegration was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpsSiteIntegration(long crpsSiteIntegrationId);
+  public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId);
 
   /**
    * This method validate if the crpsSiteIntegration identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpsSiteIntegrationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpsSiteIntegration crpsSiteIntegration);
+  public CrpsSiteIntegration save(CrpsSiteIntegration crpsSiteIntegration);
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectCrpContributionMySQLDAO implements ProjectCrpContributionDAO {
+public class ProjectCrpContributionMySQLDAO extends AbstractMarloDAO<ProjectCrpContribution, Long> implements ProjectCrpContributionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectCrpContributionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectCrpContributionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectCrpContribution(long projectCrpContributionId) {
+  public void deleteProjectCrpContribution(long projectCrpContributionId) {
     ProjectCrpContribution projectCrpContribution = this.find(projectCrpContributionId);
     projectCrpContribution.setActive(false);
-    return this.save(projectCrpContribution) > 0;
+    this.save(projectCrpContribution);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectCrpContributionMySQLDAO implements ProjectCrpContributionDAO
 
   @Override
   public ProjectCrpContribution find(long id) {
-    return dao.find(ProjectCrpContribution.class, id);
+    return super.find(ProjectCrpContribution.class, id);
 
   }
 
   @Override
   public List<ProjectCrpContribution> findAll() {
     String query = "from " + ProjectCrpContribution.class.getName() + " where is_active=1";
-    List<ProjectCrpContribution> list = dao.findAll(query);
+    List<ProjectCrpContribution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectCrpContributionMySQLDAO implements ProjectCrpContributionDAO
   }
 
   @Override
-  public long save(ProjectCrpContribution projectCrpContribution) {
+  public ProjectCrpContribution save(ProjectCrpContribution projectCrpContribution) {
     if (projectCrpContribution.getId() == null) {
-      dao.save(projectCrpContribution);
+      super.saveEntity(projectCrpContribution);
     } else {
-      dao.update(projectCrpContribution);
+      projectCrpContribution = super.update(projectCrpContribution);
     }
 
 
-    return projectCrpContribution.getId();
+    return projectCrpContribution;
   }
 
 

@@ -72,15 +72,16 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
-  private List<ProjectMilestone> milestones;
 
+
+  private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
+
   private List<ProjectNextuser> nextUsers;
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public ProjectOutcome() {
@@ -127,7 +128,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public SrfTargetUnit getAchievedUnit() {
     return achievedUnit;
   }
-
 
   public Long getAchievedValue() {
     return achievedValue;
@@ -207,6 +207,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return narrativeAchieved;
   }
 
+
   public String getNarrativeTarget() {
     return narrativeTarget;
   }
@@ -214,7 +215,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public List<ProjectNextuser> getNextUsers() {
     return nextUsers;
   }
-
 
   public Project getProject() {
     return project;
@@ -245,10 +245,10 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return projectMilestones;
   }
 
+
   public Set<ProjectNextuser> getProjectNextusers() {
     return projectNextusers;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -393,6 +393,14 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setYouthComponent(String youthComponent) {
     this.youthComponent = youthComponent;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectOutcome [id=" + id + ", crpProgramOutcome=" + crpProgramOutcome + ", project=" + project
+      + ", expectedValue=" + expectedValue + ", expectedUnit=" + expectedUnit + ", achievedValue=" + achievedValue
+      + ", achievedUnit=" + achievedUnit + "]";
   }
 
 

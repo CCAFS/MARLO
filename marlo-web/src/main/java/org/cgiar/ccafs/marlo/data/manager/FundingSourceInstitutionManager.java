@@ -34,7 +34,7 @@ public interface FundingSourceInstitutionManager {
    * @param fundingSourceInstitutionId is the fundingSourceInstitution identifier.
    * @return true if the fundingSourceInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSourceInstitution(long fundingSourceInstitutionId);
+  public void deleteFundingSourceInstitution(long fundingSourceInstitutionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface FundingSourceInstitutionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitution);
+  public FundingSourceInstitution saveFundingSourceInstitution(FundingSourceInstitution fundingSourceInstitution);
 
 
 }

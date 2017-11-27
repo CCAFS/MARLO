@@ -169,6 +169,7 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "InstitutionType [id=" + id + ", name=" + name + ", acronym=" + acronym + ", description=" + description
+      + ", old=" + old + "]";
   }
 }

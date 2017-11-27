@@ -33,7 +33,7 @@ public interface ICenterImpactDAO {
    * @param researchImpactId is the researchImpact identifier.
    * @return true if the researchImpact was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpact(long researchImpactId);
+  public void deleteResearchImpact(long researchImpactId);
 
   /**
    * This method validate if the researchImpact identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface ICenterImpactDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterImpact researchImpact);
+  public CenterImpact save(CenterImpact researchImpact);
 }

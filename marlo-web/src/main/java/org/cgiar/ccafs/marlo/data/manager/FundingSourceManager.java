@@ -34,7 +34,7 @@ public interface FundingSourceManager {
    * @param fundingSourceId is the fundingSource identifier.
    * @return true if the fundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSource(long fundingSourceId);
+  public void deleteFundingSource(long fundingSourceId);
 
 
   /**
@@ -72,9 +72,9 @@ public interface FundingSourceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveFundingSource(FundingSource fundingSource);
+  public FundingSource saveFundingSource(FundingSource fundingSource);
 
-  public long saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName);
+  public FundingSource saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -84,6 +84,14 @@ public interface FundingSourceManager {
    * @return the list of FundingSource
    */
   public List<FundingSource> searchFundingSources(String query, int year, long crpID);
+
+  /**
+   * This method get the list of FundingSource that use the specific finance code
+   * 
+   * @param ocsCode
+   * @return FundingSource List
+   */
+  public List<FundingSource> searchFundingSourcesByFinanceCode(String ocsCode);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

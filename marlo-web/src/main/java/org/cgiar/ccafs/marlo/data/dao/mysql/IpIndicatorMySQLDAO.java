@@ -18,28 +18,27 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.IpIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
+public class IpIndicatorMySQLDAO extends AbstractMarloDAO<IpIndicator, Long> implements IpIndicatorDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpIndicatorMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpIndicatorMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpIndicator(long ipIndicatorId) {
+  public void deleteIpIndicator(long ipIndicatorId) {
     IpIndicator ipIndicator = this.find(ipIndicatorId);
     ipIndicator.setActive(false);
-    return this.save(ipIndicator) > 0;
+    this.save(ipIndicator);
   }
 
   @Override
@@ -54,14 +53,14 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
 
   @Override
   public IpIndicator find(long id) {
-    return dao.find(IpIndicator.class, id);
+    return super.find(IpIndicator.class, id);
 
   }
 
   @Override
   public List<IpIndicator> findAll() {
     String query = "from " + IpIndicator.class.getName() + " where is_active=1";
-    List<IpIndicator> list = dao.findAll(query);
+    List<IpIndicator> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -96,7 +95,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
 
 
     String query = sb.toString();;
-    List<Map<String, Object>> rList = dao.findCustomQuery(query);
+    List<Map<String, Object>> rList = super.findCustomQuery(query);
     List<IpIndicator> ipIndicators = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
@@ -117,7 +116,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
     query.append("LEFT JOIN ip_indicators p ON i.parent_id = p.id ");
     query.append("WHERE i.ip_element_id = ");
     query.append(elementID);
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<IpIndicator> ipIndicators = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
@@ -130,24 +129,24 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
     return ipIndicators;
   }
 
+
+  /**
+   * TODO improve this so that only one SQL query gets executed.
+   */
   @Override
   public List<IpIndicator> getIndicatorsFlagShips() {
 
     StringBuilder query = new StringBuilder();
 
 
-    query.append("SELECT DISTINCT i.id, ");
-    query.append("                i.* ,prog.acronym");
-    query.append(" FROM   ip_indicators i ");
-    query.append("       LEFT JOIN ip_indicators p ");
-    query.append("              ON i.parent_id = p.id ");
-    query.append("       INNER JOIN ip_project_indicators ipi ");
-    query.append("               ON i.id = ipi.parent_id ");
-    query.append("       INNER JOIN ip_elements ie ");
-    query.append("               ON ipi.outcome_id = ie.id ");
-    query.append("        inner  JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
+    query.append("SELECT DISTINCT i.id, prog.acronym ");
+    query.append("FROM ip_indicators i ");
+    query.append("LEFT JOIN ip_indicators p ON i.parent_id = p.id ");
+    query.append("INNER JOIN ip_project_indicators ipi ON i.id = ipi.parent_id ");
+    query.append("INNER JOIN ip_elements ie ON ipi.outcome_id = ie.id ");
+    query.append("INNER JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<IpIndicator> ipIndicators = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
@@ -161,41 +160,15 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
   }
 
   @Override
-  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
-    StringBuilder query = new StringBuilder();
-    query.append("SELECT ai.id,ai.project_id, ai.description, ai.gender, ai.target, ai.year, aip.id as 'parent_id', ");
-    query.append("aip.description as 'parent_description', aip.target as 'parent_target', ");
-    query.append(
-      "ie.id as 'outcome_id', ie.description as 'outcome_description',ai.archived,ai.narrative_gender,ai.narrative_targets ");
-    query.append("FROM ip_project_indicators as ai ");
-    query.append("INNER JOIN ip_indicators aip ON ai.parent_id = aip.id ");
-    query.append("INNER JOIN ip_elements ie ON ai.outcome_id = ie.id ");
-    query.append("WHERE ai.is_active = TRUE and aip.id=" + indicator + " and ai.year=" + year + " and ie.ip_program_id="
-      + program + " and ie.id=" + midOutcome);
-
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
-    List<IpProjectIndicator> ipIndicators = new ArrayList<>();
-    if (rList != null) {
-      for (Map<String, Object> map : rList) {
-        IpProjectIndicator indicatorDB = dao.find(IpProjectIndicator.class, Long.parseLong(map.get("id").toString()));
-
-        ipIndicators.add(indicatorDB);
-      }
-    }
-
-    return ipIndicators;
-  }
-
-  @Override
-  public long save(IpIndicator ipIndicator) {
+  public IpIndicator save(IpIndicator ipIndicator) {
     if (ipIndicator.getId() == null) {
-      dao.save(ipIndicator);
+      super.saveEntity(ipIndicator);
     } else {
-      dao.update(ipIndicator);
+      ipIndicator = super.update(ipIndicator);
     }
 
 
-    return ipIndicator.getId();
+    return ipIndicator;
   }
 
 

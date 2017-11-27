@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -42,9 +43,9 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
-  public boolean deleteResearchOutcome(long researchOutcomeId) {
+  public void deleteResearchOutcome(long researchOutcomeId) {
 
-    return researchOutcomeDAO.deleteResearchOutcome(researchOutcomeId);
+    researchOutcomeDAO.deleteResearchOutcome(researchOutcomeId);
   }
 
   @Override
@@ -61,6 +62,21 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
+  public List<Map<String, Object>> getCountTargetUnit(long programID) {
+    return researchOutcomeDAO.getCountTargetUnit(programID);
+  }
+
+  @Override
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID) {
+    return researchOutcomeDAO.getImpactPathwayOutcomes(programID);
+  }
+
+  @Override
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID) {
+    return researchOutcomeDAO.getMonitoringOutcomes(programID);
+  }
+
+  @Override
   public CenterOutcome getResearchOutcomeById(long researchOutcomeID) {
 
     return researchOutcomeDAO.find(researchOutcomeID);
@@ -72,13 +88,13 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
-  public long saveResearchOutcome(CenterOutcome researchOutcome) {
+  public CenterOutcome saveResearchOutcome(CenterOutcome researchOutcome) {
 
     return researchOutcomeDAO.save(researchOutcome);
   }
 
   @Override
-  public long saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName) {
+  public CenterOutcome saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName) {
     return researchOutcomeDAO.save(outcome, actionName, relationsName);
   }
 

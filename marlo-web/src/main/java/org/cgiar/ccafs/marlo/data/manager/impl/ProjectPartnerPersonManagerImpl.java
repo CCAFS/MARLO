@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,9 +41,9 @@ public class ProjectPartnerPersonManagerImpl implements ProjectPartnerPersonMana
   }
 
   @Override
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId) {
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId) {
 
-    return projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPersonId);
+    projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPersonId);
   }
 
   @Override
@@ -60,13 +60,24 @@ public class ProjectPartnerPersonManagerImpl implements ProjectPartnerPersonMana
   }
 
   @Override
+  public List<ProjectPartnerPerson> findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(long deliverableId,
+    long partnerId) {
+    return projectPartnerPersonDAO.findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(deliverableId, partnerId);
+  }
+
+  @Override
+  public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId) {
+    return projectPartnerPersonDAO.findAllForProjectPartner(projectPartnerId);
+  }
+
+  @Override
   public ProjectPartnerPerson getProjectPartnerPersonById(long projectPartnerPersonID) {
 
     return projectPartnerPersonDAO.find(projectPartnerPersonID);
   }
 
   @Override
-  public long saveProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
+  public ProjectPartnerPerson saveProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
 
     return projectPartnerPersonDAO.save(projectPartnerPerson);
   }

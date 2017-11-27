@@ -39,7 +39,7 @@ public interface ICenterAreaDAO {
    * @param researchAreaId the research area idor identifier
    * @return true if the research area record was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchArea(long researchAreaId);
+  public void deleteResearchArea(long researchAreaId);
 
   /**
    * This finds if the research area with the specified id exists in the database or system.
@@ -80,5 +80,5 @@ public interface ICenterAreaDAO {
    * @return a number greater than 0 representing the new ID assigned by the database if a new record was added and 0 if
    *         the research area was updated or -1 is some error occurred.
    */
-  public long save(CenterArea researchArea);
+  public CenterArea save(CenterArea researchArea);
 }

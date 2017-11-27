@@ -40,7 +40,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.hibernate.util.DTDEntityResolver;
 import org.json.JSONObject;
 
 /**
@@ -51,7 +50,7 @@ public class ClientRepository {
   protected static Element getDocumentRoot(InputStreamReader stream) {
     try {
       SAXReader saxReader = new SAXReader();
-      saxReader.setEntityResolver(new DTDEntityResolver());
+      saxReader.setEntityResolver(new org.hibernate.internal.util.xml.DTDEntityResolver());
       saxReader.setMergeAdjacentText(true);
       return saxReader.read(stream).getRootElement();
     } catch (DocumentException de) {
@@ -102,8 +101,10 @@ public class ClientRepository {
 
       String handleUrl = CGSPACEHANDLE.replace("{0}", id.replace("oai:cgspace.cgiar.org:", ""));
 
+      RestConnectionUtil connection = new RestConnectionUtil();
 
-      Element elementHandle = this.getXmlRestClient(handleUrl);
+      Element elementHandle = connection.getXmlRestClient(handleUrl);
+
       id = elementHandle.element("id").getStringValue();
 
       linkRequest = linkRequest.replace("{0}", id);

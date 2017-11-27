@@ -16,8 +16,6 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 public class ActivityPartner {
 
   private int id;
@@ -94,7 +92,7 @@ public class ActivityPartner {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+    return "ActivityPartner [id=" + id + ", contactName=" + contactName + ", contactEmail=" + contactEmail + "]";
   }
 
 

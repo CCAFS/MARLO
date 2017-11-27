@@ -21,7 +21,7 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum CenterLeaderTypeEnum {
 
-  RESEARCH_AREA_LEADER_TYPE(5), RESEARCH_PROGRAM_LEADER_TYPE(6);
+  RESEARCH_AREA_LEADER_TYPE(5), RESEARCH_PROGRAM_LEADER_TYPE(6), PROGRAM_SCIENTIST_LEADER_TYPE(11);
 
 
   private int value;

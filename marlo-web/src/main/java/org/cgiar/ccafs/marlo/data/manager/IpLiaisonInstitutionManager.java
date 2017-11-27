@@ -34,7 +34,7 @@ public interface IpLiaisonInstitutionManager {
    * @param ipLiaisonInstitutionId is the ipLiaisonInstitution identifier.
    * @return true if the ipLiaisonInstitution was successfully deleted, false otherwise.
    */
-  public boolean deleteIpLiaisonInstitution(long ipLiaisonInstitutionId);
+  public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId);
 
 
   /**
@@ -92,7 +92,7 @@ public interface IpLiaisonInstitutionManager {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
 
   /**
    * This method saves the information of the given ipLiaisonInstitution
@@ -102,6 +102,6 @@ public interface IpLiaisonInstitutionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution);
+  public IpLiaisonInstitution saveIpLiaisonInstitution(IpLiaisonInstitution ipLiaisonInstitution);
 
 }

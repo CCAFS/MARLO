@@ -271,19 +271,22 @@ public class OutcomesAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         outcome = (CenterOutcome) autoSaveReader.readFromJson(jReader);
 
-        reader.close();
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
 
         outcome.setMilestones(new ArrayList<>(
           outcome.getResearchMilestones().stream().filter(rm -> rm.isActive()).collect(Collectors.toList())));
-      }
 
+      }
+      outcome.getMilestones().sort(Comparator.nullsLast((p1, p2) -> p1.getTargetYear().compareTo(p2.getTargetYear())));
 
       if (selectedProgram.getResearchTopics() != null) {
         researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
@@ -319,9 +322,7 @@ public class OutcomesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (targetUnitList != null) {
-        targetUnitList.clear();
-      }
+      outcome.setTargetUnit(null);
 
       if (researchImpacts != null) {
         researchImpacts.clear();
@@ -344,7 +345,11 @@ public class OutcomesAction extends BaseAction {
 
       CenterOutcome outcomeDb = outcomeService.getResearchOutcomeById(outcomeID);
 
-      CenterImpact impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+      CenterImpact impact = null;
+      if (outcome.getResearchImpact().getId() != -1) {
+        impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+      }
+
 
       CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(outcome.getTargetUnit().getId());
 
@@ -361,19 +366,14 @@ public class OutcomesAction extends BaseAction {
 
       outcomeDb.setResearchImpact(impact);
 
-      outcomeDb.setModifiedBy(this.getCurrentUser());
-      Long outcomeSaveId = outcomeService.saveResearchOutcome(outcomeDb);
-
-      CenterOutcome outcomeSave = outcomeService.getResearchOutcomeById(outcomeSaveId);
-
-      this.saveMilestones(outcomeSave);
+      this.saveMilestones(outcomeDb);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
-      outcome = outcomeService.getResearchOutcomeById(outcomeID);
-      outcome.setActiveSince(new Date());
-      outcome.setModifiedBy(this.getCurrentUser());
-      outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
+
+      outcomeDb.setActiveSince(new Date());
+      outcomeDb.setModifiedBy(this.getCurrentUser());
+      outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -381,23 +381,28 @@ public class OutcomesAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
-
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      messages = this.getActionMessages();
-
-      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }

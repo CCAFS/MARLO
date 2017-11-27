@@ -2,23 +2,31 @@
 [#assign title = "Outputs List" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js","${baseUrlMedia}/js/impactPathway/outputList.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
-[#assign currentSection = "impactPathway" /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js",
+  "${baseUrlMedia}/js/impactPathway/outputList.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
+[#assign currentSection = "centerImpactPathway" /]
 [#assign currentStage = "outputs" /]
 
 [#assign breadCrumb = [
-  {"label":"impactPathway", "nameSpace":"", "action":"topics"},
+  {"label":"centerImpactPathway", "nameSpace":"", "action":"topics"},
   {"label":"outputsList", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
 [#assign editable = false /]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/center//views/impactPathway/outputListTemplate.ftl" as outputsList /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+[#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outputsList /]
 [#--  Research Outputs Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutputsList.help" /]
 [#--  marlo cluster of activities--]
@@ -74,7 +82,7 @@
           [@s.form action=actionName enctype="multipart/form-data" ]
           [#-- Output Table --]
           [#if outputs?has_content]
-          <div style="">[@outputsList.outputsList outputs=outputs canValidate=true canEdit=canEdit namespace="/impactPathway" defaultAction="${(centerSession)!}/outputs"/]</div>
+          <div style="">[@outputsList.outputsList outputs=outputs canValidate=true canEdit=canEdit namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outputs"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content]
             <div class="clearfix"></div>
@@ -98,6 +106,10 @@
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
+            [#else]
+              <div class="text-right">
+                [@s.text name="programImpact.outputList.allTopics" /]
+              </div>   
             [/#if]  
             [#else]
             [#if selectedResearchTopic?has_content] 
@@ -106,6 +118,10 @@
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
+            [#else]
+              <div class="text-right">
+                [@s.text name="programImpact.outputList.allTopics" /]
+              </div> 
             [/#if]
             [/#if]
           [/#if]
@@ -128,6 +144,6 @@
 
 [@customForm.confirmJustificationOut action="deleteOutput.do" namespace="/${currentSection}" title="Remove Output" /]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 

@@ -178,6 +178,7 @@ public class CenterArea implements Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -310,11 +311,17 @@ public class CenterArea implements Serializable, IAuditLog {
     this.researchLeaders = researchLeaders;
   }
 
+
   /**
    * @param researchPrograms the researchPrograms to set
    */
   public void setResearchPrograms(Set<CenterProgram> researchPrograms) {
     this.researchPrograms = researchPrograms;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterArea [id=" + id + ", name=" + name + ", acronym=" + acronym + "]";
   }
 
 }

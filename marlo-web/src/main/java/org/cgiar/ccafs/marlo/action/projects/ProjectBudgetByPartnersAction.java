@@ -304,7 +304,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
     project.getBudgets().add(projectBudget);
 
-    return this.getIndexBudget(institutionId, year, type);
+    return this.getIndexBudget(institutionId, year, type, fundingSourceID);
   }
 
 
@@ -441,6 +441,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -560,6 +561,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -567,7 +570,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
-        reader.close();
+
 
         if (project.getBudgets() != null) {
           for (ProjectBudget projectBudget : project.getBudgets()) {
@@ -717,25 +720,18 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
-    if (!projectDB.isBilateralProject()) {
-      projectDB
-        .setBudgets(projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
-    } else {
-      projectDB
-        .setBudgets(projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
+    if (project.getBudgets() == null) {
+      project.setBudgets(new ArrayList<>());
     }
 
-    for (ProjectBudget projectBudget : projectDB.getBudgets().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
+    // get the list of previous budgets
+    List<ProjectBudget> previousBudgets =
+      projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-      if (project.getBudgets() == null) {
-        project.setBudgets(new ArrayList<>());
-      }
-      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
+    for (ProjectBudget projectBudget : previousBudgets) {
+
+      if (projectBudget.getYear() >= this.getCurrentCycleYear()) {
         if (!project.getBudgets().contains(projectBudget)) {
           projectBudgetManager.deleteProjectBudget(projectBudget.getId());
 
@@ -744,13 +740,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     }
 
-    if (project.getBudgets() != null) {
-      for (ProjectBudget projectBudget : project.getBudgets()) {
-        if (projectBudget != null) {
-          this.saveBudget(projectBudget);
-        }
+    // Check the budgets that we enter through the interface and save or update them
+    for (ProjectBudget projectBudget : project.getBudgets()) {
+      if (projectBudget != null) {
+        this.saveBudget(projectBudget);
       }
     }
+
   }
 
 

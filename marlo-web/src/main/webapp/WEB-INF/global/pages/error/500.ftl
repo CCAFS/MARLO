@@ -1,25 +1,9 @@
 [#ftl]
 [#assign title][@s.text name="server.error.500.title" /][/#assign]
-[#assign customCSS = [ "${baseUrlMedia}/css/global/500.css" ] /]
+[#assign customCSS = [ "${baseUrl}/global/css/500.css" ] /]
 
-[#if !errorPage??]
-  [#if crpSession??]
-    [#include "/WEB-INF/global/pages/header.ftl" /]
-    [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-  [/#if]
-  
-  [#if centerSession??]
-    [#include "/WEB-INF/center/global/pages/header.ftl" /]
-    [#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-  [/#if]
-  
-[#else]
-  [#include "/WEB-INF/global/pages/header.ftl" /]
-  [#include "/WEB-INF/global/pages/main-menu.ftl" /]
- 
-[/#if]
-
-
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]
 
 <section class="content">
   <br />
@@ -49,14 +33,4 @@
   </article>
 </section>
 
-[#if !errorPage??]
-  [#if crpSession??]
-    [#include "/WEB-INF/global/pages/footer.ftl"]
-  [/#if]
-  
-  [#if centerSession??]
-    [#include "/WEB-INF/center/global/pages/footer.ftl"]
-  [/#if]
-[#else]
-  [#include "/WEB-INF/global/pages/footer.ftl"]
-[/#if]
+[#include "/WEB-INF/${(headerPath)!'crp'}/pages/footer.ftl"]

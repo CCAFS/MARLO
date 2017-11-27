@@ -136,11 +136,11 @@ public class User implements java.io.Serializable, IAuditLog {
       return false;
     }
     User other = (User) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -168,7 +168,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.firstName + " " + this.lastName;
   }
 
-
   public String getComposedID() {
     String composedId = this.email.split("@")[0] + "-" + this.id;
     return composedId;
@@ -188,6 +187,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.getLastName() + ", " + this.getFirstName() + " <" + this.getEmail() + ">";
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -195,7 +195,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
-
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
@@ -205,6 +204,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
   }
+
 
   public List<CrpUser> getCrpUser() {
     return crpUser;
@@ -217,7 +217,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getEmail() {
     return this.email;
   }
-
 
   public String getFirstName() {
     return this.firstName;
@@ -238,6 +237,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public Date getLastLogin() {
     return this.lastLogin;
   }
+
 
   public String getLastName() {
     return this.lastName;
@@ -280,7 +280,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-
   public String getUsername() {
     return this.username;
   }
@@ -288,6 +287,15 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
@@ -424,7 +432,9 @@ public class User implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
+      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", autoSave=" + autoSave
+      + ", lastLogin=" + lastLogin + "]";
   }
 }
 

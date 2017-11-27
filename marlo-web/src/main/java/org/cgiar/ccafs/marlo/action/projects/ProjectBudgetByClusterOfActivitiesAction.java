@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -363,6 +364,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -370,7 +373,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
-        reader.close();
+      
 
         this.setDraft(true);
       } else {
@@ -382,6 +385,12 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
       }
+
+      /**
+       * There is an issue where a CoA that is unmapped from the project - still appears here, this happens for
+       * both auto-save files and non auto-save updates.
+       */
+      project.getBudgetsCluserActvities().removeIf(Objects::isNull);
 
 
       Project projectBD = projectManager.getProjectById(projectID);
@@ -399,24 +408,29 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     }
     if (project.getBudgetsCluserActvities() != null) {
       for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
-        projectBudgetsCluserActvity.setCrpClusterOfActivity(crpClusterOfActivityManager
-          .getCrpClusterOfActivityById(projectBudgetsCluserActvity.getCrpClusterOfActivity().getId()));
+
+        // This additional null check is required for auto save file after a CoA has been deleted from the project
+        if (projectBudgetsCluserActvity.getCrpClusterOfActivity() != null) {
+          projectBudgetsCluserActvity.setCrpClusterOfActivity(crpClusterOfActivityManager
+            .getCrpClusterOfActivityById(projectBudgetsCluserActvity.getCrpClusterOfActivity().getId()));
+        }
+
       }
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_CLUSTER_BASE_PERMISSION, params));
 
-
     if (this.isHttpPost()) {
-      if (project.getCrpActivities() != null) {
-        project.getCrpActivities().clear();
-      }
 
-      if (project.getBudgetsCluserActvities() != null) {
-        project.getBudgetsCluserActvities().clear();
-      }
 
+      // if (project.getCrpActivities() != null) {
+      // project.getCrpActivities().clear();
+      // }
+      //
+      // if (project.getBudgetsCluserActvities() != null) {
+      // project.getBudgetsCluserActvities().clear();
+      // }
 
     }
 
@@ -474,52 +488,46 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
+    for (ProjectBudgetsCluserActvity projectBudgetCluserActivityDB : projectDB.getProjectBudgetsCluserActvities()) {
 
-    projectDB.setBudgetsCluserActvities(
-      projectDB.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-    for (ProjectBudgetsCluserActvity projectBudget : projectDB.getBudgetsCluserActvities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
-      if (project.getBudgetsCluserActvities() == null) {
-        project.setBudgetsCluserActvities(new ArrayList<>());
-      }
-      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
-        if (!project.getBudgetsCluserActvities().contains(projectBudget)) {
-          projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudget.getId());
-
+      if (projectBudgetCluserActivityDB.getYear() == this.getCurrentCycleYear()) {
+        if (!project.getBudgetsCluserActvities().contains(projectBudgetCluserActivityDB)) {
+          projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudgetCluserActivityDB.getId());
         }
+
       }
 
     }
 
     if (project.getBudgetsCluserActvities() != null) {
-      for (ProjectBudgetsCluserActvity projectBudget : project.getBudgetsCluserActvities()) {
-        if (projectBudget != null) {
-          if (projectBudget.getId() == null) {
-            projectBudget.setCreatedBy(this.getCurrentUser());
+      for (ProjectBudgetsCluserActvity projectBudgetCluserActivityUI : project.getBudgetsCluserActvities()) {
+        if (projectBudgetCluserActivityUI != null) {
+          if (projectBudgetCluserActivityUI.getId() == null) {
+            projectBudgetCluserActivityUI.setCreatedBy(this.getCurrentUser());
 
-            projectBudget.setActiveSince(new Date());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
+            projectBudgetCluserActivityUI.setActiveSince(new Date());
+            projectBudgetCluserActivityUI.setActive(true);
+            projectBudgetCluserActivityUI.setProject(project);
+            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
+            projectBudgetCluserActivityUI.setModificationJustification("");
+
+            projectBudgetCluserActivityUI =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
 
           } else {
-            ProjectBudgetsCluserActvity ProjectBudgetDB =
-              projectBudgetsCluserActvityManager.getProjectBudgetsCluserActvityById(projectBudget.getId());
-            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+            ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
+              .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
 
-            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
+            ProjectBudgetDB.setActive(true);
+            ProjectBudgetDB.setProject(project);
+            ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
+            ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
+            ProjectBudgetDB.setModifiedBy(this.getCurrentUser());
+            ProjectBudgetDB.setModificationJustification("");
+
+            ProjectBudgetDB = projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(ProjectBudgetDB);
           }
 
-
-          projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudget);
         }
 
       }

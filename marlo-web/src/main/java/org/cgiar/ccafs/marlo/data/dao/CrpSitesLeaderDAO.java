@@ -32,7 +32,7 @@ public interface CrpSitesLeaderDAO {
    * @param crpSitesLeaderId is the crpSitesLeader identifier.
    * @return true if the crpSitesLeader was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpSitesLeader(long crpSitesLeaderId);
+  public void deleteCrpSitesLeader(long crpSitesLeaderId);
 
   /**
    * This method validate if the crpSitesLeader identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpSitesLeaderDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpSitesLeader crpSitesLeader);
+  public CrpSitesLeader save(CrpSitesLeader crpSitesLeader);
 }

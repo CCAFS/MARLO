@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterUser;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterUserDAO implements ICenterUserDAO {
+public class CenterUserDAO extends AbstractMarloDAO<CenterUser, Long> implements ICenterUserDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterUserDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterUserDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpUser(long crpUserId) {
+  public void deleteCrpUser(long crpUserId) {
     CenterUser crpUser = this.find(crpUserId);
     crpUser.setActive(false);
-    return this.save(crpUser) > 0;
+    this.save(crpUser);
   }
 
   @Override
@@ -52,7 +52,7 @@ public class CenterUserDAO implements ICenterUserDAO {
   @Override
   public boolean existCrpUser(long userId, long crpId) {
     String query = "from " + CenterUser.class.getName() + " where user_id=" + userId + " and center_id=" + crpId;
-    List<CenterUser> crpUser = dao.findAll(query);
+    List<CenterUser> crpUser = super.findAll(query);
     if (crpUser != null && crpUser.size() > 0) {
       return true;
     }
@@ -61,14 +61,14 @@ public class CenterUserDAO implements ICenterUserDAO {
 
   @Override
   public CenterUser find(long id) {
-    return dao.find(CenterUser.class, id);
+    return super.find(CenterUser.class, id);
 
   }
 
   @Override
   public List<CenterUser> findAll() {
     String query = "from " + CenterUser.class.getName() + " where is_active=1";
-    List<CenterUser> list = dao.findAll(query);
+    List<CenterUser> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -77,13 +77,13 @@ public class CenterUserDAO implements ICenterUserDAO {
   }
 
   @Override
-  public long save(CenterUser crpUser) {
+  public CenterUser save(CenterUser crpUser) {
     if (crpUser.getId() == null) {
-      dao.save(crpUser);
+      super.saveEntity(crpUser);
     } else {
-      dao.update(crpUser);
+      crpUser = super.update(crpUser);
     }
-    return crpUser.getId();
+    return crpUser;
   }
 
 

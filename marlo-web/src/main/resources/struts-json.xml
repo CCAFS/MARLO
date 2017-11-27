@@ -108,6 +108,13 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		<action name="ocsService"
+      class="org.cgiar.ccafs.marlo.action.json.global.OcsServiceAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 		<action name="searchCountryListPL"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
 			<result type="json">
@@ -375,6 +382,24 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="rejectPartnerRequest"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.RejectPartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+		<action name="editPartnerRequest"
+      class="org.cgiar.ccafs.marlo.action.json.superadmin.EditPartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+		
 
 		<!-- **************************************** JSON CENTER ACTIONS ************************************************** -->
 
@@ -473,7 +498,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-
+    <!-- 
 		<action name="ocsService"
 			class="org.cgiar.ccafs.marlo.action.center.json.global.OcsServiceAction">
 			<result type="json">
@@ -481,9 +506,52 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		 -->
+		
+		<action name="projectSync"
+      class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.CrpProjectAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="validateSyncCode"
+      class="org.cgiar.ccafs.marlo.action.center.json.monitoring.project.ValidateSyncCode">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+     <action name="impactSubIdo"
+      class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.SubIdosStatementAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<!-- ************************************************************************************************************** -->
 
+<action name="acceptOfficesRequest" method="addCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="includeProperties">success</param>
+      </result>
+    </action>
+    
+     <action name="rejectOfficesRequest" method="rejectCountryOffices"
+      class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+        <param name="includeProperties">success</param>
+      </result>
+    </action>
+    
 	</package>
 
 	<package name="json-planning" namespace="/impactPathway"

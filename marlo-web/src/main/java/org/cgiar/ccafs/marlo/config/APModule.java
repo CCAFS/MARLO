@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,26 +40,22 @@ public class APModule implements Module {
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(APModule.class);
 
-  private PropertiesManager properties;
-  private APConfig config;
-
   @Override
   public void configure(Binder binder) {
     // We are configuring google guice using annotation. However you can do it here if you want.
     binder.bind(Authenticator.class).annotatedWith(Names.named("LDAP")).to(LDAPAuthenticator.class);
     binder.bind(Authenticator.class).annotatedWith(Names.named("DB")).to(DBAuthenticator.class);
 
+    binder.bind(SessionFactory.class).toProvider(HibernateSessionFactoryProvider.class).in(Singleton.class);
     // In addition, we are using this place to configure other stuffs.
     ToStringBuilder.setDefaultStyle(ToStringStyle.MULTI_LINE_STYLE);
 
-    properties = new PropertiesManager();
-
-    config = new APConfig(properties);
+    PropertiesManager properties = new PropertiesManager();
 
     LOG.info("----- DATABASE CONNECTION -----");
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_USER));
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_HOST));
-    LOG.info(properties.getPropertiesAsString(config.MYSQL_DATABASE));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_USER));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_HOST));
+    LOG.info(properties.getPropertiesAsString(APConfig.MYSQL_DATABASE));
 
 
   }
