@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterTargetUnitDAO implements ICenterTargetUnitDAO {
+public class CenterTargetUnitDAO extends AbstractMarloDAO<CenterTargetUnit, Long> implements ICenterTargetUnitDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterTargetUnitDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterTargetUnitDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteTargetUnit(long targetUnitId) {
+  public void deleteTargetUnit(long targetUnitId) {
     CenterTargetUnit targetUnit = this.find(targetUnitId);
     targetUnit.setActive(false);
-    return this.save(targetUnit) > 0;
+    this.save(targetUnit);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterTargetUnitDAO implements ICenterTargetUnitDAO {
 
   @Override
   public CenterTargetUnit find(long id) {
-    return dao.find(CenterTargetUnit.class, id);
+    return super.find(CenterTargetUnit.class, id);
 
   }
 
   @Override
   public List<CenterTargetUnit> findAll() {
     String query = "from " + CenterTargetUnit.class.getName();
-    List<CenterTargetUnit> list = dao.findAll(query);
+    List<CenterTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterTargetUnitDAO implements ICenterTargetUnitDAO {
   @Override
   public List<CenterTargetUnit> getTargetUnitsByUserId(long userId) {
     String query = "from " + CenterTargetUnit.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterTargetUnit targetUnit) {
+  public CenterTargetUnit save(CenterTargetUnit targetUnit) {
     if (targetUnit.getId() == null) {
-      dao.save(targetUnit);
+      super.saveEntity(targetUnit);
     } else {
-      dao.update(targetUnit);
+      targetUnit = super.update(targetUnit);
     }
-    return targetUnit.getId();
+    return targetUnit;
   }
 
 

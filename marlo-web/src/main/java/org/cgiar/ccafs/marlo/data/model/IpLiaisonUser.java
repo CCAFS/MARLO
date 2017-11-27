@@ -29,6 +29,7 @@ public class IpLiaisonUser implements java.io.Serializable, IAuditLog {
     this.ipLiaisonInstitution = ipLiaisonInstitution;
   }
 
+
   @Override
   public Long getId() {
     return id;
@@ -64,7 +65,6 @@ public class IpLiaisonUser implements java.io.Serializable, IAuditLog {
     return user;
   }
 
-
   @Override
   public boolean isActive() {
     return true;
@@ -83,6 +83,12 @@ public class IpLiaisonUser implements java.io.Serializable, IAuditLog {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpLiaisonUser [id=" + id + ", user=" + user + ", ipLiaisonInstitution=" + ipLiaisonInstitution + "]";
   }
 
 

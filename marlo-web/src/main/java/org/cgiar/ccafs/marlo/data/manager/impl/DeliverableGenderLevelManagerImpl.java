@@ -41,9 +41,9 @@ public class DeliverableGenderLevelManagerImpl implements DeliverableGenderLevel
   }
 
   @Override
-  public boolean deleteDeliverableGenderLevel(long deliverableGenderLevelId) {
+  public void deleteDeliverableGenderLevel(long deliverableGenderLevelId) {
 
-    return deliverableGenderLevelDAO.deleteDeliverableGenderLevel(deliverableGenderLevelId);
+    deliverableGenderLevelDAO.deleteDeliverableGenderLevel(deliverableGenderLevelId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class DeliverableGenderLevelManagerImpl implements DeliverableGenderLevel
   }
 
   @Override
-  public long saveDeliverableGenderLevel(DeliverableGenderLevel deliverableGenderLevel) {
+  public DeliverableGenderLevel saveDeliverableGenderLevel(DeliverableGenderLevel deliverableGenderLevel) {
 
     return deliverableGenderLevelDAO.save(deliverableGenderLevel);
   }

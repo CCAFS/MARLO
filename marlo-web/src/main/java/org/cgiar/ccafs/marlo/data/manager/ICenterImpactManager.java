@@ -34,7 +34,7 @@ public interface ICenterImpactManager {
    * @param researchImpactId is the researchImpact identifier.
    * @return true if the researchImpact was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpact(long researchImpactId);
+  public void deleteResearchImpact(long researchImpactId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterImpactManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchImpact(CenterImpact researchImpact);
+  public CenterImpact saveResearchImpact(CenterImpact researchImpact);
 
 
 }

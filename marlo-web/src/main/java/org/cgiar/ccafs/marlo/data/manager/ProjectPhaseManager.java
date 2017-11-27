@@ -34,7 +34,7 @@ public interface ProjectPhaseManager {
    * @param projectPhaseId is the projectPhase identifier.
    * @return true if the projectPhase was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPhase(long projectPhaseId);
+  public void deleteProjectPhase(long projectPhaseId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectPhaseManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPhase(ProjectPhase projectPhase);
+  public ProjectPhase saveProjectPhase(ProjectPhase projectPhase);
 
 
 }

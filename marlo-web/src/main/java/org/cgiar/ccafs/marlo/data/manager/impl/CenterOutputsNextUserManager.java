@@ -42,9 +42,9 @@ public class CenterOutputsNextUserManager implements ICenterOutputsNextUserManag
   }
 
   @Override
-  public boolean deleteResearchOutputsNextUser(long researchOutputsNextUserId) {
+  public void deleteResearchOutputsNextUser(long researchOutputsNextUserId) {
 
-    return researchOutputsNextUserDAO.deleteResearchOutputsNextUser(researchOutputsNextUserId);
+    researchOutputsNextUserDAO.deleteResearchOutputsNextUser(researchOutputsNextUserId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterOutputsNextUserManager implements ICenterOutputsNextUserManag
   }
 
   @Override
-  public long saveResearchOutputsNextUser(CenterOutputsNextUser researchOutputsNextUser) {
+  public CenterOutputsNextUser saveResearchOutputsNextUser(CenterOutputsNextUser researchOutputsNextUser) {
 
     return researchOutputsNextUserDAO.save(researchOutputsNextUser);
   }

@@ -165,6 +165,13 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     this.volume = volume;
   }
 
+  @Override
+  public String toString() {
+    return "DeliverablePublicationMetadata [id=" + id + ", deliverable=" + deliverable + ", volume=" + volume
+      + ", issue=" + issue + ", pages=" + pages + ", journal=" + journal + ", isiPublication=" + isiPublication
+      + ", nasr=" + nasr + ", coAuthor=" + coAuthor + ", publicationAcknowledge=" + publicationAcknowledge + "]";
+  }
+
 
 }
 

@@ -32,7 +32,7 @@ public interface ProjectNextuserDAO {
    * @param projectNextuserId is the projectNextuser identifier.
    * @return true if the projectNextuser was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectNextuser(long projectNextuserId);
+  public void deleteProjectNextuser(long projectNextuserId);
 
   /**
    * This method validate if the projectNextuser identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectNextuserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectNextuser projectNextuser);
+  public ProjectNextuser save(ProjectNextuser projectNextuser);
 }

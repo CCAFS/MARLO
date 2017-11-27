@@ -41,9 +41,9 @@ public class ProjectScopeManagerImpl implements ProjectScopeManager {
   }
 
   @Override
-  public boolean deleteProjectScope(long projectScopeId) {
+  public void deleteProjectScope(long projectScopeId) {
 
-    return projectScopeDAO.deleteProjectScope(projectScopeId);
+    projectScopeDAO.deleteProjectScope(projectScopeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectScopeManagerImpl implements ProjectScopeManager {
   }
 
   @Override
-  public long saveProjectScope(ProjectScope projectScope) {
+  public ProjectScope saveProjectScope(ProjectScope projectScope) {
 
     return projectScopeDAO.save(projectScope);
   }

@@ -59,6 +59,7 @@ public class ProjectPhase implements java.io.Serializable, IAuditLog {
     return project;
   }
 
+
   @Override
   public boolean isActive() {
 
@@ -75,6 +76,11 @@ public class ProjectPhase implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public String toString() {
+    return "ProjectPhase [id=" + id + ", phase=" + phase + ", project=" + project + "]";
   }
 
 }

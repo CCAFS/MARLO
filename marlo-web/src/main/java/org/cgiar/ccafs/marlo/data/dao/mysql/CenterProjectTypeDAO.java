@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectTypeDAO implements ICenterProjectTypeDAO {
+public class CenterProjectTypeDAO extends AbstractMarloDAO<CenterProjectType, Long> implements ICenterProjectTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectTypeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectTypeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectType(long projectTypeId) {
+  public void deleteProjectType(long projectTypeId) {
     CenterProjectType projectType = this.find(projectTypeId);
     projectType.setActive(false);
-    return this.save(projectType) > 0;
+    this.save(projectType);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterProjectTypeDAO implements ICenterProjectTypeDAO {
 
   @Override
   public CenterProjectType find(long id) {
-    return dao.find(CenterProjectType.class, id);
+    return super.find(CenterProjectType.class, id);
 
   }
 
   @Override
   public List<CenterProjectType> findAll() {
     String query = "from " + CenterProjectType.class.getName();
-    List<CenterProjectType> list = dao.findAll(query);
+    List<CenterProjectType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +69,27 @@ public class CenterProjectTypeDAO implements ICenterProjectTypeDAO {
   @Override
   public List<CenterProjectType> getProjectTypesByUserId(long userId) {
     String query = "from " + CenterProjectType.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectType projectType) {
+  public CenterProjectType save(CenterProjectType projectType) {
     if (projectType.getId() == null) {
-      dao.save(projectType);
+      super.saveEntity(projectType);
     } else {
-      dao.update(projectType);
+      projectType = super.update(projectType);
     }
-    return projectType.getId();
+    return projectType;
   }
 
   @Override
-  public long save(CenterProjectType projectType, String actionName, List<String> relationsName) {
+  public CenterProjectType save(CenterProjectType projectType, String actionName, List<String> relationsName) {
     if (projectType.getId() == null) {
-      dao.save(projectType, actionName, relationsName);
+      super.saveEntity(projectType, actionName, relationsName);
     } else {
-      dao.update(projectType, actionName, relationsName);
+      projectType = super.update(projectType, actionName, relationsName);
     }
-    return projectType.getId();
+    return projectType;
   }
 
 

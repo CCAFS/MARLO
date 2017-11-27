@@ -22,20 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverablePublicationMetadataMySQLDAO implements DeliverablePublicationMetadataDAO {
+public class DeliverablePublicationMetadataMySQLDAO extends AbstractMarloDAO<DeliverablePublicationMetadata, Long>
+  implements DeliverablePublicationMetadataDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverablePublicationMetadataMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverablePublicationMetadataMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
+  public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
     DeliverablePublicationMetadata deliverablePublicationMetadata = this.find(deliverablePublicationMetadataId);
-    return dao.delete(deliverablePublicationMetadata);
+    super.delete(deliverablePublicationMetadata);
   }
 
   @Override
@@ -50,14 +51,14 @@ public class DeliverablePublicationMetadataMySQLDAO implements DeliverablePublic
 
   @Override
   public DeliverablePublicationMetadata find(long id) {
-    return dao.find(DeliverablePublicationMetadata.class, id);
+    return super.find(DeliverablePublicationMetadata.class, id);
 
   }
 
   @Override
   public List<DeliverablePublicationMetadata> findAll() {
     String query = "from " + DeliverablePublicationMetadata.class.getName() + " where is_active=1";
-    List<DeliverablePublicationMetadata> list = dao.findAll(query);
+    List<DeliverablePublicationMetadata> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +67,15 @@ public class DeliverablePublicationMetadataMySQLDAO implements DeliverablePublic
   }
 
   @Override
-  public long save(DeliverablePublicationMetadata deliverablePublicationMetadata) {
+  public DeliverablePublicationMetadata save(DeliverablePublicationMetadata deliverablePublicationMetadata) {
     if (deliverablePublicationMetadata.getId() == null) {
-      dao.save(deliverablePublicationMetadata);
+      super.saveEntity(deliverablePublicationMetadata);
     } else {
-      dao.update(deliverablePublicationMetadata);
+      deliverablePublicationMetadata = super.update(deliverablePublicationMetadata);
     }
 
 
-    return deliverablePublicationMetadata.getId();
+    return deliverablePublicationMetadata;
   }
 
 

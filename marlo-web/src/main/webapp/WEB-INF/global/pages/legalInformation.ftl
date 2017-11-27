@@ -106,14 +106,15 @@
         <div>
           <strong>Conacting Us</strong>
           <p>If there are any questions regarding this privacy policy, you may contact us using the information below. </p>
-          <span>International Center for Tropical Agriculture (CIAT)</span>
-          <span>Km 17 Recta Cali-Palmira</span>
-          <span>Palmira, Valle del Cauca 763537</span>
-          <span>Colombia</span>
-          <span>MARLOSupport@cgiar.org</span>
+          <span>International Center for Tropical Agriculture (CIAT)</span><br />
+          <span>Km 17 Recta Cali-Palmira</span><br />
+          <span>Palmira, Valle del Cauca 763537</span><br />
+          <span>Colombia</span><br />
+          <span>MARLOSupport@cgiar.org</span><br />
         </div>
         
-        <i>Last Edited on 2017-10-12</i>
+        <p><br /><i>Last Edited on 2017-10-12</i></p>
+        
       </div>
       
       <h2 id="termsConditions">Terms and Conditions</h2>

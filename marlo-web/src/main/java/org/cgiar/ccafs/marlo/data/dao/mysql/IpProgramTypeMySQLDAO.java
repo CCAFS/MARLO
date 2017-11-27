@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.IpProgramType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpProgramTypeMySQLDAO implements IpProgramTypeDAO {
+public class IpProgramTypeMySQLDAO extends AbstractMarloDAO<IpProgramType, Long> implements IpProgramTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpProgramTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpProgramTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpProgramType(long ipProgramTypeId) {
+  public void deleteIpProgramType(long ipProgramTypeId) {
     IpProgramType ipProgramType = this.find(ipProgramTypeId);
-    return dao.delete(ipProgramType);
+    super.delete(ipProgramType);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class IpProgramTypeMySQLDAO implements IpProgramTypeDAO {
 
   @Override
   public IpProgramType find(long id) {
-    return dao.find(IpProgramType.class, id);
+    return super.find(IpProgramType.class, id);
 
   }
 
   @Override
   public List<IpProgramType> findAll() {
     String query = "from " + IpProgramType.class.getName() + " where is_active=1";
-    List<IpProgramType> list = dao.findAll(query);
+    List<IpProgramType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class IpProgramTypeMySQLDAO implements IpProgramTypeDAO {
   }
 
   @Override
-  public long save(IpProgramType ipProgramType) {
+  public IpProgramType save(IpProgramType ipProgramType) {
     if (ipProgramType.getId() == null) {
-      dao.save(ipProgramType);
+      super.saveEntity(ipProgramType);
     } else {
-      dao.update(ipProgramType);
+      ipProgramType = super.update(ipProgramType);
     }
 
 
-    return ipProgramType.getId();
+    return ipProgramType;
   }
 
 

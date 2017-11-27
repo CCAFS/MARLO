@@ -45,14 +45,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  */
 public class ProjectListAction extends BaseAction {
 
-
   private static final long serialVersionUID = -793652591843623397L;
+
+  private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
 
   private Crp loggedCrp;
@@ -231,7 +235,8 @@ public class ProjectListAction extends BaseAction {
       project.setPresetDate(new Date());
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       project.setAdministrative(new Boolean(admin));
-      projectID = projectManager.saveProject(project);
+      project = projectManager.saveProject(project);
+      projectID = project.getId();
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
         ProjectPhase projectPhase = new ProjectPhase();
@@ -276,7 +281,8 @@ public class ProjectListAction extends BaseAction {
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
       project.setAdministrative(new Boolean(admin));
 
-      projectID = projectManager.saveProject(project);
+      project = projectManager.saveProject(project);
+      projectID = project.getId();
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
       if (phase != null) {
@@ -321,17 +327,19 @@ public class ProjectListAction extends BaseAction {
           .setModificationJustification(this.getJustification() == null ? "Project deleted" : this.getJustification());
         project.setModifiedBy(this.getCurrentUser());
 
-        boolean deleted = projectManager.deleteProject(project);
-
-
-        if (deleted) {
+        try {
+          projectManager.deleteProject(project);
           for (ProjectPhase projectPhase : project.getProjectPhases()) {
             projectPhaseManager.deleteProjectPhase(projectPhase.getId());
           }
           this.addActionMessage(
             "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
-        } else {
+        } catch (Exception e) {
+          logger.error("Unable to delete project", e);
           this.addActionError(this.getText("deleting.problem", new String[] {this.getText("project").toLowerCase()}));
+          /**
+           * Assume we don't need to re-throw the exception as this transaction is limited to deleting only.
+           */
         }
       } else {
         this.addActionError(this.getText("projects.cannotDelete"));

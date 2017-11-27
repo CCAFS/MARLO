@@ -46,12 +46,12 @@ public class CenterTopic implements Serializable, IAuditLog {
   @Expose
   private String researchTopic;
 
-
   /**
    * The research program related to this research topic or flagship project.
    */
   @Expose
   private CenterProgram researchProgram;
+
 
   @Expose
   private boolean active;
@@ -93,7 +93,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     // TODO Auto-generated constructor stub
   }
 
-
   /**
    * @param researchTopic
    * @param researchProgram
@@ -103,6 +102,7 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.researchTopic = researchTopic;
     this.researchProgram = researchProgram;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -125,7 +125,6 @@ public class CenterTopic implements Serializable, IAuditLog {
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -270,8 +269,15 @@ public class CenterTopic implements Serializable, IAuditLog {
     this.researchTopic = researchTopic;
   }
 
+
   public void setShortName(String shortName) {
     this.shortName = shortName;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterTopic [id=" + id + ", researchTopic=" + researchTopic + ", researchProgram=" + researchProgram
+      + ", shortName=" + shortName + "]";
   }
 
 

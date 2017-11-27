@@ -32,7 +32,7 @@ public interface IpProgramDAO {
    * @param ipProgramId is the ipProgram identifier.
    * @return true if the ipProgram was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgram(long ipProgramId);
+  public void deleteIpProgram(long ipProgramId);
 
   /**
    * This method validate if the ipProgram identify with the given id exists in the system.
@@ -65,7 +65,7 @@ public interface IpProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpProgram ipProgram);
+  public IpProgram save(IpProgram ipProgram);
 
   /**
    * This method saves the information of the given ip program and save the history in the auditlog
@@ -75,5 +75,5 @@ public interface IpProgramDAO {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public long save(IpProgram ipProgram, String section, List<String> relationsName);
+  public IpProgram save(IpProgram ipProgram, String section, List<String> relationsName);
 }

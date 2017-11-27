@@ -34,7 +34,7 @@ public interface ProjectNextuserManager {
    * @param projectNextuserId is the projectNextuser identifier.
    * @return true if the projectNextuser was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectNextuser(long projectNextuserId);
+  public void deleteProjectNextuser(long projectNextuserId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectNextuserManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectNextuser(ProjectNextuser projectNextuser);
+  public ProjectNextuser saveProjectNextuser(ProjectNextuser projectNextuser);
 
 
 }

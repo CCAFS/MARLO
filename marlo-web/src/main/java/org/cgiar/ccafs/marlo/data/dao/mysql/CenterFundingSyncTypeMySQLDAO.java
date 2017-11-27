@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,15 @@ import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterFundingSyncTypeMySQLDAO implements CenterFundingSyncTypeDAO {
+public class CenterFundingSyncTypeMySQLDAO extends AbstractMarloDAO<CenterFundingSyncType, Long>
+  implements CenterFundingSyncTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterFundingSyncTypeMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterFundingSyncTypeMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterFundingSyncTypeMySQLDAO implements CenterFundingSyncTypeDAO {
 
   @Override
   public CenterFundingSyncType find(long id) {
-    return dao.find(CenterFundingSyncType.class, id);
+    return super.find(CenterFundingSyncType.class, id);
 
   }
 
   @Override
   public List<CenterFundingSyncType> findAll() {
     String query = "from " + CenterFundingSyncType.class.getName() + " where is_active=1";
-    List<CenterFundingSyncType> list = dao.findAll(query);
+    List<CenterFundingSyncType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,9 +70,9 @@ public class CenterFundingSyncTypeMySQLDAO implements CenterFundingSyncTypeDAO {
   @Override
   public long save(CenterFundingSyncType centerFundingSyncType) {
     if (centerFundingSyncType.getId() == null) {
-      dao.save(centerFundingSyncType);
+      super.saveEntity(centerFundingSyncType);
     } else {
-      dao.update(centerFundingSyncType);
+      super.update(centerFundingSyncType);
     }
 
 

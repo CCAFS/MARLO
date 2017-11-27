@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpProgramMySQLDAO implements CrpProgramDAO {
+public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> implements CrpProgramDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpProgramMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpProgramMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpProgram(long crpProgramId) {
+  public void deleteCrpProgram(long crpProgramId) {
     CrpProgram crpProgram = this.find(crpProgramId);
     crpProgram.setActive(false);
-    return this.save(crpProgram) > 0;
+    this.save(crpProgram);
   }
 
   @Override
@@ -51,7 +51,7 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
 
   @Override
   public CrpProgram find(long id) {
-    return dao.find(CrpProgram.class, id);
+    return super.find(CrpProgram.class, id);
 
   }
 
@@ -60,7 +60,7 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
 
 
     String query = "from " + CrpProgram.class.getName() + " where is_active=1";
-    List<CrpProgram> list = dao.findAll(query);
+    List<CrpProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
      * Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
      * List<CrpProgram> programs = new ArrayList<CrpProgram>();
      * String query = "select * from auditlog";
-     * List<Map<String, Object>> lst = dao.findCustomQuery(query);
+     * List<Map<String, Object>> lst = super.findCustomQuery(query);
      * for (Map<String, Object> map : lst) {
      * String json = (String) map.get("Entity_json");
      * CrpProgram prog = gson.fromJson(json, CrpProgram.class);
@@ -84,7 +84,7 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
   public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
     String query = "from " + CrpProgram.class.getName() + " where crp_id=" + id + " and program_type=" + programType
       + " and is_active=1";
-    List<CrpProgram> list = dao.findAll(query);
+    List<CrpProgram> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -92,23 +92,23 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
   }
 
   @Override
-  public long save(CrpProgram crpProgram) {
+  public CrpProgram save(CrpProgram crpProgram) {
     if (crpProgram.getId() == null) {
-      dao.save(crpProgram);
+      super.saveEntity(crpProgram);
     } else {
-      dao.update(crpProgram);
+      crpProgram = super.update(crpProgram);
     }
-    return crpProgram.getId();
+    return crpProgram;
   }
 
   @Override
-  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName) {
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName) {
     if (crpProgram.getId() == null) {
-      dao.save(crpProgram, actionName, relationsName);
+      super.saveEntity(crpProgram, actionName, relationsName);
     } else {
-      dao.update(crpProgram, actionName, relationsName);
+      crpProgram = super.update(crpProgram, actionName, relationsName);
     }
-    return crpProgram.getId();
+    return crpProgram;
   }
 
 

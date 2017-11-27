@@ -181,6 +181,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    Thread.sleep(200);
     if (existProject && validSection) {
       // getting the current section status.
       switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
@@ -423,10 +424,12 @@ public class ValidateProjectSectionAction extends BaseAction {
       default:
         sectionStatus =
           sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
-        section = new HashMap<String, Object>();
+        if (sectionStatus != null) {
+          section = new HashMap<String, Object>();
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        }
 
-        section.put("sectionName", sectionStatus.getSectionName());
-        section.put("missingFields", sectionStatus.getMissingFields());
         break;
     }
 

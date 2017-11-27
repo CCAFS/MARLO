@@ -23,20 +23,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
+public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO<IpLiaisonInstitution, Long> implements IpLiaisonInstitutionDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public IpLiaisonInstitutionMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public IpLiaisonInstitutionMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
+  public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
     IpLiaisonInstitution ipLiaisonInstitution = this.find(ipLiaisonInstitutionId);
-    return dao.delete(ipLiaisonInstitution);
+    super.delete(ipLiaisonInstitution);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
 
   @Override
   public IpLiaisonInstitution find(long id) {
-    return dao.find(IpLiaisonInstitution.class, id);
+    return super.find(IpLiaisonInstitution.class, id);
 
   }
 
   @Override
   public List<IpLiaisonInstitution> findAll() {
     String query = "from " + IpLiaisonInstitution.class.getName();
-    List<IpLiaisonInstitution> list = dao.findAll(query);
+    List<IpLiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,7 +69,7 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
   @Override
   public IpLiaisonInstitution findByIpProgram(long ipProgramID) {
     String query = "from " + IpLiaisonInstitution.class.getName() + " where ip_program=" + ipProgramID;
-    List<IpLiaisonInstitution> list = dao.findAll(query);
+    List<IpLiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -79,7 +79,7 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
   @Override
   public List<IpLiaisonInstitution> getLiaisonInstitutionsCrpsIndicator() {
     String query = "from " + IpLiaisonInstitution.class.getName() + " where id not in(1,6,7,8,9,10)";
-    List<IpLiaisonInstitution> list = dao.findAll(query);
+    List<IpLiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -89,29 +89,29 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
   @Override
   public List<Map<String, Object>> getLiaisonInstitutionSynthesisByMog() {
     String query = "select id FROM liaison_institutions li where id  in (2,3,4,5,6,7,8,9,10)";
-    return dao.findCustomQuery(query);
+    return super.findCustomQuery(query);
   }
 
   @Override
-  public long save(IpLiaisonInstitution ipLiaisonInstitution) {
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution) {
     if (ipLiaisonInstitution.getId() == null) {
-      dao.save(ipLiaisonInstitution);
+      super.saveEntity(ipLiaisonInstitution);
     } else {
-      dao.update(ipLiaisonInstitution);
+      ipLiaisonInstitution = super.update(ipLiaisonInstitution);
     }
 
 
-    return ipLiaisonInstitution.getId();
+    return ipLiaisonInstitution;
   }
 
   @Override
-  public long save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName) {
     if (ipLiaisonInstitution.getId() == null) {
-      dao.save(ipLiaisonInstitution, section, relationsName);
+      super.saveEntity(ipLiaisonInstitution, section, relationsName);
     } else {
-      dao.update(ipLiaisonInstitution, section, relationsName);
+      ipLiaisonInstitution = super.update(ipLiaisonInstitution, section, relationsName);
     }
-    return ipLiaisonInstitution.getId();
+    return ipLiaisonInstitution;
   }
 
 

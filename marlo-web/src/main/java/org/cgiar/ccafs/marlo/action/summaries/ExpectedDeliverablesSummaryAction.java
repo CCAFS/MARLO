@@ -45,6 +45,13 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
+/**
+ * ExpectedDeliverablesSummaryAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 2, 2017
+ * @time 9:13:34 AM: Added a new column to masterList called Project Managing Partners
+ */
 public class ExpectedDeliverablesSummaryAction extends BaseAction implements Summary {
 
   /**
@@ -100,12 +107,14 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
     masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));
     masterReport.getParameterValues().put("i8nIndividual", this.getText("deliverable.individual"));
-    masterReport.getParameterValues().put("i8nManaging", this.getText("deliverable.managing"));
+    masterReport.getParameterValues().put("i8nPartnersResponsible", this.getText("deliverable.managing"));
     masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
     masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
     masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
+    masterReport.getParameterValues().put("i8nManagingResponsible", this.getText("deliverable.project.managing"));
+    masterReport.getParameterValues().put("i8nProjectLeadPartner", this.getText("summaries.deliverable.leadPartner"));
 
     return masterReport;
   }
@@ -118,8 +127,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/deliverables_OutcomeIndicator.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/deliverables_20171102.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 

@@ -23,21 +23,24 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CenterOutcomeDAO implements ICenterOutcomeDAO {
+public class CenterOutcomeDAO extends AbstractMarloDAO<CenterOutcome, Long> implements ICenterOutcomeDAO {
 
-  private StandardDAO dao;
+  private static Logger LOG = LoggerFactory.getLogger(CenterOutcomeDAO.class);
 
   @Inject
-  public CenterOutcomeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterOutcomeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchOutcome(long researchOutcomeId) {
+  public void deleteResearchOutcome(long researchOutcomeId) {
     CenterOutcome researchOutcome = this.find(researchOutcomeId);
     researchOutcome.setActive(false);
-    return this.save(researchOutcome) > 0;
+    this.save(researchOutcome);
   }
 
   @Override
@@ -52,14 +55,14 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
 
   @Override
   public CenterOutcome find(long id) {
-    return dao.find(CenterOutcome.class, id);
+    return super.find(CenterOutcome.class, id);
 
   }
 
   @Override
   public List<CenterOutcome> findAll() {
     String query = "from " + CenterOutcome.class.getName();
-    List<CenterOutcome> list = dao.findAll(query);
+    List<CenterOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -85,7 +88,7 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
     query.append(" GROUP BY ");
     query.append("center_target_units.`name`  ");
 
-    return dao.findCustomQuery(query.toString());
+    return super.findCustomQuery(query.toString());
   }
 
   @Override
@@ -178,9 +181,9 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
     query.append("co.id ASC  ");
 
 
-    System.out.println(query.toString());
+    LOG.debug(query.toString());
 
-    return dao.findCustomQuery(query.toString());
+    return super.findCustomQuery(query.toString());
   }
 
   @Override
@@ -249,35 +252,35 @@ public class CenterOutcomeDAO implements ICenterOutcomeDAO {
     query.append("co.id ASC,  ");
     query.append("mco.`year` ASC  ");
 
-    System.out.println(query.toString());
+    LOG.debug(query.toString());
 
-    return dao.findCustomQuery(query.toString());
+    return super.findCustomQuery(query.toString());
   }
 
   @Override
   public List<CenterOutcome> getResearchOutcomesByUserId(long userId) {
     String query = "from " + CenterOutcome.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterOutcome researchOutcome) {
+  public CenterOutcome save(CenterOutcome researchOutcome) {
     if (researchOutcome.getId() == null) {
-      dao.save(researchOutcome);
+      super.saveEntity(researchOutcome);
     } else {
-      dao.update(researchOutcome);
+      researchOutcome = super.update(researchOutcome);
     }
-    return researchOutcome.getId();
+    return researchOutcome;
   }
 
   @Override
-  public long save(CenterOutcome outcome, String actionName, List<String> relationsName) {
+  public CenterOutcome save(CenterOutcome outcome, String actionName, List<String> relationsName) {
     if (outcome.getId() == null) {
-      dao.save(outcome, actionName, relationsName);
+      super.saveEntity(outcome, actionName, relationsName);
     } else {
-      dao.update(outcome, actionName, relationsName);
+      outcome = super.update(outcome, actionName, relationsName);
     }
-    return outcome.getId();
+    return outcome;
   }
 
 

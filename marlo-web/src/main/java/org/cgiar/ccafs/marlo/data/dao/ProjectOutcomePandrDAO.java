@@ -32,7 +32,7 @@ public interface ProjectOutcomePandrDAO {
    * @param projectOutcomePandrId is the projectOutcomePandr identifier.
    * @return true if the projectOutcomePandr was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOutcomePandr(long projectOutcomePandrId);
+  public void deleteProjectOutcomePandr(long projectOutcomePandrId);
 
   /**
    * This method validate if the projectOutcomePandr identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectOutcomePandrDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectOutcomePandr projectOutcomePandr);
+  public ProjectOutcomePandr save(ProjectOutcomePandr projectOutcomePandr);
 }

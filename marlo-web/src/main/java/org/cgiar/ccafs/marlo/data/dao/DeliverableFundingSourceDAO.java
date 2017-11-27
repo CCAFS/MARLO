@@ -32,7 +32,7 @@ public interface DeliverableFundingSourceDAO {
    * @param deliverableFundingSourceId is the deliverableFundingSource identifier.
    * @return true if the deliverableFundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableFundingSource(long deliverableFundingSourceId);
+  public void deleteDeliverableFundingSource(long deliverableFundingSourceId);
 
   /**
    * This method validate if the deliverableFundingSource identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface DeliverableFundingSourceDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableFundingSource deliverableFundingSource);
+  public DeliverableFundingSource save(DeliverableFundingSource deliverableFundingSource);
 }

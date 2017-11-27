@@ -41,9 +41,9 @@ public class InstitutionTypeManagerImpl implements InstitutionTypeManager {
   }
 
   @Override
-  public boolean deleteInstitutionType(long institutionTypeId) {
+  public void deleteInstitutionType(long institutionTypeId) {
 
-    return institutionTypeDAO.deleteInstitutionType(institutionTypeId);
+    institutionTypeDAO.deleteInstitutionType(institutionTypeId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class InstitutionTypeManagerImpl implements InstitutionTypeManager {
   }
 
   @Override
-  public long saveInstitutionType(InstitutionType institutionType) {
+  public InstitutionType saveInstitutionType(InstitutionType institutionType) {
 
     return institutionTypeDAO.save(institutionType);
   }

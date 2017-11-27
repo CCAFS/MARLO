@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectPartnerDAO implements ICenterProjectPartnerDAO {
+public class CenterProjectPartnerDAO extends AbstractMarloDAO<CenterProjectPartner, Long>
+  implements ICenterProjectPartnerDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectPartnerDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectPartnerDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
     CenterProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    return this.save(projectPartner) > 0;
+    this.save(projectPartner);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectPartnerDAO implements ICenterProjectPartnerDAO {
 
   @Override
   public CenterProjectPartner find(long id) {
-    return dao.find(CenterProjectPartner.class, id);
+    return super.find(CenterProjectPartner.class, id);
 
   }
 
   @Override
   public List<CenterProjectPartner> findAll() {
     String query = "from " + CenterProjectPartner.class.getName();
-    List<CenterProjectPartner> list = dao.findAll(query);
+    List<CenterProjectPartner> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterProjectPartnerDAO implements ICenterProjectPartnerDAO {
   @Override
   public List<CenterProjectPartner> getProjectPartnersByUserId(long userId) {
     String query = "from " + CenterProjectPartner.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectPartner projectPartner) {
+  public CenterProjectPartner save(CenterProjectPartner projectPartner) {
     if (projectPartner.getId() == null) {
-      dao.save(projectPartner);
+      super.saveEntity(projectPartner);
     } else {
-      dao.update(projectPartner);
+      projectPartner = super.update(projectPartner);
     }
-    return projectPartner.getId();
+    return projectPartner;
   }
 
 

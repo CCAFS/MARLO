@@ -31,6 +31,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private Institution institution;
 
+
   @Expose
   private CenterProject project;
 
@@ -58,6 +59,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
 
   public CenterProjectPartner(User modifiedBy, User createdBy, Institution institution, CenterProject project,
     boolean active, Date activeSince, String modificationJustification,
+
     Set<CenterProjectPartnerPerson> projectPartnerPersons) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -90,7 +92,6 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -147,6 +148,7 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     return users;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -188,18 +190,23 @@ public class CenterProjectPartner implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(CenterProject project) {
     this.project = project;
   }
+
 
   public void setProjectPartnerPersons(Set<CenterProjectPartnerPerson> projectPartnerPersons) {
     this.projectPartnerPersons = projectPartnerPersons;
   }
 
-
   public void setUsers(List<CenterProjectPartnerPerson> users) {
     this.users = users;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterProjectPartner [id=" + id + ", institution=" + institution + ", project=" + project + "]";
   }
 
 }

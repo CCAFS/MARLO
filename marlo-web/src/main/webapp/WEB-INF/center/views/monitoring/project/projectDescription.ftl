@@ -44,22 +44,24 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/center/views/monitoring/project/messages-projects.ftl" /]
         <br />
-      
+
+        [#assign projectSync = (project.sync)!false /]
+     
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
+           
           [#-- Back --]
         <div class="pull-right">
           <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>
-          
+            
             <h3 class="headTitle">${selectedProgram.name} - [@s.text name="projectDescription.title" /]</h3>  
             <div id="projectDescription" class="borderBox">
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
@@ -67,7 +69,7 @@
             </div>
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
             </div> 
           
            
@@ -367,14 +369,21 @@
 [#macro fundingSourceMacro element name index=-1 isTemplate=false]  
   [#local customName = "${name}[${index}]" /]
   [#local isSynced = (element.sync)!false ]
+  [#local isAutofill = (element.autoFill)!false ]
   [#local isOCS = (element.centerFundingSyncType.id == 1)!true ]
   <div id="fundingSource-${isTemplate?string('template',(element.id)!)}" class="fundingSources fsSync simpleBox"  style="display:${isTemplate?string('none','block')}">
     [#-- Loading block --]
     <div class="loading syncBlock" style="display:none"></div>
     
     [#-- Remove Button --]
-    [#if editable]<div class="removeFundingSource removeElement sm" title="Remove Milestone"></div>[/#if]
-
+    [#if editable]
+      [#if isAutofill]
+        <div class="removeFundingSource"></div>
+      [#else]
+        <div class="removeFundingSource removeElement sm" title="Remove Funding Source"></div>        
+      [/#if]       
+    [/#if]
+    
     [#-- Index --]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>

@@ -401,15 +401,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
         locElement.setIsSiteIntegration(true);
         locElementManager.saveLocElement(locElement);
 
-        Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+        siteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
 
         if (siteIntegration.getSiteLeaders() != null) {
           for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
             User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-            CrpsSiteIntegration crpSiteIntegration =
-              crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
 
-            sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+            sitesLeader.setCrpsSiteIntegration(siteIntegration);
             sitesLeader.setUser(userSiteLeader);
             sitesLeader.setActive(true);
             sitesLeader.setModifiedBy(this.getCurrentUser());

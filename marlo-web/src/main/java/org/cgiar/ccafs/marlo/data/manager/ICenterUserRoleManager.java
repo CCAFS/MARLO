@@ -34,7 +34,7 @@ public interface ICenterUserRoleManager {
    * @param userRoleId is the userRole identifier.
    * @return true if the userRole was successfully deleted, false otherwise.
    */
-  public boolean deleteUserRole(long userRoleId);
+  public void deleteUserRole(long userRoleId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterUserRoleManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveUserRole(CenterUserRole userRole);
+  public CenterUserRole saveUserRole(CenterUserRole userRole);
 
 
 }

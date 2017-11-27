@@ -18,16 +18,16 @@ public class CenterRegion implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 2934551082694871863L;
 
-
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private User createdBy;
+
 
   @Expose
   private String name;
@@ -60,7 +60,6 @@ public class CenterRegion implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.researchImpactBeneficiaries = researchImpactBeneficiaries;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -109,19 +108,21 @@ public class CenterRegion implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public String getName() {
     return name;
   }
+
 
   public Set<CenterImpactBeneficiary> getResearchImpactBeneficiaries() {
     return researchImpactBeneficiaries;
@@ -160,10 +161,10 @@ public class CenterRegion implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setName(String name) {
     this.name = name;
@@ -171,6 +172,11 @@ public class CenterRegion implements java.io.Serializable, IAuditLog {
 
   public void setResearchImpactBeneficiaries(Set<CenterImpactBeneficiary> researchImpactBeneficiaries) {
     this.researchImpactBeneficiaries = researchImpactBeneficiaries;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterRegion [id=" + id + ", name=" + name + "]";
   }
 
 }

@@ -34,7 +34,7 @@ public interface InstitutionDAO {
    * @param institutionId is the institution identifier.
    * @return true if the institution was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitution(long institutionId);
+  public void deleteInstitution(long institutionId);
 
   /**
    * This method validate if the institution identify with the given id exists in the system.
@@ -76,7 +76,7 @@ public interface InstitutionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Institution institution);
+  public Institution save(Institution institution);
 
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID);
 }

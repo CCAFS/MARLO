@@ -22,6 +22,7 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
   private Long id;
 
   private FundingSource fundingSource;
+
   @Expose
   private Institution institution;
 
@@ -32,7 +33,6 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
     this.fundingSource = fundingSource;
     this.institution = institution;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -55,6 +55,7 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
     }
     return true;
   }
+
 
   public FundingSource getFundingSource() {
     return this.fundingSource;
@@ -113,6 +114,12 @@ public class FundingSourceInstitution implements java.io.Serializable, IAuditLog
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  @Override
+  public String toString() {
+    return "FundingSourceInstitution [id=" + id + ", fundingSource=" + fundingSource + ", institution=" + institution
+      + "]";
   }
 
 

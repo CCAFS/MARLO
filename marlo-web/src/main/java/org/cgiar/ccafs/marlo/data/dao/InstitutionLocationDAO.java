@@ -32,7 +32,7 @@ public interface InstitutionLocationDAO {
    * @param institutionLocationId is the institutionLocation identifier.
    * @return true if the institutionLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitutionLocation(long institutionLocationId);
+  public void deleteInstitutionLocation(long institutionLocationId);
 
   /**
    * This method validate if the institutionLocation identify with the given id exists in the system.
@@ -68,5 +68,5 @@ public interface InstitutionLocationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(InstitutionLocation institutionLocation);
+  public InstitutionLocation save(InstitutionLocation institutionLocation);
 }

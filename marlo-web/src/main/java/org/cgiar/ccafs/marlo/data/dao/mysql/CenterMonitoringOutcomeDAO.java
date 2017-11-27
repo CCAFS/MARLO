@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterMonitoringOutcomeDAO implements ICenterMonitoringOutcomeDAO {
+public class CenterMonitoringOutcomeDAO extends AbstractMarloDAO<CenterMonitoringOutcome, Long>
+  implements ICenterMonitoringOutcomeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterMonitoringOutcomeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterMonitoringOutcomeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteMonitoringOutcome(long monitoringOutcomeId) {
+  public void deleteMonitoringOutcome(long monitoringOutcomeId) {
     CenterMonitoringOutcome monitoringOutcome = this.find(monitoringOutcomeId);
     monitoringOutcome.setActive(false);
-    return this.save(monitoringOutcome) > 0;
+    this.save(monitoringOutcome);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterMonitoringOutcomeDAO implements ICenterMonitoringOutcomeDAO {
 
   @Override
   public CenterMonitoringOutcome find(long id) {
-    return dao.find(CenterMonitoringOutcome.class, id);
+    return super.find(CenterMonitoringOutcome.class, id);
 
   }
 
   @Override
   public List<CenterMonitoringOutcome> findAll() {
     String query = "from " + CenterMonitoringOutcome.class.getName();
-    List<CenterMonitoringOutcome> list = dao.findAll(query);
+    List<CenterMonitoringOutcome> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterMonitoringOutcomeDAO implements ICenterMonitoringOutcomeDAO {
   @Override
   public List<CenterMonitoringOutcome> getMonitoringOutcomesByUserId(long userId) {
     String query = "from " + CenterMonitoringOutcome.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterMonitoringOutcome monitoringOutcome) {
+  public CenterMonitoringOutcome save(CenterMonitoringOutcome monitoringOutcome) {
     if (monitoringOutcome.getId() == null) {
-      dao.save(monitoringOutcome);
+      super.saveEntity(monitoringOutcome);
     } else {
-      dao.update(monitoringOutcome);
+      monitoringOutcome = super.update(monitoringOutcome);
     }
-    return monitoringOutcome.getId();
+    return monitoringOutcome;
   }
 
 

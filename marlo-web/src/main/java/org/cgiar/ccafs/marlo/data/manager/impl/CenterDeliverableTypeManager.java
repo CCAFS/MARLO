@@ -42,9 +42,9 @@ public class CenterDeliverableTypeManager implements ICenterDeliverableTypeManag
   }
 
   @Override
-  public boolean deleteDeliverableType(long deliverableTypeId) {
+  public void deleteDeliverableType(long deliverableTypeId) {
 
-    return deliverableTypeDAO.deleteDeliverableType(deliverableTypeId);
+    deliverableTypeDAO.deleteDeliverableType(deliverableTypeId);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class CenterDeliverableTypeManager implements ICenterDeliverableTypeManag
   }
 
   @Override
-  public long saveDeliverableType(CenterDeliverableType deliverableType) {
+  public CenterDeliverableType saveDeliverableType(CenterDeliverableType deliverableType) {
 
     return deliverableTypeDAO.save(deliverableType);
   }

@@ -32,7 +32,7 @@ public interface GenderTypeDAO {
    * @param genderTypeId is the genderType identifier.
    * @return true if the genderType was successfully deleted, false otherwise.
    */
-  public boolean deleteGenderType(long genderTypeId);
+  public void deleteGenderType(long genderTypeId);
 
   /**
    * This method validate if the genderType identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface GenderTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(GenderType genderType);
+  public GenderType save(GenderType genderType);
 }

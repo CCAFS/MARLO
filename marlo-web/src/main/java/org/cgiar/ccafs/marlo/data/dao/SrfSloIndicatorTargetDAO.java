@@ -32,7 +32,7 @@ public interface SrfSloIndicatorTargetDAO {
    * @param srfSloIndicatorTargetId is the srfSloIndicatorTarget identifier.
    * @return true if the srfSloIndicatorTarget was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
+  public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId);
 
   /**
    * This method validate if the srfSloIndicatorTarget identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface SrfSloIndicatorTargetDAO {
    *         was updated
    *         or -1 is some error occurred.
    */
-  public long save(SrfSloIndicatorTarget srfSloIndicatorTarget);
+  public SrfSloIndicatorTarget save(SrfSloIndicatorTarget srfSloIndicatorTarget);
 }

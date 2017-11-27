@@ -34,7 +34,7 @@ public interface DeliverableDisseminationManager {
    * @param deliverableDisseminationId is the deliverableDissemination identifier.
    * @return true if the deliverableDissemination was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableDissemination(long deliverableDisseminationId);
+  public void deleteDeliverableDissemination(long deliverableDisseminationId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface DeliverableDisseminationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableDissemination(DeliverableDissemination deliverableDissemination);
+  public DeliverableDissemination saveDeliverableDissemination(DeliverableDissemination deliverableDissemination);
 
 
 }

@@ -41,9 +41,9 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
   }
 
   @Override
-  public boolean deleteLiaisonInstitution(long liaisonInstitutionId) {
+  public void deleteLiaisonInstitution(long liaisonInstitutionId) {
 
-    return liaisonInstitutionDAO.deleteLiaisonInstitution(liaisonInstitutionId);
+    liaisonInstitutionDAO.deleteLiaisonInstitution(liaisonInstitutionId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
 
 
   @Override
-  public long saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+  public LiaisonInstitution saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
 
     return liaisonInstitutionDAO.save(liaisonInstitution);
   }

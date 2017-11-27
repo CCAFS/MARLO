@@ -34,7 +34,7 @@ public interface ICenterImpactStatementManager {
    * @param researchImpactStatementId is the researchImpactStatement identifier.
    * @return true if the researchImpactStatement was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchImpactStatement(long researchImpactStatementId);
+  public void deleteResearchImpactStatement(long researchImpactStatementId);
 
 
   /**
@@ -80,7 +80,7 @@ public interface ICenterImpactStatementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement);
+  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement);
 
   /**
    * This method saves the information of the given researchImpactStatement
@@ -92,7 +92,7 @@ public interface ICenterImpactStatementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
+  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
     List<String> relationsName);
 
 

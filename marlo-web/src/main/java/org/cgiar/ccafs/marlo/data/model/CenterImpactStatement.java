@@ -32,6 +32,7 @@ public class CenterImpactStatement implements java.io.Serializable, IAuditLog {
   @Expose
   private SrfIdo srfIdo;
 
+
   @Expose
   private String name;
 
@@ -62,7 +63,6 @@ public class CenterImpactStatement implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.researchImpacts = researchImpacts;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -111,6 +111,7 @@ public class CenterImpactStatement implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -125,6 +126,7 @@ public class CenterImpactStatement implements java.io.Serializable, IAuditLog {
   public String getName() {
     return name;
   }
+
 
   public Set<CenterImpact> getResearchImpacts() {
     return researchImpacts;
@@ -179,9 +181,14 @@ public class CenterImpactStatement implements java.io.Serializable, IAuditLog {
     this.researchImpacts = researchImpacts;
   }
 
-
   public void setSrfIdo(SrfIdo srfIdo) {
     this.srfIdo = srfIdo;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterImpactStatement [id=" + id + ", srfIdo=" + srfIdo + ", name=" + name + "]";
   }
 
 

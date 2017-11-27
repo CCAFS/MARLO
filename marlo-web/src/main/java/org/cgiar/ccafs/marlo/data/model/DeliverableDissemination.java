@@ -16,8 +16,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   private static final long serialVersionUID = 3873609958921714313L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private Deliverable deliverable;
   @Expose
@@ -46,8 +48,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   private String disseminationChannelName;
   @Expose
   private Boolean synced;
-
-
   private String type;
 
 
@@ -58,6 +58,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public DeliverableDissemination(Deliverable deliverable, Boolean isOpenAccess, Boolean intellectualProperty,
     Boolean limitedExclusivity, Boolean restrictedUseAgreement, Date restrictedAccessUntil,
@@ -111,10 +112,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannel;
   }
 
-
   public String getDisseminationChannelName() {
     return disseminationChannelName;
   }
+
 
   public String getDisseminationUrl() {
     return disseminationUrl;
@@ -124,11 +125,11 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return effectiveDateRestriction;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
+
 
   public Boolean getIntellectualProperty() {
     return intellectualProperty;
@@ -138,10 +139,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return isOpenAccess;
   }
 
-
   public Boolean getLimitedExclusivity() {
     return limitedExclusivity;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -149,7 +150,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -194,6 +194,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public String getType() {
     return type;
   }
+
 
   @Override
   public int hashCode() {
@@ -269,9 +270,15 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     this.synced = synced;
   }
 
-
   public void setType(String type) {
     this.type = type;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverableDissemination [id=" + id + ", deliverable=" + deliverable + ", isOpenAccess=" + isOpenAccess
+      + ", disseminationUrl=" + disseminationUrl + ", synced=" + synced + ", type=" + type + "]";
   }
 
 

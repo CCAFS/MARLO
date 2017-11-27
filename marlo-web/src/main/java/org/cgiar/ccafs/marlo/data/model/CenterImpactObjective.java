@@ -14,16 +14,16 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -8979609328318401070L;
 
-
   @Expose
   private Long id;
+
 
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private CenterObjective researchObjective;
+
 
   @Expose
   private User createdBy;
@@ -89,7 +89,6 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -98,6 +97,7 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   @Override
   public Long getId() {
@@ -111,10 +111,11 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -144,10 +145,10 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -157,10 +158,10 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -176,6 +177,12 @@ public class CenterImpactObjective implements java.io.Serializable, IAuditLog {
 
   public void setResearchObjective(CenterObjective researchObjective) {
     this.researchObjective = researchObjective;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterImpactObjective [id=" + id + ", researchObjective=" + researchObjective + ", researchImpact="
+      + researchImpact + "]";
   }
 
 
