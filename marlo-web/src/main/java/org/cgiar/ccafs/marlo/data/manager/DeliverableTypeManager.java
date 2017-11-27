@@ -34,7 +34,7 @@ public interface DeliverableTypeManager {
    * @param deliverableTypeId is the deliverableType identifier.
    * @return true if the deliverableType was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableType(long deliverableTypeId);
+  public void deleteDeliverableType(long deliverableTypeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface DeliverableTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverableType(DeliverableType deliverableType);
+  public DeliverableType saveDeliverableType(DeliverableType deliverableType);
 
 
 }

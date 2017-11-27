@@ -20,19 +20,24 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PartnersSaveAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Oct 30, 2017
+ * @time 11:43:29 AM: Add CRP
+ * @time 4:25:29 PM: Add clone request to check if there are changes
+ */
 public class PartnersSaveAction extends BaseAction {
 
   /**
@@ -59,32 +72,40 @@ public class PartnersSaveAction extends BaseAction {
   private ActivityManager activityManager;
   private ProjectManager projectManager;
   private FundingSourceManager fundingSourceManager;
+  private PartnerRequestManager partnerRequestManager;
+  private CrpManager crpManager;
+
 
   // Model
   private List<LocElement> countriesList;
   private List<InstitutionType> institutionTypesList;
   private List<Institution> institutions;
+  private long locationId;
+  private Crp loggedCrp;
 
   // private ActivityPartner activityPartner;
   private boolean messageSent;
 
-
   private String partnerWebPage;
   private int projectID;
   private int fundingSourceID;
+
   private int activityID;
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
-    ProjectManager projectManager, FundingSourceManager fundingSourceManager) {
+    ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
+    FundingSourceManager fundingSourceManager, CrpManager crpManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
     this.activityManager = activityManager;
     this.projectManager = projectManager;
     this.institutionsManager = institutionsManager;
+    this.partnerRequestManager = partnerRequestManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.crpManager = crpManager;
   }
 
   public int getActivityID() {
@@ -103,18 +124,19 @@ public class PartnersSaveAction extends BaseAction {
     return fundingSourceID;
   }
 
-
   public List<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
   }
 
-  public String getPartnerWebPage() {
-    return partnerWebPage;
+  public long getLocationId() {
+    return locationId;
   }
+
 
   public int getProjectID() {
     return projectID;
@@ -128,13 +150,21 @@ public class PartnersSaveAction extends BaseAction {
   public void prepare() throws Exception {
     super.prepare();
     // Take the project id only the first time the page loads
-
     if (this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID) != null
       && Integer.parseInt(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)) != 0) {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       LOG.info("The user {} load the request partner section related to the project {}.",
         this.getCurrentUser().getEmail(), projectID);
     }
+    // Take the fundingSource id only the first time the page loads
+    if (this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID) != null
+      && Integer.parseInt(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)) != 0) {
+      fundingSourceID =
+        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
+      LOG.info("The user {} load the request partner section related to the funding source {}.",
+        this.getCurrentUser().getEmail(), fundingSourceID);
+    }
+
     // Take the fundingSource id only the first time the page loads
     if (this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID) != null
       && Integer.parseInt(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)) != 0) {
@@ -151,36 +181,31 @@ public class PartnersSaveAction extends BaseAction {
     institutions = institutionsManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    // Get loggerCrp
+    try {
+      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    } catch (Exception e) {
+      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+    }
   }
 
 
   @Override
   public String save() {
-    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName,
-      website;
+    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, partnerWebPage;
     String subject;
     StringBuilder message = new StringBuilder();
 
     long partnerTypeId;
-    long headQuater = -1;
     // Take the values to create the message
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
-    countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
-    // city = activityPartner.getPartner().getCity();
-    website = activityPartner.getPartner().getWebsiteLink();
-    headQuaterName = "";
-    /*
-     * try {
-     * headQuater = activityPartner.getPartner().getHeadquarter().getId();
-     * headQuaterName = institutionsManager.getInstitutionById(headQuater).getComposedName();
-     * } catch (Exception e) {
-     * headQuater = -1;
-     * }
-     * // Get the country name
-     * countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
-     */
+    countryId = String.valueOf(locationId);
+    partnerWebPage = activityPartner.getPartner().getWebsiteLink();
+
     // Get the partner type name
     countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
 
@@ -191,8 +216,46 @@ public class PartnersSaveAction extends BaseAction {
       }
     }
 
+
+    // Add Partner Request information.
+    PartnerRequest partnerRequest = new PartnerRequest();
+    // Add a clone request to check if there are changes later
+    PartnerRequest partnerRequestModifications = new PartnerRequest();
+    partnerRequest.setActive(true);
+    partnerRequestModifications.setActive(true);
+    partnerRequest.setActiveSince(new Date());
+    partnerRequestModifications.setActiveSince(new Date());
+    partnerRequest.setCreatedBy(this.getCurrentUser());
+    partnerRequestModifications.setCreatedBy(this.getCurrentUser());
+    partnerRequest.setModifiedBy(this.getCurrentUser());
+    partnerRequestModifications.setModifiedBy(this.getCurrentUser());
+    partnerRequest.setModificationJustification("");
+    partnerRequestModifications.setModificationJustification("");
+
+    partnerRequest.setPartnerName(institutionName);
+    partnerRequestModifications.setPartnerName(institutionName);
+    partnerRequest.setAcronym(institutionAcronym);
+    partnerRequestModifications.setAcronym(institutionAcronym);
+    partnerRequest.setCrp(loggedCrp);
+    partnerRequestModifications.setCrp(loggedCrp);
+
+    partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequestModifications.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequestModifications.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
+    partnerRequest.setOffice(false);
+    partnerRequestModifications.setOffice(false);
+
+
+    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
+      partnerRequest.setWebPage(partnerWebPage);
+      partnerRequestModifications.setWebPage(partnerWebPage);
+    }
+
     // message subject
-    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
+
+    subject = this.getText("marloRequestInstitution.email.subject",
+      new String[] {this.getCrpSession().toUpperCase(), institutionName});
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
@@ -208,22 +271,12 @@ public class PartnersSaveAction extends BaseAction {
     message.append(institutionTypeName);
     message.append(" </br>");
 
-    if (headQuater != -1) {
-      message.append("HeadQuater: ");
-      message.append(headQuaterName);
-      message.append(" </br>");
-    }
-
-    // message.append("City: ");
-    // message.append(city);
-    // message.append(" </br>");
-
-    message.append("Country: ");
+    message.append("Headquarter country location: ");
     message.append(countryName);
     message.append(" </br>");
 
     // Is there a web page?
-    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
+    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
       message.append(" </br>");
@@ -235,17 +288,34 @@ public class PartnersSaveAction extends BaseAction {
       message.append(activityID);
       message.append(") - ");
       message.append(activityManager.getActivityById(activityID).getTitle());
+      partnerRequest
+        .setRequestSource("Activity: (" + activityID + ") - " + activityManager.getActivityById(activityID).getTitle());
+      partnerRequestModifications
+        .setRequestSource("Activity: (" + activityID + ") - " + activityManager.getActivityById(activityID).getTitle());
     } else if (projectID > 0) {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
       message.append(projectManager.getProjectById(projectID).getTitle());
+      partnerRequest
+        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+      partnerRequestModifications
+        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
     } else if (fundingSourceID > 0) {
       message.append("Funding Source: (");
       message.append(fundingSourceID);
       message.append(") - ");
       message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
+        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
+        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
     }
+
+    partnerRequestManager.savePartnerRequest(partnerRequest);
+    partnerRequestModifications.setPartnerRequest(partnerRequest);
+    partnerRequestModifications.setModified(false);
+    partnerRequestManager.savePartnerRequest(partnerRequestModifications);
 
     message.append(".</br>");
     message.append("</br>");
@@ -254,7 +324,12 @@ public class PartnersSaveAction extends BaseAction {
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {
-
+      System.out.println(e);
+      LOG.error("unable to send mail", e);
+      /**
+       * Original code swallows the exception and didn't even log it. Now we at least log it,
+       * but we need to revisit to see if we should continue processing or re-throw the exception.
+       */
     }
     messageSent = true;
 
@@ -285,22 +360,24 @@ public class PartnersSaveAction extends BaseAction {
     this.fundingSourceID = fundingSourceID;
   }
 
-
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+
+  public void setLocationId(long locationId) {
+    this.locationId = locationId;
   }
 
   public void setMessageSent(boolean messageSent) {
     this.messageSent = messageSent;
   }
 
-  public void setPartnerWebPage(String partnerWebPage) {
-    this.partnerWebPage = partnerWebPage;
-  }
 
   public void setProjectID(int projectID) {
     this.projectID = projectID;
   }
+
 
   @Override
   public void validate() {
@@ -314,18 +391,18 @@ public class PartnersSaveAction extends BaseAction {
         this.addFieldError("activityPartner.partner.name", this.getText("validation.field.required"));
         anyError = true;
       }
-
-
+      // Check the institution type
       if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
-        this.addFieldError("activityPartner.institutionType.id", this.getText("validation.field.required"));
+        this.addFieldError("activityPartner.partner.institutionType.id", this.getText("validation.field.required"));
         anyError = true;
       }
-      /*
-       * if (activityPartner.getPartner().getLocElement().getId() == -1) {
-       * this.addFieldError("activityPartner.locElement.id", this.getText("validation.field.required"));
-       * anyError = true;
-       * }
-       */
+
+      // Check the location
+      if (locationId == -1 || locationId == 0) {
+        this.addFieldError("locationId", this.getText("validation.field.required"));
+        anyError = true;
+      }
+
 
       if (anyError) {
         this.addActionError(this.getText("saving.fields.required"));
@@ -333,5 +410,6 @@ public class PartnersSaveAction extends BaseAction {
     }
     super.validate();
   }
+
 
 }

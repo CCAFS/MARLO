@@ -34,7 +34,7 @@ public interface CrpLocElementTypeManager {
    * @param crpLocElementTypeId is the crpLocElementType identifier.
    * @return true if the crpLocElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpLocElementType(long crpLocElementTypeId);
+  public void deleteCrpLocElementType(long crpLocElementTypeId);
 
 
   /**
@@ -73,7 +73,7 @@ public interface CrpLocElementTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpLocElementType(CrpLocElementType crpLocElementType);
+  public CrpLocElementType saveCrpLocElementType(CrpLocElementType crpLocElementType);
 
 
 }

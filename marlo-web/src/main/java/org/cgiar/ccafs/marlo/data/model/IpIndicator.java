@@ -30,6 +30,8 @@ public class IpIndicator implements java.io.Serializable, IAuditLog {
   private IpElement ipElement;
   @Expose
   private IpIndicator ipIndicator;
+
+
   @Expose
   private IpProgramElement ipProgramElement;
   @Expose
@@ -88,7 +90,6 @@ public class IpIndicator implements java.io.Serializable, IAuditLog {
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public String getComposedName() {
 
@@ -249,6 +250,14 @@ public class IpIndicator implements java.io.Serializable, IAuditLog {
 
   public void setTarget(String target) {
     this.target = target;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpIndicator [id=" + id + ", ipElement=" + ipElement + ", ipIndicator=" + ipIndicator + ", ipProgramElement="
+      + ipProgramElement + ", modifiedBy=" + modifiedBy + ", createdBy=" + createdBy + ", description=" + description
+      + ", target=" + target + "]";
   }
 
 

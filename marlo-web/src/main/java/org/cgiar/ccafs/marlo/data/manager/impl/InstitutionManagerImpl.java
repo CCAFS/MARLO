@@ -37,8 +37,8 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
-  public boolean deleteInstitution(long institutionId) {
-    return institutionDao.deleteInstitution(institutionId);
+  public void deleteInstitution(long institutionId) {
+    institutionDao.deleteInstitution(institutionId);
   }
 
   @Override
@@ -52,12 +52,17 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  public List<Institution> findPPAInstitutions(long crpID) {
+    return institutionDao.findPPAInstitutions(crpID);
+  }
+
+  @Override
   public Institution getInstitutionById(long institutionId) {
     return institutionDao.find(institutionId);
   }
 
   @Override
-  public long saveInstitution(Institution institution) {
+  public Institution saveInstitution(Institution institution) {
     return institutionDao.save(institution);
   }
 

@@ -34,7 +34,7 @@ public interface MogSynthesyManager {
    * @param mogSynthesyId is the mogSynthesy identifier.
    * @return true if the mogSynthesy was successfully deleted, false otherwise.
    */
-  public boolean deleteMogSynthesy(long mogSynthesyId);
+  public void deleteMogSynthesy(long mogSynthesyId);
 
 
   /**
@@ -86,7 +86,7 @@ public interface MogSynthesyManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveMogSynthesy(MogSynthesy mogSynthesy);
+  public MogSynthesy saveMogSynthesy(MogSynthesy mogSynthesy);
 
 
 }

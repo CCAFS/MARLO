@@ -2,8 +2,17 @@
 [#assign title = "Outcome" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/output.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outputList.css"] /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrlMedia}/js/impactPathway/output.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outputList.css"
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outputs" /]
 [#assign currentSubStage = "partners" /]
@@ -14,9 +23,9 @@
   {"label":"output", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outputListTemplate.ftl" as outcomesList /]
 
 [#assign outputCustomName= "output" /]
@@ -92,7 +101,7 @@
 </section>
 
 [#-- Search users Interface --]
-[#import "/WEB-INF/center/global/macros/usersPopup.ftl" as usersForm/]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
 [#-- Partner Template --]
@@ -101,7 +110,7 @@
 [#-- UserItem Template --]
 [@userItem element={} name="${outputCustomName}.partners[-1].users" index="-1" template=true /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro partnerMacro element name index isTemplate=false]
   <div id="partner-${isTemplate?string('template', index)}" class="partner borderBox" style="display:${isTemplate?string('none','block')}">

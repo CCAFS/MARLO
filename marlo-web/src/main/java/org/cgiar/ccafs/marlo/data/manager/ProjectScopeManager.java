@@ -34,7 +34,7 @@ public interface ProjectScopeManager {
    * @param projectScopeId is the projectScope identifier.
    * @return true if the projectScope was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectScope(long projectScopeId);
+  public void deleteProjectScope(long projectScopeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectScopeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectScope(ProjectScope projectScope);
+  public ProjectScope saveProjectScope(ProjectScope projectScope);
 
 
 }

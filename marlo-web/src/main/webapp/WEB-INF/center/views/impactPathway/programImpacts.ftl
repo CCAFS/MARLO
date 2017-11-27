@@ -2,7 +2,12 @@
 [#assign title = "Impact Pathway - Program Impacts" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["select2", "vanilla-color-picker"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/impactPathway/programImpact.js", "${baseUrlMedia}/js/global/autoSave.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/impactPathway/programImpact.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "programImpacts" /]
 [#assign breadCrumb = [
@@ -10,9 +15,9 @@
   {"label":"programImpacts", "nameSpace":"", "action":"programimpacts"}
 ]/]
 [#assign leadersName = "leaders"/]
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/utils.ftl" as utils /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#--  Program Impacts Help Text--]
 [@utils.helpInfos hlpInfo="programImpact.help" /]
 [#--  marlo cluster of activities--]
@@ -66,7 +71,7 @@
 
 [@beneficiaryMacro beneficiary={} name="impacts[-1].beneficiaries" index=-1 template=true/]
 
-[#include "/WEB-INF/center//global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 [#macro programImpactMacro element name index template=false]
   <div id="programImpact-${template?string('template','')}" class="borderBox programImpact" style="display:${template?string('none','block')}">
@@ -84,6 +89,9 @@
     [/#if]  
     [/#if]
     
+    [#-- Loading --]
+    <div class="loading" style="display:none"></div>
+    
     <div class="leftHead">
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="programImpact.programImpact" /]</span>
@@ -93,10 +101,18 @@
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     
     [#-- SRF Ido --]
+    [#assign isSRFSelected = (element.researchImpactStatement.id != -1)!false /]
     <div class="form-group">
       [@customForm.select name="${customName}.researchImpactStatement.id"  i18nkey="programImpact.ido" listName="idos" keyFieldName="id"  displayFieldName="name" required=true  className="srfIdoSelect"  editable=editable/]
     </div>
-     <div class="form-group otherSrf" style="display: [#if element.researchImpactStatement??][#if element.researchImpactStatement.id==-1]block[#else]none[/#if][#else]block[/#if]">[@customForm.input name="${customName}.description" i18nkey="programImpact.otherIdo" className="limitChar-150" required=true editable=editable /]</div> 
+    [#-- Customized Program Impact Statement --]
+    <div class="form-group otherSrf" style="display:${isSRFSelected?string('none','block')}">
+      [@customForm.input name="${customName}.description" i18nkey="programImpact.otherIdo" className="limitChar-150" required=true editable=editable /]
+    </div>
+    [#-- According to SLO/IDO selected, please select a SUB-IDO --]
+    <div class="form-group impactSubIdo" style="display:${isSRFSelected?string('block','none')}">
+      [@customForm.select name="${customName}.srfSubIdo.id"  i18nkey="programImpact.srfSubIdo" listName="${customName}.researchImpactStatement.srfIdo.srfSubIdos" keyFieldName="id"  displayFieldName="description" required=true  className="impactSubIdoSelect" editable=editable/]
+    </div> 
     
     [#-- Short name--]
     <div class="form-group">           

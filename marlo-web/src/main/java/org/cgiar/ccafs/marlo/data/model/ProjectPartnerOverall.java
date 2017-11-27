@@ -97,7 +97,8 @@ public class ProjectPartnerOverall implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "ProjectPartnerOverall [id=" + id + ", projectPartner=" + projectPartner + ", year=" + year + ", overall="
+      + overall + "]";
   }
 
 }

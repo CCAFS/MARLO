@@ -34,7 +34,7 @@ public interface ProjectPartnerLocationManager {
    * @param projectPartnerLocationId is the projectPartnerLocation identifier.
    * @return true if the projectPartnerLocation was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerLocation(long projectPartnerLocationId);
+  public void deleteProjectPartnerLocation(long projectPartnerLocationId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectPartnerLocationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartnerLocation(ProjectPartnerLocation projectPartnerLocation);
+  public ProjectPartnerLocation saveProjectPartnerLocation(ProjectPartnerLocation projectPartnerLocation);
 
 
 }

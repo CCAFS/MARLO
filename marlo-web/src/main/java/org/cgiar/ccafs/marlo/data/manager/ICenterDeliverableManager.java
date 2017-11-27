@@ -34,7 +34,7 @@ public interface ICenterDeliverableManager {
    * @param deliverableId is the deliverable identifier.
    * @return true if the deliverable was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverable(long deliverableId);
+  public void deleteDeliverable(long deliverableId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterDeliverableManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverable(CenterDeliverable deliverable);
+  public CenterDeliverable saveDeliverable(CenterDeliverable deliverable);
 
   /**
    * This method saves the information of the given deliverable
@@ -88,7 +88,7 @@ public interface ICenterDeliverableManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveDeliverable(CenterDeliverable deliverable, String actionName, List<String> relationsName);
+  public CenterDeliverable saveDeliverable(CenterDeliverable deliverable, String actionName, List<String> relationsName);
 
 
 }

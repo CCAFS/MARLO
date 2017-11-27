@@ -21,6 +21,7 @@ public class IpProgramElementRelationType implements java.io.Serializable, IAudi
   private static final long serialVersionUID = 6317495249767270568L;
   @Expose
   private Integer id;
+
   @Expose
   private String name;
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
@@ -86,6 +87,11 @@ public class IpProgramElementRelationType implements java.io.Serializable, IAudi
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return "IpProgramElementRelationType [id=" + id + ", name=" + name + "]";
   }
 
 

@@ -41,6 +41,33 @@
       </result>
     </action>
     
+    <action name="centerDeliverables"
+      class="org.cgiar.ccafs.marlo.action.center.summaries.DeliverablesSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+    <action name="centerOutcomes"
+      class="org.cgiar.ccafs.marlo.action.center.summaries.IPOutcomesSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+    <action name="centerMonitoringOutcomes"
+      class="org.cgiar.ccafs.marlo.action.center.summaries.MonitoringOutcomesSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
     <action name="{center}/summaries"
       class="org.cgiar.ccafs.marlo.action.center.summaries.SummaryListAction">
       <!-- interceptor-ref name="autoLogin" / -->

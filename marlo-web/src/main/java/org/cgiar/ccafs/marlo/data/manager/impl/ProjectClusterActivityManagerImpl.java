@@ -41,9 +41,9 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   }
 
   @Override
-  public boolean deleteProjectClusterActivity(long projectClusterActivityId) {
+  public void deleteProjectClusterActivity(long projectClusterActivityId) {
 
-    return projectClusterActivityDAO.deleteProjectClusterActivity(projectClusterActivityId);
+    projectClusterActivityDAO.deleteProjectClusterActivity(projectClusterActivityId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   }
 
   @Override
-  public long saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity) {
+  public ProjectClusterActivity saveProjectClusterActivity(ProjectClusterActivity projectClusterActivity) {
 
     return projectClusterActivityDAO.save(projectClusterActivity);
   }

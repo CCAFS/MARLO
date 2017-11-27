@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectFundingSourceDAO implements ICenterProjectFundingSourceDAO {
+public class CenterProjectFundingSourceDAO extends AbstractMarloDAO<CenterProjectFundingSource, Long>
+  implements ICenterProjectFundingSourceDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectFundingSourceDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectFundingSourceDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectFundingSource(long projectFundingSourceId) {
+  public void deleteProjectFundingSource(long projectFundingSourceId) {
     CenterProjectFundingSource projectFundingSource = this.find(projectFundingSourceId);
     projectFundingSource.setActive(false);
-    return this.save(projectFundingSource) > 0;
+    this.save(projectFundingSource);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectFundingSourceDAO implements ICenterProjectFundingSourc
 
   @Override
   public CenterProjectFundingSource find(long id) {
-    return dao.find(CenterProjectFundingSource.class, id);
+    return super.find(CenterProjectFundingSource.class, id);
 
   }
 
   @Override
   public List<CenterProjectFundingSource> findAll() {
     String query = "from " + CenterProjectFundingSource.class.getName();
-    List<CenterProjectFundingSource> list = dao.findAll(query);
+    List<CenterProjectFundingSource> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,19 +68,31 @@ public class CenterProjectFundingSourceDAO implements ICenterProjectFundingSourc
   }
 
   @Override
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code) {
+    StringBuilder q = new StringBuilder();
+    q.append("from " + CenterProjectFundingSource.class.getName() + " where code= '" + code + "'");
+    List<CenterProjectFundingSource> list = super.findAll(q.toString());
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
   public List<CenterProjectFundingSource> getProjectFundingSourcesByUserId(long userId) {
     String query = "from " + CenterProjectFundingSource.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectFundingSource projectFundingSource) {
+  public CenterProjectFundingSource save(CenterProjectFundingSource projectFundingSource) {
     if (projectFundingSource.getId() == null) {
-      dao.save(projectFundingSource);
+      super.saveEntity(projectFundingSource);
     } else {
-      dao.update(projectFundingSource);
+      projectFundingSource = super.update(projectFundingSource);
     }
-    return projectFundingSource.getId();
+    return projectFundingSource;
   }
 
 

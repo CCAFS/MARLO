@@ -32,7 +32,7 @@ public interface OtherContributionDAO {
    * @param otherContributionId is the otherContribution identifier.
    * @return true if the otherContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteOtherContribution(long otherContributionId);
+  public void deleteOtherContribution(long otherContributionId);
 
   /**
    * This method validate if the otherContribution identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface OtherContributionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(OtherContribution otherContribution);
+  public OtherContribution save(OtherContribution otherContribution);
 }

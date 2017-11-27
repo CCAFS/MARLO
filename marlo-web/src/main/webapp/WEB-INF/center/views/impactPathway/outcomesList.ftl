@@ -2,21 +2,29 @@
 [#assign title = "Outcomes List" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/usersManagement.js", "${baseUrlMedia}/js/impactPathway/outcomeList.js", "${baseUrlMedia}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/impactPathway/outcomeList.css"] /]
-[#assign currentSection = "impactPathway" /]
+[#assign customJS = [
+  "${baseUrl}/global/js/usersManagement.js", 
+  "${baseUrl}/global/js/fieldsValidation.js",
+  "${baseUrlMedia}/js/impactPathway/outcomeList.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/impactPathway/outcomeList.css"
+  ]
+/]
+[#assign currentSection = "centerImpactPathway" /]
 [#assign currentStage = "outcomes" /]
 
 [#assign breadCrumb = [
-  {"label":"impactPathway", "nameSpace":"", "action":"topics"},
+  {"label":"centerImpactPathway", "nameSpace":"", "action":"topics"},
   {"label":"outcomesList", "nameSpace":"", "action":""}
 ]/]
 [#assign leadersName = "leaders"/]
 
-[#include "/WEB-INF/center/global/pages/header.ftl" /]
-[#include "/WEB-INF/center/global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center/global/macros/utils.ftl" as utils /]
-[#import "/WEB-INF/center/global/macros/forms.ftl" as customForm /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#import "/WEB-INF/center/views/impactPathway/outcomeListTemplate.ftl" as outcomesList /]
 [#--  Research Otcomes Help Text--] 
 [@utils.helpInfos hlpInfo="researchOutcomesList.help" /]
@@ -65,7 +73,7 @@
           
           [#-- Outcomes Table --]
           [#if outcomes?has_content]
-          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/impactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
+          <div style="">[@outcomesList.outcomesList outcomes=outcomes canValidate=true canEdit=editable namespace="/centerImpactPathway" defaultAction="${(centerSession)!}/outcomes"/]</div>
           [#else]
             [#if selectedResearchTopic?has_content] 
             <div class="clearfix"></div>
@@ -91,7 +99,7 @@
               </div>
               [#else]
               <div class="text-right">
-                In order to add a new outcome, please select a specific "Research Topic" from the drop-down list above.
+                [@s.text name="programImpact.outcomeList.allTopics" /]
               </div>
               [/#if]
             [#else]
@@ -103,7 +111,7 @@
               </div>
               [#else]
               <div class="text-right">
-                In order to add a new outcome, please select a specific "Research Topic" from the drop-down list above.
+               [@s.text name="programImpact.outcomeList.allTopics" /]
               </div>
               [/#if]
             [/#if]
@@ -120,8 +128,8 @@
   </div>
 </section>
 
-[@customForm.confirmJustification action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
+[@customForm.confirmJustificationOutcome action="deleteOutcome.do" namespace="/${currentSection}" title="Remove Outcome" /]
 
-[#include "/WEB-INF/center/global/pages/footer.ftl" /]
+[#include "/WEB-INF/center/pages/footer.ftl" /]
 
 

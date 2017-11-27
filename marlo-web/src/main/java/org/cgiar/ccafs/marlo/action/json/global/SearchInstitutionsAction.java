@@ -19,12 +19,15 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -96,8 +99,12 @@ public class SearchInstitutionsAction extends BaseAction {
       institutionMap.put("acronym", institution.getAcronym());
       institutionMap.put("name", institution.getName());
       institutionMap.put("type", institution.getInstitutionType().getName());
-
-
+      // Add locations to a set to show it separated by comma
+      Set<String> locHash = new TreeSet<String>();
+      for (InstitutionLocation il : institution.getInstitutionsLocations()) {
+        locHash.add(il.getLocElement().getIsoAlpha2());
+      }
+      institutionMap.put("countries", StringUtils.join(locHash, ','));
       institutionMap.put("isPPA", institution.isPPA(this.getCrpID()));
       this.institutions.add(institutionMap);
     }

@@ -32,7 +32,7 @@ public interface ProjectHighligthDAO {
    * @param projectHighligthId is the projectHighligth identifier.
    * @return true if the projectHighligth was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectHighligth(long projectHighligthId);
+  public void deleteProjectHighligth(long projectHighligthId);
 
   /**
    * This method validate if the projectHighligth identify with the given id exists in the system.
@@ -66,7 +66,7 @@ public interface ProjectHighligthDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectHighlight projectHighlight);
+  public ProjectHighlight save(ProjectHighlight projectHighlight);
 
-  public long save(ProjectHighlight projectHighlight, String section, List<String> relationsName);
+  public ProjectHighlight save(ProjectHighlight projectHighlight, String section, List<String> relationsName);
 }

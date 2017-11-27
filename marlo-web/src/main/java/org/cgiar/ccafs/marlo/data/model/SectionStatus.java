@@ -202,7 +202,11 @@ public class SectionStatus implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "SectionStatus [id=" + id + ", crpProgram=" + crpProgram + ", sectionName=" + sectionName
+      + ", missingFields=" + missingFields + ", cycle=" + cycle + ", year=" + year + ", project=" + project
+      + ", fundingSource=" + fundingSource + ", deliverable=" + deliverable + ", projectOutcome=" + projectOutcome
+      + ", caseStudy=" + caseStudy + ", projectHighlight=" + projectHighlight + ", ipProgram=" + ipProgram
+      + ", ipLiaisonInstitution=" + ipLiaisonInstitution + "]";
   }
 }
 

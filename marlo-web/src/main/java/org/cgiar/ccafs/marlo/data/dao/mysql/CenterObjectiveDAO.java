@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterObjectiveDAO implements ICenterObjectiveDAO {
+public class CenterObjectiveDAO extends AbstractMarloDAO<CenterObjective, Long> implements ICenterObjectiveDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterObjectiveDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterObjectiveDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchObjective(long researchObjectiveId) {
+  public void deleteResearchObjective(long researchObjectiveId) {
     CenterObjective researchObjective = this.find(researchObjectiveId);
     researchObjective.setActive(false);
-    return this.save(researchObjective) > 0;
+    this.save(researchObjective);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterObjectiveDAO implements ICenterObjectiveDAO {
 
   @Override
   public CenterObjective find(long id) {
-    return dao.find(CenterObjective.class, id);
+    return super.find(CenterObjective.class, id);
 
   }
 
   @Override
   public List<CenterObjective> findAll() {
     String query = "from " + CenterObjective.class.getName();
-    List<CenterObjective> list = dao.findAll(query);
+    List<CenterObjective> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterObjectiveDAO implements ICenterObjectiveDAO {
   @Override
   public List<CenterObjective> getResearchObjectivesByUserId(long userId) {
     String query = "from " + CenterObjective.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterObjective researchObjective) {
+  public CenterObjective save(CenterObjective researchObjective) {
     if (researchObjective.getId() == null) {
-      dao.save(researchObjective);
+      super.saveEntity(researchObjective);
     } else {
-      dao.update(researchObjective);
+      researchObjective = super.update(researchObjective);
     }
-    return researchObjective.getId();
+    return researchObjective;
   }
 
 

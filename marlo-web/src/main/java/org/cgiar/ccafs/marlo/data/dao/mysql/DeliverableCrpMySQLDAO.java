@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableCrpMySQLDAO implements DeliverableCrpDAO {
+public class DeliverableCrpMySQLDAO extends AbstractMarloDAO<DeliverableCrp, Long> implements DeliverableCrpDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableCrpMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableCrpMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableCrp(long deliverableCrpId) {
+  public void deleteDeliverableCrp(long deliverableCrpId) {
     DeliverableCrp deliverableCrp = this.find(deliverableCrpId);
 
-    return dao.delete(deliverableCrp);
+    super.delete(deliverableCrp);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class DeliverableCrpMySQLDAO implements DeliverableCrpDAO {
 
   @Override
   public DeliverableCrp find(long id) {
-    return dao.find(DeliverableCrp.class, id);
+    return super.find(DeliverableCrp.class, id);
 
   }
 
   @Override
   public List<DeliverableCrp> findAll() {
     String query = "from " + DeliverableCrp.class.getName() + " where is_active=1";
-    List<DeliverableCrp> list = dao.findAll(query);
+    List<DeliverableCrp> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class DeliverableCrpMySQLDAO implements DeliverableCrpDAO {
   }
 
   @Override
-  public long save(DeliverableCrp deliverableCrp) {
+  public DeliverableCrp save(DeliverableCrp deliverableCrp) {
     if (deliverableCrp.getId() == null) {
-      dao.save(deliverableCrp);
+      super.saveEntity(deliverableCrp);
     } else {
-      dao.update(deliverableCrp);
+      deliverableCrp = super.update(deliverableCrp);
     }
 
 
-    return deliverableCrp.getId();
+    return deliverableCrp;
   }
 
 

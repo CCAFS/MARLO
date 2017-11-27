@@ -205,11 +205,8 @@ public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    try {
-      return this.getLocElement().getName();
-    } catch (Exception e) {
-      return this.getLocElementType().getName();
-    }
+    return "ProjectLocation [id=" + id + ", locElement=" + locElement + ", project=" + project + ", scope=" + scope
+      + ", locElementType=" + locElementType + "]";
   }
 
 }

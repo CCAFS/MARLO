@@ -49,10 +49,52 @@ table {
     font-size: 0.95em;
 }
 
+
+/* Metadata */
+.url-field{
+  width: 59%;
+  float:left;
+}
+
+.url-field button{
+  height: 27px;
+  line-height: 1.1em;
+}
+
+.buttons-field{
+  width: 40%;
+  float:right;
+  margin-top: 22px;
+  text-align: center;
+}
+
 .redInfo{
   color:red;
 }
 
 .blueInfo{
-  color:#2ECC71;
+	color:#2ECC71;
+}
+
+.managingPartners {
+  border-right: dashed 2px #e6e6e6;
+}
+
+#grantTotalAmount {
+  font-size: 1.2em;
+  float: right;
+  text-align: right;
+  margin-top: -14px;
+}
+
+#grantTotalAmount p{margin: 0;}
+
+small.grayLabel {
+  color: #888;
+  /* padding-right: 6px; */
+}
+
+.button-disabled {
+  opacity: 0.6;
+  cursor: progress;
 }

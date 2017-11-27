@@ -42,9 +42,9 @@ public class CenterObjectiveManager implements ICenterObjectiveManager {
   }
 
   @Override
-  public boolean deleteResearchObjective(long researchObjectiveId) {
+  public void deleteResearchObjective(long researchObjectiveId) {
 
-    return researchObjectiveDAO.deleteResearchObjective(researchObjectiveId);
+    researchObjectiveDAO.deleteResearchObjective(researchObjectiveId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterObjectiveManager implements ICenterObjectiveManager {
   }
 
   @Override
-  public long saveResearchObjective(CenterObjective researchObjective) {
+  public CenterObjective saveResearchObjective(CenterObjective researchObjective) {
 
     return researchObjectiveDAO.save(researchObjective);
   }

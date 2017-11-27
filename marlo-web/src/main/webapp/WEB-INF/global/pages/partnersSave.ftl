@@ -1,14 +1,14 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/global/partnersSave.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/partnersSave.css"] /]
+[#assign customJS = ["${baseUrl}/global/js/partnersSave.js"] /]
+[#assign customCSS = ["${baseUrl}/global/css/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
-[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/crp/pages/header.ftl" /]
 
   <section> 
     <article>
@@ -47,7 +47,7 @@
             [#list institutionTypesList as type]
               <div id="institutionType-${type.id}">
                 <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
-                <i>${(type.description)!'No description'}</i>
+                <i>${(type.description)!''}</i>
               </div>
             [/#list]
           </div>
@@ -55,18 +55,19 @@
         
         [#-- Countries list --]
         <div id="partnerCountry" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.locElement.id" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
+          [@customForm.select name="locationId" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
         </div>
         
         [#-- Web page link --]
         <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
+          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
         </div>
         
         [#-- Hidden input with message of success --]
         <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
-        <input type="hidden" name="projectID" value="${projectID}"/>
-        <input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>
+        [#if projectID??]<input type="hidden" name="projectID" value="${projectID}"/>[/#if]
+        [#if fundingSourceID??]<input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>[/#if]
+
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">
@@ -88,7 +89,8 @@
           <br />
           [#-- Buttons --]
           <div class="text-center">
-            <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="btn btn-primary">Request a new one</a>
+            [#if projectID?? && (projectID != 0)]<a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
+            [#if fundingSourceID?? && (fundingSourceID != 0)]<a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
             <a href="#" class="btn btn-danger" onClick="window.close()">Close</a>
           </div>
         </div>

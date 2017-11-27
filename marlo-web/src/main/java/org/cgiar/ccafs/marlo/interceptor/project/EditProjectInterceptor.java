@@ -166,16 +166,16 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         session.put(APConstants.TEMP_CYCLE, APConstants.REPORTING);
         session.put(APConstants.TEMP_YEAR, baseAction.getReportingYear());
-
-
+        editParameter = false;
+        canEdit = false;
       }
       String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
       }
-      String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
-      baseAction
-        .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
+      // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
+      // baseAction
+      // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
 
 
       // TODO Validate is the project is new

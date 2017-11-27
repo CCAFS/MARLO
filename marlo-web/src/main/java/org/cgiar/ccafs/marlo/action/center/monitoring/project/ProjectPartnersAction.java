@@ -256,6 +256,8 @@ public class ProjectPartnersAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+        
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (CenterProject) autoSaveReader.readFromJson(jReader);
@@ -282,7 +284,6 @@ public class ProjectPartnersAction extends BaseAction {
         }
 
 
-        reader.close();
         this.setDraft(true);
       } else {
 
@@ -326,10 +327,11 @@ public class ProjectPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
-      project = projectService.getCenterProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      projectService.saveCenterProject(project, this.getActionName(), relationsName);
+      projectDB.setActiveSince(new Date());
+      projectDB.setModifiedBy(this.getCurrentUser());
+      projectDB = projectService.saveCenterProject(projectDB, this.getActionName(), relationsName);
+
+      project = projectDB;
 
       Path path = this.getAutoSaveFilePath();
 
@@ -337,20 +339,27 @@ public class ProjectPartnersAction extends BaseAction {
         path.toFile().delete();
       }
 
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
-
-
-      return SUCCESS;
     } else {
 
 
@@ -406,16 +415,12 @@ public class ProjectPartnersAction extends BaseAction {
           partnerNew.setCreatedBy(this.getCurrentUser());
           partnerNew.setModifiedBy(this.getCurrentUser());
           partnerNew.setModificationJustification("");
-
-          partnerNew.setInternal(projectPartner.isInternal());
           partnerNew.setProject(projectSave);
 
           Institution institution = institutionService.getInstitutionById(projectPartner.getInstitution().getId());
           partnerNew.setInstitution(institution);
 
-          long partnerNewId = partnerService.saveProjectPartner(partnerNew);
-
-          partnerNew = partnerService.getProjectPartnerById(partnerNewId);
+          partnerNew = partnerService.saveProjectPartner(partnerNew);
 
           if (projectPartner.getUsers() != null) {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {
@@ -432,18 +437,13 @@ public class ProjectPartnersAction extends BaseAction {
               User user = userService.getUser(partnerPerson.getUser().getId());
               partnerPersonNew.setUser(user);
 
-              partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+              partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
 
             }
           }
         } else {
 
           CenterProjectPartner partnerNew = partnerService.getProjectPartnerById(projectPartner.getId());
-
-          if (partnerNew.isInternal() != projectPartner.isInternal()) {
-            partnerNew.setInternal(projectPartner.isInternal());
-            partnerService.saveProjectPartner(projectPartner);
-          }
 
           if (projectPartner.getUsers() != null) {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {
@@ -462,7 +462,7 @@ public class ProjectPartnersAction extends BaseAction {
                 User user = userService.getUser(partnerPerson.getUser().getId());
                 partnerPersonNew.setUser(user);
 
-                partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+                partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
               }
             }
           }

@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.CenterOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -32,7 +33,7 @@ public interface ICenterOutcomeDAO {
    * @param researchOutcomeId is the researchOutcome identifier.
    * @return true if the researchOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutcome(long researchOutcomeId);
+  public void deleteResearchOutcome(long researchOutcomeId);
 
   /**
    * This method validate if the researchOutcome identify with the given id exists in the system.
@@ -57,6 +58,27 @@ public interface ICenterOutcomeDAO {
    */
   public List<CenterOutcome> findAll();
 
+  /**
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes by research program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
+
+  /**
+   * This method gets a report of Monitoring Outcomes by research program
+   * 
+   * @return a list of report of Monitoring Outcomes
+   */
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID);
+
 
   /**
    * This method gets a list of researchOutcomes belongs of the user
@@ -74,7 +96,7 @@ public interface ICenterOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterOutcome researchOutcome);
+  public CenterOutcome save(CenterOutcome researchOutcome);
 
   /**
    * This method saves the information of the given researchOutcome
@@ -84,5 +106,5 @@ public interface ICenterOutcomeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterOutcome outcome, String actionName, List<String> relationsName);
+  public CenterOutcome save(CenterOutcome outcome, String actionName, List<String> relationsName);
 }

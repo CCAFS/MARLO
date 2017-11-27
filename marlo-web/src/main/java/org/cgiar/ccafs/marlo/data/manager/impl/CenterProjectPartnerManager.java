@@ -42,9 +42,9 @@ public class CenterProjectPartnerManager implements ICenterProjectPartnerManager
   }
 
   @Override
-  public boolean deleteProjectPartner(long projectPartnerId) {
+  public void deleteProjectPartner(long projectPartnerId) {
 
-    return projectPartnerDAO.deleteProjectPartner(projectPartnerId);
+    projectPartnerDAO.deleteProjectPartner(projectPartnerId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterProjectPartnerManager implements ICenterProjectPartnerManager
   }
 
   @Override
-  public long saveProjectPartner(CenterProjectPartner projectPartner) {
+  public CenterProjectPartner saveProjectPartner(CenterProjectPartner projectPartner) {
 
     return projectPartnerDAO.save(projectPartner);
   }

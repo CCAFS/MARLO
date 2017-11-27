@@ -15,11 +15,12 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -1004953642319195188L;
 
-
   @Expose
   private Long id;
 
+
   private CaseStudy caseStudy;
+
   @Expose
   private Project project;
   @Expose
@@ -55,16 +56,15 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
+
 
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -132,8 +132,14 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public String toString() {
+    return "CaseStudyProject [id=" + id + ", caseStudy=" + caseStudy + ", project=" + project + "]";
   }
 
 

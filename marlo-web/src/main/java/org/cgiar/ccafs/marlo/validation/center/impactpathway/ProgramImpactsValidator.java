@@ -64,7 +64,7 @@ public class ProgramImpactsValidator extends BaseValidator {
       Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("programImpact.action.draft");
+        this.addMissingField(baseAction.getText("programImpact.action.draft"));
       }
     }
 
@@ -96,7 +96,14 @@ public class ProgramImpactsValidator extends BaseValidator {
     params.add(String.valueOf(j + 1));
 
     if (impactBeneficiary.getResearchRegion() != null) {
-      if (impactBeneficiary.getResearchRegion().getId() == -1) {
+      if (impactBeneficiary.getResearchRegion().getId() != null) {
+
+        if (impactBeneficiary.getResearchRegion().getId() == -1) {
+          this.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
+          baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].researchRegion.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         this.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
         baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].researchRegion.id",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -108,7 +115,13 @@ public class ProgramImpactsValidator extends BaseValidator {
     }
 
     if (impactBeneficiary.getBeneficiary() != null) {
-      if (impactBeneficiary.getBeneficiary().getId() == -1) {
+      if (impactBeneficiary.getBeneficiary().getId() != null) {
+        if (impactBeneficiary.getBeneficiary().getId() == -1) {
+          this.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
+          baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
         this.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
         baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.id",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -120,12 +133,19 @@ public class ProgramImpactsValidator extends BaseValidator {
     }
 
     if (impactBeneficiary.getBeneficiary() != null) {
-      if (impactBeneficiary.getBeneficiary().getBeneficiaryType().getId() == -1) {
-        this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
-        baseAction.getInvalidFields().put(
-          "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
-          InvalidFieldsMessages.EMPTYFIELD);
+      if (impactBeneficiary.getBeneficiary().getId() != null) {
+        if (impactBeneficiary.getBeneficiary().getBeneficiaryType().getId() == -1) {
+          this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+          baseAction.getInvalidFields().put(
+            "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
+    } else {
+      this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+      baseAction.getInvalidFields().put(
+        "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 

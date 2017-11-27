@@ -47,9 +47,9 @@ public class DateTypeAdapter extends TypeAdapter<Date> {
     try {
       String dateAux = json.replaceAll(", ", " ").replaceAll(" ", "-");
       Date date = foDateFormat.parse(dateAux);
-
       return date;
     } catch (Exception ignored) {
+
 
     }
     try {

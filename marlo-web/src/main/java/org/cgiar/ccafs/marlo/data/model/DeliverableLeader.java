@@ -21,8 +21,8 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   private Deliverable deliverable;
+
 
   @Expose
   private Institution institution;
@@ -34,7 +34,6 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
     this.deliverable = deliverable;
     this.institution = institution;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -58,6 +57,7 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -70,7 +70,6 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
   public Institution getInstitution() {
     return institution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -85,6 +84,7 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -117,6 +117,11 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableLeader [id=" + id + ", deliverable=" + deliverable + ", institution=" + institution + "]";
   }
 
 

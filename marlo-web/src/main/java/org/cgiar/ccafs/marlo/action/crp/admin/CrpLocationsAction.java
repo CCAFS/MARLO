@@ -126,18 +126,16 @@ public class CrpLocationsAction extends BaseAction {
         locElementType.setActiveSince(new Date());
         locElementType.setModificationJustification("");
         locElementType.setScope(true);
-        Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
+        locElementType = locElementTypeManager.saveLocElementType(locElementType);
 
         if (locElementType.getLocationElements() != null) {
           for (LocElement locElement : locElementType.getLocationElements()) {
             if (locElement.getId() == null) {
 
-
-              LocElementType elementType = locElementTypeManager.getLocElementTypeById(newLocElementTypeId);
               LocElement parentElement =
                 locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
 
-              locElement.setLocElementType(elementType);
+              locElement.setLocElementType(locElementType);
               locElement.setLocElement(parentElement);
               locElement.setLocGeoposition(null);
               locElement.setCrp(loggedCrp);
@@ -146,10 +144,10 @@ public class CrpLocationsAction extends BaseAction {
               locElement.setCreatedBy(this.getCurrentUser());
               locElement.setActiveSince(new Date());
               locElement.setModificationJustification("");
-              locElementManager.saveLocElement(locElement);
+              locElement = locElementManager.saveLocElement(locElement);
 
-              elementType.setHasCoordinates(false);
-              locElementTypeManager.saveLocElementType(elementType);
+              locElementType.setHasCoordinates(false);
+              locElementTypeManager.saveLocElementType(locElementType);
             }
           }
         }
@@ -241,7 +239,7 @@ public class CrpLocationsAction extends BaseAction {
         locElementType.setActiveSince(new Date());
         locElementType.setModificationJustification("");
         locElementType.setScope(false);
-        Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
+        locElementType = locElementTypeManager.saveLocElementType(locElementType);
 
         if (locElementType.getLocationElements() != null) {
           for (LocElement locElement : locElementType.getLocationElements()) {
@@ -256,15 +254,12 @@ public class CrpLocationsAction extends BaseAction {
               locGeoposition.setActiveSince(new Date());
               locGeoposition.setModificationJustification("");
 
-              Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
-              LocElementType elementType = locElementTypeManager.getLocElementTypeById(newLocElementTypeId);
+              locGeoposition = locGeopositionManager.saveLocGeoposition(locGeoposition);
               LocElement parentElement =
                 locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
 
-              locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
-
               locElement.setLocGeoposition(locGeoposition);
-              locElement.setLocElementType(elementType);
+              locElement.setLocElementType(locElementType);
               locElement.setLocElement(parentElement);
               locElement.setCrp(loggedCrp);
               locElement.setActive(true);
@@ -274,9 +269,9 @@ public class CrpLocationsAction extends BaseAction {
               locElement.setModificationJustification("");
               locElementManager.saveLocElement(locElement);
 
-              elementType.setHasCoordinates(true);
-              elementType.setName(locElementType.getName());
-              locElementTypeManager.saveLocElementType(elementType);
+              locElementType.setHasCoordinates(true);
+              locElementType.setName(locElementType.getName());
+              locElementTypeManager.saveLocElementType(locElementType);
             }
           }
         }
@@ -310,12 +305,10 @@ public class CrpLocationsAction extends BaseAction {
                 locGeoposition.setActiveSince(new Date());
                 locGeoposition.setModificationJustification("");
 
-                Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
+                locGeoposition = locGeopositionManager.saveLocGeoposition(locGeoposition);
                 LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
                 LocElement parentElement =
                   locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-
-                locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
 
                 locElement.setLocGeoposition(locGeoposition);
                 locElement.setLocElementType(elementType);

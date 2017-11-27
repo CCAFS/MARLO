@@ -7,7 +7,7 @@ $(document).ready(function() {
 
   $('select').select2({
       templateResult: formatState,
-      templateSelection: formatState,
+      templateSelection: formatStateSelection,
       width: '100%'
   });
 
@@ -50,16 +50,27 @@ function addNewOutcome() {
   console.log(name)
 }
 
-function formatState(state) {
+function formatStateSelection(state) {
   if(state.id != "-1") {
-    var text = state.text.split(":");
-    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+    var text = $("span.outcomeID-" + state.id).html();
+    var $state = $(text);
+    $state.find('.indicatorText').remove();
     return $state;
   } else {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
   }
-};
+}
+
+function formatState(state) {
+  if(state.id != "-1") {
+    var text = $("span.outcomeID-" + state.id).html();
+    return $(text);
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
+}
 
 /** Reporting functions * */
 
@@ -73,10 +84,7 @@ function attachReportingEvents() {
 function addOtherContribution() {
   var $item = $('#otherContribution-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.tab-pane').find('.otherContributionsBlock');
-  console.log('asdasd');
-
   $list.append($item);
-
   $item.show('slow');
 
 }

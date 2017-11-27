@@ -1085,4 +1085,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
+  @Override
+  public String toString() {
+    return "Deliverable [id=" + id + ", project=" + project + ", title=" + title + ", year=" + year + ", status="
+      + status + ", crp=" + crp + "]";
+  }
+
 }

@@ -277,6 +277,8 @@ public class OutputsAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         output = (CenterOutput) autoSaveReader.readFromJson(jReader);
@@ -286,8 +288,12 @@ public class OutputsAction extends BaseAction {
             List<CenterOutputsNextUser> ouputNextUsers = new ArrayList<>(output.getNextUsers());
             List<CenterOutputsNextUser> autoSaveOutputNextrUsers = new ArrayList<>();
             for (CenterOutputsNextUser outputNextUser : ouputNextUsers) {
-              CenterNextuserType nextuserType =
-                nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+              CenterNextuserType nextuserType = null;
+              if (outputNextUser.getNextuserType().getId() != null) {
+                if (outputNextUser.getNextuserType().getId() != -1) {
+                  nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+                }
+              }
 
               CenterOutputsNextUser autoSaveOutputNextUser = new CenterOutputsNextUser();
 
@@ -306,7 +312,6 @@ public class OutputsAction extends BaseAction {
         }
 
 
-        reader.close();
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -353,11 +358,9 @@ public class OutputsAction extends BaseAction {
 
       outputDb.setShortName(output.getShortName());
 
-      long outputSaveId = outputService.saveResearchOutput(outputDb);
+      outputDb = outputService.saveResearchOutput(outputDb);
 
-      CenterOutput outputSave = outputService.getResearchOutputById(outputSaveId);
-
-      this.saveNextUser(outputSave);
+      this.saveNextUser(outputDb);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
@@ -372,23 +375,28 @@ public class OutputsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      Collection<String> messages = this.getActionMessages();
-
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // check if there is a url to redirect
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        // check if there are missing field
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
         }
-
+        return SUCCESS;
       } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
+        // No messages to next page
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        // redirect the url select by user
+        return REDIRECT;
       }
 
-      messages = this.getActionMessages();
-
-      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
@@ -420,8 +428,10 @@ public class OutputsAction extends BaseAction {
           nextUserNew.setModificationJustification("");
 
           nextUserNew.setResearchOutput(outputSave);
-          CenterNextuserType nextuserType =
-            nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          CenterNextuserType nextuserType = null;
+          if (outputNextUser.getNextuserType().getId() != -1) {
+            nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          }
           nextUserNew.setNextuserType(nextuserType);
           outputNextUserService.saveResearchOutputsNextUser(nextUserNew);
 
@@ -431,8 +441,10 @@ public class OutputsAction extends BaseAction {
           CenterOutputsNextUser nextUserPrev =
             outputNextUserService.getResearchOutputsNextUserById(outputNextUser.getId());
 
-          CenterNextuserType nextuserType =
-            nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          CenterNextuserType nextuserType = null;
+          if (outputNextUser.getNextuserType().getId() != -1) {
+            nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+          }
 
           if (nextUserPrev.getNextuserType() != null) {
             if (!nextUserPrev.getNextuserType().equals(nextuserType)) {

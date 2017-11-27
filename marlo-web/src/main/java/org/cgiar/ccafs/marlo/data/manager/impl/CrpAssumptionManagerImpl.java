@@ -41,9 +41,9 @@ public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
   }
 
   @Override
-  public boolean deleteCrpAssumption(long crpAssumptionId) {
+  public void deleteCrpAssumption(long crpAssumptionId) {
 
-    return crpAssumptionDAO.deleteCrpAssumption(crpAssumptionId);
+    crpAssumptionDAO.deleteCrpAssumption(crpAssumptionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
   }
 
   @Override
-  public long saveCrpAssumption(CrpAssumption crpAssumption) {
+  public CrpAssumption saveCrpAssumption(CrpAssumption crpAssumption) {
 
     return crpAssumptionDAO.save(crpAssumption);
   }

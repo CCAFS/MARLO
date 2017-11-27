@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -34,7 +35,7 @@ public interface ICenterOutcomeManager {
    * @param researchOutcomeId is the researchOutcome identifier.
    * @return true if the researchOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutcome(long researchOutcomeId);
+  public void deleteResearchOutcome(long researchOutcomeId);
 
 
   /**
@@ -45,7 +46,6 @@ public interface ICenterOutcomeManager {
    */
   public boolean existResearchOutcome(long researchOutcomeID);
 
-
   /**
    * This method gets a list of researchOutcome that are active
    * 
@@ -53,6 +53,28 @@ public interface ICenterOutcomeManager {
    */
   public List<CenterOutcome> findAll();
 
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes Target Unit count by program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getCountTargetUnit(long programID);
+
+
+  /**
+   * This method gets a report of Impact Pathway Outcomes by research program
+   * 
+   * @return a list of report of Impact Pathway Outcomes
+   */
+  public List<Map<String, Object>> getImpactPathwayOutcomes(long programID);
+
+  /**
+   * This method gets a report of Monitoring Outcomes by research program
+   * 
+   * @return a list of report of Monitoring Outcomes
+   */
+  public List<Map<String, Object>> getMonitoringOutcomes(long programID);
 
   /**
    * This method gets a researchOutcome object by a given researchOutcome identifier.
@@ -78,7 +100,7 @@ public interface ICenterOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchOutcome(CenterOutcome researchOutcome);
+  public CenterOutcome saveResearchOutcome(CenterOutcome researchOutcome);
 
   /**
    * This method saves the information of the given researchOutcome
@@ -88,7 +110,7 @@ public interface ICenterOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName);
+  public CenterOutcome saveResearchOutcome(CenterOutcome outcome, String actionName, List<String> relationsName);
 
 
 }

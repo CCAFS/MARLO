@@ -34,7 +34,7 @@ public interface InstitutionManager {
    * @param institutionId is the institution identifier.
    * @return true if the institution was successfully deleted, false otherwise.
    */
-  public boolean deleteInstitution(long institutionId);
+  public void deleteInstitution(long institutionId);
 
 
   /**
@@ -55,6 +55,14 @@ public interface InstitutionManager {
 
 
   /**
+   * This method gets a list of ppa institution that are active for the crp
+   * 
+   * @param crpId the crp id we want to search ppa institutions
+   * @return a list from Institution null if no exist records
+   */
+  public List<Institution> findPPAInstitutions(long crpID);
+
+  /**
    * This method gets a institution object by a given institution identifier.
    * 
    * @param institutionId is the institution identifier.
@@ -70,7 +78,7 @@ public interface InstitutionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveInstitution(Institution institution);
+  public Institution saveInstitution(Institution institution);
 
   /**
    * This method looks for the active Institutions that contains the

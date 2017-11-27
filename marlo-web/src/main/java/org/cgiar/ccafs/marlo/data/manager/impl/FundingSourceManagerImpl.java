@@ -43,9 +43,9 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public boolean deleteFundingSource(long fundingSourceId) {
+  public void deleteFundingSource(long fundingSourceId) {
 
-    return fundingSourceDAO.deleteFundingSource(fundingSourceId);
+    fundingSourceDAO.deleteFundingSource(fundingSourceId);
   }
 
   @Override
@@ -86,13 +86,13 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public long saveFundingSource(FundingSource fundingSource) {
+  public FundingSource saveFundingSource(FundingSource fundingSource) {
 
     return fundingSourceDAO.save(fundingSource);
   }
 
   @Override
-  public long saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+  public FundingSource saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName) {
 
     return fundingSourceDAO.save(fundingSource, sectionName, relationsName);
   }
@@ -100,6 +100,11 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   @Override
   public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
     return fundingSourceDAO.searchFundingSources(query, year, crpID);
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByFinanceCode(String ocsCode) {
+    return fundingSourceDAO.searchFundingSourcesByFinanceCode(ocsCode);
   }
 
   @Override

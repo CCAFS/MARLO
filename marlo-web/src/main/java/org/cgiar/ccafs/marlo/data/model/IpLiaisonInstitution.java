@@ -53,13 +53,14 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   private Set<SectionStatus> sectionStatus = new HashSet<SectionStatus>(0);
 
+
   private List<CrpIndicatorReport> indicatorReports;
 
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
 
-
   public IpLiaisonInstitution() {
   }
+
 
   public IpLiaisonInstitution(Institution institution, String name) {
     this.institution = institution;
@@ -100,7 +101,6 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
-
   public Set<IpLiaisonUser> getIpLiaisonUsers() {
     return ipLiaisonUsers;
   }
@@ -138,6 +138,7 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return name;
   }
 
+
   public Set<SectionStatus> getSectionStatus() {
     return sectionStatus;
   }
@@ -167,15 +168,14 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.indicatorReports = indicatorReports;
   }
 
-
   public void setInstitution(Institution institution) {
     this.institution = institution;
   }
 
+
   public void setIpLiaisonUsers(Set<IpLiaisonUser> ipLiaisonUsers) {
     this.ipLiaisonUsers = ipLiaisonUsers;
   }
-
 
   public void setIpProgram(Integer ipProgram) {
     this.ipProgram = ipProgram;
@@ -194,6 +194,13 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public void setSectionStatus(Set<SectionStatus> sectionStatus) {
     this.sectionStatus = sectionStatus;
+  }
+
+
+  @Override
+  public String toString() {
+    return "IpLiaisonInstitution [id=" + id + ", institution=" + institution + ", name=" + name + ", acronym=" + acronym
+      + ", ipProgram=" + ipProgram + "]";
   }
 
 

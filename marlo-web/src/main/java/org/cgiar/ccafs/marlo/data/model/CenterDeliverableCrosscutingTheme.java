@@ -143,6 +143,7 @@ public class CenterDeliverableCrosscutingTheme implements java.io.Serializable, 
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -230,6 +231,13 @@ public class CenterDeliverableCrosscutingTheme implements java.io.Serializable, 
 
   public void setYouth(Boolean youth) {
     this.youth = youth;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterDeliverableCrosscutingTheme [id=" + id + ", deliverable=" + deliverable + ", gender=" + gender
+      + ", youth=" + youth + ", capacityDevelopment=" + capacityDevelopment + "]";
   }
 
 

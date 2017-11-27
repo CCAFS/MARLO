@@ -35,7 +35,7 @@ public interface CrpManager {
    * @param crpId is the crp identifier.
    * @return true if the crp was successfully deleted, false otherwise.
    */
-  public boolean deleteCrp(long crpId);
+  public void deleteCrp(long crpId);
 
 
   /**
@@ -78,6 +78,6 @@ public interface CrpManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrp(Crp crp);
+  public Crp saveCrp(Crp crp);
 
 }

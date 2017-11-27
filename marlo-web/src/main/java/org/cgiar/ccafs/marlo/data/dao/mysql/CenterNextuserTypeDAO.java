@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterNextuserTypeDAO implements ICenterNextuserTypeDAO {
+public class CenterNextuserTypeDAO extends AbstractMarloDAO<CenterNextuserType, Long>
+  implements ICenterNextuserTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterNextuserTypeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterNextuserTypeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteNextuserType(long nextuserTypeId) {
+  public void deleteNextuserType(long nextuserTypeId) {
     CenterNextuserType nextuserType = this.find(nextuserTypeId);
     nextuserType.setActive(false);
-    return this.save(nextuserType) > 0;
+    this.save(nextuserType);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterNextuserTypeDAO implements ICenterNextuserTypeDAO {
 
   @Override
   public CenterNextuserType find(long id) {
-    return dao.find(CenterNextuserType.class, id);
+    return super.find(CenterNextuserType.class, id);
 
   }
 
   @Override
   public List<CenterNextuserType> findAll() {
     String query = "from " + CenterNextuserType.class.getName();
-    List<CenterNextuserType> list = dao.findAll(query);
+    List<CenterNextuserType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterNextuserTypeDAO implements ICenterNextuserTypeDAO {
   @Override
   public List<CenterNextuserType> getNextuserTypesByUserId(long userId) {
     String query = "from " + CenterNextuserType.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterNextuserType nextuserType) {
+  public CenterNextuserType save(CenterNextuserType nextuserType) {
     if (nextuserType.getId() == null) {
-      dao.save(nextuserType);
+      super.saveEntity(nextuserType);
     } else {
-      dao.update(nextuserType);
+      nextuserType = super.update(nextuserType);
     }
-    return nextuserType.getId();
+    return nextuserType;
   }
 
 

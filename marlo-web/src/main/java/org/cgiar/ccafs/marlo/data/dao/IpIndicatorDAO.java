@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.IpIndicatorMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public interface IpIndicatorDAO {
    * @param ipIndicatorId is the ipIndicator identifier.
    * @return true if the ipIndicator was successfully deleted, false otherwise.
    */
-  public boolean deleteIpIndicator(long ipIndicatorId);
+  public void deleteIpIndicator(long ipIndicatorId);
 
   /**
    * This method validate if the ipIndicator identify with the given id exists in the system.
@@ -64,8 +63,6 @@ public interface IpIndicatorDAO {
 
   public List<IpIndicator> getIndicatorsFlagShips();
 
-  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
-
 
   /**
    * This method saves the information of the given ipIndicator
@@ -75,5 +72,5 @@ public interface IpIndicatorDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpIndicator ipIndicator);
+  public IpIndicator save(IpIndicator ipIndicator);
 }

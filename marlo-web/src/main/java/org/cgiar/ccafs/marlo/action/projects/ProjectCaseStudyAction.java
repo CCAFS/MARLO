@@ -59,7 +59,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,11 +302,13 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+ 	      reader.close();
+ 	
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         caseStudy = (CaseStudy) autoSaveReader.readFromJson(jReader);
-        reader.close();
+      
         if (caseStudy.getProjects() != null) {
           for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
             caseStudyProject.setProject(projectManager.getProjectById(caseStudyProject.getProject().getId()));
@@ -411,7 +412,7 @@ public class ProjectCaseStudyAction extends BaseAction {
         caseStudy.setFile(this.getFileDB(caseStudyDB.getFile(), file, fileFileName, this.getCaseStudyPath()));
 
         FileManager.copyFile(file, this.getCaseStudyPath() + fileFileName);
-        Log.info("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
+        LOG.info("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
         System.out.println("CASE STUDY" + this.getCaseStudyPath() + "/" + fileFileName);
 
       }

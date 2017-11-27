@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
+public class SrfTargetUnitMySQLDAO extends AbstractMarloDAO<SrfTargetUnit, Long> implements SrfTargetUnitDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public SrfTargetUnitMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public SrfTargetUnitMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteSrfTargetUnit(long srfTargetUnitId) {
+  public void deleteSrfTargetUnit(long srfTargetUnitId) {
     SrfTargetUnit srfTargetUnit = this.find(srfTargetUnitId);
     srfTargetUnit.setActive(false);
-    return this.save(srfTargetUnit) > 0;
+    this.save(srfTargetUnit);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
 
   @Override
   public SrfTargetUnit find(long id) {
-    return dao.find(SrfTargetUnit.class, id);
+    return super.find(SrfTargetUnit.class, id);
 
   }
 
   @Override
   public List<SrfTargetUnit> findAll() {
     String query = "from " + SrfTargetUnit.class.getName() + " where is_active=1";
-    List<SrfTargetUnit> list = dao.findAll(query);
+    List<SrfTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
   }
 
   @Override
-  public long save(SrfTargetUnit srfTargetUnit) {
+  public SrfTargetUnit save(SrfTargetUnit srfTargetUnit) {
     if (srfTargetUnit.getId() == null) {
-      dao.save(srfTargetUnit);
+      super.saveEntity(srfTargetUnit);
     } else {
-      dao.update(srfTargetUnit);
+      srfTargetUnit = super.update(srfTargetUnit);
     }
-    return srfTargetUnit.getId();
+    return srfTargetUnit;
   }
 
 

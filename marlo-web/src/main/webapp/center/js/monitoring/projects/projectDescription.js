@@ -8,7 +8,8 @@ function init() {
     width: "100%"
   });
 
-  $('.amount').currencyInput();
+  // Setting Currency Inputs
+  $('form input.currencyInput').currencyInput();
 
   datePickerConfig({
       "startDate": "#project\\.startDate",
@@ -127,11 +128,6 @@ function init() {
   $(".isGlobal .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var isChecekd = $(this).hasClass('radio-checked');
-    if(!valueSelected || !isChecekd) {
-      $(".countriesBox").show("slow");
-    } else {
-      $(".countriesBox").hide("slow");
-    }
   });
 
   // Is this project has a regional dimension
@@ -285,11 +281,6 @@ function addRegion(option) {
   $item.show('slow');
   updateRegionList($list);
   checkRegionList($list);
-
-// Reset select
-// $(option).val("-1");
-// $(option).trigger('change.select2');
-
 }
 
 function removeRegion() {
@@ -308,9 +299,6 @@ function removeRegion() {
   console.log(option);
   option.prop('disabled', false);
   $('.regionSelect').select2();
-// Add region option again
-// $select.addOption(value, name);
-// $select.trigger("change.select2");
 }
 
 function updateRegionList($list) {
@@ -349,7 +337,7 @@ function addFundingSource() {
 function removeFundingSource() {
   var $list = $(this).parents('.fundingSourceList');
   var $item = $(this).parents('.fundingSources');
-  $item.hide(1000, function() {
+  $item.hide(300, function() {
     $item.remove();
     checkItems($list);
     updateFundingSource();
@@ -359,8 +347,18 @@ function removeFundingSource() {
 
 function updateFundingSource() {
   $(".fundingSourceList").find('.fundingSources').each(function(i,e) {
+    // Set numeric index
+    $(e).find('span.index').text(i+1);
+    
     // Set indexes
     $(e).setNameIndexes(1, i);
+    
+    // Update radio elements
+    $(e).find('.radio-input').each(function(iRadio, radioInput){
+      $(radioInput).attr('id', 'radio-'+ radioInput.value +'-'+ i).next().attr('for', 'radio-'+ radioInput.value +'-'+ i);
+    });
+    
+
   });
 }
 
@@ -451,15 +449,16 @@ function checkOutputsToRemove() {
  * Attach to the date fields the datepicker plugin
  */
 function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate), $(element.extensionDate));
+  settingDate($(element.startDate), $(element.endDate), $(element.extensionDate));
 }
 
-function date(start,end,extension) {
+
+function settingDate(start,end,extension) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -470,12 +469,14 @@ function date(start,end,extension) {
           $(end).datepicker("option", "minDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   var to = $(end).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -486,12 +487,14 @@ function date(start,end,extension) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   var to = $(extension).datepicker({
       dateFormat: dateFormat,
-      minDate: '2008-01-01',
-      maxDate: '2019-12-31',
+      minDate: '2005-01-01',
+      maxDate: '2030-12-31',
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
@@ -502,6 +505,8 @@ function date(start,end,extension) {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
+  }).on('keydown', function(e){
+    e.preventDefault();
   });
 
   function getDate(element) {

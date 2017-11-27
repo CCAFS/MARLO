@@ -164,7 +164,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setModifiedBy(this.getCurrentUser());
 
 
-    long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+    fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
     /*
      * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
@@ -192,9 +192,6 @@ public class FundingSourceAddAction extends BaseAction {
 
     fundingSourceInstitution.setInstitution(institution);
     fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
-
-
-    fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
     double remaining = 0;
     boolean hasYear = false;
@@ -247,10 +244,10 @@ public class FundingSourceAddAction extends BaseAction {
     }
 
 
-    if (fundingSourceID > 0)
+    if (fundingSource.getId() > 0)
 
     {
-      fsProp.put("id", fundingSourceID);
+      fsProp.put("id", fundingSource.getId());
       fsProp.put("title", fundingSource.getDescription());
       fsProp.put("ammount", remaining);
       fsProp.put("type", budgetType.getName());

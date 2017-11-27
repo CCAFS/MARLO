@@ -34,7 +34,7 @@ public interface IpProgramTypeManager {
    * @param ipProgramTypeId is the ipProgramType identifier.
    * @return true if the ipProgramType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpProgramType(long ipProgramTypeId);
+  public void deleteIpProgramType(long ipProgramTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpProgramTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpProgramType(IpProgramType ipProgramType);
+  public IpProgramType saveIpProgramType(IpProgramType ipProgramType);
 
 
 }

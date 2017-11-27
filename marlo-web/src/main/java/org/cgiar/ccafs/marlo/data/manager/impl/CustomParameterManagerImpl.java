@@ -41,9 +41,9 @@ public class CustomParameterManagerImpl implements CustomParameterManager {
   }
 
   @Override
-  public boolean deleteCustomParameter(long customParameterId) {
+  public void deleteCustomParameter(long customParameterId) {
 
-    return customParameterDAO.deleteCustomParameter(customParameterId);
+    customParameterDAO.deleteCustomParameter(customParameterId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CustomParameterManagerImpl implements CustomParameterManager {
   }
 
   @Override
-  public long saveCustomParameter(CustomParameter customParameter) {
+  public CustomParameter saveCustomParameter(CustomParameter customParameter) {
 
     return customParameterDAO.save(customParameter);
   }

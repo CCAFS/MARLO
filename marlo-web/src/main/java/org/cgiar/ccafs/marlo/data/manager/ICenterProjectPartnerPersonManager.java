@@ -34,7 +34,7 @@ public interface ICenterProjectPartnerPersonManager {
    * @param projectPartnerPersonId is the projectPartnerPerson identifier.
    * @return true if the projectPartnerPerson was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectPartnerPerson(long projectPartnerPersonId);
+  public void deleteProjectPartnerPerson(long projectPartnerPersonId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectPartnerPersonManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectPartnerPerson(CenterProjectPartnerPerson projectPartnerPerson);
+  public CenterProjectPartnerPerson saveProjectPartnerPerson(CenterProjectPartnerPerson projectPartnerPerson);
 
 
 }

@@ -25,10 +25,11 @@ public class CrpPandr implements java.io.Serializable, IAuditLog {
   private String name;
   @Expose
   private String acronym;
+
+
   @Expose
   private boolean active;
   private Set<ProjectCrpContribution> projectCrpContributions = new HashSet<ProjectCrpContribution>(0);
-
 
   public CrpPandr() {
   }
@@ -88,10 +89,10 @@ public class CrpPandr implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -105,6 +106,12 @@ public class CrpPandr implements java.io.Serializable, IAuditLog {
 
   public void setProjectCrpContributions(Set<ProjectCrpContribution> projectCrpContributions) {
     this.projectCrpContributions = projectCrpContributions;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CrpPandr [id=" + id + ", name=" + name + ", acronym=" + acronym + "]";
   }
 
 

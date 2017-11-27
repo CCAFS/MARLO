@@ -39,12 +39,14 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private Institution institution;
 
+
   private Project project;
-  @Expose
-  private User createdBy;
 
   @Expose
+  private User createdBy;
+  @Expose
   private User modifiedBy;
+
   @Expose
   private Double amount;
   @Expose
@@ -59,7 +61,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private FundingSource fundingSource;
-
   @Expose
   private Date activeSince;
 
@@ -74,9 +75,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     ProjectBudget other = (ProjectBudget) obj;
     if (id == null) {
       if (other.id != null) {
@@ -116,11 +115,11 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return genderValue;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
+
 
   public Institution getInstitution() {
     return institution;
@@ -147,7 +146,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public int getYear() {
     return year;
   }
@@ -160,6 +158,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -186,10 +185,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
+
 
   public void setGenderPercentage(Double genderPercentage) {
     this.genderPercentage = genderPercentage;
@@ -215,7 +214,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -223,6 +221,13 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setYear(int year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectBudget [id=" + id + ", institution=" + institution + ", project=" + project + ", amount=" + amount
+      + ", budgetType=" + budgetType + ", year=" + year + ", fundingSource=" + fundingSource + "]";
   }
 
 

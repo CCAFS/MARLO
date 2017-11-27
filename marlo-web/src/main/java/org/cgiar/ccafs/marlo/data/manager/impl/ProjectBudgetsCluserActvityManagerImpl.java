@@ -41,9 +41,9 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   }
 
   @Override
-  public boolean deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
+  public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
 
-    return projectBudgetsCluserActvityDAO.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvityId);
+    projectBudgetsCluserActvityDAO.deleteProjectBudgetsCluserActvity(projectBudgetsCluserActvityId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
   }
 
   @Override
-  public long saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
+  public ProjectBudgetsCluserActvity saveProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity) {
 
     return projectBudgetsCluserActvityDAO.save(projectBudgetsCluserActvity);
   }

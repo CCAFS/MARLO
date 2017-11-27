@@ -29,6 +29,7 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private String acronym;
 
@@ -48,7 +49,6 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
 
   public PartnerDivision() {
   }
-
 
   public PartnerDivision(boolean active) {
     this.active = active;
@@ -97,6 +97,7 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
@@ -113,11 +114,11 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -157,18 +158,23 @@ public class PartnerDivision implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  @Override
+  public String toString() {
+    return "PartnerDivision [id=" + id + ", acronym=" + acronym + ", name=" + name + "]";
   }
 
 }

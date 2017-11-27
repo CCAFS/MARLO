@@ -57,3 +57,6 @@
     <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
   </div> 
 </div>
+
+[#-- Draft Message --]
+[#include "/WEB-INF/global/macros/draftMessage.ftl" /]

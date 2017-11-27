@@ -408,9 +408,11 @@ public class ClusterActivitiesAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
-    String subject = this.getText("email.cluster.assigned.subject",
-      new String[] {crpClusterPreview.getIdentifier(), loggedCrp.getAcronym()});
+    String subject =
+      this.getText("email.cluster.assigned.subject", new String[] {crpClusterPreview.getIdentifier(), crp});
 
     // Message
     userAssigned = userManager.getUser(userAssigned.getId());
@@ -418,7 +420,7 @@ public class ClusterActivitiesAction extends BaseAction {
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
-      crpClusterPreview.getDescription(), loggedCrp.getAcronym(), this.getText("email.cluster.responsabilities")}));
+      crpClusterPreview.getDescription(), crp, this.getText("email.cluster.responsabilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
@@ -467,8 +469,9 @@ public class ClusterActivitiesAction extends BaseAction {
         ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
       }
     }
+
     // Also crp program Leaders
-    for (CrpProgramLeader crpProgramLeader : crpClusterOfActivity.getCrpProgram().getCrpProgramLeaders().stream()
+    for (CrpProgramLeader crpProgramLeader : selectedProgram.getCrpProgramLeaders().stream()
       .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
       if (ccEmail.isEmpty()) {
         ccEmail += crpProgramLeader.getUser().getEmail();
@@ -480,9 +483,11 @@ public class ClusterActivitiesAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
+    String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
+      : loggedCrp.getName();
     // Subject
-    String subject = this.getText("email.cluster.unassigned.subject",
-      new String[] {crpClusterOfActivity.getIdentifier(), loggedCrp.getAcronym()});
+    String subject =
+      this.getText("email.cluster.unassigned.subject", new String[] {crpClusterOfActivity.getIdentifier(), crp});
 
 
     // Message
@@ -490,8 +495,8 @@ public class ClusterActivitiesAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.cluster.unassigned", new String[] {crpClusterOfActivity.getIdentifier(),
-      crpClusterOfActivity.getDescription(), loggedCrp.getAcronym()}));
+    message.append(this.getText("email.cluster.unassigned",
+      new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), crp}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
 
@@ -646,6 +651,8 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+          reader.close();
+
 
           try {
             AutoSaveReader autoSaveReader = new AutoSaveReader();
@@ -688,7 +695,7 @@ public class ClusterActivitiesAction extends BaseAction {
             e.printStackTrace();
           }
 
-          reader.close();
+
           this.setDraft(true);
         } else {
           this.setDraft(false);
@@ -737,44 +744,40 @@ public class ClusterActivitiesAction extends BaseAction {
         }
       }
       /*
-       * Save outcomes
+       * Save outcomes. crpClusterOfActivityDettached is in an detached or transient hibernate state.
        */
-      for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
-
-        if (crpClusterOfActivity.getId() == null) {
-          crpClusterOfActivity.setActive(true);
-
-          crpClusterOfActivity.setCreatedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModifiedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModificationJustification("");
-          crpClusterOfActivity.setActiveSince(new Date());
-
+      for (CrpClusterOfActivity crpClusterOfActivityDetached : clusterofActivities) {
+        CrpClusterOfActivity clusterOfActivityDB = null;
+        if (crpClusterOfActivityDetached.getId() == null) {
+          clusterOfActivityDB = new CrpClusterOfActivity();
+          clusterOfActivityDB.setActiveSince(new Date());
+          clusterOfActivityDB.setCreatedBy(this.getCurrentUser());
         } else {
-          CrpClusterOfActivity db =
-            crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-          crpClusterOfActivity.setActive(true);
-          crpClusterOfActivity.setCreatedBy(db.getCreatedBy());
-          crpClusterOfActivity.setModifiedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModificationJustification("");
-          crpClusterOfActivity.setActiveSince(db.getActiveSince());
+          clusterOfActivityDB =
+            crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivityDetached.getId());
         }
-        crpClusterOfActivity.setCrpProgram(selectedProgram);
-        crpClusterOfActivityManager.saveCrpClusterOfActivity(crpClusterOfActivity);
+        clusterOfActivityDB.setIdentifier(crpClusterOfActivityDetached.getIdentifier());
+        clusterOfActivityDB.setDescription(crpClusterOfActivityDetached.getDescription());
+        clusterOfActivityDB.setCrpProgram(selectedProgram);
+
+        clusterOfActivityDB.setActive(true);
+        clusterOfActivityDB.setModifiedBy(this.getCurrentUser());
+        clusterOfActivityDB.setModificationJustification("");
+
+        clusterOfActivityDB = crpClusterOfActivityManager.saveCrpClusterOfActivity(clusterOfActivityDB);
 
         /*
          * Check leaders
          */
-        CrpClusterOfActivity crpClusterPrev =
-          crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-        for (CrpClusterActivityLeader leaderPreview : crpClusterPrev.getCrpClusterActivityLeaders().stream()
+        for (CrpClusterActivityLeader leaderDB : clusterOfActivityDB.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-          if (crpClusterOfActivity.getLeaders() == null) {
-            crpClusterOfActivity.setLeaders(new ArrayList<>());
+          if (crpClusterOfActivityDetached.getLeaders() == null) {
+            crpClusterOfActivityDetached.setLeaders(new ArrayList<>());
           }
-          if (!crpClusterOfActivity.getLeaders().contains(leaderPreview)) {
-            crpClusterActivityLeaderManager.deleteCrpClusterActivityLeader(leaderPreview.getId());
-            User user = userManager.getUser(leaderPreview.getUser().getId());
+          if (!crpClusterOfActivityDetached.getLeaders().contains(leaderDB)) {
+            crpClusterActivityLeaderManager.deleteCrpClusterActivityLeader(leaderDB.getId());
+            User user = userManager.getUser(leaderDB.getUser().getId());
 
             List<CrpClusterActivityLeader> existsUserLeader =
               user.getCrpClusterActivityLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
@@ -788,7 +791,7 @@ public class ClusterActivitiesAction extends BaseAction {
               if (clUserRoles != null || !clUserRoles.isEmpty()) {
                 for (UserRole userRole : clUserRoles) {
                   userRoleManager.deleteUserRole(userRole.getId());
-                  this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpClusterOfActivity);
+                  this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpClusterOfActivityDetached);
                 }
 
                 this.checkCrpUserByRole(user);
@@ -799,24 +802,30 @@ public class ClusterActivitiesAction extends BaseAction {
         /*
          * Save leaders
          */
-        if (crpClusterOfActivity.getLeaders() != null) {
-          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
-            if (crpClusterActivityLeader.getId() == null) {
-              crpClusterActivityLeader.setActive(true);
-              crpClusterActivityLeader.setCrpClusterOfActivity(crpClusterOfActivity);
-              crpClusterActivityLeader.setCreatedBy(this.getCurrentUser());
-              crpClusterActivityLeader.setModifiedBy(this.getCurrentUser());
-              crpClusterActivityLeader.setModificationJustification("");
-              crpClusterActivityLeader.setActiveSince(new Date());
-              CrpClusterOfActivity crpClusterPreview =
-                crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-              if (crpClusterPreview.getCrpClusterActivityLeaders().stream()
-                .filter(c -> c.isActive() && c.getUser().equals(crpClusterActivityLeader.getUser()))
+        if (crpClusterOfActivityDetached.getLeaders() != null) {
+          for (CrpClusterActivityLeader crpClusterActivityLeaderDettached : crpClusterOfActivityDetached.getLeaders()) {
+
+            if (crpClusterActivityLeaderDettached.getId() == null) {
+
+              CrpClusterActivityLeader crpClusterOfActivityLeaderDB = new CrpClusterActivityLeader();
+
+              crpClusterOfActivityLeaderDB.setActive(true);
+              crpClusterOfActivityLeaderDB.setCrpClusterOfActivity(clusterOfActivityDB);
+              crpClusterOfActivityLeaderDB.setCreatedBy(this.getCurrentUser());
+              crpClusterOfActivityLeaderDB.setModifiedBy(this.getCurrentUser());
+              crpClusterOfActivityLeaderDB.setModificationJustification("");
+              crpClusterOfActivityLeaderDB.setActiveSince(new Date());
+              crpClusterOfActivityLeaderDB.setUser(crpClusterActivityLeaderDettached.getUser());
+              // CrpClusterOfActivity crpClusterDB =
+              // crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivityDettached.getId());
+              if (clusterOfActivityDB.getCrpClusterActivityLeaders().stream()
+                .filter(c -> c.isActive() && c.getUser().equals(crpClusterActivityLeaderDettached.getUser()))
                 .collect(Collectors.toList()).isEmpty()) {
-                crpClusterActivityLeaderManager.saveCrpClusterActivityLeader(crpClusterActivityLeader);
+                crpClusterOfActivityLeaderDB =
+                  crpClusterActivityLeaderManager.saveCrpClusterActivityLeader(crpClusterOfActivityLeaderDB);
               }
 
-              User user = userManager.getUser(crpClusterActivityLeader.getUser().getId());
+              User user = userManager.getUser(crpClusterActivityLeaderDettached.getUser().getId());
               UserRole userRole = new UserRole();
               userRole.setUser(user);
               userRole.setRole(this.roleCl);
@@ -824,7 +833,7 @@ public class ClusterActivitiesAction extends BaseAction {
                 userRoleManager.saveUserRole(userRole);
                 this.addCrpUser(userRole.getUser());
                 this.notifyNewUserCreated(userRole.getUser());
-                this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
+                this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), clusterOfActivityDB);
               }
 
 
@@ -836,83 +845,87 @@ public class ClusterActivitiesAction extends BaseAction {
         /*
          * Check key outputs
          */
-        crpClusterPrev = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-        for (CrpClusterKeyOutput keyPreview : crpClusterPrev.getCrpClusterKeyOutputs().stream()
+        for (CrpClusterKeyOutput keyOutputDB : clusterOfActivityDB.getCrpClusterKeyOutputs().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-          if (crpClusterOfActivity.getKeyOutputs() == null) {
-            crpClusterOfActivity.setKeyOutputs(new ArrayList<>());
+          if (crpClusterOfActivityDetached.getKeyOutputs() == null) {
+            crpClusterOfActivityDetached.setKeyOutputs(new ArrayList<>());
           }
-          if (!crpClusterOfActivity.getKeyOutputs().contains(keyPreview)) {
-            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyPreview.getCrpClusterKeyOutputOutcomes()) {
+          if (!crpClusterOfActivityDetached.getKeyOutputs().contains(keyOutputDB)) {
+            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputDB.getCrpClusterKeyOutputOutcomes()) {
               crpClusterKeyOutputOutcomeManager.deleteCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome.getId());
             }
-            crpClusterKeyOutputManager.deleteCrpClusterKeyOutput(keyPreview.getId());
+            crpClusterKeyOutputManager.deleteCrpClusterKeyOutput(keyOutputDB.getId());
 
           }
         }
         /*
          * Save key outputs
          */
-        if (crpClusterOfActivity.getKeyOutputs() != null) {
-          for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
-            if (crpClusterKeyOutput.getId() == null) {
-              crpClusterKeyOutput.setCreatedBy(this.getCurrentUser());
-
-              crpClusterKeyOutput.setActiveSince(new Date());
+        if (crpClusterOfActivityDetached.getKeyOutputs() != null) {
+          for (CrpClusterKeyOutput crpClusterKeyOutputDetached : crpClusterOfActivityDetached.getKeyOutputs()) {
+            CrpClusterKeyOutput crpClusterKeyOutputDB = null;
+            if (crpClusterKeyOutputDetached.getId() == null) {
+              crpClusterKeyOutputDB = new CrpClusterKeyOutput();
+              crpClusterKeyOutputDB.setCreatedBy(this.getCurrentUser());
+              crpClusterKeyOutputDB.setActiveSince(new Date());
 
             } else {
-              CrpClusterKeyOutput crpClusterKeyOutputPrev =
-                crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutput.getId());
-              crpClusterKeyOutput.setCreatedBy(crpClusterKeyOutputPrev.getCreatedBy());
-              crpClusterKeyOutput.setActiveSince(crpClusterKeyOutputPrev.getActiveSince());
+              crpClusterKeyOutputDB =
+                crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutputDetached.getId());
 
             }
-            crpClusterKeyOutput.setActive(true);
-            crpClusterKeyOutput.setCrpClusterOfActivity(crpClusterOfActivity);
-            crpClusterKeyOutput.setModifiedBy(this.getCurrentUser());
-            crpClusterKeyOutput.setModificationJustification("");
-            crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutput);
+            crpClusterKeyOutputDB.setCrpClusterOfActivity(clusterOfActivityDB);
+            crpClusterKeyOutputDB.setContribution(crpClusterKeyOutputDetached.getContribution());
+            crpClusterKeyOutputDB.setKeyOutput(crpClusterKeyOutputDetached.getKeyOutput());
+
+            crpClusterKeyOutputDB.setActive(true);
+            crpClusterKeyOutputDB.setModifiedBy(this.getCurrentUser());
+            crpClusterKeyOutputDB.setModificationJustification("");
+            crpClusterKeyOutputDB = crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutputDB);
 
             /*
              * deleting key ouputs otucomes
              */
-            CrpClusterKeyOutput crpClusterKeyOutputPrev =
-              crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutput.getId());
-            for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpClusterKeyOutputPrev.getCrpClusterKeyOutputOutcomes()
+            for (CrpClusterKeyOutputOutcome keyOutputOutcomeDB : crpClusterKeyOutputDB.getCrpClusterKeyOutputOutcomes()
               .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-              if (crpClusterKeyOutput.getKeyOutputOutcomes() == null) {
-                crpClusterKeyOutput.setKeyOutputOutcomes(new ArrayList<>());
+              if (crpClusterKeyOutputDetached.getKeyOutputOutcomes() == null) {
+                crpClusterKeyOutputDetached.setKeyOutputOutcomes(new ArrayList<>());
               }
-              if (!crpClusterKeyOutput.getKeyOutputOutcomes().contains(keyOutputOutcome)) {
-                crpClusterKeyOutputOutcomeManager.deleteCrpClusterKeyOutputOutcome(keyOutputOutcome.getId());
+              if (!crpClusterKeyOutputDetached.getKeyOutputOutcomes().contains(keyOutputOutcomeDB)) {
+                crpClusterKeyOutputOutcomeManager.deleteCrpClusterKeyOutputOutcome(keyOutputOutcomeDB.getId());
 
               }
             }
             /*
              * Save key outputs otucomes
              */
-            if (crpClusterKeyOutput.getKeyOutputOutcomes() != null) {
-              for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
-                if (crpClusterKeyOutputOutcome.getId() == null) {
-                  crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
+            if (crpClusterKeyOutputDetached.getKeyOutputOutcomes() != null) {
+              for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeDetached : crpClusterKeyOutputDetached
+                .getKeyOutputOutcomes()) {
+                CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeDB = null;
+                if (crpClusterKeyOutputOutcomeDetached.getId() == null) {
+                  crpClusterKeyOutputOutcomeDB = new CrpClusterKeyOutputOutcome();
 
-                  crpClusterKeyOutputOutcome.setActiveSince(new Date());
-                  crpClusterKeyOutputOutcome.setActive(true);
+                  crpClusterKeyOutputOutcomeDB.setCreatedBy(this.getCurrentUser());
+                  crpClusterKeyOutputOutcomeDB.setActiveSince(new Date());
+                  crpClusterKeyOutputOutcomeDB.setActive(true);
+
                 } else {
-                  CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
-                    .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
-                  crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
-                  crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
-                  crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
-
+                  crpClusterKeyOutputOutcomeDB = crpClusterKeyOutputOutcomeManager
+                    .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcomeDetached.getId());
                 }
 
-                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutput);
-                crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
-                crpClusterKeyOutputOutcome.setModificationJustification("");
-                crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
+                crpClusterKeyOutputOutcomeDB
+                  .setCrpProgramOutcome(crpClusterKeyOutputOutcomeDetached.getCrpProgramOutcome());
+                crpClusterKeyOutputOutcomeDB.setCrpClusterKeyOutput(crpClusterKeyOutputDB);
+                crpClusterKeyOutputOutcomeDB.setContribution(crpClusterKeyOutputOutcomeDetached.getContribution());
+
+                crpClusterKeyOutputOutcomeDB.setModifiedBy(this.getCurrentUser());
+                crpClusterKeyOutputOutcomeDB.setModificationJustification("");
+                crpClusterKeyOutputOutcomeDB =
+                  crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcomeDB);
               }
             }
 

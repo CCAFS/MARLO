@@ -41,9 +41,9 @@ public class SrfSloIdoManagerImpl implements SrfSloIdoManager {
   }
 
   @Override
-  public boolean deleteSrfSloIdo(long srfSloIdoId) {
+  public void deleteSrfSloIdo(long srfSloIdoId) {
 
-    return srfSloIdoDAO.deleteSrfSloIdo(srfSloIdoId);
+    srfSloIdoDAO.deleteSrfSloIdo(srfSloIdoId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfSloIdoManagerImpl implements SrfSloIdoManager {
   }
 
   @Override
-  public long saveSrfSloIdo(SrfSloIdo srfSloIdo) {
+  public SrfSloIdo saveSrfSloIdo(SrfSloIdo srfSloIdo) {
 
     return srfSloIdoDAO.save(srfSloIdo);
   }

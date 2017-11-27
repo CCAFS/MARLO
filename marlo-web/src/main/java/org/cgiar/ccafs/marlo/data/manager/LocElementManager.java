@@ -34,7 +34,7 @@ public interface LocElementManager {
    * @param locElementId is the locElement identifier.
    * @return true if the locElement was successfully deleted, false otherwise.
    */
-  public boolean deleteLocElement(long locElementId);
+  public void deleteLocElement(long locElementId);
 
 
   /**
@@ -87,7 +87,7 @@ public interface LocElementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveLocElement(LocElement locElement);
+  public LocElement saveLocElement(LocElement locElement);
 
 
 }

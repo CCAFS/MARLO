@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterProjectOutputDAO implements ICenterProjectOutputDAO {
+public class CenterProjectOutputDAO extends AbstractMarloDAO<CenterProjectOutput, Long>
+  implements ICenterProjectOutputDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterProjectOutputDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterProjectOutputDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectOutput(long projectOutputId) {
+  public void deleteProjectOutput(long projectOutputId) {
     CenterProjectOutput projectOutput = this.find(projectOutputId);
     projectOutput.setActive(false);
-    return this.save(projectOutput) > 0;
+    this.save(projectOutput);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterProjectOutputDAO implements ICenterProjectOutputDAO {
 
   @Override
   public CenterProjectOutput find(long id) {
-    return dao.find(CenterProjectOutput.class, id);
+    return super.find(CenterProjectOutput.class, id);
 
   }
 
   @Override
   public List<CenterProjectOutput> findAll() {
     String query = "from " + CenterProjectOutput.class.getName();
-    List<CenterProjectOutput> list = dao.findAll(query);
+    List<CenterProjectOutput> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +70,17 @@ public class CenterProjectOutputDAO implements ICenterProjectOutputDAO {
   @Override
   public List<CenterProjectOutput> getProjectOutputsByUserId(long userId) {
     String query = "from " + CenterProjectOutput.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterProjectOutput projectOutput) {
+  public CenterProjectOutput save(CenterProjectOutput projectOutput) {
     if (projectOutput.getId() == null) {
-      dao.save(projectOutput);
+      super.saveEntity(projectOutput);
     } else {
-      dao.update(projectOutput);
+      projectOutput = super.update(projectOutput);
     }
-    return projectOutput.getId();
+    return projectOutput;
   }
 
 

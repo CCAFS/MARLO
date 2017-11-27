@@ -34,7 +34,7 @@ public interface IpElementTypeManager {
    * @param ipElementTypeId is the ipElementType identifier.
    * @return true if the ipElementType was successfully deleted, false otherwise.
    */
-  public boolean deleteIpElementType(long ipElementTypeId);
+  public void deleteIpElementType(long ipElementTypeId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface IpElementTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveIpElementType(IpElementType ipElementType);
+  public IpElementType saveIpElementType(IpElementType ipElementType);
 
 
 }

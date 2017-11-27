@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CustomParameterMySQLDAO implements CustomParameterDAO {
+public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, Long> implements CustomParameterDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CustomParameterMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CustomParameterMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCustomParameter(long customParameterId) {
+  public void deleteCustomParameter(long customParameterId) {
     CustomParameter customParameter = this.find(customParameterId);
     customParameter.setActive(false);
-    return this.save(customParameter) > 0;
+    this.save(customParameter);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CustomParameterMySQLDAO implements CustomParameterDAO {
 
   @Override
   public CustomParameter find(long id) {
-    return dao.find(CustomParameter.class, id);
+    return super.find(CustomParameter.class, id);
 
   }
 
   @Override
   public List<CustomParameter> findAll() {
     String query = "from " + CustomParameter.class.getName() + " where is_active=1";
-    List<CustomParameter> list = dao.findAll(query);
+    List<CustomParameter> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class CustomParameterMySQLDAO implements CustomParameterDAO {
   }
 
   @Override
-  public long save(CustomParameter customParameter) {
+  public CustomParameter save(CustomParameter customParameter) {
     if (customParameter.getId() == null) {
-      dao.save(customParameter);
+      super.saveEntity(customParameter);
     } else {
-      dao.update(customParameter);
+      customParameter = super.update(customParameter);
     }
 
 
-    return customParameter.getId();
+    return customParameter;
   }
 
 

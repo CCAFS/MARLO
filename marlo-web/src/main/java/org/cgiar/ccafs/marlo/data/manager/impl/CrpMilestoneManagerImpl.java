@@ -41,9 +41,9 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
   }
 
   @Override
-  public boolean deleteCrpMilestone(long crpAssumptionId) {
+  public void deleteCrpMilestone(long crpAssumptionId) {
 
-    return crpAssumptionDAO.deleteCrpMilestone(crpAssumptionId);
+    crpAssumptionDAO.deleteCrpMilestone(crpAssumptionId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
   }
 
   @Override
-  public long saveCrpMilestone(CrpMilestone crpAssumption) {
+  public CrpMilestone saveCrpMilestone(CrpMilestone crpAssumption) {
 
     return crpAssumptionDAO.save(crpAssumption);
   }

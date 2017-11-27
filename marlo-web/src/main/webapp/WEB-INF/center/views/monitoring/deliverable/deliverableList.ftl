@@ -1,9 +1,16 @@
 [#ftl]
-[#assign title = "MiLE Deliverables" /]
+[#assign title = "MARLO Deliverables" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrlMedia}/js/monitoring/deliverable/deliverableList.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/global/customDataTable.css","${baseUrlMedia}/css/deliverable/projectDeliverable.css"] /]
+[#assign customJS = [
+  "${baseUrlMedia}/js/monitoring/deliverable/deliverableList.js" 
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrl}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/deliverable/projectDeliverable.css"
+  ] 
+  /]
 [#assign currentSection = "monitoring" /]
 [#assign currentStage = "deliverables" /]
 
@@ -12,14 +19,13 @@
   {"label":"deliverables", "nameSpace":"/monitoring", "action":"${(centerSession)!}/deliverableList"}
 ] /]
 
-[#include "/WEB-INF/center//global/pages/header.ftl" /]
-[#include "/WEB-INF/center//global/pages/main-menu.ftl" /]
-[#import "/WEB-INF/center//global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/center//global/macros/deliverableListTemplate.ftl" as deliverableList /]
+[#include "/WEB-INF/center/pages/header.ftl" /]
+[#include "/WEB-INF/center/pages/main-menu.ftl" /]
+[#import "/WEB-INF/center/macros/deliverableListTemplate-center.ftl" as deliverableList /]
 [#-- Help text --]
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlMedia}/images/global/icon-help.png" />
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.png" />
     <p class="col-md-10"> [@s.text name="deliverableList.help"][/@s.text] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -29,11 +35,11 @@
   <article class="row" id="mainInformation">
   [#-- Project Menu --]
       <div class="col-md-3">
-        [#include "/WEB-INF/center//views/monitoring/project/menu-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/menu-projects.ftl" /]
       </div>
     <div class="col-md-9">
     [#-- Projects data information --]
-        [#include "/WEB-INF/center//views/monitoring/project/dataInfo-projects.ftl" /]
+        [#include "/WEB-INF/center/views/monitoring/project/dataInfo-projects.ftl" /]
         <br />
         
       [#-- deliverable List (My Projects) --]
@@ -56,7 +62,7 @@
     
   </article>
 </section>
-[@customForm.confirmJustification action="deleteDeliverable.do" namespace="/${currentSection}" title="Remove Deliverable" /]
+[@customForm.confirmJustificationDeliverable action="deleteDeliverable.do" namespace="/${currentSection}" title="Remove Deliverable" /]
 
 
-[#include "/WEB-INF/center//global/pages/footer.ftl"]
+[#include "/WEB-INF/center/pages/footer.ftl"]
