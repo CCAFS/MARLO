@@ -177,7 +177,7 @@
                     <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="baseline-tab-${year}"> 
                       
                       <div class="form-group text-right">
-                        <a href="${baseUrl}" class="downloadBaseline"><img src="${baseUrlMedia}/images/global/pdf.png" width="20px" alt="" /> Download Baseline Instructions</a> 
+                        <a href="${baseUrl}" class="downloadBaseline"><img src="${baseUrl}/global/images//pdf.png" width="20px" alt="" /> Download Baseline Instructions</a> 
                       </div>
                       
                       [#assign baselineIndicators = [
@@ -316,6 +316,9 @@
 
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
+
+
+
   
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -454,6 +457,37 @@
             <div class="clearfix"></div>
           </div>
         [/#list]
+      </div>
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro baselineIndicatorMacro element name index year isTemplate=false]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local customName = "${name}[${index}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.title}</strong>
+    </div>
+    <div class="form-group row">
+      <div class="col-md-3">
+        [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=isYearRequired(year) editable=editable && !reportingActive /]
+      </div>
+      <div class="col-md-3">
+        [#if reportingActive]
+          [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=isYearRequired(year) editable=editable /]
+        [/#if]
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.expectedNarrative" i18nkey="projectOutcomeBaseline.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
+    </div>
+    [#if reportingActive]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
       </div>
     [/#if]
   </div>
