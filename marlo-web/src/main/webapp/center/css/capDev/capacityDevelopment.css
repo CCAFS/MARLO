@@ -270,6 +270,14 @@
   color:#fff;
 }
 
+.downloadButtonHome{
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  color:#fff;
+}
+
+
 .capdevButtons{
 	background-color: #2e874f;
 	border-bottom: 3px solid #2e874f;

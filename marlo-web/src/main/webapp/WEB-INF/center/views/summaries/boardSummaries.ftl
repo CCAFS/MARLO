@@ -160,33 +160,50 @@
         [#-- -- -- capdev reports -- -- --]
         <div id="capdev-contentOptions" style="display:none">
         
-        [#-- full capdev  report--]
+        [#--  capdev  report by research area --]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
-              <label for="">Full capacity development interventions report </label>
+              <label for="">Full capacity development interventions report by Research Areas </label>
             </div>
             <div class="col-md-12"> 
               <div class="col-md-6 ">
                 [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Area"  listName="researchAreas"  keyFieldName="id"  displayFieldName="name" className="researchAreasSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
               </div>
+             
               <div class="col-md-6 capdevYearSelect">
-                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="year"   multiple=false required=true   editable=true/]
-                <!-- [@customForm.input name="" type="text" help="" i18nkey="Select a Year"  required=true className="year" /] -->
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="yearArea"   multiple=false required=true   editable=true/]
               </div>
-
-              
               
               <div class="pull-right">
-                <a id="generarReportCapdev" target="_blank" class=" addButton pull-right generateReportcapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
+                <a id="generarReportCapdevByArea" target="_blank" class=" addButton pull-right  generarReportCapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
               </div>
             </div>
             
+          </div>
+
+
+          [#-- capdev report by research program --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
+              <label for="">Full capacity development interventions report by Research Program </label>
+            </div>
+            <div class="col-md-12"> 
+              
+              <div class="col-md-6 ">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="name" className="researchProgramSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
+              </div>
+              <div class="col-md-6 capdevYearSelect">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="yearProgram"   multiple=false required=true   editable=true/]
+              </div>
+              
+              <div class="pull-right">
+                <a id="generarReportCapdevByProgram" target="_blank" class=" addButton pull-right  generarReportCapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
             
           </div>
-        
-          
-        
           
         </div>
 
