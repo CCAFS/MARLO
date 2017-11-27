@@ -51,10 +51,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String partnerType;
+
+
   @Expose
   private boolean active;
-
-
   @Expose
   private Date activeSince;
 
@@ -106,10 +106,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -126,13 +126,13 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -169,11 +169,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -204,10 +204,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
 
   public void setPartnerDivision(PartnerDivision partnerDivision) {
     this.partnerDivision = partnerDivision;
@@ -221,6 +221,13 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public void setProjectPartnerPerson(ProjectPartnerPerson projectPartnerPerson) {
     this.projectPartnerPerson = projectPartnerPerson;
+  }
+
+
+  @Override
+  public String toString() {
+    return "DeliverablePartnership [id=" + id + ", deliverable=" + deliverable + ", partnerType=" + partnerType
+      + ", partnerDivision=" + partnerDivision + "]";
   }
 
 }

@@ -271,13 +271,13 @@ public class OutcomesAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         outcome = (CenterOutcome) autoSaveReader.readFromJson(jReader);
 
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -322,9 +322,7 @@ public class OutcomesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (targetUnitList != null) {
-        targetUnitList.clear();
-      }
+      outcome.setTargetUnit(null);
 
       if (researchImpacts != null) {
         researchImpacts.clear();
@@ -347,7 +345,11 @@ public class OutcomesAction extends BaseAction {
 
       CenterOutcome outcomeDb = outcomeService.getResearchOutcomeById(outcomeID);
 
-      CenterImpact impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+      CenterImpact impact = null;
+      if (outcome.getResearchImpact().getId() != -1) {
+        impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+      }
+
 
       CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(outcome.getTargetUnit().getId());
 
@@ -364,19 +366,14 @@ public class OutcomesAction extends BaseAction {
 
       outcomeDb.setResearchImpact(impact);
 
-      outcomeDb.setModifiedBy(this.getCurrentUser());
-      Long outcomeSaveId = outcomeService.saveResearchOutcome(outcomeDb);
-
-      CenterOutcome outcomeSave = outcomeService.getResearchOutcomeById(outcomeSaveId);
-
-      this.saveMilestones(outcomeSave);
+      this.saveMilestones(outcomeDb);
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTCOME_MILESTONE_RELATION);
-      outcome = outcomeService.getResearchOutcomeById(outcomeID);
-      outcome.setActiveSince(new Date());
-      outcome.setModifiedBy(this.getCurrentUser());
-      outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
+
+      outcomeDb.setActiveSince(new Date());
+      outcomeDb.setModifiedBy(this.getCurrentUser());
+      outcomeDb = outcomeService.saveResearchOutcome(outcomeDb, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
 

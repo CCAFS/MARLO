@@ -32,7 +32,7 @@ public interface ICenterProjectFundingSourceDAO {
    * @param projectFundingSourceId is the projectFundingSource identifier.
    * @return true if the projectFundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectFundingSource(long projectFundingSourceId);
+  public void deleteProjectFundingSource(long projectFundingSourceId);
 
   /**
    * This method validate if the projectFundingSource identify with the given id exists in the system.
@@ -59,6 +59,14 @@ public interface ICenterProjectFundingSourceDAO {
 
 
   /**
+   * This method gets a list of projectFundingSource search by code (sync code)
+   * 
+   * @param code - the sync code
+   * @return CenterProjectFundingSource object
+   */
+  public CenterProjectFundingSource getProjectFundingSourceByCode(String code);
+
+  /**
    * This method gets a list of projectFundingSources belongs of the user
    * 
    * @param userId - the user id
@@ -74,5 +82,5 @@ public interface ICenterProjectFundingSourceDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectFundingSource projectFundingSource);
+  public CenterProjectFundingSource save(CenterProjectFundingSource projectFundingSource);
 }

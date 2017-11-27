@@ -41,9 +41,9 @@ public class SrfTargetUnitManagerImpl implements SrfTargetUnitManager {
   }
 
   @Override
-  public boolean deleteSrfTargetUnit(long srfTargetUnitId) {
+  public void deleteSrfTargetUnit(long srfTargetUnitId) {
 
-    return srfTargetUnitDAO.deleteSrfTargetUnit(srfTargetUnitId);
+    srfTargetUnitDAO.deleteSrfTargetUnit(srfTargetUnitId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class SrfTargetUnitManagerImpl implements SrfTargetUnitManager {
   }
 
   @Override
-  public long saveSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+  public SrfTargetUnit saveSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
 
     return srfTargetUnitDAO.save(srfTargetUnit);
   }

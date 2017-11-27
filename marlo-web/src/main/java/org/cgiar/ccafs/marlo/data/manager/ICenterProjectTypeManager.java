@@ -34,7 +34,7 @@ public interface ICenterProjectTypeManager {
    * @param projectTypeId is the projectType identifier.
    * @return true if the projectType was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectType(long projectTypeId);
+  public void deleteProjectType(long projectTypeId);
 
 
   /**
@@ -78,7 +78,7 @@ public interface ICenterProjectTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectType(CenterProjectType projectType);
+  public CenterProjectType saveProjectType(CenterProjectType projectType);
 
   /**
    * This method saves the information of the given projectType
@@ -88,7 +88,7 @@ public interface ICenterProjectTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectType(CenterProjectType projectType, String actionName, List<String> relationsName);
+  public CenterProjectType saveProjectType(CenterProjectType projectType, String actionName, List<String> relationsName);
 
 
 }

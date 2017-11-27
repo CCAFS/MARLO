@@ -34,7 +34,7 @@ public interface ProjectOutcomeManager {
    * @param projectOutcomeId is the projectOutcome identifier.
    * @return true if the projectOutcome was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectOutcome(long projectOutcomeId);
+  public void deleteProjectOutcome(long projectOutcomeId);
 
 
   /**
@@ -70,8 +70,8 @@ public interface ProjectOutcomeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectOutcome(ProjectOutcome projectOutcome);
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome);
 
-  public long saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName);
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName);
 
 }

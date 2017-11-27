@@ -32,7 +32,7 @@ public interface CrpPandrDAO {
    * @param crpPandrId is the crpPandr identifier.
    * @return true if the crpPandr was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpPandr(long crpPandrId);
+  public void deleteCrpPandr(long crpPandrId);
 
   /**
    * This method validate if the crpPandr identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface CrpPandrDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpPandr crpPandr);
+  public CrpPandr save(CrpPandr crpPandr);
 }

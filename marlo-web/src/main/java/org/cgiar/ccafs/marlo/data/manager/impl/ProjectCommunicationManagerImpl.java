@@ -41,9 +41,9 @@ public class ProjectCommunicationManagerImpl implements ProjectCommunicationMana
   }
 
   @Override
-  public boolean deleteProjectCommunication(long projectCommunicationId) {
+  public void deleteProjectCommunication(long projectCommunicationId) {
 
-    return projectCommunicationDAO.deleteProjectCommunication(projectCommunicationId);
+    projectCommunicationDAO.deleteProjectCommunication(projectCommunicationId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProjectCommunicationManagerImpl implements ProjectCommunicationMana
   }
 
   @Override
-  public long saveProjectCommunication(ProjectCommunication projectCommunication) {
+  public ProjectCommunication saveProjectCommunication(ProjectCommunication projectCommunication) {
 
     return projectCommunicationDAO.save(projectCommunication);
   }

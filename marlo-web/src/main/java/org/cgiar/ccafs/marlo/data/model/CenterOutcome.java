@@ -45,20 +45,18 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private String description;
 
-
   @Expose
   private Integer targetYear;
 
   @Expose
   private BigDecimal value;
 
-
   @Expose
   private CenterImpact researchImpact;
 
+
   @Expose
   private boolean active;
-
 
   @Expose
   private Date activeSince;
@@ -71,38 +69,35 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private CenterTargetUnit targetUnit;
 
+
   @Expose
   private String modificationJustification;
-
 
   @Expose
   private boolean impactPathway;
 
   @Expose
-  private BigDecimal baseline;
-
-
-  @Expose
   private String shortName;
+
 
   private Set<CenterMilestone> researchMilestones = new HashSet<CenterMilestone>(0);
 
-
   private Set<CenterOutput> researchOutputs = new HashSet<CenterOutput>(0);
+
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   private Set<CenterMonitoringOutcome> monitoringOutcomes = new HashSet<CenterMonitoringOutcome>(0);
 
-
   private List<CenterMilestone> milestones;
+
 
   private List<CenterMonitoringOutcome> monitorings;
 
@@ -136,12 +131,8 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return activeSince;
   }
 
-  public BigDecimal getBaseline() {
-    return baseline;
-  }
-
   public String getComposedName() {
-    return "OC" + this.id + "- "+ (this.description != null ? this.description : "title not defined") ;
+    return "OC" + this.id + "- " + (this.description != null ? this.description : "title not defined");
   }
 
   public User getCreatedBy() {
@@ -170,11 +161,12 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public List<CenterMilestone> getMilestones() {
     return milestones;
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -260,11 +252,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-  public void setBaseline(BigDecimal baseline) {
-    this.baseline = baseline;
-  }
-
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -276,6 +263,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   /**
    * @param id the id to set
@@ -291,7 +279,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
   public void setMilestones(List<CenterMilestone> milestones) {
     this.milestones = milestones;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -330,13 +317,13 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.researchOutputs = researchOutputs;
   }
 
+
   /**
    * @param researchTopic the researchTopic to set
    */
   public void setResearchTopic(CenterTopic researchTopic) {
     this.researchTopic = researchTopic;
   }
-
 
   public void setSectionStatuses(Set<CenterSectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
@@ -347,10 +334,10 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.shortName = shortName;
   }
 
+
   public void setTargetUnit(CenterTargetUnit targetUnit) {
     this.targetUnit = targetUnit;
   }
-
 
   /**
    * @param targetYear the targetYear to set
@@ -359,8 +346,14 @@ public class CenterOutcome implements Serializable, IAuditLog {
     this.targetYear = targetYear;
   }
 
+
   public void setValue(BigDecimal value) {
     this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterOutcome [id=" + id + ", description=" + description + ", shortName=" + shortName + "]";
   }
 
 }

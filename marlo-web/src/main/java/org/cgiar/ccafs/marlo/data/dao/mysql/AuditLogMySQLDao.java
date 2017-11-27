@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
-import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.utils.BigDecimalTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
@@ -39,7 +38,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
@@ -48,23 +49,31 @@ import org.hibernate.type.Type;
 /**
  * @author Christian Garcia
  */
-public class AuditLogMySQLDao implements AuditLogDao {
+public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implements AuditLogDao {
 
-  private StandardDAO dao;
-  private UserDAO userDao;
   public String baseModelPakcage = "org.cgiar.ccafs.marlo.data.model";
 
   @Inject
-  public AuditLogMySQLDao(StandardDAO dao, UserDAO userDao) {
-    this.dao = dao;
-    this.userDao = userDao;
+  public AuditLogMySQLDao(SessionFactory sessionFactory) {
+    super(sessionFactory);
+  }
+
+  @Override
+  public List<Auditlog> findAllWithClassNameAndIdAndActionName(Class<?> classAudit, long id, String actionName) {
+    String queryString =
+      "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
+        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc";
+    Query query = this.getSessionFactory().getCurrentSession().createQuery(queryString);
+    query.setMaxResults(11);
+    List<Auditlog> auditLogs = super.findAll(query);
+    return auditLogs;
   }
 
   @Override
   public Auditlog getAuditlog(String transactionID) {
 
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
+      super.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
 
     if (!auditLogs.isEmpty()) {
 
@@ -83,7 +92,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
 
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and ENTITY_ID="
+      super.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and ENTITY_ID="
         + auditLog.getId() + " and ENTITY_NAME='" + auditLog.getClass().toString() + "'");
 
     if (!auditLogs.isEmpty()) {
@@ -100,7 +109,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   @Override
   public List<Auditlog> getCompleteHistory(String transactionID) {
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "'");
+      super.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "'");
     return auditLogs;
 
   }
@@ -110,7 +119,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   public IAuditLog getHistory(String transactionID) {
 
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
+      super.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
 
     if (!auditLogs.isEmpty()) {
 
@@ -132,7 +141,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
     String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
       + principal.getEntityId() + "'" + " and ENTITY_NAME='" + principal.getEntityName() + "' and DETAIL = '"
       + principal.getDetail() + "'  and CREATED_DATE< '" + principal.getCreatedDate() + "'  ORDER BY CREATED_DATE desc";
-    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
+    List<Map<String, Object>> auditLogs = super.findCustomQuery(sql);
 
     if (!auditLogs.isEmpty()) {
       logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
@@ -150,7 +159,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
     String sql = " select  transaction_id from auditlog where transaction_id !='" + transactionID + "' and ENTITY_ID='"
       + entityID + "'" + " and ENTITY_NAME='" + className + "'  and CREATED_DATE< '" + principal.getCreatedDate()
       + "'  ORDER BY CREATED_DATE desc";
-    List<Map<String, Object>> auditLogs = dao.findCustomQuery(sql);
+    List<Map<String, Object>> auditLogs = super.findCustomQuery(sql);
 
     if (!auditLogs.isEmpty()) {
       logs.addAll(this.getCompleteHistory(auditLogs.get(0).get("transaction_id").toString()));
@@ -159,25 +168,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
     return logs;
 
   }
-
-  @Override
-  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName) {
-
-    List<Auditlog> auditLogs = dao.findAll(
-      "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
-        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
-    // " and principal=1 order by CREATED_DATE desc LIMIT 10");
-    for (Auditlog auditlog : auditLogs) {
-      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
-    }
-
-    if (auditLogs.size() > 11) {
-      return auditLogs.subList(0, 11);
-    }
-    return auditLogs;
-
-  }
-
 
   public IAuditLog loadFromAuditLog(Auditlog auditlog) {
     try {
@@ -204,7 +194,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   public void loadRelationsForIAuditLog(IAuditLog iAuditLog, String transactionID) {
     try {
 
-      Session session = dao.openSession();
+      Session session = super.getSessionFactory().getCurrentSession();
       ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(iAuditLog.getClass());
       String[] propertyNames = classMetadata.getPropertyNames();
       for (String name : propertyNames) {
@@ -215,7 +205,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
           String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
             + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId()
             + "'order by ABS(ENTITY_ID) asc";
-          List<Auditlog> auditLogsRelations = dao.findAll(sql);
+          List<Auditlog> auditLogsRelations = super.findAll(sql);
 
           Set<IAuditLog> relation = new HashSet<IAuditLog>();
           for (Auditlog auditlog : auditLogsRelations) {
@@ -226,7 +216,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
           classMetadata.setPropertyValue(iAuditLog, name, relation);
         }
       }
-      session.close();
     } catch (JsonSyntaxException e) {
       e.printStackTrace();
     }

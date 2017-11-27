@@ -32,7 +32,7 @@ public interface MogSynthesyDAO {
    * @param mogSynthesyId is the mogSynthesy identifier.
    * @return true if the mogSynthesy was successfully deleted, false otherwise.
    */
-  public boolean deleteMogSynthesy(long mogSynthesyId);
+  public void deleteMogSynthesy(long mogSynthesyId);
 
   /**
    * This method validate if the mogSynthesy identify with the given id exists in the system.
@@ -70,5 +70,5 @@ public interface MogSynthesyDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(MogSynthesy mogSynthesy);
+  public MogSynthesy save(MogSynthesy mogSynthesy);
 }

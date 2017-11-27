@@ -30,6 +30,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   private User createdBy;
   @Expose
   private FundingSource fundingSource;
+
   @Expose
   private boolean active;
   @Expose
@@ -93,11 +94,11 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     return fundingSource;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -106,11 +107,11 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -134,7 +135,6 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -154,6 +154,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     this.deliverable = deliverable;
   }
 
+
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
@@ -168,6 +169,12 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  @Override
+  public String toString() {
+    return "DeliverableFundingSource [id=" + id + ", deliverable=" + deliverable + ", fundingSource=" + fundingSource
+      + "]";
   }
 
 

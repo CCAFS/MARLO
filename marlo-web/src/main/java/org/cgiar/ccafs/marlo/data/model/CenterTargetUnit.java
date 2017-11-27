@@ -22,6 +22,7 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
+
   @Expose
   private User createdBy;
   @Expose
@@ -38,7 +39,8 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
   public CenterTargetUnit() {
   }
 
-  public CenterTargetUnit(User modifiedBy, String name, boolean active, Date activeSince, String modificationJustification) {
+  public CenterTargetUnit(User modifiedBy, String name, boolean active, Date activeSince,
+    String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.name = name;
     this.active = active;
@@ -47,8 +49,7 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
   }
 
   public CenterTargetUnit(User modifiedBy, User createdBy, String name, boolean active, Date activeSince,
-    String modificationJustification, Set<CenterMilestone> researchMilestones,
-    Set<CenterOutcome> researchOutcomes) {
+    String modificationJustification, Set<CenterMilestone> researchMilestones, Set<CenterOutcome> researchOutcomes) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.name = name;
@@ -81,7 +82,6 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -106,6 +106,7 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -120,6 +121,7 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
   public String getName() {
     return name;
   }
+
 
   public Set<CenterMilestone> getResearchMilestones() {
     return researchMilestones;
@@ -166,10 +168,10 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
   }
+
 
   public void setResearchMilestones(Set<CenterMilestone> researchMilestones) {
     this.researchMilestones = researchMilestones;
@@ -177,6 +179,11 @@ public class CenterTargetUnit implements java.io.Serializable, IAuditLog {
 
   public void setResearchOutcomes(Set<CenterOutcome> researchOutcomes) {
     this.researchOutcomes = researchOutcomes;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterTargetUnit [id=" + id + ", name=" + name + "]";
   }
 
 

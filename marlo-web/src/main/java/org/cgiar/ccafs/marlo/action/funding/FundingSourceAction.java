@@ -67,6 +67,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -74,11 +75,22 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * FundingSourceAction:
+ * 
+ * @author AVALENCIA - CCAFS
+ * @date Nov 23, 2017
+ * @time 11:38:34 AM: Check empty regions and countries
+ */
 public class FundingSourceAction extends BaseAction {
 
 
   private static final long serialVersionUID = -3919022306156272887L;
+
+  private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
 
   private AuditLogManager auditLogManager;
@@ -606,7 +618,7 @@ public class FundingSourceAction extends BaseAction {
         institutions.add(crpPpaPartner.getInstitution());
       }
 
-      if (fundingSource.getBudgetType() != null) {
+      if (fundingSource.getBudgetType() != null && fundingSource.getBudgetType().getId() != null) {
         // if the funding source is type center funds -- institutions are ppa
         if (fundingSource.getBudgetType().getId().longValue() == 4) {
           List<Institution> allInstitutions = null;
@@ -628,8 +640,9 @@ public class FundingSourceAction extends BaseAction {
           } else {
 
             // if the funding source is type bilateral -- institutions are not cgiar center
-            institutionsDonors = institutionManager.findAll().stream()
-              .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() != 3).collect(Collectors.toList());
+            institutionsDonors =
+              institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
+            institutionsDonors.removeAll(institutions);
           }
 
         }
@@ -650,6 +663,8 @@ public class FundingSourceAction extends BaseAction {
         liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
 
 
+    } else {
+      LOG.debug("No FundingSource found for ID : " + fundingSourceID);
     }
 
     budgetTypes = new HashMap<>();
@@ -672,24 +687,46 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
+
+      /**
+       * This is a real nasty hack to get around an issue caused by bug #1124. We set the istitution to null and rely on
+       * the save() method updating the institution regardless of whether or not the user actually changed this value.
+       * If we don't do this hibernate will think that we are modifying the id of a managed entity (i.e. the
+       * institution) when a user does actually update the institution. In this scenario hibernate will throw an
+       * exception saying that we are trying to modify the id of a managed entity when the validate method gets called
+       * (the validate method will perform a query on the funding source which triggers an auto-flush).
+       * A better solution would be to have a DTO (assuming we don't want to have our hibernate entities AND their child
+       * collections bound to the freemarker templates) and the freemarker template binds to that.
+       * The prepare method would map the database values to a FundingSourceDTO (or better call a mapper class to do
+       * this) and the save method would map the values from the FundingSourceDTO to the FundingSource hibernate entity.
+       */
+
+      /*
+       * if (fundingSource.getInstitutions() != null) {
+       * for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+       * fundingSourceInstitution
+       * .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+       * }
+       * fundingSource.getInstitutions().clear();
+       * }
+       * if (fundingSource.getFundingRegions() != null) {
+       * fundingSource.getFundingRegions().clear();
+       * }
+       * if (fundingSource.getFundingCountry() != null) {
+       * fundingSource.getFundingCountry().clear();
+       * }
+       */
+
+      fundingSource.setW1w2(null);
       fundingSource.setFile(null);
-      if (fundingSource.getInstitutions() != null) {
-        for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
-          fundingSourceInstitution
-            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
-        }
-        fundingSource.setW1w2(null);
-        fundingSource.getInstitutions().clear();
-      }
+      fundingSource.setDirectDonor(null);
+      fundingSource.setInstitution(null);
+      fundingSource.setBudgets(null);
+      fundingSource.setBudgetType(null);
+      fundingSource.setFundingRegions(null);
+      fundingSource.setFundingCountry(null);
 
-      if (fundingSource.getFundingRegions() != null) {
-        fundingSource.getFundingRegions().clear();
-      }
-
-      if (fundingSource.getFundingCountry() != null) {
-        fundingSource.getFundingCountry().clear();
-      }
-
+      return;
     }
   }
 
@@ -705,9 +742,11 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setModificationJustification("");
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
+      Institution institution = fundingSource.getInstitution();
+
       // if Original donor has a select option, no option put donor null
       if (fundingSource.getInstitution().getId().longValue() != -1) {
-        fundingSourceDB.setInstitution(fundingSource.getInstitution());
+        fundingSourceDB.setInstitution(institution);
       } else {
         fundingSourceDB.setInstitution(null);
       }
@@ -718,8 +757,10 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setSyncedDate(fundingSource.getSyncedDate());
       fundingSourceDB.setGrantAmount(fundingSource.getGrantAmount());
 
+
       // if Direct donor has a select option, no option put donor null
-      if (fundingSource.getDirectDonor().getId().longValue() != -1) {
+      if (fundingSource.getDirectDonor() != null && fundingSource.getDirectDonor().getId() != null
+        && fundingSource.getDirectDonor().getId().longValue() != -1) {
         fundingSourceDB.setDirectDonor(fundingSource.getDirectDonor());
       } else {
         fundingSourceDB.setDirectDonor(null);
@@ -753,13 +794,13 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
 
-      if (fundingSource.getFile().getId() == null) {
+      if (fundingSource.getFile() == null) {
         fundingSourceDB.setFile(null);
       } else {
         fundingSourceDB.setFile(fundingSource.getFile());
       }
 
-      fundingSourceManager.saveFundingSource(fundingSourceDB);
+      fundingSourceDB = fundingSourceManager.saveFundingSource(fundingSourceDB);
       /*
        * if (file != null) {
        * fundingSourceDB
@@ -775,26 +816,33 @@ public class FundingSourceAction extends BaseAction {
        */
 
       if (fundingSource.getBudgets() != null) {
+
+        // TODO find out why the fundingSource budgets are being set to null.
+        fundingSource.getBudgets().removeIf(Objects::isNull);
+
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+
           if (fundingSourceBudget.getId() == null) {
             fundingSourceBudget.setActive(true);
             fundingSourceBudget.setCreatedBy(this.getCurrentUser());
             fundingSourceBudget.setModifiedBy(this.getCurrentUser());
             fundingSourceBudget.setModificationJustification("");
-            fundingSourceBudget.setFundingSource(fundingSource);
+            fundingSourceBudget.setFundingSource(fundingSourceDB);
             fundingSourceBudget.setActiveSince(new Date());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           } else {
             FundingSourceBudget fundingSourceBudgetBD =
               fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
-            fundingSourceBudget.setActive(true);
-            fundingSourceBudget.setFundingSource(fundingSource);
-            fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
-            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-            fundingSourceBudget.setModificationJustification("");
-            fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
-            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+            fundingSourceBudgetBD.setActive(true);
+            fundingSourceBudgetBD.setFundingSource(fundingSourceDB);
+            // fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
+            fundingSourceBudgetBD.setModifiedBy(this.getCurrentUser());
+            fundingSourceBudgetBD.setModificationJustification("");
+            // fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
+            fundingSourceBudgetBD = fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudgetBD);
+            fundingSourceBudgetBD.setBudget(fundingSourceBudget.getBudget());
           }
+
 
         }
       }
@@ -814,9 +862,10 @@ public class FundingSourceAction extends BaseAction {
           if (fundingSourceInstitution.getId() == null || fundingSourceInstitution.getId().longValue() == -1) {
 
             fundingSourceInstitution.setId(null);
-            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setFundingSource(fundingSourceDB);
 
-            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+            fundingSourceInstitution =
+              fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
             instituionsEdited = true;
           }
 
@@ -836,7 +885,7 @@ public class FundingSourceAction extends BaseAction {
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
       fundingSourceDB.setActiveSince(new Date());
-      fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
+      fundingSourceDB = fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -976,8 +1025,29 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         }
       }
+    }
 
+    // Check empty regions and countries
+    List<FundingSourceLocation> regionsDB = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+      .filter(
+        fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
 
+    // If regions were deleted and existed records in DB, delete the regions
+    if (fundingSource.getFundingRegions() == null && regionsDB != null && regionsDB.size() > 0) {
+      for (FundingSourceLocation fundingSourceLocation : regionsDB) {
+        fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+      }
+    }
+    List<FundingSourceLocation> countriesDB = new ArrayList<>(fundingSourceDB
+      .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
+        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 2)
+      .collect(Collectors.toList()));
+    // If countries were deleted and existed records in DB, delete the countries
+    if (fundingSource.getFundingCountry() == null && countriesDB != null && countriesDB.size() > 0) {
+      for (FundingSourceLocation fundingSourceLocation : countriesDB) {
+        fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+      }
     }
 
   }

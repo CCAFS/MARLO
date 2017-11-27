@@ -34,7 +34,7 @@ public interface OtherContributionManager {
    * @param otherContributionId is the otherContribution identifier.
    * @return true if the otherContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteOtherContribution(long otherContributionId);
+  public void deleteOtherContribution(long otherContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface OtherContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveOtherContribution(OtherContribution otherContribution);
+  public OtherContribution saveOtherContribution(OtherContribution otherContribution);
 
 
 }

@@ -34,7 +34,7 @@ public interface ProjectCrpContributionManager {
    * @param projectCrpContributionId is the projectCrpContribution identifier.
    * @return true if the projectCrpContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCrpContribution(long projectCrpContributionId);
+  public void deleteProjectCrpContribution(long projectCrpContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface ProjectCrpContributionManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectCrpContribution(ProjectCrpContribution projectCrpContribution);
+  public ProjectCrpContribution saveProjectCrpContribution(ProjectCrpContribution projectCrpContribution);
 
 
 }

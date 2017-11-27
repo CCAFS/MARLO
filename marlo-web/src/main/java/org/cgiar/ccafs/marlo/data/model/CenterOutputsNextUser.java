@@ -24,6 +24,7 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
   @Expose
   private CenterOutput researchOutput;
 
+
   @Expose
   private CenterNextuserType nextuserType;
 
@@ -49,7 +50,6 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
     this.researchOutput = researchOutput;
     this.nextuserType = nextuserType;
   }
-
 
   public CenterOutputsNextUser(CenterOutput researchOutput, CenterNextuserType nextuserType, User modifiedBy,
     User createdBy, Date activeSince, boolean active, String modificationJustification) {
@@ -110,6 +110,7 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -124,6 +125,7 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
   public CenterNextuserType getNextuserType() {
     return nextuserType;
   }
+
 
   public CenterOutput getResearchOutput() {
     return researchOutput;
@@ -158,7 +160,6 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -168,13 +169,20 @@ public class CenterOutputsNextUser implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setNextuserType(CenterNextuserType nextuserType) {
     this.nextuserType = nextuserType;
   }
 
-
   public void setResearchOutput(CenterOutput researchOutput) {
     this.researchOutput = researchOutput;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterOutputsNextUser [id=" + id + ", researchOutput=" + researchOutput + ", nextuserType=" + nextuserType
+      + "]";
   }
 
 }

@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharing;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class DeliverableDataSharingMySQLDAO implements DeliverableDataSharingDAO {
+public class DeliverableDataSharingMySQLDAO extends AbstractMarloDAO<DeliverableDataSharing, Long> implements DeliverableDataSharingDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public DeliverableDataSharingMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public DeliverableDataSharingMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableDataSharing(long deliverableDataSharingId) {
+  public void deleteDeliverableDataSharing(long deliverableDataSharingId) {
     DeliverableDataSharing deliverableDataSharing = this.find(deliverableDataSharingId);
-    return dao.delete(deliverableDataSharing);
+    super.delete(deliverableDataSharing);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class DeliverableDataSharingMySQLDAO implements DeliverableDataSharingDAO
 
   @Override
   public DeliverableDataSharing find(long id) {
-    return dao.find(DeliverableDataSharing.class, id);
+    return super.find(DeliverableDataSharing.class, id);
 
   }
 
   @Override
   public List<DeliverableDataSharing> findAll() {
     String query = "from " + DeliverableDataSharing.class.getName() + " where is_active=1";
-    List<DeliverableDataSharing> list = dao.findAll(query);
+    List<DeliverableDataSharing> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +66,15 @@ public class DeliverableDataSharingMySQLDAO implements DeliverableDataSharingDAO
   }
 
   @Override
-  public long save(DeliverableDataSharing deliverableDataSharing) {
+  public DeliverableDataSharing save(DeliverableDataSharing deliverableDataSharing) {
     if (deliverableDataSharing.getId() == null) {
-      dao.save(deliverableDataSharing);
+      super.saveEntity(deliverableDataSharing);
     } else {
-      dao.update(deliverableDataSharing);
+      deliverableDataSharing = super.update(deliverableDataSharing);
     }
 
 
-    return deliverableDataSharing.getId();
+    return deliverableDataSharing;
   }
 
 

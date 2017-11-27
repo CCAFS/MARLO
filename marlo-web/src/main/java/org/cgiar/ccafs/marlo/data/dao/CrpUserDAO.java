@@ -32,7 +32,7 @@ public interface CrpUserDAO {
    * @param crpUserId is the crpUser identifier.
    * @return true if the crpUser was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpUser(long crpUserId);
+  public void deleteCrpUser(long crpUserId);
 
   /**
    * This method validate if the crpUser identify with the given id exists in the system.
@@ -75,5 +75,5 @@ public interface CrpUserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpUser crpUser);
+  public CrpUser save(CrpUser crpUser);
 }

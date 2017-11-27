@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,25 +21,25 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
+public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long> implements CrpPpaPartnerDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpPpaPartnerMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpPpaPartnerMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId) {
+  public void deleteCrpPpaPartner(long crpPpaPartnerId) {
     CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
     crpPpaPartner.setActive(false);
-    return this.save(crpPpaPartner) > 0;
+    this.save(crpPpaPartner);
   }
 
   @Override
@@ -53,13 +53,13 @@ public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
 
   @Override
   public CrpPpaPartner find(long id) {
-    return dao.find(CrpPpaPartner.class, id);
+    return super.find(CrpPpaPartner.class, id);
   }
 
   @Override
   public List<CrpPpaPartner> findAll() {
     String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1";
-    List<CrpPpaPartner> list = dao.findAll(query);
+    List<CrpPpaPartner> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,13 +67,13 @@ public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
   }
 
   @Override
-  public long save(CrpPpaPartner crpPpaPartner) {
+  public CrpPpaPartner save(CrpPpaPartner crpPpaPartner) {
     if (crpPpaPartner.getId() == null) {
-      dao.save(crpPpaPartner);
+      super.saveEntity(crpPpaPartner);
     } else {
-      dao.update(crpPpaPartner);
+      crpPpaPartner = super.update(crpPpaPartner);
     }
-    return crpPpaPartner.getId();
+    return crpPpaPartner;
   }
 
 }

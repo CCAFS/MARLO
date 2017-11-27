@@ -32,7 +32,7 @@ public interface RoleDAO {
    * @param roleId is the role identifier.
    * @return true if the role was successfully deleted, false otherwise.
    */
-  public boolean deleteRole(long roleId);
+  public void deleteRole(long roleId);
 
   /**
    * This method validate if the role identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface RoleDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(Role role);
+  public Role save(Role role);
 }

@@ -34,7 +34,7 @@ public interface CrpSubIdosContributionManager {
    * @param crpSubIdosContributionId is the crpSubIdosContribution identifier.
    * @return true if the crpSubIdosContribution was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpSubIdosContribution(long crpSubIdosContributionId);
+  public void deleteCrpSubIdosContribution(long crpSubIdosContributionId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CrpSubIdosContributionManager {
    *         was updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpSubIdosContribution(CrpSubIdosContribution crpSubIdosContribution);
+  public CrpSubIdosContribution saveCrpSubIdosContribution(CrpSubIdosContribution crpSubIdosContribution);
 
 
 }

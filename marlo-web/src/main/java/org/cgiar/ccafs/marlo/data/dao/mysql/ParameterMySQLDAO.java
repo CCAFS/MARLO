@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.Parameter;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ParameterMySQLDAO implements ParameterDAO {
+public class ParameterMySQLDAO extends AbstractMarloDAO<Parameter, Long> implements ParameterDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ParameterMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ParameterMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteParameter(long parameterId) {
+  public void deleteParameter(long parameterId) {
     Parameter parameter = this.find(parameterId);
 
-    return dao.delete(parameter);
+    super.delete(parameter);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ParameterMySQLDAO implements ParameterDAO {
 
   @Override
   public Parameter find(long id) {
-    return dao.find(Parameter.class, id);
+    return super.find(Parameter.class, id);
 
   }
 
   @Override
   public List<Parameter> findAll() {
     String query = "from " + Parameter.class.getName() + "";
-    List<Parameter> list = dao.findAll(query);
+    List<Parameter> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,7 +69,7 @@ public class ParameterMySQLDAO implements ParameterDAO {
   @Override
   public Parameter getParameterByKey(String key) {
     String query = "from " + Parameter.class.getName() + " where key='" + key + "'";
-    List<Parameter> list = dao.findAll(query);
+    List<Parameter> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -77,15 +77,15 @@ public class ParameterMySQLDAO implements ParameterDAO {
   }
 
   @Override
-  public long save(Parameter parameter) {
+  public Parameter save(Parameter parameter) {
     if (parameter.getId() == null) {
-      dao.save(parameter);
+      super.saveEntity(parameter);
     } else {
-      dao.update(parameter);
+      parameter = super.update(parameter);
     }
 
 
-    return parameter.getId();
+    return parameter;
   }
 
 

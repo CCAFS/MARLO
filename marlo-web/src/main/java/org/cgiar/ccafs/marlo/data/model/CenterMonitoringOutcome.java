@@ -22,47 +22,48 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
   @Expose
   private Long id;
 
-
   @Expose
   private User modifiedBy;
 
   @Expose
   private User createdBy;
 
-
   @Expose
   private CenterOutcome researchOutcome;
 
-
   @Expose
   private int year;
-
+  @Expose
+  private String statusQuo;
 
   @Expose
-  private String narrative;
+  private String ciatRole;
+
+  @Expose
+  private String whatChanged;
 
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
 
-
   @Expose
   private String modificationJustification;
-
 
   private Set<CenterMonitoringMilestone> monitoringMilestones = new HashSet<CenterMonitoringMilestone>(0);
 
   private List<CenterMonitoringMilestone> milestones;
 
-  private Set<CenterMonitoringOutcomeEvidence> monitorignOutcomeEvidences = new HashSet<CenterMonitoringOutcomeEvidence>(0);
+  private Set<CenterMonitoringOutcomeEvidence> monitorignOutcomeEvidences =
+    new HashSet<CenterMonitoringOutcomeEvidence>(0);
 
   private List<CenterMonitoringOutcomeEvidence> evidences;
 
+
   public CenterMonitoringOutcome() {
   }
+
 
   public CenterMonitoringOutcome(CenterOutcome researchOutcome, int year, boolean active) {
     this.researchOutcome = researchOutcome;
@@ -70,13 +71,12 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.active = active;
   }
 
-  public CenterMonitoringOutcome(User modifiedBy, User createdBy, CenterOutcome researchOutcome, int year, String narrative,
+  public CenterMonitoringOutcome(User modifiedBy, User createdBy, CenterOutcome researchOutcome, int year,
     boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.researchOutcome = researchOutcome;
     this.year = year;
-    this.narrative = narrative;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -84,6 +84,10 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public String getCiatRole() {
+    return ciatRole;
   }
 
   public User getCreatedBy() {
@@ -110,6 +114,7 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     return milestones;
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -119,24 +124,24 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     return modifiedBy;
   }
 
-
   public Set<CenterMonitoringOutcomeEvidence> getMonitorignOutcomeEvidences() {
     return monitorignOutcomeEvidences;
   }
-
 
   public Set<CenterMonitoringMilestone> getMonitoringMilestones() {
     return monitoringMilestones;
   }
 
-
-  public String getNarrative() {
-    return narrative;
-  }
-
-
   public CenterOutcome getResearchOutcome() {
     return researchOutcome;
+  }
+
+  public String getStatusQuo() {
+    return statusQuo;
+  }
+
+  public String getWhatChanged() {
+    return whatChanged;
   }
 
 
@@ -160,9 +165,16 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
+
+  public void setCiatRole(String ciatRole) {
+    this.ciatRole = ciatRole;
+  }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -192,22 +204,32 @@ public class CenterMonitoringOutcome implements java.io.Serializable, IAuditLog 
     this.monitorignOutcomeEvidences = monitorignOutcomeEvidences;
   }
 
-
   public void setMonitoringMilestones(Set<CenterMonitoringMilestone> monitoringMilestones) {
     this.monitoringMilestones = monitoringMilestones;
-  }
-
-
-  public void setNarrative(String narrative) {
-    this.narrative = narrative;
   }
 
   public void setResearchOutcome(CenterOutcome researchOutcome) {
     this.researchOutcome = researchOutcome;
   }
 
+
+  public void setStatusQuo(String statusQuo) {
+    this.statusQuo = statusQuo;
+  }
+
+
+
+  public void setWhatChanged(String whatChanged) {
+    this.whatChanged = whatChanged;
+  }
+
   public void setYear(int year) {
     this.year = year;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterMonitoringOutcome [id=" + id + ", researchOutcome=" + researchOutcome + ", year=" + year + "]";
   }
 
 

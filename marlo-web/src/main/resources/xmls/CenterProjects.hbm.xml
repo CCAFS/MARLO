@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Feb 15, 2017 8:49:31 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CenterProject" table="center_projects"
@@ -54,6 +54,12 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="sync" type="boolean">
+      <column name="sync"/>
+    </property>
+    <property name="autoFill" type="boolean">
+      <column name="auto_fill"/>
+    </property>
 		<property name="global" type="java.lang.Boolean">
 			<column name="is_global" />
 		</property>
@@ -63,6 +69,9 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" />
 		</property>
+		<property name="syncDate" type="timestamp">
+      <column name="sync_date" length="19" />
+    </property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535" />
 		</property>

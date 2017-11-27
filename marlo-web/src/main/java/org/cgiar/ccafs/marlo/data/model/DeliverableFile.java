@@ -16,8 +16,6 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 public class DeliverableFile {
 
   private Long id;
@@ -98,6 +96,7 @@ public class DeliverableFile {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+    return "DeliverableFile [id=" + id + ", name=" + name + ", link=" + link + ", size=" + size + ", hosted=" + hosted
+      + "]";
   }
 }

@@ -45,7 +45,6 @@
     [/#compress]
   </head>
   <body>
-    [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
     [#if !(avoidHeader!false)]
       <header class="clearfix">
         [#-- MARLO Admin Menu --]

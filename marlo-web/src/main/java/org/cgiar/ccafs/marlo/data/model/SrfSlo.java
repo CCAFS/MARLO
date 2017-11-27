@@ -196,7 +196,7 @@ public class SrfSlo implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "SrfSlo [id=" + id + ", title=" + title + ", description=" + description + "]";
   }
 }
 

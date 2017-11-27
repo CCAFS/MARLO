@@ -22,20 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CenterRole;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterRoleDAO implements ICenterRoleDAO {
+public class CenterRoleDAO extends AbstractMarloDAO<CenterRole, Long> implements ICenterRoleDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterRoleDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterRoleDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteRole(long roleId) {
+  public void deleteRole(long roleId) {
     CenterRole role = this.find(roleId);
-    return dao.delete(role);
+    super.delete(role);
   }
 
   @Override
@@ -50,14 +50,14 @@ public class CenterRoleDAO implements ICenterRoleDAO {
 
   @Override
   public CenterRole find(long id) {
-    return dao.find(CenterRole.class, id);
+    return super.find(CenterRole.class, id);
 
   }
 
   @Override
   public List<CenterRole> findAll() {
     String query = "from " + CenterRole.class.getName();
-    List<CenterRole> list = dao.findAll(query);
+    List<CenterRole> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -68,27 +68,27 @@ public class CenterRoleDAO implements ICenterRoleDAO {
   @Override
   public List<CenterRole> getRolesByUserId(long userId) {
     String query = "from " + CenterRole.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterRole role) {
+  public CenterRole save(CenterRole role) {
     if (role.getId() == null) {
-      dao.save(role);
+      super.saveEntity(role);
     } else {
-      dao.update(role);
+      role = super.update(role);
     }
-    return role.getId();
+    return role;
   }
 
   @Override
-  public long save(CenterRole role, String actionName, List<String> relationsName) {
+  public CenterRole save(CenterRole role, String actionName, List<String> relationsName) {
     if (role.getId() == null) {
-      dao.save(role, actionName, relationsName);
+      super.saveEntity(role, actionName, relationsName);
     } else {
-      dao.update(role, actionName, relationsName);
+      role = super.update(role, actionName, relationsName);
     }
-    return role.getId();
+    return role;
   }
 
 

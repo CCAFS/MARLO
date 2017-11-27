@@ -42,9 +42,9 @@ public class CenterTargetUnitManager implements ICenterTargetUnitManager {
   }
 
   @Override
-  public boolean deleteTargetUnit(long targetUnitId) {
+  public void deleteTargetUnit(long targetUnitId) {
 
-    return targetUnitDAO.deleteTargetUnit(targetUnitId);
+    targetUnitDAO.deleteTargetUnit(targetUnitId);
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CenterTargetUnitManager implements ICenterTargetUnitManager {
   }
 
   @Override
-  public long saveTargetUnit(CenterTargetUnit targetUnit) {
+  public CenterTargetUnit saveTargetUnit(CenterTargetUnit targetUnit) {
 
     return targetUnitDAO.save(targetUnit);
   }

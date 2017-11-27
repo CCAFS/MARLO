@@ -32,7 +32,7 @@ public interface DeliverableTypeDAO {
    * @param deliverableTypeId is the deliverableType identifier.
    * @return true if the deliverableType was successfully deleted, false otherwise.
    */
-  public boolean deleteDeliverableType(long deliverableTypeId);
+  public void deleteDeliverableType(long deliverableTypeId);
 
   /**
    * This method validate if the deliverableType identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface DeliverableTypeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(DeliverableType deliverableType);
+  public DeliverableType save(DeliverableType deliverableType);
 }

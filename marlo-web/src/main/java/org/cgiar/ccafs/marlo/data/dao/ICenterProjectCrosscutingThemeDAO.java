@@ -32,7 +32,7 @@ public interface ICenterProjectCrosscutingThemeDAO {
    * @param projectCrosscutingThemeId is the projectCrosscutingTheme identifier.
    * @return true if the projectCrosscutingTheme was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectCrosscutingTheme(long projectCrosscutingThemeId);
+  public void deleteProjectCrosscutingTheme(long projectCrosscutingThemeId);
 
   /**
    * This method validate if the projectCrosscutingTheme identify with the given id exists in the system.
@@ -76,5 +76,5 @@ public interface ICenterProjectCrosscutingThemeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectCrosscutingTheme projectCrosscutingTheme);
+  public CenterProjectCrosscutingTheme save(CenterProjectCrosscutingTheme projectCrosscutingTheme);
 }

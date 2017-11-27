@@ -24,6 +24,7 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private FundingSource fundingSource;
 
@@ -41,7 +42,6 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
-
 
   public FundingSourceBudget() {
   }
@@ -101,6 +101,7 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -144,18 +145,24 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setYear(Integer year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "FundingSourceBudget [id=" + id + ", fundingSource=" + fundingSource + ", budget=" + budget + ", year="
+      + year + "]";
   }
 
 

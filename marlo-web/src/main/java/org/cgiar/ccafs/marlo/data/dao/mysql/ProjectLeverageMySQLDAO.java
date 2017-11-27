@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class ProjectLeverageMySQLDAO implements ProjectLeverageDAO {
+public class ProjectLeverageMySQLDAO extends AbstractMarloDAO<ProjectLeverage, Long> implements ProjectLeverageDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public ProjectLeverageMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public ProjectLeverageMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteProjectLeverage(long projectLeverageId) {
+  public void deleteProjectLeverage(long projectLeverageId) {
     ProjectLeverage projectLeverage = this.find(projectLeverageId);
     projectLeverage.setActive(false);
-    return this.save(projectLeverage) > 0;
+    this.save(projectLeverage);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class ProjectLeverageMySQLDAO implements ProjectLeverageDAO {
 
   @Override
   public ProjectLeverage find(long id) {
-    return dao.find(ProjectLeverage.class, id);
+    return super.find(ProjectLeverage.class, id);
 
   }
 
   @Override
   public List<ProjectLeverage> findAll() {
     String query = "from " + ProjectLeverage.class.getName() + " where is_active=1";
-    List<ProjectLeverage> list = dao.findAll(query);
+    List<ProjectLeverage> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectLeverageMySQLDAO implements ProjectLeverageDAO {
   }
 
   @Override
-  public long save(ProjectLeverage projectLeverage) {
+  public ProjectLeverage save(ProjectLeverage projectLeverage) {
     if (projectLeverage.getId() == null) {
-      dao.save(projectLeverage);
+      super.saveEntity(projectLeverage);
     } else {
-      dao.update(projectLeverage);
+      projectLeverage = super.update(projectLeverage);
     }
 
 
-    return projectLeverage.getId();
+    return projectLeverage;
   }
 
 

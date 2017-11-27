@@ -35,7 +35,7 @@ public interface ICenterManager {
    * @param crpId is the crp identifier.
    * @return true if the crp was successfully deleted, false otherwise.
    */
-  public boolean deleteCrp(long crpId);
+  public void deleteCrp(long crpId);
 
 
   /**
@@ -78,6 +78,6 @@ public interface ICenterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrp(Center crp);
+  public Center saveCrp(Center crp);
 
 }

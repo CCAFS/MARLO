@@ -34,7 +34,7 @@ public interface SrfCrossCuttingIssueManager {
    * @param srfCrossCuttingIssueId is the srfCrossCuttingIssue identifier.
    * @return true if the srfCrossCuttingIssue was successfully deleted, false otherwise.
    */
-  public boolean deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId);
+  public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface SrfCrossCuttingIssueManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssue);
+  public SrfCrossCuttingIssue saveSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssue);
 
 
 }

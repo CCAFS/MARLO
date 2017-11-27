@@ -32,7 +32,7 @@ public interface ICenterProjectStatusDAO {
    * @param projectStatusId is the projectStatus identifier.
    * @return true if the projectStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectStatus(long projectStatusId);
+  public void deleteProjectStatus(long projectStatusId);
 
   /**
    * This method validate if the projectStatus identify with the given id exists in the system.
@@ -74,5 +74,5 @@ public interface ICenterProjectStatusDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterProjectStatus projectStatus);
+  public CenterProjectStatus save(CenterProjectStatus projectStatus);
 }

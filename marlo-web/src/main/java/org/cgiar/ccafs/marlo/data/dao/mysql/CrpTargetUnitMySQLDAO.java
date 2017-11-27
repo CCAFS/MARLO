@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpTargetUnitMySQLDAO implements CrpTargetUnitDAO {
+public class CrpTargetUnitMySQLDAO extends AbstractMarloDAO<CrpTargetUnit, Long> implements CrpTargetUnitDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpTargetUnitMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpTargetUnitMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpTargetUnit(long crpTargetUnitId) {
+  public void deleteCrpTargetUnit(long crpTargetUnitId) {
     CrpTargetUnit crpTargetUnit = this.find(crpTargetUnitId);
     crpTargetUnit.setActive(false);
-    return this.save(crpTargetUnit) > 0;
+    this.save(crpTargetUnit);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CrpTargetUnitMySQLDAO implements CrpTargetUnitDAO {
 
   @Override
   public CrpTargetUnit find(long id) {
-    return dao.find(CrpTargetUnit.class, id);
+    return super.find(CrpTargetUnit.class, id);
 
   }
 
   @Override
   public List<CrpTargetUnit> findAll() {
     String query = "from " + CrpTargetUnit.class.getName() + " where is_active=1";
-    List<CrpTargetUnit> list = dao.findAll(query);
+    List<CrpTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,7 +70,7 @@ public class CrpTargetUnitMySQLDAO implements CrpTargetUnitDAO {
   public CrpTargetUnit getByTargetUnitIdAndCrpId(long crpId, long targetUnitId) {
     String query =
       "from " + CrpTargetUnit.class.getName() + " where crp_id=" + crpId + " and target_unit_id=" + targetUnitId;
-    List<CrpTargetUnit> list = dao.findAll(query);
+    List<CrpTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
     }
@@ -78,15 +78,15 @@ public class CrpTargetUnitMySQLDAO implements CrpTargetUnitDAO {
   }
 
   @Override
-  public long save(CrpTargetUnit crpTargetUnit) {
+  public CrpTargetUnit save(CrpTargetUnit crpTargetUnit) {
     if (crpTargetUnit.getId() == null) {
-      dao.save(crpTargetUnit);
+      super.saveEntity(crpTargetUnit);
     } else {
-      dao.update(crpTargetUnit);
+      crpTargetUnit = super.update(crpTargetUnit);
     }
 
 
-    return crpTargetUnit.getId();
+    return crpTargetUnit;
   }
 
 

@@ -41,9 +41,9 @@ public class IpProgramManagerImpl implements IpProgramManager {
   }
 
   @Override
-  public boolean deleteIpProgram(long ipProgramId) {
+  public void deleteIpProgram(long ipProgramId) {
 
-    return ipProgramDAO.deleteIpProgram(ipProgramId);
+    ipProgramDAO.deleteIpProgram(ipProgramId);
   }
 
   @Override
@@ -66,12 +66,12 @@ public class IpProgramManagerImpl implements IpProgramManager {
   }
 
   @Override
-  public long save(IpProgram ipProgram, String section, List<String> relationsName) {
+  public IpProgram save(IpProgram ipProgram, String section, List<String> relationsName) {
     return ipProgramDAO.save(ipProgram, section, relationsName);
   }
 
   @Override
-  public long saveIpProgram(IpProgram ipProgram) {
+  public IpProgram saveIpProgram(IpProgram ipProgram) {
 
     return ipProgramDAO.save(ipProgram);
   }

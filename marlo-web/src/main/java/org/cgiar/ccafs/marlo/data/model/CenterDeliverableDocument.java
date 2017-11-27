@@ -23,6 +23,7 @@ public class CenterDeliverableDocument implements java.io.Serializable, IAuditLo
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
 
@@ -49,9 +50,8 @@ public class CenterDeliverableDocument implements java.io.Serializable, IAuditLo
     this.active = active;
   }
 
-
-  public CenterDeliverableDocument(User modifiedBy, User createdBy, CenterDeliverable deliverable, String link, boolean active,
-    Date activeSince, String modificationJustification) {
+  public CenterDeliverableDocument(User modifiedBy, User createdBy, CenterDeliverable deliverable, String link,
+    boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.deliverable = deliverable;
@@ -118,6 +118,8 @@ public class CenterDeliverableDocument implements java.io.Serializable, IAuditLo
     return sb.toString();
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -160,18 +162,23 @@ public class CenterDeliverableDocument implements java.io.Serializable, IAuditLo
     this.id = id;
   }
 
-
   public void setLink(String link) {
     this.link = link;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  @Override
+  public String toString() {
+    return "CenterDeliverableDocument [id=" + id + ", deliverable=" + deliverable + ", link=" + link + "]";
   }
 
 

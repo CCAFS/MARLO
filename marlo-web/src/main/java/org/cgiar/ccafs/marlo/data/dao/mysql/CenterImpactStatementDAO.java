@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpactStatement;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterImpactStatementDAO implements ICenterImpactStatementDAO {
+public class CenterImpactStatementDAO extends AbstractMarloDAO<CenterImpactStatement, Long>
+  implements ICenterImpactStatementDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterImpactStatementDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterImpactStatementDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchImpactStatement(long researchImpactStatementId) {
+  public void deleteResearchImpactStatement(long researchImpactStatementId) {
     CenterImpactStatement researchImpactStatement = this.find(researchImpactStatementId);
     researchImpactStatement.setActive(false);
-    return this.save(researchImpactStatement) > 0;
+    this.save(researchImpactStatement);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterImpactStatementDAO implements ICenterImpactStatementDAO {
 
   @Override
   public CenterImpactStatement find(long id) {
-    return dao.find(CenterImpactStatement.class, id);
+    return super.find(CenterImpactStatement.class, id);
 
   }
 
   @Override
   public List<CenterImpactStatement> findAll() {
     String query = "from " + CenterImpactStatement.class.getName();
-    List<CenterImpactStatement> list = dao.findAll(query);
+    List<CenterImpactStatement> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,27 +70,27 @@ public class CenterImpactStatementDAO implements ICenterImpactStatementDAO {
   @Override
   public List<CenterImpactStatement> getResearchImpactStatementsByUserId(long userId) {
     String query = "from " + CenterImpactStatement.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterImpactStatement researchImpactStatement) {
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement) {
     if (researchImpactStatement.getId() == null) {
-      dao.save(researchImpactStatement);
+      super.saveEntity(researchImpactStatement);
     } else {
-      dao.update(researchImpactStatement);
+      researchImpactStatement = super.update(researchImpactStatement);
     }
-    return researchImpactStatement.getId();
+    return researchImpactStatement;
   }
 
   @Override
-  public long save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName) {
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName) {
     if (researchImpactStatement.getId() == null) {
-      dao.save(researchImpactStatement, actionName, relationsName);
+      super.saveEntity(researchImpactStatement, actionName, relationsName);
     } else {
-      dao.update(researchImpactStatement, actionName, relationsName);
+      researchImpactStatement = super.update(researchImpactStatement, actionName, relationsName);
     }
-    return researchImpactStatement.getId();
+    return researchImpactStatement;
   }
 
 

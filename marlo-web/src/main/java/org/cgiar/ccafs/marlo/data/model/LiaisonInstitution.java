@@ -194,7 +194,8 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "LiaisonInstitution [id=" + id + ", crpProgram=" + crpProgram + ", institution=" + institution + ", name="
+      + name + ", acronym=" + acronym + ", crp=" + crp + "]";
   }
 
 }

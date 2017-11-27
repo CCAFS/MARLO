@@ -27,6 +27,7 @@ public class ProjectFurtherContribution implements java.io.Serializable, IAuditL
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
+
   @Expose
   private Project project;
 
@@ -47,7 +48,6 @@ public class ProjectFurtherContribution implements java.io.Serializable, IAuditL
 
   @Expose
   private String modificationJustification;
-
 
   public ProjectFurtherContribution() {
   }
@@ -119,6 +119,7 @@ public class ProjectFurtherContribution implements java.io.Serializable, IAuditL
     return project;
   }
 
+
   public Integer getValue() {
     return value;
   }
@@ -160,7 +161,6 @@ public class ProjectFurtherContribution implements java.io.Serializable, IAuditL
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
@@ -178,6 +178,13 @@ public class ProjectFurtherContribution implements java.io.Serializable, IAuditL
 
   public void setYear(Integer year) {
     this.year = year;
+  }
+
+
+  @Override
+  public String toString() {
+    return "ProjectFurtherContribution [id=" + id + ", crpProgramOutcome=" + crpProgramOutcome + ", project=" + project
+      + ", year=" + year + ", description=" + description + ", value=" + value + "]";
   }
 
 

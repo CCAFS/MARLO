@@ -32,7 +32,7 @@ public interface ProjectLeverageDAO {
    * @param projectLeverageId is the projectLeverage identifier.
    * @return true if the projectLeverage was successfully deleted, false otherwise.
    */
-  public boolean deleteProjectLeverage(long projectLeverageId);
+  public void deleteProjectLeverage(long projectLeverageId);
 
   /**
    * This method validate if the projectLeverage identify with the given id exists in the system.
@@ -66,5 +66,5 @@ public interface ProjectLeverageDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectLeverage projectLeverage);
+  public ProjectLeverage save(ProjectLeverage projectLeverage);
 }

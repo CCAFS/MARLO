@@ -41,9 +41,9 @@ public class CrpSitesLeaderManagerImpl implements CrpSitesLeaderManager {
   }
 
   @Override
-  public boolean deleteCrpSitesLeader(long crpSitesLeaderId) {
+  public void deleteCrpSitesLeader(long crpSitesLeaderId) {
 
-    return crpSitesLeaderDAO.deleteCrpSitesLeader(crpSitesLeaderId);
+    crpSitesLeaderDAO.deleteCrpSitesLeader(crpSitesLeaderId);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpSitesLeaderManagerImpl implements CrpSitesLeaderManager {
   }
 
   @Override
-  public long saveCrpSitesLeader(CrpSitesLeader crpSitesLeader) {
+  public CrpSitesLeader saveCrpSitesLeader(CrpSitesLeader crpSitesLeader) {
 
     return crpSitesLeaderDAO.save(crpSitesLeader);
   }

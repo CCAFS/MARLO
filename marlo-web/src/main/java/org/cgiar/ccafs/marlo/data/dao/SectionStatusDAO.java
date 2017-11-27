@@ -32,7 +32,7 @@ public interface SectionStatusDAO {
    * @param sectionStatusId is the sectionStatus identifier.
    * @return true if the sectionStatus was successfully deleted, false otherwise.
    */
-  public boolean deleteSectionStatus(long sectionStatusId);
+  public void deleteSectionStatus(long sectionStatusId);
 
   /**
    * This method validate if the sectionStatus identify with the given id exists in the system.
@@ -90,5 +90,5 @@ public interface SectionStatusDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(SectionStatus sectionStatus);
+  public SectionStatus save(SectionStatus sectionStatus);
 }

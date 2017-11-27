@@ -16,13 +16,12 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
 
   private static final long serialVersionUID = -5721682159549693547L;
 
-
   @Expose
   private Long id;
 
+
   @Expose
   private User user;
-
 
   @Expose
   private User modifiedBy;
@@ -30,6 +29,7 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
 
   @Expose
   private User createdBy;
+
 
   @Expose
   private CenterProjectPartner projectPartner;
@@ -50,8 +50,8 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
     this.active = active;
   }
 
-  public CenterProjectPartnerPerson(User user, User modifiedBy, User createdBy, CenterProjectPartner projectPartner, boolean active,
-    Date activeSince, String modificationJustification) {
+  public CenterProjectPartnerPerson(User user, User modifiedBy, User createdBy, CenterProjectPartner projectPartner,
+    boolean active, Date activeSince, String modificationJustification) {
     this.user = user;
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -83,7 +83,6 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -108,6 +107,7 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
   }
 
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -128,6 +128,7 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
     return user;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -136,11 +137,11 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -166,13 +167,18 @@ public class CenterProjectPartnerPerson implements java.io.Serializable, IAuditL
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProjectPartner(CenterProjectPartner projectPartner) {
     this.projectPartner = projectPartner;
   }
 
+
   public void setUser(User user) {
     this.user = user;
+  }
+
+  @Override
+  public String toString() {
+    return "CenterProjectPartnerPerson [id=" + id + ", user=" + user + ", projectPartner=" + projectPartner + "]";
   }
 
 

@@ -22,21 +22,21 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterImpactDAO implements ICenterImpactDAO {
+public class CenterImpactDAO extends AbstractMarloDAO<CenterImpact, Long> implements ICenterImpactDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterImpactDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterImpactDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteResearchImpact(long researchImpactId) {
+  public void deleteResearchImpact(long researchImpactId) {
     CenterImpact researchImpact = this.find(researchImpactId);
     researchImpact.setActive(false);
-    return this.save(researchImpact) > 0;
+    this.save(researchImpact);
   }
 
   @Override
@@ -51,14 +51,14 @@ public class CenterImpactDAO implements ICenterImpactDAO {
 
   @Override
   public CenterImpact find(long id) {
-    return dao.find(CenterImpact.class, id);
+    return super.find(CenterImpact.class, id);
 
   }
 
   @Override
   public List<CenterImpact> findAll() {
     String query = "from " + CenterImpact.class.getName();
-    List<CenterImpact> list = dao.findAll(query);
+    List<CenterImpact> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,17 +69,17 @@ public class CenterImpactDAO implements ICenterImpactDAO {
   @Override
   public List<CenterImpact> getResearchImpactsByUserId(long userId) {
     String query = "from " + CenterImpact.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
-  public long save(CenterImpact researchImpact) {
+  public CenterImpact save(CenterImpact researchImpact) {
     if (researchImpact.getId() == null) {
-      dao.save(researchImpact);
+      super.saveEntity(researchImpact);
     } else {
-      dao.update(researchImpact);
+      researchImpact = super.update(researchImpact);
     }
-    return researchImpact.getId();
+    return researchImpact;
   }
 
 

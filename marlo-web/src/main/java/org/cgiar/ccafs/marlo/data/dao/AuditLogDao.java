@@ -30,6 +30,14 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(AuditLogMySQLDao.class)
 public interface AuditLogDao {
 
+  /**
+   * List of AuditLogs from the class of parameter that has the entity id
+   * 
+   * @param classAudit: the class we want to get logs
+   * @param id the entity id
+   */
+  public List<Auditlog> findAllWithClassNameAndIdAndActionName(Class<?> classAudit, long id, String actionName);
+
   public Auditlog getAuditlog(String transactionID);
 
   public Auditlog getAuditlog(String transactionID, IAuditLog auditLog);
@@ -48,12 +56,4 @@ public interface AuditLogDao {
 
   public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID);
 
-  /**
-   * List of AuditLogs from the class of parameter that has the entity id
-   * 
-   * @param classAudit: the class we want to get logs
-   * @param id the entity id
-   */
-
-  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName);
 }

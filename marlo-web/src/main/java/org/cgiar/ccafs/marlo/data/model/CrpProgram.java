@@ -374,7 +374,8 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return id.toString();
+    return "CrpProgram [id=" + id + ", crp=" + crp + ", name=" + name + ", acronym=" + acronym + ", programType="
+      + programType + "]";
   }
 
 

@@ -32,7 +32,7 @@ public interface IpElementDAO {
    * @param ipElementId is the ipElement identifier.
    * @return true if the ipElement was successfully deleted, false otherwise.
    */
-  public boolean deleteIpElement(long ipElementId);
+  public void deleteIpElement(long ipElementId);
 
 
   /**
@@ -92,5 +92,5 @@ public interface IpElementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(IpElement ipElement);
+  public IpElement save(IpElement ipElement);
 }

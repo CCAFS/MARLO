@@ -327,10 +327,11 @@ public class ProjectPartnersAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
-      project = projectService.getCenterProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      projectService.saveCenterProject(project, this.getActionName(), relationsName);
+      projectDB.setActiveSince(new Date());
+      projectDB.setModifiedBy(this.getCurrentUser());
+      projectDB = projectService.saveCenterProject(projectDB, this.getActionName(), relationsName);
+
+      project = projectDB;
 
       Path path = this.getAutoSaveFilePath();
 
@@ -419,9 +420,7 @@ public class ProjectPartnersAction extends BaseAction {
           Institution institution = institutionService.getInstitutionById(projectPartner.getInstitution().getId());
           partnerNew.setInstitution(institution);
 
-          long partnerNewId = partnerService.saveProjectPartner(partnerNew);
-
-          partnerNew = partnerService.getProjectPartnerById(partnerNewId);
+          partnerNew = partnerService.saveProjectPartner(partnerNew);
 
           if (projectPartner.getUsers() != null) {
             for (CenterProjectPartnerPerson partnerPerson : projectPartner.getUsers()) {
@@ -438,7 +437,7 @@ public class ProjectPartnersAction extends BaseAction {
               User user = userService.getUser(partnerPerson.getUser().getId());
               partnerPersonNew.setUser(user);
 
-              partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+              partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
 
             }
           }
@@ -463,7 +462,7 @@ public class ProjectPartnersAction extends BaseAction {
                 User user = userService.getUser(partnerPerson.getUser().getId());
                 partnerPersonNew.setUser(user);
 
-                partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
+                partnerPersonNew = partnerPersonService.saveProjectPartnerPerson(partnerPersonNew);
               }
             }
           }

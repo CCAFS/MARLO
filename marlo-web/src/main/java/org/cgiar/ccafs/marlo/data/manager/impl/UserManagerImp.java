@@ -161,7 +161,7 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
-  public Long saveUser(User user, User createdBy) {
+  public User saveUser(User user, User createdBy) {
     if (!user.isCgiarUser()) {
       user.setPassword(MD5Convert.stringToMD5(user.getPassword()));
     }

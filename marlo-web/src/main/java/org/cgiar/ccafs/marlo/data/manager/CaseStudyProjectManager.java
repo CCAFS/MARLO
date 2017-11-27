@@ -34,7 +34,7 @@ public interface CaseStudyProjectManager {
    * @param caseStudyProjectId is the caseStudyProject identifier.
    * @return true if the caseStudyProject was successfully deleted, false otherwise.
    */
-  public boolean deleteCaseStudyProject(long caseStudyProjectId);
+  public void deleteCaseStudyProject(long caseStudyProjectId);
 
 
   /**
@@ -70,7 +70,7 @@ public interface CaseStudyProjectManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCaseStudyProject(CaseStudyProject caseStudyProject);
+  public CaseStudyProject saveCaseStudyProject(CaseStudyProject caseStudyProject);
 
 
 }

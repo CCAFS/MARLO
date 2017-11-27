@@ -26,21 +26,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
+public class CrpIndicatorReportMySQLDAO extends AbstractMarloDAO<CrpIndicatorReport, Long>
+  implements CrpIndicatorReportDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CrpIndicatorReportMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpIndicatorReportMySQLDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteCrpIndicatorReport(long crpIndicatorReportId) {
+  public void deleteCrpIndicatorReport(long crpIndicatorReportId) {
     CrpIndicatorReport crpIndicatorReport = this.find(crpIndicatorReportId);
 
-    return dao.delete(crpIndicatorReport);
+    super.delete(crpIndicatorReport);
   }
 
   @Override
@@ -55,14 +56,14 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
 
   @Override
   public CrpIndicatorReport find(long id) {
-    return dao.find(CrpIndicatorReport.class, id);
+    return super.find(CrpIndicatorReport.class, id);
 
   }
 
   @Override
   public List<CrpIndicatorReport> findAll() {
     String query = "from " + CrpIndicatorReport.class.getName() + " where is_active=1";
-    List<CrpIndicatorReport> list = dao.findAll(query);
+    List<CrpIndicatorReport> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -70,6 +71,10 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
 
   }
 
+
+  /**
+   * This can be refactored with some logic moving to the service/manager layer.
+   */
   @Override
   public List<CrpIndicatorReport> getIndicatorReportsList(long leader, int year) {
 
@@ -89,7 +94,7 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
     // query.append(" where i.serial not in ('ind01','ind02','ind03','ind04','ind05','ind06')");
     query.append(" ORDER BY i.id  ");
 
-    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
     List<CrpIndicatorReport> indicatorReports = new ArrayList<>();
 
@@ -105,9 +110,11 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
 
           CrpIndicatorReport report = new CrpIndicatorReport();
           report.setActual("");
-          report.setCrpIndicator(dao.find(CrpIndicator.class, Long.parseLong(map.get("indicator_id").toString())));
+          report.setCrpIndicator((CrpIndicator) this.getSessionFactory().getCurrentSession().get(CrpIndicator.class,
+            Long.parseLong(map.get("indicator_id").toString())));
           report.setDeviation("");
-          report.setIpLiaisonInstitution(dao.find(IpLiaisonInstitution.class, leader));
+          report.setIpLiaisonInstitution((IpLiaisonInstitution) this.getSessionFactory().getCurrentSession()
+            .get(IpLiaisonInstitution.class, leader));
           report.setNextTarget("");
           report.setSupportLinks("");
           report.setTarget("");
@@ -122,15 +129,15 @@ public class CrpIndicatorReportMySQLDAO implements CrpIndicatorReportDAO {
   }
 
   @Override
-  public long save(CrpIndicatorReport crpIndicatorReport) {
+  public CrpIndicatorReport save(CrpIndicatorReport crpIndicatorReport) {
     if (crpIndicatorReport.getId() == null) {
-      dao.save(crpIndicatorReport);
+      super.saveEntity(crpIndicatorReport);
     } else {
-      dao.update(crpIndicatorReport);
+      crpIndicatorReport = super.update(crpIndicatorReport);
     }
 
 
-    return crpIndicatorReport.getId();
+    return crpIndicatorReport;
   }
 
 

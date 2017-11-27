@@ -608,9 +608,10 @@ function ajaxService(url,data) {
         $select.empty();
         $select.addOption("-1", "Select an option...");
         $.each(m.institutions, function(i,e) {
-          $select.addOption(e.id, e.name);
+          $select.addOptionFast(e.id, e.name);
         });
         console.log(data.budgetTypeID);
+        // Set CGIAR Consortium Office if applicable to the direct donor
         if(data.budgetTypeID == "1" && $select.find("option:selected").val() == "-1") {
           $select.val($(".cgiarConsortium").text());
         }

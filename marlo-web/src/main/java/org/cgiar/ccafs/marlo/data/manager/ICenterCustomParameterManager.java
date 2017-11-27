@@ -34,7 +34,7 @@ public interface ICenterCustomParameterManager {
    * @param centerCustomParameterId is the centerCustomParameter identifier.
    * @return true if the centerCustomParameter was successfully deleted, false otherwise.
    */
-  public boolean deleteCenterCustomParameter(long centerCustomParameterId);
+  public void deleteCenterCustomParameter(long centerCustomParameterId);
 
 
   /**
@@ -79,7 +79,7 @@ public interface ICenterCustomParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterCustomParameter(CenterCustomParameter centerCustomParameter);
+  public CenterCustomParameter saveCenterCustomParameter(CenterCustomParameter centerCustomParameter);
 
   /**
    * This method saves the information of the given centerCustomParameter
@@ -90,7 +90,7 @@ public interface ICenterCustomParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCenterCustomParameter(CenterCustomParameter centerCustomParameter, String actionName,
+  public CenterCustomParameter saveCenterCustomParameter(CenterCustomParameter centerCustomParameter, String actionName,
     List<String> relationsName);
 
 

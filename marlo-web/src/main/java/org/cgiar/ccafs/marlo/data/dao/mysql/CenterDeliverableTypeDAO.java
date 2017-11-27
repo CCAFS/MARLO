@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.SessionFactory;
 
-public class CenterDeliverableTypeDAO implements ICenterDeliverableTypeDAO {
+public class CenterDeliverableTypeDAO extends AbstractMarloDAO<CenterDeliverableType, Long>
+  implements ICenterDeliverableTypeDAO {
 
-  private StandardDAO dao;
 
   @Inject
-  public CenterDeliverableTypeDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CenterDeliverableTypeDAO(SessionFactory sessionFactory) {
+    super(sessionFactory);
   }
 
   @Override
-  public boolean deleteDeliverableType(long deliverableTypeId) {
+  public void deleteDeliverableType(long deliverableTypeId) {
     CenterDeliverableType deliverableType = this.find(deliverableTypeId);
     deliverableType.setActive(false);
-    return this.save(deliverableType) > 0;
+    this.save(deliverableType);
   }
 
   @Override
@@ -51,14 +52,14 @@ public class CenterDeliverableTypeDAO implements ICenterDeliverableTypeDAO {
 
   @Override
   public CenterDeliverableType find(long id) {
-    return dao.find(CenterDeliverableType.class, id);
+    return super.find(CenterDeliverableType.class, id);
 
   }
 
   @Override
   public List<CenterDeliverableType> findAll() {
     String query = "from " + CenterDeliverableType.class.getName();
-    List<CenterDeliverableType> list = dao.findAll(query);
+    List<CenterDeliverableType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,13 +70,13 @@ public class CenterDeliverableTypeDAO implements ICenterDeliverableTypeDAO {
   @Override
   public List<CenterDeliverableType> getDeliverableTypesByUserId(long userId) {
     String query = "from " + CenterDeliverableType.class.getName() + " where user_id=" + userId;
-    return dao.findAll(query);
+    return super.findAll(query);
   }
 
   @Override
   public List<CenterDeliverableType> getSubDeliverableType(Long deliverableId) {
     String query = "from " + CenterDeliverableType.class.getName() + " where parent_id= " + deliverableId;
-    List<CenterDeliverableType> list = dao.findAll(query);
+    List<CenterDeliverableType> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -83,13 +84,13 @@ public class CenterDeliverableTypeDAO implements ICenterDeliverableTypeDAO {
   }
 
   @Override
-  public long save(CenterDeliverableType deliverableType) {
+  public CenterDeliverableType save(CenterDeliverableType deliverableType) {
     if (deliverableType.getId() == null) {
-      dao.save(deliverableType);
+      super.saveEntity(deliverableType);
     } else {
-      dao.update(deliverableType);
+      deliverableType = super.update(deliverableType);
     }
-    return deliverableType.getId();
+    return deliverableType;
   }
 
 

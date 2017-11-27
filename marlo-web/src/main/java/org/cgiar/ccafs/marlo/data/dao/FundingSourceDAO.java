@@ -33,7 +33,7 @@ public interface FundingSourceDAO {
    * @param fundingSourceId is the fundingSource identifier.
    * @return true if the fundingSource was successfully deleted, false otherwise.
    */
-  public boolean deleteFundingSource(long fundingSourceId);
+  public void deleteFundingSource(long fundingSourceId);
 
   /**
    * This method validate if the fundingSource identify with the given id exists in the system.
@@ -70,9 +70,9 @@ public interface FundingSourceDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(FundingSource fundingSource);
+  public FundingSource save(FundingSource fundingSource);
 
-  public long save(FundingSource fundingSource, String section, List<String> relationsName);
+  public FundingSource save(FundingSource fundingSource, String section, List<String> relationsName);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

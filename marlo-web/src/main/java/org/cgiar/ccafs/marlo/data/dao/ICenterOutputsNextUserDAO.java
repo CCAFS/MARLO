@@ -32,7 +32,7 @@ public interface ICenterOutputsNextUserDAO {
    * @param researchOutputsNextUserId is the researchOutputsNextUser identifier.
    * @return true if the researchOutputsNextUser was successfully deleted, false otherwise.
    */
-  public boolean deleteResearchOutputsNextUser(long researchOutputsNextUserId);
+  public void deleteResearchOutputsNextUser(long researchOutputsNextUserId);
 
   /**
    * This method validate if the researchOutputsNextUser identify with the given id exists in the system.
@@ -76,5 +76,5 @@ public interface ICenterOutputsNextUserDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CenterOutputsNextUser researchOutputsNextUser);
+  public CenterOutputsNextUser save(CenterOutputsNextUser researchOutputsNextUser);
 }

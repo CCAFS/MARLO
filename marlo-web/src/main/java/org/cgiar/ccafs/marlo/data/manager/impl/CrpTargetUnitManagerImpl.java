@@ -41,9 +41,9 @@ public class CrpTargetUnitManagerImpl implements CrpTargetUnitManager {
   }
 
   @Override
-  public boolean deleteCrpTargetUnit(long crpTargetUnitId) {
+  public void deleteCrpTargetUnit(long crpTargetUnitId) {
 
-    return crpTargetUnitDAO.deleteCrpTargetUnit(crpTargetUnitId);
+    crpTargetUnitDAO.deleteCrpTargetUnit(crpTargetUnitId);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class CrpTargetUnitManagerImpl implements CrpTargetUnitManager {
   }
 
   @Override
-  public long saveCrpTargetUnit(CrpTargetUnit crpTargetUnit) {
+  public CrpTargetUnit saveCrpTargetUnit(CrpTargetUnit crpTargetUnit) {
 
     return crpTargetUnitDAO.save(crpTargetUnit);
   }
