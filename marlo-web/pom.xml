@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.cgiar.ccafs</groupId>
     <artifactId>marlo</artifactId>
-    <version>4.1.8-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>marlo-web</artifactId>
   <packaging>war</packaging>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>org.cgiar.ccafs</groupId>
       <artifactId>marlo-utils</artifactId>
-      <version>4.1.8-SNAPSHOT</version>
+      <version>4.2.0-SNAPSHOT</version>
     </dependency>
     <!-- End of project dependecies -->
     <!-- STRUTS 2 - Framework Core -->
@@ -581,6 +581,13 @@
     <artifactId>catalina</artifactId>
     <version>6.0.16</version>
     <scope>provided</scope>
+</dependency>
+
+<!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
+<dependency>
+  <groupId>net.gpedro.integrations.slack</groupId>
+  <artifactId>slack-webhook</artifactId>
+  <version>1.3.0</version>
 </dependency>
 
   </dependencies>
