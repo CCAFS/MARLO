@@ -27,9 +27,18 @@
 
 
 	<div class="container">
-		<div class="row titleContainer">
-			<div class="col-md-12">
+		<div class="row titleContainer" >
+			<div class="col-md-9">
 				<p>Capacity Development Tracking Tool</p>
+			</div>
+
+			<div class="col-md-3">
+				<div class="pull-right" >
+					<button type="button" class="capdevButtons downloadButtonHome" style="height: 30px;"  title="Download template to upload the list of participants">
+						[@s.text name="capdev.downloadTemplate" /]
+						<a class="downloadButtonHome" href="[@s.url action='${centerSession}/downloadFile' /]" ></a>
+					</button>
+				</div>
 			</div>
 			
 		
@@ -42,7 +51,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-12 titleContainer">
+			<div class="col-md-9 titleContainer">
 				Latest CAPDEV Interventions
 			</div>
 		</div>
