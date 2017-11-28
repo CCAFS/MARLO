@@ -62,8 +62,8 @@ public class ClusterByFPsAction extends BaseAction {
     for (String string : flagships) {
 
       CrpProgram crpProgram = crpManager.getCrpProgramById(Long.parseLong(string));
-      List<CrpClusterOfActivity> crpPrograms =
-        crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());;
+      List<CrpClusterOfActivity> crpPrograms = crpProgram.getCrpClusterOfActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());;
       for (CrpClusterOfActivity ccActivity : crpPrograms) {
         try {
           flagShip = new HashMap<String, Object>();

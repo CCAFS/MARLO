@@ -76,8 +76,10 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   @Override
   public void deleteProjectClusterActivity(long projectClusterActivityId) {
 
-    projectClusterActivityDAO.deleteProjectClusterActivity(projectClusterActivityId);
     ProjectClusterActivity projectClusterActivity = this.getProjectClusterActivityById(projectClusterActivityId);
+    projectClusterActivity.setActive(false);
+    this.saveProjectClusterActivity(projectClusterActivity);
+
     if (projectClusterActivity.getPhase().getNext() != null) {
       this.deletProjectClusterPhase(projectClusterActivity.getPhase().getNext(),
         projectClusterActivity.getProject().getId(), projectClusterActivity);
