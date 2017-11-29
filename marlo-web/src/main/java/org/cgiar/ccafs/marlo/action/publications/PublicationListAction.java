@@ -89,6 +89,7 @@ public class PublicationListAction extends BaseAction {
       deliverable.setCrp(loggedCrp);
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
+      deliverable.setPhase(this.getActualPhase());
 
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverableID = deliverable.getId();

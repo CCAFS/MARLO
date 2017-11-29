@@ -17,6 +17,9 @@
       class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
       <column name="crp_id"  />
 		</many-to-one>
+		        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
 		
 		 <set name="deliverableInfos" table="deliverables_info" inverse="true" lazy="true" fetch="select">
             <key>

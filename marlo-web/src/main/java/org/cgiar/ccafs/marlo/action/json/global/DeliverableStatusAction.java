@@ -84,7 +84,8 @@ public class DeliverableStatusAction extends BaseAction {
 
       } else {
         if (year < this.getActualPhase().getYear()) {
-          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
         }
       }
     }

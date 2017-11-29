@@ -92,7 +92,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -338,12 +337,7 @@ public class DeliverableAction extends BaseAction {
         .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
       return true;
     }
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
-      return true;
-    }
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
-      return true;
-    }
+
     return false;
 
   }
@@ -354,53 +348,50 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == null) {
       return true;
     }
-    if (this.isReportingActive()) {
-      try {
-        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-          return false;
-        }
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
-        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (ParseException e) {
-        e.printStackTrace();
-        return false;
-      }
-    } else {
 
 
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
-        return true;
-      }
-
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())
-        || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-        return false;
-      }
-      Date reportingDate = null;
-      try {
-        reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
-      } catch (ParseException e) {
-
-        e.printStackTrace();
-      }
-
-      if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-        return true;
-      } else {
-        return false;
-      }
-
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
+      return true;
     }
+
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+      .parseInt(ProjectStatusEnum.Extended.getStatusId())
+      || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+      return false;
+    }
+
+
+    if (this.isDeliverableNew(deliverableID)) {
+      return true;
+    } else {
+      return false;
+    }
+
+
+  }
+
+  public Boolean canEditDeliverable(long deliverableID) {
+
+
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        return true;
+      }
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        return false;
+      }
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        return false;
+      }
+    }
+    if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
+      return true;
+    }
+    return false;
 
   }
 
@@ -664,84 +655,6 @@ public class DeliverableAction extends BaseAction {
 
   public String getTransaction() {
     return transaction;
-  }
-
-  @Override
-  public Boolean isDeliverableNew(long deliverableID) {
-
-    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-
-    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
-
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
-        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (ParseException e) {
-        e.printStackTrace();
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
-        // System.out.println(deliverable.getCreateDate());
-        // System.out.println(reportingDate);
-
-        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (ParseException e) {
-        e.printStackTrace();
-        return false;
-      }
-
-    }
-  }
-
-  public Boolean isDeliverabletNew(long deliverableID) {
-
-    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
-        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (ParseException e) {
-        e.printStackTrace();
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
-        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (ParseException e) {
-        e.printStackTrace();
-        return false;
-      }
-
-    }
   }
 
 
@@ -1230,13 +1143,14 @@ public class DeliverableAction extends BaseAction {
         } else {
           // OLD Deliverable
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
-            status.remove(ProjectStatusEnum.Ongoing.getStatusId());
 
+            status.remove(ProjectStatusEnum.Cancelled.getStatusId());
           }
         }
       } else {
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
-          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+
+          status.remove(ProjectStatusEnum.Cancelled.getStatusId());
         }
       }
 

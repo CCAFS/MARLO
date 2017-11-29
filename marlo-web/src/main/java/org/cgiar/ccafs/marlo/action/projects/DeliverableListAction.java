@@ -103,12 +103,14 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setCreatedBy(this.getCurrentUser());
     deliverable.setActive(true);
     deliverable.setActiveSince(new Date());
+    deliverable.setPhase(this.getActualPhase());
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
     DeliverableInfo deliverableInfo = new DeliverableInfo();
     deliverableInfo.setDeliverable(deliverable);
     deliverableInfo.setPhase(this.getActualPhase());
     deliverableInfo.setYear(this.getCurrentCycleYear());
+
     deliverableInfo.setModifiedBy(this.getCurrentUser());
     deliverableInfo.setModificationJustification("New expected deliverable created");
     deliverableInfoManager.saveDeliverableInfo(deliverableInfo);

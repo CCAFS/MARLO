@@ -70,7 +70,7 @@
       [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
       [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
       [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
+      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
       [#if !editable]${(deliverable.deliverableInfo.year)!}[/#if]
     </div>
     [#-- New Expected Year - Extended = 4 --]
