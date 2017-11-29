@@ -30,12 +30,13 @@
           <h2 class="successTitle">The project has been successfully submitted</h2>
           <div class="fullPartBlock">
             <h6>Project title</h6>
-            <p>${(project.title)!"Title not defined"}</p>
+            <p>${(project.projectInfo.title)!"Title not defined"}</p>
           </div> 
-            [#assign lastSubmission =currentSubmission /]
+            [#assign lastSubmission =submission /]
           <div class="fullPartBlock">
               <h6>Submission date</h6>
               [#if lastSubmission?has_content ]
+              ${lastSubmission.id!}
                    <p>${(lastSubmission.cycle)!} - ${(lastSubmission.year)!} - ${(lastSubmission.dateTime?date)!} by ${(lastSubmission.user.composedCompleteName)!}</p>
               [/#if]
            

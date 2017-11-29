@@ -76,6 +76,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -1438,7 +1439,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public SectionStatus getDeliverableStatus(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
-
+    if (deliverableID == 4063) {
+      System.out.println("holi");
+    }
+    if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
+      DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
+      if (deliverableInfo.getStatus() != null
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverableInfo.getYear() < this.getActualPhase().getYear()) {
+          return new SectionStatus();
+        }
+      }
+    }
     List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
       .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
       .collect(Collectors.toList());
@@ -1859,15 +1871,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<Deliverable> openA = new ArrayList<>();
 
         if (this.isPlanningActive()) {
-          openA = deliverables.stream()
-            .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
-              && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          openA = deliverables.stream().filter(a -> a.isActive()
+
+            && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
               || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == -1))))
+                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
             .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
@@ -2527,13 +2539,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<Deliverable> deliverables =
         project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
       List<Deliverable> openA = deliverables.stream()
-        .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear()
-          && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-            || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
           || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
+        || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
         .collect(Collectors.toList());
 
       if (this.isReportingActive()) {

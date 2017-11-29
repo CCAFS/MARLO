@@ -289,12 +289,12 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         List<Deliverable> deliverables =
           project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive()
-            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-            && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-              || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        List<Deliverable> openA = deliverables.stream().filter(a -> a.isActive()
+
+          && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+            || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -618,10 +618,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable) {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()) && dp.isActive()
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.getPhase() != null && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+          && dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
       return list;
     } catch (Exception e) {
@@ -711,7 +710,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   public DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.getPhase().equals(this.getActualPhase()) && dp.isActive()
+        .filter(dp -> dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase()) && dp.isActive()
           && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
       return partnership;
@@ -925,14 +924,13 @@ public class ValidateProjectSectionAction extends BaseAction {
     List<Deliverable> deliverables =
       project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
     List<Deliverable> openA = deliverables.stream()
-      .filter(
-        a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-          && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
-            || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+      .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
         || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
+      || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
       .collect(Collectors.toList());
 
     if (this.isReportingActive()) {
@@ -958,7 +956,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     for (Deliverable deliverable : openA) {
 
-
+      deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
       deliverable.setGenderLevels(

@@ -1126,6 +1126,7 @@ public class ProjectPartnerAction extends BaseAction {
 
         // Looping through the UI partner list
         for (ProjectPartner projectPartnerClient : project.getPartners()) {
+          ProjectPartner projectPartnerDB = null;
           if (projectPartnerClient.getId() == null) {
 
 
@@ -1137,9 +1138,9 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerClient.setActiveSince(new Date());
             projectPartnerClient.setProject(project);
             projectPartnerClient.setPhase(this.getActualPhase());
-            projectPartnerManager.saveProjectPartner(projectPartnerClient);
+            projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerClient);
           } else {
-            ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
+            projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
             projectPartnerDB.setActive(true);
             projectPartnerDB.setProject(project);
             projectPartnerDB.setCreatedBy(projectPartnerDB.getCreatedBy());
@@ -1148,11 +1149,11 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setModificationJustification("");
             projectPartnerDB.setPhase(projectPartnerDB.getPhase());
             projectPartnerDB.setActiveSince(projectPartnerDB.getActiveSince());
-            projectPartnerManager.saveProjectPartner(projectPartnerDB);
+            projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
 
-          ProjectPartner projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
+          // projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
 
           this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -64,6 +65,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
   // Manager
   private SubmissionManager submissionManager;
+  private UserManager userManager;
+
   private ProjectManager projectManager;
   private CrpManager crpManager;
   private SendMailS sendMail;
@@ -88,7 +91,7 @@ public class ProjectSubmissionAction extends BaseAction {
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
     CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, UserManager userManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -96,6 +99,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.sendMail = sendMail;
     this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
+    this.userManager = userManager;
     this.phaseManager = phaseManager;
   }
 
@@ -113,7 +117,9 @@ public class ProjectSubmissionAction extends BaseAction {
           this.submitProject();
           complete = true;
         } else {
-          this.setSubmission(submissions.get(0));
+          Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
+          submission.setUser(userManager.getUser(submission.getUser().getId()));
+          this.setSubmission(submission);
           complete = true;
         }
       }

@@ -36,7 +36,11 @@
     var currenPhaseIndex = ${currenPhaseIndex};
   </script>
   
-  [#assign pageLibs = pageLibs + ["sly", "jsUri"] /]
+  [#if pageLibs??]
+    [#assign pageLibs = pageLibs + ["sly", "jsUri"] /]
+  [#else]
+    [#assign pageLibs = ["sly", "jsUri"] /]
+  [/#if]
   [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
 
 </div>

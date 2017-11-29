@@ -462,7 +462,7 @@ public class DeliverableAction extends BaseAction {
 
       try {
         partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
           .collect(Collectors.toList()).get(0);
       } catch (Exception e) {
@@ -687,7 +687,7 @@ public class DeliverableAction extends BaseAction {
     try {
       List<DeliverablePartnership> list =
         deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
