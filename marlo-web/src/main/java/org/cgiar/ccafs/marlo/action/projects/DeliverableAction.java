@@ -1263,7 +1263,9 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList());
         for (FundingSource fundingSource : fundingSources) {
           fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
+          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream()
+            .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear() && c.getPhase() != null
+              && c.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList())) {
             if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
               this.fundingSources.add(fundingSource);
@@ -1378,7 +1380,7 @@ public class DeliverableAction extends BaseAction {
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
       List<DeliverablePartnership> partnerShipsPrew =
         deliverablePrew.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
@@ -1406,7 +1408,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
           && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
       return partnership;
@@ -2092,7 +2094,7 @@ public class DeliverableAction extends BaseAction {
       partnership.setModifiedBy(this.getCurrentUser());
       partnership.setModificationJustification("");
       partnership.setActiveSince(new Date());
-
+      partnership.setPhase(this.getActualPhase());
 
       if (deliverable.getResponsiblePartner().getPartnerDivision() != null
         && deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() != -1) {

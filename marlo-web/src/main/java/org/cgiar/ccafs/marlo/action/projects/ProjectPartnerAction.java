@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -45,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -126,6 +128,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectComponentLesson projectComponentLesson;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
+  private DeliverablePartnershipManager deliverablePartnershipManager;
   private ProjectPartnerContributionManager projectPartnerContributionManager;
   private ProjectPartnerOverallManager projectPartnerOverallManager;
   private InstitutionManager institutionManager;
@@ -177,12 +180,14 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
     HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
     CrpUserManager crpUserManager, ProjectPartnerLocationManager projectPartnerLocationManager,
+    DeliverablePartnershipManager deliverablePartnershipManager,
     InstitutionLocationManager institutionLocationManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
+    this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.institutionTypeManager = institutionTypeManager;
     this.projectPartnerLocationManager = projectPartnerLocationManager;
     this.locationManager = locationManager;
@@ -317,8 +322,8 @@ public class ProjectPartnerAction extends BaseAction {
     List<Deliverable> deliverables =
       project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (Deliverable deliverable : deliverables) {
-      if (!deliverable.getDeliverablePartnerships()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+      if (!deliverable.getDeliverablePartnerships().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
           && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
         .collect(Collectors.toList()).isEmpty()) {
         deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -1094,6 +1099,10 @@ public class ProjectPartnerAction extends BaseAction {
     for (ProjectPartnerPerson partnerPerson : projectPartnerDB.getProjectPartnerPersons()) {
       if (projectPartnerClient.getPartnerPersons() == null
         || !projectPartnerClient.getPartnerPersons().contains(partnerPerson)) {
+        for (DeliverablePartnership deliverablePartnership : partnerPerson.getDeliverablePartnerships().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+        }
         projectPartnerPersonManager.deleteProjectPartnerPerson(partnerPerson.getId());
       }
     }

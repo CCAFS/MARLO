@@ -106,14 +106,30 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setPhase(this.getActualPhase());
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
-    DeliverableInfo deliverableInfo = new DeliverableInfo();
-    deliverableInfo.setDeliverable(deliverable);
-    deliverableInfo.setPhase(this.getActualPhase());
-    deliverableInfo.setYear(this.getCurrentCycleYear());
 
-    deliverableInfo.setModifiedBy(this.getCurrentUser());
-    deliverableInfo.setModificationJustification("New expected deliverable created");
-    deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+    List<Integer> years = project.getProjecInfoPhase(this.getActualPhase()).getAllYearsPhase();
+    for (Integer year : years) {
+      DeliverableInfo deliverableInfo = new DeliverableInfo();
+      deliverableInfo.setDeliverable(deliverable);
+      deliverableInfo.setPhase(phaseManager.findCycle(APConstants.PLANNING, year, this.getCrpID()));
+      deliverableInfo.setYear(this.getCurrentCycleYear());
+
+      deliverableInfo.setModifiedBy(this.getCurrentUser());
+      deliverableInfo.setModificationJustification("New expected deliverable created");
+      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
+      DeliverableInfo deliverableInfoReporting = new DeliverableInfo();
+      deliverableInfoReporting.setDeliverable(deliverable);
+      deliverableInfoReporting.setPhase(phaseManager.findCycle(APConstants.REPORTING, year, this.getCrpID()));
+      deliverableInfoReporting.setYear(this.getCurrentCycleYear());
+
+      deliverableInfoReporting.setModifiedBy(this.getCurrentUser());
+      deliverableInfoReporting.setModificationJustification("New expected deliverable created");
+      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
+
+
+    }
+
 
     if (deliverableID > 0) {
       return SUCCESS;

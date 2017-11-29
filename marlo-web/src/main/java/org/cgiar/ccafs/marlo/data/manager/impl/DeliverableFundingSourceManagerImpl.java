@@ -101,9 +101,11 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   @Override
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
-    deliverableFundingSourceDAO.deleteDeliverableFundingSource(deliverableFundingSourceId);
+
     DeliverableFundingSource deliverableFundingSource =
       this.getDeliverableFundingSourceById(deliverableFundingSourceId);
+    deliverableFundingSource.setActive(false);
+    this.saveDeliverableFundingSource(deliverableFundingSource);
     Phase currentPhase = phaseDao.find(deliverableFundingSource.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (deliverableFundingSource.getPhase().getNext() != null) {
