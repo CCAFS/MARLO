@@ -67,6 +67,30 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     this.deliverableManager = deliverableManager;
   }
 
+  public Boolean canEditDeliverable(Deliverable deliverable, Phase phase) {
+
+
+    if (deliverable.getDeliverableInfo(phase).getStatus() != null) {
+      if (deliverable.getDeliverableInfo(phase).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        return true;
+      }
+      if (deliverable.getDeliverableInfo(phase).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        return false;
+      }
+      if (deliverable.getDeliverableInfo(phase).getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        return false;
+      }
+    }
+    if (deliverable.getDeliverableInfo(phase).getYear() >= phase.getYear()) {
+      return true;
+    }
+    return false;
+
+  }
+
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
 
@@ -193,6 +217,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
+      if (!this.canEditDeliverable(deliverable, phase)) {
+        canEdit = false;
+        baseAction.setEditStatus(true);
+      }
+
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
@@ -202,5 +231,4 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       throw new NullPointerException();
     }
   }
-
 }

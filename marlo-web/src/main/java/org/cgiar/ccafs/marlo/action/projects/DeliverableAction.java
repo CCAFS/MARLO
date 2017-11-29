@@ -371,29 +371,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-  public Boolean canEditDeliverable(long deliverableID) {
-
-
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        return true;
-      }
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-        return false;
-      }
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
-        return false;
-      }
-    }
-    if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
-      return true;
-    }
-    return false;
-
-  }
 
   /**
    * Delete Deliverable Gender Levels if there is no cross cutting gender component.
