@@ -26,6 +26,10 @@
 				<param name="errorMessage">Not Found</param>
 			</result>
 		</action>
+		
+		<action name="mapGeo" class="org.cgiar.ccafs.marlo.action.MapGeolocation">
+      <result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
+    </action>
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">
