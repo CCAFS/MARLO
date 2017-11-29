@@ -28,7 +28,7 @@
       [@logHistory.logList list=recordsList itemName="deliverableID" itemId=deliverable.id /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
-    [#if editable]
+    [#if editable || editStatus]
       [#-- Back Button 
       <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
       --]
