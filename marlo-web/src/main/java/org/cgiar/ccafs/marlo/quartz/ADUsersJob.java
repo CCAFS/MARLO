@@ -48,9 +48,21 @@ public class ADUsersJob implements Job {
   private SessionFactory sessionFactory;
 
 
+  public String deleteSpecialCaracter(String string) {
+    for (int i = 0; i < string.length(); i++) {
+      if (string.charAt(i) == (char) 39) {
+        StringBuilder sb = new StringBuilder(string);
+        sb.deleteCharAt(i);
+        string = sb.toString();
+      }
+    }
+
+    return string;
+  }
+
+
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
-    System.out.println("Struts 2.3.4 + Quartz 2.1.5");
     SchedulerContext schedulerContext = null;
     try {
       schedulerContext = context.getScheduler().getContext();
@@ -78,7 +90,7 @@ public class ADUsersJob implements Job {
         if (user.getEmail() != null) {
           if (!user.getEmail().equals("")) {
             try {
-              AdUser adUser = adUsermanager.findByUserEmail(user.getEmail());
+              AdUser adUser = adUsermanager.findByUserEmail(this.deleteSpecialCaracter(user.getEmail()));
               if (adUser == null) {
                 adUser = new AdUser();
                 adUser.setLogin(user.getLogin());

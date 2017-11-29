@@ -34,7 +34,6 @@ public class ADUsersListener implements ServletContextListener {
 
   @Override
   public void contextDestroyed(ServletContextEvent arg0) {
-    // TODO Auto-generated method stub
 
   }
 
@@ -45,10 +44,8 @@ public class ADUsersListener implements ServletContextListener {
     JobDetail job = JobBuilder.newJob(ADUsersJob.class).withIdentity("anyJobName", "group1").build();
 
     try {
-
-
       Trigger trigger = TriggerBuilder.newTrigger().withIdentity("anyTriggerName", "group1")
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 0/60 * * * ?")).build();
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 30 01 * * ?")).build();
 
       Scheduler scheduler = new StdSchedulerFactory().getScheduler();
       scheduler.getContext().put("injector", injector);

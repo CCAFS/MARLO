@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup;
 import org.cgiar.ccafs.marlo.data.model.Discipline;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -83,7 +84,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
   private int totalOther = 0;
   private Long researchAreaID;
   private Long researchProgramID;
-  private Long isFrom;
+  private Long isFrom; // if 1=request come from research Area, if 2= request come from research program
   private int year;
 
   @Inject
@@ -118,6 +119,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
     // Subreport list of capdev
     this.fillSubreport((SubReport) hm.get("capdev_list"), "capdev_list");
+    this.fillSubreport((SubReport) hm.get("capdevDetail"), "capdevDetail");
     this.fillSubreport((SubReport) hm.get("types"), "types");
     this.fillSubreport((SubReport) hm.get("groupTypes"), "groupTypes");
     this.fillSubreport((SubReport) hm.get("disciplines"), "disciplines");
@@ -129,6 +131,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     this.fillSubreport((SubReport) hm.get("highest_degree"), "highest_degree");
     this.fillSubreport((SubReport) hm.get("founding_type"), "founding_type");
     this.fillSubreport((SubReport) hm.get("institution"), "institution");
+    this.fillSubreport((SubReport) hm.get("institutions_type"), "institutions_type");
 
 
     // PdfReportUtil.createPDF(masterReport, os);
@@ -180,11 +183,17 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       case "capdev_list":
         model = this.getCapDevListTableModel();
         break;
+      case "capdevDetail":
+        model = this.getCapDevDetailTableModel();
+        break;
       case "outputs":
         model = this.getOutputTypeTableModel();
         break;
       case "institution":
         model = this.getInstitutionsTableModel();
+        break;
+      case "institutions_type":
+        model = this.getInstitutionsTypeTableModel();
         break;
 
 
@@ -254,9 +263,82 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     return capdev;
   }
 
+  private TypedTableModel getCapDevDetailTableModel() {
+    // Initialization of Model
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"capdevId", "name", "gender", "age", "citizenship", "institution", "country_institution",
+        "highest_degree", "personal_email", "job_email", "supervisor"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class});
+
+    for (CapacityDevelopment capdev : capDevs) {
+
+      if (capdev.getCapdevParticipant() != null) {
+        List<CapdevParticipant> participants =
+          capdev.getCapdevParticipant().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        if (participants != null) {
+          for (CapdevParticipant capdev_participant : participants) {
+            String capdev_id = capdev_participant.getCapacityDevelopment().getId().toString();
+            Participant participant = capdev_participant.getParticipant();
+            String name = "";
+            if (participant.getName() != null) {
+              name = participant.getName();
+              if (participant.getLastName() != null) {
+                name += participant.getLastName();
+              }
+            }
+            String gender = "";
+            if (participant.getGender() != null) {
+              gender = participant.getGender();
+            }
+            String age = "";
+            if (participant.getAge() != null) {
+              age = participant.getAge().getRange();
+            }
+            String citizenship = "";
+            if (participant.getLocElementsByCountryOfInstitucion() != null) {
+              citizenship = participant.getLocElementsByCountryOfInstitucion().getName();
+            }
+            String institution = "";
+            if (participant.getInstitutions() != null) {
+              institution = participant.getInstitutions().getName();
+            }
+            String country_institution = "";
+            if (participant.getLocElementsByCountryOfInstitucion() != null) {
+              country_institution = participant.getLocElementsByCountryOfInstitucion().getName();
+            }
+            String highest_degree = "";
+            if (participant.getHighestDegree() != null) {
+              highest_degree = participant.getHighestDegree().getName();
+            }
+            String personal_email = "";
+            if (participant.getPersonalEmail() != null) {
+              personal_email = participant.getPersonalEmail();
+            }
+            String job_email = "";
+            if (participant.getEmail() != null) {
+              job_email = participant.getEmail();
+            }
+            String supervisor = "";
+            if (participant.getSupervisor() != null) {
+              supervisor = participant.getSupervisor();
+            }
+
+            model.addRow(new Object[] {capdev_id, name, gender, age, citizenship, institution, country_institution,
+              highest_degree, personal_email, personal_email, job_email, supervisor});
+          }
+        }
+      }
+
+
+    }
+    return model;
+  }
+
   public long getCapdevID() {
     return capdevID;
   }
+
 
   private TypedTableModel getCapDevListTableModel() {
     // Initialization of Model
@@ -572,18 +654,18 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getInstitutionsTableModel() {
     // Initialization of Model
-    final TypedTableModel model =
-      new TypedTableModel(new String[] {"institution_name", "quantity", "other_institutions"},
-        new Class[] {String.class, Integer.class, String.class});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"institution_name", "institution_type", "quantity", "other_institutions"},
+        new Class[] {String.class, String.class, Integer.class, String.class});
 
     String other_institutions = "";
 
-    final Map<Institution, Integer> institucions = new HashMap<>();
-    for (final CapacityDevelopment capdev : capDevs) {
-      for (final CapdevParticipant participant : capdev.getCapdevParticipant()) {
+    Map<Institution, Integer> institucions = new HashMap<>();
+    for (CapacityDevelopment capdev : capDevs) {
+      for (CapdevParticipant participant : capdev.getCapdevParticipant()) {
         if (participant.getParticipant().getInstitutions() != null) {
           if (institucions.containsKey(participant.getParticipant().getInstitutions())) {
-            final int quantity = institucions.get(participant.getParticipant().getInstitutions()) + 1;
+            int quantity = institucions.get(participant.getParticipant().getInstitutions()) + 1;
             institucions.put(participant.getParticipant().getInstitutions(), quantity);
           } else {
 
@@ -599,8 +681,38 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
       }
     }
 
-    for (final Map.Entry<Institution, Integer> entry : institucions.entrySet()) {
-      model.addRow(new Object[] {entry.getKey().getName(), entry.getValue(), other_institutions});
+    for (Map.Entry<Institution, Integer> entry : institucions.entrySet()) {
+      model.addRow(new Object[] {entry.getKey().getName(), entry.getKey().getInstitutionType().getName(),
+        entry.getValue(), other_institutions});
+    }
+
+    return model;
+  }
+
+
+  private TypedTableModel getInstitutionsTypeTableModel() {
+    // Initialization of Model
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"institution_type", "quantity"}, new Class[] {String.class, Integer.class});
+
+
+    Map<String, Integer> institucions = new HashMap<>();
+    for (CapacityDevelopment capdev : capDevs) {
+      for (CapdevParticipant participant : capdev.getCapdevParticipant()) {
+        if (participant.getParticipant().getInstitutions() != null) {
+          if (institucions.containsKey(participant.getParticipant().getInstitutions().getInstitutionType().getName())) {
+            int quantity =
+              institucions.get(participant.getParticipant().getInstitutions().getInstitutionType().getName()) + 1;
+            institucions.put(participant.getParticipant().getInstitutions().getInstitutionType().getName(), quantity);
+          } else {
+            institucions.put(participant.getParticipant().getInstitutions().getInstitutionType().getName(), 1);
+          }
+        }
+      }
+    }
+
+    for (Map.Entry<String, Integer> entry : institucions.entrySet()) {
+      model.addRow(new Object[] {entry.getKey(), entry.getValue()});
     }
 
     return model;
