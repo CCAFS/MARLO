@@ -39,7 +39,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 public class ReadExcelFile {
 
   private static final String[] HEAD_TEMPLATE = {"Identification number", "Name", "Last Name", "Gender", "Citizenship",
-    "Highest degree", "Institution", "Country of institution", "Email", "Reference", "Suggest Intitution"};
+    "Highest degree", "Institution", "Country of institution", "Email", "Suggest Intitution"};
   private int totalRows;
   private int totalColumns;
 
@@ -81,26 +81,25 @@ public class ReadExcelFile {
   public List<Map<String, Object>> getDataExcelFile(Workbook wb) {
     final List<Map<String, Object>> fullData = new ArrayList<>();
     try {
-      final Sheet sheet = wb.getSheetAt(0);
+      Sheet sheet = wb.getSheetAt(0);
       this.searchForEmptyRows(sheet);
-      final Row firstRow = sheet.getRow(9); // fila donde esta el encabezado del template
+      Row firstRow = sheet.getRow(9); // fila donde esta el encabezado del template
       totalRows = (sheet.getLastRowNum() - firstRow.getRowNum()) + 1;
-      System.out.println(totalRows);
       totalColumns = firstRow.getLastCellNum();
-      final List<Row> rows = this.searchForEmptyRows(sheet);
+      List<Row> rows = this.searchForEmptyRows(sheet);
       for (int fila = 0; fila < rows.size(); fila++) {
-        final Row row = rows.get(fila);
-        final Map<String, Object> data = new HashMap<>();
+        Row row = rows.get(fila);
+        Map<String, Object> data = new HashMap<>();
         for (int col = 0; col < firstRow.getLastCellNum(); col++) {
-          final Cell cell = row.getCell(col);
-          final Cell headerCell = firstRow.getCell(col);
+          Cell cell = row.getCell(col);
+          Cell headerCell = firstRow.getCell(col);
           data.put(headerCell.getStringCellValue(), this.getCellData(cell));
         }
         fullData.add(data);
 
       }
 
-    } catch (final EncryptedDocumentException e) {
+    } catch (EncryptedDocumentException e) {
       e.printStackTrace();
     }
 
@@ -111,12 +110,12 @@ public class ReadExcelFile {
 
   public List<String> getHeadersExcelFile(Workbook wb) {
     // ######
-    final Sheet sheet = wb.getSheetAt(0);
-    final List<String> headers = new ArrayList<>();
-    final Row row = sheet.getRow(9);
+    Sheet sheet = wb.getSheetAt(0);
+    List<String> headers = new ArrayList<>();
+    Row row = sheet.getRow(9);
     for (int i = 0; i < row.getLastCellNum(); i++) {
-      final Cell cell = row.getCell(i);
-      final Map<String, Object> data = new HashMap<>();
+      Cell cell = row.getCell(i);
+      Map<String, Object> data = new HashMap<>();
       data.put(cell.getStringCellValue(), cell.getStringCellValue());
       headers.add(cell.getStringCellValue());
     }
@@ -152,9 +151,9 @@ public class ReadExcelFile {
         totalColumns = firstRow.getLastCellNum();
         data = new Object[totalRows][totalColumns];
         for (int fila = 0; fila < rows.size(); fila++) {
-          final Row row = rows.get(fila);
+          Row row = rows.get(fila);
           for (int col = 0; col < totalColumns; col++) {
-            final Cell cell = row.getCell(col);
+            Cell cell = row.getCell(col);
             data[fila][col] = this.getCellData(cell);
           }
 
@@ -205,7 +204,7 @@ public class ReadExcelFile {
   public Object sustraerId(String cadena) {
     String newCadena = null;
     if (!cadena.equals("")) {
-      final int index = cadena.indexOf("-");
+      int index = cadena.indexOf("-");
       newCadena = cadena.substring(0, index);
     }
     return newCadena;
@@ -215,7 +214,7 @@ public class ReadExcelFile {
   public Object sustraerID(String cadena) {
     String newCadena = null;
     if (!cadena.equals("")) {
-      final int index = cadena.indexOf("-");
+      int index = cadena.indexOf("-");
       newCadena = cadena.substring(index + 2, cadena.length());
     }
     return newCadena;
@@ -230,8 +229,8 @@ public class ReadExcelFile {
     boolean equal = true;
     try {
       fip = new FileInputStream(file);
-      final Workbook wb = WorkbookFactory.create(fip);
-      final List<String> header = this.getHeadersExcelFile(wb);
+      Workbook wb = WorkbookFactory.create(fip);
+      List<String> header = this.getHeadersExcelFile(wb);
       if (header.size() == HEAD_TEMPLATE.length) {
         for (int i = 0; i < header.size(); i++) {
           if (!header.get(i).equals(HEAD_TEMPLATE[i])) {
@@ -256,7 +255,7 @@ public class ReadExcelFile {
   public boolean validarExcelFile(Workbook wb) {
     boolean equal = true;
     try {
-      final List<String> header = this.getHeadersExcelFile(wb);
+      List<String> header = this.getHeadersExcelFile(wb);
       if (header.size() == HEAD_TEMPLATE.length) {
         for (int i = 0; i < header.size(); i++) {
           if (!header.get(i).equals(HEAD_TEMPLATE[i])) {
@@ -267,7 +266,7 @@ public class ReadExcelFile {
         equal = false;
       }
 
-    } catch (final EncryptedDocumentException e) {
+    } catch (EncryptedDocumentException e) {
       equal = false;
     }
 
