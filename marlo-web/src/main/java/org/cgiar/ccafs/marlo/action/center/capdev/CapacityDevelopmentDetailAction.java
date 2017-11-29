@@ -210,7 +210,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public String deleteListOfParticipants() throws Exception {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
-    for (final CapdevParticipant obj : listOfParticipants) {
+    for (CapdevParticipant obj : listOfParticipants) {
       obj.setActive(false);
       obj.setModifiedBy(this.getCurrentUser());
       capdevParicipantService.saveCapdevParticipant(obj);
@@ -332,7 +332,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    */
   public int getNumMenParticipants(Object[][] data) {
     int numMen = 0;
-    for (final Object[] element : data) {
+    for (Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("Male")) {
         numMen++;
       }
@@ -347,7 +347,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    */
   public int getNumOtherGender(Object[][] data) {
     int numOther = 0;
-    for (final Object[] element : data) {
+    for (Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("Other")) {
         numOther++;
 
@@ -363,7 +363,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    */
   public int getNumWomenParticipants(Object[][] data) {
     int numWomen = 0;
-    for (final Object[] element : data) {
+    for (Object[] element : data) {
       if (((String) element[3]).equalsIgnoreCase("Female")) {
         numWomen++;
 
@@ -444,11 +444,11 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
    */
   public List<Participant> loadParticipantsList(Object[][] data) {
     participantList = new ArrayList<>();
-    final Session session = SecurityUtils.getSubject().getSession();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     for (int i = 0; i < reader.getTotalRows(); i++) {
-      final Participant participant = new Participant();
+      Participant participant = new Participant();
       participant.setCode(Math.round((double) data[i][0]));
       participant.setName((String) data[i][1]);
       participant.setLastName((String) data[i][2]);
@@ -486,10 +486,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       }
 
       participant.setEmail((String) data[i][8]);
-      participant.setReference((String) data[i][9]);
-
-
-      participant.setInstitutionsSuggested((String) data[i][10]);
+      participant.setInstitutionsSuggested((String) data[i][9]);
 
 
       participant.setActive(true);
@@ -658,7 +655,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
             ctEmail = capdev.getCtEmail();
           }
           contact = ctFirstName + " " + ctLastName + " " + ctEmail;
-          final Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+          Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
           capdev.setCapdevParticipant(capdevParticipants);
 
         }
@@ -872,8 +869,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     if (!this.getInvalidFields().isEmpty()) {
       this.setActionMessages(null);
-      final List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-      for (final String key : keys) {
+      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (String key : keys) {
         this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
       }
     } else {
@@ -909,10 +906,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public void saveCapDevParticipan(Participant participant, CapacityDevelopment capdev) {
-    final CapdevParticipant capdevParticipant = new CapdevParticipant();
-    final Session session = SecurityUtils.getSubject().getSession();
+    CapdevParticipant capdevParticipant = new CapdevParticipant();
+    Session session = SecurityUtils.getSubject().getSession();
 
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
+    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     capdevParticipant.setCapacityDevelopment(capdev);
     capdevParticipant.setParticipant(participant);
     capdevParticipant.setActive(true);
