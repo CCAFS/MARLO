@@ -95,7 +95,7 @@
             
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.summary" required=((project.projectEditLeader)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project status --]
