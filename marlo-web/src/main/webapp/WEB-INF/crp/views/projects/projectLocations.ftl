@@ -126,7 +126,7 @@
                       [#assign recommendedCountries=0]
                     [/#if]
                     [#if recommendedCountries?? && recommendedCountries==0 && recommendedRegions?? && recommendedRegions==0]
-                      <p class="text-center inf">There is not locations recommended</p>
+                      <p class="text-center inf">[@s.text name="projectLocations.noLocations" /]</p>
                     [/#if]
                   </div>
                   </div>
