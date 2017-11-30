@@ -391,7 +391,6 @@
   </div>
 [/#macro]
 
-
 [#function changedField name]
   [#if action.changedField(name)??]
     [#assign fieldObj = action.changedField(name)]
@@ -399,5 +398,3 @@
   [/#if]
   [#return '']
 [/#function]
-
-
