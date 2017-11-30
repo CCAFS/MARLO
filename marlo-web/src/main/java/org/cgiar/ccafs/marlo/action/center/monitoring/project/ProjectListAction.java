@@ -426,10 +426,10 @@ public class ProjectListAction extends BaseAction {
     projectCrosscutingTheme.setImpactAssessment(false);
     projectCrosscutingTheme.setNa(false);
 
-    project.setProjectCrosscutingTheme(projectCrosscutingTheme);
-    projectCrosscutingTheme.setProject(project);
+    // project.setProjectCrosscutingTheme(projectCrosscutingTheme);
+    // projectCrosscutingTheme.setProject(project);
 
-    projectID = projectService.b(project).getId();
+    projectID = projectService.(project).getId();
 
   }
 
