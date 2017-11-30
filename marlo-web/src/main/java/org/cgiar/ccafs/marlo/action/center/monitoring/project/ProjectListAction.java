@@ -429,7 +429,6 @@ public class ProjectListAction extends BaseAction {
     // project.setProjectCrosscutingTheme(projectCrosscutingTheme);
     // projectCrosscutingTheme.setProject(project);
 
-    projectID = projectService.(project).getId();
 
   }
 
