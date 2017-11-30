@@ -86,8 +86,8 @@ public class CrpPpaPartnersAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym()};
 
     if (loggedCrp.getCrpPpaPartners() != null) {
-      loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
-        loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+      loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
+        .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       loggedCrp.getCrpInstitutionsPartners()
         .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
     }
@@ -112,7 +112,8 @@ public class CrpPpaPartnersAction extends BaseAction {
       if (crpPpaPartnerManager.findAll() != null) {
         ppaPartnerReview = crpPpaPartnerManager.findAll();
 
-        for (CrpPpaPartner partner : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
+        for (CrpPpaPartner partner : ppaPartnerReview.stream()
+          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
             crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
@@ -130,13 +131,14 @@ public class CrpPpaPartnersAction extends BaseAction {
           partner.setModifiedBy(this.getCurrentUser());
           partner.setModificationJustification("");
           partner.setActiveSince(new Date());
+          partner.setPhase(this.getActualPhase());
           crpPpaPartnerManager.saveCrpPpaPartner(partner);
         }
       }
 
       if (loggedCrp.getCrpPpaPartners() != null) {
-        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
-          loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
+          .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       }
 
       Collection<String> messages = this.getActionMessages();

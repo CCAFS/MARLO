@@ -627,7 +627,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
     if (institution.getId() != null) {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
-        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

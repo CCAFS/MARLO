@@ -1008,7 +1008,8 @@ public class ProjectPartnerAction extends BaseAction {
     if (!project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
       allInstitutions = new ArrayList<>();
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
-        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+          && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList())) {
         allInstitutions.add(crpPpaPartner.getInstitution());
       }
@@ -1021,7 +1022,8 @@ public class ProjectPartnerAction extends BaseAction {
     // Getting the list of all PPA institutions
     allPPAInstitutions = new ArrayList<>();
     for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive()
+        && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       allPPAInstitutions.add(crpPpaPartner.getInstitution());
     }

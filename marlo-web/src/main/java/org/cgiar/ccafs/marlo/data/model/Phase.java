@@ -51,9 +51,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
+  private Set<CrpPpaPartner> crpPpaPartner = new HashSet<CrpPpaPartner>(0);
+
 
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
+
+
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
+
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
@@ -68,10 +73,8 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
   private Set<ProjectBudgetsCluserActvity> projectBudgetsActivities = new HashSet<ProjectBudgetsCluserActvity>(0);
 
-
   public Phase() {
   }
-
 
   public Phase(Crp crp, String description, int year) {
     this.crp = crp;
@@ -111,6 +114,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return clusters;
   }
 
+
   public String getComposedName() {
     return this.description + " - " + year;
   }
@@ -120,10 +124,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
+  public Set<CrpPpaPartner> getCrpPpaPartner() {
+    return crpPpaPartner;
+  }
+
+
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
-
 
   public Set<DeliverableInfo> getDeliverableInfos() {
     return deliverableInfos;
@@ -164,6 +172,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return fundingSourceInstitutions;
   }
 
+
   public Set<FundingSourceLocation> getFundingSourceLocations() {
     return fundingSourceLocations;
   }
@@ -185,7 +194,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -259,6 +267,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
+
   public Boolean getVisible() {
     return visible;
   }
@@ -266,7 +275,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public int getYear() {
     return this.year;
   }
-
 
   @Override
   public int hashCode() {
@@ -296,6 +304,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+
+  public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
+    this.crpPpaPartner = crpPpaPartner;
   }
 
   public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {

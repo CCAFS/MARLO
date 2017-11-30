@@ -100,7 +100,7 @@ public class SearchInstitutionsAction extends BaseAction {
         institution.getInstitutionsLocations().toString().length() - 1));
 
 
-      institutionMap.put("isPPA", institution.isPPA(this.getCrpID()));
+      institutionMap.put("isPPA", institution.isPPA(this.getCrpID(), this.getActualPhase()));
       this.institutions.add(institutionMap);
     }
 

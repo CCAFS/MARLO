@@ -545,7 +545,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
         if (crpPpaPartner.getInstitution().getProjectPartners().stream()
-          .filter(c -> c.isActive() && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+          .filter(c -> c.isActive() && c.getPhase().equals(crpPpaPartner.getPhase())
+            && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList()).size() > 0) {
           return false;
         }
@@ -3004,9 +3005,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (institution.getId() != null) {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
-        if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.getCrp().getId().longValue() == this.getCrpID() && c.isActive()).collect(Collectors.toList())
-          .size() > 0) {
+        if (institution.getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
+          && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()).size() > 0) {
           return true;
         }
       }

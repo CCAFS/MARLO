@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 import java.net.URL;
 
 import com.google.inject.Provider;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -42,52 +43,61 @@ public class HibernateSessionFactoryProvider implements Provider<SessionFactory>
 
   private final String path = "/hibernate.cfg.xml";
 
-  private final SessionFactory sessionFactory;
+  SessionFactory sessionFactory = null;
 
   private final Logger LOG = LoggerFactory.getLogger(HibernateSessionFactoryProvider.class);
 
   public HibernateSessionFactoryProvider() {
 
-    LOG.debug("Building the Hibernate SessionFactory using configuration at path " + path);
+    try {
+      LOG.debug("Building the Hibernate SessionFactory using configuration at path " + path);
 
-    URL url = HibernateSessionFactoryProvider.class.getResource(path);
-    Configuration hibernateConfig = new Configuration().configure(url);
-    PropertiesManager manager = new PropertiesManager();
+      URL url = HibernateSessionFactoryProvider.class.getResource(path);
+      Configuration hibernateConfig = new Configuration().configure(url);
+      PropertiesManager manager = new PropertiesManager();
 
-    hibernateConfig.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
-    hibernateConfig.setProperty("hibernate.connection.password",
-      manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-    String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
-      + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-      + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
-    hibernateConfig.setProperty("hibernate.connection.url", urlMysql);
+      hibernateConfig.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
+      hibernateConfig.setProperty("hibernate.connection.password",
+        manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+      String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
+        + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
+        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "?autoReconnect=true&&useSSL=false";
+      hibernateConfig.setProperty("hibernate.connection.url", urlMysql);
 
-    hibernateConfig.setProperty("hibernate.hikari.dataSource.user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
-    hibernateConfig.setProperty("hibernate.hikari.dataSource.password",
-      manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-    hibernateConfig.setProperty("hibernate.hikari.dataSource.url", urlMysql);
-    hibernateConfig.setProperty("hibernate.hikari.connectionTimeout", "10000");
-    // Minimum number of ideal connections in the pool
-    hibernateConfig.setProperty("hibernate.hikari.minimumIdle", "1000");
-    // Maximum number of actual connection in the pool
-    hibernateConfig.setProperty("hibernate.hikari.maximumPoolSize", "40");
-    // Maximum time that a connection is allowed to sit ideal in the pool
-    hibernateConfig.setProperty("hibernate.hikari.idleTimeout", "5000");
-    hibernateConfig.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");
+      hibernateConfig.setProperty("hibernate.hikari.dataSource.user",
+        manager.getPropertiesAsString(APConfig.MYSQL_USER));
+      hibernateConfig.setProperty("hibernate.hikari.dataSource.password",
+        manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+      hibernateConfig.setProperty("hibernate.hikari.dataSource.url", urlMysql);
+      hibernateConfig.setProperty("hibernate.hikari.connectionTimeout", "10000");
+      // Minimum number of ideal connections in the pool
+      hibernateConfig.setProperty("hibernate.hikari.minimumIdle", "1000");
+      // Maximum number of actual connection in the pool
+      hibernateConfig.setProperty("hibernate.hikari.maximumPoolSize", "40");
+      // Maximum time that a connection is allowed to sit ideal in the pool
+      hibernateConfig.setProperty("hibernate.hikari.idleTimeout", "5000");
+      hibernateConfig.setProperty("hibernate.bytecode.use_reflection_optimizer'", "false");
 
-    /**
-     * TODO refactor the MARLO properties system and use Guice to inject properties.
-     * There are also libraries such as https://bitbucket.org/strangerintheq/guice-config/wiki/Dependency that we could
-     * use as well.
-     */
-    String showSql = manager.getPropertiesAsString(APConfig.MYSQL_SHOW_SQL);
-    if (showSql != null && ("true".equals(showSql) || "false".equals(showSql))) {
-      hibernateConfig.setProperty(Environment.SHOW_SQL, manager.getPropertiesAsString(APConfig.MYSQL_SHOW_SQL));
+      /**
+       * TODO refactor the MARLO properties system and use Guice to inject properties.
+       * There are also libraries such as https://bitbucket.org/strangerintheq/guice-config/wiki/Dependency that we
+       * could
+       * use as well.
+       */
+      String showSql = manager.getPropertiesAsString(APConfig.MYSQL_SHOW_SQL);
+      if (showSql != null && ("true".equals(showSql) || "false".equals(showSql))) {
+        hibernateConfig.setProperty(Environment.SHOW_SQL, manager.getPropertiesAsString(APConfig.MYSQL_SHOW_SQL));
+      }
+
+      ServiceRegistry serviceRegistry =
+        new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
+      this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
+    } catch (HibernateException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      System.out.println(e.getLocalizedMessage());
+
     }
-
-    ServiceRegistry serviceRegistry =
-      new StandardServiceRegistryBuilder().applySettings(hibernateConfig.getProperties()).build();
-    this.sessionFactory = hibernateConfig.buildSessionFactory(serviceRegistry);
 
     LOG.debug("Finished building the Hibernate SessionFactory");
 

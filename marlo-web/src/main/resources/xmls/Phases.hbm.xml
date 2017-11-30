@@ -11,6 +11,7 @@
         <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
             <column name="crp_id" not-null="true" />
         </many-to-one>
+       
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />
         </property>
@@ -110,6 +111,13 @@
                 <column name="id_phase" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
+        </set>
+        
+         <set name="crpPpaPartner" table="crp_ppa_partners" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
         </set>
            <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
             <key>

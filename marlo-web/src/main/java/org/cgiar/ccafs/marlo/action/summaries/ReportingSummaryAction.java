@@ -1687,11 +1687,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     if (!project.getDeliverables().isEmpty()) {
       // get Reporting deliverables
-      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()
-        && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && d.getProject().getCrp() != null
-        && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+      List<Deliverable> deliverables =
+        new ArrayList<>(
+          project.getDeliverables().stream()
+            .filter(
+              d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
+                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting()
+                && d.getProject().getCrp() != null
+                && d.getProject().getCrp().getId()
+                  .equals(this.getLoggedCrp().getId())
         && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
         && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -1713,8 +1718,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
-        .collect(Collectors.toList()));
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))).collect(Collectors.toList()));
       deliverables
         .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
           .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
@@ -2839,9 +2843,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3582,7 +3588,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (institution.getId() != null) {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
-        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
           .size() > 0) {
           return true;
         }

@@ -566,7 +566,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       for (Institution partnerResponsible : institutionsResponsibleList) {
         // Check if is ppa
-        if (partnerResponsible.isPPA(this.getLoggedCrp().getId())) {
+        if (partnerResponsible.isPPA(this.getLoggedCrp().getId(), this.getActualPhase())) {
           managingResponsibleList.add(partnerResponsible);
         } else {
           // If is not a ppa, get the crp linked to the partner
