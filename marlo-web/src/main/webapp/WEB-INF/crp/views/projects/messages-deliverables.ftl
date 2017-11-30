@@ -34,7 +34,7 @@
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
       [#if editStatus]
-        <p class="readPrivileges">You have permissions to modify the status only.</p>
+        <p class="note text-center">You have permissions to modify the status only.</p>
       [#else]
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
       [/#if]

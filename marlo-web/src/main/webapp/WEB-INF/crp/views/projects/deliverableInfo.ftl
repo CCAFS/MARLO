@@ -69,28 +69,31 @@
     <div class="col-md-4 form-group">
       [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
       [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
-      [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
-      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
-      [#if !editable]
-        ${(deliverable.deliverableInfo.year)!}
-        <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}" />
+      
+      [#if editable || editStatus]
+        [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
+      [#else]
+         <div class="select">
+          <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
+          <p>${(deliverable.deliverableInfo.year)!}</p>
+          [#if canNotEditYear] <input type="hidden" name="deliverable.deliverableInfo.year" value="${(deliverable.deliverableInfo.year)!}"/>  [/#if]
+        </div>
       [/#if]
     </div>
     [#-- New Expected Year - Extended = 4 --]
-     [#assign canViewNewExpectedYear =action.candEditExpectedYear(deliverable.id) /]
+    [#assign canViewNewExpectedYear =action.candEditExpectedYear(deliverable.id) /]
     
     <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
-      [#if editable]
+      [#if editable || editStatus]
         [#if reportingActive]
           [#assign startExpectedYear = currentCycleYear-1]
         [#else]
           [#assign startExpectedYear = (deliverable.deliverableInfo.year)!currentCycleYear ]
         [/#if]
-        [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+        [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
       [#else]
-        <input type="hidden" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}"/>
         <div class="select">
-          <label for="">Expected year:</label>
+          <label for="">[@s.text name="deliverable.newExpectedYear" /]:</label>
           <p>${(deliverable.deliverableInfo.newExpectedYear)!}</p>
           <input type="hidden" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}" />
         </div>
