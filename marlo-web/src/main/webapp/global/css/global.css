@@ -497,6 +497,10 @@ input[type="submit"], button, .addButton, a.form-button {
   text-decoration: none;
 }
 
+a.form-button:hover {
+  background-color: rgb(40, 156, 185);
+}
+
 a.form-button.button-edit{
   background-color: #999;
   border-bottom: 3px solid #807f7f;
@@ -2182,10 +2186,6 @@ h3.contentSubTitle {
 .borderBox .buttons, .simpleBox .buttons{
   float: none;
   margin: 0;
-}
-
-.buttons button[name=save]:hover{
-  background-color: #8BA383;
 }
 
 .buttons button[name=next] {
@@ -5538,10 +5538,14 @@ h4.testEnvironment {
   margin-top: 0;
 }
 
-.button-save {
+.buttons-content .button-save {
   color: #FFFFFF;
-  background: #8EA786;
+  background-color: #8EA786;
   border-bottom: 3px solid #7E9377;
+}
+
+.buttons-content .button-save:hover{
+  background-color: #7da171;
 }
 
 .button-save.disabled, .button-save.disabled:hover {
