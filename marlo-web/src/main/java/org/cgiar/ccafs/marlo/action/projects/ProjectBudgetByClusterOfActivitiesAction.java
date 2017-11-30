@@ -437,6 +437,9 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       // if (project.getBudgetsCluserActvities() != null) {
       // project.getBudgetsCluserActvities().clear();
       // }
+      if (project.getBudgetsCluserActvities() != null) {
+        project.getBudgetsCluserActvities().clear();
+      }
 
     }
 
@@ -494,12 +497,9 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
-    projectDB.setBudgetsCluserActvities(projectDB.getProjectBudgetsCluserActvities().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
-
-    for (ProjectBudgetsCluserActvity projectBudget : projectDB.getBudgetsCluserActvities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+    for (ProjectBudgetsCluserActvity projectBudget : projectDB.getProjectBudgetsCluserActvities().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
       if (project.getBudgetsCluserActvities() == null) {
         project.setBudgetsCluserActvities(new ArrayList<>());
@@ -524,26 +524,32 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
             projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
             projectBudgetCluserActivityUI.setModificationJustification("");
             projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
-            projectBudgetCluserActivityUI =
+
+            if (projectBudgetCluserActivityUI.getCrpClusterOfActivity() != null) {
               projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
+            }
+
 
           } else {
             ProjectBudgetsCluserActvity ProjectBudgetDB = projectBudgetsCluserActvityManager
               .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
-
-            ProjectBudgetDB.setActive(true);
-            ProjectBudgetDB.setProject(project);
             ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
             ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-            ProjectBudgetDB.setModifiedBy(this.getCurrentUser());
-            ProjectBudgetDB.setModificationJustification("");
+            if (projectBudgetCluserActivityUI.getId() == 1056) {
+              System.out.println("holi");
+            }
+            projectBudgetCluserActivityUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
             projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
-            ProjectBudgetDB = projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(ProjectBudgetDB);
+            projectBudgetCluserActivityUI.setActiveSince(ProjectBudgetDB.getActiveSince());
+            projectBudgetCluserActivityUI.setActive(true);
+            projectBudgetCluserActivityUI.setProject(project);
+            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
+            projectBudgetCluserActivityUI.setModificationJustification("");
+            projectBudgetCluserActivityUI.setModifiedBy(this.getCurrentUser());
+            projectBudgetCluserActivityUI =
+              projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
           }
 
-          if (projectBudgetCluserActivityUI.getYear() >= this.getActualPhase().getYear()) {
-            projectBudgetsCluserActvityManager.saveProjectBudgetsCluserActvity(projectBudgetCluserActivityUI);
-          }
 
         }
 

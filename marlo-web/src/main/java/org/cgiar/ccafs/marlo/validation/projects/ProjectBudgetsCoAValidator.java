@@ -150,7 +150,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         if (CollectionUtils.isNotEmpty(project.getBudgetsCluserActvities())) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
             List<ProjectBudgetsCluserActvity> w1w2List = project
-              .getBudgetsCluserActvities().stream().filter(c -> c.isActive()
+              .getBudgetsCluserActvities().stream().filter(c -> c != null && c.isActive()
                 && (c.getBudgetType().getId().longValue() == 1) && (c.getYear() == action.getCurrentCycleYear()))
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1),
