@@ -1132,17 +1132,14 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .panel span.listButton, .budget span.listButton {
-  /* float:right; */
-  padding: 0px 8px;
+  padding: 5px 8px;
   cursor: pointer;
+  position: absolute;
+  margin-left: 15px;
 }
 
 .panel span.listButton.select {
     background-color: #E6E6E6;
-}
-.panel span.name {
-  cursor:pointer;
-  /* padding: 5px 3px; */
 }
 
 .remove {
@@ -1150,7 +1147,9 @@ select#partnerSave_activityPartner_partner_type_id {
   color: #fff;
   border-radius: 3px;
   font-size: 0.95em;
-  cursor: pointer;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .panel span.listButton.remove:hover {
