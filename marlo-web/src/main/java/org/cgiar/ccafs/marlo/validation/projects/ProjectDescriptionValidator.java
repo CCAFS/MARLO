@@ -90,9 +90,12 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.getInvalidFields().put("input-project.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 250)) {
-      this.addMessage(action.getText("project.summary"));
-      action.getInvalidFields().put("input-project.summary", InvalidFieldsMessages.EMPTYFIELD);
+    if (project.isProjectEditLeader()) {
+      // Validate project summary
+      if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 250)) {
+        this.addMessage(action.getText("project.summary"));
+        action.getInvalidFields().put("input-project.summary", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
 
     if (project.getLiaisonUser() != null) {
