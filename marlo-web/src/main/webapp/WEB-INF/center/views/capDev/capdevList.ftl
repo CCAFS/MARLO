@@ -32,14 +32,16 @@
 				<p>Capacity Development Tracking Tool</p>
 			</div>
 
+			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<div class="col-md-3">
 				<div class="pull-right" >
 					<button type="button" class="capdevButtons downloadButtonHome" style="height: 30px;"  title="Download template to upload the list of participants">
-						[@s.text name="capdev.downloadTemplate" /]
-						<a class="downloadButtonHome" href="[@s.url action='${centerSession}/downloadFile' /]" ></a>
+						
+						<a class="downloadButtonHome" href="[@s.url action='${centerSession}/downloadFile' /]" >[@s.text name="capdev.downloadTemplate" /]</a>
 					</button>
 				</div>
 			</div>
+			[/@s.form]
 			
 		
 		</div>
