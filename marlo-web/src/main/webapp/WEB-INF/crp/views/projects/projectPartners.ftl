@@ -235,6 +235,16 @@
     </div>
   </div>
 </div>
+
+[#--  allInstitutions list --]
+<ul style="display:none">
+[#list allInstitutions as inst]
+  <li id="instID-${inst.id}">
+    <span class="composedName">${inst.composedName}</span>
+    <span class="allowSubDepart">${inst.institutionType.subDepartmentActive?string}</span>
+  </li>
+[/#list]
+</ul>
   
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -246,6 +256,7 @@
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
+  [#local allowSubDep = (element.institution.institutionType.subDepartmentActive)!false]
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
@@ -282,26 +293,6 @@
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
-      [#-- Filters  
-      [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
-        <div class="filters-link"> <span class="glyphicon glyphicon-filter"></span> <span>[@s.text name="projectPartners.filters" /]</span></div>
-        <div class="filters-content">
-          [#-- Partner type list  
-          <div class="col-md-6 partnerTypeName chosen">
-            [#-- Name attribute is not needed, we just need to load the value, not save it it.  
-            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.partnerType" listName="intitutionTypes" keyFieldName="id"  displayFieldName="name" className="partnerTypes" value="${(element.institution.type.id)!}" /]
-          </div>
-          --]
-          [#-- Country list  
-          <div class="col-md-6 countryListBlock chosen">
-            [#-- Name attribute is not needed, we just need to load the value, not save it it. 
-            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.country" listName="countries" keyFieldName="id"  displayFieldName="name" className="countryList" value="'${(element.institution.country.id)!}'" /]
-          </div> 
-          <div class="clearfix"></div>
-        </div> 
-      [/#if]
-      --]
-      
       [#-- Institution / Organization --]
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
       <div class="form-group partnerName">
@@ -312,6 +303,11 @@
       [#else]
         <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
       [/#if]
+      
+      [#-- Sub department input, only for goverment institutions --]
+      <div class="form-group subDepartment" style="display:${allowSubDep?string('block','none')}">
+        [@customForm.input name="${name}.subDepartment" className="subDepartment" i18nkey="projectPartners.subDepartment"  editable=editable /]
+      </div>
       
       [#-- Responsibilities --]
       [#if project.projectEditLeader]

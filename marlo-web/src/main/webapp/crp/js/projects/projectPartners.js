@@ -697,7 +697,7 @@ function removePersonEvent(e) {
 function setProjectPartnersIndexes() {
   $partnersBlock.find(".projectPartner").each(function(index,element) {
     var partner = new PartnerObject($(element));
-    partner.setIndex($('#partners-name').val(), index);
+    partner.setIndex(index);
   });
 }
 
@@ -765,42 +765,46 @@ function addSelect2() {
  */
 
 function PartnerObject(partner) {
+  
   var types = [];
   this.id = parseInt($(partner).find('.partnerId').val());
   this.institutionId = parseInt($(partner).find('.institutionsList').val());
-  this.institutionName =
-      $('#projectPartner-template .institutionsList option[value=' + this.institutionId + ']').text()
-          || $(partner).find('.partnerTitle').text();
+  this.institutionName = $('#instID-'+this.institutionId+' .composedName').text() || $(partner).find('.partnerTitle').text();
+  this.allowSubDepart = ($('#instID-'+this.institutionId+' .allowSubDepart').text() === "true") || false;
+  this.subDepartments = $('#instID-'+this.institutionId+' .subDepartments option');
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
   this.countriesSelect = $(partner).find('.countriesList');
-  this.setIndex = function(name,index) {
-    var elementName = name + "[" + index + "].";
+  this.setIndex = function(index) {
 
     // Updating indexes
     $(partner).setNameIndexes(1, index);
-
     // Update index for project Partner
-    
     $(partner).find("> .blockTitle .index_number").html(index + 1);
-
     // Update index for CCAFS Partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
       $(li).setNameIndexes(2, li_index);
     });
     // Update index for partner persons
-    $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+    $(partner).find('.contactPerson').each(function(person_index,partnerPerson) {
       var contact = new PartnerPersonObject($(partnerPerson));
-      contact.setIndex(elementName, index, i);
+      contact.setIndex(index, person_index);
     });
-    
- // Update index for locations
+    // Update index for locations
     $(partner).find('.locElement').each(function(i,element) {
       $(element).setNameIndexes(2, i);
     });
   };
+  this.validateGovernmentType  = function() {
+    if (this.allowSubDepart){
+      $(partner).find('.subDepartment').slideDown();
+    }else{
+      $(partner).find('.subDepartment').slideUp();
+    }
+  };
   this.updateBlockContent = function() {
     $(partner).find('.partnerTitle').text(this.institutionName);
+    this.validateGovernmentType();
   };
   this.hasPartnerContributions = function() {
     var partners = [];
@@ -954,6 +958,7 @@ function PartnerObject(partner) {
     $(partner).find('.contactsPerson .requiredTag').show();
     
   };
+ 
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();
   };
@@ -989,7 +994,7 @@ function PartnerPersonObject(partnerPerson) {
   this.getRelations = function(relation) {
     return $(partnerPerson).find('.tag.' + relation).next().find('ul').html();
   };
-  this.setIndex = function(name,partnerIndex,index) {
+  this.setIndex = function(partnerIndex,index) {
     // Update Indexes
     $(partnerPerson).setNameIndexes(2, index);
 
@@ -1058,4 +1063,3 @@ function removeLocElement() {
     setProjectPartnersIndexes();
   });
 }
-
