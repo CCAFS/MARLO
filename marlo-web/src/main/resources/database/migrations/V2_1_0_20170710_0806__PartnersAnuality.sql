@@ -1,7 +1,7 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-
+SET SESSION wait_timeout=100000;
 
 CREATE TEMPORARY TABLE
 IF NOT EXISTS tablepartners AS (SELECT * FROM project_partners);
