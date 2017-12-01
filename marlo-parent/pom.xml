@@ -56,6 +56,7 @@
     <commons-discovery.version>0.4</commons-discovery.version>
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <tomcat-catalina.version>6.0.16</tomcat-catalina.version>
+    <jackson.version>2.9.2</jackson.version>
 	</properties>
 	<developers>
 		<developer>
@@ -285,9 +286,9 @@
         <artifactId>logback-classic</artifactId>
         <version>${logback-classic.version}</version>
       </dependency>
-			<!-- This dependency allows conditions in logger configuration -->
-			<!-- Spring dependencies -->
-			<dependency>
+      <!-- This dependency allows conditions in logger configuration -->
+      <!-- Spring dependencies -->
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
         <version>${org.springframework-version}</version>
@@ -297,26 +298,26 @@
         <artifactId>spring-core</artifactId>
         <version>${org.springframework-version}</version>
       </dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${org.springframework-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context-support</artifactId>
-				<version>${org.springframework-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${org.springframework-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-orm</artifactId>
-				<version>${org.springframework-version}</version>
-			</dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${org.springframework-version}</version>
+      </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -520,7 +521,16 @@
         <groupId>wsdl4j</groupId>
         <artifactId>wsdl4j</artifactId>
         <version>${wsdl4j.version}</version>
-
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>

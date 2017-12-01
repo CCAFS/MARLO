@@ -13,7 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.rest;
+package org.cgiar.ccafs.marlo.rest;
 
 import org.cgiar.ccafs.marlo.action.repository.InstitutionsRepository;
 

@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo;
 
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -38,24 +41,37 @@ public class MarloShiroConfiguration {
   @Bean(name = "realm")
   @DependsOn("lifecycleBeanPostProcessor")
   public APCustomRealm realm() {
-    return new APCustomRealm();
+    APCustomRealm realm = new APCustomRealm();
+    return realm;
   }
 
   @Bean(name = "securityManager")
   public DefaultWebSecurityManager securityManager() {
     DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-    // securityManager.setRealm(this.realm());
     return securityManager;
   }
 
   @Bean(name = "shiroFilter")
-  public ShiroFilterFactoryBean shiroFilter() throws Exception {
+  public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager) throws Exception {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-    shiroFilterFactoryBean.setSecurityManager(this.securityManager());
+    shiroFilterFactoryBean.setSecurityManager(securityManager);
 
     shiroFilterFactoryBean.setLoginUrl("/login.do");
     shiroFilterFactoryBean.setSuccessUrl("/");
     shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+
+    // RESTfull services basic authentication filter setup.
+    Map<String, String> filterChainDefinitionMap = new HashMap<>();
+    filterChainDefinitionMap.put("/api/**", "authcBasic");
+    shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+
+    /**
+     * This part is only necessary if we need to extend the BasicHttpAuthenticationFilter. Can remove this once
+     * Authorization logic is complete.
+     */
+    // Map<String, Filter> filterMap = new HashMap<>();
+    // filterMap.put("authcBasic", new ExtendedBasicHttpAuthenticationFilter());
+    // shiroFilterFactoryBean.setFilters(filterMap);
 
     return shiroFilterFactoryBean;
   }

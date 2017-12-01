@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,7 @@ import com.google.gson.GsonBuilder;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class InstitutionsRepository {
 
   private static Map<String, Object> institutions = new HashMap<String, Object>();

@@ -84,9 +84,9 @@
   <logger name="org.pentaho">
     <level value="WARN" />
   </logger>
-  
-   
- <logger name="com.zaxxer.hikari" level="ERROR" />
+  <logger name="com.zaxxer.hikari">
+    <level value="WARN" />
+  </logger>
 
   <!-- ======= Attach the appenders according to the configuration properties 
     ======= -->

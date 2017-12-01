@@ -31,7 +31,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
- * This is the servlet 3.0 way to load a web context wihtout (or combined with) a web.xml file.  
+ * This is the servlet 3.0 way to load a web context wihtout (or combined with) a web.xml file.
  */
 public class WebAppInitializer implements WebApplicationInitializer {
 
@@ -58,7 +58,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
      */
     marloOpenSessionInViewFilter.setInitParameter("targetFilterLifecycle", "true");
     marloOpenSessionInViewFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json",
-      "/");
+      "/", "/api/*");
 
     /**
      * Need to use the DelegatingFilterProxy to allow the shiroFilter to be instantiated properly.
