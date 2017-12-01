@@ -48,15 +48,14 @@
             [#-- Add Item --]
             [#if editable] 
               <div class="text-center">
-                <div class="dddCollaboration bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
+                <div class="dddCollaboration bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlatformCollaboration" /]</div>
               </div>
             [/#if]
           </div>
           
-          
           [#-- Other Flagships platforms Collaborations --]
-          <h5 class="sectionSubTitle">[@s.text name="platformCollaboration.otherCollaborations" /]</h5>
           <div class="form-group">
+            <h5 class="sectionSubTitle">[@s.text name="platformCollaboration.otherCollaborations" /]</h5>
             <table class="">
               <thead>
                 <tr>
@@ -76,6 +75,7 @@
               </tbody>
             </table>
           </div>
+          
         </div>
         
         [#-- Section Buttons & hidden inputs--]
@@ -95,7 +95,6 @@
       <span class="elementId">Platform Collaboration</span>
     </div>
     <br />
-    
     <div class="form-group row">
       <div class="col-md-8">
         [@customForm.input name="${customName}.name" i18nkey="${name}.name" required=true className="" editable=editable /]

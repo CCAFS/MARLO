@@ -57,7 +57,7 @@
                 </tr>
               </thead>
               <tbody>
-                [#list 1..4 as deliverable]
+                [#list 1..4 as flagships]
                 <tr>
                   <td>FP1 - Priorities and Policies for CSA</td>
                   <td>
