@@ -122,7 +122,8 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId) {
 
     String query = "select distinct pp from ProjectPartner as pp inner join pp.project as project "
-      + "left join fetch pp.projectPartnerPersons as ppp where project.id = :projectId " + "and ppp.active = true";
+      + "left join fetch pp.projectPartnerPersons as ppp where project.id = :projectId "
+      + "and ppp.active = true and pp.active=true";
 
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectId", projectId);

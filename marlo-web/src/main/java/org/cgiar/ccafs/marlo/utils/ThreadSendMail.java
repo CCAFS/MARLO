@@ -46,10 +46,11 @@ public class ThreadSendMail extends Thread {
         sent = true;
 
       } catch (MessagingException e) {
-        LOG.info("Message  DON'T sent: \n" + subject);
+        LOG.info("Message  DID NOT sent: \n" + subject);
 
         i++;
         if (i == 10) {
+          e.printStackTrace();
           break;
 
         }

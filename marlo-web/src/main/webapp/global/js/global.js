@@ -241,6 +241,9 @@ $(document).ready(function() {
       }
   });
 
+  /* ADD TITLE TOOLTIP TO ALL REQUIRED SIGN */
+  $(".requiredTag").attr('title','This is a required field');
+
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     var $t = $(target);

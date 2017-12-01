@@ -5250,9 +5250,192 @@ span.elementId{
   width: 97%;
 }
 
-.highlightsTypes input {
-  
-} 
+
+/* -------------- SUMMARIES -----------------*/
+
+.summariesButtons {
+  width: 93%;
+  margin: 0 auto;
+}
+
+.summariesSection {
+  width: 23%;
+  float: left;
+  margin-right: 1.4%;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+  /* text-align: center; */
+}
+
+.summariesSection:last-child {
+  margin-right:0;
+}
+
+.summariesSection a {
+display: block;line-height: 50px;text-decoration: none;color: #5F5F5F;font-size: 1.2em;}
+
+.summariesSection.current {
+background-color: #1DA5CE;}
+
+.summariesSection.current a {
+color: #fff;font-weight: bold;}
+
+.summariesSection span {
+  background-image: url(../../images/summaries/summaries-icons.png);
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 50px;
+  margin-left: 35px;
+  display: block;
+  float: left;
+  cursor: pointer;
+}
+
+.summariesOptions {
+  margin: 8px 0;
+}
+
+.summariesOption {
+  margin: 11px 0px;
+}
+
+.summariesOption .description {
+  margin: 4px 33px 13px 33px;
+  color: #868686;
+}
+
+.summariesOption input { 
+vertical-align: middle;}
+
+.summariesOption label span{/* background-color: #f1f1f1; */font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
+
+/* Summaries Section icons*/
+
+#projects.summariesSection span {
+  background-position: 6px 10px;
+}
+
+#projects.summariesSection.current span {
+  background-position: -89px 10px;
+}
+
+#partners.summariesSection span {
+  background-position: 9px -31px;
+}
+
+#partners.summariesSection.current span {
+  background-position: -88px -31px;
+}
+
+#deliverables.summariesSection span {
+  background-position: 8px -78px;
+}
+
+#deliverables.summariesSection.current span {
+  background-position: -92px -78px;
+}
+
+#budget.summariesSection span {
+  background-position: 5px -173px;
+}
+
+#budget.summariesSection.current span {
+  background-position: -92px -173px;
+}
+
+/* -------------- SUMMARIES -----------------*/
+
+.summariesButtons {
+  width: 93%;
+  margin: 0 auto;
+}
+
+.summariesSection {
+  width: 23%;
+  float: left;
+  margin-right: 1.4%;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+  /* text-align: center; */
+}
+
+.summariesSection:last-child {
+  margin-right:0;
+}
+
+.summariesSection a {
+display: block;line-height: 50px;text-decoration: none;color: #5F5F5F;font-size: 1.2em;}
+
+.summariesSection.current {
+background-color: #1DA5CE;}
+
+.summariesSection.current a {
+color: #fff;font-weight: bold;}
+
+.summariesSection span {
+  background-image: url(../../images/summaries/summaries-icons.png);
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 50px;
+  margin-left: 35px;
+  display: block;
+  float: left;
+  cursor: pointer;
+}
+
+.summariesOptions {
+  margin: 8px 0;
+}
+
+.summariesOption {
+  margin: 11px 0px;
+}
+
+.summariesOption .description {
+  margin: 4px 33px 13px 33px;
+  color: #868686;
+}
+
+.summariesOption input { 
+vertical-align: middle;}
+
+.summariesOption label span{/* background-color: #f1f1f1; */font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
+
+/* Summaries Section icons*/
+
+#projects.summariesSection span {
+  background-position: 6px 10px;
+}
+
+#projects.summariesSection.current span {
+  background-position: -89px 10px;
+}
+
+#partners.summariesSection span {
+  background-position: 9px -31px;
+}
+
+#partners.summariesSection.current span {
+  background-position: -88px -31px;
+}
+
+#deliverables.summariesSection span {
+  background-position: 8px -78px;
+}
+
+#deliverables.summariesSection.current span {
+  background-position: -92px -78px;
+}
+
+#budget.summariesSection span {
+  background-position: 5px -173px;
+}
+
+#budget.summariesSection.current span {
+  background-position: -92px -173px;
+}
 
 /*************** FOOTER ****************/
 footer {
@@ -6653,3 +6836,70 @@ img#crpSelectedImage {
 
 img.hint-img {
 }
+/* Radio Flat*/
+.radioFlat input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.radioFlat input[type="radio"] + .radio-label:before {
+  content: '';
+  background: #f4f4f4;
+  border-radius: 100%;
+  border: 1px solid #b4b4b4;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  position: relative;
+  /* top: -0.2em; */
+  margin-right: 0.3em;
+  vertical-align: top;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+}
+
+.radioFlat input[type="radio"]:checked + .radio-label:before {
+  background-color: #3197EE;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+
+.radioFlat input[type="radio"]:focus + .radio-label:before {
+  outline: none;
+  border-color: #3197EE;
+}
+
+/* YES */
+.radioFlat input[type="radio"]:checked + .radio-label.radio-label-yes:before {
+  background-color: #4CAF50;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+
+.radioFlat input[type="radio"]:focus + .radio-label.radio-label-yes:before {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+/* NO */
+.radioFlat input[type="radio"]:checked + .radio-label.radio-label-no:before {
+  background-color: #F44336;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+
+.radioFlat input[type="radio"]:focus + .radio-label.radio-label-no:before {
+  outline: none;
+  border-color: #F44336;
+}
+
+.radio input[type="radio"]:disabled + .radio-label:before {
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+  border-color: #b4b4b4;
+  background: #b4b4b4;
+}
+
+.radio input[type="radio"] + .radio-label:empty:before {
+  margin-right: 0;
+}
+
+/* END Radio Flat*/
