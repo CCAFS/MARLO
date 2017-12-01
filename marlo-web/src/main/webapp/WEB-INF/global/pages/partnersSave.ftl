@@ -14,7 +14,7 @@
     <article>
     [#-- title --]
     <div class="title col-xs-12">
-      <h3 class=" text-center form-group">[@s.text name="Request creation of new institution" /]</h3>
+      <h3 class=" text-center form-group">[@s.text name="marloRequestCreation.title" /]</h3>
     </div>  
     
     [#if !messageSent]
@@ -22,8 +22,8 @@
       [#-- SLIDE 1 --]
       <div class="mySlides fades">
         <p  class="helpMessage ">
-          <span class=""> </span> Please enter the institution as “Partner,” the legal entity. <br />
-          <span class=""> </span> The name of the institution should be in its official language. (e.g. For CIAT: Centro Internacional de Agricultura Tropical).
+          <span> [@s.text name="marloRequestCreation.helpMessage" /] </span> <br/>
+          <span> [@s.text name="marloRequestCreation.helpMessage.example" /] </span> 
         </p>
       </div>
     
@@ -60,7 +60,7 @@
         
         [#-- Web page link --]
         <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
+          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" inputGroupText="http://" /]
         </div>
         
         [#-- Hidden input with message of success --]
