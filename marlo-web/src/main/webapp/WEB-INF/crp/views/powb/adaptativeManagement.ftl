@@ -38,6 +38,21 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="adaptativeManagement.title" /]</h3>
         <div class="borderBox">
+        
+          [#-- CRP Management and governance (up to 1/4 page) --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.managementGovernance" help="liaisonInstitution.powb.managementGovernance.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- Monitoring, Evaluation, Impact Assessment and Learning (up to ½ page) --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.melInitiatives" help="liaisonInstitution.powb.melInitiatives.help" required=true className="limitWords-300" editable=editable /]
+          </div>
+          
+          [#-- Adjustments/ changes to your Theories of Change (up to ½ page) --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.plannedAdjusments" help="liaisonInstitution.powb.plannedAdjusments.help" required=true className="limitWords-300" editable=editable /]
+          </div>
           
         </div>
         

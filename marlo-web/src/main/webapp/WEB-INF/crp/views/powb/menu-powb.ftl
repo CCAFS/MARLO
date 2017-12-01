@@ -1,6 +1,7 @@
 [#ftl]
 
 [#assign menus= [
+  [#--
   { 'title': 'A. CRP Level', 'show': true,
     'items': [
     { 'slug': 'delivery',  'name': 'powb.menu.delivery',  'action': 'delivery',  'active': true  },
@@ -24,7 +25,7 @@
     { 'slug': 'expectedKeyOutputstable',  'name': 'powb.menu.expectedKeyOutputstable',  'action': 'expectedKeyOutputstable',  'active': true  }
     ]
   },
-  [#-- ---------------------------- --]
+   ---------------------------- --]
   { 'title': 'Executive Summary', 'show': true,
     'items': [
     { 'slug': 'summaryHighlight',  'name': 'powb.menu.summaryHighlight',  'action': 'summaryHighlight',  'active': true  }
