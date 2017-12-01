@@ -1041,6 +1041,13 @@ select#partnerSave_activityPartner_partner_type_id {
   width: 99%;
 }
 
+.input-group{
+  display: table;
+}
+
+.input-group .input-group-addon{
+  padding: 5px 12px;
+}
 
 .dialog-content {
     text-align: left;
