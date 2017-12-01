@@ -55,7 +55,7 @@
           <div class="form-group">
             <br />
             [#-- Back --]
-            <small >
+            <small>
               <a href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][/@s.url]">
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
               </a>
