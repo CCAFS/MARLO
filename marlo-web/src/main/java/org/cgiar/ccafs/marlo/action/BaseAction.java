@@ -1817,7 +1817,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case OUTCOMES:
         project = projectManager.getProjectById(projectID);
         List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
 
 
         project.setOutcomes(projectOutcomes);
