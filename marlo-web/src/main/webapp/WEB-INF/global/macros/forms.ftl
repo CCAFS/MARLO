@@ -1,7 +1,7 @@
 [#ftl]
 [#macro text name readText=false param="" ][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
-[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder=""]
+[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText=""]
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
@@ -10,7 +10,11 @@
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
+      [#-- Condition to add input group to field --]
+      [#if inputGroupText != ""]<div class="input-group"><span class="input-group-addon">${inputGroupText}</span>[/#if]
       <input type="${type}" id="${name}" name="${name}" value="[#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if]"  class="form-control input-sm ${className} ${required?string('required','optional')}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if] [#if placeholder?has_content]placeholder="[@s.text name=placeholder /]"[/#if]/>
+      [#if inputGroupText != ""]</div>[/#if]
+      [#-- End condition --]
     [#else]
       <input type="hidden" id="${name}" name="${name}" value="[#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if]" class="form-control input-sm ${className} ${required?string('required','optional')}"/>
       [#assign requiredText][#if required && editable ]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 

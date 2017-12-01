@@ -1041,6 +1041,13 @@ select#partnerSave_activityPartner_partner_type_id {
   width: 99%;
 }
 
+.input-group{
+  display: table;
+}
+
+.input-group .input-group-addon{
+  padding: 5px 12px;
+}
 
 .dialog-content {
     text-align: left;
@@ -6403,6 +6410,7 @@ img.removeInput {
 	font-size: 0.9em;
 	border: 1px solid #f7f7f7;
 	box-shadow: 0px 1px 3px #c5c5c5;
+	background-color: #fff;
 }
 .newsButton b{
     font-weight: bolder;

@@ -60,7 +60,7 @@
         
         [#-- Web page link --]
         <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" inputGroup="http://" /]
+          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" placeholder="http://example.com" /]
         </div>
         
         [#-- Hidden input with message of success --]
@@ -71,7 +71,7 @@
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">
-          [@s.submit type="button" name="save"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="form.buttons.savePartner.request" /][/@s.submit]
+          [@s.submit type="button" name="save"] <span class="glyphicon glyphicon-send"></span> [@s.text name="form.buttons.savePartner.request" /][/@s.submit]
         </div> 
       </div>
       [/@s.form]
