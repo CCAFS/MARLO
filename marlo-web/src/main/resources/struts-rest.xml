@@ -5,7 +5,13 @@
 <struts>
 	<package name="rest" namespace="/api" extends="rest-default">
     <action name="institutions"
-      class="org.cgiar.ccafs.marlo.action.rest.InstitutionController">
+      class="org.cgiar.ccafs.marlo.rest.InstitutionController">
+    </action>
+<!--     <action name="crps" -->
+<!--       class="org.cgiar.ccafs.marlo.rest.CrpEntityController"> -->
+    <action name="crps"
+      class="org.cgiar.ccafs.marlo.rest.CrpController">
+      
     </action>
   </package>
 </struts>

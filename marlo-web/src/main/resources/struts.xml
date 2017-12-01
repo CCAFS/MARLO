@@ -17,7 +17,7 @@
 	<constant name="struts.mapper.class"
 		value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />
 	<constant name="struts.mapper.prefixMapping" value="/api:rest,:struts" />
-	<constant name="struts.convention.action.suffix" value="Action, Controller" />
+	<constant name="struts.convention.action.suffix" value="Controller" />
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
 	<constant name="struts.convention.default.parent.package"
 		value="rest-default" />
@@ -25,6 +25,10 @@
 
 	<constant name="struts.rest.namespace" value="/api" />
 	<constant name="struts.rest.defaultExtension" value="json" />
+  <constant name="struts.rest.content.restrictToGET" value="false"/>
+  
+  <bean type="org.apache.struts2.rest.handler.ContentTypeHandler" name="jackson" class="org.apache.struts2.rest.handler.JacksonLibHandler"/>
+  <constant name="struts.rest.handlerOverride.json" value="jackson"/>
 
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
