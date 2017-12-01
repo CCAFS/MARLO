@@ -13,7 +13,7 @@
           </div>
           [#-- Legal Information--]
           <div class="col-md-4 infoLinks text-left">
-            <strong>Legal</strong><br />
+            [#-- <strong>Legal</strong><br /> --]
             
           </div>
           [#-- Glossary --]
