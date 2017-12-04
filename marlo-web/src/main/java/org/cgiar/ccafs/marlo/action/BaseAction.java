@@ -64,11 +64,13 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.CenterUser;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -1229,7 +1231,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<GlobalUnit> getCrpList() {
-    return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
+    List<Crp> crps = new ArrayList<>();
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        if (crpUser.getCrp().isActive()) {
+          crps.add(crpUser.getCrp());
+        }
+      }
+    } else {
+      crps = this.getCrpCategoryList("1");
+    }
+
+    return crps;
   }
 
   /**

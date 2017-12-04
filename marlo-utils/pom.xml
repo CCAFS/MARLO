@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.cgiar.ccafs</groupId>
     <artifactId>marlo</artifactId>
-    <version>4.1.8-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>marlo-utils</artifactId>
   
