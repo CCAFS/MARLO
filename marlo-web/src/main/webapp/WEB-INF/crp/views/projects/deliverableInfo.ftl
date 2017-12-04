@@ -186,10 +186,11 @@
           <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
           <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
         [#else]
-          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingCapacity" value="true">[/#if]
+          [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
+          
         [/#if]
       </div>
     </div>
