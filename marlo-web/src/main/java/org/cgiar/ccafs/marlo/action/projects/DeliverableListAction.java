@@ -188,7 +188,7 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
-  public List<Deliverable> getDeliverables(boolean open) {
+  public List<Deliverable> getDeliverables(boolean open, boolean closed) {
 
     try {
       if (open) {
@@ -247,23 +247,41 @@ public class DeliverableListAction extends BaseAction {
 
       } else {
         if (this.isPlanningActive()) {
-          List<Deliverable> openA = deliverables.stream()
-            .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId())
-              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
-            .collect(Collectors.toList());
+          List<Deliverable> openA = new ArrayList<>();
+          if (closed) {
+            openA = deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+              .collect(Collectors.toList());
+
+          } else {
+            openA = deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))))))
+              .collect(Collectors.toList());
+          }
 
           return openA;
         } else {
-          List<Deliverable> openA = deliverables.stream()
-            .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Complete.getStatusId())
-              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
-            .collect(Collectors.toList());
+          List<Deliverable> openA = new ArrayList<>();
+          if (closed) {
+            openA = deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+              .collect(Collectors.toList());
+
+          } else {
+            openA = deliverables.stream()
+              .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+                && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Complete.getStatusId()))))))
+              .collect(Collectors.toList());
+          }
+
+
           openA
             .removeAll(
               deliverables.stream()
