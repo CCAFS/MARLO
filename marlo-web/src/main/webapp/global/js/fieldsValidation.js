@@ -56,7 +56,7 @@ function getListElement(fieldName,message) {
 
 function getInputElement(fieldName,message) {
   var elementQuery = $("input[name='" + fieldName + "']");
-  console.log(elementQuery);
+
   // validate if it's input
   if(elementQuery.length == 0) {
     // validate if it's textaera
@@ -104,6 +104,18 @@ function getInputElement(fieldName,message) {
       }
     }
   }
+
+  // Find Bootstrap tabs
+  var tabPane = $(elementQuery).parents('.tab-pane');
+  if(tabPane) {
+    var tabID = $(tabPane).attr('id');
+    var $tab = $('a[href="#' + tabID + '"]');
+    // Add Field error to the text
+    $tab.addClass('fieldError');
+    // Add Filed error to the badge
+    $tab.find('.badge').addClass('fieldError');
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 

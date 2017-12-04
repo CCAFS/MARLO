@@ -257,10 +257,14 @@ ul.fieldError {
   padding: 0;
 }
 
-ul.fieldError li {
+ul.fieldError li, a.fieldError {
   color: red;
   list-style-type: none;
   text-align: left;
+}
+
+span.badge.fieldError{
+  background-color:red;
 }
 
 .radios {
@@ -366,14 +370,14 @@ p.fieldChecked{
 }
 
 span.fieldError{
-  background-color: #F59898;
-  color: #fff !important;
-  padding: 1px 6px 1px 6px;
-  margin-right: 4px;
-  margin-top: 2px;
-  border-radius: 2px;
-  font-size: 0.85em;
-  float: left;
+  /* background-color: #F59898; */
+  /* color: #fff !important; */
+  /* padding: 1px 6px 1px 6px; */
+  /* margin-right: 4px; */
+  /* margin-top: 2px; */
+  /* border-radius: 2px; */
+  /* font-size: 0.85em; */
+  /* float: left; */
 }
 
 p.warning-info {
