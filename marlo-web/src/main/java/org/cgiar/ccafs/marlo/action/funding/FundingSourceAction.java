@@ -253,7 +253,8 @@ public class FundingSourceAction extends BaseAction {
 
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()).isEmpty();
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList()).isEmpty();
   }
 
   private Path getAutoSaveFilePath() {
