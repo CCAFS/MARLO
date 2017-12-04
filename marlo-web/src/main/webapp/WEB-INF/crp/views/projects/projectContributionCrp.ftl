@@ -162,7 +162,7 @@
             [/#if]
             
             [#-- Baseline Indicators --]
-            [#if action.hasSpecificities('crp_baseline_indicators') && (projectOutcome.crpProgramOutcome.crpProgram.id == 86)]
+            [#if action.hasSpecificities('crp_baseline_indicators') && (projectOutcome.crpProgramOutcome.crpProgram.id == 86) && false]
               <h5 class="sectionSubTitle">Baseline Indicators</h5>
               <div class="form-group">
                 <!-- Nav tabs -->
@@ -195,6 +195,7 @@
                 </div>
               </div>
             [/#if]
+            
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
