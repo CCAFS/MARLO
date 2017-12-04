@@ -21,7 +21,7 @@
           <td class="date"> 
             ${log.createdDate?datetime} 
             [#if log_index == 0]<!--span class="label label-primary">Current</span--> 
-              [#if canEdit]<a id="cancelButton" class="btn btn-danger btn-xs" href="#" role="button">[@s.text name="form.buttons.recover" /] this version</a>[/#if]
+              [#if canEdit]<a id="cancelButton" class="btn btn-danger btn-xs" href="#" role="button">[@s.text name="form.buttons.recover" /] [@s.text name="logHistory.thisVersion" /]</a>[/#if]
             [/#if]
           </td>
           <td class="person">${log.user.composedCompleteName?html}</td>
