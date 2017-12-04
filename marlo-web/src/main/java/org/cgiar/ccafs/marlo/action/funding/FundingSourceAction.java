@@ -78,6 +78,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * FundingSourceAction:
+ * 
+ * @author AVALENCIA - CCAFS
+ * @date Nov 23, 2017
+ * @time 11:38:34 AM: Check empty regions and countries
+ */
 public class FundingSourceAction extends BaseAction {
 
 
@@ -1022,8 +1029,29 @@ public class FundingSourceAction extends BaseAction {
           fundingSourceLocationsManager.saveFundingSourceLocations(fundingSourceLocationSave);
         }
       }
+    }
 
+    // Check empty regions and countries
+    List<FundingSourceLocation> regionsDB = new ArrayList<>(fundingSourceDB.getFundingSourceLocations().stream()
+      .filter(
+        fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
 
+    // If regions were deleted and existed records in DB, delete the regions
+    if (fundingSource.getFundingRegions() == null && regionsDB != null && regionsDB.size() > 0) {
+      for (FundingSourceLocation fundingSourceLocation : regionsDB) {
+        fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+      }
+    }
+    List<FundingSourceLocation> countriesDB = new ArrayList<>(fundingSourceDB
+      .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
+        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 2)
+      .collect(Collectors.toList()));
+    // If countries were deleted and existed records in DB, delete the countries
+    if (fundingSource.getFundingCountry() == null && countriesDB != null && countriesDB.size() > 0) {
+      for (FundingSourceLocation fundingSourceLocation : countriesDB) {
+        fundingSourceLocationsManager.deleteFundingSourceLocations(fundingSourceLocation.getId());
+      }
     }
 
   }
