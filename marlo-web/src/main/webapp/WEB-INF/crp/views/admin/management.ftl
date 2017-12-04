@@ -206,32 +206,40 @@
     </div>
     
     [#-- Managers  --]
-    <label for="">[@s.text name="CrpProgram.managers"/]</label>
-    <div class="usersBlock managers simpleBox" listname="flagshipsPrograms[${index}].managers">
-      [#-- Managers List --]
-      <div class="items-list" >
-        <ul>
-        [#if element.managers?has_content]
-          [#list element.managers as leader]
-            [@userItem element=leader index=leader_index name="${customName}.managers" userRole=fpmRole.id /]
-          [/#list]
-        [/#if]
-        </ul>
-        <p class="text-center usersMessage" style="display:${(element.managers?has_content)?string('none','block')}">[@s.text name="CrpProgram.notManagers.span"/]</p>
-      </div>
-      [#-- Add person Button --]
-      [#if editable]
-      <div class="text-center">
-        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> 
-        [@s.text name="form.buttons.addFlagshipManager" ]
-          [@s.param ]mkyong[/@s.param]
-        [/@s.text]
+    <div class="form-group">
+      <label for="">[@s.text name="CrpProgram.managers"/]</label>
+      <div class="usersBlock managers simpleBox" listname="flagshipsPrograms[${index}].managers">
+        [#-- Managers List --]
+        <div class="items-list" >
+          <ul>
+          [#if element.managers?has_content]
+            [#list element.managers as leader]
+              [@userItem element=leader index=leader_index name="${customName}.managers" userRole=fpmRole.id /]
+            [/#list]
+          [/#if]
+          </ul>
+          <p class="text-center usersMessage" style="display:${(element.managers?has_content)?string('none','block')}">[@s.text name="CrpProgram.notManagers.span"/]</p>
         </div>
+        [#-- Add person Button --]
+        [#if editable]
+        <div class="text-center">
+          <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> 
+          [@s.text name="form.buttons.addFlagshipManager" ]
+            [@s.param ]mkyong[/@s.param]
+          [/@s.text]
+          </div>
+        </div>
+        [/#if]
+        [#-- Hidden Parameters --]
+        <span class="usersType" style="display:none">programUser</span>
+        <span class="usersRole" style="display:none">${fpmRole.id}</span> 
       </div>
-      [/#if]
-      [#-- Hidden Parameters --]
-      <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">${fpmRole.id}</span> 
     </div>
+    
+    [#if action.hasSpecificities('crp_baseline_indicators')]
+    <div class="form-group simpleBox">
+      [@customForm.checkBoxFlat id="${customName}.allowBaseline" name="${customName}.allowBaseline" label="CrpProgram.allowBaseline" editable=editable value="true" checked=false cssClass="" /]
+    </div>
+    [/#if]
   </li>
 [/#macro]
