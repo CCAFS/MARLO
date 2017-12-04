@@ -64,7 +64,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
-import org.cgiar.ccafs.marlo.data.model.CenterUser;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -1231,7 +1230,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<GlobalUnit> getCrpList() {
-    List<Crp> crps = new ArrayList<>();
+    List<GlobalUnit> crps = new ArrayList<>();
     if (!this.canAccessSuperAdmin()) {
       User user = this.getCurrentUser();
       user = userManager.getUser(user.getId());
