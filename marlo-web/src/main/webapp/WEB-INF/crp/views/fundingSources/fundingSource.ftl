@@ -501,7 +501,10 @@
                   </a>
                 </td>
                 <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
-                <td>${(projectBudget.budgetType.name)!}</td>
+                <td>${(projectBudget.budgetType.name)!}
+                   [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+         
+                </td>
                 <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
                </tr>
               [#assign counter = counter + 1 /]
