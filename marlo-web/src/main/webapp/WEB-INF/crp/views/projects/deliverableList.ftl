@@ -77,7 +77,7 @@
              </p>
            [/#if]
            <hr />
-           <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+           <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
             [#if canEdit && action.hasPermission("addDeliverable")]
@@ -88,12 +88,17 @@
           </div>
           
           
-          [#if action.getDeliverables(false)?has_content]
+          [#if action.getDeliverables(false,false)?has_content]
             <h3 class="subTitle headTitle">Completed deliverables</h3>
             <hr />
-            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
           [/#if]
 
+          [#if action.getDeliverables(false,true)?has_content]
+            <h3 class="subTitle headTitle">Cancelled deliverables</h3>
+            <hr />
+            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+          [/#if]
           <input type="hidden" name="projectID" value="${projectID}" />
         [/@s.form] 
       </div>
