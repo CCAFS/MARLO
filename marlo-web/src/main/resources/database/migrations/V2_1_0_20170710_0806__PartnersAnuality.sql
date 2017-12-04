@@ -183,9 +183,9 @@ t2.division_id,
 ph.id
 FROM
 table_deliverable_partnerships t2
-left join deliverables d on d.id=t2.deliverable_id
-left JOIN project_phases pp ON pp.project_id = d.project_id
-left JOIN phases ph ON ph.id = pp.id_phase
+inner join deliverables d on d.id=t2.deliverable_id
+inner JOIN project_phases pp ON pp.project_id = d.project_id
+inner JOIN phases ph ON ph.id = pp.id_phase
 inner join project_partners ppa on  ppa.project_id=t2.project_id and ppa.institution_id=t2.institution_id and ppa.id_phase=ph.id
 inner join  project_partner_persons ppp on ppp.project_partner_id=ppa.id
 ;

@@ -129,7 +129,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
           i++;
         }
-        if (total == 0) {
+        if (total < 0) {
           this.addMessage(action.getText("projectBudgets.amount"));
           i = 0;
           for (ProjectBudget projectBudget : project.getBudgets()) {
