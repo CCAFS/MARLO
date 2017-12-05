@@ -143,7 +143,7 @@
 [@assumptionMacro assumption={} name="outcomes[-1].subIdos[-1].assumptions" index=-1 isTemplate=true /]
 
 [#-- Baseline Indicator Template --]
-[@baselineIndicatorMacro indicator={} name="outcomes[-1].baselineIndicators" index=-1 isTemplate=true /]
+[@baselineIndicatorMacro indicator={} name="outcomes[-1].indicators" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/crp/pages/footer.ftl" /]
 
@@ -198,17 +198,13 @@
     [#if editable && targetUnitList?has_content]<div class="form-group note">[@s.text name = "outcomes.addNewTargetUnit" /]</div>[/#if]
     
     
-    [#assign baselineIndicators = [
-            {"title": "Total project area targeted (ha)."},
-            {"title": "Numbers of heads of livestock per species in the project area. "}
-          ] 
-        /]
+
     
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
-      <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(baselineIndicators?size)!'0'}</span></a></li>
+      <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
       [/#if]
       <li role="presentation"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
     </ul>
@@ -245,9 +241,10 @@
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
           [#local hasFile = outcome.baselineFile?? && outcome.baselineFile.id?? /]
           <input id="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.baselineFile.id)!}" />
+          <input id="outcomeID" type="hidden" name="${outcomeCustomName}.outcomeID" value="${(outcome.id)!}" />
           [#-- Input File --]
           [#if editable]
-          <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaselineInstructions.do"></div>
+          <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
           [/#if]
           [#-- Uploaded File --]
           <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
@@ -260,12 +257,12 @@
         <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
         <div class="baselineIndicators-list"">
         
-        [#if baselineIndicators?has_content]
-          [#list baselineIndicators as baselineIndicator]
-            [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.baselineIndicators" index=baselineIndicator_index /]
+        [#if outcome.indicators?has_content]
+          [#list outcome.indicators as baselineIndicator]
+            [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
           [/#list]
         [#else]
-          [@baselineIndicatorMacro indicator={} name="${outcomeCustomName}.baselineIndicators" index=0 /]
+          [@baselineIndicatorMacro indicator={} name="${outcomeCustomName}.indicators" index=0 /]
         [/#if]
         </div>
         [#-- Add Baseline Indicator Button --]
@@ -433,11 +430,11 @@
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
     [#if !editable] 
-      [#if indicator.description?has_content]
-        <div class="input"><p> <strong>${index+1}.</strong> ${(indicator.description)!}</p></div>
+      [#if indicator.indicator?has_content]
+        <div class="input"><p> <strong>${index+1}.</strong> ${(indicator.indicator)!}</p></div>
       [/#if] 
     [#else]
-      [@customForm.input name="${customName}.title" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
+      [@customForm.input name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
     [/#if]
     <div class="clearfix"></div>
   </div>
