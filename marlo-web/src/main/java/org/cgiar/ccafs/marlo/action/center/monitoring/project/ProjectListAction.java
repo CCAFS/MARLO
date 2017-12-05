@@ -406,6 +406,7 @@ public class ProjectListAction extends BaseAction {
     centerProject.setResearchProgram(selectedProgram);
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(false);
+    centerProject.setProject(project);
 
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
@@ -426,8 +427,10 @@ public class ProjectListAction extends BaseAction {
     projectCrosscutingTheme.setImpactAssessment(false);
     projectCrosscutingTheme.setNa(false);
 
-    // project.setProjectCrosscutingTheme(projectCrosscutingTheme);
-    // projectCrosscutingTheme.setProject(project);
+    centerProject.setProjectCrosscutingTheme(projectCrosscutingTheme);
+    projectCrosscutingTheme.setProject(centerProject);
+
+    centerProject = projectService.saveCenterProject(centerProject);
 
 
   }
