@@ -1547,23 +1547,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean getFundingSourceStatus(FundingSource fundingSource) {
     fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-    List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
-      .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-        && c.getYear() == this.getActualPhase().getYear())
+    if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
+      List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
+        .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+          && c.getYear() == this.getActualPhase().getYear())
 
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
-    if (!sectionStatuses.isEmpty()) {
-      SectionStatus sectionStatus = sectionStatuses.get(0);
-      return sectionStatus.getMissingFields().length() == 0
-        && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
-          ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
+      if (!sectionStatuses.isEmpty()) {
+        SectionStatus sectionStatus = sectionStatuses.get(0);
+        return sectionStatus.getMissingFields().length() == 0
+          && !this.getAutoSaveFilePath(fundingSource.getClass().getSimpleName(),
+            ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), fundingSource.getId());
 
+      } else {
+
+        fundingSourceValidator.validate(this, fundingSource, false);
+        return this.getFundingSourceStatus(fundingSource);
+      }
     } else {
-
-      fundingSourceValidator.validate(this, fundingSource, false);
-      return this.getFundingSourceStatus(fundingSource);
+      return false;
     }
+
   }
 
   public boolean getFundingSourceStatus(long fundingSourceID) {
