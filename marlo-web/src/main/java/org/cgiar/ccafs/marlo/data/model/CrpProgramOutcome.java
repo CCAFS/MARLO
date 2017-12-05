@@ -95,6 +95,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   private List<CrpMilestone> milestones;
   private List<CrpOutcomeSubIdo> subIdos;
+  private List<CrpProgramOutcomeIndicator> indicators;
+
 
   public CrpProgramOutcome() {
   }
@@ -123,6 +125,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -143,6 +146,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -154,7 +158,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public Set<CrpClusterKeyOutputOutcome> getCrpClusterKeyOutputOutcomes() {
     return crpClusterKeyOutputOutcomes;
@@ -172,6 +175,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
+
 
   public Set<CrpProgramOutcomeIndicator> getCrpProgramOutcomeIndicators() {
     return crpProgramOutcomeIndicators;
@@ -198,6 +202,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return indicator;
   }
 
+  public List<CrpProgramOutcomeIndicator> getIndicators() {
+    return indicators;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -222,6 +229,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public Set<ProjectFurtherContribution> getProjectFurtherContributions() {
     return projectFurtherContributions;
@@ -272,7 +280,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.crpMilestones = crpMilestones;
   }
 
-
   public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
   }
@@ -281,6 +288,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
+
 
   public void setCrpProgramOutcomeIndicators(Set<CrpProgramOutcomeIndicator> crpProgramOutcomeIndicators) {
     this.crpProgramOutcomeIndicators = crpProgramOutcomeIndicators;
@@ -304,6 +312,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setIndicator(String indicator) {
     this.indicator = indicator;
+  }
+
+  public void setIndicators(List<CrpProgramOutcomeIndicator> indicators) {
+    this.indicators = indicators;
   }
 
   public void setMilestones(List<CrpMilestone> milestones) {
