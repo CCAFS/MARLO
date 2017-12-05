@@ -75,9 +75,9 @@ public class UploadBaseLineFileAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFundingSourceFilePath());
+    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getBaseLineFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
-    FileManager.copyFile(file, this.getFundingSourceFilePath() + fileDB.getFileName());
+    FileManager.copyFile(file, this.getBaseLineFilePath() + fileDB.getFileName());
     fileID = fileDB.getId();
     return SUCCESS;
   }
@@ -103,17 +103,17 @@ public class UploadBaseLineFileAction extends BaseAction {
   }
 
 
-  private String getFundingSourceFilePath() {
+  private String getBaseLineFilePath() {
     String upload = config.getUploadsBaseFolder();
-    return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
+    return upload + File.separator + this.getBaseLineRelativePath() + File.separator;
   }
 
 
-  public String getFundingSourceFileURL() {
-    return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
+  public String getBaseLineFileURL() {
+    return config.getDownloadURL() + "/" + this.getBaseLineFilePath().replace('\\', '/');
   }
 
-  private String getFundingSourceRelativePath() {
+  private String getBaseLineRelativePath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
   }
