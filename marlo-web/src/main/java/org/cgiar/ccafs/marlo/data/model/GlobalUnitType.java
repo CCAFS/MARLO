@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author Hermes Jimenez
  */
@@ -14,19 +16,19 @@ public class GlobalUnitType implements java.io.Serializable {
 
   private static final long serialVersionUID = 1393262857086220239L;
 
-
+  @Expose
   private Long id;
-
+  @Expose
   private User modifiedBy;
-
+  @Expose
   private User createdBy;
-
+  @Expose
   private String name;
-
+  @Expose
   private boolean active;
-
+  @Expose
   private Date activeSince;
-
+  @Expose
   private String modificationJustification;
 
   private Set<GlobalUnit> globalUnits = new HashSet<GlobalUnit>(0);

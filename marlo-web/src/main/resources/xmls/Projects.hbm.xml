@@ -355,13 +355,8 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnitProject" />
 		</set>
-		<set name="centerProjects" table="center_projects" inverse="true"
-			lazy="true" fetch="select">
-			<key>
-				<column name="project_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterProject" />
-		</set>
-
+    <one-to-one name="centerProject"
+      class="org.cgiar.ccafs.marlo.data.model.CenterProject"
+      cascade="save-update"></one-to-one>
 	</class>
 </hibernate-mapping>

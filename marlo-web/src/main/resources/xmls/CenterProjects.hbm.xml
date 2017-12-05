@@ -9,6 +9,7 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<one-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" constrained="true"></one-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />
@@ -32,10 +33,6 @@
 		<many-to-one name="researchProgram"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
 			<column name="program_id" />
-		</many-to-one>
-		<many-to-one name="project"
-			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
-			<column name="project_id" />
 		</many-to-one>
 		<property name="description" type="string">
 			<column name="description" length="65535" />
