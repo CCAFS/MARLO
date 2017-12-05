@@ -51,6 +51,7 @@ import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -170,9 +171,20 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
+
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
+      + File.separator;
+  }
+
+
   public long getCrpProgramID() {
     return crpProgramID;
   }
+
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
@@ -188,7 +200,6 @@ public class OutcomesAction extends BaseAction {
     return milestoneYears;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -197,6 +208,7 @@ public class OutcomesAction extends BaseAction {
   public List<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -207,11 +219,9 @@ public class OutcomesAction extends BaseAction {
     return srfIdos;
   }
 
-
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
-
 
   public List<Integer> getTargetYears() {
     List<Integer> targetYears = new ArrayList<>();
@@ -588,6 +598,7 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
+
   public void saveCrpProgramOutcome() {
 
     /**
@@ -638,6 +649,9 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setValue(crpProgramOutcomeDetached.getValue());
       crpProgramOutcomeDB.setYear(crpProgramOutcomeDetached.getYear());
       crpProgramOutcomeDB.setCrpProgram(selectedProgram);
+      if (crpProgramOutcomeDetached.getFile() != null && crpProgramOutcomeDetached.getFile().getId() == null) {
+        crpProgramOutcomeDetached.setFile(null);
+      }
       crpProgramOutcomeDB.setFile(crpProgramOutcomeDetached.getFile());
       crpProgramOutcomeDB.setModifiedBy(this.getCurrentUser());
       crpProgramOutcomeDB.setModificationJustification("");
@@ -651,6 +665,7 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
+
 
   public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
@@ -697,7 +712,6 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
-
 
   public void saveMilestones(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
