@@ -89,7 +89,7 @@ public class FundingSourceValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
-    if (fundingSource.getFundingSourceInfo().getBudgetType() == null
+    if (fundingSource.getFundingSourceInfo().getBudgetType() != null
       && fundingSource.getFundingSourceInfo().getBudgetType().getId() == null) {
       fundingSource.getFundingSourceInfo().setBudgetType(null);
     }
