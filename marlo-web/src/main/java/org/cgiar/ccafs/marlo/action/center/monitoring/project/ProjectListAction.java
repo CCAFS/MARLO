@@ -426,7 +426,6 @@ public class ProjectListAction extends BaseAction {
     project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
     project.setAdministrative(new Boolean(false));
 
-
     CenterProject centerProject = new CenterProject();
     centerProject.setActive(true);
     centerProject.setActiveSince(new Date());
@@ -438,19 +437,40 @@ public class ProjectListAction extends BaseAction {
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(false);
 
+    CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
+
+
+    projectCrosscutingTheme.setActive(true);
+    projectCrosscutingTheme.setActiveSince(new Date());
+    projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
+    projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
+    projectCrosscutingTheme.setModificationJustification("");
+
+    projectCrosscutingTheme.setClimateChange(false);
+    projectCrosscutingTheme.setGender(false);
+    projectCrosscutingTheme.setYouth(false);
+    projectCrosscutingTheme.setPoliciesInstitutions(false);
+    projectCrosscutingTheme.setCapacityDevelopment(false);
+    projectCrosscutingTheme.setBigData(false);
+    projectCrosscutingTheme.setImpactAssessment(false);
+    projectCrosscutingTheme.setNa(false);
+
+    centerProject.setProjectCrosscutingTheme(projectCrosscutingTheme);
+    projectCrosscutingTheme.setProject(centerProject);
+
     project.setCenterProject(centerProject);
     centerProject.setProject(project);
-
 
     project = projectManager.saveProject(project);
     projectID = project.getId();
 
-    Project newProject = projectManager.getProjectById(projectID);
-
-
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setActive(true);
+    globalUnitProject.setActiveSince(new Date());
+    globalUnitProject.setModifiedBy(this.getCurrentUser());
+    globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
-    globalUnitProject.setProject(newProject);
+    globalUnitProject.setProject(project);
     globalUnitProject.setOrigin(true);
     globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
