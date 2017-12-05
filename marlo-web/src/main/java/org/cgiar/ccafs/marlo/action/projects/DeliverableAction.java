@@ -1006,12 +1006,25 @@ public class DeliverableAction extends BaseAction {
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null).collect(Collectors.toList()));
+        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && !dt.getAdminType().booleanValue())
+        .collect(Collectors.toList()));
 
-      deliverableTypeParent.addAll(new ArrayList<>(
-        deliverableTypeManager.findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
-          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue()).collect(Collectors.toList())));
+      deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
+          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
+        .collect(Collectors.toList())));
 
+      if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+
+        deliverableTypeParent.addAll(deliverableTypeManager.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && dt.getAdminType().booleanValue())
+          .collect(Collectors.toList()));
+
+        deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
+            && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
+          .collect(Collectors.toList())));
+      }
       if (deliverable.getDeliverableType() != null) {
         Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
 
