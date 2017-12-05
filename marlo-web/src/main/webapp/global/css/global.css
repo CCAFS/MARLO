@@ -6410,6 +6410,7 @@ img.removeInput {
 	font-size: 0.9em;
 	border: 1px solid #f7f7f7;
 	box-shadow: 0px 1px 3px #c5c5c5;
+	background-color: #fff;
 }
 .newsButton b{
     font-weight: bolder;

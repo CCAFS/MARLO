@@ -27,6 +27,11 @@
           <span>  &#169; Copyright CIAT 2017 - Current version ${action.getVersion()}</span><br />
           <span> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Some rights reserved</a></span>
         </div>
+        <div class="newsButton">
+          <a href="https://marlo-news.blogspot.com" target="__blank">
+             <b> [@s.text name="footer.checkBlog" /] </b> <span class="fa fa-external-link-square"></span>
+          </a>
+        </div>
       </div>
     </footer>
     
