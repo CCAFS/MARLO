@@ -251,7 +251,7 @@
             [#if editable]<span class="removeIcon"> </span> [/#if]
           </p> 
         </div>
-        
+        <br />
         [#-- Baseline indicators list --]
         <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
         <div class="baselineIndicators-list"">
@@ -261,7 +261,7 @@
             [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
           [/#list]
         [#else]
-          [@baselineIndicatorMacro indicator={} name="${outcomeCustomName}.indicators" index=0 /]
+          [#-- @baselineIndicatorMacro indicator={} name="${outcomeCustomName}.indicators" index=0 / --]
         [/#if]
         </div>
         [#-- Add Baseline Indicator Button --]
