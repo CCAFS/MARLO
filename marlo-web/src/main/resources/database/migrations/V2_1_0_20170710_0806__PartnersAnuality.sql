@@ -31,7 +31,7 @@ INNER JOIN project_partner_locations ppp ON pp.id = ppp.project_partner_id)
 
 
 CREATE TEMPORARY TABLE
-IF NOT EXISTS table_deliverable_partnerships AS (select dp.*,pp.institution_id,pp.project_id,ppp.user_id from deliverable_partnerships dp inner join project_partner_persons ppp on dp.partner_person_id=ppp.id
+IF NOT EXISTS table_deliverable_partnerships AS (select distinct dp.*,pp.institution_id,pp.project_id,ppp.user_id from deliverable_partnerships dp inner join project_partner_persons ppp on dp.partner_person_id=ppp.id
 INNER JOIN project_partners pp on pp.id=ppp.project_partner_id
 inner join institutions inst on inst.id=pp.institution_id);
 
