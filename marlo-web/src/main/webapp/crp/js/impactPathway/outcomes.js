@@ -389,8 +389,8 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $uploadBlock.find('.textMessage .contentResult').html("");
   $uploadBlock.find('.textMessage').hide();
   $uploadBlock.find('.fileUpload').show();
-  $('input#fileID').val('');
-  $('input#outcomeID').val('');
+  $('input.fileID').val('');
+  $('input.outcomeID').val('');
 });
 
 /**
