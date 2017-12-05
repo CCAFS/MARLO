@@ -240,8 +240,7 @@
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
           [#local hasFile = outcome.baselineFile?? && outcome.baselineFile.id?? /]
-          <input id="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.baselineFile.id)!}" />
-          <input id="outcomeID" type="hidden" name="${outcomeCustomName}.outcomeID" value="${(outcome.id)!}" />
+          <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.baselineFile.id)!}" />
           [#-- Input File --]
           [#if editable]
           <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>

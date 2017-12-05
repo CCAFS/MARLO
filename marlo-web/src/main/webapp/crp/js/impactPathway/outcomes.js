@@ -351,27 +351,37 @@ var $fileUpload = $uploadBlock.find('.upload');
 $fileUpload.fileupload({
     dataType: 'json',
     start: function(e) {
-      console.log(e);
-      $uploadBlock.addClass('blockLoading');
+      var $ub = $(e.target).parents('.fileUploadContainer');
+      $ub.addClass('blockLoading');
     },
     stop: function(e) {
-      $uploadBlock.removeClass('blockLoading');
+      var $ub = $(e.target).parents('.fileUploadContainer');
+      $ub.removeClass('blockLoading');
     },
     done: function(e,data) {
       var r = data.result;
       console.log(r);
       if(r.saved) {
-        $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
-        $uploadBlock.find('.textMessage').show();
-        $uploadBlock.find('.fileUpload').hide();
+        var $ub = $(e.target).parents('.fileUploadContainer');
+        $ub.find('.textMessage .contentResult').html(r.fileFileName);
+        $ub.find('.textMessage').show();
+        $ub.find('.fileUpload').hide();
         // Set file ID
-        $('input#fileID').val(r.fileID);
-        $('input#outcomeID').val(r.outcomeID);
+        $ub.find('input.fileID').val(r.fileID);
+        $ub.find('input.outcomeID').val(r.outcomeID);
       }
     },
     progressall: function(e,data) {
       var progress = parseInt(data.loaded / data.total * 100, 10);
     }
+});
+
+// Prepare data
+$fileUpload.bind('fileuploadsubmit', function(e,data) {
+  var outcomeID = $(e.target).parents('.outcome').find('.outcomeId').val();
+  data.formData = {
+    outcomeID: outcomeID
+  };
 });
 
 // Remove file event
