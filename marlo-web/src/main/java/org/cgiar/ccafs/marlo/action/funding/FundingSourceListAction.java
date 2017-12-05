@@ -245,11 +245,17 @@ public class FundingSourceListAction extends BaseAction {
 
       }
     }
+    List<FundingSource> fundingSources = new ArrayList<>();
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
           .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+        if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
+          fundingSources.add(fundingSource);
+        }
       }
+      myProjects.clear();
+      myProjects.addAll(fundingSources);
     }
 
   }
