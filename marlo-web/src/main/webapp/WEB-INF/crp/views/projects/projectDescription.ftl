@@ -95,7 +95,7 @@
             
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.summary" required=((project.projectEditLeader)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project status --]
@@ -180,11 +180,11 @@
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
-                    <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
-                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                    <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]"> 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
+                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation glyphicon glyphicon-remove"></span>[/#if]
                       <div class="clearfix"></div>
                       <ul class="leaders">
                         [#if element.crpClusterOfActivity.leaders??]
@@ -256,10 +256,10 @@
 [#-- Cluster of activity list template --]
 <ul style="display:none">
   <li id="cpListTemplate" class="clusterActivity clearfix">
-    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
     <span class="name"></span>
+    <span class="listButton remove glyphicon glyphicon-remove"></span>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>
   </li>
@@ -268,7 +268,7 @@
 [#-- project scope template --]
 <ul style="display:none">
   <li id="projecScope-template" class="projecScope clearfix">
-    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <span class="listButton remove glyphicon glyphicon-remove"></span>
     <input class="id" type="hidden" name="project.scopes[-1].locElementType.id" value="" />
     <input class="cid" type="hidden" name="project.scopes[-1].id" value="" />
     <span class="name"></span>
