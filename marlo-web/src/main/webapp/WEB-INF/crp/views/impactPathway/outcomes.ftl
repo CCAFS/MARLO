@@ -237,7 +237,7 @@
       </div>
       
       [#-- Baseline indicators --]
-      [#if action.hasSpecificities('crp_baseline_indicators') && (crpProgramID == 86)]
+      [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <div role="tabpanel" class="tab-pane fade" id="baseline-tab-${index}">
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
