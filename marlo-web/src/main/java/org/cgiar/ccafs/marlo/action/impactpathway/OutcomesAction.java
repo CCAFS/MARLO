@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
@@ -35,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
@@ -91,6 +93,7 @@ public class OutcomesAction extends BaseAction {
 
 
   private CrpManager crpManager;
+  private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private long crpProgramID;
@@ -116,7 +119,8 @@ public class OutcomesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
     CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
-    HistoryComparator historyComparator, AuditLogManager auditLogManager, SrfSubIdoManager srfSubIdoManager) {
+    HistoryComparator historyComparator, AuditLogManager auditLogManager,
+    CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -131,6 +135,7 @@ public class OutcomesAction extends BaseAction {
     this.crpAssumptionManager = crpAssumptionManager;
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
+    this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicator;
   }
 
 
@@ -238,7 +243,8 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcome.setMilestones(
         crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
+      crpProgramOutcome.setIndicators(crpProgramOutcome.getCrpProgramOutcomeIndicators().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList()));
       crpProgramOutcome.setSubIdos(
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
@@ -630,18 +636,66 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setValue(crpProgramOutcomeDetached.getValue());
       crpProgramOutcomeDB.setYear(crpProgramOutcomeDetached.getYear());
       crpProgramOutcomeDB.setCrpProgram(selectedProgram);
-
+      crpProgramOutcomeDB.setFile(crpProgramOutcomeDetached.getFile());
       crpProgramOutcomeDB.setModifiedBy(this.getCurrentUser());
       crpProgramOutcomeDB.setModificationJustification("");
 
       crpProgramOutcomeDB = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcomeDB);
 
+      this.saveIndicators(crpProgramOutcomeDB, crpProgramOutcomeDetached);
       this.saveMilestones(crpProgramOutcomeDB, crpProgramOutcomeDetached);
       this.saveSubIdo(crpProgramOutcomeDB, crpProgramOutcomeDetached);
 
     }
 
   }
+
+  public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
+
+    /*
+     * Delete Indicators
+     */
+    for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcomeDB.getCrpProgramOutcomeIndicators()
+      .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (crpProgramOutcomeDetached.getIndicators() != null) {
+        if (!crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
+          crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+        }
+      } else {
+        crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+      }
+    }
+
+    /*
+     * Save Milestones
+     */
+    if (crpProgramOutcomeDetached.getIndicators() != null) {
+      for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDetached : crpProgramOutcomeDetached.getIndicators()) {
+        CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDB = null;
+        if (crpProgramOutcomeIndicatorDetached.getId() == null) {
+          crpProgramOutcomeIndicatorDB = new CrpProgramOutcomeIndicator();
+          crpProgramOutcomeIndicatorDB.setActive(true);
+          crpProgramOutcomeIndicatorDB.setCreatedBy(this.getCurrentUser());
+          crpProgramOutcomeIndicatorDB.setActiveSince(new Date());
+
+        } else {
+          crpProgramOutcomeIndicatorDB = crpProgramOutcomeIndicatorManager
+            .getCrpProgramOutcomeIndicatorById(crpProgramOutcomeIndicatorDetached.getId());
+        }
+
+        crpProgramOutcomeIndicatorDB.setCrpProgramOutcome(crpProgramOutcomeDB);
+        crpProgramOutcomeIndicatorDB.setIndicator(crpProgramOutcomeIndicatorDetached.getIndicator());
+
+        crpProgramOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
+        crpProgramOutcomeIndicatorDB.setModificationJustification("");
+
+        crpProgramOutcomeIndicatorDB =
+          crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);
+      }
+    }
+
+  }
+
 
   public void saveMilestones(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
 
