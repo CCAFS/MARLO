@@ -343,6 +343,44 @@ function removeBaselineIndicator() {
 }
 
 /**
+ * File upload (blueimp-tmpl)
+ */
+
+var $uploadBlock = $('.fileUploadContainer');
+var $fileUpload = $uploadBlock.find('.upload');
+$fileUpload.fileupload({
+    dataType: 'json',
+    start: function(e) {
+      $uploadBlock.addClass('blockLoading');
+    },
+    stop: function(e) {
+      $uploadBlock.removeClass('blockLoading');
+    },
+    done: function(e,data) {
+      var r = data.result;
+      console.log(r);
+      if(r.saved) {
+        $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
+        $uploadBlock.find('.textMessage').show();
+        $uploadBlock.find('.fileUpload').hide();
+        // Set file ID
+        $('input#fileID').val(r.fileID);
+      }
+    },
+    progressall: function(e,data) {
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+    }
+});
+
+// Remove file event
+$uploadBlock.find('.removeIcon').on('click', function() {
+  $uploadBlock.find('.textMessage .contentResult').html("");
+  $uploadBlock.find('.textMessage').hide();
+  $uploadBlock.find('.fileUpload').show();
+  $('input#fileID').val('');
+});
+
+/**
  * General Function
  */
 

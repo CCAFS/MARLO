@@ -94,7 +94,7 @@
 		</set>
 		<many-to-one name="file"
       class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-      <column name="file" not-null="false" />
+      <column name="file_id" not-null="false" />
     </many-to-one>
      <set name="crpProgramOutcomeIndicators" table="crp_program_outcome_indicator" inverse="true" lazy="true" fetch="select">
             <key>

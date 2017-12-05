@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
-[#assign pageLibs = ["select2","cytoscape","cytoscape-panzoom"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
   "${baseUrlMedia}/js/impactPathway/outcomes.js", 
@@ -207,7 +207,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
-      [#if action.hasSpecificities('crp_baseline_indicators') && (crpProgramID == 86)]
+      [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(baselineIndicators?size)!'0'}</span></a></li>
       [/#if]
       <li role="presentation"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Milestones <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
@@ -239,6 +239,7 @@
       [#-- Baseline indicators --]
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
       <div role="tabpanel" class="tab-pane fade" id="baseline-tab-${index}">
+        
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
@@ -252,7 +253,7 @@
           <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
             <span class="contentResult">[#if outcome.baselineFile??]${(outcome.baselineFile.fileName)!('No file name')} [/#if]</span> 
             [#if editable]<span class="removeIcon"> </span> [/#if]
-          </p>
+          </p> 
         </div>
         
         [#-- Baseline indicators list --]
