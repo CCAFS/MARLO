@@ -177,18 +177,21 @@ public class LoginAction extends BaseAction {
     } else {
       // Check if the user exists in the session
       if (this.getCurrentUser() != null) {
-        if (this.getCrpSession() != null) {
-          return SUCCESS;
-        }
+        switch (this.getCurrentCrp().getGlobalUnitType().getId().intValue()) {
+          case 1:
+            return SUCCESS;
 
-        if (this.getCenterSession() != null) {
-          this.url = this.getBaseUrl() + "/" + this.getCenterSession() + "/centerDashboard.do";
-          return LOGIN;
+          case 2:
+            this.url = this.getBaseUrl() + "/" + this.getCurrentCrp().getAcronym() + "/centerDashboard.do";
+            return LOGIN;
+
+          default:
+            return INPUT;
         }
       } else {
         return INPUT;
       }
-      return INPUT;
+
       // return (this.getCurrentUser() == null) ? INPUT : SUCCESS;
     }
 

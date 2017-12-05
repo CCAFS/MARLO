@@ -99,7 +99,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   @Expose
   private String suggestedName;
 
-  @Expose
+
   private Project project;
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);

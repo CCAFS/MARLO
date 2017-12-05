@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
@@ -82,6 +83,7 @@ public class ProjectListAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
+  private GlobalUnitProjectManager globalUnitProjectManager;
   private ICenterProjectCrosscutingThemeManager projectCrosscutingService;
   private ICenterProjectLocationManager projectLocationService;
   private ICenterProjectFundingSourceManager centerProjectFudingSourceManager;
@@ -117,7 +119,7 @@ public class ProjectListAction extends BaseAction {
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
     ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
-    ICenterProjectPartnerPersonManager partnerPersonService) {
+    ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -133,46 +135,12 @@ public class ProjectListAction extends BaseAction {
     this.projectLocationService = projectLocationService;
     this.partnerService = partnerService;
     this.partnerPersonService = partnerPersonService;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
   @Override
   public String add() {
-
-    // CenterProject project = new CenterProject();
-    // project.setActive(true);
-    // project.setActiveSince(new Date());
-    // project.setCreatedBy(this.getCurrentUser());
-    // project.setModifiedBy(this.getCurrentUser());
-    // project.setStartDate(new Date());
-    // project.setDateCreated(new Date());
-    // project.setResearchProgram(selectedProgram);
-    // project.setProjectStatus(new CenterProjectStatus(new Long(2), true));
-    // project.setAutoFill(false);
-    //
-    //
-    // CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
-    //
-    //
-    // projectCrosscutingTheme.setActive(true);
-    // projectCrosscutingTheme.setActiveSince(new Date());
-    // projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
-    // projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
-    // projectCrosscutingTheme.setModificationJustification("");
-    //
-    // projectCrosscutingTheme.setClimateChange(false);
-    // projectCrosscutingTheme.setGender(false);
-    // projectCrosscutingTheme.setYouth(false);
-    // projectCrosscutingTheme.setPoliciesInstitutions(false);
-    // projectCrosscutingTheme.setCapacityDevelopment(false);
-    // projectCrosscutingTheme.setBigData(false);
-    // projectCrosscutingTheme.setImpactAssessment(false);
-    // projectCrosscutingTheme.setNa(false);
-    //
-    // project.setProjectCrosscutingTheme(projectCrosscutingTheme);
-    // projectCrosscutingTheme.setProject(project);
-    //
-    // projectID = projectService.saveCenterProject(project).getId();
 
     /**
      * Add Project sync information
@@ -216,16 +184,13 @@ public class ProjectListAction extends BaseAction {
     long pID = Long.parseLong(syncCode);
     Project project = projectManager.getProjectById(pID);
 
-    CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
+    CenterProject centerProject = this.createCenterProject(project, true);
 
-    centerProject.setName(project.getTitle());
-    centerProject.setDescription(project.getSummary());
-    centerProject.setStartDate(project.getStartDate());
-    centerProject.setEndDate(project.getEndDate());
-    centerProject.setProjectLeader(project.getLeaderPerson().getUser());
-    centerProject.setSync(true);
-    centerProject.setSyncDate(new Date());
-    centerProject.setAutoFill(true);
+    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setGlobalUnit(loggedCenter);
+    globalUnitProject.setProject(project);
+    globalUnitProject.setOrigin(false);
+    globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
     // Add Project Status
     centerProject.setProjectStatus(new CenterProjectStatus(project.getStatus(), true));
@@ -244,8 +209,8 @@ public class ProjectListAction extends BaseAction {
     CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
 
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    globalUnitProject = project.getGlobalUnitProjects().stream().filter(gu -> gu.isActive() && gu.isOrigin())
+      .collect(Collectors.toList()).get(0);
 
     fundingSource.setCenterProject(centerProject);
     fundingSource.setCode("P" + syncCode);
@@ -280,7 +245,23 @@ public class ProjectListAction extends BaseAction {
 
     agreement = ocsClient.getagreement(syncCode);
 
-    CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
+    Project project = new Project();
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("New expected Project created");
+    project.setActive(true);
+    project.setActiveSince(new Date());
+    project.setScale(0);
+    project.setCofinancing(false);
+    project.setCreateDate(new Date());
+    project.setProjectEditLeader(false);
+    project.setPresetDate(new Date());
+    project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    project.setAdministrative(new Boolean(false));
+    project = projectManager.saveProject(project);
+    projectID = project.getId();
+
+    CenterProject centerProject = this.createCenterProject(project, true);
 
     centerProject.setName(agreement.getDescription());
     centerProject.setDescription(agreement.getDescription());
@@ -291,6 +272,12 @@ public class ProjectListAction extends BaseAction {
     centerProject.setAutoFill(true);
 
     projectService.saveCenterProject(centerProject);
+
+    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setGlobalUnit(loggedCenter);
+    globalUnitProject.setProject(project);
+    globalUnitProject.setOrigin(true);
+    globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
     CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
 
@@ -374,28 +361,7 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-  /**
-   * Create a No Sync Project
-   */
-  public void createEmptyProject() {
-
-    Project project = new Project();
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setModificationJustification("New expected Project created");
-    project.setActive(true);
-    project.setActiveSince(new Date());
-    project.setScale(0);
-    project.setCofinancing(false);
-    project.setCreateDate(new Date());
-    project.setProjectEditLeader(false);
-    project.setPresetDate(new Date());
-    project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-    project.setAdministrative(new Boolean(false));
-    project = projectManager.saveProject(project);
-    projectID = project.getId();
-
-
+  public CenterProject createCenterProject(Project project, boolean autofill) {
     CenterProject centerProject = new CenterProject();
     centerProject.setActive(true);
     centerProject.setActiveSince(new Date());
@@ -405,9 +371,14 @@ public class ProjectListAction extends BaseAction {
     centerProject.setDateCreated(new Date());
     centerProject.setResearchProgram(selectedProgram);
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
-    centerProject.setAutoFill(false);
+    centerProject.setAutoFill(autofill);
+
+    project.setCenterProject(centerProject);
     centerProject.setProject(project);
 
+    project = projectManager.saveProject(project);
+
+    centerProject = projectService.getCenterProjectById(project.getId());
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
 
@@ -432,6 +403,56 @@ public class ProjectListAction extends BaseAction {
 
     centerProject = projectService.saveCenterProject(centerProject);
 
+
+    return centerProject;
+  }
+
+  /**
+   * Create a No Sync Project
+   */
+  public void createEmptyProject() {
+
+    Project project = new Project();
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("New expected Project created");
+    project.setActive(true);
+    project.setActiveSince(new Date());
+    project.setScale(0);
+    project.setCofinancing(false);
+    project.setCreateDate(new Date());
+    project.setProjectEditLeader(false);
+    project.setPresetDate(new Date());
+    project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    project.setAdministrative(new Boolean(false));
+
+
+    CenterProject centerProject = new CenterProject();
+    centerProject.setActive(true);
+    centerProject.setActiveSince(new Date());
+    centerProject.setCreatedBy(this.getCurrentUser());
+    centerProject.setModifiedBy(this.getCurrentUser());
+    centerProject.setStartDate(new Date());
+    centerProject.setDateCreated(new Date());
+    centerProject.setResearchProgram(selectedProgram);
+    centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
+    centerProject.setAutoFill(false);
+
+    project.setCenterProject(centerProject);
+    centerProject.setProject(project);
+
+
+    project = projectManager.saveProject(project);
+    projectID = project.getId();
+
+    Project newProject = projectManager.getProjectById(projectID);
+
+
+    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setGlobalUnit(loggedCenter);
+    globalUnitProject.setProject(newProject);
+    globalUnitProject.setOrigin(true);
+    globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
   }
 

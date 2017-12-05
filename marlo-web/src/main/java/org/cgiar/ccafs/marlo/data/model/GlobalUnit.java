@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author Hermes Jimenez
  */
@@ -15,31 +17,32 @@ public class GlobalUnit implements java.io.Serializable {
 
   private static final long serialVersionUID = -3398924354219701873L;
 
+  @Expose
   private Long id;
-
+  @Expose
   private GlobalUnitType globalUnitType;
 
-
+  @Expose
   private User modifiedBy;
-
+  @Expose
   private User createdBy;
 
-
+  @Expose
   private String name;
-
+  @Expose
   private String acronym;
 
-
+  @Expose
   private boolean active;
-
+  @Expose
   private Date activeSince;
 
-
+  @Expose
   private String modificationJustification;
-
+  @Expose
   private boolean marlo;
 
-
+  @Expose
   private boolean login;
 
   private Set<CenterLeader> centerLeaders = new HashSet<CenterLeader>(0);

@@ -5,7 +5,6 @@
     <thead>
       <tr class="header">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="sync">[@s.text name="projectsList.projectSync" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectOutputs" >[@s.text name="projectsList.projectOutputs" /]</th>
         <th id="projectLeader">[@s.text name="projectsList.projectLeader" /]</th>
@@ -21,10 +20,6 @@
         [#-- ID --]
         <td class="projectId">
           <a href="${projectUrl}"> P${project.id}</a>
-        </td>
-        [#-- Sync Project --]
-        <td class="projectId">
-          <a href="${projectUrl}"> ${action.getProjectSyncCode(project.id)}</a>
         </td>
           [#-- Project Title --]
           <td class="left">
