@@ -238,7 +238,7 @@
     
     [#if action.hasSpecificities('crp_baseline_indicators')]
     <div class="form-group simpleBox">
-      [@customForm.checkBoxFlat id="${customName}.allowBaseline" name="${customName}.allowBaseline" label="CrpProgram.allowBaseline" editable=editable value="true" checked=false cssClass="" /]
+      [@customForm.checkBoxFlat id="${customName}.baseLine" name="${customName}.baseLine" label="CrpProgram.allowBaseline" editable=editable value="true" checked=(element.baseLine)!false cssClass="" /]
     </div>
     [/#if]
   </li>
