@@ -351,6 +351,7 @@ var $fileUpload = $uploadBlock.find('.upload');
 $fileUpload.fileupload({
     dataType: 'json',
     start: function(e) {
+      console.log(e);
       $uploadBlock.addClass('blockLoading');
     },
     stop: function(e) {
@@ -365,6 +366,7 @@ $fileUpload.fileupload({
         $uploadBlock.find('.fileUpload').hide();
         // Set file ID
         $('input#fileID').val(r.fileID);
+        $('input#outcomeID').val(r.outcomeID);
       }
     },
     progressall: function(e,data) {
@@ -378,6 +380,7 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $uploadBlock.find('.textMessage').hide();
   $uploadBlock.find('.fileUpload').show();
   $('input#fileID').val('');
+  $('input#outcomeID').val('');
 });
 
 /**
