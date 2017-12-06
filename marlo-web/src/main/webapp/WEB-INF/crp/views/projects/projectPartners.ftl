@@ -256,7 +256,7 @@
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
-  [#local allowSubDep = (element.institution.institutionType.subDepartmentActive)!false]
+  [#local allowSubDep = ((element.subDepartment?has_content)!false) || ((element.institution.institutionType.subDepartmentActive)!false) ]
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Loading --]
