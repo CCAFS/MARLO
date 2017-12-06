@@ -1729,7 +1729,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (Deliverable deliverable : deliverables) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName();
+        String delivStatus =
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -2277,7 +2278,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .collect(Collectors.toList())) {
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName();
+        String delivStatus =
+          deliverable.getDeliverableInfo(this.getSelectedPhase()).getStatusName(this.getActualPhase());
         String delivYear = null;
         String keyOutput = "";
         String leader = null;
