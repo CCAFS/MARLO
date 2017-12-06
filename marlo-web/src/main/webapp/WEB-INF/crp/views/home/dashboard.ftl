@@ -46,12 +46,14 @@
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree">
       [#-- Add new Project --]
-      [#if !crpClosed && !reportingActive]<div class="flex-container"><a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">[/#if]
+      <div class="flex-container">
+      [#if !crpClosed && !reportingActive]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">[/#if]
         <div id="newProject" class="hvr-float option ${(crpClosed)?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
       [#if !crpClosed && !reportingActive]</a>[/#if]</div>
       
       [#-- Update an ongoing Project --]
-      [#if !crpClosed]<div class="flex-container"><a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'/]"> [/#if]
+      <div class="flex-container">
+      [#if !crpClosed]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'/]"> [/#if]
         <div id="updatePlanning" class="hvr-float option ${crpClosed?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
       [#if !crpClosed]</a>[/#if]</div>
       
