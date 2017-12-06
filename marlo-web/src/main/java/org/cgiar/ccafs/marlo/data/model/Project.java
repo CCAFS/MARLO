@@ -319,7 +319,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private String customID;
   private Set<GlobalUnitProject> globalUnitProjects = new HashSet<GlobalUnitProject>(0);
 
-  private Set<CenterProject> centerProjects = new HashSet<CenterProject>(0);
 
   public Project() {
   }
@@ -474,9 +473,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return centerProject;
   }
 
-  public Set<CenterProject> getCenterProjects() {
-    return centerProjects;
-  }
 
   public List<Activity> getClosedProjectActivities() {
     return closedProjectActivities;
@@ -1231,10 +1227,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.centerProject = centerProject;
   }
 
-
-  public void setCenterProjects(Set<CenterProject> centerProjects) {
-    this.centerProjects = centerProjects;
-  }
 
   public void setClosedProjectActivities(List<Activity> closedProjectActivities) {
     this.closedProjectActivities = closedProjectActivities;

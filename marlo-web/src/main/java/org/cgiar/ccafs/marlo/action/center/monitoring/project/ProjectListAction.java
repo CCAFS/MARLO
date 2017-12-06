@@ -186,11 +186,8 @@ public class ProjectListAction extends BaseAction {
 
     CenterProject centerProject = this.createCenterProject(project, true);
 
-    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
-    globalUnitProject.setGlobalUnit(loggedCenter);
-    globalUnitProject.setProject(project);
-    globalUnitProject.setOrigin(false);
-    globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
+    // Add Project Leader
+    centerProject.setProjectLeader(project.getLeaderPerson().getUser());
 
     // Add Project Status
     centerProject.setProjectStatus(new CenterProjectStatus(project.getStatus(), true));
@@ -204,35 +201,18 @@ public class ProjectListAction extends BaseAction {
     // Add Crp Project Partners to Center Project
     this.crpProjectPartners(project, centerProject);
 
-    projectService.saveCenterProject(centerProject);
+    project = projectManager.saveProject(project);
+    projectID = project.getId();
 
-    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
-
-    // Get The Crp/Center/Platform where the project was created
-    globalUnitProject = project.getGlobalUnitProjects().stream().filter(gu -> gu.isActive() && gu.isOrigin())
-      .collect(Collectors.toList()).get(0);
-
-    fundingSource.setCenterProject(centerProject);
-    fundingSource.setCode("P" + syncCode);
-    fundingSource.setSync(true);
-    fundingSource.setSyncDate(new Date());
-    fundingSource.setAutoFill(true);
-    fundingSource.setCrp(globalUnitProject.getGlobalUnit());
-    fundingSource.setTitle(project.getTitle());
-    fundingSource.setDescription(project.getSummary());
-    fundingSource.setStartDate(project.getStartDate());
-    fundingSource.setEndDate(project.getEndDate());
-
-    // Setting the sync type (2 = MARLO-CRP)
-    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
-    fundingSource.setCenterFundingSyncType(fundingSyncType);
-
-    fundingSource.setActive(true);
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSource.setActiveSince(new Date());
-
-    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
+    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setActive(true);
+    globalUnitProject.setActiveSince(new Date());
+    globalUnitProject.setModifiedBy(this.getCurrentUser());
+    globalUnitProject.setCreatedBy(this.getCurrentUser());
+    globalUnitProject.setGlobalUnit(loggedCenter);
+    globalUnitProject.setProject(project);
+    globalUnitProject.setOrigin(true);
+    globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
   }
 
@@ -373,12 +353,6 @@ public class ProjectListAction extends BaseAction {
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(autofill);
 
-    project.setCenterProject(centerProject);
-    centerProject.setProject(project);
-
-    project = projectManager.saveProject(project);
-
-    centerProject = projectService.getCenterProjectById(project.getId());
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
 
@@ -401,8 +375,10 @@ public class ProjectListAction extends BaseAction {
     centerProject.setProjectCrosscutingTheme(projectCrosscutingTheme);
     projectCrosscutingTheme.setProject(centerProject);
 
-    centerProject = projectService.saveCenterProject(centerProject);
+    project.setCenterProject(centerProject);
+    centerProject.setProject(project);
 
+    project = projectManager.saveProject(project);
 
     return centerProject;
   }
