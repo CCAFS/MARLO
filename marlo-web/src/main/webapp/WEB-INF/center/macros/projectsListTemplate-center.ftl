@@ -23,9 +23,9 @@
         </td>
           [#-- Project Title --]
           <td class="left">
-            [#if project.name?has_content]
-              <a href="${projectUrl}" title="${project.name}">
-              [#if project.name?length < 120] ${project.name}</a> [#else] [@utilities.wordCutter string=project.name maxPos=120 /]...</a> [/#if]
+            [#if project.title?has_content]
+              <a href="${projectUrl}" title="${project.title}">
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.none" /]
@@ -46,15 +46,15 @@
           </td>
           [#-- Contact person--]
           <td>
-           [#if project.projectLeader?has_content]${(project.projectLeader.composedName)!""}[#else][@s.text name="projectsList.none" /][/#if]
+           [#if project.centerProject.projectLeader?has_content]${(project.centerProject.projectLeader.composedName)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
           [#-- Status --]
           <td>
-           [#if project.projectStatus?has_content]${(project.projectStatus.name)!""}[#else][@s.text name="projectsList.none" /][/#if]
+           [#if project.centerProject.projectStatus?has_content]${(project.centerProject.projectStatus.name)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
           [#-- Delete project--]
           <td class="text-center">
-            [#if canEdit && action.centerCanBeDeleted(project.id, project.class.name)!false]
+            [#if canEdit && action.centerCanBeDeleted(project.id, project.centerProject.class.name)!false]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
               </a>
