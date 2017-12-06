@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -317,21 +318,52 @@ public class ProjectPartnerAction extends BaseAction {
 
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
-    Project project = projectManager.getProjectById(projectID);
+
+    /*
+     * Project project = projectManager.getProjectById(projectID);
+     * List<Deliverable> deliverablesLeads = new ArrayList<>();
+     * List<Deliverable> deliverables =
+     * project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+     * for (Deliverable deliverable : deliverables) {
+     * if (!deliverable.getDeliverablePartnerships().stream()
+     * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+     * && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
+     * .collect(Collectors.toList()).isEmpty()) {
+     * deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+     * deliverablesLeads.add(deliverable);
+     * }
+     * }
+     * return deliverablesLeads;
+     */
     List<Deliverable> deliverablesLeads = new ArrayList<>();
-    List<Deliverable> deliverables =
-      project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (Deliverable deliverable : deliverables) {
-      if (!deliverable.getDeliverablePartnerships().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-          && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
-        .collect(Collectors.toList()).isEmpty()) {
+    ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(userID);
+    if (partnerPerson != null) {
+      List<DeliverablePartnership> deliverablePartnerships = partnerPerson.getDeliverablePartnerships().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+      for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
+        Deliverable deliverable = deliverablePartnership.getDeliverable();
         deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-        deliverablesLeads.add(deliverable);
+        if (!deliverablesLeads.contains(deliverable)) {
+          if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+            deliverablesLeads.add(deliverable);
+          } else {
+            if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
+                deliverablesLeads.add(deliverable);
+              }
+            }
+          }
+        }
+
       }
     }
-
     return deliverablesLeads;
+
   }
 
 
