@@ -37,6 +37,12 @@ inner join institutions inst on inst.id=pp.institution_id);
 
 
 
+CREATE  TABLE
+IF NOT EXISTS table_temp_project_partner_persons
+AS (select distinct pp.id,pp.institution_id,pp.project_id,ppp.user_id from project_partner_persons ppp 
+INNER JOIN project_partners pp on pp.id=ppp.project_partner_id
+inner join institutions inst on inst.id=pp.institution_id);
+
 ALTER TABLE `deliverable_partnerships`
 ADD COLUMN `id_phase`  bigint(20) NULL AFTER `deliverable_id`;
 
@@ -187,5 +193,5 @@ inner join deliverables d on d.id=t2.deliverable_id
 inner JOIN project_phases pp ON pp.project_id = d.project_id
 inner JOIN phases ph ON ph.id = pp.id_phase
 inner join project_partners ppa on  ppa.project_id=t2.project_id and ppa.institution_id=t2.institution_id and ppa.id_phase=ph.id
-inner join  project_partner_persons ppp on ppp.project_partner_id=ppa.id
+inner join  project_partner_persons ppp on ppp.project_partner_id=ppa.id and ppp.user_id=t2.user_id
 ;
