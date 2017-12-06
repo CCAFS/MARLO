@@ -95,7 +95,7 @@
           [#-- Deliverable Status --]
           <td>
             [#attempt]
-              ${(deliverable.deliverableInfo.statusName)!'none'}
+              ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'}
               [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
                to ${deliverable.deliverableInfo.newExpectedYear}
               [/#if]
