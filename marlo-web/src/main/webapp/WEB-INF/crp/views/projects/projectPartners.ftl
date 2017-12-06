@@ -411,7 +411,7 @@
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!)]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
     [/#if]
     <div class="leftHead">
