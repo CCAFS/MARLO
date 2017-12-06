@@ -376,7 +376,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         // System.out.println("#" + i);
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
         Integer delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -1132,7 +1132,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
 
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName();
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
         Boolean showFAIR = false;
         Boolean showPublication = false;
 
@@ -1506,10 +1506,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             && deliverable.getDeliverablePublicationMetadatas().stream()
               .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0) != null) {
-            DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable
-              .getDeliverablePublicationMetadatas().stream()
-              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList()).get(0);
+            DeliverablePublicationMetadata deliverablePublicationMetadata =
+              deliverable.getDeliverablePublicationMetadatas().stream()
+                .filter(
+                  dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList()).get(0);
             if (deliverablePublicationMetadata.getVolume() != null
               && !deliverablePublicationMetadata.getVolume().trim().isEmpty()) {
               volume = deliverablePublicationMetadata.getVolume();

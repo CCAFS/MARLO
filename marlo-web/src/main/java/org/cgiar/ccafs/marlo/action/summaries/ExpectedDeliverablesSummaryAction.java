@@ -375,8 +375,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         keyOutput = null;
       }
 
-      String delivStatus = (deliverableInfo.getStatusName() != null && !deliverableInfo.getStatusName().isEmpty())
-        ? deliverableInfo.getStatusName() : null;
+      String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
+        && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
+          ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
       Integer delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
         ? deliverableInfo.getNewExpectedYear() : null;
       Long projectID = null;
