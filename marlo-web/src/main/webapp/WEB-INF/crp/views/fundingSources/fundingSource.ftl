@@ -96,7 +96,12 @@
         </div>
         
         [#-- Finance code module --]
-        [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+         [#if fundingSource.fundingSourceInfo?has_content]
+         [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+          [#else]
+           [#assign isSynced =false ]
+          [/#if]
+       
         [#assign financeChannelInstitution = {} /]
         [#if fundingSource.institutions?has_content]
           [#assign financeChannelInstitution = (fundingSource.institutions)?first /]
@@ -525,8 +530,6 @@
   [/@s.form] 
   </article>
 </section>
-[/#if]
-
 [#-- Funding Source list template --]
 <ul style="display:none">
   <li id="leadPartnerTemplate" class="leadPartners clearfix" style="display:none;">
@@ -573,5 +576,8 @@
 <span class="hidden allowExtensionDate">${hasCIAT?string}</span>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
+
+[/#if]
+
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
