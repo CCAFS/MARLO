@@ -183,6 +183,8 @@
           [#if (deliverable.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
           [#if (deliverable.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
           [#if (deliverable.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+          [#if (!deliverable.crossCuttingGender?has_content) && (!deliverable.crossCuttingYouth?has_content) && (!deliverable.crossCuttingCapacity?has_content) && (!deliverable.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
         [/#if]
       </div>
     </div>
