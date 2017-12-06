@@ -386,11 +386,12 @@ $fileUpload.bind('fileuploadsubmit', function(e,data) {
 
 // Remove file event
 $uploadBlock.find('.removeIcon').on('click', function() {
-  $uploadBlock.find('.textMessage .contentResult').html("");
-  $uploadBlock.find('.textMessage').hide();
-  $uploadBlock.find('.fileUpload').show();
-  $('input.fileID').val('');
-  $('input.outcomeID').val('');
+  var $ub = $(this).parents('.fileUploadContainer');
+  $ub.find('.textMessage .contentResult').html("");
+  $ub.find('.textMessage').hide();
+  $ub.find('.fileUpload').show();
+  $ub.find('input.fileID').val('');
+  $ub.find('input.outcomeID').val('');
 });
 
 /**

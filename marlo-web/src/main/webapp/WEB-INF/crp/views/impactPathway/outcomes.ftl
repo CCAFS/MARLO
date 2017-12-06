@@ -239,18 +239,24 @@
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
-          [#local hasFile = outcome.file?? && outcome.file.id?? /]
-          <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
-          [#-- Input File --]
-          [#if editable]
-          <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
-          
+          [#if !isTemplate]
+            [#local hasFile = outcome.file?? && outcome.file.id?? /]
+            <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
+            [#-- Input File --]
+            [#if editable]
+            <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
+            
+            [/#if]
+            [#-- Uploaded File --]
+            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+              <span class="contentResult">[#if outcome.file??]
+                <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}/${(outcome.file.fileName)!}">${(outcome.file.fileName)!('No file name')} </a>
+                [/#if]</span> 
+              [#if editable]<span class="removeIcon"> </span> [/#if]
+            </p> 
+          [#else]
+            <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]
-          [#-- Uploaded File --]
-          <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-            <span class="contentResult">[#if outcome.file??]${(outcome.file.fileName)!('No file name')} [/#if]</span> 
-            [#if editable]<span class="removeIcon"> </span> [/#if]
-          </p> 
         </div>
         <br />
         [#-- Baseline indicators list --]
@@ -429,12 +435,12 @@
     [#if editable]<div class="removeBaselineIndicator removeElement sm" title="Remove Indicators"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
-    [#if !editable] 
-      [#if indicator.indicator?has_content]
-        <div class="input"><p> <strong>${index+1}.</strong> ${(indicator.indicator)!}</p></div>
-      [/#if] 
-    [#else]
+    [#if editable] 
       [@customForm.input name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
+    [#else]
+      [#if indicator.indicator?has_content]
+        <div class="input"><p>${(indicator.indicator)!}</p></div>
+      [/#if] 
     [/#if]
     <div class="clearfix"></div>
   </div>
