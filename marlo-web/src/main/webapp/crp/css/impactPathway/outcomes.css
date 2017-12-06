@@ -167,3 +167,7 @@ p.contributioRem {
     padding: 10px 33px;
     border-color: #eee #eee #e8e8e8;
 }
+
+.baselineIndicator {
+  padding: 20px 10px 5px 23px;
+}
