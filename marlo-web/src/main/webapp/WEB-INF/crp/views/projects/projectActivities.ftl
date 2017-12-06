@@ -179,7 +179,7 @@
 
 [#macro deliverablesMacro element name index=-1 isTemplate=false]  
   [#assign deliverableCustomName = "${name}[${index}]" /]
-  <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity  borderBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
