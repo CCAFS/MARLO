@@ -71,8 +71,15 @@
       [#assign canNotEditYear =!action.candEditYear(deliverable.id)/]
       
       [#if editable ]
-        [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
       
+      [#if canNotEditYear]
+      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
+      
+      [#else]
+      [@customForm.select name="deliverable.deliverableInfo.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.projectInfo.AllYearsPhase" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear /]
+      
+      [/#if]
+        
       [#else]
          <div class="select">
           <label for="">[@s.text name="project.deliverable.generalInformation.year" /]:</label>
