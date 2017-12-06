@@ -239,15 +239,16 @@
         [#-- Upload a PDF with baseline instructions --]
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
-          [#local hasFile = outcome.baselineFile?? && outcome.baselineFile.id?? /]
-          <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.baselineFile.id)!}" />
+          [#local hasFile = outcome.file?? && outcome.file.id?? /]
+          <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
           [#-- Input File --]
           [#if editable]
           <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
+          
           [/#if]
           [#-- Uploaded File --]
           <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-            <span class="contentResult">[#if outcome.baselineFile??]${(outcome.baselineFile.fileName)!('No file name')} [/#if]</span> 
+            <span class="contentResult">[#if outcome.file??]${(outcome.file.fileName)!('No file name')} [/#if]</span> 
             [#if editable]<span class="removeIcon"> </span> [/#if]
           </p> 
         </div>
