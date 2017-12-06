@@ -468,7 +468,8 @@ public class ProjectLocationAction extends BaseAction {
 
         if (project.getProjectRegions() != null) {
           List<ProjectLocation> locElements = project.getProjectRegions().stream()
-            .filter(c -> c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+            .filter(c -> c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID
+              && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
             .collect(Collectors.toList());
 
           return !locElements.isEmpty();
@@ -488,7 +489,8 @@ public class ProjectLocationAction extends BaseAction {
     } else {
       Project projectDB = projectManager.getProjectById(projectID);
       List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
-        .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID)
+        .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID
+          && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
 
       return !locElements.isEmpty();
@@ -501,14 +503,17 @@ public class ProjectLocationAction extends BaseAction {
 
     if (project.getProjectRegions() != null) {
       List<ProjectLocation> locElements = project.getProjectRegions().stream()
-        .filter(c -> c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+        .filter(c -> c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID
+          && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
 
       return !locElements.isEmpty();
     } else {
       Project projectDB = projectManager.getProjectById(projectID);
-      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream().filter(
-        c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId().longValue() == locElementID)
+      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getLocElementType() != null
+          && c.getLocElementType().getId().longValue() == locElementID && c.getPhase() != null
+          && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
 
       return !locElements.isEmpty();
