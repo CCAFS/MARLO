@@ -1,3 +1,4 @@
+SET SESSION wait_timeout=100000;
 
 
 INSERT INTO project_budgets (
