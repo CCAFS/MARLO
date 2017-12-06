@@ -156,12 +156,12 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
               if (oai_dc.element("date") != null) {
                 List<Element> dateElements = oai_dc.elements("date");
                 if (dateElements != null && dateElements.size() > 0) {
-                  dateElements =
-                    dateElements.stream().sorted((e1, e2) -> e1.getStringValue().compareTo(e2.getStringValue()))
-                      .collect(Collectors.toList());
+                  dateElements = dateElements.stream()
+                    .sorted((e1, e2) -> Integer.compare(e1.getStringValue().length(), e2.getStringValue().length()))
+                    .collect(Collectors.toList());
                   Element dateElement = dateElements.get(0);
                   Calendar cal = Calendar.getInstance();
-                  cal.set(Integer.parseInt(dateElement.getStringValue()), 1, 1, 0, 0, 0);
+                  cal.set(Integer.parseInt(dateElement.getStringValue()), 0, 1, 0, 0, 0);
                   Date date = cal.getTime();
                   jo.put("publicationDate", date);
                 }
