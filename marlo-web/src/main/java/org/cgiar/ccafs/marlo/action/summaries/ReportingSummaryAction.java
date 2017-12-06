@@ -26,12 +26,12 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -130,8 +131,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Andrés Felipe Valencia Rivera. CCAFS
+ * ReportingSummaryAction
+ * 
+ * @author avalencia - CCAFS
  * @author Christian Garcia - CIAT/CCAFS
+ * @date Nov 8, 2017
+ * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
@@ -170,20 +175,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   // Managers
   private ProjectManager projectManager;
   private CrpProgramManager programManager;
-
-
   private GenderTypeManager genderTypeManager;
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
+  private RepositoryChannelManager repositoryChannelManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
-    SrfTargetUnitManager srfTargetUnitManager) {
+    SrfTargetUnitManager srfTargetUnitManager, RepositoryChannelManager repositoryChannelManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -194,6 +198,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.ipElementManager = ipElementManager;
     this.genderTypeManager = genderTypeManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
 
   /**
@@ -1741,14 +1746,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getYear() == this.year
-              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getYear() == this.year
+                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
@@ -1917,11 +1922,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
           if (deliverableDissemination.getDisseminationChannel() != null
             && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-            if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-              delivDisseminationChannel =
-                ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+            RepositoryChannel repositoryChannel = repositoryChannelManager
+              .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
+            if (repositoryChannel != null) {
+              delivDisseminationChannel = repositoryChannel.getName();
             }
-            // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
           }
           if (deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
@@ -2853,11 +2858,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(
-        new String[] {"region", "indicator", "contribution_description", "target_contribution",
-          "otherContributionyear"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
+      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;

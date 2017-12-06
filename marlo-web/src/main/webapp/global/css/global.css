@@ -6010,7 +6010,7 @@ textarea{
 }
 
 input.fieldChecked {
-    background: url(../../global/images/icon-check-tiny.png) no-repeat;
+    background: url(../../../global/images/icon-check-tiny.png) no-repeat;
     background-position: 97% 50%;
     background-size: 12px;
     border-color: #8ea786 !important;
