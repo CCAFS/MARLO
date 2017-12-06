@@ -1299,11 +1299,10 @@ public class ProjectLocationAction extends BaseAction {
     }
 
 
-    List<ProjectLocation> regions =
-      new ArrayList<>(projectDB.getProjectLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
-        .collect(Collectors.toList()));
+    List<ProjectLocation> regions = new ArrayList<>(projectDB.getProjectLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+        && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
     regions.addAll(projectDB.getProjectLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));
@@ -1335,9 +1334,10 @@ public class ProjectLocationAction extends BaseAction {
       }
     }
 
-    regions = new ArrayList<>(projectDB
-      .getProjectLocations().stream().filter(fl -> fl.isActive() && fl.getLocElementType() == null
-        && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId().longValue() == 1)
+    regions = new ArrayList<>(projectDB.getProjectLocations().stream()
+      .filter(fl -> fl.isActive() && fl.getLocElementType() == null && fl.getLocElement() != null
+        && fl.getLocElement().getLocElementType() != null
+        && fl.getLocElement().getLocElementType().getId().longValue() == 1)
       .collect(Collectors.toList()));
 
     if (regions != null && regions.size() > 0) {

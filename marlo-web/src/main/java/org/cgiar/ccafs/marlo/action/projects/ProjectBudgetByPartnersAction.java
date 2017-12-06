@@ -713,11 +713,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(projectID);
 
 
-    projectDB.setBudgets(projectDB.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-
-
-    for (ProjectBudget projectBudget : projectDB.getBudgets().stream()
+    for (ProjectBudget projectBudget : projectDB.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
       if (budgets == null) {
