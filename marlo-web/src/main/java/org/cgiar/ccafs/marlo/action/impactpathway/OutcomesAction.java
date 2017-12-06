@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -98,6 +99,8 @@ public class OutcomesAction extends BaseAction {
   private CrpMilestoneManager crpMilestoneManager;
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private long crpProgramID;
+  private FileDBManager fileDBManager;
+
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
@@ -120,7 +123,7 @@ public class OutcomesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
     CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
-    HistoryComparator historyComparator, AuditLogManager auditLogManager,
+    HistoryComparator historyComparator, AuditLogManager auditLogManager, FileDBManager fileDBManager,
     CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -128,6 +131,7 @@ public class OutcomesAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.crpProgramManager = crpProgramManager;
+    this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
@@ -257,7 +261,13 @@ public class OutcomesAction extends BaseAction {
         .filter(c -> c.isActive()).collect(Collectors.toList()));
       crpProgramOutcome.setSubIdos(
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+      if (crpProgramOutcome.getFile() != null) {
+        if (crpProgramOutcome.getFile().getId() != null) {
+          crpProgramOutcome.setFile(fileDBManager.getFileDBById(crpProgramOutcome.getFile().getId()));
+        } else {
+          crpProgramOutcome.setFile(null);
+        }
+      }
 
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         List<CrpAssumption> assumptions =
@@ -456,6 +466,13 @@ public class OutcomesAction extends BaseAction {
                 if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != null) {
                   subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
                 }
+              }
+            }
+            if (outcome.getFile() != null) {
+              if (outcome.getFile().getId() != null) {
+                outcome.setFile(fileDBManager.getFileDBById(outcome.getFile().getId()));
+              } else {
+                outcome.setFile(null);
               }
             }
           }
