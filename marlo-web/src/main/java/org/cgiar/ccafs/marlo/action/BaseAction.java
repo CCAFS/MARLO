@@ -1914,7 +1914,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<Deliverable> openA = new ArrayList<>();
 
         if (this.isPlanningActive()) {
-          openA = deliverables.stream().filter(a -> a.isActive()
+          openA = deliverables.stream().filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
 
             && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
               || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -1927,6 +1927,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
+              && a.getDeliverableInfo(this.getActualPhase()) != null
               && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                 || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
@@ -1937,6 +1938,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           openA.addAll(deliverables.stream()
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()) != null
               && d.getDeliverableInfo(this.getActualPhase()).getYear() == this.getCurrentCycleYear()
               && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
               && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
@@ -1945,6 +1947,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           openA.addAll(deliverables.stream()
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
+              && d.getDeliverableInfo(this.getActualPhase()) != null
               && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
               && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
                 .getCurrentCycleYear()
