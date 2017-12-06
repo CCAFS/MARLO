@@ -16,9 +16,6 @@ var notyDefaultOptions = {
     ]
 };
 
-
-
-
 /**
  * Global javascript must be here.
  */
@@ -225,6 +222,9 @@ $(document).ready(function() {
       }
   });
 
+  /* ADD TITLE TOOLTIP TO ALL REQUIRED SIGN */
+  $(".requiredTag").attr('title','This is a required field');
+
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     var $t = $(target);
@@ -279,7 +279,7 @@ $(document).ready(function() {
     });
 
   });
-  
+
   // Datatables language
   if($.fn.dataTable) {
     $.extend( true, $.fn.dataTable.defaults, {
@@ -288,7 +288,7 @@ $(document).ready(function() {
       }
     });
   }
-  
+
   // Cancel button
   $('#cancelButton').on('click', function() {
     $('button[name="cancel"]').trigger('click');
