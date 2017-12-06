@@ -359,15 +359,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         projectOutcome = (ProjectOutcome) autoSaveReader.readFromJson(jReader);
 
 
-      
         this.setDraft(true);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
@@ -487,7 +486,7 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
-      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setPhase(this.getActualPhase());
@@ -743,7 +742,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectOutcome saveProjectOutcome() {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
+    // ProjectOutcome projectOutcomeDB = new ProjectOutcome();
 
     int endYear = 0;
     Calendar startDate = Calendar.getInstance();
@@ -753,31 +753,28 @@ public class ProjectOutcomeAction extends BaseAction {
     endDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    if (this.isPlanningActive() || this.getCurrentCycleYear() == endYear) {
-      projectOutcomeDB.setActive(true);
-      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
-      projectOutcomeDB.setCreatedBy(this.getCurrentUser());
-      projectOutcomeDB.setActiveSince(new Date());
-      projectOutcomeDB.setCrpProgramOutcome(crpProgramOutcome);
-      projectOutcomeDB.setProject(project);
+    if (this.isPlanningActive()) {
+      // projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcome.setActive(true);
+      projectOutcome.setModifiedBy(this.getCurrentUser());
+      projectOutcome.setCreatedBy(this.getCurrentUser());
+      projectOutcome.setActiveSince(new Date());
+      projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+      projectOutcome.setProject(project);
       if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
-        projectOutcomeDB.setExpectedUnit(null);
+        projectOutcome.setExpectedUnit(null);
       } else {
-        projectOutcomeDB.setExpectedUnit(projectOutcome.getExpectedUnit());
+        projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
       }
-      projectOutcomeDB.setId(projectOutcomeID);
-      projectOutcomeDB.setPhase(this.getActualPhase());
-      projectOutcomeDB.setExpectedValue(projectOutcome.getExpectedValue());
-      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
-      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
-      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+      projectOutcome.setId(projectOutcomeID);
+      projectOutcome.setPhase(this.getActualPhase());
 
-      projectOutcomeDB.setModificationJustification("");
-      projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
+      projectOutcome.setModificationJustification("");
+      projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }
 
-    return projectOutcomeDB;
+    return projectOutcome;
 
   }
 
