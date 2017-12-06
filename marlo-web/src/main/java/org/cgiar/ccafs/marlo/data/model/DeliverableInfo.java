@@ -219,8 +219,17 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getStatusName() {
+  public String getStatusName(Phase phase) {
+
+
     try {
+      if (this.status != null) {
+        if (status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          if (phase.getYear() > this.getYear()) {
+            return "Ready to be Reported";
+          }
+        }
+      }
       if (this.status != null) {
         return ProjectStatusEnum.getValue(this.status).getStatus() != null
           ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
