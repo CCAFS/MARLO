@@ -421,7 +421,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "Phase [id=" + id + ", crp=" + crp + ", description=" + description + ", year=" + year + "]";
+    return "Phase [id=" + id + " description=" + description + ", year=" + year + "]";
   }
 }
 
