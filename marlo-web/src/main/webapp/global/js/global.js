@@ -297,6 +297,13 @@ $(document).ready(function() {
   // Set autogrow
   $("textarea[id!='justification']").autoGrow();
 
+  //Accessible enter click when button is focus
+  $("input[type='submit']").keyup(function(event) {
+    if (event.keyCode === 13) {
+        $(this).click();
+    }
+  });
+
 });
 
 function isReportingCycle() {

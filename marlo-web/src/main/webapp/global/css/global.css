@@ -2611,7 +2611,7 @@ input.userName {
 .login-button-container{
   display: flex;
   justify-content: flex-end;
-  width: 100%;
+  width: 80%;
   font-size: 20px;
   height: 30px;
 }
@@ -2628,6 +2628,10 @@ input.userName {
 .login-logos-container {
   display: flex;
   flex-flow: row wrap;
+}
+
+.login-logos-container ul, .selection-bar-options{
+  /* padding: 5px; */
 }
 
 .login-logos-container ul, .selection-bar-options ul{
@@ -2651,6 +2655,7 @@ input.userName {
   width: 130px;
   height: 50px;
   margin: 3px;
+  cursor: pointer;
 }
 
 .selection-bar-options ul li:last-child img{
@@ -2668,6 +2673,16 @@ span.login-input-container.welcome-message{
 
 span.login-input-container.username{
   margin: 8px;
+  text-decoration: #d3d3d3 dotted underline;
+  cursor: pointer;
+}
+
+/* Icon style */
+span.login-input-container.username i{
+  font-size: 12px;
+  vertical-align: middle;
+  line-height: 5px;
+  height: 10px;
 }
 
 .crps-select{
@@ -2677,7 +2692,7 @@ span.login-input-container.username{
   left: 80px;
   background-color: #f1f1f1;
   height: 380px;
-  width: 155px;
+  width: 165px;
   box-shadow: 1px 0px 1px rgba(0, 0, 0, 0.2);
   overflow-y: scroll;
   transition: left 0.5s ease;

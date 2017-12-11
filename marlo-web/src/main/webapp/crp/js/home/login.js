@@ -89,6 +89,7 @@ function init() {
     $(".crps-select").css("left",sideBarPosition);
   });
 
+  //Scroll control
   $(".crps-select").on('mouseover',function(){
     $('html, body').disableScroll();
   });
@@ -97,9 +98,17 @@ function init() {
     $('html, body').enableScroll();
   });
 
+  //Accessible enter click to login
   $(".loginForm .login-input").keyup(function(event) {
     if (event.keyCode === 13) {
         $("input#login_next").click();
+    }
+  });
+
+  //Accessible enter click to select crp,center or platform
+  $(".selection-bar-options ul li").keyup(function(event) {
+    if (event.keyCode === 13) {
+        $(this).click();
     }
   });
 

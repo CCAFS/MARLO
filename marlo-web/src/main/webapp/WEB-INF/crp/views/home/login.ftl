@@ -95,7 +95,7 @@
 
 
 [#macro crpItem element]
-  <li id="crp-${element.acronym}" class="${element.login?string('enabled', 'disabled')}" title="${element.login?string('', 'Coming soon...')}">
+  <li id="crp-${element.acronym}" class="${element.login?string('enabled', 'disabled')}" title="${element.login?string('', 'Coming soon...')}" >
     <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
   </li>
 [/#macro]
