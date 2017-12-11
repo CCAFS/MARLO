@@ -41,7 +41,7 @@
         <ul>
           [#if centersList?has_content]
               [#list centersList as center]
-                [@crpItem element=center /]
+                [@availableItems element=center /]
               [/#list]
             [#else]
               <p>Not Centers loaded</p>
@@ -60,7 +60,7 @@
           [/#attempt]
           [#if platformsList?has_content]
             [#list platformsList as platform]
-              [@crpItem element=platform /]
+              [@availableItems element=platform /]
             [/#list]
           [#else]
             <p>Not Platforms loaded</p>
@@ -78,14 +78,15 @@
             </div>
             [#-- Image --]
             <div class="form-group text-center" style="display:none">
-              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
+            [#-- src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" --]
+              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'A4NH'}.png" alt="${(element.name)!}" />
             </div>
             [#-- Welcome info --]
             <div class="row">
               <div class="col-sm-10 welcome-message-container" style="display:none">
                 <span class="login-input-container welcome-message">Welcome:</span>
                 <br>
-                <span class="login-input-container username">Hector Tobon</span>
+                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i>Hector Tobon</span>
               </div>
             </div>
           </div>
@@ -94,7 +95,7 @@
         <div class="row" >
           <div class="col-sm-10">
             <div class="login-input-container" id="login-password" style="display:none">
-              <input class="login-input" type="password" name="login-password" required/>
+              <input class="login-input" type="password" name="login-password" tabindex=2 required/>
               <label for="login-password">Password</label>
             </div>
           </div>
@@ -120,6 +121,6 @@
 
 [#macro availableItems element]
   <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+    <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=1/>
   </li>
 [/#macro]
