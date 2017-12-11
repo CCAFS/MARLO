@@ -557,9 +557,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
-        if (crpPpaPartner.getInstitution().getId().longValue() == 46) {
-          System.out.println("holi");
-        }
+
         List<ProjectPartner> partners = crpPpaPartner.getInstitution().getProjectPartners().stream()
           .filter(
             c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
