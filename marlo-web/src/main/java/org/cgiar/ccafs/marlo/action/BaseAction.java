@@ -101,6 +101,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
@@ -556,10 +557,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
-        if (crpPpaPartner.getInstitution().getProjectPartners().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(crpPpaPartner.getPhase())
-            && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
-          .collect(Collectors.toList()).size() > 0) {
+        if (crpPpaPartner.getInstitution().getId().longValue() == 46) {
+          System.out.println("holi");
+        }
+        List<ProjectPartner> partners = crpPpaPartner.getInstitution().getProjectPartners().stream()
+          .filter(
+            c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
+              && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+          .collect(Collectors.toList());
+        if (partners.size() > 0) {
           return false;
         }
       }
@@ -655,7 +661,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       return true;
     } catch (Exception e) {
-
+      e.printStackTrace();
       return true;
     }
 
