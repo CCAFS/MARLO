@@ -77,15 +77,8 @@ error
 
 
 [#-- Mini-graph --]
-<div id="graphicWrapper">
-<p class="text-center title">Impact Pathway Graph</p>
-  <div id="mini-graphic">
-    <div id="overlay" >
-      <button class="btn btn-primary btn-xs"><strong>Show graph</strong></button>
-    </div>
-  </div>
-  <div class="clearfix"></div>
-</div>
+
+
 
 <br />
 <div class="col-md-12">
