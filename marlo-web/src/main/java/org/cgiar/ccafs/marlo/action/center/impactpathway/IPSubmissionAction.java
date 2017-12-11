@@ -115,7 +115,7 @@ public class IPSubmissionAction extends BaseAction {
 
           if (submission.getId() > 0) {
             this.setCenterSubmission(submission);
-            this.sendNotficationEmail();
+            // this.sendNotficationEmail();
           }
 
         }
