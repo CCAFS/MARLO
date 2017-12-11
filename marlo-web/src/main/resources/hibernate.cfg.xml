@@ -23,8 +23,7 @@
       <!-- Model Mappings -->
       <mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
       <mapping resource="xmls/Auditlog.hbm.xml" />
-      <mapping resource="xmls/Users.hbm.xml" />
-      
+      <mapping resource="xmls/Users.hbm.xml" />      
       <mapping resource="xmls/CrpUsers.hbm.xml" />
       <mapping resource="xmls/Roles.hbm.xml" />
       <mapping resource="xmls/UserRoles.hbm.xml" />
@@ -193,5 +192,6 @@
       <mapping resource="xmls/GlobalUnitTypes.hbm.xml" />
       <mapping resource="xmls/GlobalUnits.hbm.xml" />      
       <mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
+      <mapping resource="xmls/RepositoryChannel.hbm.xml" />
    </session-factory>
 </hibernate-configuration>

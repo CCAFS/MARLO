@@ -68,9 +68,32 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    LiaisonUser other = (LiaisonUser) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public String getComposedName() {
     return user.getComposedName();
   }
+
 
 
   public GlobalUnit getCrp() {
@@ -117,7 +140,6 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return projects;
   }
 
-
   public User getUser() {
     return user;
   }
@@ -128,7 +150,6 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
 
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;

@@ -43,6 +43,9 @@
 		<property name="name" type="string">
 			<column name="name" length="65535" />
 		</property>
+		<property name="ocsCode" type="string">
+      <column name="ocs_code" length="65535" />
+    </property>
 		<property name="suggestedName" type="string">
 			<column name="suggested_name" length="65535" />
 		</property>

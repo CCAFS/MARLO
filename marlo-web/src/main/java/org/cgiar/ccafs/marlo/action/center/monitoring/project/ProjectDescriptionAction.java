@@ -614,10 +614,10 @@ public class ProjectDescriptionAction extends BaseAction {
 
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
-      projectDB.setName(project.getName());
-      projectDB.setStartDate(project.getStartDate());
-      projectDB.setEndDate(project.getEndDate());
-      projectDB.setDescription(project.getDescription());
+      projectDB.getProject().setTitle(project.getProject().getTitle());
+      projectDB.getProject().setStartDate(project.getProject().getStartDate());
+      projectDB.getProject().setEndDate(project.getProject().getEndDate());
+      projectDB.getProject().setSummary(project.getProject().getSummary());
       projectDB.setGlobal(this.bolValue(project.getsGlobal()));
       projectDB.setRegion(this.bolValue(project.getsRegion()));
       projectDB.setSuggestedName(project.getSuggestedName());

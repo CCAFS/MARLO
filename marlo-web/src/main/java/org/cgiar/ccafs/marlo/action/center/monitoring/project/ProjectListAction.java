@@ -32,14 +32,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
-import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
@@ -243,15 +241,16 @@ public class ProjectListAction extends BaseAction {
 
     CenterProject centerProject = this.createCenterProject(project, true);
 
-    centerProject.setName(agreement.getDescription());
-    centerProject.setDescription(agreement.getDescription());
-    centerProject.setStartDate(agreement.getStartDate());
-    centerProject.setEndDate(agreement.getEndDate());
+    project.setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
+    project.setSummary(agreement.getDescription());
+    project.setStartDate(agreement.getStartDate());
+    project.setEndDate(agreement.getEndDate());
+
     centerProject.setSync(true);
     centerProject.setSyncDate(new Date());
     centerProject.setAutoFill(true);
+    centerProject.setOcsCode(syncCode.trim());
 
-    projectService.saveCenterProject(centerProject);
 
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
     globalUnitProject.setGlobalUnit(loggedCenter);
@@ -259,85 +258,87 @@ public class ProjectListAction extends BaseAction {
     globalUnitProject.setOrigin(true);
     globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
-    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+    project = projectManager.saveProject(project);
 
-    fundingSource.setCenterProject(centerProject);
-    fundingSource.setCode(syncCode);
-    fundingSource.setSync(true);
-    fundingSource.setSyncDate(new Date());
-    fundingSource.setAutoFill(true);
-
-    fundingSource.setTitle(agreement.getDescription());
-    fundingSource.setDescription(agreement.getDescription());
-
-    try {
-      fundingSource.setStartDate(agreement.getStartDate());
-    } catch (Exception e) {
-      // OCS sends a bad Date format
-      fundingSource.setStartDate(null);
-    }
-    try {
-      fundingSource.setEndDate(agreement.getEndDate());
-    } catch (Exception e) {
-      // OCS sends a bad Date format
-      fundingSource.setEndDate(null);
-    }
-    try {
-
-      if (agreement.getExtensionDate().after(agreement.getEndDate())) {
-        fundingSource.setExtensionDate(agreement.getExtensionDate());
-      } else {
-        fundingSource.setExtensionDate(null);
-      }
-    } catch (Exception e) {
-      // OCS sends a bad Date format
-      fundingSource.setExtensionDate(null);
-    }
-
-    if (agreement.getOriginalDonor() != null) {
-      fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
-    }
-    if (agreement.getDirectDonor() != null) {
-      fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
-    }
-    fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
-
-    // Setting the sync type (1 = OCS CIAT)
-    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(1);
-    fundingSource.setCenterFundingSyncType(fundingSyncType);
-
-    // Setting the budget Type
-    String fundingType = agreement.getFundingType();
-    long fundingtypeID = -1L;
-    if (fundingType != null) {
-      switch (fundingType) {
-        case "BLR":
-          fundingtypeID = 3;
-          break;
-        case "W1/W2":
-          fundingtypeID = 1;
-          break;
-        case "W3R":
-          fundingtypeID = 2;
-          break;
-        case "W3U":
-          fundingtypeID = 2;
-          break;
-        default:
-          fundingtypeID = -1L;
-          break;
-      }
-    }
-
-    CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
-    fundingSource.setCenterFundingSourceType(fundingSourceType);
-
-    fundingSource.setActive(true);
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSource.setActiveSince(new Date());
-
-    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
+    // CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+    //
+    // fundingSource.setCenterProject(centerProject);
+    // fundingSource.setCode(syncCode);
+    // fundingSource.setSync(true);
+    // fundingSource.setSyncDate(new Date());
+    // fundingSource.setAutoFill(true);
+    //
+    // fundingSource.setTitle(agreement.getDescription());
+    // fundingSource.setDescription(agreement.getDescription());
+    //
+    // try {
+    // fundingSource.setStartDate(agreement.getStartDate());
+    // } catch (Exception e) {
+    // // OCS sends a bad Date format
+    // fundingSource.setStartDate(null);
+    // }
+    // try {
+    // fundingSource.setEndDate(agreement.getEndDate());
+    // } catch (Exception e) {
+    // // OCS sends a bad Date format
+    // fundingSource.setEndDate(null);
+    // }
+    // try {
+    //
+    // if (agreement.getExtensionDate().after(agreement.getEndDate())) {
+    // fundingSource.setExtensionDate(agreement.getExtensionDate());
+    // } else {
+    // fundingSource.setExtensionDate(null);
+    // }
+    // } catch (Exception e) {
+    // // OCS sends a bad Date format
+    // fundingSource.setExtensionDate(null);
+    // }
+    //
+    // if (agreement.getOriginalDonor() != null) {
+    // fundingSource.setOriginalDonor(agreement.getOriginalDonor().getName());
+    // }
+    // if (agreement.getDirectDonor() != null) {
+    // fundingSource.setDirectDonor(agreement.getDirectDonor().getName());
+    // }
+    // fundingSource.setTotalAmount(Double.parseDouble(agreement.getGrantAmount()));
+    //
+    // // Setting the sync type (1 = OCS CIAT)
+    // CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(1);
+    // fundingSource.setCenterFundingSyncType(fundingSyncType);
+    //
+    // // Setting the budget Type
+    // String fundingType = agreement.getFundingType();
+    // long fundingtypeID = -1L;
+    // if (fundingType != null) {
+    // switch (fundingType) {
+    // case "BLR":
+    // fundingtypeID = 3;
+    // break;
+    // case "W1/W2":
+    // fundingtypeID = 1;
+    // break;
+    // case "W3R":
+    // fundingtypeID = 2;
+    // break;
+    // case "W3U":
+    // fundingtypeID = 2;
+    // break;
+    // default:
+    // fundingtypeID = -1L;
+    // break;
+    // }
+    // }
+    //
+    // CenterFundingSourceType fundingSourceType = centerFundingTypeManager.getFundingSourceTypeById(fundingtypeID);
+    // fundingSource.setCenterFundingSourceType(fundingSourceType);
+    //
+    // fundingSource.setActive(true);
+    // fundingSource.setCreatedBy(this.getCurrentUser());
+    // fundingSource.setModifiedBy(this.getCurrentUser());
+    // fundingSource.setActiveSince(new Date());
+    //
+    // centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
 
