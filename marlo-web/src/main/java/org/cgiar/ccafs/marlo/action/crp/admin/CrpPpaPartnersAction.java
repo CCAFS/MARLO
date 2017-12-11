@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -26,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -75,6 +77,12 @@ public class CrpPpaPartnersAction extends BaseAction {
   public static byte[] readFully(InputStream stream) throws IOException {
     byte[] buffer = new byte[8192];
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
@@ -114,7 +122,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
-/**
+  /**
    * Add cpRole as a flag to avoid contact points
    * 
    * @author avalencia - CCAFS
@@ -254,7 +262,7 @@ public class CrpPpaPartnersAction extends BaseAction {
   public Role getCpRole() {
     return cpRole;
   }
-  
+
   public List<Institution> getCrpInstitutions() {
     return crpInstitutions;
   }
