@@ -90,10 +90,16 @@ public class CrpProjectPhases extends BaseAction {
     for (Project project : phasesProjects) {
       project.getProjecInfoPhase(this.getActualPhase());
     }
+
     for (Project project : allProjects) {
       List<ProjectInfo> projectInfos =
         project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      project.setProjectInfo(projectInfos.get(projectInfos.size() - 1));
+      if (!projectInfos.isEmpty()) {
+        project.setProjectInfo(projectInfos.get(projectInfos.size() - 1));
+      } else {
+        System.out.println(project.getId());
+      }
+
     }
     if (this.isHttpPost()) {
       if (allProjects != null) {
