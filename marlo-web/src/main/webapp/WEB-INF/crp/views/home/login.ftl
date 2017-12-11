@@ -24,14 +24,14 @@
         --]
       </div>
       <div class="row">
-        <div class=" col-md-6 col-center">
+        <div class=" col-md-offset-3 col-xs-7 col-sm-6 col-sm-6 col-md-5 col-center">
           [#include "/WEB-INF/global/pages/newLoginForm.ftl" /]
         </div>
       </div>
     </div>
     [#-- CRPS --]
     <br>
-    <div class="row">
+    <div class="row left-margin">
       <div class="col-md-12 col-center">
         <label>CRPS:</label>
         <div class="login-logos-container">
@@ -54,7 +54,7 @@
     </div>
     [#-- CENTERS --]
     <br>
-    <div class="row">
+    <div class="row left-margin">
       <div class="col-md-offset-3 col-md-2">
         <label>Centers:</label>
         <div class="login-logos-container">
@@ -70,7 +70,7 @@
         </div>
       </div>
       [#-- PLATFORMS --]
-      <div class="col-md-offset-0 col-md-4">
+      <div class="col-md-4">
         <label>Platforms:</label>
         <div class="login-logos-container">
           <ul>

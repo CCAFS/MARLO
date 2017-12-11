@@ -1414,6 +1414,7 @@ a#userLogOut {
 /************* 3. MAIN MENU ***************/
 #mainMenu{
   height: 65px;
+  z-index: 5000;
 }
 
 #mainMenu .menuContent{
@@ -2393,10 +2394,10 @@ input.userName {
 /************* LOGIN *****************/
 .loginForm {
   padding-top: 2em;
-  min-width: 440px;
-  max-width: 700px;
-  width: 80%;
-  margin: auto;
+  /* min-width: 440px;
+  max-width: 700px; */
+  width: 100%;
+  /* margin: auto; */
   /* easeInOutQuart */
   opacity: 0;
   -webkit-animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
@@ -2611,9 +2612,16 @@ input.userName {
 .login-button-container{
   display: flex;
   justify-content: flex-end;
-  width: 80%;
+  width: 100%;
   font-size: 20px;
   height: 30px;
+}
+
+/* Hack for IE 8 to 10*/
+@media screen\0 {
+  .login-button-container{
+    width: 80%;
+  }
 }
 
 .login-button-container .login-form-button{
@@ -2625,13 +2633,13 @@ input.userName {
   font-size: 11px;
 }
 
+.left-margin{
+  margin-left: 45px !important;
+}
+
 .login-logos-container {
   display: flex;
   flex-flow: row wrap;
-}
-
-.login-logos-container ul, .selection-bar-options{
-  /* padding: 5px; */
 }
 
 .login-logos-container ul, .selection-bar-options ul{
@@ -2746,7 +2754,7 @@ p.login-description{
 
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
-  margin: auto;
+  /* margin: auto; */
   padding: 8px 24px;
   border-radius: 7px;
   border: 1px solid #ededed;
@@ -2754,6 +2762,7 @@ p.login-description{
   margin-top: 10px;
   min-height: 200px;
   height: 200px;
+  z-index: 2;
 }
 
 #loginFormContainer .loginForm p {

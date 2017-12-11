@@ -68,7 +68,10 @@
         </ul>
       </div>
      </div>
-     <div class="loginForm">
+     [#-- End crps select --]
+     [#-- Trick for IE z-index --]
+     <div style="position:relative;">
+     <div class="loginForm" style="z-index: 1000">
         [#-- Email --]
         <div class="row">
           <div class="col-sm-12">
@@ -86,7 +89,7 @@
               <div class="col-sm-10 welcome-message-container" style="display:none">
                 <span class="login-input-container welcome-message">Welcome:</span>
                 <br>
-                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i>Hector Tobon</span>
+                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i>John Doe</span>
               </div>
             </div>
           </div>
@@ -108,12 +111,13 @@
             </div>
           </div>
         </div>
-      </div>
+     </div>
+     </div>
   [/@s.form]
   <br />
   [#-- Disclaimer --]
   <div class="row">
-    <div class="col-xs-9 col-md-10 col-lg-9 col-center">
+    <div class="col-md-11 col-center">
       <div class="login-disclaimer text-justify">[@s.text name="login.disclaimer"/]</div>
     </div>
   </div>
