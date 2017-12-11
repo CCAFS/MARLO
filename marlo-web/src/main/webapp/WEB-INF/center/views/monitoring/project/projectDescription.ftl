@@ -61,7 +61,7 @@
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.project.title" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
@@ -69,7 +69,7 @@
             </div>
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.project.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
             </div> 
           
            
@@ -84,11 +84,11 @@
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-4 metadataElement-startDate">
-                [@customForm.input name="project.startDate" i18nkey="projectDescription.startDate" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+                [@customForm.input name="project.project.startDate" i18nkey="projectDescription.startDate" className="metadataValue" type="text" disabled=!editable readOnly=projectSync required=true editable=editable /]
               </div> 
               [#-- End Date --]
               <div class="col-md-4 metadataElement-endDate">
-                [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+                [@customForm.input name="project.project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable readOnly=projectSync required=false editable=editable /]
               </div>
             </div>
             

@@ -56,8 +56,10 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   @Expose
   private Date endDate;
 
+
   @Expose
   private boolean sync;
+
 
   @Expose
   private Date syncDate;
@@ -99,10 +101,13 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   @Expose
   private String suggestedName;
 
+  @Expose
+  private String ocsCode;
 
   private Project project;
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
+
 
   private Set<CenterProjectOutput> projectOutputs = new HashSet<CenterProjectOutput>(0);
 
@@ -118,7 +123,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   private Set<CenterProjectPartner> projectPartners = new HashSet<CenterProjectPartner>(0);
 
-
   private List<CenterProjectPartner> partners;
 
   private Set<CenterProjectLocation> projectLocations = new HashSet<CenterProjectLocation>(0);
@@ -126,8 +130,8 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   private List<CenterProjectLocation> projectRegions;
 
-
   private List<CenterProjectLocation> projectCountries;
+
 
   public CenterProject() {
   }
@@ -177,14 +181,15 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
+
   public String getComposedName() {
     return "P" + this.id + "- " + (this.name != null ? this.name : "title not defined");
   }
+
 
   public User getContactPerson() {
     return contactPerson;
@@ -194,11 +199,9 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public Date getDateCreated() {
     return dateCreated;
   }
-
 
   public Set<CenterDeliverable> getDeliverables() {
     return deliverables;
@@ -209,9 +212,11 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return description;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
+
 
   public String getEndDateFormat() {
     String pattern = "yyyy-MM-dd";
@@ -257,14 +262,18 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return name;
   }
 
+  public String getOcsCode() {
+    return ocsCode;
+  }
+
   public List<CenterProjectOutput> getOutputs() {
     return outputs;
   }
 
-
   public List<CenterProjectPartner> getPartners() {
     return partners;
   }
+
 
   public Project getProject() {
     return project;
@@ -285,7 +294,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   public User getProjectLeader() {
     return projectLeader;
   }
-
 
   public Set<CenterProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -310,6 +318,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   public CenterProjectStatus getProjectStatus() {
     return projectStatus;
   }
+
 
   public Boolean getRegion() {
     return region;
@@ -365,7 +374,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -375,6 +383,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   public boolean isAutoFill() {
     return autoFill;
   }
+
 
   public boolean isSync() {
     return sync;
@@ -388,10 +397,10 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setAutoFill(boolean autoFill) {
     this.autoFill = autoFill;
   }
+
 
   public void setContactPerson(User contactPerson) {
     this.contactPerson = contactPerson;
@@ -425,7 +434,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.global = global;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
@@ -435,13 +443,18 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setOcsCode(String ocsCode) {
+    this.ocsCode = ocsCode;
   }
 
 

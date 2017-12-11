@@ -63,6 +63,14 @@ public interface ICenterProjectManager {
   public CenterProject getCenterProjectById(long projectID);
 
   /**
+   * Get the Center Project by OcsCode
+   * 
+   * @param ocsCode - the ocs Code
+   * @return CenterProject Object
+   */
+  CenterProject getCenterProjectsByOcsCode(String ocsCode);
+
+  /**
    * This method gets a list of projects belongs of the user
    * 
    * @param userId - the user id

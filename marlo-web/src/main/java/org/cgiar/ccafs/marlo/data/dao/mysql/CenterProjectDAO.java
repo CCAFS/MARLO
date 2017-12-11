@@ -67,6 +67,16 @@ public class CenterProjectDAO extends AbstractMarloDAO<CenterProject, Long> impl
   }
 
   @Override
+  public CenterProject getCenterProjectsByOcsCode(String ocsCode) {
+    String query = "from " + CenterProject.class.getName() + " where ocs_code='" + ocsCode + "'";
+    List<CenterProject> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public List<CenterProject> getCenterProjectsByUserId(long userId) {
     String query = "from " + CenterProject.class.getName() + " where user_id=" + userId;
     return super.findAll(query);

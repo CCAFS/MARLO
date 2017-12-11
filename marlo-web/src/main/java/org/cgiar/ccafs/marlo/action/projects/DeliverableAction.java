@@ -46,7 +46,7 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
@@ -79,6 +79,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -98,6 +99,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -113,6 +115,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author avalencia - CCAFS
+ * @date Nov 8, 2017
+ * @time 9:48:25 AM: Added repositoryChannel List from Database
+ * @time 1:36:16 PM: Fix -1 id error
  */
 public class DeliverableAction extends BaseAction {
 
@@ -127,14 +133,14 @@ public class DeliverableAction extends BaseAction {
   private AuditLogManager auditLogManager;
 
 
-  private Map<String, String> channels;
+  private List<RepositoryChannel> repositoryChannels;
+
 
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
@@ -211,7 +217,9 @@ public class DeliverableAction extends BaseAction {
   private List<CrpClusterKeyOutput> keyOutputs;
 
 
+
   private GlobalUnit loggedCrp;
+
 
   private MetadataElementManager metadataElementManager;
 
@@ -245,6 +253,8 @@ public class DeliverableAction extends BaseAction {
 
   private PartnerDivisionManager partnerDivisionManager;
 
+  private RepositoryChannelManager repositoryChannelManager;
+
 
   private List<PartnerDivision> divisions;
 
@@ -266,7 +276,8 @@ public class DeliverableAction extends BaseAction {
     HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     InstitutionManager institutionManager, MetadataElementManager metadataElementManager,
     DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
-    IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager) {
+    IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
+    RepositoryChannelManager repositoryChannelManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -299,6 +310,7 @@ public class DeliverableAction extends BaseAction {
     this.crpPandrManager = crpPandrManager;
     this.ipProgramManager = ipProgramManager;
     this.partnerDivisionManager = partnerDivisionManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
 
 
@@ -529,12 +541,17 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
+  }
+
+  public List<RepositoryChannel> getRepositoryChannels() {
+    return repositoryChannels;
   }
 
   public List<ProjectPartner> getSelectedPartners() {
@@ -839,21 +856,39 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getQualityCheck() != null) {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+              FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileAssurance(db);
             }
           }
 
           if (deliverable.getQualityCheck().getFileDictionary() != null) {
             if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+              FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileDictionary(db);
             }
           }
 
           if (deliverable.getQualityCheck().getFileTools() != null) {
             if (deliverable.getQualityCheck().getFileTools().getId() != null) {
-              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+              FileDB db;
+              // Set FileDB to null if an error occur (-1 id)
+              try {
+                db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+              } catch (IllegalArgumentException e) {
+                db = null;
+              }
               deliverable.getQualityCheck().setFileTools(db);
             }
           }
@@ -1010,12 +1045,25 @@ public class DeliverableAction extends BaseAction {
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null).collect(Collectors.toList()));
+        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && !dt.getAdminType().booleanValue())
+        .collect(Collectors.toList()));
 
-      deliverableTypeParent.addAll(new ArrayList<>(
-        deliverableTypeManager.findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
-          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue()).collect(Collectors.toList())));
+      deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+        .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
+          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
+        .collect(Collectors.toList())));
 
+      if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+
+        deliverableTypeParent.addAll(deliverableTypeManager.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && dt.getAdminType().booleanValue())
+          .collect(Collectors.toList()));
+
+        deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
+          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
+            && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
+          .collect(Collectors.toList())));
+      }
       if (deliverable.getDeliverableType() != null) {
         Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
 
@@ -1107,11 +1155,12 @@ public class DeliverableAction extends BaseAction {
       deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
 
-    channels = new HashMap<>();
 
-
-    for (ChannelEnum channel : ChannelEnum.values()) {
-      channels.put(channel.getId(), channel.getDesc());
+    repositoryChannels = repositoryChannelManager.findAll();
+    if (repositoryChannels != null && repositoryChannels.size() > 0) {
+      repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
+    } else {
+      repositoryChannels = new LinkedList<RepositoryChannel>();
     }
 
 
@@ -1268,6 +1317,13 @@ public class DeliverableAction extends BaseAction {
       Deliverable deliverableManagedState = this.updateDeliverable();
       this.updateDeliverableInReportingPhase(deliverableManagedState);
       this.updateDeliverableInPlanningPhase(deliverableManagedState);
+
+      // Set CrpClusterKeyOutput to null if has an -1 id
+      if (deliverableManagedState.getCrpClusterKeyOutput() != null
+        && deliverableManagedState.getCrpClusterKeyOutput().getId() != null
+        && deliverableManagedState.getCrpClusterKeyOutput().getId().longValue() == -1) {
+        deliverableManagedState.setCrpClusterKeyOutput(null);
+      }
 
       // This gets a DeliverablePartnership entity in managed state.
       DeliverablePartnership partnershipResponsible = this.getDeliverablePartnership(deliverableManagedState);
@@ -1808,7 +1864,13 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileAssurance() != null) {
       if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+        FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileAssurance(fileDb);
       } else {
         qualityCheck.setFileAssurance(null);
@@ -1825,7 +1887,13 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileDictionary() != null) {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+        FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileDictionary(fileDb);
       } else {
         qualityCheck.setFileDictionary(null);
@@ -1841,7 +1909,13 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getQualityCheck().getFileTools() != null) {
       if (deliverable.getQualityCheck().getFileTools().getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+        FileDB fileDb;
+        // Set FileDB to null if an exception occurs (-1 id)
+        try {
+          fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+        } catch (IllegalArgumentException e) {
+          fileDb = null;
+        }
         qualityCheck.setFileTools(fileDb);
       } else {
         qualityCheck.setFileTools(null);
@@ -1893,10 +1967,6 @@ public class DeliverableAction extends BaseAction {
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
-  }
-
-  public void setChannels(Map<String, String> channels) {
-    this.channels = channels;
   }
 
 
@@ -1973,6 +2043,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
     this.projectPrograms = projectPrograms;
+  }
+
+  public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
+    this.repositoryChannels = repositoryChannels;
   }
 
   public void setStatus(Map<String, String> status) {
