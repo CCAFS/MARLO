@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -79,6 +80,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomLevelSelect;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
@@ -94,6 +96,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -258,6 +261,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private LocElementTypeManager locElementTypeManager;
+
+  @Inject
+  private ProjectBudgetManager projectBudgetManager;
   @Inject
   private ProjectPartnerPersonManager partnerPersonManager;
 
@@ -598,6 +604,39 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
+      if (clazz == ProjectBudget.class) {
+
+
+        ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
+        FundingSource fundingSource =
+          fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
+        List<DeliverableFundingSource> deliverableFundingSources =
+          fundingSource.getDeliverableFundingSources().stream()
+            .filter(
+              c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
+                && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
+                  .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
+          .collect(Collectors.toList());
+        List<Deliverable> onDeliverables = new ArrayList<>();
+        for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
+          if (deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase())
+            .getYear() < projectBudget.getYear()
+            && deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            onDeliverables.add(deliverableFundingSource.getDeliverable());
+          }
+          if (deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase())
+            .getYear() >= projectBudget.getYear()
+            && deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            onDeliverables.add(deliverableFundingSource.getDeliverable());
+          }
+        }
+        System.out.println(fundingSource.getId() + " " + Arrays.toString(onDeliverables.toArray()));
+        if (!onDeliverables.isEmpty()) {
+          return false;
+        }
+      }
       if (clazz == CustomLevelSelect.class) {
         LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
 
@@ -613,10 +652,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       }
+
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
-      return false;
+
+      return true;
     }
 
 

@@ -67,6 +67,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private FundingSourceInfo fundingSourceInfo;
 
   private Set<FundingSourceInfo> fundingSourceInfos = new HashSet<FundingSourceInfo>(0);
+  private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
 
 
   public FundingSource() {
@@ -122,6 +123,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     }
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -130,6 +132,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public Crp getCrp() {
     return crp;
   }
+
+  public Set<DeliverableFundingSource> getDeliverableFundingSources() {
+    return deliverableFundingSources;
+  }
+
 
   public List<FundingSourceLocation> getFundingCountry() {
     return fundingCountry;
@@ -164,10 +171,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public Set<FundingSourceInfo> getFundingSourceInfos() {
     return fundingSourceInfos;
   }
+
 
   public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
     return fundingSourceInstitutions;
@@ -176,7 +183,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public Set<FundingSourceLocation> getFundingSourceLocations() {
     return fundingSourceLocations;
   }
-
 
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
@@ -200,6 +206,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -267,10 +274,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   public String getStatusName() {
     if (this.getFundingSourceInfo().getStatus() != null && this.getFundingSourceInfo().getStatus().intValue() != -1) {
@@ -282,7 +289,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -290,6 +296,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   public boolean hasInstitution(long institutionID, long idPhase) {
 
@@ -307,10 +314,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -320,13 +327,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.budgets = budgets;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
+
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+  public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {
+    this.deliverableFundingSources = deliverableFundingSources;
   }
 
 

@@ -256,7 +256,11 @@
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
  
-    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
+    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
+     [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
+       <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
+     [/#if]  
+    [/#if]
     
     [#-- Project Title --]
     <p class="checked">

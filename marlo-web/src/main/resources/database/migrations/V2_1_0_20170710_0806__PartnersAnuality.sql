@@ -35,7 +35,7 @@ IF NOT EXISTS table_deliverable_partnerships AS (select distinct dp.*,pp.institu
 INNER JOIN project_partners pp on pp.id=ppp.project_partner_id
 inner join institutions inst on inst.id=pp.institution_id);
 
-
+drop table if exists table_temp_project_partner_persons;
 
 CREATE  TABLE
 IF NOT EXISTS table_temp_project_partner_persons
