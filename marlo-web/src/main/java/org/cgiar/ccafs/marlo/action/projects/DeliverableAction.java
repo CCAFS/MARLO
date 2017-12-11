@@ -125,13 +125,12 @@ public class DeliverableAction extends BaseAction {
 
   private static final long serialVersionUID = -4474372683580321612L;
 
-
   private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
+
 
   private List<DeliverableQualityAnswer> answers;
 
   private AuditLogManager auditLogManager;
-
 
   private List<RepositoryChannel> repositoryChannels;
 
@@ -141,9 +140,9 @@ public class DeliverableAction extends BaseAction {
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+
+
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
-
   private Map<String, String> crps;
 
 
@@ -164,29 +163,29 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableUserManager deliverableUserManager;
 
+
   private DeliverableCrpManager deliverableCrpManager;
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
-
 
   private CrpPandrManager crpPandrManager;
 
 
   private long deliverableID;
+
+
   private DeliverableManager deliverableManager;
-
   private HistoryComparator historyComparator;
-  private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
+  private DeliverableMetadataElementManager deliverableMetadataElementManager;
   private DeliverablePartnershipManager deliverablePartnershipManager;
 
   private InstitutionManager institutionManager;
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
+
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
-
   private DeliverableDisseminationManager deliverableDisseminationManager;
-
 
   private List<DeliverableType> deliverableSubTypes;
 
@@ -194,15 +193,16 @@ public class DeliverableAction extends BaseAction {
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
 
-  private List<DeliverableType> deliverableTypeParent;
 
+  private List<DeliverableType> deliverableTypeParent;
 
   private DeliverableValidator deliverableValidator;
 
+
   private FileDBManager fileDBManager;
 
-
   private CrpProgramManager crpProgramManager;
+
 
   private GenderTypeManager genderTypeManager;
 
@@ -216,17 +216,15 @@ public class DeliverableAction extends BaseAction {
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
-
-
   private GlobalUnit loggedCrp;
 
 
   private MetadataElementManager metadataElementManager;
 
+
   private List<ProjectPartnerPerson> partnerPersons;
+
   private List<ProjectPartner> partners;
-
-
   private Project project;
 
 
@@ -234,6 +232,7 @@ public class DeliverableAction extends BaseAction {
 
 
   private ProjectManager projectManager;
+
 
   private List<ProjectOutcome> projectOutcome;
 
@@ -245,16 +244,16 @@ public class DeliverableAction extends BaseAction {
 
   private Map<String, String> status;
 
+  private Map<String, String> channels;
 
   private String transaction;
 
-
   private int indexTab;
+
 
   private PartnerDivisionManager partnerDivisionManager;
 
   private RepositoryChannelManager repositoryChannelManager;
-
 
   private List<PartnerDivision> divisions;
 
@@ -338,6 +337,7 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
+
   /**
    * Delete Deliverable Gender Levels if there is no cross cutting gender component.
    * 
@@ -373,7 +373,6 @@ public class DeliverableAction extends BaseAction {
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -411,6 +410,7 @@ public class DeliverableAction extends BaseAction {
     }
     return partnershipResponsible;
   }
+
 
   public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
 
@@ -472,7 +472,6 @@ public class DeliverableAction extends BaseAction {
     return divisions;
   }
 
-
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -481,6 +480,7 @@ public class DeliverableAction extends BaseAction {
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
+
 
   public int getIndexTab() {
     return indexTab;
@@ -512,10 +512,10 @@ public class DeliverableAction extends BaseAction {
     return partnerPerson;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -527,15 +527,14 @@ public class DeliverableAction extends BaseAction {
     return projectPartnerPersons;
   }
 
-
   public Map<String, String> getPrograms() {
     return programs;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -545,6 +544,7 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
@@ -633,7 +633,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -670,6 +669,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -691,10 +691,10 @@ public class DeliverableAction extends BaseAction {
     return false;
   }
 
-
   public boolean isSelectedPerson(long projectPartnerPersonId, long projectPartner) {
     return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
   }
+
 
   public List<DeliverablePartnership> otherPartners() {
     try {
@@ -1254,7 +1254,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -1305,6 +1304,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -1967,6 +1967,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
+  }
+
+  public void setChannels(Map<String, String> channels) {
+    this.channels = channels;
   }
 
 

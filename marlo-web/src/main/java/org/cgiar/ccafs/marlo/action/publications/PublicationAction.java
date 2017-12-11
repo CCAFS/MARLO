@@ -97,8 +97,8 @@ public class PublicationAction extends BaseAction {
    */
   private static final long serialVersionUID = -5176367401132626314L;
 
-
   private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
+
 
   private GlobalUnit loggedCrp;
 
@@ -106,36 +106,38 @@ public class PublicationAction extends BaseAction {
   private GlobalUnitManager crpManager;
 
   private long deliverableID;
+
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
   private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
-
   private Map<String, String> programs;
+
   private Map<String, String> regions;
   private Map<String, String> institutions;
   private CrpPpaPartnerManager crpPpaPartnerManager;
+  private Map<String, String> channels;
   private DeliverableManager deliverableManager;
   private PublicationValidator publicationValidator;
   private Deliverable deliverable;
-
   private DeliverableDisseminationManager deliverableDisseminationManager;
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
-
 
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
 
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
 
-  private DeliverableUserManager deliverableUserManager;
 
+  private DeliverableUserManager deliverableUserManager;
 
   private DeliverableLeaderManager deliverableLeaderManager;
 
+
   private DeliverableProgramManager deliverableProgramManager;
+
   private String transaction;
   private AuditLogManager auditLogManager;
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
@@ -143,13 +145,12 @@ public class PublicationAction extends BaseAction {
   private HistoryComparator historyComparator;
   private UserManager userManager;
   private InstitutionManager institutionManager;
-
   private List<DeliverableType> deliverableSubTypes;
+
   private GenderTypeManager genderTypeManager;
   private DeliverableTypeManager deliverableTypeManager;
   private RepositoryChannelManager repositoryChannelManager;
   private List<RepositoryChannel> repositoryChannels;
-
 
   @Inject
   public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -216,6 +217,7 @@ public class PublicationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -232,10 +234,10 @@ public class PublicationAction extends BaseAction {
     return crps;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -244,7 +246,6 @@ public class PublicationAction extends BaseAction {
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
-
 
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
@@ -276,19 +277,19 @@ public class PublicationAction extends BaseAction {
   }
 
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Map<String, String> getPrograms() {
     return programs;
   }
 
-
   public Map<String, String> getRegions() {
     return regions;
   }
+
 
   public String[] getRegionsIds() {
 
@@ -631,7 +632,6 @@ public class PublicationAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
@@ -832,6 +832,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -950,7 +951,6 @@ public class PublicationAction extends BaseAction {
 
   }
 
-
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
 
@@ -973,6 +973,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
 
@@ -988,7 +989,6 @@ public class PublicationAction extends BaseAction {
     }
 
   }
-
 
   public void savePrograms() {
 
@@ -1093,6 +1093,10 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  public void setChannels(Map<String, String> channels) {
+    this.channels = channels;
+  }
+
 
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
@@ -1123,7 +1127,6 @@ public class PublicationAction extends BaseAction {
   public void setInstitutions(Map<String, String> institutions) {
     this.institutions = institutions;
   }
-
 
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
