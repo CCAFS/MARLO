@@ -84,7 +84,7 @@ function init() {
     //when user has access to multiple crps, show the side bar
     $(".crps-select").css("display","");
 
-    var sideBarPosition=-$(".loginForm").position().left-50;
+    var sideBarPosition=-$(".loginForm").position().left-120;
     //move crps select side bar
     $(".crps-select").css("left",sideBarPosition);
   });
