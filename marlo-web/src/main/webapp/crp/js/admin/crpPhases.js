@@ -21,15 +21,34 @@ function setDatePicker() {
   $('.crpPhase').each(function(i,e) {
     var $startDate = $(e).find('.startDate');
     var $endDate = $(e).find('.endDate');
+    var startDatePicker, endDatePicker;
 
+    // From date a picker
     $startDate.pickadate({
-        format: dateFormat,
-        max: $endDate.val() || false
+        format: 'mmm d, yyyy',
+        formatSubmit: dateFormat,
+        hiddenName: true,
+        max: new Date($endDate.val()),
+        onClose: function() {
+          endDatePicker.set('min', startDatePicker.get());
+        }
     });
+
+    // Until date a picker
     $endDate.pickadate({
-        format: dateFormat,
-        min: $startDate.val() || false
+        format: 'mmm d, yyyy',
+        formatSubmit: dateFormat,
+        hiddenName: true,
+        min: new Date($startDate.val()),
+        onClose: function(context) {
+          startDatePicker.set('max', endDatePicker.get());
+        }
     });
+
+    // Instance picker component
+    startDatePicker = $startDate.pickadate('picker');
+    endDatePicker = $endDate.pickadate('picker');
+
   });
 
 }

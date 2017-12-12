@@ -64,10 +64,10 @@
                 
                 <div class="form-group row">
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string['yyyy-MM-dd']}" i18nkey="From" placeholder="'yyyy-mm-dd'" editable=editable  className="startDate datePicker"/]
+                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string.medium}" i18nkey="From" placeholder="" editable=editable  className="startDate datePicker"/]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string['yyyy-MM-dd']}" i18nkey="Until" placeholder="'yyyy-mm-dd'" editable=editable  className="endDate datePicker"/]
+                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string.medium}" i18nkey="Until" placeholder="" editable=editable  className="endDate datePicker"/]
                   </div>
                 </div>
                  
