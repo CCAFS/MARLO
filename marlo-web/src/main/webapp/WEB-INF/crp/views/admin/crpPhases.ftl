@@ -7,7 +7,7 @@
   "${baseUrl}/global/js/fieldsValidation.js" 
   ] 
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/projectPhases.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpPhases.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpPhases" /]
 
@@ -42,28 +42,32 @@
           [#if phases?size > 1]
             [#list phases as phase]
               [#assign customName = "phase[${phase_index}]"]
-              <div id="crpPhase-${phase.id}" class="crpPhase simpleBox">
+              <div id="crpPhase-${phase.id}" class="crpPhase simpleBox ${(phase.isReporting())?string('reporting','planning')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]current[/#if]">
+                <div class="leftHead sm">
+                  <span class="index">${phase_index+1}</span>
+                </div>
+                
                 <h4> ${(phase.description)!} ${(phase.year)!}</h4>
                 <hr />
-                <div class="form-group row">
+                <div class="form-group row"> 
                   <div class="col-md-6">
                     <label>Visible:</label>
-                    [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible /]
-                    [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="true" checked=!phase.visible /]
+                    [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible cssClassLabel="radio-label-yes"/]
+                    [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="true" checked=!phase.visible cssClassLabel="radio-label-no"/]
                   </div>
                   <div class="col-md-6">
                     <label>Editable:</label>
-                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable /]
-                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="true" checked=!phase.editable /]
+                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
+                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="true" checked=!phase.editable  cssClassLabel="radio-label-no"/]
                   </div>
                 </div>
                 
                 <div class="form-group row">
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string['yyyy-MM-dd']}" i18nkey="Start Date" placeholder="'yyyy-mm-dd'" editable=editable  className="startDate datePicker"/]
+                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string['yyyy-MM-dd']}" i18nkey="From" placeholder="'yyyy-mm-dd'" editable=editable  className="startDate datePicker"/]
                   </div>
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string['yyyy-MM-dd']}" i18nkey="End Date" placeholder="'yyyy-mm-dd'" editable=editable  className="endDate datePicker"/]
+                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string['yyyy-MM-dd']}" i18nkey="Until" placeholder="'yyyy-mm-dd'" editable=editable  className="endDate datePicker"/]
                   </div>
                 </div>
                  
