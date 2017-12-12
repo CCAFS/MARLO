@@ -33,14 +33,8 @@
   
     <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
-  </listener>
-  
-<!--   Quartz Listener -->
-  <listener>
-	  <listener-class>org.cgiar.ccafs.marlo.config.ADUsersListener</listener-class>
-	</listener>
+  </listener>  
 
-  
   <!-- Google Guice integration with our web application.  Other filters are configured in Guice Module-->
   <filter>
     <filter-name>guice</filter-name>
