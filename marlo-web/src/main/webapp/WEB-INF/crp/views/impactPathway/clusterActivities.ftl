@@ -256,6 +256,18 @@
       </div>
       [/#if]
     </div>
+    
+    [#if !isTemplate]
+    <div class="form-group">
+      [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
+      [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
+      <strong>Deliverables ${deliverables?size}</strong> | <strong>Projects ${deliverables?size}</strong>
+      
+      [#list deliverables as d]
+        <li>${d}</li>
+      [/#list]
+    </div>
+    [/#if]
   
   </div>
 
