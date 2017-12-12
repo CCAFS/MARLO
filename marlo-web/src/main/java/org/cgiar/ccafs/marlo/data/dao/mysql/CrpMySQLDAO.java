@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import java.util.List;
 
 import com.google.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 /**
@@ -29,10 +30,21 @@ import org.hibernate.SessionFactory;
  */
 public class CrpMySQLDAO extends AbstractMarloDAO<Crp, Long> implements CrpDAO {
 
-
   @Inject
   public CrpMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+
+  @Override
+  public List<Crp> crpUsers(String emai) {
+
+    String query =
+      "select distinct cp from crp cp inner join fetch cp.crpUsers cpUsers   " + "where cpUsers.user.email = :emai";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("emai", emai);
+    List<Crp> crps = super.findAll(createQuery);
+    return crps;
   }
 
   @Override
