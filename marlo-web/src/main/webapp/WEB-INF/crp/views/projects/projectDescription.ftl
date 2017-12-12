@@ -233,7 +233,7 @@
                       <div class="${customForm.changedField('project.crossCuttingCapacity')}">[#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
                       <div class="${customForm.changedField('project.crossCuttingNa')}">[#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
                       [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-                      [#if project.crossCuttingGender==false && project.crossCuttingYouth==false && project.crossCuttingCapacity==false && project.crossCuttingNa==false]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
+                      [#if ((!project.crossCuttingGender)!false) && ((!project.crossCuttingYouth)!false) && ((!project.crossCuttingCapacity)!false) && ((!project.crossCuttingNa)!false)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
                     [/#if]
                   </div>
                 </div>

@@ -56,7 +56,7 @@
                     [#-- Show if is a headquarter institution --]
                     [#if !(institutionLead.headquarter??)]
                       <li id="" class="leadPartners clearfix">
-                      [#if editable ]
+                      [#if editable  && action.canBeDeleted((institutionLead.id)!-1,(institutionLead.class.name)!)]
                         <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
                       [/#if]
                         <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
