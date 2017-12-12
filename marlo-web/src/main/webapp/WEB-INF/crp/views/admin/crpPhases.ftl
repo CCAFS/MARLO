@@ -46,28 +46,33 @@
                 <div class="leftHead sm">
                   <span class="index">${phase_index+1}</span>
                 </div>
+                [#-- Hidden Inputs --]
+                <input type="hidden" name="${customName}.id" value="${phase.id}" />
                 
-                <h4> ${(phase.description)!} ${(phase.year)!}</h4>
-                <hr />
+                [#-- Title --]
+                <h4> ${(phase.description)!} ${(phase.year)!}</h4><hr />
                 <div class="form-group row"> 
+                  [#-- Visible Phase --]
                   <div class="col-md-6">
                     <label>Visible:</label>
                     [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible cssClassLabel="radio-label-yes"/]
                     [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="true" checked=!phase.visible cssClassLabel="radio-label-no"/]
                   </div>
+                  [#-- Editable Phase --]
                   <div class="col-md-6">
                     <label>Editable:</label>
                     [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
                     [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="true" checked=!phase.editable  cssClassLabel="radio-label-no"/]
                   </div>
                 </div>
-                
                 <div class="form-group row">
+                  [#-- From Date  --]
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string['yyyy-MM-dd']}" i18nkey="From" placeholder="'yyyy-mm-dd'" editable=editable  className="startDate datePicker"/]
+                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string.medium}" i18nkey="From" placeholder="" editable=editable  className="startDate datePicker"/]
                   </div>
+                  [#-- Until Date  --]
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string['yyyy-MM-dd']}" i18nkey="Until" placeholder="'yyyy-mm-dd'" editable=editable  className="endDate datePicker"/]
+                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string.medium}" i18nkey="Until" placeholder="" editable=editable  className="endDate datePicker"/]
                   </div>
                 </div>
                  

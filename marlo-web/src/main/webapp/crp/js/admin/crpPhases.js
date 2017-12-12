@@ -1,13 +1,9 @@
-var dateFormat;
 $(document).ready(init);
 
 function init() {
 
-  // Set date format
-  dateFormat = "yyyy-mm-dd";
-
   // Set date-picker
-  setDatePicker();
+  setDatePickers();
 
   /* Declaring Events */
   attachEvents();
@@ -16,20 +12,36 @@ function init() {
 function attachEvents() {
 }
 
-function setDatePicker() {
+function setDatePickers() {
+  var datePickerOptions = {
+      format: "mmm d, yyyy",
+      formatSubmit: "yyyy-mm-dd",
+      hiddenName: true
+  }
 
   $('.crpPhase').each(function(i,e) {
     var $startDate = $(e).find('.startDate');
     var $endDate = $(e).find('.endDate');
+    var startDatePicker, endDatePicker;
 
-    $startDate.pickadate({
-        format: dateFormat,
-        max: $endDate.val() || false
+    // Set date pickers
+    $startDate.pickadate(datePickerOptions);
+    $endDate.pickadate(datePickerOptions);
+
+    // Instance picker component
+    startDatePicker = $startDate.pickadate('picker');
+    endDatePicker = $endDate.pickadate('picker');
+
+    // Set parameters an events
+    startDatePicker.set('max', endDatePicker.get());
+    startDatePicker.on('close', function() {
+      endDatePicker.set('min', startDatePicker.get());
     });
-    $endDate.pickadate({
-        format: dateFormat,
-        min: $startDate.val() || false
-    });
+
+    endDatePicker.set('min', startDatePicker.get());
+    endDatePicker.on('close', function() {
+      startDatePicker.set('max', endDatePicker.get());
+    })
+
   });
-
 }
