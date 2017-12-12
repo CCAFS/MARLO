@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="8">Funding Source information</th>
+        <th colspan="9">Funding Source information</th>
         <th colspan="2">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -14,6 +14,8 @@
         <th id="code" >Finance Code</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="leader" >[@s.text name="projectsList.institutions" /]</th>
+         <th id="endDate" >[@s.text name="projectsList.endDate" /]</th>
+        
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.originalDonor" /]</th>
         <th id="fieldCheck" >[@s.text name="message.fieldsCheck.required" /]</th>
@@ -71,6 +73,10 @@
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
+          </td>
+          
+           <td class=""> 
+            ${(project.fundingSourceInfo.endDate)!'Not defined'}
           </td>
           
           [#-- Direct Donor --]
