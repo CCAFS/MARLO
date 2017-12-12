@@ -782,6 +782,10 @@ img.icon {
   cursor: pointer;
 }
 
+.removeElement.disable {
+  opacity:0.4;
+}
+
 .removeElement.sm {
   padding: 10px 11px;
 }
@@ -6010,7 +6014,7 @@ textarea{
 }
 
 input.fieldChecked {
-    background: url(../../global/images/icon-check-tiny.png) no-repeat;
+    background: url(../../../global/images/icon-check-tiny.png) no-repeat;
     background-position: 97% 50%;
     background-size: 12px;
     border-color: #8ea786 !important;
@@ -6563,3 +6567,32 @@ img#crpSelectedImage {
 }
 
 /* END Radio Flat*/
+
+/* Select2 show and hide animation in dropdowns*/
+.select2-results__option.loading-results,
+.select2-results__option.select2-results__option--load-more {
+  display: inline;
+  position: relative;
+  -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+  border-style: none;
+}
+
+@-webkit-keyframes sk-scaleout {
+  0% { -webkit-transform: scale(0) }
+  100% {
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
+}
+
+@keyframes sk-scaleout {
+  0% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 100% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+    opacity: 0;
+  }
+}
