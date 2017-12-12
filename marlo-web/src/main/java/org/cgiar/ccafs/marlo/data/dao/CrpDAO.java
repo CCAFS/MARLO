@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,6 +27,8 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(CrpMySQLDAO.class)
 public interface CrpDAO {
+
+  public List<Crp> crpUsers(String emai);
 
   /**
    * This method removes a specific crp value from the database.

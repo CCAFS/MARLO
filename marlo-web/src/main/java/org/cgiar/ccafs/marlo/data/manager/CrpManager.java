@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,6 +29,8 @@ import com.google.inject.ImplementedBy;
 public interface CrpManager {
 
 
+  public List<Crp> crpUsers(String emai);
+
   /**
    * This method removes a specific crp value from the database.
    * 
@@ -36,7 +38,6 @@ public interface CrpManager {
    * @return true if the crp was successfully deleted, false otherwise.
    */
   public void deleteCrp(long crpId);
-
 
   /**
    * This method validate if the crp identify with the given id exists in the system.
