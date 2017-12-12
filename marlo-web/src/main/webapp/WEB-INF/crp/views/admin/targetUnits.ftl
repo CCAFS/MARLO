@@ -61,11 +61,7 @@
         
         [#if editable]
         [#-- Section Buttons--]
-        <div class="buttons">
-          <div class="buttons-content">
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          </div>
-        </div>
+        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         [/#if]
         
         [/@s.form]
