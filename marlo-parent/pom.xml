@@ -20,8 +20,8 @@
 		<javax.inject.version>1</javax.inject.version>
     <javax-mail.version>1.5.5</javax-mail.version>
     <com.sun.mail.version>1.5.5</com.sun.mail.version>
-    <struts2.version>2.5.13</struts2.version>
-    <struts2-json.version>2.5.13</struts2-json.version>
+    <struts2.version>2.5.10</struts2.version>
+    <struts2-json.version>2.5.10</struts2-json.version>
     <struts2-java8-support-plugin.version>2.5.2</struts2-java8-support-plugin.version>
     <xwork-core.version>2.3.31</xwork-core.version>
     <freemarker.version>2.3.23</freemarker.version>
