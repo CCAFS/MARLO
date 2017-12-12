@@ -1,10 +1,10 @@
 [#ftl]
-[#assign title = "Project Phases" /]
+[#assign title = "CRP Phases" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["bootstrap-select","jquery-ui"] /]
+[#assign pageLibs = ["bootstrap-select","jquery-ui", "pickadate"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/admin/projectPhases.js",
-  "${baseUrlMedia}/global/js/fieldsValidation.js" 
+  "${baseUrlMedia}/js/admin/crpPhases.js",
+  "${baseUrl}/global/js/fieldsValidation.js" 
   ] 
 /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/projectPhases.css" ] /]
@@ -41,18 +41,29 @@
         <div class="borderBox row ">
           [#if phases?size > 1]
             [#list phases as phase]
-              <div class="simpleBox">
+              [#assign customName = "phase[${phase_index}]"]
+              <div id="crpPhase-${phase.id}" class="crpPhase simpleBox">
                 <h4> ${(phase.description)!} ${(phase.year)!}</h4>
-                
-                <p><strong>editable:</strong> ${phase.editable?string}</p>
-                <p><strong>visible:</strong> ${phase.visible?string}</p>
+                <hr />
+                <div class="form-group row">
+                  <div class="col-md-6">
+                    <label>Visible:</label>
+                    [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible /]
+                    [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="true" checked=!phase.visible /]
+                  </div>
+                  <div class="col-md-6">
+                    <label>Editable:</label>
+                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable /]
+                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="true" checked=!phase.editable /]
+                  </div>
+                </div>
                 
                 <div class="form-group row">
                   <div class="col-md-6">
-                    <strong>From: </strong>${phase.startDate}
+                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string['yyyy-MM-dd']}" i18nkey="Start Date" placeholder="'yyyy-mm-dd'" editable=editable  className="startDate datePicker"/]
                   </div>
                   <div class="col-md-6">
-                    <strong>Until: </strong>${phase.endDate}
+                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string['yyyy-MM-dd']}" i18nkey="End Date" placeholder="'yyyy-mm-dd'" editable=editable  className="endDate datePicker"/]
                   </div>
                 </div>
                  

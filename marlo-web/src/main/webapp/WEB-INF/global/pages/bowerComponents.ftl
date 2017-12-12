@@ -23,6 +23,9 @@
   [#if libraryName="font-awesome" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/font-awesome/css/font-awesome.css" />[/#if]
   [#if libraryName="TimelineJS3" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/TimelineJS3/compiled/css/timeline.css" />[/#if]
   [#if libraryName="jquery-tag-editor" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/jquery-tag-editor/jquery.tag-editor.css" />[/#if]
+  [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.css" />[/#if]
+  [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.date.css" />[/#if]
+  [#if libraryName="pickadate" ]<link rel="stylesheet" href="${baseUrl}/global/bower_components/pickadate/lib/themes/classic.time.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -61,5 +64,8 @@
   [#if libraryName="caret"]<script src="${baseUrl}/global/bower_components/caret/jquery.caret.js"></script>[/#if]
   [#if libraryName="jquery-tag-editor"]<script src="${baseUrl}/global/bower_components/jquery-tag-editor/jquery.tag-editor.min.js"></script>[/#if]
   [#if libraryName="sly"]<script src="${baseUrl}/global/bower_components/sly/dist/sly.min.js"></script>[/#if]
+  [#if libraryName="pickadate"]<script src="${baseUrl}/global/bower_components/pickadate/lib/picker.js"></script>[/#if]
+  [#if libraryName="pickadate"]<script src="${baseUrl}/global/bower_components/pickadate/lib/picker.date.js"></script>[/#if]
+  [#if libraryName="pickadate"]<script src="${baseUrl}/global/bower_components/pickadate/lib/picker.time.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
