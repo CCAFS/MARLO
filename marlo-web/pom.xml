@@ -15,6 +15,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- The jdt_apt value is so that target classes can be generated from annotations in eclipse -->
+    <m2e.apt.activation>jdt_apt</m2e.apt.activation>
   </properties>
 
   <developers>
@@ -346,16 +348,17 @@
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>catalina</artifactId>
-      <scope>provided</scope>
     </dependency>
-
-<!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
-<dependency>
-  <groupId>net.gpedro.integrations.slack</groupId>
-  <artifactId>slack-webhook</artifactId>
-  <version>1.3.0</version>
-</dependency>
-
+    <!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
+    <dependency>
+      <groupId>net.gpedro.integrations.slack</groupId>
+      <artifactId>slack-webhook</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-jdk8</artifactId>
+    </dependency>
   </dependencies>
 
 

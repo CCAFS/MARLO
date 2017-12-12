@@ -53,6 +53,8 @@ public class CrpController implements ModelDriven<Object> {
 
   private final UserManager userManager;
 
+  private final CrpMapper crpMapper;
+
   private CrpDTO crpDTO = new CrpDTO();
 
   private Long id;
@@ -60,9 +62,10 @@ public class CrpController implements ModelDriven<Object> {
   private List<CrpDTO> crpDTOs;
 
   @Inject
-  public CrpController(CrpManager crpManager, UserManager userManager) {
+  public CrpController(CrpManager crpManager, UserManager userManager, CrpMapper crpMapper) {
     this.crpManager = crpManager;
     this.userManager = userManager;
+    this.crpMapper = crpMapper;
   }
 
 
@@ -70,8 +73,7 @@ public class CrpController implements ModelDriven<Object> {
   public HttpHeaders create() {
     LOG.debug("Create new crp {}", crpDTO);
 
-    CrpMapper crpMapper = new CrpMapper();
-    Crp newCrp = crpMapper.crpDTOtoCrp(crpDTO);
+    Crp newCrp = crpMapper.crpDTOToCrp(crpDTO);
 
     // These audit fields should be automatically created via a Hibernate post-insert/update listener!
     newCrp.setCreatedBy(this.getCurrentUser());
@@ -81,6 +83,9 @@ public class CrpController implements ModelDriven<Object> {
 
 
     newCrp = crpManager.saveCrp(newCrp);
+
+    crpDTO = crpMapper.crpToCrpDTO(newCrp);
+
     return new DefaultHttpHeaders("create");
   }
 
@@ -165,7 +170,6 @@ public class CrpController implements ModelDriven<Object> {
   // GET /crps
   public HttpHeaders index() {
     List<Crp> crps = crpManager.findAll();
-    CrpMapper crpMapper = new CrpMapper();
     crpDTOs = new ArrayList<>();
     // Create crpDTOs
     for (Crp crp : crps) {
@@ -193,7 +197,6 @@ public class CrpController implements ModelDriven<Object> {
   public HttpHeaders show() {
     Crp crp = crpManager.getCrpById(this.getId());
 
-    CrpMapper crpMapper = new CrpMapper();
     crpDTO = crpMapper.crpToCrpDTO(crp);
 
     return new DefaultHttpHeaders("show");
@@ -227,8 +230,7 @@ public class CrpController implements ModelDriven<Object> {
   public void updateEntityAfterFetching() {
     Crp existingCrp = crpManager.getCrpById(crpDTO.getId());
 
-    CrpMapper crpMapper = new CrpMapper();
-    existingCrp = crpMapper.crpDTOtoCrp(crpDTO, existingCrp);
+    existingCrp = crpMapper.updateCrpFromCrpDto(crpDTO, existingCrp);
 
     // Auditing information should be done in a hibernate post-update/insert listener.
     existingCrp.setModifiedBy(this.getCurrentUser());
@@ -241,9 +243,8 @@ public class CrpController implements ModelDriven<Object> {
    * A more efficient implementation but more risky as it requires exposing more fields to the client.
    */
   public void updateEntityDirectlyWithoutFetching() {
-    CrpMapper crpMapper = new CrpMapper();
 
-    Crp updatedCrp = crpMapper.crpDTOtoCrp(crpDTO);
+    Crp updatedCrp = crpMapper.crpDTOToCrp(crpDTO);
 
     updatedCrp = crpManager.saveCrp(updatedCrp);
   }

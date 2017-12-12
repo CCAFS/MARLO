@@ -18,58 +18,26 @@ package org.cgiar.ccafs.marlo.rest.response.mapper;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.rest.response.CrpDTO;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+
 /**
  * Maps Crp domain entites to CrpDTO objects. As JSON serialization frameworks will try and serialize all
  * relations (including bi-directional assocations which can lead to infinite loops unless mitigated against) we
  * either have to create DTO objects or give the JSON serialization framework instructions on which fields to
  * serialize and which ones to not serialize.
+ * We use the MapStruct framework here, all we need to do is create our DTO object and our interface mapper and
+ * MapStruct will create the implementation for us.
  * 
  * @author GrantL
  */
-public class CrpMapper {
+@Mapper(componentModel = "jsr330")
+public interface CrpMapper {
 
-  public Crp crpDTOtoCrp(CrpDTO crpDTO) {
-    Crp crp = new Crp();
-    crp = this.crpDTOtoCrp(crpDTO, crp);
-    return crp;
-  }
+  public Crp crpDTOToCrp(CrpDTO crpDTO);
 
-  /**
-   * Generally this overloaded method is not required, but this is to prevent code-duplication of the mapping in our
-   * update method.
-   * 
-   * @param crpDTO
-   * @param crp
-   * @return
-   */
-  public Crp crpDTOtoCrp(CrpDTO crpDTO, Crp crp) {
-    crp.setAcronym(crpDTO.getAcronym());
-    crp.setCategory(crpDTO.getCategory());
-    // This will be null for CREATE requests and not null for UPDATE requests.
-    crp.setId(crpDTO.getId());
-    crp.setName(crpDTO.getName());
-    crp.setActive(crpDTO.isActive());
-    crp.setHasRegions(crpDTO.isHasRegions());
-    crp.setMarlo(crpDTO.isMarlo());
-    crp.setModificationJustification(crpDTO.getModificationJustification());
-    return crp;
-  }
+  public CrpDTO crpToCrpDTO(Crp crp);
 
-
-  public CrpDTO crpToCrpDTO(Crp crp) {
-    if (crp == null) {
-      return null;
-    }
-    CrpDTO crpDTO = new CrpDTO();
-    crpDTO.setId(crp.getId());
-    crpDTO.setAcronym(crp.getAcronym());
-    crpDTO.setActive(crp.isActive());
-    crpDTO.setCategory(crp.getCategory());
-    crpDTO.setHasRegions(crp.isHasRegions());
-    crpDTO.setMarlo(crp.isMarlo());
-    crpDTO.setName(crp.getName());
-    crpDTO.setModificationJustification(crp.getModificationJustification());
-    return crpDTO;
-  }
+  public Crp updateCrpFromCrpDto(CrpDTO crpDTO, @MappingTarget Crp crp);
 
 }
