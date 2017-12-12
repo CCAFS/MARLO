@@ -39,8 +39,8 @@ public class CrpMySQLDAO extends AbstractMarloDAO<Crp, Long> implements CrpDAO {
   @Override
   public List<Crp> crpUsers(String emai) {
 
-    String query =
-      "select distinct cp from crp cp inner join fetch cp.crpUsers cpUsers   " + "where cpUsers.user.email = :emai";
+    String query = "select distinct cp from Crp cp inner join fetch cp.crpUsers cpUser   "
+      + "where cpUser.user.email = :emai and cpUser.active=1 ";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("emai", emai);
     List<Crp> crps = super.findAll(createQuery);
