@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
+
+  <package name="homeJson" namespace="/" extends="json-default">
+  <action name="crpByEmail"
+          class="org.cgiar.ccafs.marlo.action.json.global.CrpByUserEmailAction"
+          >
+          <result type="json">
+            <param name="noCache">true</param>
+              
+          </result>
+        </action>
+</package>
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
 
@@ -19,6 +30,7 @@
 			</result>
 		</action>
 
+	
 		<action name="testCIATOCS" class="org.cgiar.ccafs.marlo.action.TestCIATOCSAction">
 			<result name="success">/WEB-INF/global/pages/ocsMessage.ftl</result>
 			<result name="input" type="httpheader">
