@@ -611,7 +611,16 @@ public class ProjectDescriptionAction extends BaseAction {
 
           projectLocations.add(projectLocation);
         }
-        project.setClusterActivities(projectClusterActivities);
+        List<String> activities = new ArrayList<>();
+        List<ProjectClusterActivity> projectActivities = new ArrayList<>();
+        for (ProjectClusterActivity projectClusterActivity : projectClusterActivities) {
+          if (!activities.contains(projectClusterActivity.getCrpClusterOfActivity().getIdentifier())) {
+            projectActivities.add(projectClusterActivity);
+            activities.add(projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+
+          }
+        }
+        project.setClusterActivities(projectActivities);
         project.setFlagships(programs);
         project.setRegions(regions);
         project.setScopes(projectLocations);
