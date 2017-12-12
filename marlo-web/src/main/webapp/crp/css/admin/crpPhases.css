@@ -1,0 +1,16 @@
+.crpPhase {
+    padding: 18px 20px 10px 20px;
+}
+
+.crpPhase.current{
+  border-color: #bbb;
+}
+
+.crpPhase.planning span.index {
+  background: #337ab7;
+}
+
+.crpPhase.reporting span.index {
+  background: #777777;
+}
+
