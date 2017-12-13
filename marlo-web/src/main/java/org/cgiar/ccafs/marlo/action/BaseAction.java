@@ -1925,7 +1925,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-  private List<Project> getProjectRelationsImpact(long id, String className) {
+  public List<Project> getProjectRelationsImpact(long id, String className) {
     Class<?> clazz;
     List<Project> projects = null;
     try {
