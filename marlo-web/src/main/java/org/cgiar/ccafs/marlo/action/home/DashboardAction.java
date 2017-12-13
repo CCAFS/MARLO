@@ -92,8 +92,10 @@ public class DashboardAction extends BaseAction {
       } else {
 
         List<Project> allProjects = new ArrayList<>();
-        for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+        if (phase != null) {
+          for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+            allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+          }
         }
         if (this.isPlanningActive()) {
 
