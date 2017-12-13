@@ -16,7 +16,9 @@ function setDatePickers() {
   var datePickerOptions = {
       format: "mmm d, yyyy",
       formatSubmit: "yyyy-mm-dd",
-      hiddenName: true
+      hiddenName: true,
+      selectYears: true,
+      selectMonths: true
   }
 
   $('.crpPhase').each(function(i,e) {
