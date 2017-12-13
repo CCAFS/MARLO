@@ -33,7 +33,7 @@
 			<column name="partner_name" length="65535" />
 		</property>
 		<property name="acronym" type="string">
-			<column name="acronym" length="10" />
+			<column name="acronym" length="45" />
 		</property>
 		<property name="webPage" type="string">
 			<column name="web_page" length="65535" />
