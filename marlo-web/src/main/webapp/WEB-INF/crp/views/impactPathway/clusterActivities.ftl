@@ -50,9 +50,6 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
           [#list programs as program]
@@ -62,6 +59,9 @@
             </li>
           [/#list]
         </ul>
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
 
@@ -187,6 +187,7 @@
     </div>    
     <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>
     
+    <div class="clearfix"></div>
     [#if !isTemplate]
       [@relationsMacro element=cluster /]
     [/#if]
@@ -213,11 +214,9 @@
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
-     
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
-     
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
@@ -301,11 +300,12 @@
   [#local composedID = "${className}-${element.id}"]
   [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
+  [#if (deliverables?has_content) ||  (projects?has_content)]
   <div id="${composedID}" class="form-group elementRelations ${className}">
-    [#if deliverables??]
+    [#if deliverables?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-deliverables-${composedID}">
-        Deliverables ${deliverables?size}
+        <span class="icon-20 deliverable"></span> <strong>${deliverables?size}</strong> Deliverable(s)
       </button>
       
       [#-- Modal --]
@@ -317,7 +317,7 @@
               <h4 class="modal-title" id="myModalLabel">Deliverables that are contributing</h4>
             </div>
             <div class="modal-body">
-              Deliverables ${composedID}
+              Deliverable(s) ${composedID}
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -327,10 +327,10 @@
       </div>
     [/#if]
     
-    [#if projects??]
+    [#if projects?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-projects-${composedID}">
-        Projects ${projects?size}
+        <span class="icon-20 project"></span> <strong>${projects?size}</strong> Project(s)
       </button>
       
       [#-- Modal --]
@@ -342,7 +342,7 @@
               <h4 class="modal-title" id="myModalLabel">Projects that are contributing</h4>
             </div>
             <div class="modal-body">
-              Projects ${composedID}
+              Project(s) ${composedID}
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -352,4 +352,5 @@
       </div>
     [/#if]
   </div>
+  [/#if]
 [/#macro]

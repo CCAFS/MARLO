@@ -46,9 +46,6 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
           [#list programs as program]
@@ -58,6 +55,9 @@
             </li>
           [/#list]
         </ul>
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]

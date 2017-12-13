@@ -4424,6 +4424,21 @@ li.fileUploaded span {
   display: inline-block;
 }
 
+.icon-20.deliverable{
+  background-image: url(../../global/images/summaries/summaries-icons.png);
+  background-position: -28px -42px;
+  background-size: 350%;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+.icon-20.project{
+  background-image: url(../../global/images/summaries/summaries-icons.png);
+  background-position: -28px 2px;
+  background-size: 360%;
+  vertical-align: middle;
+}
+
 .icon-uncheck{
   background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
 }
@@ -6907,5 +6922,5 @@ img.hint-img {
 
 
 .elementRelations  {
-  margin: 7px 0 0 19px;
+  margin: 7px 0 0 15px;
 }
