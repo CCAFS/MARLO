@@ -207,6 +207,8 @@
       <mapping resource="xmls/CrpAgreement.hbm.xml" />
       <mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
       <mapping resource="xmls/PlaAgreement.hbm.xml" />
+       <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
+      <mapping resource="xmls/RepositoryChannel.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

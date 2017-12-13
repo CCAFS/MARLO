@@ -45,6 +45,9 @@ public class MetadataApiFactory {
     if (clientType.equalsIgnoreCase("cimmyt")) {
       return new CIMMYTClientAPI();
     }
+    if (clientType.equalsIgnoreCase("cimmytDspace")) {
+      return new CIMMYTDspaceClientAPI();
+    }
     return null;
   }
 

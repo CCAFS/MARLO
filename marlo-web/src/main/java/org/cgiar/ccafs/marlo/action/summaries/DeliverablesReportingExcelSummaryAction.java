@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -72,7 +73,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Andrés Valencia - CIAT/CCAFS
+ * DeliverablesReportingExcelSummaryAction
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 8, 2017
+ * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
 public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction implements Summary {
 
@@ -82,6 +87,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private CrpProgramManager programManager;
   private DeliverableManager deliverableManager;
   private GenderTypeManager genderTypeManager;
+  private RepositoryChannelManager repositoryChannelManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -93,11 +99,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager) {
+    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,   RepositoryChannelManager repositoryChannelManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
     this.deliverableManager = deliverableManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
 
   /**
@@ -586,11 +593,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (isDisseminated) {
             if (deliverableDissemination.getDisseminationChannel() != null
               && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-              if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-                delivDisseminationChannel =
-                  ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+              RepositoryChannel repositoryChannel = repositoryChannelManager
+                .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
+              if (repositoryChannel != null) {
+                delivDisseminationChannel = repositoryChannel.getName();
               }
-              // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
             }
           } else {
             delivDisseminationChannel = "<Not applicable>";
@@ -1252,11 +1259,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           if (isDisseminated) {
             if (deliverableDissemination.getDisseminationChannel() != null
               && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-              if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-                delivDisseminationChannel =
-                  ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+              RepositoryChannel repositoryChannel = repositoryChannelManager
+                .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
+              if (repositoryChannel != null) {
+                delivDisseminationChannel = repositoryChannel.getName();
               }
-              // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
             }
           } else {
             delivDisseminationChannel = "<Not applicable>";

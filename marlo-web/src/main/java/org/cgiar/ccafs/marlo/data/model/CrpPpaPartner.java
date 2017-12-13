@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
@@ -49,6 +50,8 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
 
   private Crp crp;
+
+  private List<LiaisonUser> contactPoints;
 
 
   public CrpPpaPartner() {
@@ -85,6 +88,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public List<LiaisonUser> getContactPoints() {
+    return contactPoints;
   }
 
   public User getCreatedBy() {
@@ -137,9 +144,16 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
+
+  public void setContactPoints(List<LiaisonUser> contactPoints) {
+    this.contactPoints = contactPoints;
+  }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;

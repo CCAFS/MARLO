@@ -97,6 +97,16 @@ function init() {
 
   });
 
+  // CHANGE CATEGORY
+  $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id").on('change', function(e) {
+    var selectedOption = $("#CCAFS_deliverable_deliverable_deliverableType_deliverableType_id option:selected").val();
+    if(selectedOption != -1) {
+      $(".subType-select").show(600);
+    } else {
+      $(".subType-select").hide(600);
+    }
+  });
+
   // CHANGE STATUS
   $statuses.on("change", function() {
     justificationByStatus($(this).val());

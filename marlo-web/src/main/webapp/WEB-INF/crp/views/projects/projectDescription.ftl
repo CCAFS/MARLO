@@ -160,6 +160,7 @@
                       [#if project.regions?has_content]
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
                       [#else]
+                        <p>[@s.text name="form.values.fieldEmpty" /]</p>
                         [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
                       [/#if]
                     [/#if]
@@ -203,6 +204,10 @@
                   [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
                   <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
+                [#else]
+                  [#if !project.clusterActivities?has_content]
+                    <p>[@s.text name="form.values.fieldEmpty" /]</p>
+                  [/#if]
                 [/#if] 
               </div>
             </div>
@@ -229,6 +234,8 @@
                       <div class="${customForm.changedField('project.projectInfo.crossCuttingYouth')}">[#if (project.projectInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
                       <div class="${customForm.changedField('project.projectInfo.crossCuttingCapacity')}">[#if (project.projectInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
                       <div class="${customForm.changedField('project.projectInfo.crossCuttingNa')}">[#if (project.projectInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
+                      [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+                      [#if ((!project.crossCuttingGender)!false) && ((!project.crossCuttingYouth)!false) && ((!project.crossCuttingCapacity)!false) && ((!project.crossCuttingNa)!false)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
                     [/#if]
                   </div>
                 </div>

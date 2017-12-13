@@ -46,11 +46,14 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private String subDepartment;
+
 
   private Set<ProjectPartnerContribution> projectPartnerContributions = new HashSet<ProjectPartnerContribution>(0);
 
-  private Set<ProjectPartnerContribution> projectPartnerContributors = new HashSet<ProjectPartnerContribution>(0);
 
+  private Set<ProjectPartnerContribution> projectPartnerContributors = new HashSet<ProjectPartnerContribution>(0);
 
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
 
@@ -242,6 +245,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.projectPartnerOveralls;
   }
 
+
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return this.projectPartnerPersons;
   }
@@ -252,6 +256,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public List<InstitutionLocation> getSelectedLocations() {
     return selectedLocations;
+  }
+
+  public String getSubDepartment() {
+    return subDepartment;
   }
 
   @Override
@@ -351,11 +359,11 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
-
   public void
     setProjectPartnerContributions(Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerId) {
     this.projectPartnerContributions = projectPartnerContributionsesForProjectPartnerId;
   }
+
 
   public void setProjectPartnerContributors(
     Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerContributorId) {
@@ -380,6 +388,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setSelectedLocations(List<InstitutionLocation> selectedLocations) {
     this.selectedLocations = selectedLocations;
+  }
+
+  public void setSubDepartment(String subDepartment) {
+    this.subDepartment = subDepartment;
   }
 
   @Override

@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
@@ -91,6 +92,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -296,6 +298,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean fullEditable; // If user is able to edit all the form.
   @Inject
   private FundingSourceManager fundingSourceManager;
+  @Inject
+  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   @Inject
   private FundingSourceValidator fundingSourceValidator;
   private HashMap<String, String> invalidFields;
@@ -569,6 +573,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
         if (fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList())
           .size() > 0) {
+          return false;
+        }
+      }
+      if (clazz == FundingSourceInstitution.class) {
+        FundingSourceInstitution fundingSourceInstitution =
+          fundingSourceInstitutionManager.getFundingSourceInstitutionById(id);
+        if (fundingSourceInstitution.getFundingSource().getProjectBudgets().stream()
+          .filter(
+            c -> c.isActive() && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
+          .collect(Collectors.toList()).size() > 0) {
           return false;
         }
       }

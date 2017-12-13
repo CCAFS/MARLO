@@ -82,6 +82,15 @@
               [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
+            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
+            <h4 class="">
+              [#-- Planning / Reporting tag --]
+              [#if reportingActive??]
+                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
+              [/#if]
+              [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
+            </h4>
+            </a>
           </div>
           
           [#-- Testing Environment --]
@@ -94,6 +103,11 @@
                <b>Check our blog </b> <span class="fa fa-external-link-square"></span>
             </a>
           </div>
+          [#if namespace?contains('superadmin')]
+            <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
+          [#else]
+            [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+          [/#if]
         </div>
       </header>
     [/#if]
