@@ -13,10 +13,10 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.response.mapper;
+package org.cgiar.ccafs.marlo.rest.dto.mapper;
 
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.rest.response.CrpDTO;
+import org.cgiar.ccafs.marlo.rest.dto.CrpDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

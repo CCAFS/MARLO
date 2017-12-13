@@ -19,8 +19,8 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.rest.response.CrpDTO;
-import org.cgiar.ccafs.marlo.rest.response.mapper.CrpMapper;
+import org.cgiar.ccafs.marlo.rest.dto.CrpDTO;
+import org.cgiar.ccafs.marlo.rest.dto.mapper.CrpMapper;
 
 import java.util.ArrayList;
 import java.util.Date;
