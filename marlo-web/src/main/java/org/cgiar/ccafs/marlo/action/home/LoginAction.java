@@ -185,6 +185,8 @@ public class LoginAction extends BaseAction {
             this.url = this.getBaseUrl() + "/" + this.getCurrentCrp().getAcronym() + "/centerDashboard.do";
             return LOGIN;
 
+          case 3:
+            return SUCCESS;
           default:
             return INPUT;
         }
@@ -264,6 +266,9 @@ public class LoginAction extends BaseAction {
         case 2:
           this.url = this.getBaseUrl() + "/" + loggedCrp.getAcronym() + "/centerDashboard.do";
           return LOGIN;
+
+        case 3:
+          return SUCCESS;
 
         default:
           return INPUT;

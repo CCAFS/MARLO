@@ -948,6 +948,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return config.getBaseUrl() + "/crp";
         case 2:
           return config.getBaseUrl() + "/center";
+        case 3:
+          return config.getBaseUrl() + "/crp";
         default:
           return config.getBaseUrl() + "/crp";
       }
