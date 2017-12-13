@@ -136,6 +136,13 @@
       [#if editable]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
+      
+      [#if !isTemplate]
+        <div class="pull-right">
+          [@popUps.relationsMacro element=cluster /]
+        </div>
+      [/#if]
+      
       [#-- Cluster Activity identifier --]
       <div class=" form-group cluster-identifier ">
         [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable /]
@@ -189,9 +196,6 @@
     <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>
     
     <div class="clearfix"></div>
-    [#if !isTemplate]
-      [@popUps.relationsMacro element=cluster /]
-    [/#if]
   </div>
 [/#macro]
 

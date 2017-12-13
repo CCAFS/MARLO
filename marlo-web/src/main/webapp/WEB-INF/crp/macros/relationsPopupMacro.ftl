@@ -20,8 +20,26 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">Deliverables that are contributing</h4>
             </div>
-            <div class="modal-body">
-              Deliverable(s) ${composedID}
+            <div class="modal-body"> 
+              [#-- Deliverables table --]
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                    <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+                    <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list deliverables as d]
+                  <tr>
+                    <th scope="row">D${d.id}</th>
+                    <td>${(d.deliverableInfo.title)!'Untitled'}</td>
+                    <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td> 
+                  </tr>
+                  [/#list]
+                </tbody>
+              </table>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -46,7 +64,23 @@
               <h4 class="modal-title" id="myModalLabel">Projects that are contributing</h4>
             </div>
             <div class="modal-body">
-              Project(s) ${composedID}
+              [#-- Projects table --]
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+                    <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list projects as p]
+                  <tr>
+                    <th scope="row">P${p.id}</th>
+                    <td>${(p.projectInfo.title)!'Untitled'}</td>
+                  </tr>
+                  [/#list]
+                </tbody>
+              </table>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
