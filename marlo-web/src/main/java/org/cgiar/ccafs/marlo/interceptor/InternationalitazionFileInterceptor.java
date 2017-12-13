@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import org.apache.struts2.ServletActionContext;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
@@ -47,10 +47,14 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   private final CustomParameterManager crpParameterManager;
 
+  private final LocalizedTextProvider localizedTextProvider;
+
   @Inject
-  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager) {
+  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager,
+    LocalizedTextProvider localizedTextProvider) {
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
+    this.localizedTextProvider = localizedTextProvider;
   }
 
   @Override
@@ -66,8 +70,13 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
 
     Locale locale = new Locale(language);
-    LocalizedTextUtil.reset();
-    LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+    /**
+     * Please test to see if the reset was necessary. Note that the LocalizedTextProvider will be a singleton,
+     * so should not be stateful.
+     **/
+    // this.localizedTextProvider.reset();
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
     ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
@@ -75,10 +84,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
 
-        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 
-        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
 
@@ -86,10 +95,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
 
-        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 
-        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
 
