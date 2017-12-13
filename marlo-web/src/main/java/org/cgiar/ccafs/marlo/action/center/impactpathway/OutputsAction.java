@@ -290,7 +290,9 @@ public class OutputsAction extends BaseAction {
             for (CenterOutputsNextUser outputNextUser : ouputNextUsers) {
               CenterNextuserType nextuserType = null;
               if (outputNextUser.getNextuserType().getId() != null) {
-                nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+                if (outputNextUser.getNextuserType().getId() != -1) {
+                  nextuserType = nextUserService.getNextuserTypeById(outputNextUser.getNextuserType().getId());
+                }
               }
 
               CenterOutputsNextUser autoSaveOutputNextUser = new CenterOutputsNextUser();
