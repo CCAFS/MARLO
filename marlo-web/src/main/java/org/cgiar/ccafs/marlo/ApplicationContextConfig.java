@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo;
 
+import com.opensymphony.xwork2.LocalizedTextProvider;
+import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * This configuration file is now for properties but can contain other base level beans as well.  Note that these
+ * This configuration file is now for properties but can contain other base level beans as well. Note that these
  * beans get loaded first.
  */
 @Configuration
@@ -36,5 +38,15 @@ public class ApplicationContextConfig {
     return new PropertySourcesPlaceholderConfigurer();
   }
 
+  /**
+   * Returns a LocalizedTextProvider to be used by our internationalization interceptor.
+   * 
+   * @return
+   */
+  @Bean
+  public LocalizedTextProvider getLocalizedTextProvider() {
+    // If this is not suitable try the GlobalLocalizedTextProvider
+    return new StrutsLocalizedTextProvider();
+  }
 
 }
