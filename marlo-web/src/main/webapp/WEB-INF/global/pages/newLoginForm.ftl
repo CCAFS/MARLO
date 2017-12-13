@@ -14,38 +14,20 @@
     [#-- COMMENTED BY REMAKE
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
      --]
-     <div class="crps-select" style="display:none">
+     <div class="crps-select hidden">
       <div class="name-type-container">
         <span class="selection-bar-title">CRPS:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
-          [#if crpList?has_content]
-            [#list crpList as crp]
-              [@availableItems element=crp /]
-            [/#list]
-          [#else]
-            <p>Not CRPs loaded</p>
-          [/#if]
         </ul>
       </div>
+      [#-- 
       <div class="name-type-container">
         <span class="selection-bar-title">Centers:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
-          [#if centersList?has_content]
-              [#list centersList as center]
-                [@availableItems element=center /]
-              [/#list]
-            [#else]
-              <p>Not Centers loaded</p>
-          [/#if]
         </ul>
       </div>
       <div class="name-type-container">
@@ -66,7 +48,7 @@
             <p>Not Platforms loaded</p>
           [/#if]
         </ul>
-      </div>
+      </div>--]
      </div>
      [#-- End crps select --]
      [#-- Trick for IE z-index --]
@@ -76,20 +58,20 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-input-container" id="login-email">
-              <input class="login-input" type="text" name="login-email" required/>
+              <input class="login-input" type="text" name="login-email" value="t.defabachew@cgiar.org" required/>
               <label for="login-email">Email</label>
             </div>
             [#-- Image --]
-            <div class="form-group text-center" style="display:none">
+            <div class="form-group text-center hidden" >
             [#-- src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" --]
               <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'A4NH'}.png" alt="${(element.name)!}" />
             </div>
             [#-- Welcome info --]
             <div class="row">
-              <div class="col-sm-10 welcome-message-container" style="display:none">
+              <div class="col-sm-10 welcome-message-container hidden" >
                 <span class="login-input-container welcome-message">Welcome:</span>
                 <br>
-                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i>John Doe</span>
+                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span>s</span></span>
               </div>
             </div>
           </div>
@@ -97,7 +79,7 @@
         [#-- Password --]
         <div class="row" >
           <div class="col-sm-10">
-            <div class="login-input-container" id="login-password" style="display:none">
+            <div class="login-input-container hidden" id="login-password" >
               <input class="login-input" type="password" name="login-password" tabindex=2 required/>
               <label for="login-password">Password</label>
             </div>
@@ -124,7 +106,7 @@
 </div><!-- End loginFormContainer -->
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="${element.login?string('', 'Coming soon...')}">
-    <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=1/>
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
+    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=1/>
   </li>
 [/#macro]

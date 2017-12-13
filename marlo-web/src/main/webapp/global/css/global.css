@@ -2398,11 +2398,7 @@ input.userName {
 /************* LOGIN *****************/
 .loginForm {
   padding-top: 2em;
-  /* min-width: 440px;
-  max-width: 700px; */
   width: 100%;
-  /* margin: auto; */
-  /* easeInOutQuart */
   opacity: 0;
   -webkit-animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
           animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
@@ -2735,7 +2731,6 @@ p.login-description{
 #loginContainer .disclaimer {
   padding: 10px;
   margin-top: 15px;
-  /* background-color: #F7F7D5; */
   font-weight: 600;
   color: #663300;
 }
@@ -2758,16 +2753,19 @@ p.login-description{
 
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
-  /* margin: auto; */
   padding: 8px 24px;
   border-radius: 7px;
   border: 1px solid #ededed;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
   min-height: 200px;
-  height: 200px;
   z-index: 2;
 }
+
+#loginFormContainer .loginForm.max-size{
+  height: 400px;
+}
+
 
 #loginFormContainer .loginForm p {
   margin: 5px 0;
@@ -2779,11 +2777,10 @@ p.login-description{
   padding: 0;
 }
 #loginFormContainer .loginForm h6 {
-    margin: 0px;
+  margin: 0px;
 }
 
 #loginFormContainer .loginForm div label {
-  /* display: block; */
   font-size: 13px;
 }
 
@@ -2816,7 +2813,6 @@ p.login-description{
 #reportComponent tbody tr {
   border-bottom: 1px solid #9D9D9D;
 }
-
 
 .crpGroup ul{
   margin: 0;

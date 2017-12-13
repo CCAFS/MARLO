@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -43,14 +45,16 @@ public class CrpByUserEmailAction extends BaseAction {
   private static final long serialVersionUID = -976200901679526774L;
   private final Logger logger = LoggerFactory.getLogger(FlaghshipsByCrpAction.class);
   private List<Map<String, Object>> crps;
-
+  private Map<String, Object> user;
   private String userEmail;
   private CrpManager crpManager;
+  private UserManager userManager;
 
   @Inject
-  public CrpByUserEmailAction(APConfig config, CrpManager crpManager) {
+  public CrpByUserEmailAction(APConfig config, CrpManager crpManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
+    this.userManager = userManager;
   }
 
 
@@ -75,6 +79,12 @@ public class CrpByUserEmailAction extends BaseAction {
          * but we need to revisit to see if we should continue processing or re-throw the exception.
          */
       }
+      user = new HashMap<>();
+      User usrDB = userManager.getUserByEmail(userEmail);
+      if (usrDB != null) {
+        user.put("name", usrDB.getComposedCompleteName());
+      }
+
     }
     return SUCCESS;
 
@@ -85,15 +95,25 @@ public class CrpByUserEmailAction extends BaseAction {
     return crps;
   }
 
+
+  public Map<String, Object> getUser() {
+    return user;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
   }
 
-
   public void setCrps(List<Map<String, Object>> flagships) {
     this.crps = flagships;
+  }
+
+
+  public void setUser(Map<String, Object> user) {
+    this.user = user;
   }
 
 
