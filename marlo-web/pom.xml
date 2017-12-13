@@ -66,10 +66,6 @@
       <artifactId>struts2-junit-plugin</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.struts</groupId>
-      <artifactId>struts2-java8-support-plugin</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.cgiar.ciat.auth</groupId>
       <artifactId>adauth</artifactId>
     </dependency>
@@ -141,10 +137,6 @@
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-rest-plugin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
     </dependency>
     <!-- Struts JSON library -->
     <dependency>

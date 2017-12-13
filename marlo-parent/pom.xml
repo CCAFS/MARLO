@@ -16,14 +16,10 @@
 		<junit.version>4.12</junit.version>
 		<logback-classic.version>1.1.7</logback-classic.version>
 		<janino.version>2.7.8</janino.version>
-		<org.springframework-version>4.3.10.RELEASE</org.springframework-version>
 		<javax.inject.version>1</javax.inject.version>
     <javax-mail.version>1.5.5</javax-mail.version>
     <com.sun.mail.version>1.5.5</com.sun.mail.version>
     <struts2.version>2.5.13</struts2.version>
-    <struts2-json.version>2.5.13</struts2-json.version>
-    <struts2-java8-support-plugin.version>2.5.2</struts2-java8-support-plugin.version>
-    <freemarker.version>2.3.23</freemarker.version>
     <mysql.version>5.1.39</mysql.version>
     <servlet-api.version>3.0.1</servlet-api.version>
     <jsp-api.version>2.2.1</jsp-api.version>
@@ -131,11 +127,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.apache.struts</groupId>
-        <artifactId>struts2-java8-support-plugin</artifactId>
-        <version>${struts2-java8-support-plugin.version}</version>
-      </dependency>
       <!--  Struts 2 Rest Plugin -->
       <dependency>
         <groupId>org.apache.struts</groupId>
@@ -147,20 +138,11 @@
         <artifactId>struts2-rest-plugin</artifactId>
         <version>${struts2.version}</version>
       </dependency>
-      <!-- Although struts2-core has its own freemarker dependency, it seems 
-      there is an error with its version. Thus, we had to use this version (which 
-      is higher than the struts2-core). They said they fixed the problem in the 
-      struts version 2.3.24. But are still experiencing it: https://issues.apache.org/jira/browse/WW-4437 -->
-      <dependency>
-        <groupId>org.freemarker</groupId>
-        <artifactId>freemarker</artifactId>
-        <version>${freemarker.version}</version>
-      </dependency>
       <!-- Struts JSON library -->
       <dependency>
         <groupId>org.apache.struts</groupId>
         <artifactId>struts2-json-plugin</artifactId>
-        <version>${struts2-json.version}</version>
+        <version>${struts2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
