@@ -38,7 +38,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private CrpClusterOfActivity crpClusterOfActivity;
 
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+  private Set<DeliverableInfo> deliverables = new HashSet<DeliverableInfo>(0);
 
   @Expose
   private String composeID;
@@ -61,7 +61,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
   }
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
-    boolean isActive, Date activeSince, String modificationJustification, Set<Deliverable> deliverables) {
+    boolean isActive, Date activeSince, String modificationJustification, Set<DeliverableInfo> deliverables) {
     this.crpClusterOfActivity = crpClusterOfActivity;
     this.modifiedBy = usersByModifiedBy;
     this.keyOutput = keyOutput;
@@ -137,7 +137,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.crpClusterOfActivity;
   }
 
-  public Set<Deliverable> getDeliverables() {
+  public Set<DeliverableInfo> getDeliverables() {
     return deliverables;
   }
 
@@ -213,7 +213,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivity = crpClusterOfActivity;
   }
 
-  public void setDeliverables(Set<Deliverable> deliverables) {
+  public void setDeliverables(Set<DeliverableInfo> deliverables) {
     this.deliverables = deliverables;
   }
 

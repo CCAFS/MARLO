@@ -35,11 +35,11 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
-        <set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
+        <set name="deliverables" table="deliverables_info" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="key_output_id" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableInfo" />
         </set>
          <set name="crpClusterKeyOutputOutcomes" table="crp_cluster_key_outputs_outcome" order-by="id" inverse="true" lazy="true" fetch="select">
             <key>

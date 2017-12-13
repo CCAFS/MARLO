@@ -78,6 +78,9 @@ public class CrpPhasesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       for (Phase phase : phases) {
+        if (phase.getNext().getId() == null) {
+          phase.setNext(null);
+        }
         phaseManager.savePhase(phase);
       }
       Collection<String> messages = this.getActionMessages();
