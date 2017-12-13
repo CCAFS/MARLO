@@ -185,8 +185,11 @@
       </div>
       [/#if]
     </div>    
-    <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
-           
+    <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>
+    
+    [#if !isTemplate]
+      [@relationsMacro element=cluster /]
+    [/#if]
   </div>
 [/#macro]
 
@@ -258,15 +261,7 @@
     </div>
     
     [#if !isTemplate]
-    <div class="form-group">
-      [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
-      [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
-      <strong>Deliverables ${deliverables?size}</strong> | <strong>Projects ${deliverables?size}</strong>
-      
-      [#list deliverables as d]
-        <li>${d}</li>
-      [/#list]
-    </div>
+      [@relationsMacro element=element /]
     [/#if]
   
   </div>
@@ -299,5 +294,14 @@
       </div>
   
   </div>
+[/#macro]
 
+[#macro relationsMacro element ]
+<div class="form-group elementRelations">
+  [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
+  [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
+  
+  <button type="button" class="btn btn-default btn-xs"> Projects ${deliverables?size} </button>
+  <button type="button" class="btn btn-default btn-xs"> Deliverables ${deliverables?size}</button>
+</div>
 [/#macro]
