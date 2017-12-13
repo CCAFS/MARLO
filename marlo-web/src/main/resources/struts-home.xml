@@ -3,15 +3,14 @@
 <struts>
 
   <package name="homeJson" namespace="/" extends="json-default">
-  <action name="crpByEmail"
-          class="org.cgiar.ccafs.marlo.action.json.global.CrpByUserEmailAction"
-          >
-          <result type="json">
-            <param name="noCache">true</param>
-              
-          </result>
-        </action>
-</package>
+  
+		 <action name="crpByEmail" class="org.cgiar.ccafs.marlo.action.json.global.CrpByUserEmailAction">
+	    <result type="json">
+	      <param name="noCache">true</param>
+	    </result>
+	   </action>
+	   
+  </package>
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
 
@@ -19,9 +18,9 @@
 			method="login">
 			<result name="input">/WEB-INF/crp/views/home/login.ftl</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/crpDashboard</param>
+			   <param name="actionName">${crpSession}/crpDashboard</param>
 			</result>
-			<result name="login" type="redirect">${url}</result>
+		  <result name="login" type="redirect">${url}</result>
 		</action>
 
 		<action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest">
