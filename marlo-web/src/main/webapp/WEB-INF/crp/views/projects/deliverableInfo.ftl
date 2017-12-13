@@ -15,7 +15,7 @@
     <div class="col-md-6 ">
       [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 subType-select">
       [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
     </div>
   </div>
@@ -199,6 +199,8 @@
           [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingCapacity" value="true">[/#if]
           [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
           
+          [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
+          [#if (!deliverable.crossCuttingGender?has_content) && (!deliverable.crossCuttingYouth?has_content) && (!deliverable.crossCuttingCapacity?has_content) && (!deliverable.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
         [/#if]
       </div>
     </div>

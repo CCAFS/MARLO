@@ -807,7 +807,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1347,7 +1347,9 @@ public class ProjectPartnerAction extends BaseAction {
       projectPartnerDB.setModifiedBy(this.getCurrentUser());
       projectPartnerDB.setModificationJustification("");
       projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
+      projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
       projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
+
       return projectPartnerDB;
     }
     return projectPartnerClient;
