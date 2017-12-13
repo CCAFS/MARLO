@@ -28,6 +28,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
@@ -160,6 +161,13 @@
     [#if editable]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     [/#if]
+    
+    [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=outcome /]
+      </div>
+    [/#if]
+    
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
@@ -234,6 +242,7 @@
     [/#if]
     
     <br />
+    
   </div>
 [/#macro]
 
@@ -251,6 +260,12 @@
     [#-- Remove Button --]
     [#if editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
+    [/#if]
+    
+    [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=milestone /]
+      </div>
     [/#if]
     
     [#-- Milestone Statement --]
