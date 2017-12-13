@@ -70,10 +70,6 @@
       <artifactId>struts2-java8-support-plugin</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.struts.xwork</groupId>
-      <artifactId>xwork-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.cgiar.ciat.auth</groupId>
       <artifactId>adauth</artifactId>
     </dependency>

@@ -23,7 +23,6 @@
     <struts2.version>2.5.13</struts2.version>
     <struts2-json.version>2.5.13</struts2-json.version>
     <struts2-java8-support-plugin.version>2.5.2</struts2-java8-support-plugin.version>
-    <xwork-core.version>2.3.31</xwork-core.version>
     <freemarker.version>2.3.23</freemarker.version>
     <mysql.version>5.1.39</mysql.version>
     <servlet-api.version>3.0.1</servlet-api.version>
@@ -136,21 +135,6 @@
         <groupId>org.apache.struts</groupId>
         <artifactId>struts2-java8-support-plugin</artifactId>
         <version>${struts2-java8-support-plugin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.struts.xwork</groupId>
-        <artifactId>xwork-core</artifactId>
-        <version>${xwork-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-commons</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!--  Struts 2 Rest Plugin -->
       <dependency>
