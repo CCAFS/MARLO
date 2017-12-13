@@ -75,9 +75,9 @@
           [#-- Deliverable Year --]
           <td class="text-center">
           [#if deliverable.deliverableInfo.year== -1]
-          none
+            none
           [#else]
-          ${(deliverable.deliverableInfo.year)!'none'}
+            ${(deliverable.deliverableInfo.year)!'none'}
           [/#if]
             
           </td>

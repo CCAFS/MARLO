@@ -30,6 +30,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
@@ -50,9 +51,6 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
           [#list programs as program]
@@ -62,6 +60,9 @@
             </li>
           [/#list]
         </ul>
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
 
@@ -135,6 +136,13 @@
       [#if editable]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
+      
+      [#if !isTemplate]
+        <div class="pull-right">
+          [@popUps.relationsMacro element=cluster /]
+        </div>
+      [/#if]
+      
       [#-- Cluster Activity identifier --]
       <div class=" form-group cluster-identifier ">
         [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable /]
@@ -187,9 +195,7 @@
     </div>    
     <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>
     
-    [#if !isTemplate]
-      [@relationsMacro element=cluster /]
-    [/#if]
+    <div class="clearfix"></div>
   </div>
 [/#macro]
 
@@ -213,11 +219,9 @@
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
-     
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
-     
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
@@ -261,7 +265,7 @@
     </div>
     
     [#if !isTemplate]
-      [@relationsMacro element=element /]
+      [@popUps.relationsMacro element=element /]
     [/#if]
   
   </div>
@@ -293,63 +297,5 @@
           [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution)!}" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
   
-  </div>
-[/#macro]
-
-[#macro relationsMacro element ]
-  [#local className = (element.class.name)?split('.')?last/]
-  [#local composedID = "${className}-${element.id}"]
-  [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
-  [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
-  <div id="${composedID}" class="form-group elementRelations ${className}">
-    [#if deliverables??]
-      [#-- Button --]
-      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-deliverables-${composedID}">
-        Deliverables ${deliverables?size}
-      </button>
-      
-      [#-- Modal --]
-      <div class="modal fade" id="modal-deliverables-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Deliverables that are contributing</h4>
-            </div>
-            <div class="modal-body">
-              Deliverables ${composedID}
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    [/#if]
-    
-    [#if projects??]
-      [#-- Button --]
-      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-projects-${composedID}">
-        Projects ${projects?size}
-      </button>
-      
-      [#-- Modal --]
-      <div class="modal fade" id="modal-projects-${composedID}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Projects that are contributing</h4>
-            </div>
-            <div class="modal-body">
-              Projects ${composedID}
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    [/#if]
   </div>
 [/#macro]
