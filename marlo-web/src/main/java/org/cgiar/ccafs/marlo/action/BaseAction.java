@@ -1550,10 +1550,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       clazz = Class.forName(className);
       if (clazz == CrpClusterKeyOutput.class) {
         CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        List<Deliverable> deList =
+        List<DeliverableInfo> deList =
           crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
-        for (Deliverable deliverable : deList) {
+        for (DeliverableInfo deliverableInfo : deList) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
           deliverable.getDeliverableInfo(this.getActualPhase());
           if (deliverable.getDeliverableInfo() != null) {
             if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
@@ -1575,6 +1576,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
+      e.printStackTrace();
       deliverables = new ArrayList<>();
     }
     return deliverables;
