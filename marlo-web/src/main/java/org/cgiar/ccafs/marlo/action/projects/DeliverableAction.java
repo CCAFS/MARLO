@@ -1199,7 +1199,8 @@ public class DeliverableAction extends BaseAction {
           && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
         .collect(Collectors.toList())));
 
-      if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+      if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+        && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent.addAll(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && dt.getAdminType().booleanValue())
@@ -1326,14 +1327,13 @@ public class DeliverableAction extends BaseAction {
         deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       }
 
-      
 
-    repositoryChannels = repositoryChannelManager.findAll();
-    if (repositoryChannels != null && repositoryChannels.size() > 0) {
-      repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
-    } else {
-      repositoryChannels = new LinkedList<RepositoryChannel>();
-    }
+      repositoryChannels = repositoryChannelManager.findAll();
+      if (repositoryChannels != null && repositoryChannels.size() > 0) {
+        repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
+      } else {
+        repositoryChannels = new LinkedList<RepositoryChannel>();
+      }
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
@@ -1793,10 +1793,11 @@ public class DeliverableAction extends BaseAction {
       this.updateDeliverableInPlanningPhase(deliverableManagedState);
 
       // Set CrpClusterKeyOutput to null if has an -1 id
-      if (deliverableManagedState.getCrpClusterKeyOutput() != null
-        && deliverableManagedState.getCrpClusterKeyOutput().getId() != null
-        && deliverableManagedState.getCrpClusterKeyOutput().getId().longValue() == -1) {
-        deliverableManagedState.setCrpClusterKeyOutput(null);
+      if (deliverableManagedState.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput() != null
+        && deliverableManagedState.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId() != null
+        && deliverableManagedState.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput().getId()
+          .longValue() == -1) {
+        deliverableManagedState.getDeliverableInfo(this.getActualPhase()).setCrpClusterKeyOutput(null);
       }
 
       // This gets a DeliverablePartnership entity in managed state.
