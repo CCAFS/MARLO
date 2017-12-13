@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -76,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
@@ -105,6 +107,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -236,6 +239,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
+  @Inject
+  private CrpMilestoneManager crpMilestoneManager;
 
   private Long crpID;
 
@@ -1955,6 +1960,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
+      }
+      if (clazz == CrpMilestone.class) {
+        CrpMilestone crpMilestone = crpMilestoneManager.getCrpMilestoneById(id);
+        List<ProjectMilestone> projectMilestones = crpMilestone.getProjectMilestones().stream().filter(c -> c.isActive()
+          && c.getProjectOutcome().getPhase() != null && c.getProjectOutcome().getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        Set<Project> projectsSet = new HashSet<>();
+        for (ProjectMilestone projectMilestone : projectMilestones) {
+          projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase());
+          projectsSet.add(projectMilestone.getProjectOutcome().getProject());
+        }
+        projects = new ArrayList<>();
+        projects.addAll(projectsSet);
+      }
+      if (clazz == CrpClusterKeyOutput.class) {
+        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
+        List<DeliverableInfo> deList =
+          crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        Set<Project> deSet = new HashSet<>();
+        for (DeliverableInfo deliverableInfo : deList) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.getDeliverableInfo(this.getActualPhase());
+          if (deliverable.getDeliverableInfo() != null) {
+            if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
+              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
+              deSet.add(deliverable.getProject());
+            }
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
+              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+              deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
+              deSet.add(deliverable.getProject());
+            }
+          }
+
+
+        }
+        projects = new ArrayList<>();
+        projects.addAll(deSet);
+
       }
     } catch (Exception e) {
       projects = new ArrayList<>();
