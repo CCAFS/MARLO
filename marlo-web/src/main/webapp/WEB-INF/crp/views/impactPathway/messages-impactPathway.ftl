@@ -30,7 +30,7 @@
   [/#if] 
   
   [#if !canEditPhase ]
-        <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
+     <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
   [/#if] 
   
   [#-- Program completed Message--]
