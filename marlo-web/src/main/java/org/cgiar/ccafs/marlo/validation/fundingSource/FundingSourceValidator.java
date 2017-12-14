@@ -41,8 +41,10 @@ import javax.inject.Named;
 @Named
 public class FundingSourceValidator extends BaseValidator {
 
+  // This is not thread safe.
   private boolean hasErros;
 
+  // This is not thread safe.
   BaseAction action;
 
   private final CrpManager crpManager;

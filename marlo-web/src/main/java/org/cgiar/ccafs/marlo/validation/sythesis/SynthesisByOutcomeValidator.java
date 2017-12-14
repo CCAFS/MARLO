@@ -40,6 +40,7 @@ import javax.inject.Named;
 @Named
 public class SynthesisByOutcomeValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
   private final CrpManager crpManager;
