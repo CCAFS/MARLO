@@ -41,6 +41,7 @@ import javax.inject.Named;
 @Named
 public class ProjectBudgetsValidator extends BaseValidator {
 
+  // This is not thread safe
   private boolean hasErros;
 
   private final CrpManager crpManager;

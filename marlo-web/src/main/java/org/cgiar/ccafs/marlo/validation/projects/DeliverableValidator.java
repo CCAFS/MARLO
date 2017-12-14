@@ -52,6 +52,7 @@ public class DeliverableValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
+  // This is not thread safe
   BaseAction action;
 
   private final CrpManager crpManager;
