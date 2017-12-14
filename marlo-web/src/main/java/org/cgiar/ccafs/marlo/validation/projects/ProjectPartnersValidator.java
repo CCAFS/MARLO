@@ -56,6 +56,7 @@ public class ProjectPartnersValidator extends BaseValidator {
   private final InstitutionManager institutionManager;
   private final ProjectValidator projectValidator;
 
+  // This is not thread safe
   private boolean hasErros;
 
   @Inject

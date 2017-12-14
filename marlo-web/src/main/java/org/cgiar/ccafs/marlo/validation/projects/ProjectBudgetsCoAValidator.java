@@ -51,6 +51,7 @@ import org.apache.commons.collections.CollectionUtils;
 @Named
 public class ProjectBudgetsCoAValidator extends BaseValidator {
 
+  // This is not thread safe
   private boolean hasErros;
 
   private final BudgetTypeManager budgetTypeManager;

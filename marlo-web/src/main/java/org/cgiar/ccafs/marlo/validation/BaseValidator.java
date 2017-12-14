@@ -48,7 +48,10 @@ public class BaseValidator {
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
+  // This is not thread safe
   protected StringBuilder validationMessage;
+
+  // This is not thread safe
   protected StringBuilder missingFields;
 
 
