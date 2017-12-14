@@ -40,6 +40,7 @@ import javax.inject.Named;
 @Named
 public class CrpIndicatorsValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
   private CrpManager crpManager;

@@ -43,6 +43,7 @@ import com.ibm.icu.util.Calendar;
 @Named
 public class ProjectActivitiesValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
   private final CrpManager crpManager;
