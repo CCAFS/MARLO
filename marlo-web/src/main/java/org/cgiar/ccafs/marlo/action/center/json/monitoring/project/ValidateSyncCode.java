@@ -93,7 +93,7 @@ public class ValidateSyncCode extends BaseAction {
         Project project = projectManager.getProjectById(projectID);
         if (project != null) {
 
-          CenterProject centerProject = centerProjectManager.getCenterProjectById(projectID);
+          CenterProject centerProject = project.getCenterProject();
           if (centerProject != null) {
             message.put("status", false);
           } else {
