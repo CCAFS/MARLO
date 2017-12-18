@@ -2425,6 +2425,10 @@ input.userName {
   letter-spacing: 0.012em;
 }
 
+.loginForm input.wrongEmail{
+  border-bottom: 1px solid red;
+}
+
 .loginForm input:not(.login-form-button){
   background: none;
 }
@@ -2629,6 +2633,15 @@ input.userName {
   height: 100%;
 }
 
+.login-back-container{
+  margin-top: 50px;
+}
+
+.login-back-container .loginBack{
+  color: #337ab7;
+  cursor: pointer;
+}
+
 .login-disclaimer{
   font-size: 11px;
 }
@@ -2749,6 +2762,11 @@ p.login-description{
   box-shadow: none;
   text-align: center;
   width: 65%;
+}
+
+.loginForm p.invalidEmail{
+  font-size: 12px;
+  color: red;
 }
 
 #loginFormContainer .loginForm {

@@ -11,7 +11,7 @@
         <p class="errorText primary">[@s.text name="server.error.401" /]</p> 
         <div class="col-md-6 col-md-offset-3">
           [#-- Login Form --]
-          [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+          [#include "/WEB-INF/global/pages/newLoginForm.ftl" /]
         </div>
       </div>
     </div>
