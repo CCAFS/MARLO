@@ -688,6 +688,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       }
+      if (clazz == CrpProgramOutcome.class || clazz == CrpClusterOfActivity.class || clazz == CrpMilestone.class
+        || clazz == CrpClusterKeyOutput.class) {
+        List<Project> projects = this.getProjectRelationsImpact(id, className);
+        if (!projects.isEmpty()) {
+          return false;
+        }
+
+      }
 
       return true;
     } catch (Exception e) {
@@ -1957,7 +1965,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectOutcome projectOutcome : outcomes) {
           projectOutcome.getProject().getProjecInfoPhase(this.getActualPhase());
-          projectsSet.add(projectOutcome.getProject());
+          if (projectOutcome.getProject().getProjectInfo() != null) {
+            projectsSet.add(projectOutcome.getProject());
+          }
+
         }
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
@@ -1970,6 +1981,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectClusterActivity crProjectClusterActivity : activities) {
           crProjectClusterActivity.getProject().getProjecInfoPhase(this.getActualPhase());
+          if (crProjectClusterActivity.getProject().getProjectInfo() != null) {
+            projectsSet.add(crProjectClusterActivity.getProject());
+          }
           projectsSet.add(crProjectClusterActivity.getProject());
         }
         projects = new ArrayList<>();
@@ -1983,7 +1997,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectMilestone projectMilestone : projectMilestones) {
           projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase());
-          projectsSet.add(projectMilestone.getProjectOutcome().getProject());
+          if (projectMilestone.getProjectOutcome().getProject().getProjectInfo() != null) {
+            projectsSet.add(projectMilestone.getProjectOutcome().getProject());
+          }
+
         }
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
@@ -2001,13 +2018,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
               deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
-              deSet.add(deliverable.getProject());
+              if (deliverable.getProject().getProjectInfo() != null) {
+                deSet.add(deliverable.getProject());
+              }
+
             }
             if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
               && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
               deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
-              deSet.add(deliverable.getProject());
+              if (deliverable.getProject().getProjectInfo() != null) {
+                deSet.add(deliverable.getProject());
+              }
+
+
             }
           }
 
