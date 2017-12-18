@@ -20,6 +20,18 @@
       </div>
       <div class="selection-bar-options">
         <ul>
+          [#attempt] 
+            [#assign crpList = action.getCrpCategoryList("1") /]
+          [#recover]
+            [#assign crpList = [] /]
+          [/#attempt]
+          [#if crpList?has_content]
+            [#list crpList as crp]
+              [@availableItems element=crp /]
+            [/#list]
+          [#else]
+            <p>Not CRPs loaded</p>
+          [/#if]
         </ul>
       </div>
       [#-- 
@@ -28,6 +40,13 @@
       </div>
       <div class="selection-bar-options">
         <ul>
+          [#if centersList?has_content]
+            [#list centersList as center]
+              [@availableItems element=center /]
+            [/#list]
+          [#else]
+            <p>Not Centers loaded</p>
+          [/#if]
         </ul>
       </div>
       <div class="name-type-container">
@@ -48,8 +67,10 @@
             <p>Not Platforms loaded</p>
           [/#if]
         </ul>
-      </div>--]
+      </div>
+       --]
      </div>
+     
      [#-- End crps select --]
      [#-- Trick for IE z-index --]
      <div style="position:relative;">
@@ -58,20 +79,26 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-input-container" id="login-email">
-              <input class="login-input" type="text" name="login-email" value="t.defabachew@cgiar.org" required/>
-              <label for="login-email">Email</label>
+              <input id="user.email" class="login-input" type="text" name="user.email" value="" required/>
+              <label for="user.email">Email</label>
             </div>
+            <p class="invalidEmail hidden">Please enter a valid email</p>
+            [#-- CRP Session --]
+            <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
+            [#-- Type Session --]
+            <input type="hidden" id="type-input" name="type" />
+            
             [#-- Image --]
             <div class="form-group text-center hidden" >
             [#-- src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" --]
-              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'A4NH'}.png" alt="${(element.name)!}" />
+              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
             </div>
             [#-- Welcome info --]
             <div class="row">
               <div class="col-sm-10 welcome-message-container hidden" >
                 <span class="login-input-container welcome-message">Welcome:</span>
                 <br>
-                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span>s</span></span>
+                <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span></span></span>
               </div>
             </div>
           </div>
@@ -80,8 +107,8 @@
         <div class="row" >
           <div class="col-sm-10">
             <div class="login-input-container hidden" id="login-password" >
-              <input class="login-input" type="password" name="login-password" tabindex=2 required/>
-              <label for="login-password">Password</label>
+              <input id="user.password" class="login-input" type="password" name="user.password" tabindex=1 required/>
+              <label for="user.password">Password</label>
             </div>
           </div>
         </div>
@@ -91,6 +118,11 @@
             <div class="login-button-container">
               [@s.submit key="Next" name="next" cssClass="login-form-button" role="button "/]
             </div>
+          </div>
+        </div>
+        <div class="row login-back-container hidden">
+          <div class="col-xs-6 col-center">
+            <p class="loginBack">Log in with another user</p>
           </div>
         </div>
      </div>
@@ -106,7 +138,7 @@
 </div><!-- End loginFormContainer -->
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
-    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=1/>
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} hidden" title="">
+    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
   </li>
 [/#macro]

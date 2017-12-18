@@ -333,11 +333,11 @@ $('.selectedProgram, selectedProject').on('click', function() {
 });
 
 // event to inputs in login form
-$('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) {
+/*$('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) {
   if(event.keyCode === 10 || event.keyCode === 13) {
     event.submit();
   }
-});
+});*/
 
 /* prevent enter key to inputs */
 

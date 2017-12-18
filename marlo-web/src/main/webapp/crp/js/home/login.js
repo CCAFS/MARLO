@@ -1,5 +1,5 @@
 $(document).ready(init);
-var cookieTime,loginSwitch=false,email;
+var cookieTime,loginSwitch=false;
 var username = $("input[name='user.email']");
 function init() {
   initJreject();
@@ -33,6 +33,8 @@ function init() {
   $('.selection-bar-options ul li.enabled').on('click', function() {
     var selectedImageAcronym = $(this).attr('id').split('-')[1];
     loadSelectedImage(selectedImageAcronym);
+
+    $("input#crp-input").val(selectedImageAcronym);
   });
 
   // On select a Type
@@ -40,7 +42,6 @@ function init() {
     var typeSelected = $(this).attr('id');
     // Set Type
     setType(typeSelected);
-    console.log(typeSelected);
   });
 
   $("a.goBackToSelect").on('click', function() {
@@ -64,30 +65,9 @@ function init() {
 
   //Next button click
   $("input#login_next").on('click',function(e){
-    email =  $('input[name="login-email"]').val();
-    if(!isEmail(email) || email==""){
+    if(!loginSwitch){
       e.preventDefault();
-      console.log("please enter an email");
-    }else{
-      if(!loginSwitch){
-        e.preventDefault();
-        loginSwitch=true;
-
-        loadAvailableItems();
-        //change height value to form
-        $("#loginFormContainer .loginForm").addClass("max-size");
-        //Hide email input
-        $(".loginForm #login-email").addClass("hidden");
-        //show crp image, welcome message and input password
-        $(".loginForm .form-group, " +
-            ".loginForm .welcome-message-container, " +
-            ".loginForm #login-password").removeClass("hidden");
-        //Change button value to Login
-        $("input#login_next").val("Login");
-
-        //set focus on password input
-        $(".loginForm #login-password input").focus();
-      }
+      loadAvailableItems(username.val());
     }
   });
 
@@ -129,6 +109,9 @@ function init() {
     $(".loginForm #login-email").removeClass("hidden");
     //Change button value to Next
     $("input#login_next").val("Next");
+
+    //show the back to email button
+    $('.login-back-container').addClass('hidden');
   });
 }
 
@@ -202,7 +185,7 @@ function verifyCookie(nameCookie) {
   }
 }
 
-function loadAvailableItems(){
+function loadAvailableItems(email){
   $.ajax({
     url: baseUrl+"/crpByEmail.do",
     data: {
@@ -210,35 +193,22 @@ function loadAvailableItems(){
     },
     beforeSend: function() {},
     success: function(data) {
-      console.log(data);
-      $(".welcome-message-container .username span").text(data.user.name);
+      if(data.user == null){
+        $('input[name="user.email"]').focus();
+        $('input[name="user.email"]').addClass("wrongEmail");
+        $('.loginForm p.invalidEmail').removeClass("hidden");
+        $('.loginForm p.invalidEmail').text("Your email was not found in database");
+        $('input[name="user.email"]').on('change',function(){
+          $('input[name="user.email"]').removeClass("wrongEmail");
+          $('.loginForm p.invalidEmail').addClass("hidden");
+        });
+      }else{
+        //Change form style
+        changeFormStyle(data);
+        //Button control, just send the form when button value is "login", not "next"
+        loginSwitch=true;
+      }
 
-      var itemsList = $('.selection-bar-options ul')
-      $.each(data.crps, function(i){
-          var li = $('<li/>')
-              .addClass("option")
-              .attr({
-                id:'crp-'+data.crps[i].acronym,
-                role:'menuitem'
-                })
-              .appendTo(itemsList);
-          var img = $('<img/>')
-              .addClass('animated bounceIn')
-              .attr({
-                src: baseUrl + "/global/images/crps/" + data.crps[i].acronym + ".png",
-                alt:"${element.name}",
-                tabindex:"1"
-                })
-              .appendTo(li);
-      });
-      if(data.crps.length>1){
-        //when user has access to multiple crps, show the side bar
-        $(".crps-select").removeClass("hidden");
-
-        //move crps select side bar
-        var sideBarPosition=-$(".loginForm").position().left-120;
-        $(".crps-select").css("left",sideBarPosition);
-        }
     },
     complete: function(data) {},
     error: function(data) {}
@@ -269,3 +239,42 @@ $.fn.disableScroll = function() {
 $.fn.enableScroll = function() {
   $(window).off('scroll.scrolldisabler');
 };
+
+function changeFormStyle(data){
+  $(".welcome-message-container .username span").text(data.user.name);
+
+  $.each(data.crps, function(i){
+      $('.selection-bar-options ul #crp-'+data.crps[i].acronym).removeClass("hidden");
+  });
+
+  //change height value to form
+  $("#loginFormContainer .loginForm").addClass("max-size");
+  //Hide email input
+  $(".loginForm #login-email").addClass("hidden");
+  //show crp image, welcome message and input password
+  $(".loginForm .form-group, " +
+      ".loginForm .welcome-message-container, " +
+      ".loginForm #login-password").removeClass("hidden");
+  //Change button value to Login
+  $("input#login_next").val("Login");
+  //set focus on password input
+  $(".loginForm #login-password input").focus();
+
+  if(data.crps.length>1){
+    //when user has access to multiple crps, show the side bar
+    $(".crps-select").removeClass("hidden");
+
+    //move crps select side bar
+    var sideBarPosition=-$(".loginForm").position().left-120;
+    $(".crps-select").css("left",sideBarPosition);
+    }
+  //click to the first crps loaded
+  $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
+
+  //show the back to email button
+  $('.login-back-container').removeClass('hidden');
+
+  $('.login-back-container p.loginBack').on('click',function(){
+    $(".loginForm .login-input-container.username").click();
+  });
+}
