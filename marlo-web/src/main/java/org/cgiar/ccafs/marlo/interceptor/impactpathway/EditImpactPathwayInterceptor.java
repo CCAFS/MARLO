@@ -123,8 +123,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-
-    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+    CrpProgram crpProgram = null;
+    if (crpProgramID > 0) {
+      crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+    }
 
     if (crpProgram != null) {
 

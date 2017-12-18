@@ -80,9 +80,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   public String sectionActive(String section) {
     List<CustomParameter> parameters = loggedCrp.getCustomParameters().stream()
-      .filter(
-        p -> p.getParameter().getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
-      .collect(Collectors.toList());
+      .filter(p -> p.getParameter().getKey().equals(section) && p.isActive()).collect(Collectors.toList());
 
     if (parameters.size() == 0) {
       return "false";
