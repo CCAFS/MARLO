@@ -95,7 +95,7 @@
                     <tr>
                       <th scope="row">D${d.id}</th>
                       <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>
-                      <td>P${(d.project.projectInfo.id)!'none'}</td>
+                      <td>P${(d.project.id)!'none'}</td>
                       <td>${(d.deliverableInfo.deliverableType.name?capitalize)!'none'}</td>
                       <td> <a href="${deliverableUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                     </tr>

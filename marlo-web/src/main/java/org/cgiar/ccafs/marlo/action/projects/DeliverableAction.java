@@ -1024,15 +1024,19 @@ public class DeliverableAction extends BaseAction {
         deliverable.setResponsiblePartner(this.responsiblePartner());
         deliverable.setOtherPartners(this.otherPartners());
 
-        deliverable
-          .setFundingSources(deliverable.getDeliverableFundingSources().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-              && c.getFundingSource().getFundingSourceInfo(this.getActualPhase()) != null)
+        deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
 
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+
+
           deliverableFundingSource.getFundingSource().setFundingSourceInfo(
             deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+          if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
+            deliverableFundingSource.getFundingSource().setFundingSourceInfo(
+              deliverableFundingSource.getFundingSource().getFundingSourceInfoLast(this.getActualPhase()));
+          }
         }
         deliverable.setGenderLevels(deliverable.getDeliverableGenderLevels().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
@@ -1283,17 +1287,22 @@ public class DeliverableAction extends BaseAction {
         // }
 
         this.fundingSources = new ArrayList<>();
-        List<FundingSource> fundingSources = fundingSourceManager.findAll().stream()
-          .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getActualPhase()) != null)
-          .collect(Collectors.toList());
+        List<FundingSource> fundingSources =
+          fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
         for (FundingSource fundingSource : fundingSources) {
-          fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream()
-            .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear() && c.getPhase() != null
-              && c.getPhase().equals(this.getActualPhase()))
+
+          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
             if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
-              this.fundingSources.add(fundingSource);
+              fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
+              if (fundingSource.getFundingSourceInfo() == null) {
+                fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfoLast(this.getActualPhase()));
+
+              }
+              if (fundingSource.getFundingSourceInfo() != null) {
+                this.fundingSources.add(fundingSource);
+              }
+
             }
 
           }
