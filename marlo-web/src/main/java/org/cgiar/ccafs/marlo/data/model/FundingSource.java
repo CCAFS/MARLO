@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Oct 27, 2016 3:39:29 PM by Hibernate Tools 3.4.0.CR1
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
@@ -161,6 +162,29 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
       List<FundingSourceInfo> infos =
         fundingSourceInfos.stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
           && c.getPhase().getId().longValue() == phase.getId().longValue()).collect(Collectors.toList());
+      if (!infos.isEmpty()) {
+        this.setFundingSourceInfo(infos.get(0));
+        return this.getFundingSourceInfo();
+      } else {
+        this.setFundingSourceInfo(this.getFundingSourceInfoLast(phase));
+        return this.getFundingSourceInfo();
+      }
+    }
+
+
+  }
+
+
+  public FundingSourceInfo getFundingSourceInfoLast(Phase phase) {
+    if (this.getFundingSourceInfo() != null) {
+      return this.getFundingSourceInfo();
+    } else {
+      List<FundingSourceInfo> infos = fundingSourceInfos
+        .stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
+          && phase.getYear() > c.getPhase().getYear() && c.getPhase().getDescription().equals(APConstants.PLANNING))
+        .collect(Collectors.toList());
+
+
       if (!infos.isEmpty()) {
         this.setFundingSourceInfo(infos.get(0));
         return this.getFundingSourceInfo();

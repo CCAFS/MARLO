@@ -721,7 +721,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (budgets == null) {
         budgets = (new ArrayList<>());
       }
-      if (projectBudget.getYear() >= this.getCurrentCycleYear()) {
+      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
         if (!project.getBudgets().contains(projectBudget)) {
           projectBudgetManager.deleteProjectBudget(projectBudget.getId());
 
