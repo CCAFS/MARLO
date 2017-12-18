@@ -836,7 +836,8 @@ public class FundingSourceAction extends BaseAction {
 
       fundingSource.setModifiedBy(this.getCurrentUser());
       fundingSource.setModifiedBy(this.getCurrentUser());
-
+      fundingSource.getFundingSourceInfo().setPhase(this.getActualPhase());
+      fundingSource.getFundingSourceInfo().setFundingSource(fundingSource);
 
       fundingSource
         .setFundingSourceInfo(fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo()));

@@ -75,8 +75,8 @@ public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
   public FundingSourceInfo saveFundingSourceInfo(FundingSourceInfo fundingSourceInfo) {
 
     FundingSourceInfo sourceInfo = fundingSourceInfoDAO.save(fundingSourceInfo);
-
-    if (fundingSourceInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
+    Phase phase = phaseDAO.find(fundingSourceInfo.getPhase().getId());
+    if (phase.getDescription().equals(APConstants.PLANNING)) {
       if (fundingSourceInfo.getPhase().getNext() != null) {
         this.saveInfoPhase(fundingSourceInfo.getPhase().getNext(), fundingSourceInfo.getFundingSource().getId(),
           fundingSourceInfo);
