@@ -2,8 +2,10 @@
 [#macro relationsMacro element ]
   [#local className = (element.class.name)?split('.')?last/]
   [#local composedID = "${className}-${element.id}"]
-  [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))![] /]
-  [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))![] /]
+  [#local deliverablesProject = (action.getDeliverableRelationsFundingSources(element.id, element.class.name,(element.project.id)!-1))! /]
+  [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))!deliverablesProject /]
+  [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
+  
   [#local elementTitle = (element.keyOutput)!((element.title)!((element.description)!'')) /]
   [#if (deliverables?has_content) ||  (projects?has_content)]
   <div id="${composedID}" class="form-group elementRelations ${className}">

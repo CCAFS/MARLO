@@ -133,7 +133,7 @@
         <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="global.sClusterOfActivities"/]</span>
       </div>
       [#-- Remove Button --]
-      [#if editable]
+      [#if editable && action.canBeDeleted((cluster.id)!-1,(cluster.class.name)!"" )]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
       
@@ -218,7 +218,7 @@
 [#macro keyOutputItem element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
+    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!"" )] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
