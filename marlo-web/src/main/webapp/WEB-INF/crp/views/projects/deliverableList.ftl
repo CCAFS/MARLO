@@ -69,8 +69,8 @@
           <div id="diagramPopup" style="display:none; text-align:center;">
             <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
-          
-           <h3 class="subTitle headTitle">On going deliverables</h3>
+          <h3 class="subTitle headTitle">On going deliverables 
+            <div class="deliverables-extended-version"><span class="glyphicon glyphicon-eye-open"></div></span></h3>
            [#if reportingActive]
              <p class="note">
               [@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]
