@@ -158,7 +158,7 @@
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     [/#if]
     
@@ -258,7 +258,7 @@
      <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
      
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     [/#if]
     
@@ -310,7 +310,7 @@
     
     
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((subIdo.id)!-1,(subIdo.class.name)!"" )]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />

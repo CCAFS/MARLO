@@ -561,13 +561,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
-      if (clazz == CrpClusterKeyOutput.class) {
-        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        if (crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList()).size() > 0) {
-          return false;
-        }
-      }
 
       if (clazz == FundingSource.class) {
         FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
@@ -688,15 +681,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       }
-      if (clazz == CrpProgramOutcome.class || clazz == CrpClusterOfActivity.class || clazz == CrpMilestone.class
-        || clazz == CrpClusterKeyOutput.class) {
+      if (clazz == CrpProgramOutcome.class || clazz == CrpClusterOfActivity.class || clazz == CrpMilestone.class) {
         List<Project> projects = this.getProjectRelationsImpact(id, className);
         if (!projects.isEmpty()) {
           return false;
         }
 
-      }
 
+      }
+      if (clazz == CrpClusterKeyOutput.class) {
+
+        List<Project> projects = this.getProjectRelationsImpact(id, className);
+        if (!projects.isEmpty()) {
+          return false;
+        }
+        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
+        if (crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+      }
       return true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -1570,6 +1574,52 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public List<Deliverable> getDeliverableRelationsFundingSources(long id, String className, long projectID) {
+    Class<?> clazz;
+    List<Deliverable> deliverables = null;
+    try {
+      clazz = Class.forName(className);
+
+      if (clazz == ProjectBudget.class) {
+        ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
+        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+            && c.getDeliverable().getProject().getId().longValue() == projectID)
+          .collect(Collectors.toList());
+        Set<Deliverable> deSet = new HashSet<>();
+        for (DeliverableFundingSource deliverableInfo : deList) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          long projectDB = deliverable.getProject().getId().longValue();
+          if (deliverable.getProject() != null && projectDB == projectID) {
+            if (deliverable.getDeliverableInfo() != null) {
+              if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
+                && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                deSet.add(deliverable);
+              }
+              if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
+                && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                deSet.add(deliverable);
+              }
+            }
+          }
+
+
+        }
+        deliverables = new ArrayList<>();
+        deliverables.addAll(deSet);
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+
+    }
+    return deliverables;
+
+  }
+
+
   public List<Deliverable> getDeliverableRelationsImpact(long id, String className) {
     Class<?> clazz;
     List<Deliverable> deliverables = null;
@@ -1604,7 +1654,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     } catch (Exception e) {
       e.printStackTrace();
-      deliverables = new ArrayList<>();
+
     }
     return deliverables;
 
@@ -2042,7 +2092,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-      projects = new ArrayList<>();
+
     }
     return projects;
 

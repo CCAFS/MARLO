@@ -19,6 +19,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
@@ -260,6 +261,11 @@
      [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
        <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
      [/#if]  
+          [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=element /]
+      </div>
+    [/#if]
     [/#if]
     
     [#-- Project Title --]
@@ -276,7 +282,7 @@
     [#if !isTemplate]
     </a>
     [/#if]
-    
+
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
