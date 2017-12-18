@@ -85,19 +85,13 @@
             [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
             <h4 class="">
               [#-- Planning / Reporting tag --]
-              [#if reportingActive??]
-                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
-              [/#if]
+              
               [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
             </h4>
             </a>
           </div>
           
-          [#-- Testing Environment --]
-          [#if !config.production] <h4 class="testEnvironment pull-left"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
-          [#-- Is Closed--]
-          <h4 class="pull-left">[#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]</h4>
-          
+         
           <div class="newsButton text-right">
             <a href="https://marlo-news.blogspot.com" target="__blank">
                <b>Check our blog </b> <span class="fa fa-external-link-square"></span>
