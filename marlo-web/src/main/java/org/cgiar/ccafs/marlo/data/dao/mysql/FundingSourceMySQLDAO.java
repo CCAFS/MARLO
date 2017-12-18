@@ -191,13 +191,11 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
     for (FundingSource fundingSource : fundingSources) {
       try {
-        if (fundingSource.getFundingSourceInfo().getBudgetType().getId().intValue() != 1) {
-          if (fundingSource.hasInstitution(institutionID, phaseID)) {
-            fundingSourcesReturn.add(fundingSource);
-          }
-        } else {
+
+        if (fundingSource.hasInstitution(institutionID, phaseID)) {
           fundingSourcesReturn.add(fundingSource);
         }
+
 
       } catch (Exception e) {
 

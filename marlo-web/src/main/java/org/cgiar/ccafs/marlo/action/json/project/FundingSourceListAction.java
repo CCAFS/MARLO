@@ -93,10 +93,6 @@ public class FundingSourceListAction extends BaseAction {
         this.getCrpID(), phase.getId());
 
 
-      fundingSources.addAll(
-        fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(), phase.getId()));
-
-
     }
 
     if (fundingSources != null) {

@@ -273,7 +273,9 @@
     <p class="checked">
       [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
       <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
+     [#if isYearEditable(selectedYear)]
       <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
+    [/#if]
     </p> 
     
     [#if !isTemplate]
