@@ -21,6 +21,11 @@
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
+
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
@@ -32,10 +37,6 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 [/#if]
-
-[#if (!availabePhase)!false]
-  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
-[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -319,7 +320,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        [#if project.projectInfo.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
+        [#if ((project.projectInfo.projectEditLeader)!false) && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
           [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
@@ -342,7 +343,7 @@
 
 [#-- Get if the year is required--]
 [#function isYearRequired year]
-  [#if project.projectInfo.endDate??]
+  [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
@@ -356,7 +357,7 @@
 
 [#-- Get if the year is editable--]
 [#function isYearEditable year]
-  [#if project.projectInfo.endDate??]
+  [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year gte currentCycleYear) ]

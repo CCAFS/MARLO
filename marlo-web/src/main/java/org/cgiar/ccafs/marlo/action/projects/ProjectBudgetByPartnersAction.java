@@ -604,7 +604,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
       project.setPartners(projectBD.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList()));
 
       for (ProjectPartner projectPartner : project.getPartners()) {
         projectPartner.setPartnerPersons(
