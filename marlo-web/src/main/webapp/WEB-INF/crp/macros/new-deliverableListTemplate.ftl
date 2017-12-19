@@ -11,8 +11,7 @@
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
         <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
-        <th id="deliverableRF">[@s.text name="project.deliverableList.requiredFields" /] </th>
-        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>  
+        <th id="deliverableRF"></th>
       </tr>
     </thead>
     <tbody>
@@ -78,11 +77,14 @@
           none
           [#else]
           ${(deliverable.year)!'none'}
+            [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
+              to ${deliverable.newExpectedYear}
+            [/#if]
           [/#if]
             
           </td>
           [#-- Deliverable FAIR compliance --]
-          <td class="fair"> 
+          <td class="fair text-center"> 
           [#if deliverable.requeriedFair()]
             <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
             <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
@@ -93,12 +95,11 @@
           [/#if]
           </td>
           [#-- Deliverable Status --]
-          <td>
+          <td class="text-center">
             [#attempt]
-              ${(deliverable.statusName)!'none'}
-              [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
-               to ${deliverable.newExpectedYear}
-              [/#if]
+              <div class="status-container">
+                <div class="status-indicator ${(deliverable.statusName)!'none'}" title="${(deliverable.statusName)!'none'}"></div>
+              </div>
             [#recover]
               none
             [/#attempt]
@@ -108,17 +109,7 @@
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-              <span class="icon-20 icon-uncheck" title=""></span> 
-            [/#if]
-          </td>
-          [#-- Delete Deliverable--]
-          <td class="text-center">
-            [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
-              </a>
-            [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
+              <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
             [/#if]
           </td>
         </tr>  
