@@ -109,6 +109,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -530,12 +531,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .collect(Collectors.toList())) {
 
 
-          List<Project> projects =
+          List<ProjectInfo> projects =
             liaisonUser.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           boolean deleted = true;
           if (projects.size() > 0) {
 
-            for (Project project : projects) {
+            for (ProjectInfo projectInfo : projects) {
+              Project project = projectInfo.getProject();
               if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId()
                 .equals(crpProgramLeader.getCrpProgram().getId())) {
                 if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null) {
