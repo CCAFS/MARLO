@@ -8,4 +8,14 @@
   background: #fff url(../../global/images/calendar.png) no-repeat scroll 99% 2px !important;
 }
 
+/**
+ * The month and year selectors.
+ */
+.picker__select--month,
+.picker__select--year {
+  height: 1.5em;
+  padding: .0em;
+}
+
 /* END Picker */
+
