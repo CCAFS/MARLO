@@ -23,7 +23,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/crp/macros/deliverableListTemplate.ftl" as deliverableList /]
+[#import "/WEB-INF/crp/macros/new-deliverableListTemplate.ftl" as deliverableList /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -69,14 +69,24 @@
           <div id="diagramPopup" style="display:none; text-align:center;">
             <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
           </div>
-          <h3 class="subTitle headTitle">On going deliverables 
-            <div class="deliverables-extended-version"><span class="glyphicon glyphicon-eye-open"></div></span></h3>
+          <h3 class="subTitle headTitle">On going deliverables</h3>
+          <div class="deliverables-extended-version" data-toggle="modal" data-target=".extended-table-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+          <span class="extended-simple-version">Extended version</span>
            [#if reportingActive]
              <p class="note">
               [@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]
              </p>
            [/#if]
            <hr />
+           [#-- Extended table (Modal) --]
+           <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                ...
+              </div>
+            </div>
+          </div>
+          [#-- Simple table --]
            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
