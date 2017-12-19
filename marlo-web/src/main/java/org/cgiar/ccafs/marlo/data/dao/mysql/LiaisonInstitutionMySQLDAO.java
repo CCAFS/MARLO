@@ -82,7 +82,7 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
   @Override
   public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID) {
     String query = "from " + LiaisonInstitution.class.getName() + " where institution_id=" + institutionId
-      + " and crp_id=" + crpID + " and is_active=1";
+      + " and global_unit_id=" + crpID + " and is_active=1";
     List<LiaisonInstitution> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
