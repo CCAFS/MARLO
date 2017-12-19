@@ -220,6 +220,7 @@
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 		<mapping resource="xmls/AdUser.hbm.xml" />
 		<mapping resource="xmls/CapdevRangeAge.hbm.xml" />
+		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

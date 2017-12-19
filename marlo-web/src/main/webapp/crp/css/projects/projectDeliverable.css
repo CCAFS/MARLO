@@ -230,7 +230,7 @@ p.noChecked {
     opacity: 1;
 }
 
-.fairCompliant.achieved p{background: url(../../global/images/icon-check-tiny.png) no-repeat 0;opacity: 1;padding-left: 20px;}
+.fairCompliant.achieved p{background: url(../../../global/images/icon-check-tiny.png) no-repeat 0;opacity: 1;padding-left: 20px;}
 
 .hideInfo {
   -webkit-animation: bgcolorchange 2s infinite; /* Chrome, Safari, Opera */ 
