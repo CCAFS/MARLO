@@ -488,7 +488,7 @@ public class ProjectListAction extends BaseAction {
     closedProjects = projectManager.getCompletedProjects(this.getCrpID());
 
     if (closedProjects != null) {
-      closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
+      // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
       myProjects.removeAll(closedProjects);
       if (allProjects != null) {
         allProjects.removeAll(closedProjects);

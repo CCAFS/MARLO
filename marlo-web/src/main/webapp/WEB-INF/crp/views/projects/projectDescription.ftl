@@ -104,11 +104,11 @@
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
-                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=editable /]
+                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false editable=(editable || editStatus) /]
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
-                [@customForm.textArea name="project.projectInfo.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
+                [@customForm.textArea name="project.projectInfo.statusJustification" i18nkey="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=action.hasPermission("statusDescription")  /]
               </div>
             </div>
             
@@ -230,10 +230,10 @@
                       <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingCapacity" id="capacity" value="true" [#if (project.projectInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
                       <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.crossCuttingNa"       id="na"       value="true" [#if (project.projectInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
                     [#else]
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingGender')}">[#if (project.projectInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if] </div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingYouth')}">[#if (project.projectInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]</div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingCapacity')}">[#if (project.projectInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]</div>
-                      <div class="${customForm.changedField('project.projectInfo.crossCuttingNa')}">[#if (project.projectInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingGender')}">[#if (project.projectInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p><input type="hidden" name="project.projectInfo.crossCuttingGender" value="true">[/#if] </div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingYouth')}">[#if (project.projectInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="project.projectInfo.crossCuttingYouth" value="true">[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingCapacity')}">[#if (project.projectInfo.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p><input type="hidden" name="project.projectInfo.crossCuttingCapacity" value="true">[/#if]</div>
+                      <div class="${customForm.changedField('project.projectInfo.crossCuttingNa')}">[#if (project.projectInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="project.projectInfo.crossCuttingNa" value="true">[/#if]</div>
                       [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
                       [#if ((!project.crossCuttingGender)!false) && ((!project.crossCuttingYouth)!false) && ((!project.crossCuttingCapacity)!false) && ((!project.crossCuttingNa)!false)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
                     [/#if]

@@ -34,7 +34,7 @@ and ph.id not in (1,
 5,
 6,
 7,
-8) AND YEAR(p.end_date)>=ph.`year`;
+8) ;
 
 
 
@@ -57,7 +57,7 @@ and ph.id not in (1,
 5,
 6,
 7,
-8) AND YEAR(p.end_date)>=ph.`year` ;
+8) ;
 -- ----------------------------
 -- Table structure for projects
 -- ----------------------------

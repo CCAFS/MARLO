@@ -23,8 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -32,9 +30,9 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -161,23 +159,44 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       }
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+        && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        canEdit = false;
+        canSwitchProject = false;
+        baseAction.setEditStatus(true);
+
+      }
 
       String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
       if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
         canEdit = false;
       }
-      List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
-      if (projectPhases.isEmpty()) {
-        List<ProjectInfo> infos =
-          project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        // baseAction.setActualPhase(infos.get(0).getPhase());
-        baseAction.setAvailabePhase(false);
-      }
-      if (!baseAction.getActualPhase().getEditable()) {
+      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+        || project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
         canEdit = false;
+        baseAction.setEditStatus(true);
       }
+      /*
+       * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
+       * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
+       * if (projectPhases.isEmpty()) {
+       * List<ProjectInfo> infos =
+       * project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+       * infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+       * // baseAction.setActualPhase(infos.get(0).getPhase());
+       * baseAction.setAvailabePhase(false);
+       * }
+       * if (!baseAction.getActualPhase().getEditable()) {
+       * canEdit = false;
+       * }
+       */
+
       // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
       // baseAction
       // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));

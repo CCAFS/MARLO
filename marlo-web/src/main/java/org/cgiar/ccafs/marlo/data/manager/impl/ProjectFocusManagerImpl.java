@@ -64,10 +64,9 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       projectFocusAdd.setPhase(phase);
       projectFocusAdd.setProject(projectFocus.getProject());
       projectFocusDAO.save(projectFocusAdd);
-    } else {
-      if (phase.getNext() != null) {
-        this.addProjectFocusPhase(phase.getNext(), projecID, projectFocus);
-      }
+    }
+    if (phase.getNext() != null) {
+      this.addProjectFocusPhase(phase.getNext(), projecID, projectFocus);
     }
 
 
