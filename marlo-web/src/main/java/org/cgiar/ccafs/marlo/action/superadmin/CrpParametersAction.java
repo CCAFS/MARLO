@@ -118,10 +118,12 @@ public class CrpParametersAction extends BaseAction {
     if (this.canAccessSuperAdmin()) {
 
       for (GlobalUnit crp : crps) {
+
         if (crp.getParameters() == null) {
           crp.setParameters(new ArrayList<CustomParameter>());
         }
         GlobalUnit crpDB = crpManager.getGlobalUnitById(crp.getId());
+        long globalUnitTypeId = crpDB.getGlobalUnitType().getId();
         for (CustomParameter parameter : crpDB.getCustomParameters().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (!crp.getParameters().contains(parameter)) {
@@ -138,18 +140,21 @@ public class CrpParametersAction extends BaseAction {
               parameter.setActiveSince(new Date());
               parameter.setActive(true);
               parameter.setCreatedBy(this.getCurrentUser());
-              parameter.setCrp(crp);
-              parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+              parameter.setCrp(crpDB);
+              parameter
+                .setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId));
               parameter.setModificationJustification("");
               parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);
             } else {
+
               CustomParameter customParameterDB = crpParameterManager.getCustomParameterById(parameter.getId());
               parameter.setActiveSince(customParameterDB.getActiveSince());
               parameter.setActive(true);
               parameter.setCreatedBy(customParameterDB.getCreatedBy());
-              parameter.setCrp(crp);
-              parameter.setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey()));
+              parameter.setCrp(crpDB);
+              parameter
+                .setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId));
               parameter.setModificationJustification("");
               parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);

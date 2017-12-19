@@ -67,8 +67,9 @@ public class ParameterMySQLDAO extends AbstractMarloDAO<Parameter, Long> impleme
   }
 
   @Override
-  public Parameter getParameterByKey(String key) {
-    String query = "from " + Parameter.class.getName() + " where key='" + key + "'";
+  public Parameter getParameterByKey(String key, long globalUnitTypeId) {
+    String query =
+      "from " + Parameter.class.getName() + " where key='" + key + "' and global_unit_type_id=" + globalUnitTypeId;
     List<Parameter> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
