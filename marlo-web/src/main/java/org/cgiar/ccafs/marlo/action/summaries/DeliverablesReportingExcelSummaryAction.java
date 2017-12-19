@@ -99,7 +99,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
     ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,   RepositoryChannelManager repositoryChannelManager) {
+    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
+    RepositoryChannelManager repositoryChannelManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
@@ -340,34 +341,30 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     if (!deliverableManager.findAll().isEmpty()) {
 
       // get Reporting deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive() && d.getProject() != null
-          && d.getProject().isActive() && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-
-          && d.getProject().getProjectInfo().getReporting() && d.getProject().getCrp() != null
-          && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
-          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
-          && ((d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
-              || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-                || (d.getDeliverableInfo().getNewExpectedYear() != null
-                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
-          && (d.getDeliverableInfo().getStatus().intValue() == Integer
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+        && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
+        && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
+        && ((d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
+            || (d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
+          || (d.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
-          .collect(Collectors.toList()));
+            && (d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+          || (d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              || (d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
+        && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+        .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())
         .compareTo(p2.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())));
@@ -1513,11 +1510,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             && deliverable.getDeliverablePublicationMetadatas().stream()
               .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0) != null) {
-            DeliverablePublicationMetadata deliverablePublicationMetadata =
-              deliverable.getDeliverablePublicationMetadatas().stream()
-                .filter(
-                  dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList()).get(0);
+            DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable
+              .getDeliverablePublicationMetadatas().stream()
+              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList()).get(0);
             if (deliverablePublicationMetadata.getVolume() != null
               && !deliverablePublicationMetadata.getVolume().trim().isEmpty()) {
               volume = deliverablePublicationMetadata.getVolume();

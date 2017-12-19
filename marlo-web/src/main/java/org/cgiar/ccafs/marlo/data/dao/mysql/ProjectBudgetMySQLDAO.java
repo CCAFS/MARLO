@@ -51,7 +51,7 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
             + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
             + " where pb.institution_id= " + institutionId + " and pb.year= " + year + " and pb.budget_type= "
             + budgetType + " and pb.project_id= " + projectId + " and pb.id_phase=" + idPhase
-            + " and pb.is_active=1 AND fs.w1w2";
+            + " and pb.is_active=1 AND fsi.w1w2";
         break;
       case 3:
         query =
@@ -59,7 +59,7 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
             + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
             + " where pb.institution_id= " + institutionId + " and pb.year= " + year + " and pb.budget_type= "
             + budgetType + " and pb.project_id= " + projectId + " and pb.id_phase=" + idPhase
-            + " and  pb.is_active=1 AND !fs.w1w2";
+            + " and  pb.is_active=1 AND !fsi.w1w2";
         break;
 
       default:
