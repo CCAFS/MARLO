@@ -86,8 +86,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
     if (deliverable.getDocuments() == null) {
       this.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
-      baseAction.getInvalidFields().put("list-capdev.supportingDocs",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Supporting Documents"}));
+      baseAction.getInvalidFields().put("list-capdev.supportingDocs", InvalidFieldsMessages.EMPTYLIST);
     } else {
       for (int j = 0; j < deliverable.getDocuments().size(); j++) {
         this.valideDocument(baseAction, deliverable.getDocuments().get(j).getLink(), j);

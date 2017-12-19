@@ -161,7 +161,7 @@ public class BaseValidator {
     String sectionName) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
-    CenterSectionStatus status = centerSectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+    CenterSectionStatus status = centerSectionStatusManager.getSectionStatusBySupDocs(deliverable.getId(),
       capacityDevelopment.getId(), sectionName, year);
     if (status == null) {
 

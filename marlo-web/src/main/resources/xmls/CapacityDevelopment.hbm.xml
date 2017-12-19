@@ -173,5 +173,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSectionStatus" />
 		</set>
+		<set name="submissions" table="center_submissions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="capdev_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterSubmission" />
+    </set>
 	</class>
 </hibernate-mapping>
