@@ -13,8 +13,8 @@
           [#if phases?size > 1]
             [#list phases as phase]
               <li id="phase-${(phase.id)!}" class="phaseBox text-left ${(phase.isReporting())?string('reporting','planning')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]active[/#if]">
-                <h4> ${(phase.description)!} ${(phase.year)!}</h4>
-                  <small><strong>From: </strong>${phase.startDate} | <strong>Until: </strong>${phase.endDate}</small>
+                <h4> ${(phase.description)!} ${(phase.year)!} <small class="pull-right">${phase.editable?string('', '<span class="label label-danger">Closed</span>')}</small></h4>
+                <small><strong>From: </strong>${phase.startDate} | <strong>Until: </strong>${phase.endDate}</small>
               </li>
             [/#list] 
           [/#if]
