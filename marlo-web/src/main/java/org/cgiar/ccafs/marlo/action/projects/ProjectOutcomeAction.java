@@ -745,13 +745,13 @@ public class ProjectOutcomeAction extends BaseAction {
 
     // ProjectOutcome projectOutcomeDB = new ProjectOutcome();
 
-    int endYear = 0;
+
     Calendar startDate = Calendar.getInstance();
     startDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getStartDate());
 
     Calendar endDate = Calendar.getInstance();
     endDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
-    endYear = endDate.get(Calendar.YEAR);
+    int endYear = endDate.get(Calendar.YEAR);
 
     if (this.isPlanningActive()) {
       // projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);

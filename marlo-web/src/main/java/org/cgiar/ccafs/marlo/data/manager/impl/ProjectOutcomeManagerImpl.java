@@ -147,7 +147,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     Phase phase = phaseMySQLDAO.find(next.getId());
     List<ProjectOutcome> projectOutcomes = phase.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
-        && c.getCrpProgramOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId()))
+        && c.getCrpProgramOutcome().getComposeID().equals(projectOutcome.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
     if (phase.getEditable() != null && phase.getEditable() && projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
@@ -185,7 +185,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
           projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
           projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
-          projectOutcomeDAO.save(projectOutcomeAdd);
+
+          projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
           this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
           this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
         }
@@ -211,7 +212,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     Phase phase = phaseMySQLDAO.find(next.getId());
     List<ProjectOutcome> projectOutcomes = phase.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
-        && c.getCrpProgramOutcome().getId().equals(projectOutcome.getCrpProgramOutcome().getId()))
+        && c.getCrpProgramOutcome().getComposeID().equals(projectOutcome.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
     if (phase.getEditable() != null && phase.getEditable() && projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
@@ -329,11 +330,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectOutcome project outcome modified
    */
   private void updateProjectMilestones(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+    for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+      projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
+    }
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
         .filter(c -> c != null && c.getCrpMilestone() != null
-          && c.getCrpMilestone().getId().equals(projectMilestone.getCrpMilestone().getId()))
+          && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
         projectMilestone.setActive(false);
         projectMilestoneDAO.save(projectMilestone);
@@ -345,7 +349,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           if (projectOutcomePrev.getProjectMilestones().stream()
             .filter(c -> c != null && c.isActive() && c.getCrpMilestone() != null
               && projectMilestone.getCrpMilestone() != null
-              && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
+              && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
             .collect(Collectors.toList()).isEmpty()) {
 
             ProjectMilestone projectMilestoneAdd = new ProjectMilestone();
@@ -354,7 +358,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestoneAdd.setCreatedBy(projectOutcome.getCreatedBy());
             projectMilestoneAdd.setModificationJustification("");
             projectMilestoneAdd.setModifiedBy(projectOutcome.getCreatedBy());
-            projectMilestoneAdd.setCrpMilestone(projectMilestone.getCrpMilestone());
+            projectMilestoneAdd
+              .setCrpMilestone(crpMilestoneDAO.getCrpMilestone(projectMilestone.getCrpMilestone().getComposeID(),
+                this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
+
             projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
             projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
             projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
@@ -367,7 +374,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
           } else {
             ProjectMilestone milestone = projectOutcomePrev.getProjectMilestones().stream()
-              .filter(c -> c.isActive() && c.getCrpMilestone().equals(projectMilestone.getCrpMilestone()))
+              .filter(c -> c.isActive()
+                && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
               .collect(Collectors.toList()).get(0);
             milestone.setAchievedValue(projectMilestone.getAchievedValue());
             milestone.setExpectedUnit(projectMilestone.getExpectedUnit());
@@ -376,6 +384,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
             milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
             milestone.setYear(projectMilestone.getYear());
+
             projectMilestoneDAO.save(milestone);
 
           }
@@ -395,7 +404,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     for (ProjectNextuser projectNextuser : projectOutcomePrev.getProjectNextusers().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
       if (projectOutcome.getNextUsers() == null || projectOutcome.getNextUsers().stream()
-        .filter(c -> c.getComposeID().equals(projectNextuser.getComposeID())).collect(Collectors.toList()).isEmpty()) {
+        .filter(c -> c.getComposeID() != null && c.getComposeID().equals(projectNextuser.getComposeID()))
+        .collect(Collectors.toList()).isEmpty()) {
         projectNextuser.setActive(false);
         projectNextuserDAO.save(projectNextuser);
       }
@@ -433,6 +443,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectNextusertoUpdate.setNextUser(projectNextuser.getNextUser());
           projectNextusertoUpdate.setProjectOutcome(projectOutcomePrev);
           projectNextusertoUpdate.setStrategies(projectNextuser.getStrategies());
+
           projectNextuserDAO.save(projectNextusertoUpdate);
         }
       }
