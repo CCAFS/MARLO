@@ -194,7 +194,11 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     for (Map<String, Object> map : maps) {
       Project project = this.find(Long.parseLong(map.get("id").toString()));
       project.getProjectInfoLast(phase);
-      project.getProjectInfo().setStatusName(ProjectStatusEnum.Complete.getStatus());
+      if (project.getProjectInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+
+        project.getProjectInfo().setStatusName(ProjectStatusEnum.Complete.getStatus());
+      }
 
       list.add(project);
     }
