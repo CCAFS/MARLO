@@ -43,7 +43,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -486,10 +488,15 @@ public class ProjectListAction extends BaseAction {
     closedProjects = projectManager.getCompletedProjects(this.getCrpID());
 
     if (closedProjects != null) {
+      closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
       myProjects.removeAll(closedProjects);
       if (allProjects != null) {
         allProjects.removeAll(closedProjects);
       }
+      Set<Project> uniqueProjects = new HashSet<>();
+      uniqueProjects.addAll(closedProjects);
+      closedProjects.clear();
+      closedProjects.addAll(uniqueProjects);
       this.loadFlagshipgsAndRegionsCurrentPhase(closedProjects);
     }
 

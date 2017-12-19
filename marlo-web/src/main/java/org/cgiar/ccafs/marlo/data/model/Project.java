@@ -750,10 +750,13 @@ public class Project implements java.io.Serializable, IAuditLog {
       if (!infos.isEmpty()) {
         this.setProjectInfo(infos.get(0));
         return this.getProjectInfo();
+      } else {
+        this.setProjectInfo(this.getProjectInfoLast(phase));
+        return this.getProjectInfo();
       }
     }
 
-    return null;
+
   }
 
 
@@ -841,9 +844,30 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  public ProjectInfo getProjectInfoLast(Phase phase) {
+    if (this.getProjectInfo() != null) {
+      return this.getProjectInfo();
+    } else {
+      List<ProjectInfo> infos = projectInfos
+        .stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
+          && phase.getYear() > c.getPhase().getYear() && c.getPhase().getDescription().equals(APConstants.PLANNING))
+        .collect(Collectors.toList());
+
+
+      if (!infos.isEmpty()) {
+        this.setProjectInfo(infos.get(0));
+        return this.getProjectInfo();
+      }
+    }
+
+    return null;
+
+  }
+
   public Set<ProjectInfo> getProjectInfos() {
     return projectInfos;
   }
+
 
   public Set<ProjectLeverage> getProjectLeverages() {
     return projectLeverages;
@@ -968,7 +992,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return total;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -976,7 +999,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {

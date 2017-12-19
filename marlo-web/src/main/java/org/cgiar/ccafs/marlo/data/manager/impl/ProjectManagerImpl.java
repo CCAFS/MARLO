@@ -64,8 +64,14 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+
   public List<Project> getCompletedProjects(long crpId) {
     return projectDAO.getCompletedProjects(crpId);
+  }
+
+  @Override
+  public List<Project> getNoPhaseProjects(long crpId, Phase phase) {
+    return projectDAO.getNoPhaseProjects(crpId, phase);
   }
 
   @Override

@@ -55,6 +55,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   private Boolean locationGlobal;
   @Expose
   private Long status;
+  private String statusName;
+
   @Expose
   private String statusJustification;
   @Expose
@@ -325,6 +327,9 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public String getStatusName() {
 
+    if (statusName != null) {
+      return statusName;
+    }
     if (status != null) {
       return ProjectStatusEnum.getValue(status.intValue()).getStatus();
     }
@@ -335,7 +340,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public String getSummary() {
     return summary;
   }
-
 
   public String getTitle() {
     return title;
@@ -515,6 +519,12 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
 
   public void setStatusJustification(String statusJustification) {
     this.statusJustification = statusJustification;
+  }
+
+
+  public void setStatusName(String statusName) {
+    this.statusName = statusName;
+
   }
 
 
