@@ -104,7 +104,7 @@
         
           [#-- Delete Project--]
           <td class="text-center">
-            [#if (action.canBeDeleted(project.id, project.class.name) && action.canAddFunding() && !crpClosed) ||action.canAccessSuperAdmin() ]
+            [#if (action.canBeDeleted(project.id, project.class.name) && action.canAddFunding() && !crpClosed) ||action.canAccessSuperAdmin()  && action.getActualPhase().editable]
               <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="">
                 <img src="${baseUrl}/global/images/trash.png"/> 
               </a>
