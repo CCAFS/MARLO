@@ -64,10 +64,10 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       projectClusterAdd.setPhase(phase);
       projectClusterAdd.setProject(projectCluster.getProject());
       this.projectClusterActivityDAO.save(projectClusterAdd);
-    } else {
-      if (phase.getNext() != null) {
-        this.addProjectClusterPhase(phase.getNext(), projecID, projectCluster);
-      }
+    }
+
+    if (phase.getNext() != null) {
+      this.addProjectClusterPhase(phase.getNext(), projecID, projectCluster);
     }
 
 

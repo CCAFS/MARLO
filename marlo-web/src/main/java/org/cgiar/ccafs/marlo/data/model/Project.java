@@ -848,9 +848,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (this.getProjectInfo() != null) {
       return this.getProjectInfo();
     } else {
-      List<ProjectInfo> infos = projectInfos
-        .stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
-          && phase.getYear() > c.getPhase().getYear() && c.getPhase().getDescription().equals(APConstants.PLANNING))
+      List<ProjectInfo> infos = projectInfos.stream()
+        .filter(c -> c.getPhase() != null && c.getPhase().getId() != null && phase.getYear() > c.getPhase().getYear())
         .collect(Collectors.toList());
 
 

@@ -316,7 +316,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private Map<String, Object> parameters;
   private boolean planningActive;
-
   private int planningYear;
 
   @Inject

@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import com.google.inject.Inject;
@@ -123,6 +124,13 @@ public class ProjectDescriptionValidator extends BaseValidator
     if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() == null) {
       this.addMessage(action.getText("project.endDate"));
       action.getInvalidFields().put("input-project.projectInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
+    } else {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
+      if (cal.get(Calendar.YEAR) < action.getActualPhase().getYear()) {
+        this.addMessage(action.getText("project.endDate"));
+        action.getInvalidFields().put("input-project.projectInfo.endDate", "Invalid Date");
+      }
     }
 
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
