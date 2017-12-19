@@ -62,7 +62,7 @@ public interface ParameterManager {
    */
   public Parameter getParameterById(long parameterID);
 
-  public Parameter getParameterByKey(String key);
+  public Parameter getParameterByKey(String key, long globalUnitId);
 
   /**
    * This method saves the information of the given parameter

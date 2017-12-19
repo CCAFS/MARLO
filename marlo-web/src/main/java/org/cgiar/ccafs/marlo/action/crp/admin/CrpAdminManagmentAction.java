@@ -1123,7 +1123,8 @@ public class CrpAdminManagmentAction extends BaseAction {
         parameter.setActive(true);
         parameter.setCrp(loggedCrp);
 
-        parameter.setParameter(parameterManager.getParameterByKey(APConstants.CRP_HAS_REGIONS));
+        parameter.setParameter(
+          parameterManager.getParameterByKey(APConstants.CRP_HAS_REGIONS, loggedCrp.getGlobalUnitType().getId()));
         parameter.setActiveSince(new Date());
         parameter.setCreatedBy(this.getCurrentUser());
 
