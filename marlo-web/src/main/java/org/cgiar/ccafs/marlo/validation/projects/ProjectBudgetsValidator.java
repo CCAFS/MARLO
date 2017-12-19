@@ -110,6 +110,9 @@ public class ProjectBudgetsValidator extends BaseValidator {
                   fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
                 // calculate the remaing. If the budget is new, calculate it with the budgets associated with this FS in
                 // the year evaluated. If it is not new this budget is excluded from the calculation
+                if (projectBudget.getId().intValue() == 6319) {
+                  System.out.println("holi");
+                }
                 double remaining = 0;
                 if (projectBudget.getId() == null) {
                   remaining = fundingSource.getRemaining(projectBudget.getYear());
@@ -117,7 +120,10 @@ public class ProjectBudgetsValidator extends BaseValidator {
                   remaining =
                     fundingSource.getRemainingExcludeBudget(projectBudget.getYear(), projectBudget.getId().longValue());
                 }
-                if (remaining - projectBudget.getAmount() < 0) {
+                double currentAmount = projectBudget.getAmount().doubleValue();
+                double subBudgets = remaining - currentAmount;
+                int intValue = (int) subBudgets;
+                if (intValue < 0) {
                   this.addMessage(action.getText("projectBudgets.fundig"));
                   action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
                     InvalidFieldsMessages.EMPTYFIELD);
