@@ -83,6 +83,9 @@ public class CrpPhasesAction extends BaseAction {
         }
         phaseManager.savePhase(phase);
       }
+
+      this.getSession().remove(APConstants.PHASES);
+      this.getSession().remove(APConstants.PHASES_IMPACT);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();

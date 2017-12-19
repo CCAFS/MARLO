@@ -25,13 +25,13 @@
                 <comment>This field is a link to the table users</comment>
             </column>
         </many-to-one>
-        <set name="projects" table="projects" inverse="true" lazy="true" fetch="select">
+        <set name="projects" table="projects_info" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="liaison_user_id">
                     <comment>foreign key to the table liaison_users</comment>
                 </column>
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
         </set>
     </class>
 </hibernate-mapping>
