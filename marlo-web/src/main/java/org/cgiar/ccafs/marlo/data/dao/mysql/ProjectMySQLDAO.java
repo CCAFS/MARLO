@@ -137,7 +137,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   }
 
-
   @Override
   public Project find(long id) {
     Project project = super.find(Project.class, id);
@@ -145,6 +144,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return project;
 
   }
+
 
   @Override
   public List<Project> findAll() {
@@ -175,6 +175,31 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
       projects.add(project);
     }
     return projects;
+
+  }
+
+  @Override
+  public List<Project> getNoPhaseProjects(long crpId, Phase phase) {
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("select distinct  p.* from projects p inner JOIN project_phases ph ");
+    builder.append("on ph.project_id=p.id ");
+    builder.append("inner join phases fa on fa.id=ph.id_phase ");
+    builder.append("where p.is_active=1 and p.crp_id=" + crpId + " ");
+    builder.append("and (select COUNT('x') from project_phases ph2 where ph2.id_phase in (" + phase.getId()
+      + ") and ph2.project_id=p.id) =0 ");
+    builder.append("and fa.`year`<" + phase.getYear() + " ;");
+    List<Project> list = new ArrayList<>();
+    List<Map<String, Object>> maps = super.findCustomQuery(builder.toString());
+    for (Map<String, Object> map : maps) {
+      Project project = this.find(Long.parseLong(map.get("id").toString()));
+      project.getProjectInfoLast(phase);
+      project.getProjectInfo().setStatusName(ProjectStatusEnum.Complete.getStatus());
+
+      list.add(project);
+    }
+    return list;
+
   }
 
   @Override
