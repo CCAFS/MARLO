@@ -157,7 +157,7 @@
           </td>
           [#-- Delete Project--]
           <td>
-            [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
+            [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>

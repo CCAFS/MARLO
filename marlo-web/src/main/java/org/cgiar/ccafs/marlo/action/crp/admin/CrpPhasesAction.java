@@ -36,7 +36,7 @@ public class CrpPhasesAction extends BaseAction {
    */
   private static final long serialVersionUID = -8565941816588436403L;
 
-  private List<Phase> phases;
+  private List<Phase> phasesAction;
 
   private PhaseManager phaseManager;
   private Crp loggedCrp;
@@ -54,9 +54,8 @@ public class CrpPhasesAction extends BaseAction {
   }
 
 
-  @Override
-  public List<Phase> getPhases() {
-    return phases;
+  public List<Phase> getPhasesAction() {
+    return phasesAction;
   }
 
 
@@ -64,25 +63,28 @@ public class CrpPhasesAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
 
-    phases = phaseManager.findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue())
-      .collect(Collectors.toList());
-    phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+    phasesAction = phaseManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+    phasesAction.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      phases.clear();
+      phasesAction.clear();
     }
   }
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      for (Phase phase : phases) {
+      for (Phase phase : phasesAction) {
         if (phase.getNext().getId() == null) {
           phase.setNext(null);
         }
         phaseManager.savePhase(phase);
       }
+
+      this.getSession().remove(APConstants.PHASES);
+      this.getSession().remove(APConstants.PHASES_IMPACT);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -104,7 +106,7 @@ public class CrpPhasesAction extends BaseAction {
     this.phaseManager = phaseManager;
   }
 
-  public void setPhases(List<Phase> phases) {
-    this.phases = phases;
+  public void setPhasesAction(List<Phase> phases) {
+    this.phasesAction = phases;
   }
 }

@@ -50,13 +50,13 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
-  private Set<Project> projects = new HashSet<Project>(0);
+  private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
 
   public LiaisonInstitution() {
   }
 
   public LiaisonInstitution(CrpProgram crpProgram, Institution institution, String name, String acronym,
-    Set<LiaisonUser> liaisonUserses, Set<Project> projectses) {
+    Set<LiaisonUser> liaisonUserses, Set<ProjectInfo> projectses) {
     this.crpProgram = crpProgram;
     this.institution = institution;
     this.name = name;
@@ -144,7 +144,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-  public Set<Project> getProjects() {
+  public Set<ProjectInfo> getProjects() {
     return projects;
   }
 
@@ -187,7 +187,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProjects(Set<Project> projects) {
+  public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
 

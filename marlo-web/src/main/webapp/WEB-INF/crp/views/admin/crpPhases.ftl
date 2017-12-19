@@ -40,8 +40,8 @@
         <h4 class="sectionTitle">CRP Phases</h4>
         <div class="borderBox row ">
           [#if phases?size > 1]
-            [#list phases as phase]
-              [#assign customName = "phases[${phase_index}]"]
+            [#list phasesAction as phase]
+              [#assign customName = "phasesAction[${phase_index}]"]
               <div id="crpPhase-${phase.id}" class="crpPhase simpleBox ${(phase.isReporting())?string('reporting','planning')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]current[/#if]">
                 <div class="leftHead sm">
                   <span class="index">${phase_index+1}</span>
