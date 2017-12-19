@@ -137,7 +137,7 @@
             [/#if]
             
             [#-- Cross-cutting contributions --]
-            [#if ((projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
+            [#if ((project.projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
             <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
             <div class="form-group">
               [#if (project.projectInfo.crossCuttingGender)!false]
