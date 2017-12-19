@@ -17,7 +17,6 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.publications.PublicationAction;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
@@ -46,7 +45,7 @@ public class CrpParametersAction extends BaseAction {
   private static final long serialVersionUID = 2672633110828731495L;
 
   private final Logger LOG = LoggerFactory.getLogger(CrpParametersAction.class);
-  
+
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
@@ -82,16 +81,15 @@ public class CrpParametersAction extends BaseAction {
     super.prepare();
     crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
     for (GlobalUnit crp : crps) {
+
       crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
-      if (crp.getId().equals(new Long(21))) {
-        System.out.println("a");
-      }
-      List<Parameter> parameters = parameterManager.findAll().stream()
-        .filter(c -> c.getCustomParameters().stream()
-          .filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId())).collect(Collectors.toList()).isEmpty())
-        .collect(Collectors.toList());
+      List<Parameter> parameters =
+        parameterManager.findAll().stream()
+          .filter(c -> c.getGlobalUnitType().getId() == crp.getGlobalUnitType().getId()
+            && c.getCustomParameters().stream().filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId()))
+              .collect(Collectors.toList()).isEmpty())
+          .collect(Collectors.toList());
 
       for (Parameter parameter : parameters) {
         CustomParameter customParameter = new CustomParameter();
