@@ -42,7 +42,7 @@
           [#if phases?size > 1]
             [#list phasesAction as phase]
               [#assign customName = "phasesAction[${phase_index}]"]
-              <div id="crpPhase-${phase.id}" class="crpPhase simpleBox ${(phase.isReporting())?string('reporting','planning')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]current[/#if]">
+              <div id="crpPhase-${phase.id}" class="crpPhase simpleBox ${(phase.isReporting())?string('reporting','planning')} ${(phase.visible)?string('','displayOn')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]current[/#if]">
                 <div class="leftHead sm">
                   <span class="index">${phase_index+1}</span>
                 </div>
@@ -50,32 +50,32 @@
                 <input type="hidden" name="${customName}.id" value="${phase.id}" />
                 <input type="hidden" name="${customName}.description" value="${phase.description}" />
                 <input type="hidden" name="${customName}.year" value="${phase.year}" />
-                 <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
-                  <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
+                <input type="hidden" name="${customName}.next.id" value="${(phase.next.id)!}" />
+                <input type="hidden" name="${customName}.crp.id" value="${phase.crp.id}" />
                 [#-- Title --]
                 <h4> ${(phase.description)!} ${(phase.year)!}</h4><hr />
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
                   <div class="col-md-6">
-                    <label>Visible:</label>
+                    <label>[@s.text name="projectPhases.visible" /]:</label>
                     [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible cssClassLabel="radio-label-yes"/]
                     [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="false" checked=!phase.visible cssClassLabel="radio-label-no"/]
                   </div>
                   [#-- Editable Phase --]
                   <div class="col-md-6">
-                    <label>Editable:</label>
-                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
-                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="false" checked=!phase.editable  cssClassLabel="radio-label-no"/]
+                    <label>[@s.text name="projectPhases.editable" /]:</label>
+                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Open" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
+                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="Close" value="false" checked=!phase.editable  cssClassLabel="radio-label-no"/]
                   </div>
                 </div>
                 <div class="form-group row">
                   [#-- From Date  --]
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.startDate" value="${phase.startDate?string.medium}" i18nkey="From" placeholder="" editable=editable  className="startDate datePicker"/]
+                    [@customForm.input name="${customName}.startDate" value="${(phase.startDate?string.medium)!}" i18nkey="From" placeholder="" editable=editable  className="startDate datePicker"/]
                   </div>
                   [#-- Until Date  --]
                   <div class="col-md-6">
-                    [@customForm.input name="${customName}.endDate" value="${phase.endDate?string.medium}" i18nkey="Until" placeholder="" editable=editable  className="endDate datePicker"/]
+                    [@customForm.input name="${customName}.endDate" value="${(phase.endDate?string.medium)!}" i18nkey="Until" placeholder="" editable=editable  className="endDate datePicker"/]
                   </div>
                 </div>
                  
