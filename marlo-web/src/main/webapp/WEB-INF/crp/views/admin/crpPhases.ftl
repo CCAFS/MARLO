@@ -57,15 +57,15 @@
                 <div class="form-group row"> 
                   [#-- Visible Phase --]
                   <div class="col-md-6">
-                    <label>Visible:</label>
+                    <label>[@s.text name="projectPhases.visible" /]:</label>
                     [@customForm.radioFlat id="visible-yes-${phase_index}" name="${customName}.visible" label="Yes" value="true" checked=phase.visible cssClassLabel="radio-label-yes"/]
                     [@customForm.radioFlat id="visible-no-${phase_index}" name="${customName}.visible" label="No" value="false" checked=!phase.visible cssClassLabel="radio-label-no"/]
                   </div>
                   [#-- Editable Phase --]
                   <div class="col-md-6">
-                    <label>Editable:</label>
-                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Yes" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
-                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="No" value="false" checked=!phase.editable  cssClassLabel="radio-label-no"/]
+                    <label>[@s.text name="projectPhases.editable" /]:</label>
+                    [@customForm.radioFlat id="editable-yes-${phase_index}" name="${customName}.editable" label="Open" value="true" checked=phase.editable  cssClassLabel="radio-label-yes"/]
+                    [@customForm.radioFlat id="editable-no-${phase_index}" name="${customName}.editable" label="Close" value="false" checked=!phase.editable  cssClassLabel="radio-label-no"/]
                   </div>
                 </div>
                 <div class="form-group row">
