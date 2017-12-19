@@ -23,11 +23,6 @@
     color: #ccc;
 }
 
-.subTitle {
-    /* margin-bottom: 30px; */
-    /* color: #772323; */
-}
-
 .blockContent {
     margin-top: 20px;
 }
@@ -40,8 +35,6 @@
     margin-top: 20px;
 }
 
-
-
 .deliverableActivity {
     list-style: none;
     padding: 1px 4px 0px 6px;
@@ -51,6 +44,10 @@
     border-radius: 4px;
     margin-bottom: 5px;
     position: relative;
+}
+
+.deliverableActivity:hover {
+    background-color: rgb(240, 240, 240);
 }
 
 .addActivity {
