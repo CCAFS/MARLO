@@ -65,7 +65,7 @@
         </div>
       </div>
       [#-- Section Buttons --]
-      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive]
+      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive && action.getActualPhase().editable]
       <div class="buttons">
         <div class="buttons-content">
           <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addResearchProject" /]</a>
