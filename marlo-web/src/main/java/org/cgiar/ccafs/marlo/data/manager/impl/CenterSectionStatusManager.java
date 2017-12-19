@@ -64,6 +64,20 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   }
 
   @Override
+  public List<String> distinctSectionStatusCapDev(long capDevID) {
+    List<String> status = new ArrayList<String>();
+
+    List<Map<String, Object>> data = sectionStatusDAO.distinctSectionStatusCapDev(capDevID);
+    if (data != null) {
+      for (Map<String, Object> map : data) {
+        status.add(map.get("section_name").toString());
+      }
+    }
+
+    return status;
+  }
+
+  @Override
   public List<String> distinctSectionStatusProject(long projectID) {
     List<String> status = new ArrayList<String>();
 
@@ -130,6 +144,12 @@ public class CenterSectionStatusManager implements ICenterSectionStatusManager {
   @Override
   public CenterSectionStatus getSectionStatusByProject(long programId, long projectId, String sectionName, int year) {
     return sectionStatusDAO.getSectionStatusByProject(programId, projectId, sectionName, year);
+  }
+
+  @Override
+  public CenterSectionStatus getSectionStatusBySupDocs(long deliverableId, long capDevId, String sectionName,
+    int year) {
+    return sectionStatusDAO.getSectionStatusBySupDocs(deliverableId, capDevId, sectionName, year);
   }
 
   @Override

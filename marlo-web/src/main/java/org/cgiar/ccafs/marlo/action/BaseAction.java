@@ -1756,7 +1756,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive() && (((a.getStatus() == null)
@@ -2094,6 +2094,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+  /**
+   * TODO
+   * ************************ CENTER METHOD *********************
+   * validate if the user can submit the capdev
+   * ***************************************************************
+   * 
+   * @return true if the user have the permission
+   */
+  public boolean hasPersmissionSubmitCapDev(long capDevID) {
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+    return true;
+  }
+
   public boolean hasPersmissionSubmitImpact() {
 
     return this.hasPermission("submit");
@@ -2203,6 +2216,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ************************ CENTER METHOD *********************
+   * verify if the cap-dev is complete
+   * ***************************************************************
+   * 
+   * @return true if the cap dev is complete
+   */
+  public boolean isCompleteCapDev(long capDevID) {
+
+    if (sectionStatusService.findAll() == null) {
+      return false;
+    }
+
+    final CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+
+    final List<String> statuses = secctionStatusService.distinctSectionStatusCapDev(capDevID);
+
+    if (statuses.size() != 3) {
+      return false;
+    }
+
+
+    if (!this.validateCapDevSupDocs(capacityDevelopment)) {
+      return false;
+    }
+
+    final List<CenterSectionStatus> sectionStatuses = new ArrayList<>(capacityDevelopment.getSectionStatuses().stream()
+      .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
+
+    if ((sectionStatuses != null) && (sectionStatuses.size() > 0)) {
+      for (final CenterSectionStatus sectionStatus : sectionStatuses) {
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+
+  /**
+   * ************************ CENTER METHOD *********************
    * verify if the project is complete
    * ***************************************************************
    * 
@@ -2260,7 +2315,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -2953,12 +3007,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
     return true;
   }
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Check if the impact pathway is submitted
+   * ***************************************************************
+   * 
+   * @return true if the impact pathway is submitted
+   */
+  public boolean isSubmitCapDev(long capDevID) {
+
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+    if (capacityDevelopment != null) {
+
+      List<CenterSubmission> submissions = new ArrayList<>(capacityDevelopment.getSubmissions().stream()
+        .filter(s -> (s.getYear().intValue() == this.getCenterYear())).collect(Collectors.toList()));
+
+      if ((submissions != null) && (submissions.size() > 0)) {
+        this.setCenterSubmission(submissions.get(0));
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -2986,7 +3064,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -3484,6 +3561,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the Cap-Dev Supporting Documents section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCapDevSupDocs(CapacityDevelopment capacityDevelopment) {
+    if (capacityDevelopment != null) {
+      List<CenterDeliverable> centerDeliverables = new ArrayList<>(
+        capacityDevelopment.getDeliverables().stream().filter(cd -> cd.isActive()).collect(Collectors.toList()));
+      if ((centerDeliverables != null) && !centerDeliverables.isEmpty()) {
+        for (CenterDeliverable centerDeliverable : centerDeliverables) {
+          final CenterSectionStatus sectionStatus = this.getCenterDeliverableStatus(centerDeliverable.getId());
+          if (sectionStatus == null) {
+            return false;
+          } else {
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
+          }
+        }
+      } else {
+        return false;
+      }
+      return true;
+    }
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
    * Validate the missing fields in the deliverables section
    * ***************************************************************
    * 
@@ -3534,6 +3641,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************

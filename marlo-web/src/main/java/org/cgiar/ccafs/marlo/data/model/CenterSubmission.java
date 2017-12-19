@@ -17,25 +17,25 @@ public class CenterSubmission implements java.io.Serializable {
 
   private User user;
 
+
   private CenterCycle researchCycle;
 
   private CenterProgram researchProgram;
 
+  private CapacityDevelopment capacityDevelopment;
 
   private CenterProject project;
 
-
   private Date dateTime;
 
-
   private String modificationJustification;
+
 
   private Short year;
 
 
   public CenterSubmission() {
   }
-
 
   public CenterSubmission(User user, CenterCycle researchCycle, CenterProgram researchProgram, Date dateTime,
     String modificationJustification, Short year) {
@@ -51,6 +51,11 @@ public class CenterSubmission implements java.io.Serializable {
   public CenterSubmission(User user, Date dateTime) {
     this.user = user;
     this.dateTime = dateTime;
+  }
+
+
+  public CapacityDevelopment getCapacityDevelopment() {
+    return capacityDevelopment;
   }
 
 
@@ -88,8 +93,13 @@ public class CenterSubmission implements java.io.Serializable {
     return user;
   }
 
+
   public Short getYear() {
     return year;
+  }
+
+  public void setCapacityDevelopment(CapacityDevelopment capacityDevelopment) {
+    this.capacityDevelopment = capacityDevelopment;
   }
 
   public void setDateTime(Date dateTime) {
