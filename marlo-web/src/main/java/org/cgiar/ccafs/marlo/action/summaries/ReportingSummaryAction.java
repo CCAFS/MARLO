@@ -178,7 +178,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
-    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
+    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
+    RepositoryChannelManager repositoryChannelManager) {
     super(config, crpManager, phaseManager);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -1694,16 +1695,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     if (!project.getDeliverables().isEmpty()) {
       // get Reporting deliverables
-      List<Deliverable> deliverables =
-        new ArrayList<>(
-          project.getDeliverables().stream()
-            .filter(
-              d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
-                && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting()
-                && d.getProject().getCrp() != null
-                && d.getProject().getCrp().getId()
-                  .equals(this.getLoggedCrp().getId())
+      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()
+        && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && d.getProject().getCrp() != null
+        && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
         && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
         && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -1725,7 +1721,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
           || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))).collect(Collectors.toList()));
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+        .collect(Collectors.toList()));
       deliverables
         .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
           .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
