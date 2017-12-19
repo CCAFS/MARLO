@@ -249,6 +249,11 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProject.setActive(true);
+      globalUnitProject.setActiveSince(new Date());
+      globalUnitProject.setModifiedBy(this.getCurrentUser());
+      globalUnitProject.setCreatedBy(this.getCurrentUser());
+      globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
@@ -301,6 +306,11 @@ public class ProjectListAction extends BaseAction {
       GlobalUnitProject globalUnitProject = new GlobalUnitProject();
       globalUnitProject.setProject(project);
       globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProject.setActive(true);
+      globalUnitProject.setActiveSince(new Date());
+      globalUnitProject.setModifiedBy(this.getCurrentUser());
+      globalUnitProject.setCreatedBy(this.getCurrentUser());
+      globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());

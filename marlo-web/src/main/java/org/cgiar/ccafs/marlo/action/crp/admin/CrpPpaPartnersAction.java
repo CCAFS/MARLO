@@ -566,24 +566,26 @@ public class CrpPpaPartnersAction extends BaseAction {
             liaisonInstitution.setAcronym(partner.getInstitution().getAcronym());
             liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
           }
-          for (LiaisonUser liaisonUser : partner.getContactPoints()) {
-            // new User?
-            if (liaisonUser.getId() == null || !partner.getContactPoints().contains(liaisonUser)) {
-              // Add liaisonUser
-              LiaisonUser liaisonUserSave =
-                new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
-              liaisonUserSave.setCrp(loggedCrp);
-              liaisonUserSave.setActive(true);
-              liaisonUserManager.saveLiaisonUser(liaisonUserSave);
-              // If is new user active it
-              if (!liaisonUser.getUser().isActive()) {
-                this.notifyNewUserCreated(liaisonUser.getUser());
-              }
-              // add userRole
-              if (cpRole != null) {
-                UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
-                userRoleManager.saveUserRole(userRole);
-                this.notifyRoleContactPointAssigned(userRole, partner);
+          if (partner.getContactPoints() != null) {
+            for (LiaisonUser liaisonUser : partner.getContactPoints()) {
+              // new User?
+              if (liaisonUser.getId() == null || !partner.getContactPoints().contains(liaisonUser)) {
+                // Add liaisonUser
+                LiaisonUser liaisonUserSave =
+                  new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
+                liaisonUserSave.setCrp(loggedCrp);
+                liaisonUserSave.setActive(true);
+                liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+                // If is new user active it
+                if (!liaisonUser.getUser().isActive()) {
+                  this.notifyNewUserCreated(liaisonUser.getUser());
+                }
+                // add userRole
+                if (cpRole != null) {
+                  UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                  userRoleManager.saveUserRole(userRole);
+                  this.notifyRoleContactPointAssigned(userRole, partner);
+                }
               }
             }
           }

@@ -209,7 +209,7 @@ public class ProjectListAction extends BaseAction {
     globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
     globalUnitProject.setProject(project);
-    globalUnitProject.setOrigin(true);
+    globalUnitProject.setOrigin(false);
     globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
   }
@@ -253,10 +253,15 @@ public class ProjectListAction extends BaseAction {
 
 
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject.setActive(true);
+    globalUnitProject.setActiveSince(new Date());
+    globalUnitProject.setModifiedBy(this.getCurrentUser());
+    globalUnitProject.setCreatedBy(this.getCurrentUser());
     globalUnitProject.setGlobalUnit(loggedCenter);
     globalUnitProject.setProject(project);
     globalUnitProject.setOrigin(true);
     globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
+
 
     project = projectManager.saveProject(project);
 
