@@ -79,10 +79,12 @@
            [/#if]
            <hr />
            [#-- Extended table (Modal) --]
-           <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+           <div class="modal fade extended-table-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
             <div class="modal-dialog modal-lg">
               <div class="modal-content">
-                ...
+                <h3 class="subTitle headTitle">On going deliverables</h3>
+                <hr />
+                  [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
               </div>
             </div>
           </div>

@@ -24,6 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -289,6 +291,11 @@ public class DeliverableListAction extends BaseAction {
         if (project.getDeliverables() != null) {
           deliverables =
             new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+          for (Deliverable deliverable : deliverables) {
+            deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
+            deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList()));
+          }
         }
       }
 
@@ -304,6 +311,18 @@ public class DeliverableListAction extends BaseAction {
       projectID = -1;
     }
 
+  }
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+    try {
+      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+      return partnership;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 
