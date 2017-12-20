@@ -41,7 +41,11 @@
   [#else]
     [#assign pageLibs = ["sly", "jsUri"] /]
   [/#if]
-  [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
+  [#if customJS??]
+    [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] + customJS  /]
+  [#else]
+    [#assign customJS = [ "${baseUrl}/global/js/timeline-phases.js"  ] /]
+  [/#if]
 
 </div>
 

@@ -395,7 +395,7 @@ function addSelect2() {
 }
 
 function setDisabledCheckedBoxes() {
-  $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
+  // $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
 }
 
 function formatState(state) {
