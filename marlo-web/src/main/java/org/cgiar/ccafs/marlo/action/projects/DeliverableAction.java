@@ -368,7 +368,7 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
       .parseInt(ProjectStatusEnum.Extended.getStatusId())
       || deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
       return false;
     }
 
