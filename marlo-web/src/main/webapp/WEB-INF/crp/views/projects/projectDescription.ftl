@@ -8,6 +8,10 @@
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
 /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectDescription.css"
+  ] 
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
 [#assign hideJustification = true /]
@@ -125,43 +129,40 @@
             
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
-              <div class="col-md-6">
+              <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
                     [#if programFlagships??]
-                    
+                      [#-- Contributions allowed to this flagship --]
                       [#list programFlagships as element]
-                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![]]
-                        [#if outcomesContributions?size != 0] 
+                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
+                        [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
+                        [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
+                        
+                        [#if (totalContributions != 0)] 
                           <p class="checked"> 
-                             ${element.composedName} [@outcomesRelationsPopup  element outcomesContributions /] 
-                            <input type="hidden" name="project.flagshipValue" value="${element.id}" />
+                             ${element.composedName} [@outcomesRelationsPopup  element outcomesContributions clustersContributions /] 
+                            <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
                           </p>
-                        [/#if]
-                      [/#list]
-                      
-                      [#-- Not used Falgships --]
-                      [#list programFlagships as element]
-                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![]]
-                        [#if outcomesContributions?size == 0]
+                        [#else]
+                          <p class=""> 
                           [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" /]
+                          </p>
                         [/#if]
                       [/#list]
                     [/#if]
                   [#else]
+                    [#-- If does no have permissions --]
                     <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
-                    [#if project.flagships?has_content]
-                      [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
-                    [#else]
-                    
-                    [/#if]
+                    [#-- Selected Flagships --]
+                    [#if project.flagships?has_content][#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list][/#if]
                   [/#if]
                 </div>
               </div>
               [#-- Regions --] 
-              <div class="col-md-6"> 
+              <div class="col-md-${(regionFlagships?has_content)?string('6','12')}"> 
                 [#if regionFlagships?has_content] 
                   <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
@@ -322,10 +323,10 @@
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 
-[#macro outcomesRelationsPopup  element outcomesContributions]
+[#macro outcomesRelationsPopup  element outcomesContributions clustersContributions]
   [#-- Button --]
   <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-outcomesContributions-${element.id}">
-    <span class="icon-20 outcomesCont"></span> <strong>${outcomesContributions?size}</strong>
+    <span class="icon-20 outcomesCont"></span> <strong>${outcomesContributions?size + clustersContributions?size}</strong>
   </button>
   
   [#-- Modal --]
@@ -335,7 +336,7 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalLabel">
-            Outcomes that are contributing to this flagship
+            Project flagship contributions
             <br />
             <small>${element.composedName}</small>
           </h4>
@@ -352,6 +353,7 @@
               </tr>
             </thead>
             <tbody>
+            [#if outcomesContributions??]
               [#list outcomesContributions as oc]
                 <tr>
                   <td>${(oc.crpProgram.acronym)!'None'}</td>
@@ -360,6 +362,27 @@
                   <td>${(oc.year)!'None'}</td>
                 </tr>
               [/#list]
+            [/#if]
+            </tbody>
+          </table>
+          
+          [#-- Cluters of Activities table --]
+          <table class="table">
+            <thead>
+              <tr>
+                <th id="ids">Flagship</th>
+                <th id="ids">Cluster of Activity</th>
+              </tr>
+            </thead>
+            <tbody>
+            [#if clustersContributions??]
+              [#list clustersContributions as cc]
+                <tr>
+                  <td>${(cc.crpProgram.acronym)!'None'}</td>
+                  <td>${(cc.description)!'None'}</td> 
+                </tr>
+              [/#list]
+            [/#if]
             </tbody>
           </table>
         </div>
