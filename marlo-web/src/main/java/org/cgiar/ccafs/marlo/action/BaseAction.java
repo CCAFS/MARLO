@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterUser;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpCategoryEnum;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -692,13 +693,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       if (clazz == CrpClusterKeyOutput.class) {
 
-        List<Project> projects = this.getProjectRelationsImpact(id, className);
+        List<Deliverable> projects = this.getDeliverableRelationsImpact(id, className);
         if (!projects.isEmpty()) {
           return false;
         }
         CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
         if (crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
           .collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+      }
+      if (clazz == ProjectOutcome.class) {
+
+        ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(id);
+        List<Deliverable> projects =
+          this.getDeliverableRelationsProject(id, className, projectOutcome.getProject().getId());
+        if (!projects.isEmpty()) {
           return false;
         }
       }
@@ -1575,7 +1585,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public List<Deliverable> getDeliverableRelationsFundingSources(long id, String className, long projectID) {
+  public List<Deliverable> getDeliverableRelationsImpact(long id, String className) {
+    Class<?> clazz;
+    List<Deliverable> deliverables = null;
+    try {
+      clazz = Class.forName(className);
+      if (clazz == CrpClusterKeyOutput.class) {
+        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
+        List<DeliverableInfo> deList =
+          crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        Set<Deliverable> deSet = new HashSet<>();
+        for (DeliverableInfo deliverableInfo : deList) {
+          Deliverable deliverable = deliverableInfo.getDeliverable();
+          deliverable.getDeliverableInfo(this.getActualPhase());
+          if (deliverable.getDeliverableInfo() != null) {
+            if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
+              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              deSet.add(deliverable);
+            }
+            if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
+              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+              deSet.add(deliverable);
+            }
+          }
+
+
+        }
+        deliverables = new ArrayList<>();
+        deliverables.addAll(deSet);
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+
+    }
+    return deliverables;
+
+  }
+
+
+  public List<Deliverable> getDeliverableRelationsProject(long id, String className, long projectID) {
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
@@ -1612,38 +1663,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         deliverables.addAll(deSet);
       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
-
-    }
-    return deliverables;
-
-  }
-
-
-  public List<Deliverable> getDeliverableRelationsImpact(long id, String className) {
-    Class<?> clazz;
-    List<Deliverable> deliverables = null;
-    try {
-      clazz = Class.forName(className);
-      if (clazz == CrpClusterKeyOutput.class) {
-        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        List<DeliverableInfo> deList =
-          crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (clazz == Project.class) {
+        ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
+        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+            && c.getDeliverable().getProject().getId().longValue() == projectID)
+          .collect(Collectors.toList());
         Set<Deliverable> deSet = new HashSet<>();
-        for (DeliverableInfo deliverableInfo : deList) {
+        for (DeliverableFundingSource deliverableInfo : deList) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
-          deliverable.getDeliverableInfo(this.getActualPhase());
-          if (deliverable.getDeliverableInfo() != null) {
-            if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              deSet.add(deliverable);
-            }
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              deSet.add(deliverable);
+          long projectDB = deliverable.getProject().getId().longValue();
+          if (deliverable.getProject() != null && projectDB == projectID) {
+            if (deliverable.getDeliverableInfo() != null) {
+              if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
+                && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                deSet.add(deliverable);
+              }
+              if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
+                && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                deSet.add(deliverable);
+              }
             }
           }
 
@@ -1651,6 +1692,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         deliverables = new ArrayList<>();
         deliverables.addAll(deSet);
+      }
+
+      if (clazz == ProjectOutcome.class) {
+        deliverables = new ArrayList<>();
+        ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(id);
+        List<CrpClusterKeyOutputOutcome> keyOutputOutcomes = projectOutcome.getCrpProgramOutcome()
+          .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyOutputOutcomes) {
+
+          deliverables.addAll(this.getDeliverableRelationsImpact(
+            crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
+        }
+        List<Deliverable> deList = new ArrayList<>();
+
+        for (Deliverable deliverable : deliverables) {
+          if (deliverable.getProject() != null && deliverable.getProject().getId().longValue() == projectID) {
+            deList.add(deliverable);
+          }
+        }
+        deliverables.clear();
+        deliverables.addAll(deList);
+
+
       }
 
     } catch (Exception e) {
@@ -2056,45 +2120,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
       }
-      if (clazz == CrpClusterKeyOutput.class) {
-        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        List<DeliverableInfo> deList =
-          crpClusterKeyOutput.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        Set<Project> deSet = new HashSet<>();
-        for (DeliverableInfo deliverableInfo : deList) {
-          Deliverable deliverable = deliverableInfo.getDeliverable();
-          deliverable.getDeliverableInfo(this.getActualPhase());
-          if (deliverable.getDeliverableInfo() != null) {
-            if (deliverable.getDeliverableInfo().getYear() < this.getActualPhase().getYear()
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
-              if (deliverable.getProject().getProjectInfo() != null) {
-                deSet.add(deliverable.getProject());
-              }
 
-            }
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              deliverable.getProject().getProjecInfoPhase(this.getActualPhase());
-              if (deliverable.getProject().getProjectInfo() != null) {
-                deSet.add(deliverable.getProject());
-              }
-
-
-            }
-          }
-
-
-        }
-        projects = new ArrayList<>();
-        projects.addAll(deSet);
-
-      }
     } catch (Exception e) {
 
     }
+
+    List<Project> avaliableProjects = new ArrayList<>();
+    if (projects != null) {
+      for (Project project : projects) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getPhase().equals(this.getActualPhase())) {
+          avaliableProjects.add(project);
+        }
+
+      }
+      projects.clear();
+      projects.addAll(avaliableProjects);
+    }
+
     return projects;
 
   }
