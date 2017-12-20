@@ -105,7 +105,7 @@ $(document).ready(function() {
 
   flagshipsIds = function() {
     var arr = [];
-    $('#projectFlagshipsBlock input:checked').each(function(i,e) {
+    $('#projectFlagshipsBlock input:checked, input.defaultChecked').each(function(i,e) {
       arr.push($(e).val());
     });
     return arr.join()
