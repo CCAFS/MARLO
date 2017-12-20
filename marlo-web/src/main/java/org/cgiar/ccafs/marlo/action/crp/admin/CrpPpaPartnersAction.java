@@ -122,6 +122,18 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
+  private void addCrpUserIfNotExist(User user) {
+    if (!crpUserManager.existActiveCrpUser(user.getId(), loggedCrp.getId())) {
+      CrpUser crpUser = new CrpUser(loggedCrp, user);
+      crpUser.setActive(true);
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setActiveSince(new Date());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
+  }
+
   /**
    * Add cpRole as a flag to avoid contact points
    * 
@@ -186,6 +198,7 @@ public class CrpPpaPartnersAction extends BaseAction {
               if (!liaisonUser.getUser().isActive()) {
                 this.notifyNewUserCreated(liaisonUser.getUser());
               }
+              this.addCrpUserIfNotExist(liaisonUser.getUser());
               // add userRole
               if (cpRole != null) {
                 UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
@@ -324,13 +337,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       user.setActive(true);
       userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
-      CrpUser crpUser = new CrpUser(loggedCrp, user);
-      crpUser.setActive(true);
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setActiveSince(new Date());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
-      crpUserManager.saveCrpUser(crpUser);
+      this.addCrpUserIfNotExist(user);
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
@@ -490,6 +497,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
+
   /**
    * Add cpRole as a flag to avoid contact points
    * 
@@ -581,6 +589,7 @@ public class CrpPpaPartnersAction extends BaseAction {
                 if (!liaisonUser.getUser().isActive()) {
                   this.notifyNewUserCreated(liaisonUser.getUser());
                 }
+                this.addCrpUserIfNotExist(liaisonUser.getUser());
                 // add userRole
                 if (cpRole != null) {
                   UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
