@@ -38,6 +38,15 @@ public interface CrpUserManager {
 
 
   /**
+   * This method get the crpUser if the user-crp relation exist and is active.
+   * 
+   * @param userId is the user id
+   * @param crpId is the crp id
+   * @return true if the CrpUser exists and is_active; false otherwise
+   */
+  public boolean existActiveCrpUser(long userId, long crpId);
+
+  /**
    * This method validate if the crpUser identify with the given id exists in the system.
    * 
    * @param crpUserID is a crpUser identifier.
