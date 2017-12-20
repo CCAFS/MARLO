@@ -254,7 +254,7 @@
                     [#else]
                        <img src="${baseUrl}/global/images/checked-${w1w2TagValue?string}.png" /> 
                     [/#if]
-                    <small>[@customForm.text name="fundingSource.fundingSourceInfo.w1w2Tag" readText=!editable /]</small></label>
+                    <small>[@customForm.text name="fundingSource.w1w2Tag" readText=!editable /]</small></label>
                 </div>
               </div>
             [/#if]
