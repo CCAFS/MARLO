@@ -209,9 +209,9 @@ public class ProjectLocationAction extends BaseAction {
     List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
-    project = projectManager.getProjectById(projectID);
-    List<ProjectLocation> locations =
-      project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+
+    List<ProjectLocation> locations = projectLocationManager.findAll().stream()
+      .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID).collect(Collectors.toList());
 
     project.setLocations((locations.stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
