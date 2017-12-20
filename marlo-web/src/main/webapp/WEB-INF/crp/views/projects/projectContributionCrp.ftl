@@ -16,6 +16,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
 [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]

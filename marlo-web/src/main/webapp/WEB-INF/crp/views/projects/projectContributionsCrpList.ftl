@@ -19,6 +19,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
 [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
@@ -171,9 +172,17 @@
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
+          
+          
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
+          
+             [#if !isTemplate]
+        <div class="pull-right">
+          [@popUps.relationsMacro element=projectOutcome /]
+        </div>
+      [/#if]
         </a>
       </td>
       [#-- Contribution Status --]
@@ -190,7 +199,7 @@
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
-        [#if ((action.hasPermission("delete"))!true) && canEdit]
+        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" )]
           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
             <img src="${baseUrl}/global/images/trash.png" />
           </a>

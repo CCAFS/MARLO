@@ -112,7 +112,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     if (this.keyOutput.isEmpty()) {
       return "Key output title not defined";
     } else {
-      return this.keyOutput;
+      return this.getCrpClusterOfActivity().getIdentifier() + " - " + this.keyOutput;
     }
 
   }

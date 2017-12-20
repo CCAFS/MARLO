@@ -108,8 +108,8 @@ public class ProjectOutcomeListAction extends BaseAction {
       for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
-
-      projectOutcomeManager.deleteProjectOutcome(outcomeId);
+      outcome.setActive(false);
+      projectOutcomeManager.saveProjectOutcome(outcome);
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
