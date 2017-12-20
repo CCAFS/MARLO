@@ -1168,6 +1168,10 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
         }
       }
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        status.remove(ProjectStatusEnum.Complete.getStatusId());
+      }
 
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;

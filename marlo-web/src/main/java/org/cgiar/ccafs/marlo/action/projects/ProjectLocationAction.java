@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
@@ -863,10 +864,11 @@ public class ProjectLocationAction extends BaseAction {
       }
       // get the funding source info from db
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+      FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getActualPhase());
       // Filter The Fundign Source Location Acroding
-      List<FundingSourceLocation> fundingSourceLocations =
-        new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-          .filter(fs -> fs.isActive() && fs.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(fundingSource.getFundingSourceLocations()
+        .stream().filter(fs -> fs.isActive() && fs.getPhase().equals(fundingSourceInfo.getPhase()))
+        .collect(Collectors.toList()));
 
       for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
         if (fundingSourceLocation.getLocElementType() == null) {
