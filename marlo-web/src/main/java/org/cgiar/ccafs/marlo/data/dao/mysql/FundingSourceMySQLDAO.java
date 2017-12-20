@@ -219,8 +219,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.crp_id=" + crpID
       + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1   ");
+    // query.append("project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
@@ -253,8 +253,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.crp_id="
       + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1   ");
+    // query.append(" AND project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 

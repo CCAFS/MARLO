@@ -43,4 +43,5 @@ FROM
   table_audt t2
 INNER JOIN crps cp on  t2.DETAIL like  CONCAT('Action: ',cp.acronym ,'%')
 INNER JOIN phases ph ON ph.crp_id = cp.id
+where ph.description='Planning' and ph.`year`=2017
 ;
