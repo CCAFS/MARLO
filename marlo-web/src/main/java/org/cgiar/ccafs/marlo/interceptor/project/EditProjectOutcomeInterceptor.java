@@ -174,6 +174,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
+
     } else {
       throw new NullPointerException();
     }
