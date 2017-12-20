@@ -3353,6 +3353,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public boolean isProjectDescription() {
+    String name = this.getActionName();
+    if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
+      return true;
+    }
+    return false;
+  }
+
   public Boolean isProjectNew(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -3550,6 +3558,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public void loadLessons(Crp crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
@@ -3603,7 +3612,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
-
 
   public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
@@ -3813,6 +3821,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
 
+
   public void setAdd(boolean add) {
     this.add = true;
   }
@@ -3827,7 +3836,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.basePermission = basePermission;
   }
 
-
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
@@ -3836,10 +3844,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEdit = canEdit;
   }
 
+
   public void setCanEditPhase(boolean canEditPhase) {
     this.canEditPhase = canEditPhase;
   }
-
 
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
@@ -3853,6 +3861,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.centerSession = centerSession;
   }
 
+
   public void setCenterSubmission(CenterSubmission centerSubmission) {
     this.centerSubmission = centerSubmission;
   }
@@ -3862,28 +3871,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.crpID = crpID;
   }
 
-
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
+
 
   public void setCurrentCenter(Center currentCenter) {
     this.currentCenter = currentCenter;
   }
 
-
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
+
 
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
 
-
   public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
   }
+
 
   public void setDraft(boolean draft) {
     this.draft = draft;
@@ -3894,15 +3903,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
 
+
   public void setEditStatus(boolean editStatus) {
     this.editStatus = editStatus;
   }
-
 
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;

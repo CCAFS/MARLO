@@ -222,6 +222,33 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         baseAction.setEditStatus(true);
       }
 
+      if (phase.getProjectPhases().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == deliverable.getProject().getId())
+        .collect(Collectors.toList()).isEmpty()) {
+        List<ProjectInfo> infos =
+          deliverable.getProject().getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+        baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+      }
+      if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+        || deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+        canEdit = false;
+        baseAction.setEditStatus(true);
+      }
+      if (deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
+        .equals(APConstants.REPORTING)
+        && deliverable.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
+        canEdit = false;
+        baseAction.setEditStatus(false);
+      }
+
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
