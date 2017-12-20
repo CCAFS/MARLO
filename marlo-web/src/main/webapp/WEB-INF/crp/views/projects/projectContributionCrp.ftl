@@ -297,6 +297,7 @@
       [#local projectMilestone = action.getMilestone(element.id, year) /]
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
+    
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     
@@ -347,12 +348,12 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
         </div>
         [/#if]
       </div>
