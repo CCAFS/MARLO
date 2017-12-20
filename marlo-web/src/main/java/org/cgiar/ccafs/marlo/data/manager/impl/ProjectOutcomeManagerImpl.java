@@ -185,7 +185,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
           projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
           projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
           projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
-
+          projectOutcomeAdd.setActive(projectOutcome.isActive());
           projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
           this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
           this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
