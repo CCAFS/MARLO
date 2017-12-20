@@ -33,7 +33,10 @@
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
+      [#if !editStatus]
       <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+      [/#if]
+      
     [/#if]
   [/#if]
   

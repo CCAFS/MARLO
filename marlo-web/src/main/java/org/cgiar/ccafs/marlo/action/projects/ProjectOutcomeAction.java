@@ -778,7 +778,7 @@ public class ProjectOutcomeAction extends BaseAction {
       } else {
         projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
       }
-      projectOutcome.setId(projectOutcomeID);
+      // projectOutcome.setId(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
 
       projectOutcome.setModificationJustification("");
