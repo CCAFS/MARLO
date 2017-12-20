@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.CapDevSectionEnum;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
@@ -1094,6 +1095,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
+  /**
+   * ************************ CENTER METHOD *********************
+   * Validate the sections of CapDev *
+   * ***************************************************************
+   * 
+   * @return true if the CapDev is complete
+   */
+  public boolean getCenterSectionStatusCapDev(String section, long capDevID) {
+    final CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+
+    if (ImpactPathwaySectionsEnum.getValue(section) == null) {
+      return false;
+    }
+
+    switch (CapDevSectionEnum.getValue(section)) {
+      case INTERVENTION:
+        return this.validateCapDevSection(capacityDevelopment, section);
+      case DESCRIPTION:
+        return this.validateCapDevSection(capacityDevelopment, section);
+      case SUPPORTINGDOCS:
+        return this.validateCapDevSupDocs(capacityDevelopment);
+
+    }
+
+    return true;
+  }
 
   /**
    * ************************ CENTER METHOD *********************
@@ -3561,6 +3589,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   /**
    * ************************ CENTER METHOD *********************
+   * Validate the missing fields in the program impacts section
+   * ***************************************************************
+   * 
+   * @return false if has missing fields.
+   */
+  public boolean validateCapDevSection(CapacityDevelopment capacityDevelopment, String sectionName) {
+
+    final CenterSectionStatus sectionStatus =
+      secctionStatusService.getSectionStatusByCapdev(capacityDevelopment.getId(), sectionName, this.getCenterYear());
+
+    if (sectionStatus == null) {
+      return false;
+    }
+    if (sectionStatus.getMissingFields().length() != 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * ************************ CENTER METHOD *********************
    * Validate the missing fields in the Cap-Dev Supporting Documents section
    * ***************************************************************
    * 
@@ -3588,6 +3638,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
