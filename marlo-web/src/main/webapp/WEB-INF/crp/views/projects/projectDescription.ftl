@@ -130,7 +130,25 @@
                   <p><label>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                    [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
+                    [#if programFlagships??]
+                    
+                      [#list programFlagships as element]
+                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![]]
+                        [#if outcomesContributions?size != 0] 
+                          <p class=""> 
+                            [@outcomesRelationsPopup  element outcomesContributions /]  ${element.composedName} 
+                          </p>
+                        [/#if]
+                      [/#list]
+                      
+                      [#-- Not used Falgships --]
+                      [#list programFlagships as element]
+                        [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![]]
+                        [#if outcomesContributions?size == 0]
+                          [@customForm.checkBoxFlat id="projectFp-${element.id}" name="project.flagshipValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((flagshipIds?seq_contains(element.id))!false) cssClass="fpInput" /]
+                        [/#if]
+                      [/#list]
+                    [/#if]
                   [#else]
                     <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
                     [#if project.flagships?has_content]
@@ -148,9 +166,14 @@
                     <p><label>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                      <input type="checkbox" name="project.projectInfo.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.projectInfo.noRegional)!false ]checked="checked"[/#if] />
-                      <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
-                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
+                      [#assign noRegionalLabel]<i>[@s.text name="project.noRegional" /]</i>[/#assign]
+                      [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" /]
+                      [#if regionFlagships??]
+                        [#list regionFlagships as element]
+                          [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${element.composedName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput" /]
+                        [/#list]
+                      [/#if]
+                       
                     [#else]
                       [#if (project.projectInfo.isNoRegional())!false ]
                         <input type="hidden" name="project.projectInfo.noRegional" value="true" />
@@ -296,3 +319,54 @@
 [@customForm.inputFile name="fileReporting" template=true /] 
   
 [#include "/WEB-INF/crp/pages/footer.ftl"]
+
+
+[#macro outcomesRelationsPopup  element outcomesContributions]
+  
+  [#-- Modal --]
+  <div class="modal fade" id="modal-outcomesContributions-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">
+            Outcomes that are contributing to this flagship
+            <br />
+            <small>${element.composedName}</small>
+          </h4>
+        </div>
+        <div class="modal-body">
+          [#-- Outcomes table --]
+          <table class="table">
+            <thead>
+              <tr>
+                <th id="ids">Flagship</th>
+                <th id="ids">Outcome</th>
+                <th id="ids">Target unit</th>
+                <th id="ids">Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              [#list outcomesContributions as oc]
+                <tr>
+                  <td>${(oc.crpProgram.acronym)!'None'}</td>
+                  <td>${(oc.description)!'None'}</td> 
+                  <td>${(oc.value)!} ${(oc.srfTargetUnit.name)!'None'}</td>
+                  <td>${(oc.year)!'None'}</td>
+                </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  [#-- Button --]
+  <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-outcomesContributions-${element.id}">
+    <span class="icon-20 outcomesCont"></span> <strong>${outcomesContributions?size}</strong>
+  </button>
+[/#macro]
