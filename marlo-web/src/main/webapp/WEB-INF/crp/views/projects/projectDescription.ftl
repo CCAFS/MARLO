@@ -313,7 +313,7 @@
 </ul>
 
 [#-- Remove project contribution popup --]
-<div id="removeContribution-dialog" title="Remover Cluster of Activity" style="display:none">
+<div id="removeContribution-dialog" title="Remove  [@s.text name="global.clusterOfActivities" /]" style="display:none">
   <ul class="messages"><li>[@s.text name="projectDescription.removeCoADialog" /]</li></ul>
 </div>
 
@@ -343,6 +343,7 @@
         </div>
         <div class="modal-body">
           [#-- Outcomes table --]
+          [#if outcomesContributions?has_content]
           <table class="table">
             <thead>
               <tr>
@@ -353,7 +354,6 @@
               </tr>
             </thead>
             <tbody>
-            [#if outcomesContributions??]
               [#list outcomesContributions as oc]
                 <tr>
                   <td>${(oc.crpProgram.acronym)!'None'}</td>
@@ -362,29 +362,29 @@
                   <td>${(oc.year)!'None'}</td>
                 </tr>
               [/#list]
-            [/#if]
             </tbody>
           </table>
+          [/#if]
           
           [#-- Cluters of Activities table --]
+          [#if clustersContributions?has_content]
           <table class="table">
             <thead>
               <tr>
                 <th id="ids">Flagship</th>
-                <th id="ids">Cluster of Activity</th>
+                <th id="ids">[@s.text name="global.clusterOfActivities" /]</th>
               </tr>
             </thead>
             <tbody>
-            [#if clustersContributions??]
               [#list clustersContributions as cc]
                 <tr>
                   <td>${(cc.crpProgram.acronym)!'None'}</td>
                   <td>${(cc.description)!'None'}</td> 
                 </tr>
               [/#list]
-            [/#if]
             </tbody>
           </table>
+          [/#if]
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
