@@ -823,8 +823,7 @@ public class ProjectLocationAction extends BaseAction {
 
 
     List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
-      .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear() && pb.getProject().isActive())
-      .collect(Collectors.toList()));
+      .filter(pb -> pb.isActive() && pb.getProject().isActive()).collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
     for (ProjectBudget projectBudget : projectBudgets) {

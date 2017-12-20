@@ -503,7 +503,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getProjectInfo().getLiaisonUser() != null) {
+        if (project.getProjectInfo().getLiaisonUser() != null
+          && project.getProjectInfo().getLiaisonUser().getId() != null) {
           project.getProjectInfo()
             .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
         } else {
@@ -787,6 +788,17 @@ public class ProjectDescriptionAction extends BaseAction {
 
           }
         }
+        List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList());
+        for (ProjectFocus projectFocus : fpsPreview) {
+          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocus.setActive(false);
+            projectFocusManager.saveProjectFocus(projectFocus);
+            // projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          }
+        }
         for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
@@ -818,7 +830,9 @@ public class ProjectDescriptionAction extends BaseAction {
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
         if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          projectFocus.setActive(false);
+          projectFocusManager.saveProjectFocus(projectFocus);
+          // projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
       if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
