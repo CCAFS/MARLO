@@ -681,7 +681,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
       .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-      projectStatuses.remove(ProjectStatusEnum.Complete.getStatusId());
+      projectStatuses.remove(ProjectStatusEnum.Ongoing.getStatusId());
     }
     // add project scales
 
