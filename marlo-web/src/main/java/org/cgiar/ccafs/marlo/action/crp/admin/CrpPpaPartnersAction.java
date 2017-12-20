@@ -122,6 +122,14 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
+  /**
+   * Add Crp User if there is not any active.
+   * 
+   * @author avalencia - CCAFS
+   * @date Dec 20, 2017
+   * @time 9:56:52 AM
+   * @param user
+   */
   private void addCrpUserIfNotExist(User user) {
     if (!crpUserManager.existActiveCrpUser(user.getId(), loggedCrp.getId())) {
       CrpUser crpUser = new CrpUser(loggedCrp, user);
