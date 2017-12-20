@@ -185,6 +185,12 @@ public class ProjectLocationAction extends BaseAction {
   }
 
 
+  public List<ProjectLocation> getDBLocations() {
+    List<ProjectLocation> locations = projectLocationManager.findAll().stream()
+      .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID).collect(Collectors.toList());
+    return locations;
+  }
+
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
@@ -193,10 +199,10 @@ public class ProjectLocationAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -210,10 +216,7 @@ public class ProjectLocationAction extends BaseAction {
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
 
-    List<ProjectLocation> locations = projectLocationManager.findAll().stream()
-      .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID).collect(Collectors.toList());
-
-    project.setLocations((locations.stream()
+    project.setLocations((this.getDBLocations().stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
         && p.getLocElement().getLocElementType().getId().longValue() != 1 && p.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())));
@@ -493,7 +496,7 @@ public class ProjectLocationAction extends BaseAction {
       }
     } else {
       Project projectDB = projectManager.getProjectById(projectID);
-      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      List<ProjectLocation> locElements = this.getDBLocations().stream()
         .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId().longValue() == locElementID
           && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
@@ -515,7 +518,7 @@ public class ProjectLocationAction extends BaseAction {
       return !locElements.isEmpty();
     } else {
       Project projectDB = projectManager.getProjectById(projectID);
-      List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
+      List<ProjectLocation> locElements = this.getDBLocations().stream()
         .filter(c -> c.isActive() && c.getLocElementType() != null
           && c.getLocElementType().getId().longValue() == locElementID && c.getPhase() != null
           && c.getPhase().equals(this.getActualPhase()))
@@ -574,7 +577,7 @@ public class ProjectLocationAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.getProjectInfo()
           .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
-        project.setProjectLocations(projectDb.getProjectLocations());
+        // project.setProjectLocations(projectDb.getProjectLocations());
         project.getProjectInfo()
           .setAdministrative(projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative());
         if (project.getLocationsData() != null) {
