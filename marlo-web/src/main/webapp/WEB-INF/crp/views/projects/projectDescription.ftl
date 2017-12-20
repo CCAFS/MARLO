@@ -135,8 +135,9 @@
                       [#list programFlagships as element]
                         [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![]]
                         [#if outcomesContributions?size != 0] 
-                          <p class=""> 
-                            [@outcomesRelationsPopup  element outcomesContributions /]  ${element.composedName} 
+                          <p class="checked"> 
+                             ${element.composedName} [@outcomesRelationsPopup  element outcomesContributions /] 
+                            <input type="hidden" name="project.flagshipValue" value="${element.id}" />
                           </p>
                         [/#if]
                       [/#list]
@@ -322,6 +323,10 @@
 
 
 [#macro outcomesRelationsPopup  element outcomesContributions]
+  [#-- Button --]
+  <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-outcomesContributions-${element.id}">
+    <span class="icon-20 outcomesCont"></span> <strong>${outcomesContributions?size}</strong>
+  </button>
   
   [#-- Modal --]
   <div class="modal fade" id="modal-outcomesContributions-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -365,8 +370,5 @@
     </div>
   </div>
   
-  [#-- Button --]
-  <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-outcomesContributions-${element.id}">
-    <span class="icon-20 outcomesCont"></span> <strong>${outcomesContributions?size}</strong>
-  </button>
+  
 [/#macro]
