@@ -320,6 +320,18 @@ public class ProjectOutcomeAction extends BaseAction {
     try {
       projectOutcomeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
+
+      ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      if (!outcome.getPhase().equals(this.getActualPhase())) {
+        List<ProjectOutcome> projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgramOutcome().getComposeID().equals(outcome.getCrpProgramOutcome().getComposeID())
+            && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        if (!projectOutcomes.isEmpty()) {
+          projectOutcomeID = projectOutcomes.get(0).getId();
+        }
+      }
     } catch (Exception e) {
       LOG.error("unable to parse projectOutcomeID", e);
       /**

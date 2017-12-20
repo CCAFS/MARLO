@@ -182,6 +182,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         canEdit = false;
         baseAction.setEditStatus(true);
       }
+      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
+        .equals(APConstants.REPORTING)
+        && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
+        canEdit = false;
+        baseAction.setEditStatus(false);
+      }
       /*
        * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
        * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
