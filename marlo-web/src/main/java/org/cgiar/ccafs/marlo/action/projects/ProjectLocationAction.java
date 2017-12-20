@@ -208,8 +208,10 @@ public class ProjectLocationAction extends BaseAction {
     List<CountryLocationLevel> locationLevels = new ArrayList<>();
     List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
+    List<ProjectLocation> locations =
+      project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList());
 
-    project.setLocations(new ArrayList<ProjectLocation>(project.getProjectLocations().stream()
+    project.setLocations((locations.stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
         && p.getLocElement().getLocElementType().getId().longValue() != 1 && p.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())));
