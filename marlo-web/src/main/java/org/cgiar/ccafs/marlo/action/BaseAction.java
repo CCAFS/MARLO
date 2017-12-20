@@ -748,11 +748,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
+
 
   public boolean canEditCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
@@ -763,7 +763,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
   }
-
 
   /**
    ************************ CENTER METHOD *********************
@@ -912,6 +911,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * ***********************CENTER METHOD********************
    * Check if the Monitoring section is Active
@@ -948,7 +948,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public HistoryDifference changedField(String field) {
 
 
@@ -972,6 +971,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
+
 
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
@@ -1025,7 +1025,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
-
   public String generatePermission(String permission, Map<String, Object> session, long crpID, String... params) {
     Phase phase = this.getActualPhase(session, crpID);
     String paramsRefactor[] = Arrays.copyOf(params, params.length);
@@ -1033,6 +1032,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.getText(permission, paramsRefactor);
 
   }
+
 
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
@@ -1042,10 +1042,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
+
 
   /**
    * get the actual
@@ -1068,7 +1068,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
-
 
   public Phase getActualPhase(Map<String, Object> session, long crpID) {
     try {
@@ -1095,6 +1094,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /**
    * ************************ CENTER METHOD ******************************
    * This method calculates all the years between the start date and the end date.
@@ -1120,7 +1120,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
-
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -1128,6 +1127,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
     return exist;
   }
+
 
   public String getBasePermission() {
     return basePermission;
@@ -1231,7 +1231,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Output.
@@ -1258,6 +1257,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1314,7 +1314,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1362,10 +1361,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return centers;
   }
 
+
   public CenterSubmission getCenterSubmission() {
     return centerSubmission;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1378,13 +1377,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Calendar.getInstance().get(Calendar.YEAR);
   }
 
+
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
 
-
   public APConfig getConfig() {
     return config;
+  }
+
+
+  public List<CrpProgramOutcome> getContributionsOutcome(long projectID, long crpProgramID) {
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectOutcome> outcomes =
+      project.getProjectOutcomes().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpProgramOutcome().getCrpProgram().getId().longValue() == crpProgramID).collect(Collectors.toList());
+
+    List<CrpProgramOutcome> crpProgramOutcomes = new ArrayList<>();
+    for (ProjectOutcome projectOutcome : outcomes) {
+      crpProgramOutcomes.add(projectOutcome.getCrpProgramOutcome());
+
+    }
+    return crpProgramOutcomes;
   }
 
   public List<Crp> getCrpCategoryList(String category) {
