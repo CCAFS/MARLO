@@ -78,7 +78,7 @@
           [#else]
           ${(deliverable.year)!'none'}
             [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
-              to ${deliverable.newExpectedYear}
+              Extended to ${deliverable.newExpectedYear}
             [/#if]
           [/#if]
             
@@ -99,6 +99,7 @@
             [#attempt]
               <div class="status-container">
                 <div class="status-indicator ${(deliverable.statusName)!'none'}" title="${(deliverable.statusName)!'none'}"></div>
+                <span class="hidden">${(deliverable.statusName)!'none'}</span>
               </div>
             [#recover]
               none
@@ -111,8 +112,14 @@
             [#else]
               <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
             [/#if]
+            
+            [#if isDeliverableNew]
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+                <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
+              </a>
+            [/#if]
           </td>
-        </tr>  
+        </tr>
       [/#list]
       [/#if]
     </tbody>
@@ -120,18 +127,18 @@
 [/#macro]
 
 [#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction=""]
-  <table class="deliverableList" id="deliverables">
+  <table class="deliverableList" id="deliverables" width="100%">
     <thead>
       <tr class="subHeader">
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
-        <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
-        <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
-        <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
-        <th id="deliverableRF"></th>
-        <th id="deliverableRP">Responsible partner</th>
-        <th id="deliverableFS">Funding source(s)</th>
+        <th id="ids" width="0%">[@s.text name="projectsList.projectids" /]</th>
+        <th id="deliverableTitles" width="30%">[@s.text name="project.deliverableList.deliverableName" /]</th>
+        <th id="deliverableType" width="0%">[@s.text name="project.deliverableList.subtype" /]</th>
+        <th id="deliverableEDY" width="0%">[@s.text name="project.deliverableList.deliveryYear" /]</th>
+        <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
+        <th id="deliverableRF" width="0%"></th>
+        <th id="deliverableRP" width="0%">Responsible partner</th>
+        <th id="deliverableFS" width="70%">Funding source(s)</th>
       </tr>
     </thead>
     <tbody>
@@ -153,7 +160,7 @@
         
         <tr>
           [#-- ID --]
-          <td class="deliverableId" width="">
+          <td class="deliverableId">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
               D${deliverable.id}
             </a>
@@ -188,7 +195,7 @@
             [/#if]
           </td>
           [#-- Deliverable Type --]
-          <td >
+          <td>
             ${(deliverable.deliverableType.name?capitalize)!'none'}
           </td>
           [#-- Deliverable Year --]
@@ -198,7 +205,7 @@
           [#else]
           ${(deliverable.year)!'none'}
             [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
-              to ${deliverable.newExpectedYear}
+              Extended to ${deliverable.newExpectedYear}
             [/#if]
           [/#if]
             
@@ -219,6 +226,7 @@
             [#attempt]
               <div class="status-container">
                 <div class="status-indicator ${(deliverable.statusName)!'none'}" title="${(deliverable.statusName)!'none'}"></div>
+                <span class="hidden">${(deliverable.statusName)!'none'}</span>
               </div>
             [#recover]
               none
@@ -241,18 +249,22 @@
             [/#attempt]
           </td>
           [#-- Deliverable Funding source(s) --]
-          <td width="">
-          [#-- 
+          <td>
             [#if deliverable.fundingSources??]
-              [#list deliverable.fundingSources as fundingSource]
-                ${(fundingSource.directDonor.acronym)!'none'}
+              [#list deliverable.fundingSources as deliverableFundingSource]
+                <div class="fundingSource-container">
+                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.budgetType.name)!'none'}</div>
+                 [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
+                   [#if deliverable.title?length < 13] 
+                    ${(deliverableFundingSource.fundingSource.title)!'none'}
+                   [#else] 
+                     <span title="${(deliverableFundingSource.fundingSource.title)!'none'}">[@utilities.wordCutter string=deliverableFundingSource.fundingSource.title maxPos=13 /]<span>
+                   [/#if]
+                </div>
               [/#list]
+            [#else]
+              none
             [/#if]
-             --]
-             <div class="fundingSource-container">
-              <div class="fundingSource-id-window">FS174-Bilateral</div>
-              <span>Scalable straasdfsdfkn</span>
-             </div>
           </td>
         </tr>  
       [/#list]

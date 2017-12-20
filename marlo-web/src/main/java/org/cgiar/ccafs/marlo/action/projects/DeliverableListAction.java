@@ -18,12 +18,15 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -59,6 +62,8 @@ public class DeliverableListAction extends BaseAction {
 
   private long deliverableID;
   private DeliverableManager deliverableManager;
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
+  private FundingSourceManager fundingSourceManager;
 
   // Front-end
   private List<Deliverable> deliverables;
@@ -78,13 +83,16 @@ public class DeliverableListAction extends BaseAction {
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
+    FundingSourceManager fundingSourceManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
     this.crpManager = crpManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
 
@@ -293,8 +301,13 @@ public class DeliverableListAction extends BaseAction {
             new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
           for (Deliverable deliverable : deliverables) {
             deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
-            deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive())
-              .collect(Collectors.toList()));
+
+            // Gets the Deliverable Funding Source Data without the full information.
+            List<DeliverableFundingSource> fundingSources = new ArrayList<>(deliverable.getDeliverableFundingSources()
+              .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+            deliverable.setFundingSources(fundingSources);
           }
         }
       }
