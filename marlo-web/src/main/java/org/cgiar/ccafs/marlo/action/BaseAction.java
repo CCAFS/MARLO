@@ -1382,10 +1382,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.INSTITUTION_CGIAR;
   }
 
+  public List<CrpClusterOfActivity> getClusterOutcome(long projectID, long crpProgramID) {
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectClusterActivity> clusters = project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpClusterOfActivity().getCrpProgram().getId().longValue() == crpProgramID)
+      .collect(Collectors.toList());
+
+    List<CrpClusterOfActivity> clusterOfActivities = new ArrayList<>();
+    for (ProjectClusterActivity projectClusterActivity : clusters) {
+      clusterOfActivities.add(projectClusterActivity.getCrpClusterOfActivity());
+
+    }
+    return clusterOfActivities;
+  }
+
+
   public APConfig getConfig() {
     return config;
   }
-
 
   public List<CrpProgramOutcome> getContributionsOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
