@@ -25,11 +25,13 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,6 +97,17 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     projectOutcomeId = Long.parseLong(projectParameter);
 
+    ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
+    if (!outcome.getPhase().equals(baseAction.getActualPhase())) {
+      List<ProjectOutcome> projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
+        .filter(c -> c.isActive()
+          && c.getCrpProgramOutcome().getComposeID().equals(outcome.getCrpProgramOutcome().getComposeID())
+          && c.getPhase().equals(baseAction.getActualPhase()))
+        .collect(Collectors.toList());
+      if (!projectOutcomes.isEmpty()) {
+        projectOutcomeId = projectOutcomes.get(0).getId();
+      }
+    }
     ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
     phase = baseAction.getActualPhase(session, crp.getId());
     phase = phaseManager.getPhaseById(phase.getId());
@@ -170,6 +183,32 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
       }
+
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+      if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+        && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        canEdit = false;
+        canSwitchProject = false;
+        baseAction.setEditStatus(true);
+
+      }
+      if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+        || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+        canEdit = false;
+        baseAction.setEditStatus(true);
+      }
+      if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
+        .equals(APConstants.REPORTING)
+        && project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
+        canEdit = false;
+        baseAction.setEditStatus(false);
+      }
+
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
