@@ -41,5 +41,28 @@
 
 <div class="clearfix"></div>
 
+
+[#-- Sections for checking (Using by JS) --]
+<span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
+
+
+  [#-- Check button --]
+  [#if canEdit && !completed && !submission]
+    <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
+    <div id="validateProject-${capdevID}" class="projectValidateButton">[@s.text name="form.buttons.check" /]</div>
+    <div id="progressbar-${capdevID}" class="progressbar" style="display:none"></div>
+  [/#if] 
+  
+  [#-- Submit button --]
+  [#if canEdit]
+    [#assign showSubmit=(canSubmit && !submission && completed)]
+    <a id="submitProject-${capdevID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${centerSession}/submitCapDev"][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='capdevID']${programID}[/@s.param][/@s.url]" >
+      [@s.text name="form.buttons.submit" /]
+    </a>
+  [/#if]
+
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
+
+[#-- Project Submit JS --]
+[#assign customJS = [ "${baseUrlMedia}/js/capDev/capDevSubmit.js" ] + customJS  /]
