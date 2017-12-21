@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,6 +33,15 @@ public interface CrpUserDAO {
    * @return true if the crpUser was successfully deleted, false otherwise.
    */
   public void deleteCrpUser(long crpUserId);
+
+  /**
+   * This method get the crpUser if an active user and crp relation exist.
+   * 
+   * @param userId - The user id.
+   * @param crpId - the crp id.
+   * @return true if the CrpUser exist and is active, false otherwise.
+   */
+  public boolean existActiveCrpUser(long userId, long crpId);
 
   /**
    * This method validate if the crpUser identify with the given id exists in the system.
