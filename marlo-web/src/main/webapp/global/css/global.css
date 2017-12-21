@@ -1192,6 +1192,8 @@ select#partnerSave_activityPartner_partner_type_id {
   /* float:right; */
   padding: 0px 8px;
   cursor: pointer;
+  position: relative;
+  margin-left: 15px;
 }
 
 .panel span.listButton.select {
