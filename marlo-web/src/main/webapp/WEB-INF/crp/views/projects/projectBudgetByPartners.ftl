@@ -80,7 +80,7 @@
                   [#-- No Budget available for this year --]
            
                     [#-- Budgest cannot be editable message --]
-                    [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                    [#if !isYearEditable(year) && editable]<div class="note"> ${year} budgets for cannot be editable.</div>[/#if]
                   
                     <div class="overallYearBudget clearfix">
                       [#-- Total year --]
