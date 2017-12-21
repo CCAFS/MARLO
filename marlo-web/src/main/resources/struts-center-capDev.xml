@@ -25,6 +25,19 @@
 				<param name="edit">true</param>
 			</result>
 		</action>
+		
+		<action name="{center}/submitCapDev"
+      class="org.cgiar.ccafs.marlo.action.center.impactpathway.CapDevSubmissionAction">
+      <result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/detailCapdev</param>
+        <param name="capdevID">${capdevID}</param>
+        <param name="category">${category}</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
 
 		<action name="{center}/deleteCapdev"
 			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"

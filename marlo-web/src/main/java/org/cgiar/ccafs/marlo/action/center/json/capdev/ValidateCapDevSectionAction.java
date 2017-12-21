@@ -306,32 +306,40 @@ public class ValidateCapDevSectionAction extends BaseAction {
 
   public void validateSupportingDocs() {
 
-    CenterDeliverable deliverable = centerDeliverableService.getDeliverableById(deliverableID);
 
-    if (deliverable != null) {
-      if (deliverable.getDeliverableType() != null) {
-        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+    CapacityDevelopment capdev = capdevService.getCapacityDevelopmentById(capdevID);
 
-        List<CenterDeliverableType> deliverablesSubtypesList =
-          new ArrayList<>(centerDeliverableTypeService.findAll().stream()
-            .filter(
-              dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
-            .collect(Collectors.toList()));
+    List<CenterDeliverable> centerDeliverables =
+      new ArrayList<>(capdev.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
-        Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+    for (CenterDeliverable deliverable : centerDeliverables) {
 
+      if (deliverable != null) {
+        if (deliverable.getDeliverableType() != null) {
+          Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+
+          List<CenterDeliverableType> deliverablesSubtypesList =
+            new ArrayList<>(centerDeliverableTypeService.findAll().stream()
+              .filter(
+                dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+              .collect(Collectors.toList()));
+
+          Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
+
+        }
+
+        if (deliverable.getDeliverableDocuments() != null) {
+
+          List<CenterDeliverableDocument> documents =
+            deliverable.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+          Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
+          deliverable.setDocuments(documents);
+        }
       }
 
-      if (deliverable.getDeliverableDocuments() != null) {
+      supportingDocsValidtor.validate(this, deliverable);
 
-        List<CenterDeliverableDocument> documents =
-          deliverable.getDeliverableDocuments().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        Collections.sort(documents, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
-        deliverable.setDocuments(documents);
-      }
     }
-
-    supportingDocsValidtor.validate(this, deliverable);
 
   }
 
