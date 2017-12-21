@@ -22,6 +22,7 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">
+              
                 Projects that are contributing to this [@s.text name="global.${className}" /] 
                 <br />
                 <small>${elementTitle}</small>
@@ -72,7 +73,13 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">
-                Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+               
+                 [#if className=="ProjectBudget"]
+                Deliverables funded by this funding source in this project
+                [#else]
+                  Deliverables that are contributing to this [@s.text name="global.${className}" /] 
+                [/#if]
+              
                 <br />
                 <small>${elementTitle}</small>
               </h4>
