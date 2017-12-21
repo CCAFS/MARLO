@@ -451,6 +451,9 @@ public final class APConstants {
   public static final String DELIVERABLE_OUTPUTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CenterDeliverable.deliverableOutputs)";
 
+	public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
+    "crp_has_specific_management_deliverable_type";
+
   // Cap-Dev Relations
   public static final String CAPDEV_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
