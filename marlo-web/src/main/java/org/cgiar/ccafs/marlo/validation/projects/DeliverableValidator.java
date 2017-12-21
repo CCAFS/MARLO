@@ -138,6 +138,8 @@ public class DeliverableValidator extends BaseValidator {
             this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
             action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
               InvalidFieldsMessages.EMPTYFIELD);
+            deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
           } else {
             if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
               .getDeliverableType() != null) {
@@ -146,11 +148,14 @@ public class DeliverableValidator extends BaseValidator {
                 this.addMessage(action.getText("project.deliverable.generalInformation.type"));
                 action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
                   InvalidFieldsMessages.EMPTYFIELD);
+                deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
               }
             } else {
               this.addMessage(action.getText("project.deliverable.generalInformation.type"));
               action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
                 InvalidFieldsMessages.EMPTYFIELD);
+              deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
             }
           }
         } else {
@@ -188,16 +193,21 @@ public class DeliverableValidator extends BaseValidator {
         if (!action.isReportingActive()) {
           if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
+              && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
               if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
                 this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
                 action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
                   InvalidFieldsMessages.EMPTYFIELD);
+
+                deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
+
               }
             } else {
               this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
               action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
                 InvalidFieldsMessages.EMPTYFIELD);
+              deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
             }
           }
         }
@@ -209,8 +219,7 @@ public class DeliverableValidator extends BaseValidator {
             || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
 
-            action.getInvalidFields().put(
-              "input-deliverable.deliverableInfo.responsiblePartner.projectPartnerPerson.id",
+            action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
               InvalidFieldsMessages.EMPTYFIELD);
 
           } else {
@@ -224,21 +233,18 @@ public class DeliverableValidator extends BaseValidator {
                 if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
                   if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
                     this.addMessage(action.getText("deliverable.division"));
-                    action.getInvalidFields().put(
-                      "input-deliverable.deliverableInfo.responsiblePartner.partnerDivision.id",
+                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
                       InvalidFieldsMessages.EMPTYFIELD);
                   }
                   if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
                     if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
                       this.addMessage(action.getText("deliverable.division"));
-                      action.getInvalidFields().put(
-                        "input-deliverable.deliverableInfo.responsiblePartner.partnerDivision.id",
+                      action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
                         InvalidFieldsMessages.EMPTYFIELD);
                     } else {
                       if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
                         this.addMessage(action.getText("deliverable.division"));
-                        action.getInvalidFields().put(
-                          "input-deliverable.deliverableInfo.responsiblePartner.partnerDivision.id",
+                        action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
                           InvalidFieldsMessages.EMPTYFIELD);
                       }
                     }
@@ -252,7 +258,7 @@ public class DeliverableValidator extends BaseValidator {
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-          action.getInvalidFields().put("input-deliverable.deliverableInfo.responsiblePartner.projectPartnerPerson.id",
+          action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
             InvalidFieldsMessages.EMPTYFIELD);
 
         }
