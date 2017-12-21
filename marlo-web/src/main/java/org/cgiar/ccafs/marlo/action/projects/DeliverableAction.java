@@ -190,6 +190,7 @@ public class DeliverableAction extends BaseAction {
 
 
   private List<DeliverableType> deliverableSubTypes;
+  private Boolean has_specific_management_deliverables;
 
 
   // Managers
@@ -877,6 +878,8 @@ public class DeliverableAction extends BaseAction {
        * but we need to revisit to see if we should continue processing or re-throw the exception.
        */
     }
+    has_specific_management_deliverables =
+      this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
 
     divisions = new ArrayList<>(
       partnerDivisionManager.findAll().stream().filter(pd -> pd.isActive()).collect(Collectors.toList()));
@@ -1213,9 +1216,11 @@ public class DeliverableAction extends BaseAction {
       if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
-        deliverableTypeParent.addAll(deliverableTypeManager.findAll().stream()
-          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && dt.getAdminType().booleanValue())
-          .collect(Collectors.toList()));
+        deliverableTypeParent
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+              && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
