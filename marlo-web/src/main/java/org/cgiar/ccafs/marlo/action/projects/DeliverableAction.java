@@ -1152,7 +1152,7 @@ public class DeliverableAction extends BaseAction {
           // NEW Deliverable
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
           status.remove(ProjectStatusEnum.Extended.getStatusId());
-          // status.remove(ProjectStatusEnum.Complete.getStatusId());
+          status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           // OLD Deliverable
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
