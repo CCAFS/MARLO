@@ -396,18 +396,18 @@
 										[@customForm.select name="" listName="regionsList" keyFieldName="id" displayFieldName="name" help="capdev.help.region" i18nkey="capdev.form.region" className="capdevRegionsSelect" multiple=false placeholder="capdev.select" disabled=!editable /]
 										<ul class="list">
 											[#if capdev.capDevRegions?has_content]
-											[#list capdev.capDevRegions as region]
-												<li id="" class="capdevRegion  clearfix col-md-3">
-													[#if editable]
-														<a class="removeCountry removeIcon" title="Remove country" href="[@s.url action='${centerSession}/deleteRegion'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevRegion" value=region.id /][/@s.url]"></a>
-													[/#if]
-													<input class="id" type="hidden" name="capdev.capDevRegions[${region_index}].id" value="${(region.id)!}" />
-													<input class="rId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
-													${(region.locElement.name)!}
-													<div class="clearfix"></div>
-												</li>
-												[/#list] 
-												[#else]
+  											[#list capdev.capDevRegions as region]
+  												<li id="" class="capdevRegion  clearfix col-md-4">
+  													[#if editable]
+  														<a class="removeCountry removeIcon" title="Remove country" href="[@s.url action='${centerSession}/deleteRegion'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevRegion" value=region.id /][/@s.url]"></a>
+  													[/#if]
+  													<input class="id" type="hidden" name="capdev.capDevRegions[${region_index}].id" value="${(region.id)!}" />
+  													<input class="rId" type="hidden" name="capdev.capDevRegions[${region_index}].locElement.id" value="${(region.locElement.id)!}" />
+  													${(region.locElement.name)!}
+  													<div class="clearfix"></div>
+  												</li>
+  											[/#list] 
+											[#else]
 												<p class="emptyText"> [@s.text name="capdev.notRegions" /]</p> 
 											[/#if]
 										</ul>
@@ -427,7 +427,7 @@
 										<ul class="list">
 											[#if capdev.capDevCountries?has_content]
 											[#list capdev.capDevCountries as country]
-											<li id="" class="capdevCountry clearfix col-md-3">
+											<li id="" class="capdevCountry clearfix col-md-4">
 												[#if editable]
 													<a class=" removeCountry removeIcon" title="Remove country" href="[@s.url action='${centerSession}/deleteCountry'][@s.param name="capdevID" value=capdevID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][@s.param name="capdevCountry" value=country.id /][/@s.url]"></a>
 												[/#if]

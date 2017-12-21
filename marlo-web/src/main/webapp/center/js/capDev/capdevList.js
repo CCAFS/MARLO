@@ -1,8 +1,6 @@
 $(document).ready(function() {
-console.log("hola");
-
   var $buttons = $('.botones');
-     console.log($buttons[0])     
+     console.log($buttons[0])
   if($buttons.exists()) {
     var menuOffset = function() {
       return $(document).height() - ($buttons.offset().top + $buttons.height());
@@ -45,7 +43,7 @@ console.log("hola");
     }
   }
 
- 
+
 
 });
 
@@ -58,7 +56,7 @@ var table = $capdevList.DataTable({
   "bFilter": true, // This option enable the search
   "bSort": true, // this option enable the sort of contents by columns
   "bAutoWidth": false, // This option enables the auto adjust columns width
-  "iDisplayLength": 15, // Number of rows to show on the table,
+  "iDisplayLength": 10, // Number of rows to show on the table,
   aoColumnDefs: [
       {
           bSortable: false,
@@ -116,6 +114,6 @@ $("#capdevSearchInput").keyup(function () {
 //event to remove capdev
 $('#confirm-delete-capdev').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-            
+
 });
 

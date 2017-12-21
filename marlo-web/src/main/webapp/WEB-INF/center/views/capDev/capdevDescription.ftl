@@ -1,6 +1,5 @@
 [#ftl]
 
-
 [#assign customCSS = ["${baseUrlMedia}/css/capDev/capacityDevelopment.css",
                       "${baseUrl}/global/css/customDataTable.css"] /]
 
@@ -21,16 +20,8 @@
   {"label":"capdevDescription", "nameSpace":"/capdev", "action":""}
 ]/]
 
-
 [#include "/WEB-INF/center/pages/header.ftl" /]
 [#include "/WEB-INF/center/pages/main-menu.ftl" /]
-
-
-
-
-
-
-
 
 <div class="container"> 
 
@@ -76,9 +67,6 @@
           <label><input id="gruops" type="radio" hidden="true" name="capdev.category" class="radioButton"  value="${capdev.category}" /> </label>
         </div>
       </div>
-            
-          
-          
 
       <div  class="fullForm borderBox" >
 
@@ -108,7 +96,6 @@
 
                 [/#list]
                 [#else]
-                
                 
                    
                 [/#if]
@@ -179,7 +166,6 @@
               <div class="col-md-6 " listname="capdev.researcharea">
                 [@customForm.select name="capdev.researchArea.id" listName="researchAreas" keyFieldName="id" displayFieldName="name"  required=true className="capdevResearchArea" i18nkey="capdev.form.researchArea" placeholder="capdev.select" help="capdev.help.researchArea" editable=editable/]
               </div>
-
               <!-- research program-->
               <div class="col-md-6 researchProgram ">
                 [@customForm.select name="capdev.researchProgram.id" listName="researchPrograms" keyFieldName="id" displayFieldName="name"  editable=editable i18nkey="capdev.form.researchProgram" placeholder="capdev.select" className="capdevResearchProgram" help="capdev.help.researchProgram" /]
@@ -205,8 +191,6 @@
           </div>
         </div>
         
-        
-
         <!-- Partners-->
         <label class="grupsParticipantsForm">[@s.text name="capdev.partnerts"][/@s.text] </label>
         <div class="simpleBox grupsParticipantsForm" listname="capdev.partners">
@@ -281,13 +265,11 @@
           </div>
         </div>
 
-
         <div style="display: none;">
             [@customForm.input name="capdevID" i18nkey="capdev.id" value="${capdev.id}"  type="text"  /]
             [@customForm.input name="category" i18nkey="capdev.category" value="${capdev.category}"  type="text"  /]
             [@customForm.input name="projectID" i18nkey="capdev.id" value="${projectID}"  type="text"  /]
         </div>
-
 
         <!-- buttons -->
         [#include "/WEB-INF/center/views/capDev/capdev-buttons.ftl" /]
@@ -302,9 +284,6 @@
   
 
 </div>
-
-
-
 
 <!-- disciplines template-->
 <ul style="display:none">
@@ -351,15 +330,7 @@
     </li>
 </ul>
 
-
-
-
-
-
 [#include "/WEB-INF/center/pages/footer.ftl" /]
-
-
-
 
 [#macro objectiveMacro element index=0 isTemplate=false]
   
@@ -373,10 +344,6 @@
   
 [/#macro]
 
-
-
-
-
 [#macro outComeMacro element isTemplate=false]
   <div id="outcome-${isTemplate?string('template',(element)!)}" class="outcome  borderBox col-md-4 " style="display:${isTemplate?string('none','block')}" >
     <div class="removeOutCome removeIcon" title="Remove outcome"></div>
@@ -385,9 +352,3 @@
     </div>
   </div>
 [/#macro]
-
-
-
-
-
-
