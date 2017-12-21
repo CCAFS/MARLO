@@ -11,10 +11,29 @@
     	font-size: 13px;
 }
 
-.titleContainer{
-		text-align: center;
-		font-size: 18px;
-		margin: 1%;
+.title-container{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.title-container .download-template-button{
+	display: inline-block;
+	position: absolute;
+	right: 0;
+}
+
+.subTitle-container{
+	margin-top: 25px;
+}
+
+a button.downloadButtonHome:hover{
+	background-color: #277443;
+}
+
+.col-center{
+    float: none;
+    margin: 0 auto;
 }
 
 .searchArea{
@@ -26,16 +45,9 @@
 		height: 20px;
 }
 
-
-
-
 .capDevIconConvention{
 	width: 13%;
     margin-left: auto;
-}
-
-.itemName{
-		
 }
 
 .newCapdevForm{
@@ -47,8 +59,6 @@
 .newCapdevField{
 		margin: 1%;
 }
-
-
 
 .approachesListTitle{
 		margin-left:3%;
@@ -89,7 +99,6 @@
 	font-weight: 600;
 	border-bottom: 1px solid #2e874f;
 }
-
 
 .participantsBox{
 	width: 94%;
@@ -178,7 +187,6 @@
 	border-bottom: 1px solid #E7E6E6;
 }
 
-
 .contactList ul {
   max-height: 355px;
   overflow: auto;
@@ -200,7 +208,6 @@
 	margin-bottom: 8px;
 }
 
-
 .listContainer{
 	border-left: 3px solid #E7E6E6;
 	border-bottom: 1px solid #E7E6E6;
@@ -213,7 +220,6 @@
 	font-family: Sans-serif;
 	font-weight: 600;
 }
-
 
 .capdevinfo{
 	border-radius: 5px;
@@ -232,8 +238,6 @@
     margin-bottom: 5px;
     position: relative;
 }
-
-
 
 .highlight  {
     width: 126%;
@@ -261,7 +265,6 @@
 	margin:0 auto;
 }
 
-
 .downloadButton{
   padding: 4px 25px 4px 28px;
   margin: 5px 0;
@@ -276,7 +279,6 @@
   cursor: pointer;
   color:#fff;
 }
-
 
 .capdevButtons{
 	background-color: #2e874f;
@@ -320,8 +322,6 @@
     color: #5E5E5E;
 }
 
-
-
 .capDevList thead tr.header th {
   height:45px;
   background-color: #7B9074;
@@ -364,7 +364,14 @@ div.fixed{
 
 .removeCol > img{
 	margin: 0 34% 0 34%;
+}
 
+.removeCol .modal-body p{
+	font-size: 15px;
+}
+
+.removeCol a.btn.btn-danger.btn-ok{
+	color: #fff;
 }
 
 div.icon {
@@ -377,8 +384,6 @@ div.contentIcon {
     border-radius: 7px;
     border-color: #E7E6E6;
     background-color: #f2f2f2;
-    
-    
 }
 
 img.capDevIconEnable {
@@ -401,5 +406,4 @@ img.capDevIconDisable{
     border-color: #777;
     background-color: #f2f2f2;
     margin: 2px 5px 2px 0;
-    
 }
