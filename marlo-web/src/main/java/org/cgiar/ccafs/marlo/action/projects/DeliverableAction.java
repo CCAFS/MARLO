@@ -1152,7 +1152,7 @@ public class DeliverableAction extends BaseAction {
           // NEW Deliverable
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
           status.remove(ProjectStatusEnum.Extended.getStatusId());
-          status.remove(ProjectStatusEnum.Complete.getStatusId());
+          // status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           // OLD Deliverable
           if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()) {
@@ -1168,10 +1168,13 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
         }
       }
-      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        status.remove(ProjectStatusEnum.Complete.getStatusId());
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
+        if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+          status.remove(ProjectStatusEnum.Complete.getStatusId());
+        }
       }
+
 
       genderLevels = new ArrayList<>();
       List<GenderType> genderTypes = null;

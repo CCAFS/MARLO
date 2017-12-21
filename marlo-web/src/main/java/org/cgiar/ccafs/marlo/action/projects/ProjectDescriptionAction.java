@@ -679,10 +679,14 @@ public class ProjectDescriptionAction extends BaseAction {
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
-      .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+
+    if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+      && project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
       projectStatuses.remove(ProjectStatusEnum.Ongoing.getStatusId());
     }
+
+
     // add project scales
 
     projectScales = new HashMap<>();
