@@ -1721,58 +1721,63 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
+        if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+          return true;
+        } else {
+          List<Deliverable> deliverables =
+            project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+          List<Deliverable> openA = new ArrayList<>();
 
-        List<Deliverable> deliverables =
-          project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<Deliverable> openA = new ArrayList<>();
-
-        if (this.isPlanningActive()) {
-          openA =
-            deliverables.stream()
-              .filter(
-                a -> a.isActive()
-                  && ((a.getStatus() == null
+          if (this.isPlanningActive()) {
+            openA =
+              deliverables.stream()
+                .filter(
+                  a -> a.isActive() && ((a.getStatus() == null
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
-        } else {
-          openA = deliverables.stream()
-            .filter(a -> a.isActive()
-              && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getStatus().intValue() == 0))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
+          } else {
+            openA =
+              deliverables.stream()
+                .filter(a -> a.isActive() && ((a.getStatus() == null
+                  || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || a.getStatus().intValue() == 0))))
+                .collect(Collectors.toList());
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
-              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+                && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getNewExpectedYear() != null
-              && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
-              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+                && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+                && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-        }
-        if (openA.isEmpty()) {
-          return false;
-        }
-        for (Deliverable deliverable : openA) {
-          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
-          if (sectionStatus == null) {
+          }
+          if (openA.isEmpty()) {
             return false;
           }
+          for (Deliverable deliverable : openA) {
+            sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            if (sectionStatus == null) {
+              return false;
+            }
 
-          if (sectionStatus.getMissingFields().length() != 0) {
-            return false;
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
+
           }
 
+          returnValue = true;
         }
 
-        returnValue = true;
+
         break;
 
       case ACTIVITIES:
@@ -2387,6 +2392,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         deliverable = deliverableManager.getDeliverableById(deliverable.getId());
       }
 
+      if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+        deliverableSection = 1;
+        totalSections++;
+      }
       for (SectionStatus sectionStatus : sections) {
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
@@ -2394,9 +2403,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
             Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
-            if (openA.contains(a)) {
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
+            if (project.getAdministrative() != null && !project.getAdministrative().booleanValue()) {
+              if (openA.contains(a)) {
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
               }
             }
 
@@ -2412,6 +2423,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (sections.size() == 0) {
         return false;
       }
+
       if (this.isPlanningActive()) {
         for (SectionStatus sectionStatus : sections) {
           if (sectionStatus.getCycle().equals(this.getCurrentCycle())
