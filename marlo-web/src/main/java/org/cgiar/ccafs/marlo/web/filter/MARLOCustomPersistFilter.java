@@ -92,7 +92,10 @@ public class MARLOCustomPersistFilter implements Filter {
       // Continue filter chain
       chain.doFilter(request, response);
 
-      sessionFactory.getCurrentSession().getTransaction().commit();
+      if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+      }
 
 
     } catch (StaleObjectStateException staleEx) {
