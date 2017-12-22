@@ -172,18 +172,15 @@
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
         <a href="${projectOutcomeUrl}">
           ${projectOutcome.crpProgramOutcome.description}
-          
-          
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
-          
-             [#if !isTemplate]
+        </a>
+       [#if !isTemplate]
         <div class="pull-right">
           [@popUps.relationsMacro element=projectOutcome /]
         </div>
       [/#if]
-        </a>
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
