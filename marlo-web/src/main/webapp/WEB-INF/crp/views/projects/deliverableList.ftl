@@ -23,7 +23,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#import "/WEB-INF/crp/macros/new-deliverableListTemplate.ftl" as deliverableList /]
+[#import "/WEB-INF/crp/macros/deliverableListTemplate.ftl" as deliverableList /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
