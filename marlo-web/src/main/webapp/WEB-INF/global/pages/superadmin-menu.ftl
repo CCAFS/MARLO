@@ -48,7 +48,7 @@
             [#list centersList as center]
               [#if center.login]
               <li class="[#if centerSession?? && centerSession == center.acronym ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.name}</a>
+                <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${center.acronym}</a>
               </li>
               [/#if]
             [/#list]              
