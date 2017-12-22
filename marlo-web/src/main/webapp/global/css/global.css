@@ -6545,6 +6545,24 @@ img.removeInput {
 
 /* Checkbox */
 
+
+p.checkDisable:before {
+  content: '';
+  background: #f4f4f4;
+  border: 1px solid #e0e0e0;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  position: relative;
+  margin-right: 0.3em;
+  vertical-align: top;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+  background-color: #bdd3e6;
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+}
+
 .inputsFlat input[type="checkbox"] {
   position: absolute;
   opacity: 0;

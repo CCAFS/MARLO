@@ -142,7 +142,7 @@
                         [#assign totalContributions = outcomesContributions?size + clustersContributions?size ]
                         
                         [#if (totalContributions != 0)] 
-                          <p class="checked"> 
+                          <p class="checkDisable"> 
                              ${element.composedName} [@outcomesRelationsPopup  element outcomesContributions clustersContributions /] 
                             <input type="hidden" class="defaultChecked" name="project.flagshipValue" value="${element.id}"/>
                           </p>
