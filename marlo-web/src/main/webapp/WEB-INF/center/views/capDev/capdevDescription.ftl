@@ -222,7 +222,7 @@
           [#if editable]
             <div class="row grupsParticipantsForm">
               <div class="note participantMessage">
-                <p>If you cannot find the partner you are looking for, suggest another one by clicking on the box <b>"Other"</b></p>
+                <p>If you cannot find the partner you are looking for, suggest another one by clicking below on the box <b>"Other"</b></p>
               </div>
             </div>
             <div class="grupsParticipantsForm">
