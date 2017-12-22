@@ -23,20 +23,21 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.util.Date;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian Garcia
  */
-
+@Named
 public class ProjectValidator extends BaseValidator {
 
-  @Inject
-  public InstitutionManager institutionManager;
+  private final InstitutionManager institutionManager;
 
   @Inject
-  public ProjectValidator() {
+  public ProjectValidator(InstitutionManager institutionManager) {
+    this.institutionManager = institutionManager;
   }
 
 

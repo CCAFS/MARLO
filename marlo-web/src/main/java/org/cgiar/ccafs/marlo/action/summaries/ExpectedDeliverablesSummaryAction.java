@@ -54,7 +54,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -94,6 +96,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private long startTime;
 
   // Managers
+  private CrpManager crpManager;
   private GenderTypeManager genderTypeManager;
   private CrpProgramManager crpProgramManager;
   private DeliverableManager deliverableManager;

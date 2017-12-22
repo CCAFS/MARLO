@@ -37,6 +37,8 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   private ProjectInfoDAO projectInfoDAO;
   private CrpProgramDAO crpProgramDAO;
+  
+  private Logger Log = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
   public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO) {

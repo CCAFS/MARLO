@@ -37,8 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -48,12 +50,12 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
   private static final long serialVersionUID = 6328194359119346721L;
 
-  private CrpProgramManager crpProgramManager;
+  private final CrpProgramManager crpProgramManager;
 
-  private SubmissionManager submissionManager;
-  private RoleManager roleManager;
+  private final SubmissionManager submissionManager;
+  private final RoleManager roleManager;
 
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
 
   private long programID;
   private String justification;
@@ -119,9 +121,13 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    programID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
-    justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // programID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+    // justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+
+    Map<String, Parameter> parameters = this.getParameters();
+    programID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
+    justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
   }
 
   private void sendNotficationEmail(CrpProgram program) {

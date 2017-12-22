@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterProjectLocationManager.class)
+
 public interface ICenterProjectLocationManager {
 
 
@@ -88,7 +86,8 @@ public interface ICenterProjectLocationManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
+  public CenterProjectLocation saveProjectLocation(CenterProjectLocation projectLocation, String actionName,
+    List<String> relationsName);
 
 
 }

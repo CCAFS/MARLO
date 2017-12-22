@@ -14,18 +14,16 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.IpElementManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(IpElementManagerImpl.class)
+
 public interface IpElementManager {
 
 

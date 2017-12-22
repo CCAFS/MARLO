@@ -110,7 +110,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
@@ -156,7 +157,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   // Parameters
   private long startTime;
   private HashMap<Long, String> targetUnitList;
-  private SrfTargetUnitManager srfTargetUnitManager;
+
   private Project project;
   private Boolean hasW1W2Co;
   private Boolean hasGender;
@@ -173,6 +174,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private LocElementManager locElementManager;
   private IpElementManager ipElementManager;
   private RepositoryChannelManager repositoryChannelManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -2849,9 +2851,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;

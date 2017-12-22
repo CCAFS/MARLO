@@ -24,7 +24,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * When the reports information lives on the database. The class will be used to List the reports.
@@ -41,8 +41,8 @@ public class SummaryListAction extends BaseSummariesAction {
   private Crp loggedCrp;
 
 
-  private CrpManager crpManager;
-  private PhaseManager phaseManager;
+  private final CrpManager crpManager;
+  private final PhaseManager phaseManager;
 
   @Inject
   public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {

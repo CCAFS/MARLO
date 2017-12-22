@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DeliverableQualityCheckManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DeliverableQualityCheckManagerImpl.class)
+
 public interface DeliverableQualityCheckManager {
 
 

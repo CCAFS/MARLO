@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterObjectiveManager;
 import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterObjectiveManager.class)
+
 public interface ICenterObjectiveManager {
 
 

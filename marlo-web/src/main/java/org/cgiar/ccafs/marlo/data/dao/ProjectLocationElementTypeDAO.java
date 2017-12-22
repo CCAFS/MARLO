@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectLocationElementTypeMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectLocationElementTypeMySQLDAO.class)
 public interface ProjectLocationElementTypeDAO {
 
   /**

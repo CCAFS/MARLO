@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
@@ -57,7 +56,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -89,6 +89,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private GenderTypeManager genderTypeManager;
   private RepositoryChannelManager repositoryChannelManager;
 
+
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -98,9 +99,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   @Inject
   public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectHighligthManager projectHighLightManager, CrpProgramManager programManager,
-    GenderTypeManager genderTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
-    RepositoryChannelManager repositoryChannelManager) {
+    CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
+    PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.programManager = programManager;
@@ -1510,10 +1510,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             && deliverable.getDeliverablePublicationMetadatas().stream()
               .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0) != null) {
-            DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable
-              .getDeliverablePublicationMetadatas().stream()
-              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
-              .collect(Collectors.toList()).get(0);
+            DeliverablePublicationMetadata deliverablePublicationMetadata =
+              deliverable.getDeliverablePublicationMetadatas().stream()
+                .filter(
+                  dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList()).get(0);
             if (deliverablePublicationMetadata.getVolume() != null
               && !deliverablePublicationMetadata.getVolume().trim().isEmpty()) {
               volume = deliverablePublicationMetadata.getVolume();

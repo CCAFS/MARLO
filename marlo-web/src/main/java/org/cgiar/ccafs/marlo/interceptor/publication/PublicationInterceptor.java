@@ -28,21 +28,23 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class PublicationInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long deliverableID = 0;
 
-  private CrpManager crpManager;
-  private DeliverableManager deliverableManager;
+  private final CrpManager crpManager;
+  private final DeliverableManager deliverableManager;
 
   @Inject
   public PublicationInterceptor(CrpManager crpManager, DeliverableManager deliverableManager) {
@@ -75,7 +77,8 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
+    // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
+    String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
 
     deliverableID = Long.parseLong(projectParameter);
 
@@ -102,8 +105,9 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
       }
 
 
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);
@@ -118,8 +122,9 @@ public class PublicationInterceptor extends AbstractInterceptor implements Seria
         ;
       }
 
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);

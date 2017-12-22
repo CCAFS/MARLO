@@ -38,7 +38,8 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -50,6 +51,7 @@ import org.hibernate.type.Type;
 /**
  * @author Christian Garcia
  */
+@Named
 public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implements AuditLogDao {
 
   public String baseModelPakcage = "org.cgiar.ccafs.marlo.data.model";

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.IpElementMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(IpElementMySQLDAO.class)
 public interface IpElementDAO {
 
   /**

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.IpLiaisonInstitutionManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(IpLiaisonInstitutionManagerImpl.class)
+
 public interface IpLiaisonInstitutionManager {
 
 
@@ -92,7 +90,8 @@ public interface IpLiaisonInstitutionManager {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section,
+    List<String> relationsName);
 
   /**
    * This method saves the information of the given ipLiaisonInstitution

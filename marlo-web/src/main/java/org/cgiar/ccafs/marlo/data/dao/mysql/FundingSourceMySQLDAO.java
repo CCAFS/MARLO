@@ -27,9 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long> implements FundingSourceDAO {
 
   public FundingSourceInfoDAO fundingSourceInfoDAO;

@@ -31,11 +31,13 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class DeliverableManagerImpl implements DeliverableManager {
 
   private PhaseDAO phaseDAO;

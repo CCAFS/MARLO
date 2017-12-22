@@ -29,7 +29,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -51,9 +52,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   private static Logger LOG = LoggerFactory.getLogger(InstitutionsSummaryAction.class);
 
   // Parameters
+  private int year;
   private long startTime;
-
-  // Managers
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -163,6 +163,10 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
       inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
+  }
+
+  public int getYear() {
+    return year;
   }
 
   @Override

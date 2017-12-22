@@ -14,19 +14,17 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectLocationManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectLocationManagerImpl.class)
+
 public interface ProjectLocationManager {
 
 

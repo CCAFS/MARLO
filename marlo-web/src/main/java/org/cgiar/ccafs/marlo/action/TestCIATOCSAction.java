@@ -21,8 +21,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * Action to Test CIAT-OCS service, if the service can not sends a positive
@@ -38,7 +40,7 @@ public class TestCIATOCSAction extends BaseAction {
 
 
   // OCS Agreement Servcie Class
-  private MarloOcsClient ocsClient;
+  private final MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
   // parameter to fail the service whit intention
@@ -70,9 +72,9 @@ public class TestCIATOCSAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     try {
-      this.fail = Boolean.valueOf(StringUtils.trim(((String[]) parameters.get("fail"))[0]));
+      this.fail = Boolean.valueOf(StringUtils.trim(parameters.get("fail").getMultipleValues()[0]));
     } catch (Exception e) {
       this.fail = false;
     }

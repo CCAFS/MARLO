@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ProjectListAction extends BaseSummariesAction {
 

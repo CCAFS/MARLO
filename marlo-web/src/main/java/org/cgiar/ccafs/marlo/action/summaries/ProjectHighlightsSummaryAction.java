@@ -40,10 +40,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -465,9 +467,9 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     this.setGeneralParameters();
-    this.setSelectedFormat(StringUtils.trim(((String[]) parameters.get(APConstants.SUMMARY_FORMAT))[0]));
+    this.setSelectedFormat((StringUtils.trim(parameters.get(APConstants.SUMMARY_FORMAT).getMultipleValues()[0])));
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
