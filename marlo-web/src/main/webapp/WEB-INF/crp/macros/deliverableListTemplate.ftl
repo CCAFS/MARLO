@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
-[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction=""]
+[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction=""]
   <table class="deliverableList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -9,10 +9,11 @@
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [#if isReportingActive]
+          <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [/#if]
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
-        <th id="deliverableRF">[@s.text name="project.deliverableList.requiredFields" /] </th>
-        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>  
+        <th id="deliverableRF"></th>
       </tr>
     </thead>
     <tbody>
@@ -78,11 +79,143 @@
             none
           [#else]
             ${(deliverable.deliverableInfo.year)!'none'}
+            [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
+              Extended to ${deliverable.newExpectedYear}
+            [/#if]
+          [/#if]
+            
+          </td>
+          [#if isReportingActive]
+            [#-- Deliverable FAIR compliance --]
+            <td class="fair text-center"> 
+            [#if deliverable.requeriedFair()]
+              <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
+              <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
+              <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
+              <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
+            [#else]
+              <p class="message">Not applicable</p>
+            [/#if]
+            </td>
+          [/#if]
+          [#-- Deliverable Status --]
+          <td class="text-center">
+            [#attempt]
+              <div class="status-container">
+                <div class="status-indicator ${(deliverable.statusName)!'none'}" title="${(deliverable.statusName)!'none'}"></div>
+                <span class="hidden">${(deliverable.statusName)!'none'}</span>
+              </div>
+            [#recover]
+              none
+            [/#attempt]
+          </td>
+          [#-- Deliverable required fields --]
+          <td class="text-center">
+            [#if isDeliverableComplete]
+              <span class="icon-20 icon-check" title="Complete"></span>
+            [#else]
+              <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
+            [/#if]
+            
+            [#if isDeliverableNew]
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+                <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
+              </a>
+            [/#if]
+          </td>
+        </tr>
+      [/#list]
+      [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction=""]
+  <table class="deliverableList" id="deliverables" width="100%">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids" width="0%">[@s.text name="projectsList.projectids" /]</th>
+        <th id="deliverableTitles" width="30%">[@s.text name="project.deliverableList.deliverableName" /]</th>
+        <th id="deliverableType" width="0%">[@s.text name="project.deliverableList.subtype" /]</th>
+        <th id="deliverableEDY" width="0%">[@s.text name="project.deliverableList.deliveryYear" /]</th>
+        <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
+        <th id="deliverableRF" width="0%"></th>
+        <th id="deliverableRP" width="0%">Responsible partner</th>
+        <th id="deliverableFS" width="70%">Funding source(s)</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if deliverables?has_content]
+      [#list deliverables as deliverable]
+        [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
+        [#assign hasDraft = (action.getAutoSaveFilePath(deliverable.class.simpleName, "deliverable", deliverable.id))!false /]
+        
+        [#-- isDeliverableComplete --]
+        [#if action.getDeliverableStatus(deliverable.id)??]
+          [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
+            [#assign isDeliverableComplete = true /]
+          [#else]
+            [#assign isDeliverableComplete = false /]
+          [/#if]
+        [#else]
+            [#assign isDeliverableComplete = false /]
+        [/#if]
+        
+        <tr>
+          [#-- ID --]
+          <td class="deliverableId">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+              D${deliverable.id}
+            </a>
+          </td>
+          [#-- Deliverable Title --]
+          <td class="left">
+            [#-- New Tag --]
+            [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+            
+            [#-- Draft Tag --]
+            [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
+
+            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
+              <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+            [/#if]
+            [#if deliverable.title?has_content]
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
+                [#if deliverable.title?length < 120] 
+                  ${deliverable.title}
+                [#else] 
+                  [@utilities.wordCutter string=deliverable.title maxPos=120 /]
+                [/#if]
+                </a> 
+            [#else]
+              [#if action.canEdit(deliverable.id)]
+                <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+                  [@s.text name="projectsList.title.none" /]
+                </a>
+              [#else]
+              [@s.text name="projectsList.title.none" /]
+              [/#if]
+            [/#if]
+          </td>
+          [#-- Deliverable Type --]
+          <td>
+            ${(deliverable.deliverableType.name?capitalize)!'none'}
+          </td>
+          [#-- Deliverable Year --]
+          <td class="text-center">
+          [#if deliverable.year== -1]
+          none
+          [#else]
+          ${(deliverable.year)!'none'}
+            [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
+              Extended to ${deliverable.newExpectedYear}
+            [/#if]
           [/#if]
             
           </td>
           [#-- Deliverable FAIR compliance --]
-          <td class="fair"> 
+          <td class="fair text-center"> 
           [#if deliverable.deliverableInfo.requeriedFair()]
             <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
             <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
@@ -93,7 +226,7 @@
           [/#if]
           </td>
           [#-- Deliverable Status --]
-          <td>
+          <td class="text-center">
             [#attempt]
               ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'}
               [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
@@ -108,17 +241,33 @@
             [#if isDeliverableComplete]
               <span class="icon-20 icon-check" title="Complete"></span>
             [#else]
-              <span class="icon-20 icon-uncheck" title=""></span> 
+              <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
             [/#if]
           </td>
-          [#-- Delete Deliverable--]
+          [#-- Deliverable Responsible Partner --]
           <td class="text-center">
-            [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
-                <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
-              </a>
+            [#attempt]
+              ${(deliverable.responsiblePartner.projectPartnerPerson.projectPartner.institution.acronym)!'none'}
+            [#recover]
+              none
+            [/#attempt]
+          </td>
+          [#-- Deliverable Funding source(s) --]
+          <td>
+            [#if deliverable.fundingSources??]
+              [#list deliverable.fundingSources as deliverableFundingSource]
+                <div class="fundingSource-container">
+                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.budgetType.name)!'none'}</div>
+                 [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
+                   [#if deliverable.title?length < 13] 
+                    ${(deliverableFundingSource.fundingSource.title)!'none'}
+                   [#else] 
+                     <span title="${(deliverableFundingSource.fundingSource.title)!'none'}">[@utilities.wordCutter string=deliverableFundingSource.fundingSource.title maxPos=13 /]<span>
+                   [/#if]
+                </div>
+              [/#list]
             [#else]
-              <img src="${baseUrl}/global/images/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
+              none
             [/#if]
           </td>
         </tr>  
