@@ -209,9 +209,9 @@
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
-                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
+                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
@@ -291,7 +291,7 @@
 [#-- Cluster of activity list template --]
 <ul style="display:none">
   <li id="cpListTemplate" class="clusterActivity clearfix">
-    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <span class="listButton remove pull-right">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
     <span class="name"></span>
@@ -303,7 +303,7 @@
 [#-- project scope template --]
 <ul style="display:none">
   <li id="projecScope-template" class="projecScope clearfix">
-    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <span class="listButton remove pull-right">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.scopes[-1].locElementType.id" value="" />
     <input class="cid" type="hidden" name="project.scopes[-1].id" value="" />
     <span class="name"></span>
@@ -347,19 +347,20 @@
           <table class="table">
             <thead>
               <tr>
-                <th id="ids">Flagship</th>
                 <th id="ids">Outcome</th>
                 <th id="ids">Target unit</th>
                 <th id="ids">Year</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               [#list outcomesContributions as oc]
+                [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
                 <tr>
-                  <td>${(oc.crpProgram.acronym)!'None'}</td>
                   <td>${(oc.description)!'None'}</td> 
                   <td>${(oc.value)!} ${(oc.srfTargetUnit.name)!'None'}</td>
                   <td>${(oc.year)!'None'}</td>
+                  <td> <a href="${projectUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a> </td>
                 </tr>
               [/#list]
             </tbody>
@@ -371,14 +372,12 @@
           <table class="table">
             <thead>
               <tr>
-                <th id="ids">Flagship</th>
                 <th id="ids">[@s.text name="global.clusterOfActivities" /]</th>
               </tr>
             </thead>
             <tbody>
               [#list clustersContributions as cc]
                 <tr>
-                  <td>${(cc.crpProgram.acronym)!'None'}</td>
                   <td>${(cc.description)!'None'}</td> 
                 </tr>
               [/#list]
