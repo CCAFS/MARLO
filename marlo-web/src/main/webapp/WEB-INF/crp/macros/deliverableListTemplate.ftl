@@ -177,7 +177,7 @@
             [#-- Draft Tag --]
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
 
-            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
+            [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
             [#if deliverable.title?has_content]
@@ -204,12 +204,12 @@
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
-          [#if deliverable.year== -1]
+          [#if deliverable.deliverableInfo.year== -1]
           none
           [#else]
-          ${(deliverable.year)!'none'}
-            [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
-              Extended to ${deliverable.newExpectedYear}
+          ${(deliverable.deliverableInfo.year)!'none'}
+            [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
+              Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
           [/#if]
             
@@ -259,10 +259,10 @@
                 <div class="fundingSource-container">
                  <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.budgetType.name)!'none'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
-                   [#if deliverable.title?length < 13] 
-                    ${(deliverableFundingSource.fundingSource.title)!'none'}
+                   [#if deliverable.deliverableInfo.title?length < 13] 
+                    ${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}
                    [#else] 
-                     <span title="${(deliverableFundingSource.fundingSource.title)!'none'}">[@utilities.wordCutter string=deliverableFundingSource.fundingSource.title maxPos=13 /]<span>
+                     <span title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}">[@utilities.wordCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
                    [/#if]
                 </div>
               [/#list]
