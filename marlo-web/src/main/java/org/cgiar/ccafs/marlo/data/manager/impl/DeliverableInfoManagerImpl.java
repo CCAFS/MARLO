@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
 
 

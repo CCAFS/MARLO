@@ -24,28 +24,32 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
   private ProjectInfoDAO projectInfoDAO;
   private CrpProgramDAO crpProgramDAO;
-  
-  private Logger Log = LoggerFactory.getLogger(ProjectMySQLDAO.class);
+  private APConfig apConfig;
+
 
   @Inject
-  public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO) {
+  public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO,
+    APConfig apConfig) {
     super(sessionFactory);
     this.projectInfoDAO = projectInfoDAO;
 
     this.crpProgramDAO = crpProgramDAO;
+    this.apConfig = apConfig;
   }
 
 
@@ -54,14 +58,13 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
     StringBuilder query = new StringBuilder();
 
-    PropertiesManager manager = new PropertiesManager();
 
     try {
 
       // Let's find all the tables that are related to the current table.
       query.append("SELECT * FROM information_schema.KEY_COLUMN_USAGE ");
       query.append("WHERE TABLE_SCHEMA = '");
-      query.append(manager.getPropertiesAsString(APConfig.MYSQL_DATABASE));
+      query.append(apConfig.getMysqlDatabase());
       query.append("' ");
       query.append("AND REFERENCED_TABLE_NAME = '");
       query.append(tableName);
@@ -83,7 +86,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
         query.setLength(0);
         query.append("SELECT COUNT(*) FROM information_schema.COLUMNS ");
         query.append("WHERE TABLE_SCHEMA = '");
-        query.append(manager.getPropertiesAsString(APConfig.MYSQL_DATABASE));
+        query.append(apConfig.getMysqlDatabase());
         query.append("' ");
         query.append("AND TABLE_NAME = '");
         query.append(table);

@@ -16,12 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.RepositoryChannelMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 
 import java.util.List;
-
-import com.google.inject.ImplementedBy;
 
 /**
  * RepositoryChannelDAO
@@ -31,7 +28,6 @@ import com.google.inject.ImplementedBy;
  * @time 9:09:08 AM: DAO creation
  * @time 10:22:12 AM: added findByShortName
  */
-@ImplementedBy(RepositoryChannelMySQLDAO.class)
 public interface RepositoryChannelDAO {
 
   /**
