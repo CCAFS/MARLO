@@ -89,7 +89,7 @@
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                  [@projectPartnerMacro element=projectPartner!{} name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
                 [/#list]
               [#else]
                 [#if !editable]
@@ -323,7 +323,7 @@
         <ul class="">
           [#if (element.selectedLocations?has_content)!false]
             [#list element.selectedLocations as locElement]
-              [@locElementMacro element=locElement name="${name}.selectedLocations" index=locElement_index /]
+              [@locElementMacro element=locElement!{} name="${name}.selectedLocations" index=locElement_index /]
             [/#list]
           [#else] 
             <p class="message text-center">No country office added</p>
