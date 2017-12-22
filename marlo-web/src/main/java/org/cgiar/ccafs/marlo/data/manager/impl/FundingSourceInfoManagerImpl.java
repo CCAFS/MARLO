@@ -26,11 +26,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
 
 

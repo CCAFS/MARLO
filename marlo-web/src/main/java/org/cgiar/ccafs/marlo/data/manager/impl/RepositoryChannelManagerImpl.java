@@ -21,7 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @time 9:09:33 AM: Manager Impl creation
  * @time 10:22:12 AM: added getRepositoryChannelByShortName
  */
+@Named
 public class RepositoryChannelManagerImpl implements RepositoryChannelManager {
 
   // Logger

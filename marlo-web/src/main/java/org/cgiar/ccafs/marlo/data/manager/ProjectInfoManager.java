@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectInfoManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectInfoManagerImpl.class)
 public interface ProjectInfoManager {
 
 
