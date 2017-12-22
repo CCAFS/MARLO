@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +22,7 @@ import java.util.Map;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.MethodFilterInterceptor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +47,13 @@ public class TrimInterceptor extends MethodFilterInterceptor {
   @Override
   protected String doIntercept(ActionInvocation invocation) throws Exception {
     LOG.debug("=> TrimInterceptor");
-    Map<String, Object> parameters = invocation.getInvocationContext().getParameters();
+    // Map<String, Object> parameters = invocation.getInvocationContext().getParameters();
+    Map<String, Parameter> parameters = invocation.getInvocationContext().getParameters();
+
     for (String param : parameters.keySet()) {
       if (this.isIncluded(param)) {
-        String[] vals = (String[]) parameters.get(param);
+        // String[] vals = (String[]) parameters.get(param);
+        String[] vals = parameters.get(param).getMultipleValues();
         for (int i = 0; i < vals.length; i++) {
           vals[i] = vals[i].trim();
         }

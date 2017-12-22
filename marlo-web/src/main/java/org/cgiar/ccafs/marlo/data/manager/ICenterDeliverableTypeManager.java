@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterDeliverableTypeManager.class)
+
 public interface ICenterDeliverableTypeManager {
 
 

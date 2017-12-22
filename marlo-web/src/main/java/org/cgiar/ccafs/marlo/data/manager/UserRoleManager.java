@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.UserRoleManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(UserRoleManagerImpl.class)
+
 public interface UserRoleManager {
 
 

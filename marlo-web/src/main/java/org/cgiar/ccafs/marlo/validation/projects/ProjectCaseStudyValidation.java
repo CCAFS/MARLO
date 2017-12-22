@@ -28,14 +28,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ProjectCaseStudyValidation extends BaseValidator {
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
   public ProjectCaseStudyValidation(CrpManager crpManager) {

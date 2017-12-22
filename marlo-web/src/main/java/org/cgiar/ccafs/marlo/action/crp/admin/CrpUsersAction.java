@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -43,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class CrpUsersAction extends BaseAction {
 
@@ -59,20 +58,16 @@ public class CrpUsersAction extends BaseAction {
 
   private UserRoleManager userRoleManager;
 
-  private ProjectPhaseManager projectPhaseManager;
-
   private List<UserRole> users;
   private List<Role> rolesCrp;
 
 
   @Inject
   public CrpUsersAction(APConfig config, UserManager userManager, ProjectManager projectManager,
-    PhaseManager phaseManager, ProjectPhaseManager projectPhaseManager, RoleManager roleManager,
-    UserRoleManager userRoleManager) {
+    PhaseManager phaseManager, RoleManager roleManager, UserRoleManager userRoleManager) {
     super(config);
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
-    this.projectPhaseManager = projectPhaseManager;
     this.userManager = userManager;
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -172,8 +167,8 @@ public class CrpUsersAction extends BaseAction {
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()
-            && c.getCrpClusterOfActivity().getCrpProgram().isActive()
-            && c.getCrpClusterOfActivity().getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
+            && c.getCrpClusterOfActivity().getCrpProgram().isActive() && c.getCrpClusterOfActivity().getCrpProgram()
+              .getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
         }
@@ -208,7 +203,7 @@ public class CrpUsersAction extends BaseAction {
 
 
   public List<User> getUsersByRole(long roleID) {
-    Set<User> usersRolesSet = new HashSet();
+    Set<User> usersRolesSet = new HashSet<>();
     List<User> usersRoles = new ArrayList<>();
 
     List<UserRole> userRolesBD = userRoleManager.getUserRolesByRoleId(roleID);

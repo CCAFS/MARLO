@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,16 +92,19 @@ public class SubIDOListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     // Verify if there is a programID parameter
-    if (parameters.get(APConstants.IDO_ID) == null) {
+    if (!parameters.get(APConstants.IDO_ID).isDefined()) {
       idoID = "";
       return;
     }
 
 
     // If there is a parameter take its values
-    idoID = StringUtils.trim(((String[]) parameters.get(APConstants.IDO_ID))[0]);
+    // idoID = StringUtils.trim(((String[]) parameters.get(APConstants.IDO_ID))[0]);
+    idoID = StringUtils.trim(parameters.get(APConstants.IDO_ID).getMultipleValues()[0]);
   }
 
   public void setSubIdos(List<Map<String, Object>> subIdos) {

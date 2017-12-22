@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.MogSynthesyManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(MogSynthesyManagerImpl.class)
+
 public interface MogSynthesyManager {
 
 

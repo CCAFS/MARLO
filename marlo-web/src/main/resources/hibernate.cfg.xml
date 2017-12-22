@@ -5,26 +5,18 @@
 
 <hibernate-configuration>
 	<session-factory>
-
-		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
-    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-    <property name="hibernate.search.autoregister_listeners">false</property>
-    <property name="hibernate.validator.apply_to_ddl">false</property>
-    <property name="connection.autoReconnect">true</property>
-    <property name="connection.autoReconnectForPools">true</property>
-    <property name="connection.is-connection-validation-required">true</property>
-    <property name="show_sql">false</property>
-    <property name="use_sql_comments">false</property>
-    <property name="generate_statistics">false</property>
-    
-    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
-        <property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
-        <property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
-        <property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
-        <property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
-        <property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
-        <property name="hibernate.current_session_context_class">thread</property>
+ 	<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+      <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+      <property name="hibernate.search.autoregister_listeners">false</property>
+      <property name="hibernate.validator.apply_to_ddl">false</property>
+      <property name="connection.autoReconnect">true</property>
+      <property name="connection.autoReconnectForPools">true</property>
+      <property name="connection.is-connection-validation-required">true</property>
+      <property name="show_sql">false</property>
+      <property name="use_sql_comments">false</property>
+      <property name="generate_statistics">false</property>
+      <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+      <property name="hibernate.current_session_context_class">thread</property>
 
 		<!-- Model Mappings -->
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
@@ -208,6 +200,7 @@
       <mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
       <mapping resource="xmls/PlaAgreement.hbm.xml" />
       <mapping resource="xmls/RepositoryChannel.hbm.xml" />
+      <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

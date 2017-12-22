@@ -16,12 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.AgreementManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(AgreementManagerImpl.class)
 public interface AgreementManager {
 
   public Agreement find(String id);

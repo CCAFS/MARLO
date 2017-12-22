@@ -19,13 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.ServletActionContext;
@@ -44,12 +42,9 @@ public class AccessibleCenterStageInterceptor extends AbstractInterceptor {
 
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleCenterStageInterceptor.class);
 
-  private APConfig config;
   private Center loggedCenter;
 
-  @Inject
-  public AccessibleCenterStageInterceptor(APConfig config) {
-    this.config = config;
+  public AccessibleCenterStageInterceptor() {
   }
 
   @Override

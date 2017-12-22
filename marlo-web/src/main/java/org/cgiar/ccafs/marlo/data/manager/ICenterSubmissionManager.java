@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterSubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterSubmissionManager.class)
+
 public interface ICenterSubmissionManager {
 
 

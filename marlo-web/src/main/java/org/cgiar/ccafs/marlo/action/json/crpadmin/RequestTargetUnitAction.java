@@ -25,8 +25,10 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -40,11 +42,13 @@ public class RequestTargetUnitAction extends BaseAction {
   private CrpManager crpManager;
   private Crp loggedCrp;
   private Map<String, Object> status;
+  private final SendMailS sendMail;
 
   @Inject
-  public RequestTargetUnitAction(APConfig config, CrpManager crpManager) {
+  public RequestTargetUnitAction(APConfig config, CrpManager crpManager, SendMailS sendMail) {
     super(config);
     this.crpManager = crpManager;
+    this.sendMail = sendMail;
   }
 
   @Override
@@ -60,7 +64,6 @@ public class RequestTargetUnitAction extends BaseAction {
       new String[] {this.getCurrentUser().getComposedCompleteName(), this.getCurrentUser().getEmail(), targetUnitName});
 
     try {
-      SendMailS sendMail = new SendMailS(this.config);
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, text, null, null, null,
         true);
 
@@ -84,8 +87,10 @@ public class RequestTargetUnitAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    targetUnitName = StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // targetUnitName = StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    targetUnitName = StringUtils.trim(parameters.get(APConstants.TARGET_UNIT_NAME).getMultipleValues()[0]);
   }
 
 

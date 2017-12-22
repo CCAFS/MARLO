@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.InstitutionLocationMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(InstitutionLocationMySQLDAO.class)
 public interface InstitutionLocationDAO {
 
   /**

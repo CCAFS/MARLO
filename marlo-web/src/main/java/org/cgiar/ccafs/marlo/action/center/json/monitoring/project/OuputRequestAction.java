@@ -28,7 +28,7 @@ import org.cgiar.ccafs.marlo.utils.SendMail;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
 

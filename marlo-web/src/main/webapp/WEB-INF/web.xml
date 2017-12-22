@@ -16,51 +16,11 @@
       org.cgiar.ccafs.marlo.security.SessionCounter
     </listener-class>
   </listener>
-    
-   <!-- Google Guice Module initializer -->
-  <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.APGuiceContextListener</listener-class>
-  </listener>
   
-    <!--  Flyway listener  -->
   <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.FlywayContextListener</listener-class>
-  </listener>
-    
-     <listener>
-    <listener-class>org.cgiar.ccafs.marlo.config.RulesListener</listener-class>
-  </listener>
-  
-    <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
 
-  
-  <!-- Google Guice integration with our web application.  Other filters are configured in Guice Module-->
-  <filter>
-    <filter-name>guice</filter-name>
-    <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
-  </filter>
-  
-  <!-- Google Guice configuration for all requests -->
-  <filter-mapping>
-    <filter-name>guice</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping> 
-  
-  <!-- SSL settings. only allow HTTPS access to JIRA -->  
-    <!--
-       
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>Entire Application</web-resource-name>
-      <url-pattern>/*</url-pattern>
-    </web-resource-collection>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
-   -->
   <session-config>  
     <session-timeout> 21600 </session-timeout>  
   </session-config> 

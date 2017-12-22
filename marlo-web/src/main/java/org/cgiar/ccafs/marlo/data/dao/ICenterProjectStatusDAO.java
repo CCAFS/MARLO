@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterProjectStatusDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterProjectStatusDAO.class)
 public interface ICenterProjectStatusDAO {
 
   /**

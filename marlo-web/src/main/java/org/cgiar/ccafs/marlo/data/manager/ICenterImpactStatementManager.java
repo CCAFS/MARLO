@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterImpactStatementManager;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactStatement;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterImpactStatementManager.class)
+
 public interface ICenterImpactStatementManager {
 
 
@@ -92,8 +90,8 @@ public interface ICenterImpactStatementManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement, String actionName,
-    List<String> relationsName);
+  public CenterImpactStatement saveResearchImpactStatement(CenterImpactStatement researchImpactStatement,
+    String actionName, List<String> relationsName);
 
 
 }

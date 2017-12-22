@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CrpIndicatorReportManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CrpIndicatorReportManagerImpl.class)
+
 public interface CrpIndicatorReportManager {
 
 

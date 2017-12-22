@@ -89,8 +89,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,78 +106,93 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
   // Logger
-  public static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
 
   // Model
-  public boolean existProject;
-  public Crp loggedCrp;
-  public boolean validSection;
+  private boolean existProject;
+  private Crp loggedCrp;
+  private boolean validSection;
 
-  public String sectionName;
-  public Long projectID;
-  public SectionStatus sectionStatus;
-  public Map<String, Object> section;
+  private String sectionName;
+  private Long projectID;
+  private SectionStatus sectionStatus;
+  private Map<String, Object> section;
   // Managers
-  @Inject
-  public SectionStatusManager sectionStatusManager;
-  @Inject
-  public ProjectManager projectManager;
-  @Inject
-  ProjectLocationValidator locationValidator;
+  private final SectionStatusManager sectionStatusManager;
+  private final ProjectManager projectManager;
+  private final ProjectLocationValidator locationValidator;
+
+  private final ProjectBudgetsValidator projectBudgetsValidator;
+
+  private final DeliverableValidator deliverableValidator;
+
+  private final ProjectOutcomeValidator projectOutcomeValidator;
+
+  private final ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
+
+  private final LocElementTypeManager locElementTypeManager;
+
+  private final ProjectLocationElementTypeManager projectLocationElementTypeManager;
+
+  private final DeliverableQualityCheckManager deliverableQualityCheckManager;
+
+  private final ProjectDescriptionValidator descriptionValidator;
+
+  private final ProjectPartnersValidator projectPartnerValidator;
+
+  private final ProjectActivitiesValidator projectActivitiesValidator;
+
+  private final ProjectLeverageValidator projectLeverageValidator;
+
+  private final ProjectHighLightValidator projectHighLightValidator;
+
+  private final ProjectCaseStudyValidation projectCaseStudyValidation;
+
+  private final ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
+
+  private final ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+
+  private final ProjectOtherContributionsValidator projectOtherContributionsValidator;
+
+  private final ProjectOutputsValidator projectOutputsValidator;
+
+  private final CrpManager crpManager;
 
   @Inject
-  ProjectBudgetsValidator projectBudgetsValidator;
-
-  @Inject
-  DeliverableValidator deliverableValidator;
-  @Inject
-  ProjectOutcomeValidator projectOutcomeValidator;
-
-  @Inject
-  ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
-
-  @Inject
-  LocElementTypeManager locElementTypeManager;
-
-  @Inject
-  ProjectLocationElementTypeManager projectLocationElementTypeManager;
-
-  @Inject
-  DeliverableQualityCheckManager deliverableQualityCheckManager;
-
-  @Inject
-  ProjectDescriptionValidator descriptionValidator;
-  @Inject
-  ProjectPartnersValidator projectPartnerValidator;
-  @Inject
-  ProjectActivitiesValidator projectActivitiesValidator;
-  @Inject
-  ProjectLeverageValidator projectLeverageValidator;
-
-  @Inject
-  ProjectHighLightValidator projectHighLightValidator;
-
-
-  @Inject
-  ProjectCaseStudyValidation projectCaseStudyValidation;
-
-  @Inject
-  ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
-
-  @Inject
-  ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
-
-  @Inject
-  ProjectOtherContributionsValidator projectOtherContributionsValidator;
-
-  @Inject
-  ProjectOutputsValidator projectOutputsValidator;
-  @Inject
-  public CrpManager crpManager;
-
-  @Inject
-  public ValidateProjectSectionAction(APConfig config) {
+  public ValidateProjectSectionAction(APConfig config, SectionStatusManager sectionStatusManager,
+    ProjectManager projectManager, ProjectLocationValidator locationValidator,
+    ProjectBudgetsValidator projectBudgetsValidator, DeliverableValidator deliverableValidator,
+    ProjectOutcomeValidator projectOutcomeValidator, ProjectBudgetsCoAValidator projectBudgetsCoAValidator,
+    LocElementTypeManager locElementTypeManager, ProjectLocationElementTypeManager projectLocationElementTypeManager,
+    DeliverableQualityCheckManager deliverableQualityCheckManager, ProjectDescriptionValidator descriptionValidator,
+    ProjectPartnersValidator projectPartnerValidator, ProjectActivitiesValidator projectActivitiesValidator,
+    ProjectLeverageValidator projectLeverageValidator, ProjectHighLightValidator projectHighLightValidator,
+    ProjectCaseStudyValidation projectCaseStudyValidation, ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator,
+    ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
+    ProjectOtherContributionsValidator projectOtherContributionsValidator,
+    ProjectOutputsValidator projectOutputsValidator, CrpManager crpManager) {
     super(config);
+    this.sectionStatusManager = sectionStatusManager;
+    this.projectManager = projectManager;
+    this.locationValidator = locationValidator;
+    this.projectBudgetsValidator = projectBudgetsValidator;
+    this.deliverableValidator = deliverableValidator;
+    this.projectOutcomeValidator = projectOutcomeValidator;
+    this.projectBudgetsCoAValidator = projectBudgetsCoAValidator;
+    this.locElementTypeManager = locElementTypeManager;
+    this.projectLocationElementTypeManager = projectLocationElementTypeManager;
+    this.projectPartnerValidator = projectPartnerValidator;
+    this.projectActivitiesValidator = projectActivitiesValidator;
+    this.deliverableQualityCheckManager = deliverableQualityCheckManager;
+    this.descriptionValidator = descriptionValidator;
+    this.projectLeverageValidator = projectLeverageValidator;
+    this.projectCaseStudyValidation = projectCaseStudyValidation;
+    this.projectHighLightValidator = projectHighLightValidator;
+    this.projectCCAFSOutcomeValidator = projectCCAFSOutcomeValidator;
+    this.projectOutcomesPandRValidator = projectOutcomesPandRValidator;
+    this.projectOtherContributionsValidator = projectOtherContributionsValidator;
+    this.projectOutputsValidator = projectOutputsValidator;
+    this.crpManager = crpManager;
   }
 
 
@@ -630,12 +647,17 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
+    // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
+    sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 
-    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+    // projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+    projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
     // Validate if project exists.
     existProject = projectManager.existProject(projectID);
 

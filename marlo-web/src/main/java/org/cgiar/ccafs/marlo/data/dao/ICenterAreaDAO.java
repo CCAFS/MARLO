@@ -19,18 +19,15 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterAreaDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 
 import java.util.List;
-
-import com.google.inject.ImplementedBy;
 
 
 /**
  * Modified by @author nmatovu last on Oct 7, 2016
  */
-@ImplementedBy(CenterAreaDAO.class)
+
 public interface ICenterAreaDAO {
 
   /**

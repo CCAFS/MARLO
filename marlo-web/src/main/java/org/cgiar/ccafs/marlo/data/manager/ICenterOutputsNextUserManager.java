@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutputsNextUserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterOutputsNextUserManager.class)
+
 public interface ICenterOutputsNextUserManager {
 
 

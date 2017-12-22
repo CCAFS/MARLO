@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.LiaisonUserMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(LiaisonUserMySQLDAO.class)
 public interface LiaisonUserDAO {
 
   /**
