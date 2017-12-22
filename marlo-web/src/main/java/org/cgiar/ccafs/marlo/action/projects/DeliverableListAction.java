@@ -387,8 +387,9 @@ public class DeliverableListAction extends BaseAction {
             deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
 
             // Gets the Deliverable Funding Source Data without the full information.
-            List<DeliverableFundingSource> fundingSources = new ArrayList<>(deliverable.getDeliverableFundingSources()
-              .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+            List<DeliverableFundingSource> fundingSources =
+              new ArrayList<>(deliverable.getDeliverableFundingSources().stream()
+                .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
             for (DeliverableFundingSource deliverableFundingSource : fundingSources) {
               deliverableFundingSource.getFundingSource().setFundingSourceInfo(
                 deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));

@@ -102,8 +102,8 @@
           <td class="text-center">
             [#attempt]
               <div class="status-container">
-                <div class="status-indicator ${(deliverable.statusName)!'none'}" title="${(deliverable.statusName)!'none'}"></div>
-                <span class="hidden">${(deliverable.statusName)!'none'}</span>
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
               </div>
             [#recover]
               none
@@ -180,12 +180,12 @@
             [#if deliverable.deliverableInfo.isRequieriedReporting(currentCycleYear) && reportingActive && !isDeliverableComplete]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
-            [#if deliverable.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
-                [#if deliverable.title?length < 120] 
-                  ${deliverable.title}
+            [#if deliverable.deliverableInfo.title?has_content]
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.deliverableInfo.title}">
+                [#if deliverable.deliverableInfo.title?length < 120] 
+                  ${deliverable.deliverableInfo.title}
                 [#else] 
-                  [@utilities.wordCutter string=deliverable.title maxPos=120 /]
+                  [@utilities.wordCutter string=deliverable.deliverableInfo.title maxPos=120 /]
                 [/#if]
                 </a> 
             [#else]
@@ -200,7 +200,7 @@
           </td>
           [#-- Deliverable Type --]
           <td>
-            ${(deliverable.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
@@ -257,7 +257,7 @@
             [#if deliverable.fundingSources??]
               [#list deliverable.fundingSources as deliverableFundingSource]
                 <div class="fundingSource-container">
-                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.budgetType.name)!'none'}</div>
+                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'none'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
                    [#if deliverable.deliverableInfo.title?length < 13] 
                     ${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}
