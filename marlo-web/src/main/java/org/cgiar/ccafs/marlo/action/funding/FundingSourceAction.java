@@ -35,7 +35,6 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -48,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -71,10 +71,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -615,9 +616,18 @@ public class FundingSourceAction extends BaseAction {
       }
 
       status = new HashMap<>();
-      List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
-      for (AgreementStatusEnum agreementStatusEnum : list) {
-        status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
+      // projectStatuses = new HashMap<>();
+      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      for (ProjectStatusEnum projectStatusEnum : list) {
+
+        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
+
+
+      if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
+        && fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        status.remove(ProjectStatusEnum.Ongoing.getStatusId());
       }
 
 
