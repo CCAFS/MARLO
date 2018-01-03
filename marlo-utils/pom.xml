@@ -3,7 +3,7 @@
      <parent>
     <groupId>org.cgiar.ccafs</groupId>
     <artifactId>marlo-parent</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.2.2-SNAPSHOT</version>
     <relativePath>../marlo-parent/pom.xml</relativePath>
   </parent>
     <artifactId>marlo-utils</artifactId>
