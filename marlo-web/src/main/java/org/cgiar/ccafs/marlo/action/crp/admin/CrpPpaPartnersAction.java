@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -628,7 +629,7 @@ public class CrpPpaPartnersAction extends BaseAction {
         loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
           .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       }
-         if (crpPpaPartnerManager.findAll() != null) {
+      if (crpPpaPartnerManager.findAll() != null) {
         ppaPartnerReview = crpPpaPartnerManager.findAll();
         for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
           .collect(Collectors.toList())) {
