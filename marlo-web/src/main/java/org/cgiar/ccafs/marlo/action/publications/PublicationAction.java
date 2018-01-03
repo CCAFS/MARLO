@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
@@ -147,7 +148,7 @@ public class PublicationAction extends BaseAction {
 
 
   @Inject
- public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
+  public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     GenderTypeManager genderTypeManager, DeliverableQualityCheckManager deliverableQualityCheckManager,
     AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
     MetadataElementManager metadataElementManager, UserManager userManager,
@@ -158,7 +159,7 @@ public class PublicationAction extends BaseAction {
     CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
     DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
     HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
-    IpProgramManager ipProgramManager, RepositoryChannelManager repositoryChannelManager){
+    IpProgramManager ipProgramManager, RepositoryChannelManager repositoryChannelManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;

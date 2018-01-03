@@ -139,8 +139,6 @@ public class DeliverableAction extends BaseAction {
 
   private CrpManager crpManager;
 
-	private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
 
   private Map<String, String> crps;
 
