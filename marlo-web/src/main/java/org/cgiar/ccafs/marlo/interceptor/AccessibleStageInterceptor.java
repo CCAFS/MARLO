@@ -19,13 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
-import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.ServletActionContext;
@@ -44,12 +42,9 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleStageInterceptor.class);
 
-  private APConfig config;
   private Crp loggedCrp;
 
-  @Inject
-  public AccessibleStageInterceptor(APConfig config) {
-    this.config = config;
+  public AccessibleStageInterceptor() {
   }
 
   @Override

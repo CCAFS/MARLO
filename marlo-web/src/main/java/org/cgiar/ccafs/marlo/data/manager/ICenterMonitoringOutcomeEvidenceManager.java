@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterMonitoringOutcomeEvidenceManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcomeEvidence;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterMonitoringOutcomeEvidenceManager.class)
+
 public interface ICenterMonitoringOutcomeEvidenceManager {
 
 
@@ -80,7 +78,8 @@ public interface ICenterMonitoringOutcomeEvidenceManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterMonitoringOutcomeEvidence saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
+  public CenterMonitoringOutcomeEvidence
+    saveMonitorignOutcomeEvidence(CenterMonitoringOutcomeEvidence monitorignOutcomeEvidence);
 
 
 }

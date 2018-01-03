@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterMonitoringMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterMonitoringMilestoneManager.class)
+
 public interface ICenterMonitoringMilestoneManager {
 
 

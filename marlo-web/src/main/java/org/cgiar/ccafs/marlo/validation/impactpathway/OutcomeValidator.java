@@ -32,17 +32,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian David Garcia -CIAT/CCAFS
  */
 
+@Named
 public class OutcomeValidator extends BaseValidator
 
 {
 
-  @Inject
   public OutcomeValidator() {
 
   }

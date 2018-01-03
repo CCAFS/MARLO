@@ -32,23 +32,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.ibm.icu.util.Calendar;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ProjectActivitiesValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
+  private final CrpManager crpManager;
 
   @Inject
-  private CrpManager crpManager;
-
-  @Inject
-  public ProjectActivitiesValidator() {
-    // TODO Auto-generated constructor stub
+  public ProjectActivitiesValidator(CrpManager crpManager) {
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {

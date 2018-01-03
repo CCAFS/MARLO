@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectBudgetManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectBudgetManagerImpl.class)
+
 public interface ProjectBudgetManager {
 
 

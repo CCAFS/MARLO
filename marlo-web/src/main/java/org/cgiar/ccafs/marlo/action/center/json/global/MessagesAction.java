@@ -22,7 +22,7 @@ import org.cgiar.ccafs.marlo.utils.SendPusher;
 
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class MessagesAction extends BaseAction {
 

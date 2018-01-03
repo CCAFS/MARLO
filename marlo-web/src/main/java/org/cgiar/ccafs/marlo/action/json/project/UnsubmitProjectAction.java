@@ -38,8 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -50,13 +52,13 @@ public class UnsubmitProjectAction extends BaseAction {
   private static final long serialVersionUID = 6328194359119346721L;
 
 
-  private ProjectManager projectManager;
+  private final ProjectManager projectManager;
 
-  private SubmissionManager submissionManager;
+  private final SubmissionManager submissionManager;
 
-  private RoleManager roleManager;
+  private final RoleManager roleManager;
 
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
 
   private long projectID;
   private String justification;
@@ -124,9 +126,13 @@ public class UnsubmitProjectAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
-    justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+    // justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+
+    Map<String, Parameter> parameters = this.getParameters();
+    projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
+    justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
   }
 
   private void sendNotficationEmail(Project project) {
