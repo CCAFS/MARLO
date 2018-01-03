@@ -104,7 +104,7 @@ public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
           if (fundingSourceInfo.getEndDate() != null) {
             if (cal.get(Calendar.YEAR) < phase.getYear()) {
 
-              fundingSourceInfoDAO.deleteFundingSourceInfo(fundingSourceInfoPhase.getId());
+              // fundingSourceInfoDAO.deleteFundingSourceInfo(fundingSourceInfoPhase.getId());
             } else {
               fundingSourceInfoDAO.save(fundingSourceInfoPhase);
             }

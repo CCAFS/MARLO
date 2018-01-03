@@ -23,15 +23,15 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
-import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -117,6 +117,30 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         }
       }
 
+
+      Calendar cal = Calendar.getInstance();
+      if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate() != null
+        && fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus() != null) {
+
+
+        cal.setTime(fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate());
+        if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+          canEdit = false;
+
+          baseAction.setEditStatus(true);
+
+        }
+      }
+      if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+        || fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+        canEdit = false;
+        baseAction.setEditStatus(true);
+      }
       if (phase.getDescription().equals(APConstants.REPORTING)) {
         canEdit = false;
         baseAction.setCanEditPhase(false);
@@ -140,15 +164,16 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       }
       phase = baseAction.getActualPhase();
       phase = phaseManager.getPhaseById(phase.getId());
-      if (fundingSource.getFundingSourceInfo(phase) == null) {
-        List<FundingSourceInfo> infos =
-          fundingSource.getFundingSourceInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-        baseAction.setAvailabePhase(false);
-        // baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
 
-      }
-
+      /*
+       * if (fundingSource.getFundingSourceInfo(phase) == null) {
+       * List<FundingSourceInfo> infos =
+       * fundingSource.getFundingSourceInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+       * infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+       * baseAction.setAvailabePhase(false);
+       * // baseAction.setActualPhase(infos.get(infos.size() - 1).getPhase());
+       * }
+       */
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

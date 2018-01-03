@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
@@ -145,7 +146,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSourceInfo.setFinanceCode(StringUtils.trim((parameters.get(FINANCE_CODE)).getMultipleValues()[0]));
     fundingSourceInfo.setContactPersonEmail(StringUtils.trim((parameters.get(CONTACT_EMAIL)).getMultipleValues()[0]));
     fundingSourceInfo.setContactPersonName(StringUtils.trim((parameters.get(CONTACT_NAME)).getMultipleValues()[0]));
-
+    fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
 
     try {
       fundingSourceInfo.setW1w2(Boolean.parseBoolean(StringUtils.trim((parameters.get(W1W2)).getMultipleValues()[0])));
