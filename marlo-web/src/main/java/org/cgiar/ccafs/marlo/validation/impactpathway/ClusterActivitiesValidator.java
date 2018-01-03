@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ClusterActivitiesValidator extends BaseValidator {
 
-  @Inject
   public ClusterActivitiesValidator() {
   }
 

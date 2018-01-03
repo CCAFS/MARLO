@@ -1,8 +1,6 @@
 
 package org.cgiar.ccafs.marlo.ocs.ws.client;
 
-import org.cgiar.ccafs.marlo.utils.PropertiesManager;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -28,11 +26,10 @@ public class MarloService extends Service {
   private final static QName MARLOSERVICE_QNAME = new QName("http://logic.control.abw.ciat.cgiar.org/", "MarloService");
 
   static {
-    PropertiesManager properties = new PropertiesManager();
     URL url = null;
     WebServiceException e = null;
     try {
-      url = new URL(properties.getPropertiesAsString("ocs.link"));
+      url = new URL("Malformed on purpose - use a different constructor");
 
     } catch (MalformedURLException ex) {
       e = new WebServiceException(ex);

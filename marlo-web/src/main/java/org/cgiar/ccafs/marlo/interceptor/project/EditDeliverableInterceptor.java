@@ -36,9 +36,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -48,15 +50,15 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   private static final long serialVersionUID = 7287623847333177230L;
 
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long deliverableId = 0;
   private Phase phase;
   private PhaseManager phaseManager;
-  private DeliverableManager deliverableManager;
-  private ProjectManager projectManager;
-  private CrpManager crpManager;
+  private final DeliverableManager deliverableManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
@@ -116,7 +118,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     boolean editParameter = false;
     boolean canSwitchProject = false;
     baseAction.setSession(session);
-    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
+    // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
+    String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
     phase = baseAction.getActualPhase(session, crp.getId());
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
@@ -158,8 +161,9 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
       // TODO Validate is the project is new
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);

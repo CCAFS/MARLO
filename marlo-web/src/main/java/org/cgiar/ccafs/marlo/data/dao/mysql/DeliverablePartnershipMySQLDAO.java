@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
+@Named
 public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
   implements DeliverablePartnershipDAO {
 

@@ -34,9 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -44,13 +46,13 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 8294421978295446976L;
-  private CrpManager crpManager;
-  private UserManager userManager;
-  private CrpProgramManager crpProgramManager;
+  private final CrpManager crpManager;
+  private final UserManager userManager;
+  private final CrpProgramManager crpProgramManager;
 
   private Phase phase;
   private PhaseManager phaseManager;
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long crpProgramID = 0;
@@ -66,7 +68,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   long getCrpProgramId() {
     try {
-      return Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
+      // return Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
+      return Long.parseLong(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
 
@@ -157,8 +160,9 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           baseAction.setCanEditPhase(false);
         }
 
-        if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-          String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+          // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
           editParameter = stringEditable.equals("true");
           // If the user is not asking for edition privileges we don't need to validate them.
           if (!editParameter) {

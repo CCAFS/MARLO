@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectLocationElementTypeManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectLocationElementTypeManagerImpl.class)
+
 public interface ProjectLocationElementTypeManager {
 
 
@@ -81,7 +79,8 @@ public interface ProjectLocationElementTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectLocationElementType saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType);
+  public ProjectLocationElementType
+    saveProjectLocationElementType(ProjectLocationElementType projectLocationElementType);
 
 
 }

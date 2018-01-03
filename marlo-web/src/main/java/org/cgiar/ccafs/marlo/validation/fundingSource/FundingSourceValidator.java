@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -35,22 +34,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class FundingSourceValidator extends BaseValidator {
 
+  // This is not thread safe.
   private boolean hasErros;
 
+  // This is not thread safe.
   BaseAction action;
 
+  private final CrpManager crpManager;
+
+  private final InstitutionManager institutionManager;
 
   @Inject
-  private CrpManager crpManager;
-  @Inject
-  private InstitutionManager institutionManager;
-
-  @Inject
-  private FundingSourceManager fundingSourceManager;
+  public FundingSourceValidator(CrpManager crpManager, InstitutionManager institutionManager) {
+    this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
+  }
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);

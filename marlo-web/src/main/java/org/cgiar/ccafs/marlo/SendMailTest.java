@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class SendMailTest extends BaseAction {
 

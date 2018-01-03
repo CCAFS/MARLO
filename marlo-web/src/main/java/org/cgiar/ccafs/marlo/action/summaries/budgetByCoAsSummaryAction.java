@@ -46,7 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -77,9 +78,11 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
   private long startTime;
 
   // Managers
-  private CrpProgramManager programManager;
-  private ProjectBudgetManager projectBudgetManager;
-  private InstitutionManager institutionManager;
+  private final CrpManager crpManager;
+  private final PhaseManager phaseManager;
+  private final CrpProgramManager programManager;
+  private final ProjectBudgetManager projectBudgetManager;
+  private final InstitutionManager institutionManager;
 
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -95,6 +98,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
     this.programManager = programManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
+    this.phaseManager = phaseManager;
+    this.crpManager = crpManager;
   }
 
 

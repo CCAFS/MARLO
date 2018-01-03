@@ -46,7 +46,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +71,9 @@ public class ProjectSubmissionAction extends BaseAction {
   private ProjectManager projectManager;
   private CrpManager crpManager;
   private SendMailS sendMail;
-  private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
   private String cycleName;
-  private RoleManager roleManager;
+  private final RoleManager roleManager;
   private PhaseManager phaseManager;
 
 
@@ -84,9 +84,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   private Project project;
 
-
-  @Inject
-  ReportingSummaryAction reportingSummaryAction;
+  private ReportingSummaryAction reportingSummaryAction;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
@@ -97,7 +95,6 @@ public class ProjectSubmissionAction extends BaseAction {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
-    this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
     this.userManager = userManager;
     this.phaseManager = phaseManager;
@@ -216,7 +213,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");

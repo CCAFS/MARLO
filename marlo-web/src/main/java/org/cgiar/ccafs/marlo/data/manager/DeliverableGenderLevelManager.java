@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DeliverableGenderLevelManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DeliverableGenderLevelManagerImpl.class)
+
 public interface DeliverableGenderLevelManager {
 
 

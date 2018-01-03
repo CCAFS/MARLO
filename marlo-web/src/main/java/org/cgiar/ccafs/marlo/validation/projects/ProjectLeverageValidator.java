@@ -27,23 +27,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian David Garcia Oviedo. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectLeverageValidator extends BaseValidator {
 
+  private final CrpManager crpManager;
 
   @Inject
-  private CrpManager crpManager;
-
-  @Inject
-  public ProjectLeverageValidator() {
+  public ProjectLeverageValidator(CrpManager crpManager) {
     super();
-
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
