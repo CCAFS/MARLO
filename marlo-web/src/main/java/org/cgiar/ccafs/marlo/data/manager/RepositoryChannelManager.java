@@ -14,12 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.RepositoryChannelManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 
 import java.util.List;
-
-import com.google.inject.ImplementedBy;
 
 
 /**
@@ -30,7 +27,6 @@ import com.google.inject.ImplementedBy;
  * @time 9:09:19 AM: Manager Creation
  * @time 10:22:12 AM: added getRepositoryChannelByShortName
  */
-@ImplementedBy(RepositoryChannelManagerImpl.class)
 public interface RepositoryChannelManager {
 
 

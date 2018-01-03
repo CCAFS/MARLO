@@ -22,7 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 /**
@@ -33,6 +35,7 @@ import org.hibernate.SessionFactory;
  * @time 8:49:38 AM: MySQLDAO creation
  * @time 10:22:12 AM: added findbyShortName
  */
+@Named
 public class RepositoryChannelMySQLDAO extends AbstractMarloDAO<RepositoryChannel, Long>
   implements RepositoryChannelDAO {
 
