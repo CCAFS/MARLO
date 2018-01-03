@@ -169,7 +169,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
       return permission;
     }
-    if (type == 2 || type == 3) {
+    if (type == 2 || type == 3 || type == 4) {
+
       boolean permission = this
         .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
           loggedCrp.getAcronym(), projectID + ""))

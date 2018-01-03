@@ -32,6 +32,15 @@ public interface CrpUserDAO {
   public void deleteCrpUser(long crpUserId);
 
   /**
+   * This method get the crpUser if an active user and crp relation exist.
+   * 
+   * @param userId - The user id.
+   * @param crpId - the crp id.
+   * @return true if the CrpUser exist and is active, false otherwise.
+   */
+  public boolean existActiveCrpUser(long userId, long crpId);
+
+  /**
    * This method validate if the crpUser identify with the given id exists in the system.
    * 
    * @param crpUserID is a crpUser identifier.

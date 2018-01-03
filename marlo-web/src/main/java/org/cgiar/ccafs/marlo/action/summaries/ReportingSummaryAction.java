@@ -26,12 +26,12 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
@@ -78,6 +78,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -132,8 +133,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Andrés Felipe Valencia Rivera. CCAFS
+ * ReportingSummaryAction
+ * 
+ * @author avalencia - CCAFS
  * @author Christian Garcia - CIAT/CCAFS
+ * @date Nov 8, 2017
+ * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
@@ -170,21 +175,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private int year;
   private String cycle;
   // Managers
-  private final ProjectManager projectManager;
-  private final CrpProgramManager programManager;
-  private final SrfTargetUnitManager srfTargetUnitManager;
-  private final GenderTypeManager genderTypeManager;
-  private final InstitutionManager institutionManager;
-  private final ProjectBudgetManager projectBudgetManager;
-  private final LocElementManager locElementManager;
-  private final CrpManager crpManager;
-  private final IpElementManager ipElementManager;
+  private ProjectManager projectManager;
+  private CrpProgramManager programManager;
+  private GenderTypeManager genderTypeManager;
+  private InstitutionManager institutionManager;
+  private ProjectBudgetManager projectBudgetManager;
+  private LocElementManager locElementManager;
+  private CrpManager crpManager;
+  private IpElementManager ipElementManager;
+  private RepositoryChannelManager repositoryChannelManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
-    SrfTargetUnitManager srfTargetUnitManager) {
+    SrfTargetUnitManager srfTargetUnitManager, RepositoryChannelManager repositoryChannelManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -195,6 +200,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.ipElementManager = ipElementManager;
     this.genderTypeManager = genderTypeManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
 
   /**
@@ -1918,11 +1924,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
           if (deliverableDissemination.getDisseminationChannel() != null
             && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
-            if (ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()) != null) {
-              delivDisseminationChannel =
-                ChannelEnum.getValue(deliverableDissemination.getDisseminationChannel()).getDesc();
+            RepositoryChannel repositoryChannel = repositoryChannelManager
+              .getRepositoryChannelByShortName(deliverableDissemination.getDisseminationChannel());
+            if (repositoryChannel != null) {
+              delivDisseminationChannel = repositoryChannel.getName();
             }
-            // deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
           }
           if (deliverableDissemination.getDisseminationUrl() != null
             && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
