@@ -41,12 +41,15 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean old;
 
+  @Expose
+  private Boolean subDepartmentActive;
+
+
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
 
   public InstitutionType() {
   }
-
 
   public InstitutionType(String name) {
     this.name = name;
@@ -58,6 +61,7 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
     this.institutions = institutions;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -80,6 +84,7 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -129,6 +134,10 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     return old;
   }
 
+  public Boolean getSubDepartmentActive() {
+    return subDepartmentActive;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -167,9 +176,13 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
     this.old = old;
   }
 
+  public void setSubDepartmentActive(Boolean subDepartmentActive) {
+    this.subDepartmentActive = subDepartmentActive;
+  }
+
   @Override
   public String toString() {
     return "InstitutionType [id=" + id + ", name=" + name + ", acronym=" + acronym + ", description=" + description
-      + ", old=" + old + "]";
+      + ", old=" + old + ", subDepartmentActive=" + subDepartmentActive + "]";
   }
 }

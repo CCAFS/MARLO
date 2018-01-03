@@ -36,8 +36,8 @@ import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
@@ -67,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +82,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PublicationAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 8, 2017
+ * @time 10:30:10 AM: Added repositoryChannel List from Database
+ */
 public class PublicationAction extends BaseAction {
 
   /**
@@ -92,7 +101,6 @@ public class PublicationAction extends BaseAction {
   private Crp loggedCrp;
   private CrpManager crpManager;
   private long deliverableID;
-  private Map<String, String> channels;
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
@@ -134,9 +142,12 @@ public class PublicationAction extends BaseAction {
   private GenderTypeManager genderTypeManager;
 
   private DeliverableTypeManager deliverableTypeManager;
+  private RepositoryChannelManager repositoryChannelManager;
+  private List<RepositoryChannel> repositoryChannels;
+
 
   @Inject
-  public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
+ public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     GenderTypeManager genderTypeManager, DeliverableQualityCheckManager deliverableQualityCheckManager,
     AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
     MetadataElementManager metadataElementManager, UserManager userManager,
@@ -144,9 +155,10 @@ public class PublicationAction extends BaseAction {
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
-    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
-    PublicationValidator publicationValidator, HistoryComparator historyComparator,
-    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager) {
+    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
+    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
+    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
+    IpProgramManager ipProgramManager, RepositoryChannelManager repositoryChannelManager){
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -170,7 +182,9 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
     this.userManager = userManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
+
 
   @Override
   public String cancel() {
@@ -204,11 +218,6 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
-  public Map<String, String> getChannels() {
-    return channels;
-  }
-
   public Map<String, String> getCrps() {
     return crps;
   }
@@ -217,11 +226,9 @@ public class PublicationAction extends BaseAction {
     return deliverable;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
-
 
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
@@ -252,9 +259,11 @@ public class PublicationAction extends BaseAction {
     return genderLevels;
   }
 
+
   public Map<String, String> getInstitutions() {
     return institutions;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -282,10 +291,13 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
+  public List<RepositoryChannel> getRepositoryChannels() {
+    return repositoryChannels;
+  }
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -559,12 +571,13 @@ public class PublicationAction extends BaseAction {
 
     }
 
-    channels = new HashMap<>();
-
-
-    for (ChannelEnum channel : ChannelEnum.values()) {
-      channels.put(channel.getId(), channel.getDesc());
+    repositoryChannels = repositoryChannelManager.findAll();
+    if (repositoryChannels != null && repositoryChannels.size() > 0) {
+      repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
+    } else {
+      repositoryChannels = new LinkedList<RepositoryChannel>();
     }
+
 
     genderLevels = new ArrayList<>();
     List<GenderType> genderTypes = null;
@@ -766,6 +779,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
 
@@ -804,7 +818,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -924,6 +937,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
 
@@ -945,7 +959,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
@@ -1067,13 +1080,10 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public void setChannels(Map<String, String> channels) {
-    this.channels = channels;
-  }
-
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
+
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -1091,7 +1101,6 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
-
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
@@ -1100,6 +1109,7 @@ public class PublicationAction extends BaseAction {
   public void setInstitutions(Map<String, String> institutions) {
     this.institutions = institutions;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1111,6 +1121,10 @@ public class PublicationAction extends BaseAction {
 
   public void setRegions(Map<String, String> regions) {
     this.regions = regions;
+  }
+
+  public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
+    this.repositoryChannels = repositoryChannels;
   }
 
 
