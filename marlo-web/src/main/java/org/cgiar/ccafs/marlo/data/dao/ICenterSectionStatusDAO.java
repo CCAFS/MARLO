@@ -16,15 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterSectionStatusDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterSectionStatusDAO.class)
 public interface ICenterSectionStatusDAO {
 
   /**

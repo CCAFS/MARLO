@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterProjectStatusManager.class)
+
 public interface ICenterProjectStatusManager {
 
 

@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
@@ -45,8 +44,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,25 +60,26 @@ public class ImpactPathwayGraph extends BaseAction {
    */
   private static final long serialVersionUID = 971011588781935964L;
   long crpProgramID;
-  @Inject
+
   private CrpProgramManager crpProgramManager;
 
-  @Inject
   private SrfSubIdoManager srfSubIdoManager;
-  @Inject
+
   private SrfIdoManager srfIdoManager;
-  @Inject
+
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-  @Inject
-  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
 
   private HashMap<String, Object> elements;
   private String sectionName;
 
   @Inject
-  public ImpactPathwayGraph(APConfig config) {
+  public ImpactPathwayGraph(APConfig config, CrpProgramManager crpProgramManager, SrfSubIdoManager srfSubIdoManager,
+    SrfIdoManager srfIdoManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
     super(config);
-
+    this.crpProgramManager = crpProgramManager;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.srfIdoManager = srfIdoManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
   @Override
@@ -332,17 +334,23 @@ public class ImpactPathwayGraph extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+
     // Validating parameters.
-    sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
+    // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
+    sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 
     crpProgramID = -1;
 
     try {
-      crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+      // crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+      crpProgramID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.error("There was an exception trying to parse the crp program id = {} ",
-        StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+        // StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+        StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
 
     }
   }

@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuthenticationManager;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class AuthenticationManagerImp implements AuthenticationManager {
 
 

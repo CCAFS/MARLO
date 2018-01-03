@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.OutcomeSynthesyManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -52,10 +51,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,16 +69,14 @@ public class OutcomeSynthesisAction extends BaseAction {
   private Crp loggedCrp;
   private CrpManager crpManager;
 
-  // private OutcomeSynthesisValidator validator;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private IpProgramManager ipProgramManager;
-  private IpElementManager ipElementManager;
-  private OutcomeSynthesyManager outcomeSynthesisManager;
-  private IpIndicatorManager ipIndicatorManager;
-  private IpProjectIndicatorManager ipProjectIndicatorManager;
+  private final IpProgramManager ipProgramManager;
+  private final IpElementManager ipElementManager;
+  private final OutcomeSynthesyManager outcomeSynthesisManager;
+  private final IpIndicatorManager ipIndicatorManager;
+  private final IpProjectIndicatorManager ipProjectIndicatorManager;
   private String transaction;
-  private AuditLogManager auditLogManager;
-  private SynthesisByOutcomeValidator validator;
+  private final AuditLogManager auditLogManager;
+  private final SynthesisByOutcomeValidator validator;
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
@@ -86,20 +84,19 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpLiaisonInstitution currentLiaisonInstitution;
 
   private List<IpElement> midOutcomes;
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
   private IpProgram program;
 
   private long liaisonInstitutionID;
-  private UserManager userManager;
+  private final UserManager userManager;
 
   @Inject
-  public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
-    IpProgramManager ipProgramManager, IpElementManager ipElementManager, CrpManager crpManager,
-    IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
-    SynthesisByOutcomeValidator validator, UserManager userManager, AuditLogManager auditLogManager,
-    IpIndicatorManager ipIndicatorManager) {
+  public OutcomeSynthesisAction(APConfig config, IpProgramManager ipProgramManager, IpElementManager ipElementManager,
+    CrpManager crpManager, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
+    OutcomeSynthesyManager outcomeSynthesisManager, SynthesisByOutcomeValidator validator, UserManager userManager,
+    AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager,
+    IpProjectIndicatorManager ipProjectIndicatorManager) {
     super(config);
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.outcomeSynthesisManager = outcomeSynthesisManager;
@@ -109,6 +106,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.validator = validator;
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.ipProjectIndicatorManager = ipProjectIndicatorManager;
 
 
   }
@@ -299,8 +297,8 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -309,7 +307,7 @@ public class OutcomeSynthesisAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-      
+
       } else {
         this.program.setSynthesisOutcome(program.getOutcomeSynthesis().stream()
           .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));

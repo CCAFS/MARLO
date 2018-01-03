@@ -49,10 +49,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,43 +70,43 @@ public class SynthesisByMogAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(SynthesisByMogAction.class);
 
   // Manager
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
 
 
-  private IpProgramManager ipProgramManager;
+  private final IpProgramManager ipProgramManager;
 
-  private IpElementManager ipElementManager;
-
-
-  private IpProjectContributionOverviewManager overviewManager;
+  private final IpElementManager ipElementManager;
 
 
-  private MogSynthesyManager mogSynthesisManager;
+  private final IpProjectContributionOverviewManager overviewManager;
 
 
-  private CrpManager crpManager;
+  private final MogSynthesyManager mogSynthesisManager;
 
-  private AuditLogManager auditLogManager;
+
+  private final CrpManager crpManager;
+
+  private final AuditLogManager auditLogManager;
+
+  private final UserManager userManager;
+
+  private final SynthesisByMogValidator validator;
 
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
 
-
   private List<IpElement> mogs;
 
   private IpProgram program;
 
-  private UserManager userManager;
   private List<MogSynthesy> synthesis;
 
   private Long liaisonInstitutionID;
 
-
   private Crp loggedCrp;
 
-  private SynthesisByMogValidator validator;
   private String transaction;
 
   @Inject
@@ -331,8 +332,8 @@ public class SynthesisByMogAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -341,7 +342,7 @@ public class SynthesisByMogAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-      
+
       } else {
         synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
           .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.InstitutionLocationManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(InstitutionLocationManagerImpl.class)
+
 public interface InstitutionLocationManager {
 
 

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterProjectTypeManager.class)
+
 public interface ICenterProjectTypeManager {
 
 
@@ -88,7 +86,8 @@ public interface ICenterProjectTypeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterProjectType saveProjectType(CenterProjectType projectType, String actionName, List<String> relationsName);
+  public CenterProjectType saveProjectType(CenterProjectType projectType, String actionName,
+    List<String> relationsName);
 
 
 }

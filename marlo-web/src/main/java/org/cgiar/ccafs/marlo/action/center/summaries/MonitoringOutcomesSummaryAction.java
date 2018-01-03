@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
-import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
@@ -35,7 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -68,18 +68,16 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
   // Services
   private ICenterProgramManager programService;
   private ICenterOutcomeManager outcomeService;
-  private ICenterMilestoneManager milestoneService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
 
   @Inject
   public MonitoringOutcomesSummaryAction(APConfig config, ICenterProgramManager programService,
-    ICenterOutcomeManager outcomeService, ICenterMilestoneManager milestoneService) {
+    ICenterOutcomeManager outcomeService) {
     super(config);
     this.programService = programService;
     this.outcomeService = outcomeService;
-    this.milestoneService = milestoneService;
   }
 
   /**

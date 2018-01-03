@@ -58,11 +58,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class ProjectInfoManagerImpl implements ProjectInfoManager {
 
 
@@ -147,7 +149,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;

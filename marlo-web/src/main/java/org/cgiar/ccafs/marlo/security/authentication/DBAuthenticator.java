@@ -22,16 +22,18 @@ import org.cgiar.ccafs.marlo.utils.MD5Convert;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * validate if the input user is register in the Database
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named("DB")
 public class DBAuthenticator implements Authenticator {
 
-  private AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
 
   @Inject
   public DBAuthenticator(AuthenticationManager authenticationManager) {

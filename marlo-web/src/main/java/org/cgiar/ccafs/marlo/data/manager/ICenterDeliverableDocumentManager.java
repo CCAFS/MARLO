@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterDeliverableDocumentManager.class)
+
 public interface ICenterDeliverableDocumentManager {
 
 

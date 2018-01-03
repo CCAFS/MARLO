@@ -24,8 +24,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ChangePhaseAction extends BaseAction {
 
@@ -57,8 +59,8 @@ public class ChangePhaseAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    phaseId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PHASE_ID))[0]));
+    Map<String, Parameter> parameters = this.getParameters();
+    phaseId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
   }
 
 

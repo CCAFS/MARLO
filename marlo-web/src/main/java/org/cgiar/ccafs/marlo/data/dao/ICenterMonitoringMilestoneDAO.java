@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterMonitoringMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterMonitoringMilestone;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterMonitoringMilestoneDAO.class)
 public interface ICenterMonitoringMilestoneDAO {
 
   /**

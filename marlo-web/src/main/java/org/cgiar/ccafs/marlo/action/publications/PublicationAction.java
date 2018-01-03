@@ -75,10 +75,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,6 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> programs;
   private Map<String, String> regions;
   private Map<String, String> institutions;
-  private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableManager deliverableManager;
 
   private PublicationValidator publicationValidator;
@@ -156,11 +156,11 @@ public class PublicationAction extends BaseAction {
     DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
-    CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
-    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
-    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
-    IpProgramManager ipProgramManager, RepositoryChannelManager repositoryChannelManager) {
+    DeliverableCrpManager deliverableCrpManager, CrpPpaPartnerManager crpPpaPartnerManager,
+    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
+    PublicationValidator publicationValidator, HistoryComparator historyComparator,
+    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
+    RepositoryChannelManager repositoryChannelManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -183,7 +183,6 @@ public class PublicationAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
-    this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.userManager = userManager;
     this.repositoryChannelManager = repositoryChannelManager;
   }
@@ -356,7 +355,6 @@ public class PublicationAction extends BaseAction {
         Gson gson = new GsonBuilder().create();
 
 
- 	
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         reader.close();
 

@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class LiaisonUserManagerImpl implements LiaisonUserManager {
 
 

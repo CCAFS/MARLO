@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -179,9 +180,9 @@ public class BaseSummariesAction extends BaseAction {
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
+      Map<String, Parameter> parameters = this.getParameters();
       this.setSelectedYear(
-        Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]))));
+        Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
@@ -189,8 +190,8 @@ public class BaseSummariesAction extends BaseAction {
     }
     // Get cycle
     try {
-      Map<String, Object> parameters = this.getParameters();
-      this.setSelectedCycle((StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0])));
+      Map<String, Parameter> parameters = this.getParameters();
+      this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());

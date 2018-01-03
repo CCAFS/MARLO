@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class ProjectPartnerContributionManagerImpl implements ProjectPartnerContributionManager {
 
 

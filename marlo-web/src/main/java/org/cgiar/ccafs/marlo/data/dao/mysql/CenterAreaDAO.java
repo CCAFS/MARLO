@@ -23,13 +23,15 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 
 /**
  * Modified by @author nmatovu last on Oct 7, 2016
  */
+@Named
 public class CenterAreaDAO extends AbstractMarloDAO<CenterArea, Long> implements ICenterAreaDAO {
 
 
