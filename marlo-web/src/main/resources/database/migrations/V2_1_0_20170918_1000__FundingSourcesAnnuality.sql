@@ -94,7 +94,7 @@ FROM
   funding_sources fs
 INNER JOIN phases p ON fs.crp_id = p.crp_id
 AND fs.end_date IS NOT NULL
-AND YEAR (fs.end_date) >= p.`year`
+-- AND YEAR (fs.end_date) >= p.`year`
 UNION
   SELECT
     fs.id,
