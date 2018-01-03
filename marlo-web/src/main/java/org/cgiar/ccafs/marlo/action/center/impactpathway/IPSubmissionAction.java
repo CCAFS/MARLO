@@ -40,7 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,19 +71,20 @@ public class IPSubmissionAction extends BaseAction {
   private Center loggedCenter;
   private long programID;
   private boolean isSubmited = false;
-  @Inject
-  ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
+
+  private ImpactSubmissionSummaryAction impactSubmissionSummaryAction;
 
   @Inject
   public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
     ICenterProgramManager programService, ICenterCycleManager cycleService, ICenterManager centerService,
-    SendMail sendMail) {
+    SendMail sendMail, ImpactSubmissionSummaryAction impactSubmissionSummaryAction) {
     super(config);
     this.programService = programService;
     this.submissionService = submissionService;
     this.cycleService = cycleService;
     this.centerService = centerService;
     this.sendMail = sendMail;
+    this.impactSubmissionSummaryAction = impactSubmissionSummaryAction;
   }
 
   @Override

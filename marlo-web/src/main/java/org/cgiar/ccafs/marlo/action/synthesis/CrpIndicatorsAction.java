@@ -46,10 +46,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -62,14 +63,14 @@ public class CrpIndicatorsAction extends BaseAction {
   private static final long serialVersionUID = -1417643537265271428L;
 
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
-  private IpLiaisonInstitutionManager liaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager liaisonInstitutionManager;
 
 
-  private CrpIndicatorReportManager indicatorsReportManager;
+  private final CrpIndicatorReportManager indicatorsReportManager;
 
-  private CrpIndicatorTypeManager crpIndicatorTypeManager;
+  private final CrpIndicatorTypeManager crpIndicatorTypeManager;
 
 
   // Model for the front-end
@@ -77,23 +78,23 @@ public class CrpIndicatorsAction extends BaseAction {
 
   private List<CrpIndicatorReport> indicatorReports;
   private String transaction;
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
 
   private List<CrpIndicatorType> indicatorsType;
-  private UserManager userManager;
+  private final UserManager userManager;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
 
 
   private Long liaisonInstitutionID;
-  private IpProgramManager ipProgramManager;
+  private final IpProgramManager ipProgramManager;
 
   private Long indicatorTypeID;
 
 
   private Crp loggedCrp;
 
-  private CrpIndicatorsValidator validator;
+  private final CrpIndicatorsValidator validator;
 
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
@@ -325,8 +326,8 @@ public class CrpIndicatorsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
@@ -335,7 +336,7 @@ public class CrpIndicatorsAction extends BaseAction {
         liaisonInstitutionID = currentLiaisonInstitution.getId();
 
         this.setDraft(true);
-      
+
       } else {
 
         if (transaction == null) {

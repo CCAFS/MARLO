@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class CenterDeliverableDAO extends AbstractMarloDAO<CenterDeliverable, Long> implements ICenterDeliverableDAO {
 
 

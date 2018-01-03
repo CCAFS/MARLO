@@ -22,18 +22,20 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Named
 public class MarloOcsClient {
 
   public static Logger LOG = LoggerFactory.getLogger(MarloOcsClient.class);
   private static final int MYTHREADS = 4;
 
 
-  private APConfig apConfig;
+  private final APConfig apConfig;
 
   @Inject
   public MarloOcsClient(APConfig apConfig) {

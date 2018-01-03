@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterRegionManager;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterRegionManager.class)
+
 public interface ICenterRegionManager {
 
 

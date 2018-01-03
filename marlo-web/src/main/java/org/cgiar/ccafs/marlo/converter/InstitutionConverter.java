@@ -20,7 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.struts2.util.StrutsTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class InstitutionConverter extends StrutsTypeConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(InstitutionConverter.class);
-  private InstitutionManager institutionManager;
+  private final InstitutionManager institutionManager;
 
   @Inject
   public InstitutionConverter(InstitutionManager institutionManager) {

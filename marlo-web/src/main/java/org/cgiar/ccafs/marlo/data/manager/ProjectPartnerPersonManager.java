@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectPartnerPersonManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectPartnerPersonManagerImpl.class)
+
 public interface ProjectPartnerPersonManager {
 
 

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.UserRoleMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(UserRoleMySQLDAO.class)
 public interface UserRoleDAO {
 
   /**

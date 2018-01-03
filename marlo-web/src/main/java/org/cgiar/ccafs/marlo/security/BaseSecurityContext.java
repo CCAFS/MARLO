@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.security;
 
 import java.util.Collection;
 
+import javax.inject.Named;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Hernán David Carvajal
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class BaseSecurityContext {
 
   private static Logger LOG = LoggerFactory.getLogger(BaseSecurityContext.class);

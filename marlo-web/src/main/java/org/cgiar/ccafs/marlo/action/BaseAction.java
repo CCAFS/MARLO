@@ -18,7 +18,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -136,15 +135,16 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
@@ -187,6 +187,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean add;
 
 
+  /**
+   * Use field injection in BaseAction only. Subclasses should use constructor injection.
+   */
   @Inject
   private AuditLogManager auditLogManager;
 
@@ -238,8 +241,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private SrfTargetUnitManager targetUnitManager;
   @Inject
   private LocElementTypeManager locElementTypeManager;
-  @Inject
-  private CrpLocElementTypeManager crpLocElementTypeManager;
 
   @Inject
   private UserManager userManager;
@@ -267,7 +268,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private LiaisonUserManager liaisonUserManager;
 
   protected boolean next;
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
 
   private boolean planningActive;
   private int planningYear;
@@ -344,13 +345,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
 
-  @Inject
-  public BaseAction(APConfig config) {
-    this.config = config;
+  public BaseAction() {
     this.saveable = true;
     this.fullEditable = true;
     this.justification = "";
   }
+
+  public BaseAction(APConfig config) {
+    this();
+    this.config = config;
+  }
+
 
   /* Override this method depending of the save action. */
   public String add() {
@@ -1594,7 +1599,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public Map<String, Object> getParameters() {
+  public Map<String, Parameter> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }

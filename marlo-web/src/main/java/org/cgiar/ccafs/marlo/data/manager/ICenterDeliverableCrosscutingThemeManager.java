@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterDeliverableCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterDeliverableCrosscutingThemeManager.class)
+
 public interface ICenterDeliverableCrosscutingThemeManager {
 
 
@@ -80,7 +78,8 @@ public interface ICenterDeliverableCrosscutingThemeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterDeliverableCrosscutingTheme saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme);
+  public CenterDeliverableCrosscutingTheme
+    saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme);
 
   /**
    * This method saves the information of the given deliverableCrosscutingTheme
@@ -92,8 +91,8 @@ public interface ICenterDeliverableCrosscutingThemeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterDeliverableCrosscutingTheme saveDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme,
-    String actionName, List<String> relationsName);
+  public CenterDeliverableCrosscutingTheme saveDeliverableCrosscutingTheme(
+    CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName, List<String> relationsName);
 
 
 }

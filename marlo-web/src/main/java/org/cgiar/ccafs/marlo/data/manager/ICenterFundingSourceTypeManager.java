@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterFundingSourceTypeManager.class)
+
 public interface ICenterFundingSourceTypeManager {
 
 

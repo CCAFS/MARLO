@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -29,7 +28,8 @@ import org.cgiar.ccafs.marlo.security.UserToken;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -43,18 +43,16 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = -3706764472200123669L;
 
-  private CrpManager crpManager;
-  private CrpUserManager crpUserManager;
+  private final CrpManager crpManager;
+  private final CrpUserManager crpUserManager;
   private Crp loggedCrp;
-  private ICenterManager centerService;
 
 
   @Inject
-  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager,
-    ICenterManager centerService) {
+  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
-    this.centerService = centerService;
+
   }
 
   private void changeSessionSection(Map<String, Object> session) {

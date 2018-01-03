@@ -110,11 +110,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -164,7 +166,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private Crp loggedCrp;
 
   private HashMap<Long, String> targetUnitList;
-  private SrfTargetUnitManager srfTargetUnitManager;
+
   private Project project;
   private Boolean hasW1W2Co;
   private Boolean hasGender;
@@ -182,6 +184,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
   private RepositoryChannelManager repositoryChannelManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -2858,9 +2861,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3630,8 +3635,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      // Map<String, Object> parameters = this.getParameters();
+      Map<String, Parameter> parameters = this.getParameters();
+      // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
@@ -3639,8 +3646,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     // Get cycle
     try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      // Map<String, Object> parameters = this.getParameters();
+      Map<String, Parameter> parameters = this.getParameters();
+      // cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+      cycle = (StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0]));
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
         + e.getMessage());

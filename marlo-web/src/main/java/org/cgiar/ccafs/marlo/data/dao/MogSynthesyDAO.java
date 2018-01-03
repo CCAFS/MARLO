@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.MogSynthesyMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(MogSynthesyMySQLDAO.class)
 public interface MogSynthesyDAO {
 
   /**

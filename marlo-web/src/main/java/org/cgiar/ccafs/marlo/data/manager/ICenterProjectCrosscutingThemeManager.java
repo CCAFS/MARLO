@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterProjectCrosscutingThemeManager.class)
+
 public interface ICenterProjectCrosscutingThemeManager {
 
 
@@ -80,7 +78,8 @@ public interface ICenterProjectCrosscutingThemeManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterProjectCrosscutingTheme saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme);
+  public CenterProjectCrosscutingTheme
+    saveProjectCrosscutingTheme(CenterProjectCrosscutingTheme projectCrosscutingTheme);
 
 
 }

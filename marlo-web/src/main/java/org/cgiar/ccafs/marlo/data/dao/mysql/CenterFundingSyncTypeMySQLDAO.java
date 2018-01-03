@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class CenterFundingSyncTypeMySQLDAO extends AbstractMarloDAO<CenterFundingSyncType, Long>
   implements CenterFundingSyncTypeDAO {
 
