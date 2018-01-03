@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo;
 
-import com.opensymphony.xwork2.LocalizedTextProvider;
-import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -41,12 +39,14 @@ public class ApplicationContextConfig {
   /**
    * Returns a LocalizedTextProvider to be used by our internationalization interceptor.
    * 
+   * @hjimenez : this beans does not work. temporally solution is down the struts version to 2.5.10, to able the merge
+   *           whit annuality branch
    * @return
    */
-  @Bean
-  public LocalizedTextProvider getLocalizedTextProvider() {
-    // If this is not suitable try the GlobalLocalizedTextProvider
-    return new StrutsLocalizedTextProvider();
-  }
+  // @Bean
+  // public LocalizedTextProvider getLocalizedTextProvider() {
+  // // If this is not suitable try the GlobalLocalizedTextProvider
+  // return new StrutsLocalizedTextProvider();
+  // }
 
 }

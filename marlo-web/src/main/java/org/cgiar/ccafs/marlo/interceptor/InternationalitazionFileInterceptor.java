@@ -19,6 +19,8 @@ package org.cgiar.ccafs.marlo.interceptor;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 
@@ -29,8 +31,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import org.apache.struts2.ServletActionContext;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
@@ -43,18 +45,23 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    */
   private static final long serialVersionUID = -3807232981762261100L;
 
-  private final CrpManager crpManager;
+  private UserManager userManager;
 
-  private final CustomParameterManager crpParameterManager;
+  private CrpManager crpManager;
 
-  private final LocalizedTextProvider localizedTextProvider;
+  private ICenterManager centerManager;
+
+
+  private CustomParameterManager crpParameterManager;
 
   @Inject
-  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager,
-    LocalizedTextProvider localizedTextProvider) {
+  public InternationalitazionFileInterceptor(UserManager userManager, CrpManager crpManager,
+    CustomParameterManager crpParameterManager, ICenterManager centerManager) {
+    this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
-    this.localizedTextProvider = localizedTextProvider;
+    this.centerManager = centerManager;
+
   }
 
   @Override
@@ -70,13 +77,8 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
 
     Locale locale = new Locale(language);
-
-    /**
-     * Please test to see if the reset was necessary. Note that the LocalizedTextProvider will be a singleton,
-     * so should not be stateful.
-     **/
-    // this.localizedTextProvider.reset();
-    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+    LocalizedTextUtil.reset();
+    LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
     ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
@@ -84,10 +86,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
 
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
       } else {
 
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
 
@@ -95,10 +97,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
 
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
       } else {
 
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
 
