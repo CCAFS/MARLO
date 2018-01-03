@@ -56,7 +56,7 @@
   [#-- Submit button --]
   [#if canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
-    <a id="submitProject-${capdevID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${centerSession}/submitCapDev"][@s.param name='capdevID']${capdevID}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+    <a id="submitProject-${capdevID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${centerSession}/submitCapDev"][@s.param name='capdevID']${capdevID}[/@s.param][/@s.url]" >
       [@s.text name="form.buttons.submit" /]
     </a>
   [/#if]
