@@ -2709,7 +2709,7 @@ span.login-input-container.username i{
 .crps-select{
   display: inline-block;
   position: absolute;
-  top: 10px;
+  margin-top: 10px;
   left: 80px;
   background-color: #f1f1f1;
   height: 380px;
@@ -2776,8 +2776,11 @@ p.login-description{
   border: 1px solid #ededed;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
-  min-height: 200px;
   z-index: 2;
+}
+
+#loginFormContainer .loginForm:not(.instructions) {
+  min-height: 200px;
 }
 
 #loginFormContainer .loginForm.max-size{
@@ -3481,8 +3484,6 @@ button.ipGraph-btn{
 }
 
 .note {
-  background-color: #FFF7CF;
-  padding: 6px;
   text-align: center;
   border-bottom: 2px solid #fff;
   font-style: italic;

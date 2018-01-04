@@ -1,5 +1,5 @@
 $(document).ready(init);
-var cookieTime,loginSwitch=false;
+var cookieTime,loginSwitch=false,crpPreselected;
 var username = $("input[name='user.email']");
 function init() {
   initJreject();
@@ -57,6 +57,9 @@ function init() {
     setCookie("username.email", username.val(), cookieTime);
   });
 
+  //Set focus on email input on page load
+  $(".loginForm #login-email .user-email").focus();
+
   //Add active class to available options
   $(".selection-bar-options ul li").on('click',function(){
     $(".selection-bar-options ul li").removeClass('active');
@@ -97,7 +100,7 @@ function init() {
   //Return to the first form
   $(".loginForm .login-input-container.username").on('click',function(){
     loginSwitch=false;
-    $(".loginForm #login-password").val("");
+    $(".loginForm #login-password .user-password").val("");
 
     //hide the side bar, the crp image, the welcome message and the input password
     $(".crps-select, .loginForm .form-group," +
@@ -191,8 +194,25 @@ function loadAvailableItems(email){
     data: {
       userEmail: email
     },
-    beforeSend: function() {},
+    beforeSend: function() {
+      //If url has a crp preselected (when is redirected to login '401.ftl'), save that crp in crpPreselected variable
+      if($(".loginForm #crp-input").val()){ crpPreselected=$(".loginForm #crp-input").val(); }
+    },
     success: function(data) {
+/*      var hasAccess=false;
+      if(crpPreselected){
+        $.each(data.crps, function(i){
+          if(data.crps[i].acronym == crpPreselected){
+            hasAccess=true;
+          }
+        });
+        if(hasAccess){
+          //Change form style
+          changeFormStyle(data,true);
+        }else{
+          console.log('denied access')
+        }
+      }*/
       if(data.user == null){
         $('input[name="user.email"]').focus();
         $('input[name="user.email"]').addClass("wrongEmail");
@@ -204,9 +224,7 @@ function loadAvailableItems(email){
         });
       }else{
         //Change form style
-        changeFormStyle(data);
-        //Button control, just send the form when button value is "login", not "next"
-        loginSwitch=true;
+        changeFormStyle(data,false);
       }
 
     },
@@ -240,7 +258,7 @@ $.fn.enableScroll = function() {
   $(window).off('scroll.scrolldisabler');
 };
 
-function changeFormStyle(data){
+function changeFormStyle(data,preselected){
   $(".welcome-message-container .username span").text(data.user.name);
 
   $.each(data.crps, function(i){
@@ -248,7 +266,7 @@ function changeFormStyle(data){
   });
 
   //change height value to form
-  $("#loginFormContainer .loginForm").addClass("max-size");
+  $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
   //Hide email input
   $(".loginForm #login-email").addClass("hidden");
   //show crp image, welcome message and input password
@@ -260,8 +278,8 @@ function changeFormStyle(data){
   //set focus on password input
   $(".loginForm #login-password input").focus();
 
-  if(data.crps.length>1){
-    //when user has access to multiple crps, show the side bar
+  //when user has access to multiple crps, show the side bar
+  if(data.crps.length>1 && !preselected){
     $(".crps-select").removeClass("hidden");
 
     //move crps select side bar
@@ -277,4 +295,7 @@ function changeFormStyle(data){
   $('.login-back-container p.loginBack').on('click',function(){
     $(".loginForm .login-input-container.username").click();
   });
+
+  //Button control, just send the form when button value is "login", not "next"
+  loginSwitch=true;
 }
