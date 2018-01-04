@@ -1,17 +1,14 @@
 [#ftl] 
 <div id="loginFormContainer">
   [#if !config.production]
-  [#-- COMMENTED BY REMAKE
   <div class="loginForm instructions">
-    [#-- @s.text name="home.login.message.nonCgiar" / -] [#--THIS PART WAS COMMENTED -]
     <p>[@s.text name="login.testersMessage"/]</p>
   </div>
-   --]
   [/#if]
   [#-- Form --]
   [@s.form method="POST" namespace="/" action="login"]
     [#-- Login error message --]
-    [#-- COMMENTED BY REMAKE
+    [#-- COMMENTED FOR REMODELING
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
      --]
      <div class="crps-select hidden">
@@ -79,7 +76,7 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-input-container" id="login-email">
-              <input id="user.email" class="login-input" type="text" name="user.email" value="" required/>
+              <input id="user.email" class="login-input user-email" type="text" name="user.email" value="" required/>
               <label for="user.email">Email</label>
             </div>
             <p class="invalidEmail hidden">Please enter a valid email</p>
@@ -107,7 +104,7 @@
         <div class="row" >
           <div class="col-sm-10">
             <div class="login-input-container hidden" id="login-password" >
-              <input id="user.password" class="login-input" type="password" name="user.password" tabindex=1 required/>
+              <input id="user.password" class="login-input user-password" type="password" name="user.password" tabindex=1 required/>
               <label for="user.password">Password</label>
             </div>
           </div>

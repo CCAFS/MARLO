@@ -13,15 +13,13 @@
       <div class="col-md-10 col-center">
         <h3 class="">[@s.text name="login.marloTitle" /]</h3>
         <p class="text-justify login-description">[@s.text name="login.marloDescription" /]  </p>
-        [#-- COMMENTED BY REMAKE
         [#if !config.production]
-        <br />
-        <div class="note testerMessage">
-          <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>
-          <p class="text-justify">[@s.text name="login.testersMessage3"/]</p>
-        </div>
+          <br />
+          <div class="note alert alert-warning" role="alert">
+            <p class="text-justify">[@s.text name="login.testersMessage2"/]</p>
+            <p class="text-justify">[@s.text name="login.testersMessage3"/]</p>
+          </div>
         [/#if]
-        --]
       </div>
       <div class="row">
         <div class=" col-md-offset-3 col-xs-7 col-sm-6 col-sm-6 col-md-5 col-center">
