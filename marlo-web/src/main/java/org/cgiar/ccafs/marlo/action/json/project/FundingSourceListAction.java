@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -107,8 +108,13 @@ public class FundingSourceListAction extends BaseAction {
     Set<FundingSource> hs = new HashSet<>();
     hs.addAll(fundingSources);
     fundingSources.clear();
-    fundingSources.addAll(hs);
+    fundingSources.addAll(hs.stream()
+      .filter(c -> c.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
+        && c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+      .collect(Collectors.toList()));
     fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
     for (FundingSource fundingSource : fundingSources) {
       if (fundingSource.isActive()) {
         source = new HashMap<>();
