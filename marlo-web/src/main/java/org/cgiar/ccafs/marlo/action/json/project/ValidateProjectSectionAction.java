@@ -341,7 +341,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
         }
-        if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+        if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
           sectionStatus = new SectionStatus();
           sectionStatus.setMissingFields("");
           section.put("missingFields", "");
