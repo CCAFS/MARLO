@@ -203,11 +203,11 @@ function loadAvailableItems(email){
 
       if(data.user == null){
         $('input[name="user.email"]').focus();
-        $('input[name="user.email"]').addClass("wrongEmail");
+        $('input.login-input').addClass("wrongData");
         $('.loginForm p.invalidEmail').removeClass("hidden");
         $('.loginForm p.invalidEmail').text("Your email was not found in database");
         $('input[name="user.email"]').on('change',function(){
-          $('input[name="user.email"]').removeClass("wrongEmail");
+          $('input.login-input').removeClass("wrongData");
           $('.loginForm p.invalidEmail').addClass("hidden");
         });
       }else if(crpPreselected){

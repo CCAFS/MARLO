@@ -497,6 +497,10 @@ input[type="submit"], button, .addButton, a.form-button {
   text-decoration: none;
 }
 
+input[type="submit"]:hover{
+  background-color: rgb(39, 147, 173);
+}
+
 /* Accesible change on tab */
 input[type="submit"]:focus{
   background-color: rgb(39, 147, 173);
@@ -2403,13 +2407,15 @@ input.userName {
   -webkit-animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
           animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
 }
-.loginForm .login-input-container {
+.loginForm .login-input-container{
   position: relative;
   height: 2.9em;
-  border: 0px solid #ECECEC;
   border-bottom-width: 1px;
   font-size: 20px;
   margin-top: 20px;
+}
+.wrongData{
+  border-bottom-color: red !important;
 }
 .loginForm input {
   display: block;
@@ -2425,12 +2431,9 @@ input.userName {
   letter-spacing: 0.012em;
 }
 
-.loginForm input.wrongEmail{
-  border-bottom: 1px solid red;
-}
-
 .loginForm input:not(.login-form-button){
   background: none;
+  border-bottom: 1px solid rgb(224, 224, 224);
 }
 
 .loginForm label {
@@ -2679,6 +2682,10 @@ input.userName {
   cursor: pointer;
 }
 
+.selection-bar-options ul li img:hover{
+  background-color: rgba(255, 255, 255, 0.767);
+}
+
 .selection-bar-options ul li:last-child img{
   margin-bottom: 13px;
 }
@@ -2704,6 +2711,10 @@ span.login-input-container.username i{
   vertical-align: middle;
   line-height: 5px;
   height: 10px;
+}
+
+span.login-input-container.username:hover i{
+  color: rgb(182, 182, 182);
 }
 
 .crps-select{
@@ -2771,9 +2782,9 @@ p.login-description{
 
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
+  border: 1px solid #ECECEC;
   padding: 8px 24px;
   border-radius: 7px;
-  border: 1px solid #ededed;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
   z-index: 2;

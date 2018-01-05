@@ -31,7 +31,7 @@
     <br>
     <div class="row left-margin">
       <div class="col-md-12 col-center">
-        <label>CRPS:</label>
+        <label>Participating CRPs:</label>
         <div class="login-logos-container">
           <ul>
           [#attempt] 
