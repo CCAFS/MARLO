@@ -83,6 +83,7 @@
            <div class="modal fade extended-table-modal ongoing-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
             <div class="modal-dialog modal-lg">
               <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="subTitle headTitle">On going deliverables</h3>
                 <hr />
                   [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
@@ -108,6 +109,7 @@
             <div class="modal fade extended-table-modal completed-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
               <div class="modal-dialog modal-lg">
                 <div class="modal-content">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <h3 class="subTitle headTitle">Completed deliverables</h3>
                   <hr />
                     [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(false,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
