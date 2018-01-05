@@ -13,7 +13,7 @@
      --]
      <div class="crps-select hidden">
       <div class="name-type-container">
-        <span class="selection-bar-title">CRPS:</span>
+        <span class="selection-bar-title">CRPs:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
@@ -119,7 +119,7 @@
         </div>
         <div class="row login-back-container hidden">
           <div class="col-xs-6 col-center">
-            <p class="loginBack">Log in with another user</p>
+            <p class="loginBack">Login with different user</p>
           </div>
         </div>
      </div>
