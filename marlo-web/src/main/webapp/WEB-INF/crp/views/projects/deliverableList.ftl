@@ -122,8 +122,22 @@
 
           [#if action.getDeliverables(false,true)?has_content]
             <h3 class="subTitle headTitle">Cancelled deliverables</h3>
+            <div class="deliverables-extended-version" data-toggle="modal" data-target=".cancelled-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+            <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
             <hr />
-            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+            <hr />
+            [#-- Cancelled Extended table (Modal) --]
+            <div class="modal fade extended-table-modal cancelled-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h3 class="subTitle headTitle">Cancelled deliverables</h3>
+                  <hr />
+                    [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+                </div>
+              </div>
+            </div>
+            [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/] 
           [/#if]
           <input type="hidden" name="projectID" value="${projectID}" />
         [/@s.form] 
