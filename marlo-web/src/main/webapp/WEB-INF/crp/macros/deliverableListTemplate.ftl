@@ -254,20 +254,20 @@
           </td>
           [#-- Deliverable Funding source(s) --]
           <td>
-            [#if deliverable.fundingSources??]
+            [#if deliverable.fundingSources?? && deliverable.fundingSources?size > 0]
               [#list deliverable.fundingSources as deliverableFundingSource]
                 <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}">
                  <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'none'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
-                   [#if deliverable.deliverableInfo.title?length < 13] 
-                    ${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}
+                   [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
+                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}</span>
                    [#else] 
                      <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
                    [/#if]
                 </div>
               [/#list]
             [#else]
-              none
+              <span>none<span>
             [/#if]
           </td>
         </tr>  
