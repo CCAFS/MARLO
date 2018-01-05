@@ -88,7 +88,7 @@
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
             <td class="fair text-center"> 
-            [#if deliverable.requeriedFair()]
+            [#if deliverable.deliverableInfo.requeriedFair()]
               <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
               <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
               <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
@@ -228,10 +228,11 @@
           [#-- Deliverable Status --]
           <td class="text-center">
             [#attempt]
-              ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'}
-              [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
-               to ${deliverable.deliverableInfo.newExpectedYear}
-              [/#if]
+              <div class="status-container">
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
+              </div>
+              [#-- ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'} --]
             [#recover]
               none
             [/#attempt]

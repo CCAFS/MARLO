@@ -523,6 +523,10 @@ h3.subTitle.headTitle{
     background-color: red;
 }
 
+.deliverableList .status-indicator.Ready.to.be.reported.on{
+    background-color: rgb(45, 138, 238);
+}
+
 /* Extended table (Modal)*/
 
 .extended-table-modal .modal-lg{
