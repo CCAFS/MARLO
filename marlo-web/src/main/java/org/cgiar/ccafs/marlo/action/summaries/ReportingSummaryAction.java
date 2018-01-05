@@ -111,6 +111,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
@@ -140,6 +141,7 @@ import org.slf4j.LoggerFactory;
  * @date Nov 8, 2017
  * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
+@Named
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
@@ -1749,14 +1751,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           && ((d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
             && (d.getYear() >= this.year
               || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() >= this.year)))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
-            || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getYear() == this.year
-                || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
-          && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))
+          || (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getYear() == this.year
+              || (d.getNewExpectedYear() != null && d.getNewExpectedYear().intValue() == this.year))))
+        && (d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
       deliverables.sort((p1, p2) -> p1.isRequieriedReporting(year).compareTo(p2.isRequieriedReporting(year)));
       HashSet<Deliverable> deliverablesHL = new HashSet<>();
