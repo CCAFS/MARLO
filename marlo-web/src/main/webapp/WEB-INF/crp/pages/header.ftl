@@ -90,13 +90,6 @@
             </h4>
             </a>
           </div>
-          
-         
-          <div class="newsButton text-right">
-            <a href="https://marlo-news.blogspot.com" target="__blank">
-               <b>Check our blog </b> <span class="fa fa-external-link-square"></span>
-            </a>
-          </div>
           [#if namespace?contains('superadmin')]
             <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
           [#else]
