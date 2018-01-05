@@ -21,11 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class GlobalUnitManagerImpl implements GlobalUnitManager {
 
 

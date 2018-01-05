@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.PhaseMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(PhaseMySQLDAO.class)
 public interface PhaseDAO {
 
   /**

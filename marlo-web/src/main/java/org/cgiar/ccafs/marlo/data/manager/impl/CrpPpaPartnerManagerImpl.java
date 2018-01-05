@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
 
   private CrpPpaPartnerDAO crpPpaPartnerDao;

@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.struts2.util.StrutsTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class LiasonUserConverter extends StrutsTypeConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(LiasonUserConverter.class);
-  private LiaisonUserManager liaisonUserManager;
+  private final LiaisonUserManager liaisonUserManager;
 
   @Inject
   public LiasonUserConverter(LiaisonUserManager liaisonUserManager) {
@@ -42,6 +43,7 @@ public class LiasonUserConverter extends StrutsTypeConverter {
   @SuppressWarnings("rawtypes")
   @Override
   public Object convertFromString(Map context, String[] values, Class toClass) {
+    // Is this a bug, should it not be LiasonUser.class?
     if (toClass == LiaisonInstitution.class) {
       String id = values[0];
       try {

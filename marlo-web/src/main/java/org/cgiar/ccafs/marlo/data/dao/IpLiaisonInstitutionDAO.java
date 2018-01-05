@@ -16,15 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.IpLiaisonInstitutionMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(IpLiaisonInstitutionMySQLDAO.class)
 public interface IpLiaisonInstitutionDAO {
 
   /**
@@ -91,5 +88,6 @@ public interface IpLiaisonInstitutionDAO {
    */
   public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution);
 
-  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section, List<String> relationsName);
+  public IpLiaisonInstitution save(IpLiaisonInstitution ipLiaisonInstitution, String section,
+    List<String> relationsName);
 }

@@ -87,10 +87,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -145,8 +146,8 @@ public class ProjectPartnerAction extends BaseAction {
   private InstitutionLocationManager institutionLocationManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-  private CrpUserManager crpUserManager;
-  private ProjectPartnersValidator projectPartnersValidator;
+  private final CrpUserManager crpUserManager;
+  private final ProjectPartnersValidator projectPartnersValidator;
 
   private long projectID;
   private GlobalUnit loggedCrp;
@@ -164,11 +165,11 @@ public class ProjectPartnerAction extends BaseAction {
   private Role plRole;
   private Role pcRole;
   private ProjectPartnerOverall partnerOverall;
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
   private String transaction;
-  private HistoryComparator historyComparator;
+  private final HistoryComparator historyComparator;
   // Util
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
 
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
@@ -178,9 +179,9 @@ public class ProjectPartnerAction extends BaseAction {
     InstitutionTypeManager institutionTypeManager, SendMailS sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
-    ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
-    HistoryComparator historyComparator, ProjectComponentLessonManager projectComponentLessonManager,
-    CrpUserManager crpUserManager, ProjectPartnerLocationManager projectPartnerLocationManager,
+    ProjectPartnersValidator projectPartnersValidator, HistoryComparator historyComparator,
+    ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
+    ProjectPartnerLocationManager projectPartnerLocationManager,
     InstitutionLocationManager institutionLocationManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
@@ -202,7 +203,6 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerContributionManager = projectPartnerContributionManager;
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
-    this.projectComponentLesson = projectComponentLesson;
     this.crpUserManager = crpUserManager;
 
   }

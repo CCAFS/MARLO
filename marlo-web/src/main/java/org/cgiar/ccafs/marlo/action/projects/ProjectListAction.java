@@ -46,7 +46,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class ProjectListAction extends BaseAction {
 
   private GlobalUnit loggedCrp;
 
-  @Inject
+
   private SectionStatusManager sectionStatusManager;
 
 

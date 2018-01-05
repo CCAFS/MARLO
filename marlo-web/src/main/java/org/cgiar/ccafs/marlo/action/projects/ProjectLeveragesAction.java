@@ -46,10 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -72,7 +73,6 @@ public class ProjectLeveragesAction extends BaseAction {
   private Project project;
   private Map<String, String> allInstitutions;
   private Map<String, String> flagships;
-  private List<ProjectLeverage> leveragesPreview;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
   private ProjectLeverageValidator projectLeverageValidator;

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.IpProjectIndicatorManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(IpProjectIndicatorManagerImpl.class)
+
 public interface IpProjectIndicatorManager {
 
 

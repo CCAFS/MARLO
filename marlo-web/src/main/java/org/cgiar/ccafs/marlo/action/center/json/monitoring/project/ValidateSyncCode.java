@@ -28,8 +28,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * Validate If the Project or OCS code is valid to continue the process to Sync.
@@ -117,9 +118,10 @@ public class ValidateSyncCode extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
-    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    syncTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE).getMultipleValues()[0]));
+    syncCode = StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE).getMultipleValues()[0]);
 
     // If Choose CRP replace/delete the "P" in the String to search easily the CRP MARLO Project.
     if (syncTypeID == 2) {

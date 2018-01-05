@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterProjectLocationDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterProjectLocationDAO.class)
 public interface ICenterProjectLocationDAO {
 
   /**
@@ -84,5 +81,6 @@ public interface ICenterProjectLocationDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterProjectLocation save(CenterProjectLocation projectLocation, String actionName, List<String> relationsName);
+  public CenterProjectLocation save(CenterProjectLocation projectLocation, String actionName,
+    List<String> relationsName);
 }

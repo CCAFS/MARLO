@@ -49,10 +49,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,15 +70,18 @@ public class SynthesisByMogAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(SynthesisByMogAction.class);
 
   // Manager
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
 
+  private final IpProgramManager ipProgramManager;
 
-  private IpProgramManager ipProgramManager;
+  private final IpElementManager ipElementManager;
 
-  private IpElementManager ipElementManager;
+  private UserManager userManager;
 
+  private AuditLogManager auditLogManager;
 
-  private IpProjectContributionOverviewManager overviewManager;
+  private final IpProjectContributionOverviewManager overviewManager;
+
 
   private MogSynthesyManager mogSynthesisManager;
 
@@ -86,7 +90,7 @@ public class SynthesisByMogAction extends BaseAction {
   private GlobalUnitManager crpManager;
 
 
-  private AuditLogManager auditLogManager;
+  private final SynthesisByMogValidator validator;
 
 
   // Model for the front-end
@@ -98,17 +102,9 @@ public class SynthesisByMogAction extends BaseAction {
 
   private IpProgram program;
 
-
-  private UserManager userManager;
-
   private List<MogSynthesy> synthesis;
-
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
-
-  private SynthesisByMogValidator validator;
-
-
   private String transaction;
 
   @Inject

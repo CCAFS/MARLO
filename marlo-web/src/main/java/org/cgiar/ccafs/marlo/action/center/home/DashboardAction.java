@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS

@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -81,8 +82,11 @@ public class PersonsbyPartnerAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    partnerID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // partnerID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    partnerID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PARTNER_ID).getMultipleValues()[0]));
   }
 
 

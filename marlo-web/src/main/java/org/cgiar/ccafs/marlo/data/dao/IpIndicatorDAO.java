@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.IpIndicatorMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(IpIndicatorMySQLDAO.class)
 public interface IpIndicatorDAO {
 
   /**

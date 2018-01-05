@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CrpProgramManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CrpProgramManagerImpl.class)
+
 public interface CrpProgramManager {
 
 

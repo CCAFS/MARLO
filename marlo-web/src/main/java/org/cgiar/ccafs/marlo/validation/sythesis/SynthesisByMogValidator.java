@@ -31,13 +31,16 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class SynthesisByMogValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
   @Inject
@@ -45,8 +48,9 @@ public class SynthesisByMogValidator extends BaseValidator {
   private GlobalUnitManager crpManager;
 
   @Inject
-  public SynthesisByMogValidator() {
-    // TODO Auto-generated constructor stub
+  public SynthesisByMogValidator(GlobalUnitManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {

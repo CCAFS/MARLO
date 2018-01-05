@@ -31,15 +31,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectOtherContributionsValidator extends BaseValidator {
 
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
-  @Inject
+
   public ProjectOtherContributionsValidator(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }

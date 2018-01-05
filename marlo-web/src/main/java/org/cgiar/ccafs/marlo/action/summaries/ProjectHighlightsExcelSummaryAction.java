@@ -38,8 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -448,8 +450,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseAction implements S
     // Get parameters from URL
     // Get year
     try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      // Map<String, Object> parameters = this.getParameters();
+      Map<String, Parameter> parameters = this.getParameters();
+      // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+      year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
         + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());

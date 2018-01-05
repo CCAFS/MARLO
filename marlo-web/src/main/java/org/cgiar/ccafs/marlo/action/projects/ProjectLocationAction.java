@@ -60,10 +60,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -79,17 +80,17 @@ public class ProjectLocationAction extends BaseAction {
   private GlobalUnitManager crpManager;
 
   private AuditLogManager auditLogManager;
-  private FundingSourceManager fundingSourceManager;
+  private final FundingSourceManager fundingSourceManager;
   private List<LocationLevel> locationsLevels;
 
-  private ProjectLocationValidator locationValidator;
+  private final ProjectLocationValidator locationValidator;
   private LocElementManager locElementManager;
 
 
   private LocElementTypeManager locElementTypeManager;
 
 
-  private LocGeopositionManager locGeopositionManager;
+  private final LocGeopositionManager locGeopositionManager;
 
   private GlobalUnit loggedCrp;
 
@@ -98,12 +99,12 @@ public class ProjectLocationAction extends BaseAction {
 
   private long projectID;
 
-  private ProjectLocationElementTypeManager projectLocationElementTypeManager;
+  private final ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
 
-  private ProjectLocationManager projectLocationManager;
+  private final ProjectLocationManager projectLocationManager;
 
-  private ProjectManager projectManager;
+  private final ProjectManager projectManager;
 
   private boolean region;
 

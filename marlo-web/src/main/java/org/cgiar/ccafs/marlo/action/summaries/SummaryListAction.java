@@ -29,7 +29,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class SummaryListAction extends BaseAction {
 

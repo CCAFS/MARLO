@@ -36,9 +36,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -53,7 +55,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private ICenterProgramManager programService;
   private ICenterAreaManager areaServcie;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private GlobalUnit researchCenter;
   private long programID = -1;
@@ -70,7 +72,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   void getprogramId() {
     try {
-      programID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]);
+      // programID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_PROGRAM_ID))[0]);
+      programID = Long.parseLong(parameters.get(APConstants.CENTER_PROGRAM_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       GlobalUnit loggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
       loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
@@ -88,11 +91,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           area.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
         programID = programs.get(0).getId();
       } else {
-        List<CenterLeader> userProgramLeads =
-          new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(rl -> rl.isActive()
-              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+        List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
+          .filter(
+            rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+          .collect(Collectors.toList()));
         if (!userProgramLeads.isEmpty()) {
           programID = userProgramLeads.get(0).getResearchProgram().getId();
         } else {
@@ -162,8 +164,9 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         }
       }
 
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         // If the user is not asking for edition privileges we don't need to validate them.
         if (!editParameter) {

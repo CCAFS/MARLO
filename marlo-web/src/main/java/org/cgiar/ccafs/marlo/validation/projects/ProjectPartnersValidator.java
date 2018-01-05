@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -36,7 +35,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,30 +46,32 @@ import org.slf4j.LoggerFactory;
  * @author Hernán David Carvajal B. - CIAT/CCAFS
  * @author Héctor Fabio Tobón R. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectPartnersValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
-  @Inject
+
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-  @Inject
+
   private ProjectManager projectManager;
 
-
-  @Inject
-  private InstitutionManager institutionManager;
-  private boolean hasErros;
   private ProjectValidator projectValidator;
 
-  private UserManager userManager;
+  private InstitutionManager institutionManager;
+
+  // This is not thread safe
+  private boolean hasErros;
 
   @Inject
-  public ProjectPartnersValidator(ProjectValidator projectValidator, UserManager userManager) {
+  public ProjectPartnersValidator(ProjectValidator projectValidator, GlobalUnitManager crpManager,
+    ProjectManager projectManager, InstitutionManager institutionManager) {
     super();
     this.projectValidator = projectValidator;
-    this.userManager = userManager;
+    this.crpManager = crpManager;
+    this.projectManager = projectManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {

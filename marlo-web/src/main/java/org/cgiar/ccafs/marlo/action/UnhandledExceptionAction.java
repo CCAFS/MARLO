@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,12 @@ public class UnhandledExceptionAction extends BaseAction {
   // Model
   private Exception exception;
 
+  private final SendMailS sendMail;
+
   @Inject
-  public UnhandledExceptionAction(APConfig config) {
+  public UnhandledExceptionAction(APConfig config, SendMailS sendMail) {
     super(config);
+    this.sendMail = sendMail;
   }
 
   @Override
@@ -81,7 +85,6 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());
 
-    SendMailS sendMail = new SendMailS(this.config);
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
     LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.",
