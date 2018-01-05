@@ -199,20 +199,8 @@ function loadAvailableItems(email){
       if($(".loginForm #crp-input").val()){ crpPreselected=$(".loginForm #crp-input").val(); }
     },
     success: function(data) {
-/*      var hasAccess=false;
-      if(crpPreselected){
-        $.each(data.crps, function(i){
-          if(data.crps[i].acronym == crpPreselected){
-            hasAccess=true;
-          }
-        });
-        if(hasAccess){
-          //Change form style
-          changeFormStyle(data,true);
-        }else{
-          console.log('denied access')
-        }
-      }*/
+      var hasAccess=false;
+
       if(data.user == null){
         $('input[name="user.email"]').focus();
         $('input[name="user.email"]').addClass("wrongEmail");
@@ -222,6 +210,19 @@ function loadAvailableItems(email){
           $('input[name="user.email"]').removeClass("wrongEmail");
           $('.loginForm p.invalidEmail').addClass("hidden");
         });
+      }else if(crpPreselected){
+        $.each(data.crps, function(i){
+          if(data.crps[i].acronym == crpPreselected){
+            hasAccess=true;
+          }
+        });
+        if(hasAccess){
+          //Change form style
+          changeFormStyle(data,true);
+        }else{
+          $('.loginForm p.invalidEmail').removeClass("hidden");
+          $('.loginForm p.invalidEmail').text("You don't have access to this crp");
+        }
       }else{
         //Change form style
         changeFormStyle(data,false);
