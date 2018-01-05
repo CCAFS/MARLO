@@ -31,27 +31,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian David Garcia Oviedo. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectHighLightValidator extends BaseValidator {
-
-  private ProjectValidator projectValidator;
-  private boolean fields = false;
-
 
   @Inject
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
   @Inject
-  public ProjectHighLightValidator(ProjectValidator projectValidator) {
+  public ProjectHighLightValidator(ProjectValidator projectValidator, GlobalUnitManager crpManager) {
     super();
-    this.projectValidator = projectValidator;
+    this.crpManager = crpManager;
   }
 
   /**

@@ -45,7 +45,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private LiaisonUserManager liasonUserManager;
   private GlobalUnit loggedCrp;
   private String cycleName;
-  private RoleManager roleManager;
+  private final RoleManager roleManager;
 
   private boolean complete;
   private Submission currentSubmission;
@@ -83,20 +84,19 @@ public class ProjectSubmissionAction extends BaseAction {
   private long projectID;
   private Project project;
 
-
-  @Inject
-  ReportingSummaryAction reportingSummaryAction;
+  private final ReportingSummaryAction reportingSummaryAction;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
+    ReportingSummaryAction reportingSummaryAction) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
-    this.liasonUserManager = liasonUserManager;
     this.roleManager = roleManager;
+    this.reportingSummaryAction = reportingSummaryAction;
   }
 
 

@@ -31,8 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ProjectListAction extends BaseAction {
 
@@ -92,9 +93,13 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+    // Map<String, Object> parameters = this.getParameters();
+    // cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
+    // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    cycle = (StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0]));
+    year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
   }
 
 

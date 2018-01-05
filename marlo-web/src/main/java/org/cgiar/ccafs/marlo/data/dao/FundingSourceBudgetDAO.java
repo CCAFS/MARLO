@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.FundingSourceBudgetMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(FundingSourceBudgetMySQLDAO.class)
 public interface FundingSourceBudgetDAO {
 
   /**

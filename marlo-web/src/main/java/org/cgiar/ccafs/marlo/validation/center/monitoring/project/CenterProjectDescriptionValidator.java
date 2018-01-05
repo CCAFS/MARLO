@@ -29,11 +29,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CenterProjectDescriptionValidator extends BaseValidator {
 
   // GlobalUnit Manager

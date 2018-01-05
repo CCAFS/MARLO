@@ -19,6 +19,8 @@ import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -31,11 +33,10 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Named
 public class SendMailS {
 
   // LOG

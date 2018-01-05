@@ -20,7 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.struts2.util.StrutsTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class ProjectPartnerPersonConverter extends StrutsTypeConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnerPersonConverter.class);
-  private ProjectPartnerPersonManager projectPartnerPersonManager;
+  private final ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
   public ProjectPartnerPersonConverter(ProjectPartnerPersonManager projectPartnerPersonManager) {

@@ -31,7 +31,8 @@ import java.awt.Color;
 import java.util.Date;
 import java.util.Random;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -65,11 +66,11 @@ public class LoginAction extends BaseAction {
 
   // Managers
   private UserManager userManager;
-
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
   private CrpUserManager crpUserManager;
+
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,

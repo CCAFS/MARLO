@@ -17,7 +17,8 @@ package org.cgiar.ccafs.marlo.action.rest;
 
 import org.cgiar.ccafs.marlo.action.repository.InstitutionsRepository;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ModelDriven;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
@@ -32,7 +33,7 @@ public class InstitutionController implements ModelDriven<Object> {
   private Object institutions;
 
 
-  private InstitutionsRepository repository;
+  private final InstitutionsRepository repository;
 
   @Inject
   public InstitutionController(InstitutionsRepository repository) {
@@ -79,11 +80,6 @@ public class InstitutionController implements ModelDriven<Object> {
   public void setInstitutions(Object institutions) {
     this.institutions = institutions;
   }
-
-  public void setRepository(InstitutionsRepository repository) {
-    this.repository = repository;
-  }
-
 
   public HttpHeaders show() {
     institutions = repository.get(this.getId());

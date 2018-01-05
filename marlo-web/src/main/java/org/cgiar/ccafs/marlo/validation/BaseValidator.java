@@ -25,29 +25,36 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Named
 public class BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseValidator.class);
 
+  /**
+   * Setter injection is ok here as this class is extended. TODO look into making this class abstract.
+   */
+
   @Inject
   protected APConfig config;
-  protected StringBuilder validationMessage;
-  protected StringBuilder missingFields;
-
   @Inject
   private SectionStatusManager sectionStatusManager;
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
+  // This is not thread safe
+  protected StringBuilder validationMessage;
 
-  @Inject
+  // This is not thread safe
+  protected StringBuilder missingFields;
+
+
   public BaseValidator() {
     validationMessage = new StringBuilder();
     missingFields = new StringBuilder();

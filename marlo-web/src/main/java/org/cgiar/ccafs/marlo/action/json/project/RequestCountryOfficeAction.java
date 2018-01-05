@@ -32,8 +32,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,8 @@ public class RequestCountryOfficeAction extends BaseAction {
   private String[] countries;
   private GlobalUnit loggedCrp;
 
+  private final SendMailS sendMail;
+
   // Managers
   private InstitutionManager institutionManager;
   private ProjectManager projectManager;
@@ -75,13 +79,14 @@ public class RequestCountryOfficeAction extends BaseAction {
   @Inject
   public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
     LocElementManager locElementManager, ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, SendMailS sendMail) {
     super(config);
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
     this.projectManager = projectManager;
     this.partnerRequestManager = partnerRequestManager;
     this.crpManager = crpManager;
+    this.sendMail = sendMail;
   }
 
 
@@ -144,7 +149,6 @@ public class RequestCountryOfficeAction extends BaseAction {
 
 
       try {
-        SendMailS sendMail = new SendMailS(this.config);
         sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
           null, null, null, true);
       } catch (Exception e) {
@@ -175,11 +179,14 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    projectID = Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0])));
+    Map<String, Parameter> parameters = this.getParameters();
+    projectID =
+      Long.parseLong((StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0])));
     institutionID =
-      Long.parseLong((StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0])));
-    countries = ((String[]) parameters.get(APConstants.COUNTRIES_REQUEST_ID));
+
+      Long.parseLong((StringUtils.trim(parameters.get(APConstants.INSTITUTION_REQUEST_ID).getMultipleValues()[0])));
+    countries = (parameters.get(APConstants.COUNTRIES_REQUEST_ID).getMultipleValues());
+
     // Get loggerCrp
     try {
       loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);

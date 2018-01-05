@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
@@ -36,14 +35,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class FundingSourceValidator extends BaseValidator {
 
+  // This is not thread safe.
   private boolean hasErros;
 
+  // This is not thread safe.
   BaseAction action;
-
 
   @Inject
   private GlobalUnitManager crpManager;
@@ -51,7 +53,10 @@ public class FundingSourceValidator extends BaseValidator {
   private InstitutionManager institutionManager;
 
   @Inject
-  private FundingSourceManager fundingSourceManager;
+  public FundingSourceValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
+    this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
+  }
 
   /**
    * Until I work out why the File is being set to an empty file instead of null, this will temporarily

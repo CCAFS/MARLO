@@ -41,7 +41,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,7 @@ public class PartnersSaveAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
+  private final SendMailS sendMail;
 
   // Model
   private List<LocElement> countriesList;
@@ -97,7 +99,7 @@ public class PartnersSaveAction extends BaseAction {
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
     ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager) {
+    FundingSourceManager fundingSourceManager, GlobalUnitManager crpManager, SendMailS sendMail) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -107,6 +109,7 @@ public class PartnersSaveAction extends BaseAction {
     this.partnerRequestManager = partnerRequestManager;
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
+    this.sendMail = sendMail;
   }
 
   public int getActivityID() {
@@ -321,7 +324,6 @@ public class PartnersSaveAction extends BaseAction {
     message.append(".</br>");
     message.append("</br>");
     try {
-      SendMailS sendMail = new SendMailS(this.config);
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {

@@ -52,10 +52,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -70,16 +71,14 @@ public class OutcomeSynthesisAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
-  // private OutcomeSynthesisValidator validator;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private IpProgramManager ipProgramManager;
-  private IpElementManager ipElementManager;
-  private OutcomeSynthesyManager outcomeSynthesisManager;
-  private IpIndicatorManager ipIndicatorManager;
-  private IpProjectIndicatorManager ipProjectIndicatorManager;
+  private final IpProgramManager ipProgramManager;
+  private final IpElementManager ipElementManager;
+  private final OutcomeSynthesyManager outcomeSynthesisManager;
+  private final IpIndicatorManager ipIndicatorManager;
+  private final IpProjectIndicatorManager ipProjectIndicatorManager;
   private String transaction;
-  private AuditLogManager auditLogManager;
-  private SynthesisByOutcomeValidator validator;
+  private final AuditLogManager auditLogManager;
+  private final SynthesisByOutcomeValidator validator;
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
@@ -87,20 +86,19 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpLiaisonInstitution currentLiaisonInstitution;
 
   private List<IpElement> midOutcomes;
-  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
   private IpProgram program;
 
   private long liaisonInstitutionID;
-  private UserManager userManager;
+  private final UserManager userManager;
 
   @Inject
   public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager, GlobalUnitManager crpManager,
     IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
     SynthesisByOutcomeValidator validator, UserManager userManager, AuditLogManager auditLogManager,
-    IpIndicatorManager ipIndicatorManager) {
+    IpIndicatorManager ipIndicatorManager, IpProjectIndicatorManager ipProjectIndicatorManager) {
     super(config);
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.outcomeSynthesisManager = outcomeSynthesisManager;
@@ -110,6 +108,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.validator = validator;
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.ipProjectIndicatorManager = ipProjectIndicatorManager;
 
 
   }

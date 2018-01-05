@@ -21,10 +21,14 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendPusher;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class PusherAutentication extends BaseAction {
 
@@ -32,24 +36,23 @@ public class PusherAutentication extends BaseAction {
   private static final long serialVersionUID = -5699784342330829319L;
 
 
-  public String socketID;
-  public String channel;
-  public HashMap<String, Object> jsonString;
+  private String socketID;
+  private String channel;
+  private HashMap<String, Object> jsonString;
 
 
-  public SendPusher sendPusher;
+  private SendPusher sendPusher;
 
   @Inject
-  public PusherAutentication(APConfig config, SendPusher sendPusher) {
+  public PusherAutentication(APConfig config) {
 
     super(config);
-    this.sendPusher = sendPusher;
+
   }
 
   @Override
   public String execute() throws Exception {
-    socketID = this.getRequest().getParameter("socket_id");
-    channel = this.getRequest().getParameter("channel_name");
+
     jsonString = new HashMap<>();
     /*
      * HashMap<String, String> message = new HashMap<>();
@@ -57,7 +60,7 @@ public class PusherAutentication extends BaseAction {
      * message.put("diffTime", "30");
      * sendPusher.sendPush("presence-global", "system-reset", message);
      */
-
+    sendPusher = new SendPusher(config);
     String jsonReturn = sendPusher.autenticate(socketID, channel, this.getCurrentUser(),
       this.getRequest().getSession().getId(), this.getSession().get("color").toString());
     Gson gson = new GsonBuilder().create();
@@ -67,6 +70,13 @@ public class PusherAutentication extends BaseAction {
 
   public HashMap<String, Object> getJsonString() {
     return jsonString;
+  }
+
+  @Override
+  public void prepare() throws Exception {
+    Map<String, Parameter> parameters = this.getParameters();
+    socketID = StringUtils.trim(parameters.get("socket_id").getMultipleValues()[0]);
+    channel = StringUtils.trim(parameters.get("channel_name").getMultipleValues()[0]);
   }
 
 

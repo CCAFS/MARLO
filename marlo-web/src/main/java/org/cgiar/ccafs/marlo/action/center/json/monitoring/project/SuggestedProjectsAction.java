@@ -34,8 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * Search the possibles OCS or Project codes to being a funding source in a center project
@@ -189,9 +190,10 @@ public class SuggestedProjectsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
-    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    syncTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE).getMultipleValues()[0]));
+    syncCode = StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE).getMultipleValues()[0]);
 
     if (syncTypeID == 2) {
       if (syncCode.toUpperCase().contains("P")) {

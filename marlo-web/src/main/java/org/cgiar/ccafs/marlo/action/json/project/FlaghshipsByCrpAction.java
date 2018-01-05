@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +88,10 @@ public class FlaghshipsByCrpAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    crpID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+    // crpID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_ID))[0]));
+    crpID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]));
   }
 
 

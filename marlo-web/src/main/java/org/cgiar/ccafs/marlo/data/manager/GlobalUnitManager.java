@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.GlobalUnitManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(GlobalUnitManagerImpl.class)
 public interface GlobalUnitManager {
 
 

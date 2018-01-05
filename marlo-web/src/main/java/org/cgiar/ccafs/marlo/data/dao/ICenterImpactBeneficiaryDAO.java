@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterImpactBeneficiaryDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactBeneficiary;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterImpactBeneficiaryDAO.class)
 public interface ICenterImpactBeneficiaryDAO {
 
   /**

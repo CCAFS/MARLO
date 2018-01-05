@@ -57,10 +57,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -94,7 +95,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private List<CrpPandr> crps;
   private List<IpProgram> regions;
   private List<IpIndicator> otherIndicators;
-  private HistoryComparator historyComparator;
+  private final HistoryComparator historyComparator;
   private long projectID;
   private Project project;
 
@@ -120,8 +121,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
     HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.projectCrpContributionManager = projectCrpContributionManager;
     this.crpPandrManager = crpPandrManager;
     this.ipIndicatorManager = ipIndicatorManager;
@@ -613,12 +612,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
-  }
-
 
   public void setRegions(List<IpProgram> regions) {
     this.regions = regions;

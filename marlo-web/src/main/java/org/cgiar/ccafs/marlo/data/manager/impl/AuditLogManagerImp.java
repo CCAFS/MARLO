@@ -24,8 +24,10 @@ import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
+@Named
 public class AuditLogManagerImp implements AuditLogManager {
 
   private final AuditLogDao auditLogDao;

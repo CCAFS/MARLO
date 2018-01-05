@@ -28,13 +28,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian David Garcia Oviedo. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectLeverageValidator extends BaseValidator {
 
 
@@ -45,7 +46,6 @@ public class ProjectLeverageValidator extends BaseValidator {
   @Inject
   public ProjectLeverageValidator() {
     super();
-
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {

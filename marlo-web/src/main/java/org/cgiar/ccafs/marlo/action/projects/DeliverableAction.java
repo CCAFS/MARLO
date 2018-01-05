@@ -105,10 +105,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -270,7 +271,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
     HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
@@ -284,13 +285,11 @@ public class DeliverableAction extends BaseAction {
     this.crpManager = crpManager;
     this.historyComparator = historyComparator;
     this.deliverableUserManager = deliverableUserManager;
-    this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
-    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.auditLogManager = auditLogManager;
@@ -1137,7 +1136,7 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
-      Set<FundingSource> hs = new HashSet();
+      Set<FundingSource> hs = new HashSet<>();
       hs.addAll(this.fundingSources);
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);

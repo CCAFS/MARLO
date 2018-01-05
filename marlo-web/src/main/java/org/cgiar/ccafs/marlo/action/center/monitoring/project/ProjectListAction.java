@@ -64,8 +64,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -143,9 +144,10 @@ public class ProjectListAction extends BaseAction {
     /**
      * Add Project sync information
      */
-    Map<String, Object> parameters = this.getParameters();
-    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
-    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    syncTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE).getMultipleValues()[0]));
+    syncCode = StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE).getMultipleValues()[0]);
 
 
     switch (Math.toIntExact(syncTypeID)) {
@@ -613,8 +615,10 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public String delete() {
-    Map<String, Object> parameters = this.getParameters();
-    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+    // projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
+    projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]));
 
     CenterProject project = projectService.getCenterProjectById(projectID);
 
@@ -714,7 +718,6 @@ public class ProjectListAction extends BaseAction {
           programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
-
           // Check if the User is an Area Leader
           List<CenterLeader> userAreaLeads =
             new ArrayList<>(user.getResearchLeaders().stream()

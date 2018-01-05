@@ -38,8 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +59,12 @@ public class PublicationListAction extends BaseAction {
 
 
   private long deliverableID;
-  private DeliverableManager deliverableManager;
-  private LiaisonUserManager liaisonUserManager;
-  private InstitutionManager institutionManager;
-  private DeliverableLeaderManager deliverableLeaderManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
+  private final DeliverableManager deliverableManager;
+  private final LiaisonUserManager liaisonUserManager;
+  private final InstitutionManager institutionManager;
+  private final DeliverableLeaderManager deliverableLeaderManager;
 
   @Inject
   public PublicationListAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
@@ -143,10 +145,12 @@ public class PublicationListAction extends BaseAction {
   @Override
   public String delete() {
 
-
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      Long
+        .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectOutcomeMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectOutcomeMySQLDAO.class)
 public interface ProjectOutcomeDAO {
 
   /**

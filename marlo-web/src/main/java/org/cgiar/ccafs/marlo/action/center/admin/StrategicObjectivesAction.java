@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS

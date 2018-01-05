@@ -31,22 +31,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CrpIndicatorsValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
-  @Inject
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
   @Inject
-  public CrpIndicatorsValidator() {
-    // TODO Auto-generated constructor stub
+  public CrpIndicatorsValidator(GlobalUnitManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpLiaisonInstitution ipLiaisonInstitution, long crpID) {

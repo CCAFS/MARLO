@@ -17,11 +17,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomePandrManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -48,10 +45,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,16 +67,12 @@ public class ProjectOutcomesPandRAction extends BaseAction {
    */
 
   // Manager
-  private ProjectManager projectManager;
-  private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgrammManager;
-  private ProjectOutcomePandrManager projectOutcomePandrManager;
-  private IpElementManager ipElementManager;
-  private FileDBManager fileDBManager;
+  private final ProjectManager projectManager;
+  private final ProjectOutcomePandrManager projectOutcomePandrManager;
+  private final FileDBManager fileDBManager;
+  private final ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
-
-  private ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
 
   private List<Integer> allYears;
 
@@ -95,22 +89,17 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   private String transaction;
 
-  private HistoryComparator historyComparator;
-  private AuditLogManager auditLogManager;
+  private final HistoryComparator historyComparator;
+  private final AuditLogManager auditLogManager;
 
 
   @Inject
-  public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager,
-    InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
+  public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager, AuditLogManager auditLogManager,
     GlobalUnitManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
-    HistoryComparator historyComparator, IpElementManager ipElementManager,
-    ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
+    HistoryComparator historyComparator, ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.projectOutcomePandrManager = projectOutcomePandrManager;
-    this.ipElementManager = ipElementManager;
     this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     this.crpManager = crpManager;
@@ -507,11 +496,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
   }
 
   public void setTransaction(String transaction) {

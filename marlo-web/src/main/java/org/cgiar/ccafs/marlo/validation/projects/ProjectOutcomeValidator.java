@@ -38,23 +38,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectOutcomeValidator extends BaseValidator {
 
-  private ProjectManager projectManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final ProjectManager projectManager;
+  private final CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
-  @Inject
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
   @Inject
-  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
+  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    GlobalUnitManager crpManager) {
 
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID) {

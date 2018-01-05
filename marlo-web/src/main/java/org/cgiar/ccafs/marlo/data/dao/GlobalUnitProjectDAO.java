@@ -16,14 +16,10 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.GlobalUnitProjectMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
-@ImplementedBy(GlobalUnitProjectMySQLDAO.class)
 public interface GlobalUnitProjectDAO {
 
   /**

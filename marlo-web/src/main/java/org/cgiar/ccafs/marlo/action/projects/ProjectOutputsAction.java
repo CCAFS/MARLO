@@ -49,10 +49,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -89,7 +90,7 @@ public class ProjectOutputsAction extends BaseAction {
   private GlobalUnit loggedCrp;
 
   private String transaction;
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
 
   @Inject
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
@@ -98,8 +99,6 @@ public class ProjectOutputsAction extends BaseAction {
     ProjectOutputsValidator projectOutputsValidator, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.ipProjectContributionOverviewManager = ipProjectContributionOverviewManager;
     this.ipElementManager = ipElementManager;
     this.historyComparator = historyComparator;
@@ -444,11 +443,6 @@ public class ProjectOutputsAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
   }
 
   public void setTransaction(String transaction) {

@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.hibernate.SessionFactory;
 
 public class GlobalUnitTypeMySQLDAO extends AbstractMarloDAO<GlobalUnitType, Long> implements GlobalUnitTypeDAO {

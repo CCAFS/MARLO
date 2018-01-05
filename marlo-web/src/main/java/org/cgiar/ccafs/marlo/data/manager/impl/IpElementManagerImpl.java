@@ -23,11 +23,13 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class IpElementManagerImpl implements IpElementManager {
 
 

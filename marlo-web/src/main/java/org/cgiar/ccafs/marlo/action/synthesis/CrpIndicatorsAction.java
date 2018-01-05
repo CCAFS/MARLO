@@ -46,10 +46,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -65,11 +66,11 @@ public class CrpIndicatorsAction extends BaseAction {
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
-  private IpLiaisonInstitutionManager liaisonInstitutionManager;
+  private final IpLiaisonInstitutionManager liaisonInstitutionManager;
 
-  private CrpIndicatorReportManager indicatorsReportManager;
+  private final CrpIndicatorReportManager indicatorsReportManager;
 
-  private CrpIndicatorTypeManager crpIndicatorTypeManager;
+  private final CrpIndicatorTypeManager crpIndicatorTypeManager;
 
 
   // Model for the front-end
@@ -80,9 +81,9 @@ public class CrpIndicatorsAction extends BaseAction {
 
   private String transaction;
 
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
   private List<CrpIndicatorType> indicatorsType;
-  private UserManager userManager;
+  private final UserManager userManager;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
   private Long liaisonInstitutionID;

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ParameterManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ParameterManagerImpl.class)
+
 public interface ParameterManager {
 
 

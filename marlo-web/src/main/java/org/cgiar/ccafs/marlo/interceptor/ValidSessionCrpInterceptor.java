@@ -26,7 +26,8 @@ import org.cgiar.ccafs.marlo.security.UserToken;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;

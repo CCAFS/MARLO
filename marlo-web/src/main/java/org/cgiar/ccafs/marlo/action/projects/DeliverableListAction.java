@@ -38,8 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -126,9 +127,12 @@ public class DeliverableListAction extends BaseAction {
   @Override
   public String delete() {
 
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      Long
+        .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);

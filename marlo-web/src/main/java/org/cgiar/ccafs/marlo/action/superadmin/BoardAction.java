@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -42,8 +42,8 @@ public class BoardAction extends BaseAction {
   private HashMap<Long, String> idoList;
 
 
-  private SrfTargetUnitManager srfTargetUnitManager;
-  private CrpTargetUnitManager crpTargetUnitManager;
+  private final SrfTargetUnitManager srfTargetUnitManager;
+  private final CrpTargetUnitManager crpTargetUnitManager;
 
 
   private List<SrfTargetUnit> targetUnitList;

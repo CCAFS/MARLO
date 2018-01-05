@@ -25,7 +25,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -38,9 +38,9 @@ public class SiteIntegrationAction extends BaseAction {
   private HashMap<Long, String> idoList;
 
 
-  private SrfSloManager srfSloManager;
+  private final SrfSloManager srfSloManager;
 
-  private SrfCrossCuttingIssueManager srfCrossCuttingIssueManager;
+  private final SrfCrossCuttingIssueManager srfCrossCuttingIssueManager;
 
   private List<SrfSlo> slosList;
 

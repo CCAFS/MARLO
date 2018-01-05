@@ -28,9 +28,11 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -39,10 +41,10 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
   private static final long serialVersionUID = 8386352290491092445L;
 
-  private ICenterOutputManager outputService;
-  private ICenterProgramManager programService;
+  private final ICenterOutputManager outputService;
+  private final ICenterProgramManager programService;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private GlobalUnit researchCenter;
 
@@ -64,7 +66,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
     researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
-      outputID = Long.parseLong(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]);
+      // outputID = Long.parseLong(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]);
+      outputID = Long.parseLong(parameters.get(APConstants.OUTPUT_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }
@@ -109,8 +112,9 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
             }
           }
 
-          if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-            String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+            // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+            String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
             editParameter = stringEditable.equals("true");
             // If the user is not asking for edition privileges we don't need to validate them.
             if (!editParameter) {
