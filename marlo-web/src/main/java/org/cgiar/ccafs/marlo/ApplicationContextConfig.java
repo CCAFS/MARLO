@@ -39,14 +39,17 @@ public class ApplicationContextConfig {
   /**
    * Returns a LocalizedTextProvider to be used by our internationalization interceptor.
    * 
-   * @hjimenez : this beans does not work. temporally solution is down the struts version to 2.5.10, to able the merge
-   *           whit annuality branch
    * @return
    */
-  // @Bean
-  // public LocalizedTextProvider getLocalizedTextProvider() {
-  // // If this is not suitable try the GlobalLocalizedTextProvider
-  // return new StrutsLocalizedTextProvider();
-  // }
+
+  /*
+   * this beans does not work. temporally solution is down the struts version to 2.5.10, to able the merge
+   * + * whit annuality branch
+   * @Bean
+   * public LocalizedTextProvider getLocalizedTextProvider() {
+   * // If this is not suitable try the GlobalLocalizedTextProvider
+   * return new StrutsLocalizedTextProvider();
+   * }
+   */
 
 }
