@@ -25,32 +25,27 @@ import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
-import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian David Garcia Oviedo. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectHighLightValidator extends BaseValidator {
 
-  private ProjectValidator projectValidator;
-  private boolean fields = false;
-
+  private final CrpManager crpManager;
 
   @Inject
-  private CrpManager crpManager;
-
-  @Inject
-  public ProjectHighLightValidator(ProjectValidator projectValidator) {
+  public ProjectHighLightValidator(CrpManager crpManager) {
     super();
-    this.projectValidator = projectValidator;
+    this.crpManager = crpManager;
   }
 
   /**

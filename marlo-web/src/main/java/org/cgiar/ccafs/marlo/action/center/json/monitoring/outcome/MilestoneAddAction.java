@@ -36,9 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -76,9 +77,11 @@ public class MilestoneAddAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    Map<String, Object> parameters = ActionContext.getContext().getParameters();
+    // Map<String, Object> parameters = ActionContext.getContext().getParameters();
+    Map<String, Parameter> parameters = ActionContext.getContext().getParameters();
 
-    outcomeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(OUTCOME_ID))[0]));
+    // outcomeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(OUTCOME_ID))[0]));
+    outcomeID = Long.parseLong(StringUtils.trim(parameters.get(OUTCOME_ID).getMultipleValues()[0]));
 
     CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
 
@@ -91,21 +94,29 @@ public class MilestoneAddAction extends BaseAction {
     milestone.setModifiedBy(this.getCurrentUser());
     milestone.setImpactPathway(false);
 
+    // CenterTargetUnit targetUnit = targetUnitService.getTargetUnitById(Long.parseLong(StringUtils.trim(((String[])
+    // parameters.get(TARGET_UNIT))[0])));
+
     CenterTargetUnit targetUnit = targetUnitService
-      .getTargetUnitById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(TARGET_UNIT))[0])));
+      .getTargetUnitById(Long.parseLong(StringUtils.trim(parameters.get(TARGET_UNIT).getMultipleValues()[0])));
+
     milestone.setTargetUnit(targetUnit);
     milestoneData.put("targetUnitId", targetUnit.getId());
     if (targetUnit.getId() != -1) {
-      milestone
-        .setValue(BigDecimal.valueOf(Double.parseDouble(StringUtils.trim(((String[]) parameters.get(VALUE))[0]))));
+      // milestone.setValue(BigDecimal.valueOf(Double.parseDouble(StringUtils.trim(((String[])
+      // parameters.get(VALUE))[0]))));
+      milestone.setValue(
+        BigDecimal.valueOf(Double.parseDouble(StringUtils.trim(parameters.get(VALUE).getMultipleValues()[0]))));
       milestoneData.put("value", milestone.getValue());
     } else {
       milestone.setValue(null);
     }
 
-    milestone.setTargetYear(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(YEAR))[0])));
+    // milestone.setTargetYear(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(YEAR))[0])));
+    milestone.setTargetYear(Integer.parseInt(StringUtils.trim(parameters.get(YEAR).getMultipleValues()[0])));
     milestoneData.put("targetYear", milestone.getTargetYear());
-    milestone.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
+    // milestone.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
+    milestone.setTitle(StringUtils.trim(parameters.get(TITLE).getMultipleValues()[0]));
     milestoneData.put("title", milestone.getTitle());
 
     milestone = milestoneService.saveCenterMilestone(milestone);

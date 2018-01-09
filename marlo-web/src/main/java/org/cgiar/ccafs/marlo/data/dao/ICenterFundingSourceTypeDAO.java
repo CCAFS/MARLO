@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterFundingSourceTypeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterFundingSourceTypeDAO.class)
 public interface ICenterFundingSourceTypeDAO {
 
   /**

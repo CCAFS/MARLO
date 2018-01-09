@@ -60,9 +60,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -938,7 +940,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (crpProgramDb.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
             List<UserRole> fplUserRoles =
               user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
-            if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(fplUserRoles)) {
               for (UserRole userRole : fplUserRoles) {
                 userRoleManager.deleteUserRole(userRole.getId());
                 userRole.setUser(userManager.getUser(userRole.getUser().getId()));
@@ -981,7 +983,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (crpProgramDb.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
             List<UserRole> fplUserRoles =
               user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fpmRole)).collect(Collectors.toList());
-            if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(fplUserRoles)) {
               for (UserRole userRole : fplUserRoles) {
                 userRoleManager.deleteUserRole(userRole.getId());
                 userRole.setUser(userManager.getUser(userRole.getUser().getId()));

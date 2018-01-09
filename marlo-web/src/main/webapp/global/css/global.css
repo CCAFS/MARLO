@@ -1158,7 +1158,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel span.listButton, .budget span.listButton {
   padding: 5px 8px;
   cursor: pointer;
-  position: absolute;
+  position: relative;
   margin-left: 15px;
 }
 

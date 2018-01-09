@@ -29,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,16 +94,19 @@ public class CrpClusterLeadersListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+
     // Verify if there is a programID parameter
-    if (parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID) == null) {
+    if (!parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID).isDefined()) {
       clusterId = "";
       return;
     }
 
 
     // If there is a parameter take its values
-    clusterId = StringUtils.trim(((String[]) parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID))[0]);
+    // clusterId = StringUtils.trim(((String[]) parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID))[0]);
+    clusterId = StringUtils.trim(parameters.get(APConstants.CRP_CLUSTER_ACTIVITY_ID).getMultipleValues()[0]);
   }
 
   public void setLeaders(List<Map<String, Object>> subIdos) {

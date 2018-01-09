@@ -18,7 +18,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpLocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
@@ -136,15 +135,16 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.slf4j.Logger;
@@ -187,6 +187,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean add;
 
 
+  /**
+   * Use field injection in BaseAction only. Subclasses should use constructor injection.
+   */
   @Inject
   private AuditLogManager auditLogManager;
 
@@ -238,8 +241,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private SrfTargetUnitManager targetUnitManager;
   @Inject
   private LocElementTypeManager locElementTypeManager;
-  @Inject
-  private CrpLocElementTypeManager crpLocElementTypeManager;
 
   @Inject
   private UserManager userManager;
@@ -267,7 +268,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private LiaisonUserManager liaisonUserManager;
 
   protected boolean next;
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
 
   private boolean planningActive;
   private int planningYear;
@@ -344,13 +345,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
 
-  @Inject
-  public BaseAction(APConfig config) {
-    this.config = config;
+  public BaseAction() {
     this.saveable = true;
     this.fullEditable = true;
     this.justification = "";
   }
+
+  public BaseAction(APConfig config) {
+    this();
+    this.config = config;
+  }
+
 
   /* Override this method depending of the save action. */
   public String add() {
@@ -1594,7 +1599,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public Map<String, Object> getParameters() {
+  public Map<String, Parameter> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
@@ -1721,58 +1726,63 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
+        if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+          return true;
+        } else {
+          List<Deliverable> deliverables =
+            project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+          List<Deliverable> openA = new ArrayList<>();
 
-        List<Deliverable> deliverables =
-          project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<Deliverable> openA = new ArrayList<>();
-
-        if (this.isPlanningActive()) {
-          openA =
-            deliverables.stream()
-              .filter(
-                a -> a.isActive()
-                  && ((a.getStatus() == null
+          if (this.isPlanningActive()) {
+            openA =
+              deliverables.stream()
+                .filter(
+                  a -> a.isActive() && ((a.getStatus() == null
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
-        } else {
-          openA = deliverables.stream()
-            .filter(a -> a.isActive()
-              && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getStatus().intValue() == 0))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
+          } else {
+            openA =
+              deliverables.stream()
+                .filter(a -> a.isActive() && ((a.getStatus() == null
+                  || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || a.getStatus().intValue() == 0))))
+                .collect(Collectors.toList());
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
-              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+                && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-          openA.addAll(deliverables.stream()
-            .filter(d -> d.isActive() && d.getNewExpectedYear() != null
-              && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
-              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            .collect(Collectors.toList()));
+            openA.addAll(deliverables.stream()
+              .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+                && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+                && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+              .collect(Collectors.toList()));
 
-        }
-        if (openA.isEmpty()) {
-          return false;
-        }
-        for (Deliverable deliverable : openA) {
-          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
-          if (sectionStatus == null) {
+          }
+          if (openA.isEmpty()) {
             return false;
           }
+          for (Deliverable deliverable : openA) {
+            sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            if (sectionStatus == null) {
+              return false;
+            }
 
-          if (sectionStatus.getMissingFields().length() != 0) {
-            return false;
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
+
           }
 
+          returnValue = true;
         }
 
-        returnValue = true;
+
         break;
 
       case ACTIVITIES:
@@ -2387,6 +2397,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         deliverable = deliverableManager.getDeliverableById(deliverable.getId());
       }
 
+      if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
+        deliverableSection = 1;
+        totalSections++;
+      }
       for (SectionStatus sectionStatus : sections) {
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
           && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
@@ -2394,9 +2408,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
             Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
-            if (openA.contains(a)) {
-              if (sectionStatus.getMissingFields().length() > 0) {
-                return false;
+            if (project.getAdministrative() != null && !project.getAdministrative().booleanValue()) {
+              if (openA.contains(a)) {
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
               }
             }
 
@@ -2412,6 +2428,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (sections.size() == 0) {
         return false;
       }
+
       if (this.isPlanningActive()) {
         for (SectionStatus sectionStatus : sections) {
           if (sectionStatus.getCycle().equals(this.getCurrentCycle())

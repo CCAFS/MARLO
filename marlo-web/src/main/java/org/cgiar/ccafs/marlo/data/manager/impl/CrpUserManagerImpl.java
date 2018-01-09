@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.CrpUser;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class CrpUserManagerImpl implements CrpUserManager {
 
 
@@ -44,6 +46,11 @@ public class CrpUserManagerImpl implements CrpUserManager {
   public void deleteCrpUser(long crpUserId) {
 
     crpUserDAO.deleteCrpUser(crpUserId);
+  }
+
+  @Override
+  public boolean existActiveCrpUser(long userId, long crpId) {
+    return crpUserDAO.existActiveCrpUser(userId, crpId);
   }
 
   @Override

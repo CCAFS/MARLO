@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -123,6 +123,26 @@ public class CrpPpaPartnersAction extends BaseAction {
   }
 
   /**
+   * Add Crp User if there is not any active.
+   * 
+   * @author avalencia - CCAFS
+   * @date Dec 20, 2017
+   * @time 9:56:52 AM
+   * @param user
+   */
+  private void addCrpUserIfNotExist(User user) {
+    if (!crpUserManager.existActiveCrpUser(user.getId(), loggedCrp.getId())) {
+      CrpUser crpUser = new CrpUser(loggedCrp, user);
+      crpUser.setActive(true);
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setActiveSince(new Date());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
+  }
+
+  /**
    * Add cpRole as a flag to avoid contact points
    * 
    * @author avalencia - CCAFS
@@ -186,6 +206,7 @@ public class CrpPpaPartnersAction extends BaseAction {
               if (!liaisonUser.getUser().isActive()) {
                 this.notifyNewUserCreated(liaisonUser.getUser());
               }
+              this.addCrpUserIfNotExist(liaisonUser.getUser());
               // add userRole
               if (cpRole != null) {
                 UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
@@ -324,13 +345,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       user.setActive(true);
       userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
-      CrpUser crpUser = new CrpUser(loggedCrp, user);
-      crpUser.setActive(true);
-      crpUser.setCreatedBy(this.getCurrentUser());
-      crpUser.setActiveSince(new Date());
-      crpUser.setModifiedBy(this.getCurrentUser());
-      crpUser.setModificationJustification("");
-      crpUserManager.saveCrpUser(crpUser);
+      this.addCrpUserIfNotExist(user);
 
       // Send UserManual.pdf
       String contentType = "application/pdf";
@@ -490,6 +505,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
+
   /**
    * Add cpRole as a flag to avoid contact points
    * 
@@ -567,24 +583,27 @@ public class CrpPpaPartnersAction extends BaseAction {
             liaisonInstitution.setAcronym(partner.getInstitution().getAcronym());
             liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
           }
-          for (LiaisonUser liaisonUser : partner.getContactPoints()) {
-            // new User?
-            if (liaisonUser.getId() == null || !partner.getContactPoints().contains(liaisonUser)) {
-              // Add liaisonUser
-              LiaisonUser liaisonUserSave =
-                new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
-              liaisonUserSave.setCrp(loggedCrp);
-              liaisonUserSave.setActive(true);
-              liaisonUserManager.saveLiaisonUser(liaisonUserSave);
-              // If is new user active it
-              if (!liaisonUser.getUser().isActive()) {
-                this.notifyNewUserCreated(liaisonUser.getUser());
-              }
-              // add userRole
-              if (cpRole != null) {
-                UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
-                userRoleManager.saveUserRole(userRole);
-                this.notifyRoleContactPointAssigned(userRole, partner);
+          if (partner.getContactPoints() != null && partner.getContactPoints().size() > 0) {
+            for (LiaisonUser liaisonUser : partner.getContactPoints()) {
+              // new User?
+              if (liaisonUser.getId() == null || !partner.getContactPoints().contains(liaisonUser)) {
+                // Add liaisonUser
+                LiaisonUser liaisonUserSave =
+                  new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
+                liaisonUserSave.setCrp(loggedCrp);
+                liaisonUserSave.setActive(true);
+                liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+                // If is new user active it
+                if (!liaisonUser.getUser().isActive()) {
+                  this.notifyNewUserCreated(liaisonUser.getUser());
+                }
+                this.addCrpUserIfNotExist(liaisonUser.getUser());
+                // add userRole
+                if (cpRole != null) {
+                  UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                  userRoleManager.saveUserRole(userRole);
+                  this.notifyRoleContactPointAssigned(userRole, partner);
+                }
               }
             }
           }

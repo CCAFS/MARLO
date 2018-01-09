@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class IpLiaisonInstitutionMySQLDAO extends AbstractMarloDAO<IpLiaisonInstitution, Long> implements IpLiaisonInstitutionDAO {
 
 

@@ -14,18 +14,16 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterOutcomeManager.class)
+
 public interface ICenterOutcomeManager {
 
 

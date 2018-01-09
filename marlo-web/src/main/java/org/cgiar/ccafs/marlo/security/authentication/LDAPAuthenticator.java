@@ -24,7 +24,9 @@ import org.cgiar.ciat.auth.LDAPService;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +35,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named("LDAP")
 public class LDAPAuthenticator implements Authenticator {
 
   public static Logger LOG = LoggerFactory.getLogger(LDAPAuthenticator.class);
 
 
-  private APConfig config;
+  private final APConfig config;
   private Map<String, Object> looged;
 
   @Inject

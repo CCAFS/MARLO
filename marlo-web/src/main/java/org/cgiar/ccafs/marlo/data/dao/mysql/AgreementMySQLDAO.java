@@ -19,10 +19,12 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 
+@Named
 public class AgreementMySQLDAO extends AbstractMarloDAO<Agreement, String> implements AgreementDAO {
 
   @Inject

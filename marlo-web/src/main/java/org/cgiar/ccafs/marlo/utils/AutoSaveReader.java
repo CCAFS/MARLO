@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ public class AutoSaveReader {
 
   public static Logger LOG = LoggerFactory.getLogger(AutoSaveReader.class);
 
-  @Inject
   public AutoSaveReader() {
   }
 
