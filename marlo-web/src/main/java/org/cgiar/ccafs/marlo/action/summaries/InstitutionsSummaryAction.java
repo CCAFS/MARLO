@@ -78,6 +78,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     masterReport.getParameterValues().put("i8nType", this.getText("summaries.partners.type"));
     masterReport.getParameterValues().put("i8nCountry", this.getText("summaries.partners.country"));
     masterReport.getParameterValues().put("i8nProjects", this.getText("caseStudy.projects"));
+    masterReport.getParameterValues().put("i8nProjectsTitle", this.getText("summaries.partners.projectTitle"));
     masterReport.getParameterValues().put("i8nCoas", this.getText("deliverable.coas"));
     masterReport.getParameterValues().put("i8nFlagships", this.getText("project.Flagships"));
     masterReport.getParameterValues().put("i8nRegions", this.getText("project.Regions"));

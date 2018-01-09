@@ -111,6 +111,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
@@ -137,6 +138,7 @@ import org.slf4j.LoggerFactory;
  * @date Nov 8, 2017
  * @time 10:30:10 AM: get deliverable dissemination from RepositoryChannel table
  */
+@Named
 public class ReportingSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;

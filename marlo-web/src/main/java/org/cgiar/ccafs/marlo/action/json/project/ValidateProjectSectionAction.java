@@ -90,6 +90,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -99,6 +100,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ValidateProjectSectionAction extends BaseAction {
 
 
