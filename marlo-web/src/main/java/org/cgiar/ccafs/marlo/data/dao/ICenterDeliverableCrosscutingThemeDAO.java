@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterDeliverableCrosscutingThemeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterDeliverableCrosscutingThemeDAO.class)
 public interface ICenterDeliverableCrosscutingThemeDAO {
 
   /**
@@ -89,6 +86,6 @@ public interface ICenterDeliverableCrosscutingThemeDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme, String actionName,
-    List<String> relationsName);
+  public CenterDeliverableCrosscutingTheme save(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme,
+    String actionName, List<String> relationsName);
 }

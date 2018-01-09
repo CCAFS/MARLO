@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
-import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -40,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
-import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -66,7 +64,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -101,7 +101,6 @@ public class CrpProgamRegionsAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
-  private CustomParameterManager crpParameterManager;
   private CrpUserManager crpUserManager;
   // Variables
   private Crp loggedCrp;
@@ -109,7 +108,6 @@ public class CrpProgamRegionsAction extends BaseAction {
   private long pmuRol;
   private List<LocElement> countriesList;
   private List<CrpProgram> regionsPrograms;
-  private List<CustomParameter> parameters;
   private LocElementManager locElementManger;
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private CrpProgramCountryManager crpProgramCountryManager;
@@ -133,17 +131,16 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager, CustomParameterManager crpParameterManager,
-    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
-    CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMailS sendMail, LiaisonUserManager liaisonUserManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, CrpUserManager crpUserManager) {
+    CrpProgramManager crpProgramManager, CrpManager crpManager, CrpProgramLeaderManager crpProgramLeaderManager,
+    UserManager userManager, LocElementManager locElementManger, CrpProgramCountryManager crpProgramCountryManager,
+    CrpSitesLeaderManager crpSitesLeaderManager, CrpsSiteIntegrationManager crpsSiteIntegrationManager,
+    SendMailS sendMail, LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.crpManager = crpManager;
     this.crpProgramManager = crpProgramManager;
-    this.crpParameterManager = crpParameterManager;
     this.userManager = userManager;
     this.locElementManger = locElementManger;
     this.crpProgramLeaderManager = crpProgramLeaderManager;
@@ -599,7 +596,7 @@ public class CrpProgamRegionsAction extends BaseAction {
             if (crpProgramPrev.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
               List<UserRole> fplUserRoles =
                 user.getUserRoles().stream().filter(ur -> ur.getRole().equals(rpmRole)).collect(Collectors.toList());
-              if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+              if (CollectionUtils.isNotEmpty(fplUserRoles)) {
                 for (UserRole userRole : fplUserRoles) {
                   userRoleManager.deleteUserRole(userRole.getId());
                   userRole.setUser(userManager.getUser(userRole.getUser().getId()));

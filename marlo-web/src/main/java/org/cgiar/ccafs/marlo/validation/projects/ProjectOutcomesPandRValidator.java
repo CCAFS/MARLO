@@ -30,12 +30,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectOutcomesPandRValidator extends BaseValidator {
 
-
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
   public ProjectOutcomesPandRValidator(CrpManager crpManager) {

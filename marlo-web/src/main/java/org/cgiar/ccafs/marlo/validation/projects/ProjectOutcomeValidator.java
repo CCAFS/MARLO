@@ -38,20 +38,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectOutcomeValidator extends BaseValidator {
 
-  private ProjectManager projectManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
-
-  @Inject
-  private CrpManager crpManager;
+  private final ProjectManager projectManager;
+  private final CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
-
+  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }

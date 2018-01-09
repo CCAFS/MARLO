@@ -24,8 +24,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * Service for get the OCS info through of the OCS Web services.
@@ -77,8 +78,11 @@ public class OcsServiceAction extends BaseAction {
    * Get the OCS code send by http request parameter.
    */
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    ocsCode = (StringUtils.trim(((String[]) parameters.get(APConstants.OCS_CODE_REQUEST_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // ocsCode = (StringUtils.trim(((String[]) parameters.get(APConstants.OCS_CODE_REQUEST_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    ocsCode = (StringUtils.trim(parameters.get(APConstants.OCS_CODE_REQUEST_ID).getMultipleValues()[0]));
   }
 
 

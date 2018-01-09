@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterCustomParameterDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterCustomParameterDAO.class)
 public interface ICenterCustomParameterDAO {
 
   /**
@@ -87,5 +84,6 @@ public interface ICenterCustomParameterDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterCustomParameter save(CenterCustomParameter centerCustomParameter, String actionName, List<String> relationsName);
+  public CenterCustomParameter save(CenterCustomParameter centerCustomParameter, String actionName,
+    List<String> relationsName);
 }

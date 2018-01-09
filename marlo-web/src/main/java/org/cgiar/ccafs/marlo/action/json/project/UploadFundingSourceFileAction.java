@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.File;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +46,6 @@ public class UploadFundingSourceFileAction extends BaseAction {
 
   // Manager
 
-  private FileDBManager fileDBManager;
-
-
   // Model
   private File file;
   private String fileContentType;
@@ -62,12 +59,8 @@ public class UploadFundingSourceFileAction extends BaseAction {
 
 
   @Inject
-  public UploadFundingSourceFileAction(APConfig config, FileDBManager fileDBManager) {
+  public UploadFundingSourceFileAction(APConfig config) {
     super(config);
-
-    this.fileDBManager = fileDBManager;
-    this.config = config;
-
   }
 
 

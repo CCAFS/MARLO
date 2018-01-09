@@ -25,8 +25,10 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.util.Date;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * RejectPartnerRequestAction:
@@ -47,13 +49,13 @@ public class RejectPartnerRequestAction extends BaseAction {
 
 
   // Managers
-  private PartnerRequestManager partnerRequestManager;
+  private final PartnerRequestManager partnerRequestManager;
 
   // Variables
   private String requestID;
   private String justification;
   private boolean success;
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
   private boolean sendNotification;
 
   @Inject
@@ -108,17 +110,16 @@ public class RejectPartnerRequestAction extends BaseAction {
   public void prepare() throws Exception {
     success = true;
     try {
-      Map<String, Object> parameters = this.getParameters();
-      justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
-      requestID = StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_ID))[0]);
-      sendNotification = Boolean
-        .valueOf(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION))[0]));
+      Map<String, Parameter> parameters = this.getParameters();
+      justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
+      requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
+      sendNotification = Boolean.valueOf(
+        StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;
     }
   }
-
 
   private void sendRejectedNotficationEmail(PartnerRequest partnerRequest) {
     String toEmail = "";

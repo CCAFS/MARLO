@@ -41,7 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,17 +75,17 @@ public class GuestUsersAction extends BaseAction {
 
   private final Logger LOG = LoggerFactory.getLogger(GuestUsersAction.class);
 
-  private UserManager userManager;
+  private final UserManager userManager;
 
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
-  private UserRoleManager userRoleManager;
+  private final UserRoleManager userRoleManager;
 
-  private CrpUserManager crpUserManager;
-  private RoleManager roleManager;
+  private final CrpUserManager crpUserManager;
+  private final RoleManager roleManager;
 
-  private SendMailS sendMailS;
+  private final SendMailS sendMailS;
 
   private User user;
 

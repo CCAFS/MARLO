@@ -17,17 +17,15 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(AuditLogMySQLDao.class)
+
 public interface AuditLogDao {
 
   /**

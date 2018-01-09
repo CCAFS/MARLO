@@ -21,8 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
@@ -105,10 +103,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,8 +138,6 @@ public class DeliverableAction extends BaseAction {
 
 
   private CrpManager crpManager;
-
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
   private Map<String, String> crps;
@@ -188,6 +185,7 @@ public class DeliverableAction extends BaseAction {
 
 
   private List<DeliverableType> deliverableSubTypes;
+  private Boolean has_specific_management_deliverables;
 
 
   // Managers
@@ -200,8 +198,6 @@ public class DeliverableAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-
-  private CrpProgramManager crpProgramManager;
 
   private GenderTypeManager genderTypeManager;
 
@@ -260,13 +256,13 @@ public class DeliverableAction extends BaseAction {
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableManager deliverableManager,
     CrpManager crpManager, ProjectManager projectManager, ProjectPartnerPersonManager projectPartnerPersonManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
-    DeliverablePartnershipManager deliverablePartnershipManager, AuditLogManager auditLogManager,
-    DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
-    FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
+    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
+    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
+    DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     DeliverableUserManager deliverableUserManager, GenderTypeManager genderTypeManager,
     HistoryComparator historyComparator, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
@@ -280,13 +276,11 @@ public class DeliverableAction extends BaseAction {
     this.crpManager = crpManager;
     this.historyComparator = historyComparator;
     this.deliverableUserManager = deliverableUserManager;
-    this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
-    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.auditLogManager = auditLogManager;
@@ -747,6 +741,8 @@ public class DeliverableAction extends BaseAction {
        * but we need to revisit to see if we should continue processing or re-throw the exception.
        */
     }
+    has_specific_management_deliverables =
+      this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
 
     divisions = new ArrayList<>(
       partnerDivisionManager.findAll().stream().filter(pd -> pd.isActive()).collect(Collectors.toList()));
@@ -1046,9 +1042,11 @@ public class DeliverableAction extends BaseAction {
 
       if (project.getAdministrative() != null && project.getAdministrative().booleanValue()) {
 
-        deliverableTypeParent.addAll(deliverableTypeManager.findAll().stream()
-          .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null && dt.getAdminType().booleanValue())
-          .collect(Collectors.toList()));
+        deliverableTypeParent
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+              && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1123,7 +1121,7 @@ public class DeliverableAction extends BaseAction {
 
         }
       }
-      Set<FundingSource> hs = new HashSet();
+      Set<FundingSource> hs = new HashSet<>();
       hs.addAll(this.fundingSources);
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);

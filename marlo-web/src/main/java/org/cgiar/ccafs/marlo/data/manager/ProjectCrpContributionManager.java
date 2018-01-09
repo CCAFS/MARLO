@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectCrpContributionManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectCrpContributionManagerImpl.class)
+
 public interface ProjectCrpContributionManager {
 
 
@@ -66,7 +64,8 @@ public interface ProjectCrpContributionManager {
    * This method saves the information of the given projectCrpContribution
    * 
    * @param projectCrpContribution - is the projectCrpContribution object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectCrpContribution was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectCrpContribution
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

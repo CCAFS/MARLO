@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterRegionDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterRegionDAO.class)
 public interface ICenterRegionDAO {
 
   /**

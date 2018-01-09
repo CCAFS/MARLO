@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectPartnerLocationMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectPartnerLocationMySQLDAO.class)
 public interface ProjectPartnerLocationDAO {
 
   /**
@@ -62,7 +59,8 @@ public interface ProjectPartnerLocationDAO {
    * This method saves the information of the given projectPartnerLocation
    * 
    * @param projectPartnerLocation - is the projectPartnerLocation object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPartnerLocation was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectPartnerLocation
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

@@ -20,13 +20,15 @@ import org.cgiar.ccafs.marlo.data.model.Center;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
+@Named
 public class CenterDAO extends AbstractMarloDAO<Center, Long> implements ICenterDAO {
 
 

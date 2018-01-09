@@ -24,8 +24,10 @@ import java.util.Map;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 import com.opensymphony.xwork2.interceptor.MethodFilterInterceptor;
-import org.apache.struts2.dispatcher.ServletActionRedirectResult;
-import org.apache.struts2.dispatcher.ServletRedirectResult;
+// import org.apache.struts2.dispatcher.ServletActionRedirectResult;
+import org.apache.struts2.result.ServletActionRedirectResult;
+// import org.apache.struts2.dispatcher.ServletRedirectResult;
+import org.apache.struts2.result.ServletRedirectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

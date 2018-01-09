@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CrpUserManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CrpUserManagerImpl.class)
+
 public interface CrpUserManager {
 
 
@@ -36,6 +34,15 @@ public interface CrpUserManager {
    */
   public void deleteCrpUser(long crpUserId);
 
+
+  /**
+   * This method get the crpUser if the user-crp relation exist and is active.
+   * 
+   * @param userId is the user id
+   * @param crpId is the crp id
+   * @return true if the CrpUser exists and is_active; false otherwise
+   */
+  public boolean existActiveCrpUser(long userId, long crpId);
 
   /**
    * This method validate if the crpUser identify with the given id exists in the system.

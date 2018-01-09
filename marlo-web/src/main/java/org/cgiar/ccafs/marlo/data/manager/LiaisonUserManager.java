@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.LiaisonUserManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(LiaisonUserManagerImpl.class)
+
 public interface LiaisonUserManager {
 
 

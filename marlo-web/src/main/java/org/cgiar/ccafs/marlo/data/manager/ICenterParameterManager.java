@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CenterParameter;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterParameterManager.class)
+
 public interface ICenterParameterManager {
 
 
@@ -88,7 +86,8 @@ public interface ICenterParameterManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterParameter saveCenterParameter(CenterParameter centerParameter, String actionName, List<String> relationsName);
+  public CenterParameter saveCenterParameter(CenterParameter centerParameter, String actionName,
+    List<String> relationsName);
 
 
 }
