@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -45,11 +46,11 @@ public class ProjectLeaderEditAction extends BaseAction {
   private long projectId;
   private boolean projectStatus;
   private Map<String, Object> status;
-  private ValidateProjectSectionAction validateProject;
+  private ProjectSectionValidator<ProjectLeaderEditAction> validateProject;
 
   @Inject
   public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager,
-    SectionStatusManager sectionStatusManager, ValidateProjectSectionAction validateProject) {
+    SectionStatusManager sectionStatusManager, ProjectSectionValidator<ProjectLeaderEditAction> validateProject) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
@@ -70,37 +71,33 @@ public class ProjectLeaderEditAction extends BaseAction {
 
       status.put("status", project.isProjectEditLeader());
       status.put("ok", true);
-      validateProject.setProjectID(projectId);
-      validateProject.setExistProject(true);
-      validateProject.setValidSection(true);
-      validateProject.setCrpID(this.getCrpID());
-      validateProject.setSession(this.getSession());
+
       for (ProjectSectionStatusEnum projectSectionStatusEnum : ProjectSectionStatusEnum.values()) {
         switch (projectSectionStatusEnum) {
           case LOCATIONS:
-            validateProject.validateProjectLocations();
+            validateProject.validateProjectLocations(this, this.projectId);
             break;
           case DESCRIPTION:
-            validateProject.validateProjectDescription();
+            validateProject.validateProjectDescription(this, this.projectId);
             break;
           case ACTIVITIES:
-            validateProject.validateProjectActivities();
+            validateProject.validateProjectActivities(this, this.projectId);
             break;
           case PARTNERS:
-            validateProject.validateProjectParnters();
+            validateProject.validateProjectParnters(this, this.projectId, this.getCurrentCrp());
           case BUDGET:
-            validateProject.validateProjectBudgets();
+            validateProject.validateProjectBudgets(this, this.projectId);
             break;
           case BUDGETBYCOA:
-            validateProject.validateProjectBudgetsCoAs();
+            validateProject.validateProjectBudgetsCoAs(this, this.projectId);
             break;
 
           case DELIVERABLES:
-            validateProject.validateProjectDeliverables();
+            validateProject.validateProjectDeliverables(this, this.projectId);
             break;
 
           case OUTCOMES:
-            validateProject.validateProjectOutcomes();
+            validateProject.validateProjectOutcomes(this, this.projectId);
             break;
 
           default:
