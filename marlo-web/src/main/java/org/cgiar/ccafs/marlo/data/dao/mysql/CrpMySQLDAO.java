@@ -20,13 +20,10 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 
 import java.util.List;
 
-<<<<<<< HEAD
-import com.google.inject.Inject;
-import org.hibernate.Query;
-=======
-import javax.inject.Named;
 import javax.inject.Inject;
->>>>>>> 526eac1563be62614621b474c5f4baed2a9e2a0d
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 /**
