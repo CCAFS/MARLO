@@ -30,8 +30,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -123,6 +123,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       outcomeAdd.setYear(outcome.getYear());
       outcomeAdd.setDescription(outcome.getDescription());
       outcomeAdd.setComposeID(outcome.getComposeID());
+      outcomeAdd.setIndicator(outcome.getIndicator());
       crpProgramOutcomeDAO.save(outcomeAdd);
       this.addCrpSubIdos(outcome, outcomeAdd);
       this.addCrpMilestones(outcome, outcomeAdd);
@@ -134,6 +135,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           outcomePrev.setValue(outcome.getValue());
           outcomePrev.setYear(outcome.getYear());
           outcomePrev.setDescription(outcome.getDescription());
+          outcomePrev.setIndicator(outcome.getIndicator());
           crpProgramOutcomeDAO.save(outcomePrev);
           this.updateCrpSubIdos(outcomePrev, outcome);
           this.updateMilestones(outcomePrev, outcome);
