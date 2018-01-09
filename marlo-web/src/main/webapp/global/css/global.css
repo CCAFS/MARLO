@@ -2776,6 +2776,7 @@ p.login-description{
 }
 
 .loginForm p.invalidEmail{
+  position: absolute;
   font-size: 12px;
   color: red;
 }
