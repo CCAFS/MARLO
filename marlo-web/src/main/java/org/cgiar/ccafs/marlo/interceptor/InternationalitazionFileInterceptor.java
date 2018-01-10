@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -68,12 +69,19 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       language = (String) session.get(APConstants.CRP_LANGUAGE);
     }
 
-
     Locale locale = new Locale(language);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
 
     this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
 
-    // LocalizedTextUtil.reset();
+
     ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
