@@ -166,7 +166,6 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -1062,43 +1061,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the actual phase of the crp
    */
   public Phase getActualPhase() {
-    /*
-     * try {
-     * if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
-     * return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
-     * } else {
-     * Phase phase =
-     * phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
-     * this.getSession().put(APConstants.CURRENT_PHASE, phase);
-     * return phase;
-     * }
-     * } catch (Exception e) {
-     * return new Phase(null, "", -1);
-     * }
-     */
 
-    Map<String, Parameter> parameters = this.getParameters();
     try {
-      if (this.getPhaseID() != null) {
-        Phase phase = phaseManager.getPhaseById(phaseID);
-        if (phase != null) {
-          return phase;
-        }
-
-      }
-      if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-        Phase phase = phaseManager.getPhaseById(phaseID);
-        return phase;
+      if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
+        return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
       } else {
         Phase phase =
           phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+        this.getSession().put(APConstants.CURRENT_PHASE, phase);
         return phase;
       }
     } catch (Exception e) {
       return new Phase(null, "", -1);
     }
 
+    /*
+     * Map<String, Parameter> parameters = this.getParameters();
+     * try {
+     * if (this.getPhaseID() != null) {
+     * Phase phase = phaseManager.getPhaseById(phaseID);
+     * if (phase != null) {
+     * return phase;
+     * }
+     * }
+     * if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
+     * long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+     * Phase phase = phaseManager.getPhaseById(phaseID);
+     * return phase;
+     * } else {
+     * Phase phase =
+     * phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+     * return phase;
+     * }
+     * } catch (Exception e) {
+     * return new Phase(null, "", -1);
+     * }
+     */
 
   }
 
