@@ -28,9 +28,12 @@
           <td class="justification">${(log.modificationJustification)!'Prefilled if available'}</td>
           <td class="view text-center">
             [#if !isSelected]
+            
+            [#if (log.available)!false]
             <a href="[@s.url][@s.param name=itemName value=itemId /][@s.param name="transactionId"]${log.transactionId}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
              <span class="glyphicon glyphicon-eye-open"></span> View 
             </a>
+            [/#if]
             [/#if]
           </td>
         </tr>
