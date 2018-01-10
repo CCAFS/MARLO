@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo;
 
+import com.opensymphony.xwork2.LocalizedTextProvider;
+import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,10 +45,10 @@ public class ApplicationContextConfig {
    *           whit annuality branch
    * @return
    */
-  // @Bean
-  // public LocalizedTextProvider getLocalizedTextProvider() {
-  // // If this is not suitable try the GlobalLocalizedTextProvider
-  // return new StrutsLocalizedTextProvider();
-  // }
+  @Bean
+  public LocalizedTextProvider getLocalizedTextProvider() {
+    // If this is not suitable try the GlobalLocalizedTextProvider
+    return new StrutsLocalizedTextProvider();
+  }
 
 }
