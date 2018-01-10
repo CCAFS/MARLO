@@ -77,6 +77,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID());
