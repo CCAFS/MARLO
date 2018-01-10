@@ -58,6 +58,7 @@ public class BaseValidator {
   public BaseValidator() {
     validationMessage = new StringBuilder();
     missingFields = new StringBuilder();
+
   }
 
   protected void addMessage(String message) {

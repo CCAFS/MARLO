@@ -65,7 +65,9 @@ public class PublicationValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     this.action = action;
 
