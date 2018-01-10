@@ -48,7 +48,10 @@ public class MarloLocalizedTextProvider extends GlobalLocalizedTextProvider {
         // Do nothing, not our responsibility to set up the bundles.
         return;
       }
-
+      /**
+       * Note that calling the resetResourceBundles does not seem to clear the bundles. It instead clears the bundlesMap
+       * but we in fact need to clear the map that is on the current thread context.
+       */
       bundles.clear();
       bundles.add(0, XWORK_MESSAGES_BUNDLE);
       bundles.add(0, STRUTS_MESSAGES_BUNDLE);
