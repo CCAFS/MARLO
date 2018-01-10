@@ -30,7 +30,7 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">FS${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">FS${project.id}</a>
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
@@ -38,10 +38,10 @@
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
             
             [#if project.fundingSourceInfo.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.fundingSourceInfo.title}">
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${project.fundingSourceInfo.title}">
               [#if project.fundingSourceInfo.title?length < 120] ${project.fundingSourceInfo.title}</a> [#else] [@utilities.wordCutter string=project.fundingSourceInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
-              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]
@@ -105,7 +105,7 @@
           [#-- Delete Project--]
           <td class="text-center">
             [#if (action.canBeDeleted(project.id, project.class.name) && action.canAddFunding() && !crpClosed) ||action.canAccessSuperAdmin()  && action.getActualPhase().editable]
-              <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="">
+              <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="">
                 <img src="${baseUrl}/global/images/trash.png"/> 
               </a>
             [#else]
@@ -149,7 +149,7 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">FS${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">FS${project.id}</a>
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
@@ -157,10 +157,10 @@
             [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
             
             [#if project.fundingSourceInfo.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.fundingSourceInfo.title}">
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${project.fundingSourceInfo.title}">
               [#if project.fundingSourceInfo.title?length < 120] ${project.fundingSourceInfo.title}</a> [#else] [@utilities.wordCutter string=project.fundingSourceInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
-              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]

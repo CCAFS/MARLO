@@ -56,7 +56,7 @@
           [#-- Add a new highlight --]
           [#if canEdit] 
           <div class="text-right"> 
-            <a class="button-blue" href="[@s.url action='${crpSession}/addNewHighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+            <a class="button-blue" href="[@s.url action='${crpSession}/addNewHighlight'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addHighlight" /]
             </a>
           </div>
@@ -90,7 +90,7 @@
     <tbody>
     [#if highlights?has_content]
         [#list highlights as hl]
-          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#assign]
+          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${hl.id}</a></td> 
             <td class="name"><a href="${dlurl}">[#if hl.title?trim?has_content]${hl.title}[#else]Untitled[/#if]</a></td>

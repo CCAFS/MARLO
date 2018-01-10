@@ -103,7 +103,7 @@
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
                       [/#list]
                     [#else]
-                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
+                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
                     [/#if]
 
                 
@@ -118,7 +118,7 @@
           [#else]
             <div class="simpleBox emptyMessage text-center">
               [@s.text name="projectBudgetByPartners.beforeFillingSections"]
-                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>[/@s.param]
+                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section </a>[/@s.param]
                 [@s.param]<span class="label label-success">save</span>[/@s.param]
               [/@s.text]
             </div>  
@@ -279,7 +279,7 @@
     </p> 
     
     [#if !isTemplate]
-    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][@s.param name="edit" value="true" /][/@s.url]" class="" target="_BLANK"> 
+    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK"> 
     [/#if]
       <p> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
     [#if !isTemplate]

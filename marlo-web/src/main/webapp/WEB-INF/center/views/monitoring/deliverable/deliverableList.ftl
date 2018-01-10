@@ -51,7 +51,7 @@
       [#-- Section Buttons --]
       <div class="buttons">
         <div class="buttons-content">        
-          <a class="addButton" href="[@s.url action='${(centerSession)!}/addNewDeliverable'][@s.param name='projectID']${projectID}[/@s.param][/@s.url]">[@s.text name="Add deliverable" /]</a>
+          <a class="addButton" href="[@s.url action='${(centerSession)!}/addNewDeliverable'][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="Add deliverable" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>

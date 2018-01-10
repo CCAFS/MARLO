@@ -97,7 +97,7 @@
     <tbody>
     [#if list?has_content]
         [#list list as item]
-          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/caseStudy' ][@s.param name='caseStudyID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#assign]
+          [#assign dlurl][@s.url namespace=namespace action='${crpSession}/caseStudy' ][@s.param name='caseStudyID']${item.id}[/@s.param][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
           <tr>
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name"><a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else]Untitled[/#if]</a></td>

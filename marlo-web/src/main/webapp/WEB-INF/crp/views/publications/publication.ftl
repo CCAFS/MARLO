@@ -34,7 +34,7 @@
     
     [#-- Back --]
     <small class="pull-left">
-      <a href="[@s.url action='${crpSession}/publicationsList'][/@s.url]">
+      <a href="[@s.url action='${crpSession}/publicationsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
         <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to publications
       </a>
     </small>

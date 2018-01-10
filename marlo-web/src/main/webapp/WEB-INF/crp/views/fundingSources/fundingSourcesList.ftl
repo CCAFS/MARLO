@@ -57,7 +57,7 @@
     [#-- Add --]
     <div class="buttons">
       <div class="buttons-content">
-        [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
+        [#if action.canAddFunding() && (!crpClosed) && action.getActualPhase().editable]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/addNewFundingSources' ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><span class="saveText">Add Funding Source </span></a>[/#if]
         <div class="clearfix"></div>
       </div>
     </div>
