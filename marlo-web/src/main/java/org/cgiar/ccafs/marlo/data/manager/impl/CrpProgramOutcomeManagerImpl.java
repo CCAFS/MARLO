@@ -129,18 +129,18 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       this.addCrpMilestones(outcome, outcomeAdd);
 
     } else {
-      if (phase.getEditable() != null && phase.getEditable()) {
-        for (CrpProgramOutcome outcomePrev : outcomes) {
-          outcomePrev.setSrfTargetUnit(outcome.getSrfTargetUnit());
-          outcomePrev.setValue(outcome.getValue());
-          outcomePrev.setYear(outcome.getYear());
-          outcomePrev.setDescription(outcome.getDescription());
-          outcomePrev.setIndicator(outcome.getIndicator());
-          crpProgramOutcomeDAO.save(outcomePrev);
-          this.updateCrpSubIdos(outcomePrev, outcome);
-          this.updateMilestones(outcomePrev, outcome);
-        }
+
+      for (CrpProgramOutcome outcomePrev : outcomes) {
+        outcomePrev.setSrfTargetUnit(outcome.getSrfTargetUnit());
+        outcomePrev.setValue(outcome.getValue());
+        outcomePrev.setYear(outcome.getYear());
+        outcomePrev.setDescription(outcome.getDescription());
+        outcomePrev.setIndicator(outcome.getIndicator());
+        crpProgramOutcomeDAO.save(outcomePrev);
+        this.updateCrpSubIdos(outcomePrev, outcome);
+        this.updateMilestones(outcomePrev, outcome);
       }
+
     }
 
     if (phase.getNext() != null) {

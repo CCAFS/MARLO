@@ -754,35 +754,33 @@ public class ClusterActivitiesAction extends BaseAction {
       /*
        * Save outcomes
        */
+
       for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
-
+        CrpClusterOfActivity db = null;
         if (crpClusterOfActivity.getId() == null) {
-          crpClusterOfActivity.setActive(true);
+          db.setActive(true);
 
-          crpClusterOfActivity.setCreatedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModifiedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModificationJustification("");
-          crpClusterOfActivity.setActiveSince(new Date());
+          db.setCreatedBy(this.getCurrentUser());
+          db.setModifiedBy(this.getCurrentUser());
+          db.setModificationJustification("");
+          db.setActiveSince(new Date());
 
         } else {
-          CrpClusterOfActivity db =
-            crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-          crpClusterOfActivity.setActive(true);
-          crpClusterOfActivity.setCreatedBy(db.getCreatedBy());
-          crpClusterOfActivity.setModifiedBy(this.getCurrentUser());
-          crpClusterOfActivity.setModificationJustification("");
-          crpClusterOfActivity.setActiveSince(db.getActiveSince());
+          db = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
+
         }
-        crpClusterOfActivity.setPhase(this.getActualPhase());
-        crpClusterOfActivity.setCrpProgram(selectedProgram);
-        crpClusterOfActivityManager.saveCrpClusterOfActivity(crpClusterOfActivity);
+        db.setPhase(this.getActualPhase());
+        db.setCrpProgram(selectedProgram);
+        db.setIdentifier(crpClusterOfActivity.getIdentifier());
+        db.setDescription(crpClusterOfActivity.getDescription());
+
+        db = crpClusterOfActivityManager.saveCrpClusterOfActivity(db);
 
         /*
          * Check leaders
          */
-        CrpClusterOfActivity crpClusterPrev =
-          crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-        for (CrpClusterActivityLeader leaderPreview : crpClusterPrev.getCrpClusterActivityLeaders().stream()
+
+        for (CrpClusterActivityLeader leaderPreview : db.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
           if (crpClusterOfActivity.getLeaders() == null) {
@@ -819,13 +817,13 @@ public class ClusterActivitiesAction extends BaseAction {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
             if (crpClusterActivityLeader.getId() == null) {
               crpClusterActivityLeader.setActive(true);
-              crpClusterActivityLeader.setCrpClusterOfActivity(crpClusterOfActivity);
+              crpClusterActivityLeader.setCrpClusterOfActivity(db);
               crpClusterActivityLeader.setCreatedBy(this.getCurrentUser());
               crpClusterActivityLeader.setModifiedBy(this.getCurrentUser());
               crpClusterActivityLeader.setModificationJustification("");
               crpClusterActivityLeader.setActiveSince(new Date());
-              CrpClusterOfActivity crpClusterPreview =
-                crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
+              CrpClusterOfActivity crpClusterPreview = crpClusterOfActivity;
+
               if (crpClusterPreview.getCrpClusterActivityLeaders().stream()
                 .filter(c -> c.isActive() && c.getUser().equals(crpClusterActivityLeader.getUser()))
                 .collect(Collectors.toList()).isEmpty()) {
@@ -852,9 +850,9 @@ public class ClusterActivitiesAction extends BaseAction {
         /*
          * Check key outputs
          */
-        crpClusterPrev = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
-        for (CrpClusterKeyOutput keyPreview : crpClusterPrev.getCrpClusterKeyOutputs().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+        for (CrpClusterKeyOutput keyPreview : db.getCrpClusterKeyOutputs().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
 
           if (crpClusterOfActivity.getKeyOutputs() == null) {
             crpClusterOfActivity.setKeyOutputs(new ArrayList<>());
@@ -879,10 +877,10 @@ public class ClusterActivitiesAction extends BaseAction {
 
               crpClusterKeyOutputPrev.setActiveSince(new Date());
               crpClusterKeyOutput.setActive(true);
-              crpClusterKeyOutputPrev.setCrpClusterOfActivity(crpClusterOfActivity);
+              crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
               crpClusterKeyOutputPrev.setModifiedBy(this.getCurrentUser());
               crpClusterKeyOutputPrev.setModificationJustification("");
-              crpClusterKeyOutputPrev.setCrpClusterOfActivity(crpClusterKeyOutput.getCrpClusterOfActivity());
+              crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
 
 
             } else {

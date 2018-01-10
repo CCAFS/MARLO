@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -136,19 +136,18 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     DeliverablePartnership deliverablePartnership) {
     Phase phase = phaseDAO.find(next.getId());
 
-    if (phase.getEditable() != null && phase.getEditable()) {
 
-      List<DeliverablePartnership> partnerships = phase.getDeliverablePartnerships().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
-          .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
-        .collect(Collectors.toList());
+    List<DeliverablePartnership> partnerships = phase.getDeliverablePartnerships().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
+        .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
+      .collect(Collectors.toList());
 
-      for (DeliverablePartnership dePartnership : partnerships) {
-        dePartnership.setActive(false);
-        deliverablePartnershipDAO.save(dePartnership);
+    for (DeliverablePartnership dePartnership : partnerships) {
+      dePartnership.setActive(false);
+      deliverablePartnershipDAO.save(dePartnership);
 
-      }
     }
+
     if (phase.getNext() != null) {
       this.deleteDeliverablePartnership(phase.getNext(), deliverableID, deliverablePartnership);
     }

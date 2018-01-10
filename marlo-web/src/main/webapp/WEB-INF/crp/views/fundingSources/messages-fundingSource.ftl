@@ -25,6 +25,7 @@
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
+    
       [#if !canEditPhase ]
         <p class="readPrivileges">[@s.text name="phase.read.privileges.section" /]</p>
         [#else]

@@ -24,8 +24,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -90,18 +90,17 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
 
   public void deletProjectClusterPhase(Phase next, long projecID, ProjectClusterActivity projectClusterActivity) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectClusterActivity
-          .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
-        .collect(Collectors.toList());
-      for (ProjectClusterActivity clusterActivity : clusters) {
-        this.deleteProjectClusterActivity(clusterActivity.getId());
-      }
-    } else {
-      if (phase.getNext() != null) {
-        this.deletProjectClusterPhase(phase.getNext(), projecID, projectClusterActivity);
-      }
+
+    List<ProjectClusterActivity> clusters = phase.getProjectClusters().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectClusterActivity
+        .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
+      .collect(Collectors.toList());
+    for (ProjectClusterActivity clusterActivity : clusters) {
+      this.deleteProjectClusterActivity(clusterActivity.getId());
+    }
+
+    if (phase.getNext() != null) {
+      this.deletProjectClusterPhase(phase.getNext(), projecID, projectClusterActivity);
     }
 
 

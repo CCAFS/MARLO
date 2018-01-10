@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -132,15 +132,15 @@ public class ActivityManagerImpl implements ActivityManager {
 
   public void deletActivityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<Activity> activities =
-        phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
-      for (Activity activityDB : activities) {
-        activityDB.setActive(false);
-        activityDAO.save(activityDB);
-      }
+
+    List<Activity> activities =
+      phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
+    for (Activity activityDB : activities) {
+      activityDB.setActive(false);
+      activityDAO.save(activityDB);
     }
+
     if (phase.getNext() != null) {
       this.deletActivityPhase(phase.getNext(), projecID, activity);
 
@@ -213,58 +213,59 @@ public class ActivityManagerImpl implements ActivityManager {
 
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<Activity> activities =
-        phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
-      if (activities.isEmpty()) {
-        Activity activityAdd = new Activity();
-        this.cloneActivity(activityAdd, activity, phase);
+
+    List<Activity> activities =
+      phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+    if (activities.isEmpty()) {
+      Activity activityAdd = new Activity();
+      this.cloneActivity(activityAdd, activity, phase);
+      activityDAO.save(activityAdd);
+      if (activityAdd.getComposeID() == null) {
+        activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
+        activityAdd.setComposeID(activity.getComposeID());
         activityDAO.save(activityAdd);
-        if (activityAdd.getComposeID() == null) {
-          activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
-          activityAdd.setComposeID(activity.getComposeID());
-          activityDAO.save(activityAdd);
-        }
-        if (activity.getDeliverables() != null) {
-          for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-            DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
-            deliverableActivityDAO.save(deliverableActivityAdd);
-          }
-        }
-      } else {
-        Activity activityAdd = activities.get(0);
-        this.cloneActivity(activityAdd, activity, phase);
-        activityDAO.save(activityAdd);
-        if (activity.getDeliverables() == null) {
-          activity.setDeliverables(new ArrayList<DeliverableActivity>());
-        }
+      }
+      if (activity.getDeliverables() != null) {
         for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-          if (activityAdd.getDeliverableActivities().stream()
-            .filter(c -> c.isActive() && c.getDeliverable().equals(deliverableActivity.getDeliverable()))
-            .collect(Collectors.toList()).isEmpty()) {
-            DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
-            deliverableActivityDAO.save(deliverableActivityAdd);
-          }
+          DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
+          this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
+          deliverableActivityDAO.save(deliverableActivityAdd);
         }
-        for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          if (activity.getDeliverables().stream()
-            .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
-            .isEmpty()) {
-            deliverableActivity.setActive(false);
-            deliverableActivityDAO.save(deliverableActivity);
-          }
-
+      }
+    } else {
+      Activity activityAdd = activities.get(0);
+      this.cloneActivity(activityAdd, activity, phase);
+      activityDAO.save(activityAdd);
+      if (activity.getDeliverables() == null) {
+        activity.setDeliverables(new ArrayList<DeliverableActivity>());
+      }
+      for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+        if (activityAdd.getDeliverableActivities().stream()
+          .filter(c -> c.isActive() && c.getDeliverable().equals(deliverableActivity.getDeliverable()))
+          .collect(Collectors.toList()).isEmpty()) {
+          DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
+          this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activity, activityAdd, phase);
+          deliverableActivityDAO.save(deliverableActivityAdd);
         }
-
+      }
+      for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (activity.getDeliverables().stream()
+          .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())
+          .isEmpty()) {
+          deliverableActivity.setActive(false);
+          deliverableActivityDAO.save(deliverableActivity);
+        }
 
       }
 
+
     }
-    if (phase.getNext() != null) {
+
+    if (phase.getNext() != null)
+
+    {
       this.saveActvityPhase(phase.getNext(), projecID, activity);
     }
 

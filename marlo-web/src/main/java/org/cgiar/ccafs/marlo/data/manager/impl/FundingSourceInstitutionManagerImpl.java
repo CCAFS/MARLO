@@ -25,8 +25,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -75,15 +75,15 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
   public void deletFundingSourceInstitutionPhase(Phase next, long fundingSourceID,
     FundingSourceInstitution fundingSourceInstitution) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
-        .collect(Collectors.toList());
-      for (FundingSourceInstitution fundingSourceInstitutionDB : institutions) {
-        fundingSourceInstitutionDAO.deleteFundingSourceInstitution(fundingSourceInstitutionDB.getId());
-      }
+
+    List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
+      .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+        && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
+      .collect(Collectors.toList());
+    for (FundingSourceInstitution fundingSourceInstitutionDB : institutions) {
+      fundingSourceInstitutionDAO.deleteFundingSourceInstitution(fundingSourceInstitutionDB.getId());
     }
+
     if (phase.getNext() != null) {
       this.deletFundingSourceInstitutionPhase(phase.getNext(), fundingSourceID, fundingSourceInstitution);
 
@@ -129,18 +129,18 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
   public void saveFundingSourceInstitutionPhase(Phase next, long fundingSourceID,
     FundingSourceInstitution fundingSourceInstitution) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
-        .collect(Collectors.toList());
-      if (institutions.isEmpty()) {
-        FundingSourceInstitution fundingSourceInstitutionAdd = new FundingSourceInstitution();
-        this.cloneFundingSourceInstitution(fundingSourceInstitutionAdd, fundingSourceInstitution, phase);
-        fundingSourceInstitutionDAO.save(fundingSourceInstitutionAdd);
-      }
 
+    List<FundingSourceInstitution> institutions = phase.getFundingSourceInstitutions().stream()
+      .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+        && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
+      .collect(Collectors.toList());
+    if (institutions.isEmpty()) {
+      FundingSourceInstitution fundingSourceInstitutionAdd = new FundingSourceInstitution();
+      this.cloneFundingSourceInstitution(fundingSourceInstitutionAdd, fundingSourceInstitution, phase);
+      fundingSourceInstitutionDAO.save(fundingSourceInstitutionAdd);
     }
+
+
     if (phase.getNext() != null) {
       this.saveFundingSourceInstitutionPhase(phase.getNext(), fundingSourceID, fundingSourceInstitution);
     }
