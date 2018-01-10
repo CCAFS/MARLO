@@ -289,3 +289,8 @@ div#tl-adnyds {
 .phaseTag span.reporting {
   background-color: #777;
 }
+
+.example .frame ul li.closed {
+  cursor:not-allowed;
+  opacity: 0.4;
+}
