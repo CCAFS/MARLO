@@ -1062,6 +1062,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Phase getActualPhase() {
 
+
     try {
       if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
         return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
@@ -1076,23 +1077,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     /*
-     * Map<String, Parameter> parameters = this.getParameters();
      * try {
-     * if (this.getPhaseID() != null) {
-     * Phase phase = phaseManager.getPhaseById(phaseID);
-     * if (phase != null) {
-     * return phase;
+     * if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
+     * List<Phase> phases = phaseManager.findAll().stream()
+     * .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+     * phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+     * Map<Long, Phase> allPhases = new HashMap<>();
+     * for (Phase phase : phases) {
+     * allPhases.put(phase.getId(), phase);
      * }
+     * this.getSession().put(APConstants.ALL_PHASES, allPhases);
+     * }
+     * Map<Long, Phase> allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
+     * Map<String, Parameter> parameters = this.getParameters();
+     * if (this.getPhaseID() != null) {
+     * long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+     * Phase phase = allPhases.get(new Long(phaseID));
+     * return phase;
      * }
      * if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
      * long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-     * Phase phase = phaseManager.getPhaseById(phaseID);
+     * Phase phase = allPhases.get(new Long(phaseID));
      * return phase;
-     * } else {
+     * }
      * Phase phase =
      * phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
      * return phase;
-     * }
      * } catch (Exception e) {
      * return new Phase(null, "", -1);
      * }

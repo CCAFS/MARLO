@@ -25,8 +25,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -122,19 +122,18 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
     DeliverableFundingSource deliverableFundingSource) {
     Phase phase = phaseDao.find(next.getId());
 
-    if (phase.getEditable() != null && phase.getEditable()) {
 
-      List<DeliverableFundingSource> fundingSources = phase.getDeliverableFundingSources().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
-          && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
-        .collect(Collectors.toList());
+    List<DeliverableFundingSource> fundingSources = phase.getDeliverableFundingSources().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+        && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
+      .collect(Collectors.toList());
 
-      for (DeliverableFundingSource deFundingSource : fundingSources) {
-        deFundingSource.setActive(false);
-        deliverableFundingSourceDAO.save(deFundingSource);
+    for (DeliverableFundingSource deFundingSource : fundingSources) {
+      deFundingSource.setActive(false);
+      deliverableFundingSourceDAO.save(deFundingSource);
 
-      }
     }
+
     if (phase.getNext() != null) {
       this.deleteDeliverableFundingSource(phase.getNext(), deliverableID, deliverableFundingSource);
     }

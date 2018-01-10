@@ -38,8 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -203,15 +203,15 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       }
 
     } else {
-      if (phase.getEditable() != null && phase.getEditable()) {
-        for (ProjectPartner projectPartnerPrev : partners) {
-          projectPartnerPrev.setResponsibilities(projectPartner.getResponsibilities());
-          projectPartnerPrev = projectPartnerDAO.save(projectPartnerPrev);
-          this.updateUsers(projectPartnerPrev, projectPartner);
-          this.updateLocations(projectPartnerPrev, projectPartner);
-          this.updateContributors(projectPartnerPrev, projectPartner, phase);
-        }
+
+      for (ProjectPartner projectPartnerPrev : partners) {
+        projectPartnerPrev.setResponsibilities(projectPartner.getResponsibilities());
+        projectPartnerPrev = projectPartnerDAO.save(projectPartnerPrev);
+        this.updateUsers(projectPartnerPrev, projectPartner);
+        this.updateLocations(projectPartnerPrev, projectPartner);
+        this.updateContributors(projectPartnerPrev, projectPartner, phase);
       }
+
     }
 
 
@@ -299,32 +299,32 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
   public void deletProjectPartnerPhase(Phase next, long projecID, ProjectPartner projectPartner) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectPartner> partners = phase.getPartners().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
-        .collect(Collectors.toList());
-      for (ProjectPartner partner : partners) {
 
-        for (ProjectPartnerContribution projectPartnerContribution : partner.getProjectPartnerContributions().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          projectPartnerContribution.setActive(false);
-          projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
-        }
-        for (ProjectPartnerPerson projectPartnerPerson : partner.getProjectPartnerPersons().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          projectPartnerPerson.setActive(false);
-          projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
-        }
-        for (ProjectPartnerLocation projectPartnerLocation : partner.getProjectPartnerLocations().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
-          projectPartnerLocation.setActive(false);
-          projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
-        }
+    List<ProjectPartner> partners = phase.getPartners().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
+      .collect(Collectors.toList());
+    for (ProjectPartner partner : partners) {
 
-        projectPartnerDAO.deleteProjectPartner(partner.getId());
+      for (ProjectPartnerContribution projectPartnerContribution : partner.getProjectPartnerContributions().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        projectPartnerContribution.setActive(false);
+        projectPartnerContributionDAO.deleteProjectPartnerContribution(projectPartnerContribution.getId());
       }
+      for (ProjectPartnerPerson projectPartnerPerson : partner.getProjectPartnerPersons().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        projectPartnerPerson.setActive(false);
+        projectPartnerPersonDAO.deleteProjectPartnerPerson(projectPartnerPerson.getId());
+      }
+      for (ProjectPartnerLocation projectPartnerLocation : partner.getProjectPartnerLocations().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        projectPartnerLocation.setActive(false);
+        projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocation.getId());
+      }
+
+      projectPartnerDAO.deleteProjectPartner(partner.getId());
     }
+
     if (phase.getNext() != null) {
       this.deletProjectPartnerPhase(phase.getNext(), projecID, projectPartner);
     }

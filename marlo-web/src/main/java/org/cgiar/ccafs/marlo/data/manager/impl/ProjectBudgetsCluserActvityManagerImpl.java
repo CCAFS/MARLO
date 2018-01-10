@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -82,17 +82,17 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudgetsCluserActvity projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
-        .collect(Collectors.toList());
-      for (ProjectBudgetsCluserActvity projectBudgetDB : budgets) {
-        projectBudgetDB.setActive(false);
-        projectBudgetsCluserActvityDAO.save(projectBudgetDB);
-      }
+
+    List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
+        && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
+      .collect(Collectors.toList());
+    for (ProjectBudgetsCluserActvity projectBudgetDB : budgets) {
+      projectBudgetDB.setActive(false);
+      projectBudgetsCluserActvityDAO.save(projectBudgetDB);
     }
+
     if (phase.getNext() != null) {
       this.deletBudgetPhase(phase.getNext(), projecID, projectBudget);
 
@@ -137,23 +137,23 @@ public class ProjectBudgetsCluserActvityManagerImpl implements ProjectBudgetsClu
 
   public void saveBudgetPhase(Phase next, long projecID, ProjectBudgetsCluserActvity projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
-        .collect(Collectors.toList());
-      if (budgets.isEmpty()) {
-        ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        projectBudgetsCluserActvityDAO.save(budgetAdd);
-      } else {
-        ProjectBudgetsCluserActvity budgetAdd = budgets.get(0);
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        projectBudgetsCluserActvityDAO.save(budgetAdd);
-      }
 
+    List<ProjectBudgetsCluserActvity> budgets = phase.getProjectBudgetsActivities().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getCrpClusterOfActivity().getId().equals(projectBudget.getCrpClusterOfActivity().getId())
+        && c.getYear() == projectBudget.getYear() && c.getPhase() != null)
+      .collect(Collectors.toList());
+    if (budgets.isEmpty()) {
+      ProjectBudgetsCluserActvity budgetAdd = new ProjectBudgetsCluserActvity();
+      this.cloneBudget(budgetAdd, projectBudget, phase);
+      projectBudgetsCluserActvityDAO.save(budgetAdd);
+    } else {
+      ProjectBudgetsCluserActvity budgetAdd = budgets.get(0);
+      this.cloneBudget(budgetAdd, projectBudget, phase);
+      projectBudgetsCluserActvityDAO.save(budgetAdd);
     }
+
+
     if (phase.getNext() != null) {
       this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
     }
