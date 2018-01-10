@@ -99,7 +99,9 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
@@ -111,7 +113,6 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
 
-      Project projectDb = projectManager.getProjectById(project.getId());
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
         if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
