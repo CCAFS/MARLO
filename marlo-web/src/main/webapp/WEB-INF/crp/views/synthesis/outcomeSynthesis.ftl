@@ -34,7 +34,7 @@
           [#assign isCompleted = false /]
           [#assign hasPermission = (action.hasSynthesisPermission('update', institution.id))!false/]
           <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
-            <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${institution.acronym}: ${institution.name}</a>
+            <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.acronym}: ${institution.name}</a>
             [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
           </li>
         [/#list]
@@ -100,7 +100,7 @@
                   	<tbody>
                     [#list projectMilestoneContributions as projectIndicator]
                       <tr>
-                      	<td class="center"><a href="[@s.url action="${crpSession}/contributionsCrpList" namespace="/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
+                      	<td class="center"><a href="[@s.url action="${crpSession}/contributionsCrpList" namespace="/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
                       	<td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
                       	<td class="center" title="${(projectIndicator.achieved)!''}" >[@utilities.wordCutter string=(projectIndicator.achieved)!'Prefilled when available' maxPos=25 /]</td>
                         <td class="">${(projectIndicator.narrativeTargets)!'Prefilled when available'} </td> 
