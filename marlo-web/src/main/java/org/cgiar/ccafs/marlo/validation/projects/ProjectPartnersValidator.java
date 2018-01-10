@@ -111,7 +111,6 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
 
-      Project projectDb = projectManager.getProjectById(project.getId());
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
         if (action.isReportingActive() && project.isProjectEditLeader()) {
