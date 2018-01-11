@@ -120,7 +120,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     baseAction.setSession(session);
     // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
