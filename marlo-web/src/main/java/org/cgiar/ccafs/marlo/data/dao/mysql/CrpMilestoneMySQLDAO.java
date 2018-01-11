@@ -18,11 +18,13 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 
 import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +71,25 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
   }
 
   @Override
+  public CrpMilestone getCrpMilestone(String composedId, CrpProgramOutcome crpProgramOutcome) {
+    String query = "select distinct pp from CrpMilestone  pp "
+      + "where composeID=:composeID and crpProgramOutcome.id=:crpProgramOutcomeID and active=true";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("composeID", composedId);
+    createQuery.setParameter("crpProgramOutcomeID", crpProgramOutcome.getId());
+    Object findSingleResult = super.findSingleResult(CrpMilestone.class, createQuery);
+    CrpMilestone crpMilestone = (CrpMilestone) findSingleResult;
+    if (crpMilestone != null) {
+      crpMilestone = super.refreshEntity(crpMilestone);
+    }
+
+    // projectPartner.getProjectPartnerLocations().size();
+
+    return crpMilestone;
+
+  }
+
+  @Override
   public CrpMilestone save(CrpMilestone crpMilestone) {
     if (crpMilestone.getId() == null) {
       super.saveEntity(crpMilestone);
@@ -77,6 +98,5 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
     }
     return crpMilestone;
   }
-
 
 }

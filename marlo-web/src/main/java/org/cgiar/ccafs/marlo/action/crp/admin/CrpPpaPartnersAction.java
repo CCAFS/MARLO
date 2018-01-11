@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -512,8 +513,8 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
 
     if (loggedCrp.getCrpPpaPartners() != null) {
-      loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
-        loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+      loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
+        .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       loggedCrp.getCrpInstitutionsPartners()
         .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
       // Fill Managing/PPA Partners with contact persons
@@ -541,7 +542,20 @@ public class CrpPpaPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       List<CrpPpaPartner> ppaPartnerReview;
-      // Check new institutions
+
+      if (crpPpaPartnerManager.findAll() != null) {
+        ppaPartnerReview = crpPpaPartnerManager.findAll();
+
+        for (CrpPpaPartner partner : ppaPartnerReview.stream()
+          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
+          if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
+            crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
+          }
+        }
+      }
+
+
       for (CrpPpaPartner partner : loggedCrp.getCrpInstitutionsPartners()) {
         if (partner.getId() == null) {
           partner.setCrp(loggedCrp);
@@ -552,6 +566,7 @@ public class CrpPpaPartnersAction extends BaseAction {
           partner.setModifiedBy(this.getCurrentUser());
           partner.setModificationJustification("");
           partner.setActiveSince(new Date());
+          partner.setPhase(this.getActualPhase());
           crpPpaPartnerManager.saveCrpPpaPartner(partner);
           // save liaison institution if don't exists
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
@@ -591,7 +606,11 @@ public class CrpPpaPartnersAction extends BaseAction {
           }
         }
       }
-      // Check Changes add and/or disable crpPPaPartner and contact points
+
+      if (loggedCrp.getCrpPpaPartners() != null) {
+        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
+          .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+      }
       if (crpPpaPartnerManager.findAll() != null) {
         ppaPartnerReview = crpPpaPartnerManager.findAll();
         for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))

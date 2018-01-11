@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
 <hibernate-configuration>
    <session-factory>
       <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
@@ -79,6 +82,7 @@
       <mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml" />
       <mapping resource="xmls/ProjectLocationElementTypes.hbm.xml" />
       <mapping resource="xmls/FundingSources.hbm.xml" />
+      <mapping resource="xmls/FundingSourceInfo.hbm.xml" />
       <mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
       <mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
       <mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
@@ -137,6 +141,7 @@
       <mapping resource="xmls/CustomParameters.hbm.xml" />
       <mapping resource="xmls/InstitutionsLocations.hbm.xml" />
       <mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
+      <mapping resource="xmls/ProjectsInfo.hbm.xml" />
       <mapping resource="xmls/CenterAllTypes.hbm.xml" />
       <mapping resource="xmls/CenterMilestones.hbm.xml" />
       <mapping resource="xmls/CenterAreas.hbm.xml" />
@@ -177,6 +182,7 @@
       <mapping resource="xmls/CenterDeliverableOutputs.hbm.xml" />
       <mapping resource="xmls/CenterProjectTypes.hbm.xml" />
       <mapping resource="xmls/CenterImpactStatement.hbm.xml" />
+      <mapping resource="xmls/DeliverablesInfo.hbm.xml" />
       <mapping resource="xmls/Agreement.hbm.xml" />
       <mapping resource="xmls/CountryAgreement.hbm.xml" />
       <mapping resource="xmls/CrpAgreement.hbm.xml" />

@@ -23,22 +23,19 @@ import com.google.gson.annotations.Expose;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
-
   private static final long serialVersionUID = 9208364810110651075L;
-
-
   @Expose
   private Long id;
 
   @Expose
   private Institution institution;
 
-
   @Expose
   private boolean active;
 
   @Expose
   private User createdBy;
+
   @Expose
   private Date activeSince;
 
@@ -48,15 +45,19 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-  private GlobalUnit crp;
-  
-   private List<LiaisonUser> contactPoints;
+  @Expose
+  private Phase phase;
+
+
+  private Crp crp;
+
+  private List<LiaisonUser> contactPoints;
+
 
   public CrpPpaPartner() {
   }
 
-
-  public CrpPpaPartner(Institution institution, GlobalUnit crp) {
+  public CrpPpaPartner(Institution institution, Crp crp) {
     this.institution = institution;
     this.crp = crp;
   }
@@ -89,17 +90,16 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
- public List<LiaisonUser> getContactPoints() {
+  public List<LiaisonUser> getContactPoints() {
     return contactPoints;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
 
-  public GlobalUnit getCrp() {
+  public Crp getCrp() {
     return crp;
   }
 
@@ -130,11 +130,15 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -155,7 +159,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(GlobalUnit crp) {
+  public void setCrp(Crp crp) {
     this.crp = crp;
   }
 
@@ -173,6 +177,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

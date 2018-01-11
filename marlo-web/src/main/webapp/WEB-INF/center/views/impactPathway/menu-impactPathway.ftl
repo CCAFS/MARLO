@@ -31,7 +31,7 @@ error
         [#list items as item]
           [#assign submitStatus = (action.getCenterSectionStatusIP(item.action, programID))!false /]
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name="programID" value=programID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
+            <a href="[@s.url action="${centerSession}/${item.action}"][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
               [#if item.slug == "outcomes"]
                   <span class="glyphicon glyphicon-chevron-right"></span>
               [#elseif item.slug == "outputs"]
@@ -69,7 +69,7 @@ error
 [#-- Submit button --]
 [#if canEdit]
   [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
-  <a id="submitProgram-${programID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${centerSession}/submit"][@s.param name='programID']${programID}[/@s.param][/@s.url]" >
+  <a id="submitProgram-${programID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${centerSession}/submit"][@s.param name='programID']${programID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]

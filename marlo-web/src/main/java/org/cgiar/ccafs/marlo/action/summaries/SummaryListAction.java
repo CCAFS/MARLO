@@ -16,22 +16,20 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class SummaryListAction extends BaseAction {
+/**
+ * When the reports information lives on the database. The class will be used to List the reports.
+ */
+public class SummaryListAction extends BaseSummariesAction {
 
   /**
    * 
@@ -40,16 +38,15 @@ public class SummaryListAction extends BaseAction {
 
   private List<Project> allProjects;
 
-  private GlobalUnit loggedCrp;
+  private Crp loggedCrp;
 
 
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-  private PhaseManager phaseManager;
+  private final CrpManager crpManager;
+  private final PhaseManager phaseManager;
 
   @Inject
-  public SummaryListAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager crpManager) {
-    super(config);
+  public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {
+    super(config, crpManager, phaseManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
   }
@@ -61,16 +58,9 @@ public class SummaryListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    allProjects = new ArrayList<Project>();
-    Phase phase =
-      phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-      allProjects.add((projectPhase.getProject()));
-    }
-
-
+    /*
+     * 
+     */
   }
 
   public void setAllProjects(List<Project> allProjects) {

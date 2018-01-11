@@ -16,9 +16,8 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -27,7 +26,6 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,18 +36,16 @@ import javax.inject.Named;
 @Named
 public class ProjectLocationValidator extends BaseValidator {
 
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public ProjectLocationValidator(GlobalUnitManager crpManager) {
+  public ProjectLocationValidator(CrpManager crpManager) {
     super();
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+    Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.LOCATIONS.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -59,6 +55,9 @@ public class ProjectLocationValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
 
     if (!saving) {
@@ -77,104 +76,19 @@ public class ProjectLocationValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-    if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.LOCATIONS.getStatus());
-    } else {
-      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.LOCATIONS.getStatus());
-    }
+    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.LOCATIONS.getStatus());
   }
 
   public void validateLocation(BaseAction action, Project project) {
 
-
-    if (!action.hasSpecificities(APConstants.CRP_OTHER_LOCATIONS)) {
-
-
-      if (!project.isLocationGlobal()) {
-        if (project.getCountryFS() != null) {
-
-          if (project.getCountryFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
-            action.getInvalidFields().put("list-project.locationsData",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-            this.addMessage(action.getText("project.countries"));
-          }
-        } else {
-          action.getInvalidFields().put("list-project.locationsData",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-          this.addMessage(action.getText("project.countries"));
-        }
+    if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
+      if (!project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal()) {
+        action.getInvalidFields().put("list-project.locationsData",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+        this.addMessage(action.getText("project.locationsData"));
       }
-
-      if (project.getLocationRegional() != null && project.getLocationRegional()) {
-        if (project.getRegionFS() != null) {
-          if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
-            action.getInvalidFields().put("list-project.locationsData",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-            this.addMessage(action.getText("project.regions"));
-          } else {
-            this.validationMessage = new StringBuilder();
-            this.missingFields.setLength(0);
-            action.getInvalidFields().clear();
-          }
-        } else {
-          action.getInvalidFields().put("list-project.locationsData",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-          this.addMessage(action.getText("project.regions"));
-        }
-      }
-
-
-    } else
-
-    {
-      if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
-        if (!project.isLocationGlobal()) {
-          action.getInvalidFields().put("list-project.locationsData",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-          this.addMessage(action.getText("project.locationsData"));
-          if (!project.isLocationGlobal()) {
-            if (project.getCountryFS() != null) {
-
-              if (project.getCountryFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
-                action.getInvalidFields().put("list-project.locationsData",
-                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-                this.addMessage(action.getText("project.countries"));
-              } else {
-                this.validationMessage = new StringBuilder();
-                action.getInvalidFields().clear();
-                this.missingFields.setLength(0);
-              }
-            } else {
-              action.getInvalidFields().put("list-project.locationsData",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-              this.addMessage(action.getText("project.countries"));
-            }
-          }
-          if (project.getLocationRegional() != null && project.getLocationRegional()) {
-            if (project.getRegionFS() != null) {
-              if (project.getRegionFS().stream().filter(c -> c.isSelected()).collect(Collectors.toList()).isEmpty()) {
-                action.getInvalidFields().put("list-project.locationsData",
-                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-                this.addMessage(action.getText("project.regions"));
-              } else {
-                this.validationMessage = new StringBuilder();
-                action.getInvalidFields().clear();
-                this.missingFields.setLength(0);
-              }
-            } else {
-              action.getInvalidFields().put("list-project.locationsData",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-              this.addMessage(action.getText("project.regions"));
-            }
-          }
-        }
-      }
-
-
     }
-
 
   }
 

@@ -13,7 +13,7 @@
       <p>[@s.text name="message.historyVersion" ]  
           [@s.param]<span>${object.modifiedBy.composedName?html}</span>[/@s.param]
           [@s.param]<span>${object.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name=nameParameter value=parameterID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name=nameParameter value=parameterID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
     [/#if]
@@ -54,7 +54,7 @@
   <div class="layer"></div>
   <div class="content">
     <span class="glyphicon glyphicon-lock"></span>
-    <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+    <p>[@s.text name="message.concurrence" /] [@s.text name="message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name=nameParameter value=parameterID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
   </div> 
 </div>
 

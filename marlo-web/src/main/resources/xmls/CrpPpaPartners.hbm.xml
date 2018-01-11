@@ -20,6 +20,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		  <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />

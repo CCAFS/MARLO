@@ -32,7 +32,7 @@
             [#assign isCompleted = (action.isCompleteSynthesys(institution.ipProgram, 1))!false /]
             [#assign hasPermission = (action.hasPermissionSynthesis(institution.ipProgram))!false /]
             <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
-              <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${institution.name}</a>
+              <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.name}</a>
               [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
             </li>
           [/#list]
@@ -147,7 +147,7 @@
                         <tbody>
                         [#list action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id) as projectIndicator]
                           <tr>
-                            <td class="center"><a href="[@s.url action="${crpSession}/ccafsOutcomes" namespace="/projects"][@s.param name='projectID']${(projectIndicator.project.id)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.project.id)!}</a></td>
+                            <td class="center"><a href="[@s.url action="${crpSession}/ccafsOutcomes" namespace="/projects"][@s.param name='projectID']${(projectIndicator.project.id)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">P${(projectIndicator.project.id)!}</a></td>
                             <td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="center" title="${(projectIndicator.archived)!''}" >[@utilities.wordCutter string=(projectIndicator.archived)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="">${(projectIndicator.narrativeTargets)!'Prefilled when available'} </td>

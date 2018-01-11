@@ -33,38 +33,30 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -1466921023839583918L;
-
-
   @Expose
   private Long id;
-
-
   @Expose
   private CrpProgram crpProgram;
-
-
   @Expose
   private Institution institution;
 
-
   @Expose
   private String name;
+
   @Expose
   private String acronym;
   @Expose
-  private GlobalUnit crp;
+  private Crp crp;
   @Expose
   private boolean active;
-
-
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
-  private Set<Project> projects = new HashSet<Project>(0);
+  private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
 
   public LiaisonInstitution() {
   }
 
   public LiaisonInstitution(CrpProgram crpProgram, Institution institution, String name, String acronym,
-    Set<LiaisonUser> liaisonUserses, Set<Project> projectses) {
+    Set<LiaisonUser> liaisonUserses, Set<ProjectInfo> projectses) {
     this.crpProgram = crpProgram;
     this.institution = institution;
     this.name = name;
@@ -73,10 +65,12 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
+
   public LiaisonInstitution(Institution institution, String name) {
     this.institution = institution;
     this.name = name;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -96,10 +90,9 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   }
 
-  public GlobalUnit getCrp() {
+  public Crp getCrp() {
     return crp;
   }
-
 
   public CrpProgram getCrpProgram() {
     return crpProgram;
@@ -111,7 +104,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public Institution getInstitution() {
     return institution;
   }
@@ -120,6 +112,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   public Set<LiaisonUser> getLiaisonUsers() {
     return liaisonUsers;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -151,8 +144,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
-  public Set<Project> getProjects() {
+  public Set<ProjectInfo> getProjects() {
     return projects;
   }
 
@@ -166,20 +158,17 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
 
-  public void setCrp(GlobalUnit crp) {
+  public void setCrp(Crp crp) {
     this.crp = crp;
   }
-
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -198,7 +187,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProjects(Set<Project> projects) {
+  public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
 

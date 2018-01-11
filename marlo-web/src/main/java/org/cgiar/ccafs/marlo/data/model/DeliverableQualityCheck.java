@@ -24,10 +24,10 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
 
   @Expose
   private User createdBy;
-
+  @Expose
+  private Phase phase;
   @Expose
   private DeliverableQualityAnswer dataDictionary;
-
   @Expose
   private Deliverable deliverable;
 
@@ -62,7 +62,6 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
 
   private Date activeSince;
 
-
   private String modificationJustification;
 
   public DeliverableQualityCheck() {
@@ -86,11 +85,9 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     this.modificationJustification = modificationJustification;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -101,9 +98,11 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     return dataDictionary;
   }
 
+
   public DeliverableQualityAnswer getDataTools() {
     return dataTools;
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -113,11 +112,9 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     return fileAssurance;
   }
 
-
   public FileDB getFileDictionary() {
     return fileDictionary;
   }
-
 
   public FileDB getFileTools() {
     return fileTools;
@@ -165,6 +162,11 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   public DeliverableQualityAnswer getQualityAssurance() {
     return qualityAssurance;
   }
@@ -184,6 +186,7 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -229,13 +232,17 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     this.linkTools = linkTools;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

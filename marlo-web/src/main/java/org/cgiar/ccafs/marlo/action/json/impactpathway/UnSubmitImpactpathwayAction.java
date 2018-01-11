@@ -149,7 +149,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     }
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : program.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (toEmail.isEmpty()) {

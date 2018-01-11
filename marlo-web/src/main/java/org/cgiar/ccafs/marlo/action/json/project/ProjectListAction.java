@@ -16,12 +16,9 @@
 
 package org.cgiar.ccafs.marlo.action.json.project;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.action.summaries.BaseSummariesAction;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -30,32 +27,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
-public class ProjectListAction extends BaseAction {
+public class ProjectListAction extends BaseSummariesAction {
 
   /**
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
   private List<Map<String, String>> projects;
-  private String cycle;
-  private int year;
 
-  private GlobalUnit loggedCrp;
+
   private List<Project> allProjects;
 
 
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private CrpManager crpManager;
+
+
   private PhaseManager phaseManager;
 
+
   @Inject
-  public ProjectListAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
-    super(config);
+  public ProjectListAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
 
@@ -65,22 +62,24 @@ public class ProjectListAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     projects = new ArrayList<Map<String, String>>();
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     allProjects = new ArrayList<>();
-    Phase phase = phaseManager.findCycle(cycle, year, loggedCrp.getId().longValue());
-    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-      allProjects.add((projectPhase.getProject()));
+    if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
+      for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+        .filter(pf -> pf.isActive() && pf.getProject().isActive())
+        .sorted((pf1, pf2) -> pf1.getProject().getId().compareTo(pf2.getProject().getId()))
+        .collect(Collectors.toList())) {
+        allProjects.add((projectPhase.getProject()));
+      }
+      for (Project project : allProjects) {
+        Map<String, String> projectInfo = new HashMap<String, String>();
+        projectInfo.put("id", project.getId().toString());
+        projectInfo.put("description", project.getProjecInfoPhase(this.getSelectedPhase()).getTitle());
+        projects.add(projectInfo);
+      }
     }
-    for (Project project : allProjects) {
-      Map<String, String> projectInfo = new HashMap<String, String>();
-      projectInfo.put("id", project.getId().toString());
-      projectInfo.put("description", project.getTitle());
-
-      projects.add(projectInfo);
-    }
+    System.out.println(projects.size());
     return SUCCESS;
 
   }
@@ -93,13 +92,7 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // Map<String, Object> parameters = this.getParameters();
-    // cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-
-    Map<String, Parameter> parameters = this.getParameters();
-    cycle = (StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0]));
-    year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
+    this.setGeneralParameters();
   }
 
 

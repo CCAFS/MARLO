@@ -17,6 +17,16 @@
   [/#if]
 [/#macro]
 
+[#-- letterCutter, is the same of WordCutter but cut by letters
+--]
+[#macro letterCutter string maxPos substr=" "]
+  [#if string?length < maxPos]    
+    ${string}     
+  [#else]
+    ${string?substring(0, maxPos)}...
+  [/#if]
+[/#macro]
+
 [#macro helpInfos hlpInfo]
   [#-- Help Text to be used in Research Impacts, Research Topics, Research Outcomes and Research Outputs. 
   Specify the appropriate value for hlpInfo parameter in the corresponding ftl file. --] 

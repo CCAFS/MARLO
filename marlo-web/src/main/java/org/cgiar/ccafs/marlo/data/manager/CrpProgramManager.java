@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public interface CrpProgramManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName);
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase);
 
 
 }

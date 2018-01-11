@@ -15,10 +15,9 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -29,12 +28,9 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -47,35 +43,26 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class InstitutionsLeadersSummaryAction extends BaseAction implements Summary {
-
+public class InstitutionsLeadersSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-
-
   private static Logger LOG = LoggerFactory.getLogger(InstitutionsLeadersSummaryAction.class);
-
   // Parameters
   private long startTime;
-  private GlobalUnit loggedCrp;
-  private int year;
-  private String cycle;
-  // Managers
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
+
   @Inject
-  public InstitutionsLeadersSummaryAction(APConfig config, GlobalUnitManager crpManager) {
-    super(config);
-    this.crpManager = crpManager;
+  public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
   }
+
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -105,10 +92,10 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/institutions_leaders.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/institutions_leaders-Annualization.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      Number idParam = loggedCrp.getId();
+      Number idParam = this.getLoggedCrp().getId();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -119,9 +106,10 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
       String currentDate = timezone.format(format) + "(GMT" + zone + ")";
       masterReport.getParameterValues().put("crp_id", idParam);
       masterReport.getParameterValues().put("date", currentDate);
-      masterReport.getParameterValues().put("cycle", cycle);
+      masterReport.getParameterValues().put("cycle", this.getSelectedCycle());
       masterReport.getParameterValues().put("showDescription",
         this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION));
+      masterReport.getParameterValues().put("phaseID", this.getSelectedPhase().getId());
       masterReport.getParameterValues().put("regionalAvalaible", this.hasProgramnsRegions());
       // Set i8n for pentaho
       masterReport = this.addi8nParameters(masterReport);
@@ -135,9 +123,9 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
 
   }
@@ -152,10 +140,6 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return "application/xlsx";
   }
 
-  public String getCycle() {
-    return cycle;
-  }
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -168,7 +152,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectLeadingInstitutionsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
@@ -182,63 +166,14 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     return inputStream;
   }
 
-  public GlobalUnit getLoggedCrp() {
-    return loggedCrp;
-  }
-
-  public int getYear() {
-    return year;
-  }
-
-
   @Override
   public void prepare() {
-    // Get loggerCrp
-    try {
-      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      // Map<String, Object> parameters = this.getParameters();
-      Map<String, Parameter> parameters = this.getParameters();
-      // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-      year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      // Map<String, Object> parameters = this.getParameters();
-      Map<String, Parameter> parameters = this.getParameters();
-      // cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-      cycle = (StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-  public void setYear(int year) {
-    this.year = year;
-  }
 }

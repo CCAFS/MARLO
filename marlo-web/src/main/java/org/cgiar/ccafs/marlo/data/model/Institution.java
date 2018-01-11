@@ -292,8 +292,9 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public boolean isPPA(long crpID) {
-    if (this.getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == crpID && c.isActive())
+  public boolean isPPA(long crpID, Phase phase) {
+    if (this.getCrpPpaPartners().stream()
+      .filter(c -> c.getCrp().getId().longValue() == crpID && c.isActive() && c.getPhase().equals(phase))
       .collect(Collectors.toList()).size() > 0) {
       return true;
     }

@@ -34,6 +34,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteActivity(long activityId) {
     Activity activity = this.find(activityId);
@@ -75,7 +76,6 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     } else {
       activity = super.update(activity);
     }
-
 
     return activity;
   }

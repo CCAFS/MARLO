@@ -33,26 +33,19 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2344785951769472166L;
-
-
   @Expose
   private Long id;
-
-
   @Expose
   private LiaisonInstitution liaisonInstitution;
-
-
   @Expose
   private User user;
-
-
   @Expose
-  private GlobalUnit crp;
+  private Crp crp;
   @Expose
   private boolean active;
 
-  private Set<Project> projects = new HashSet<Project>(0);
+  private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
+
 
   public LiaisonUser() {
   }
@@ -62,11 +55,12 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.user = user;
   }
 
-  public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<Project> projectses) {
+  public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<ProjectInfo> projectses) {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
     this.projects = projectses;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -95,8 +89,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-
-  public GlobalUnit getCrp() {
+  public Crp getCrp() {
     return crp;
   }
 
@@ -121,6 +114,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
 
@@ -136,7 +130,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<Project> getProjects() {
+  public Set<ProjectInfo> getProjects() {
     return projects;
   }
 
@@ -155,10 +149,9 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public void setCrp(GlobalUnit crp) {
+  public void setCrp(Crp crp) {
     this.crp = crp;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -169,7 +162,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProjects(Set<Project> projects) {
+  public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
 

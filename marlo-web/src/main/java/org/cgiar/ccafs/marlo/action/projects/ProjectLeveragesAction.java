@@ -299,8 +299,7 @@ public class ProjectLeveragesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
 
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
 
         if (project.getLeveragesClosed() == null) {
 
@@ -363,8 +362,6 @@ public class ProjectLeveragesAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.leveragesPreviousData(project.getLeverages(), true);
@@ -377,8 +374,6 @@ public class ProjectLeveragesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,10 +16,13 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpPpaPartnerDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Inject;
@@ -32,15 +35,66 @@ import javax.inject.Inject;
 public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
 
   private CrpPpaPartnerDAO crpPpaPartnerDao;
+  private PhaseDAO phaseMySQLDAO;
 
   @Inject
-  public CrpPpaPartnerManagerImpl(CrpPpaPartnerDAO crpPpaPartnerDao) {
+  public CrpPpaPartnerManagerImpl(CrpPpaPartnerDAO crpPpaPartnerDao, PhaseDAO phaseMySQLDAO) {
     this.crpPpaPartnerDao = crpPpaPartnerDao;
+    this.phaseMySQLDAO = phaseMySQLDAO;
+  }
+
+  private void addCrpPpaPartnerPhase(Phase next, long crpID, CrpPpaPartner crpPpaPartner) {
+    Phase phase = phaseMySQLDAO.find(next.getId());
+    List<CrpPpaPartner> outcomes = phase.getCrpPpaPartner().stream()
+      .filter(c -> c.isActive()
+        && c.getInstitution().getId().longValue() == crpPpaPartner.getInstitution().getId().longValue()
+        && c.getCrp().getId().longValue() == crpID)
+      .collect(Collectors.toList());
+    if (phase.getEditable() != null && phase.getEditable() && outcomes.isEmpty()) {
+      CrpPpaPartner crpPpaPartnerAdd = new CrpPpaPartner();
+      crpPpaPartnerAdd.setActive(true);
+      crpPpaPartnerAdd.setActiveSince(crpPpaPartner.getActiveSince());
+      crpPpaPartnerAdd.setCreatedBy(crpPpaPartner.getCreatedBy());
+      crpPpaPartnerAdd.setModificationJustification(crpPpaPartner.getModificationJustification());
+      crpPpaPartnerAdd.setModifiedBy(crpPpaPartner.getModifiedBy());
+      crpPpaPartnerAdd.setPhase(phase);
+      crpPpaPartnerAdd.setCrp(crpPpaPartner.getCrp());
+      crpPpaPartnerAdd.setInstitution(crpPpaPartner.getInstitution());
+      crpPpaPartnerDao.save(crpPpaPartnerAdd);
+    }
+
+    if (phase.getNext() != null) {
+      this.addCrpPpaPartnerPhase(phase.getNext(), crpID, crpPpaPartner);
+    }
+
+
   }
 
   @Override
   public void deleteCrpPpaPartner(long crpPpaPartnerId) {
-    crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartnerId);
+    CrpPpaPartner crpPpaPartner = this.getCrpPpaPartnerById(crpPpaPartnerId);
+    crpPpaPartner.setActive(false);
+    this.saveCrpPpaPartner(crpPpaPartner);
+
+    if (crpPpaPartner.getPhase().getNext() != null) {
+      this.deleteCrpPpaPartnerPhase(crpPpaPartner.getPhase().getNext(), crpPpaPartner.getCrp().getId(), crpPpaPartner);
+    }
+  }
+
+  private void deleteCrpPpaPartnerPhase(Phase next, long crpID, CrpPpaPartner crpPpaPartner) {
+    Phase phase = phaseMySQLDAO.find(next.getId());
+    List<CrpPpaPartner> partners = phase.getCrpPpaPartner().stream()
+      .filter(c -> c.isActive()
+        && c.getInstitution().getId().longValue() == crpPpaPartner.getInstitution().getId().longValue()
+        && c.getCrp().getId().longValue() == crpID)
+      .collect(Collectors.toList());
+
+    for (CrpPpaPartner crpPpaPartnersDB : partners) {
+      crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartnersDB.getId());
+    }
+    if (phase.getNext() != null) {
+      this.deleteCrpPpaPartnerPhase(phase.getNext(), crpID, crpPpaPartner);
+    }
   }
 
   @Override
@@ -60,7 +114,13 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
 
   @Override
   public CrpPpaPartner saveCrpPpaPartner(CrpPpaPartner crpPpaPartner) {
-    return crpPpaPartnerDao.save(crpPpaPartner);
+    CrpPpaPartner resultDao = crpPpaPartnerDao.save(crpPpaPartner);
+    if (crpPpaPartner.getPhase().getNext() != null) {
+      this.addCrpPpaPartnerPhase(crpPpaPartner.getPhase().getNext(), crpPpaPartner.getCrp().getId(), crpPpaPartner);
+    }
+    return resultDao;
+
+
   }
 
 }

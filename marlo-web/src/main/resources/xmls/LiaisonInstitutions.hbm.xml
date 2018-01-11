@@ -35,11 +35,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
         </set>
-        <set name="projects" table="projects" inverse="true" lazy="true" fetch="select">
+        <set name="projects" table="projects_info" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="liaison_institution_id" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectInfo" />
         </set>
         
        
