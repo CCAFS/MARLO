@@ -77,7 +77,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     List<CrpClusterOfActivity> clusters =
       phase.getClusters().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
         && c.getIdentifier().equals(crpCluster.getIdentifier())).collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && clusters.isEmpty()) {
+    if ( clusters.isEmpty()) {
       CrpClusterOfActivity clusterAdd = new CrpClusterOfActivity();
       clusterAdd.setActive(true);
       clusterAdd.setActiveSince(crpCluster.getActiveSince());
