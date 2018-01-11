@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -332,6 +333,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectOutcome project outcome modified
    */
   private void updateProjectMilestones(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+    if (projectOutcome.getMilestones() == null) {
+      projectOutcome.setMilestones(new ArrayList<ProjectMilestone>());
+    }
     for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
       projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
     }

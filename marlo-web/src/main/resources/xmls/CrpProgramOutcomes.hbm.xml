@@ -74,13 +74,7 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
 		</set>
-		<set name="deliverables" table="deliverables" inverse="true" lazy="true"
-			fetch="select">
-			<key>
-				<column name="outcome_id" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
-		</set>
+		
 		<set name="crpClusterKeyOutputOutcomes" order-by="id"
 			table="crp_cluster_key_outputs_outcome" inverse="true" lazy="true"
 			fetch="select">
