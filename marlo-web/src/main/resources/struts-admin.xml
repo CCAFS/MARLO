@@ -13,7 +13,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/management.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/management</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -25,7 +25,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/regionalMapping.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/regionalMapping</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -36,7 +36,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/siteIntegration.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/siteIntegration</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -47,7 +47,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/ppaPartners.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/ppaPartners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
@@ -56,7 +56,7 @@
       <result name="input">/WEB-INF/crp/views/admin/crpPhases.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpPhases</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -67,7 +67,7 @@
       <result name="input">/WEB-INF/crp/views/admin/projectPhases.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/projectPhases</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -78,7 +78,7 @@
       <result name="input">/WEB-INF/crp/views/admin/crpUsers.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpUsers</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
 
@@ -89,7 +89,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/locations.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/locations</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
@@ -100,7 +100,7 @@
       <result name="input">/WEB-INF/crp/views/admin/targetUnits.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/targetUnits</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     

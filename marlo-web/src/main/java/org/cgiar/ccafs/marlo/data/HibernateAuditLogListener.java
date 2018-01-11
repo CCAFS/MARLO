@@ -645,6 +645,7 @@ public class HibernateAuditLogListener
 
             }
           } catch (HibernateException e) {
+            e.printStackTrace();
             LOG.info("Can not load lazy relation  " + e.getLocalizedMessage());
           }
         }

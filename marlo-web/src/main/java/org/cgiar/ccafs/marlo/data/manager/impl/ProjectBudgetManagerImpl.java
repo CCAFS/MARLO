@@ -27,8 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -87,18 +87,18 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
   public void deletBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
-          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
-        .collect(Collectors.toList());
-      for (ProjectBudget projectBudgetDB : budgets) {
-        projectBudgetDB.setActive(false);
-        projectBudgetDAO.save(projectBudgetDB);
-      }
+
+    List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+        && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+      .collect(Collectors.toList());
+    for (ProjectBudget projectBudgetDB : budgets) {
+      projectBudgetDB.setActive(false);
+      projectBudgetDAO.save(projectBudgetDB);
     }
+
     if (phase.getNext() != null) {
       this.deletBudgetPhase(phase.getNext(), projecID, projectBudget);
 
@@ -164,25 +164,26 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
   public void saveBudgetPhase(Phase next, long projecID, ProjectBudget projectBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
-          && c.getYear() == projectBudget.getYear() && c.getPhase() != null
-          && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
-        .collect(Collectors.toList());
-      if (budgets.isEmpty()) {
-        ProjectBudget budgetAdd = new ProjectBudget();
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        projectBudgetDAO.save(budgetAdd);
-      } else {
-        ProjectBudget budgetAdd = budgets.get(0);
-        this.cloneBudget(budgetAdd, projectBudget, phase);
-        projectBudgetDAO.save(budgetAdd);
-      }
 
+    List<ProjectBudget> budgets = phase.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getFundingSource().getId().equals(projectBudget.getFundingSource().getId())
+        && c.getYear() == projectBudget.getYear() && c.getPhase() != null
+        && c.getInstitution().getId().equals(projectBudget.getInstitution().getId()))
+      .collect(Collectors.toList());
+    if (budgets.isEmpty()) {
+      ProjectBudget budgetAdd = new ProjectBudget();
+      this.cloneBudget(budgetAdd, projectBudget, phase);
+      projectBudgetDAO.save(budgetAdd);
+    } else {
+      ProjectBudget budgetAdd = budgets.get(0);
+      this.cloneBudget(budgetAdd, projectBudget, phase);
+      projectBudgetDAO.save(budgetAdd);
     }
-    if (phase.getNext() != null) {
+
+    if (phase.getNext() != null)
+
+    {
       this.saveBudgetPhase(phase.getNext(), projecID, projectBudget);
     }
 

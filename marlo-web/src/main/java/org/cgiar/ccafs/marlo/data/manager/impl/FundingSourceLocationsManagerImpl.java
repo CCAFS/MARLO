@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -104,27 +104,29 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
     if (fundingSourceLocation.getLocElementType() == null) {
       hasLocElement = true;
     }
-    if (phase.getEditable() != null && phase.getEditable()) {
 
-      List<FundingSourceLocation> locations = new ArrayList<FundingSourceLocation>();
 
-      if (hasLocElement) {
-        locations.addAll(phase.getFundingSourceLocations().stream()
+    List<FundingSourceLocation> locations = new ArrayList<FundingSourceLocation>();
+
+    if (hasLocElement) {
+      locations
+        .addAll(phase.getFundingSourceLocations().stream()
           .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
             && c.getLocElement() != null
             && fundingSourceLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-          .collect(Collectors.toList()));
-      } else {
-        locations.addAll(phase.getFundingSourceLocations().stream().filter(c -> c.isActive()
-          && c.getFundingSource().getId().longValue() == fundingSourceID && c.getLocElementType() != null
+        .collect(Collectors.toList()));
+    } else {
+      locations.addAll(phase.getFundingSourceLocations().stream()
+        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+          && c.getLocElementType() != null
           && fundingSourceLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
-          .collect(Collectors.toList()));
-      }
-      for (FundingSourceLocation location : locations) {
-        location.setActive(false);
-        this.fundingSourceLocationsDAO.save(location);
-      }
+        .collect(Collectors.toList()));
     }
+    for (FundingSourceLocation location : locations) {
+      location.setActive(false);
+      this.fundingSourceLocationsDAO.save(location);
+    }
+
     if (phase.getNext() != null) {
       this.deleteFundingSourceLocationPhase(phase.getNext(), fundingSourceID, fundingSourceLocation);
 

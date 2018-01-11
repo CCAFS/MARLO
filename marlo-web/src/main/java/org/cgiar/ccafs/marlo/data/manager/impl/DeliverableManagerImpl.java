@@ -31,8 +31,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -133,32 +133,30 @@ public class DeliverableManagerImpl implements DeliverableManager {
 
   public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
-        .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
-        .collect(Collectors.toList());
-      for (DeliverableInfo deliverableInfo : deliverablesInfo) {
-        deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
-        if (deliverableInfo.getCrpClusterKeyOutput() != null) {
-          CrpClusterKeyOutput crpClusterKeyOutput =
-            crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
-          CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
-            crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
-          List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
-            .filter(
-              c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
-            .collect(Collectors.toList());
-          if (!clusterKeyOutputs.isEmpty()) {
-            deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
-          }
-        }
 
-        deliverableInfo.setPhase(phase);
-        deliverableInfoDAO.save(deliverableInfo);
+    List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
+      .collect(Collectors.toList());
+    for (DeliverableInfo deliverableInfo : deliverablesInfo) {
+      deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+        CrpClusterKeyOutput crpClusterKeyOutput =
+          crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+        CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
+          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+        List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+          .collect(Collectors.toList());
+        if (!clusterKeyOutputs.isEmpty()) {
+          deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+        }
       }
 
-
+      deliverableInfo.setPhase(phase);
+      deliverableInfoDAO.save(deliverableInfo);
     }
+
+
     if (phase.getNext() != null) {
       this.saveDeliverablePhase(phase.getNext(), deliverableID, deliverable);
     }

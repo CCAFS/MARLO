@@ -97,7 +97,7 @@
               [#else]
                 [#if !editable]
                   <p class="center">[@s.text name="projectPartners.empty" /]
-                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
+                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
                   </p>
                 [/#if]
               [/#if] 
@@ -469,7 +469,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(element.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -480,7 +480,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(element.id) as deliverable]
-                <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
+                <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>

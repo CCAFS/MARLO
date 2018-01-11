@@ -56,7 +56,7 @@
           [#list programs as program]
             [#assign isActive = (program.id == crpProgramID)/]
             <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">Flagship ${program.acronym}</a>
             </li>
           [/#list]
         </ul>

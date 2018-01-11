@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -92,16 +92,16 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
       this.addLeaders(crpCluster, clusterAdd);
       this.addCrpKeyOutputs(crpCluster, clusterAdd);
     } else {
-      if (phase.getEditable() != null && phase.getEditable()) {
-        for (CrpClusterOfActivity clusterPrev : clusters) {
-          clusterPrev.setDescription(crpCluster.getDescription());
-          clusterPrev.setIdentifier(crpCluster.getIdentifier());
-          crpClusterOfActivityDAO.save(clusterPrev);
-          this.updateClusterLeaders(clusterPrev, crpCluster);
-          this.updateKeyOutputs(clusterPrev, crpCluster);
-        }
+
+      for (CrpClusterOfActivity clusterPrev : clusters) {
+        clusterPrev.setDescription(crpCluster.getDescription());
+        clusterPrev.setIdentifier(crpCluster.getIdentifier());
+        crpClusterOfActivityDAO.save(clusterPrev);
+        this.updateClusterLeaders(clusterPrev, crpCluster);
+        this.updateKeyOutputs(clusterPrev, crpCluster);
       }
     }
+
 
     if (phase.getNext() != null) {
       this.addCrpClusterPhase(phase.getNext(), crpProgramID, crpCluster);
@@ -251,7 +251,8 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     if (crpClusterOfActivity.getLeaders() != null) {
       for (CrpClusterActivityLeader leader : crpClusterOfActivity.getLeaders()) {
         if (crpClusterOfActivityPrev.getCrpClusterActivityLeaders().stream()
-          .filter(c -> c.isActive() && c.getUser().equals(leader.getUser())).collect(Collectors.toList()).isEmpty()) {
+          .filter(c -> c.isActive() && c.getUser().getId().equals(leader.getUser().getId()))
+          .collect(Collectors.toList()).isEmpty()) {
 
           CrpClusterActivityLeader leaderAdd = new CrpClusterActivityLeader();
 

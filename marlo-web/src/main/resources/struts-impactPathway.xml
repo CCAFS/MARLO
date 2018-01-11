@@ -12,17 +12,17 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>
@@ -33,11 +33,11 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/clusterActivities</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>

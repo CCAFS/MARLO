@@ -355,7 +355,7 @@
             </thead>
             <tbody>
               [#list outcomesContributions as oc]
-                [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${projectID}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+                [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <tr>
                   <td>${(oc.description)!'None'}</td> 
                   <td>${(oc.value)!} ${(oc.srfTargetUnit.name)!'None'}</td>
