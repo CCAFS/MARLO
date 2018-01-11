@@ -33,7 +33,6 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 
 
   private GlobalUnitDAO globalUnitDAO;
-  // Managers
 
 
   @Inject
