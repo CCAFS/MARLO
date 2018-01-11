@@ -77,7 +77,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
     }
 
 
-    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
+    if ( locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
       projectLocationAdd.setActive(true);
       projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
@@ -128,7 +128,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
     }
 
 
-    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
+    if ( locations.isEmpty()) {
       ProjectLocation projectLocationAdd = new ProjectLocation();
       projectLocationAdd.setActive(true);
       projectLocationAdd.setActiveSince(projectLocation.getActiveSince());
