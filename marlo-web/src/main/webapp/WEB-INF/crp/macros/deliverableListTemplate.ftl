@@ -299,7 +299,7 @@
         <div class="partnerPersons">
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
             [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
-              [@deliverablePerson element=person name="${dp_name}" index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
+              [@deliverablePerson element=person name="${dp_name}" projectPartner=(dp.projectPartnerPerson.projectPartner) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
             [/#list]
           [/#if]
         </div>
@@ -363,8 +363,7 @@
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
               [#list action.getPersons(projectPartner.id) as person]
-           
-                [@deliverablePerson element=person name="${dp_name}" index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
+                [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
                 [#assign personsIndex =  personsIndex + 1 /]
               [/#list]
             [/#if]
@@ -397,13 +396,14 @@
 [/#macro]
 
 
-[#macro deliverablePerson element name index checked isResponsable=false isTemplate=false]
+[#macro deliverablePerson element projectPartner name index checked isResponsable=false isTemplate=false]
   [#local customName]${name}[#if !isResponsable][${index}][/#if][/#local] 
   [#local type][#if isResponsable]radio[#else]checkbox[/#if][/#local]
   [#local deliverablePartnerShip =(action.getDeliverablePartnership((element.id)!-1))!{} /]
   
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
     [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">[/#if]
+    <input type="hidden" name="${customName}.projectPartner.id" value="${(projectPartner.id)!}" />
     <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
     <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
 
