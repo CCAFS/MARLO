@@ -111,7 +111,7 @@ public class SearchInstitutionsAction extends BaseAction {
         locHash.add(il.getLocElement().getIsoAlpha2());
       }
       institutionMap.put("countries", StringUtils.join(locHash, ','));
-      institutionMap.put("isPPA", institution.isPPA(this.getCrpID()));
+      institutionMap.put("isPPA", institution.isPPA(this.getCrpID(), this.getActualPhase()));
       this.institutions.add(institutionMap);
     }
 

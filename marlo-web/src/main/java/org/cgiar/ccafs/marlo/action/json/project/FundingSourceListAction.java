@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -62,6 +64,8 @@ public class FundingSourceListAction extends BaseAction {
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
+  private Phase phase;
+
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -75,6 +79,7 @@ public class FundingSourceListAction extends BaseAction {
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
+
   @Override
   public String execute() throws Exception {
     sources = new ArrayList<>();
@@ -84,43 +89,46 @@ public class FundingSourceListAction extends BaseAction {
 
     Map<String, Object> source;
     if (institution == null) {
-      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue());
+      fundingSources =
+        fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue(), phase.getId());
     } else {
       fundingSources = fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year,
-        this.getCrpID());
+        this.getCrpID(), phase.getId());
 
-
-      fundingSources
-        .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
-
-
-      // add elements to al, including duplicates
-      Set<FundingSource> hs = new HashSet<>();
-      hs.addAll(fundingSources);
-      fundingSources.clear();
-      fundingSources.addAll(hs);
 
     }
 
     if (fundingSources != null) {
-      fundingSources = fundingSources.stream().filter(c -> c.getTitle() != null).collect(Collectors.toList());
-      fundingSources.sort((p1, p2) -> p1.getTitle().compareTo(p2.getTitle()));
+      fundingSources =
+        fundingSources.stream().filter(c -> c.getFundingSourceInfo().getTitle() != null).collect(Collectors.toList());
+      fundingSources
+        .sort((p1, p2) -> p1.getFundingSourceInfo().getTitle().compareTo(p2.getFundingSourceInfo().getTitle()));
     }
-
+    // add elements to al, including duplicates
+    Set<FundingSource> hs = new HashSet<>();
+    hs.addAll(fundingSources);
+    fundingSources.clear();
+    fundingSources.addAll(hs.stream()
+      .filter(c -> c.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
+        && c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+      .collect(Collectors.toList()));
+    fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
     for (FundingSource fundingSource : fundingSources) {
       if (fundingSource.isActive()) {
         source = new HashMap<>();
         source.put("id", fundingSource.getId());
-        source.put("name", fundingSource.getTitle());
-        source.put("type", fundingSource.getBudgetType().getName());
-        source.put("typeId", fundingSource.getBudgetType().getId());
+        source.put("name", fundingSource.getFundingSourceInfo().getTitle());
+        source.put("type", fundingSource.getFundingSourceInfo().getBudgetType().getName());
+        source.put("typeId", fundingSource.getFundingSourceInfo().getBudgetType().getId());
 
-        if ((fundingSource.getW1w2() != null) && (this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING))) {
-          source.put("w1w2", fundingSource.getW1w2().booleanValue());
+        if ((fundingSource.getFundingSourceInfo().getW1w2() != null)
+          && (this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING))) {
+          source.put("w1w2", fundingSource.getFundingSourceInfo().getW1w2().booleanValue());
         }
 
-        if (fundingSource.getBudgetType().getId().intValue() == 1) {
+        if (fundingSource.getFundingSourceInfo().getBudgetType().getId().intValue() == 1) {
 
           String permission =
             this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym());
@@ -138,8 +146,8 @@ public class FundingSourceListAction extends BaseAction {
           fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
         double remainingAmount = 0;
         if (fundingSourceBudget != null && fundingSourceBudget.getBudget() != null) {
-          remainingAmount =
-            projectBudgetManager.getReaminingAmount(fundingSource.getId(), year, fundingSourceBudget.getBudget());
+          remainingAmount = projectBudgetManager.getReaminingAmount(fundingSource.getId(), year,
+            fundingSourceBudget.getBudget(), this.getActualPhase().getId());
         }
 
         source.put("amount", remainingAmount);
@@ -150,6 +158,7 @@ public class FundingSourceListAction extends BaseAction {
     }
     return SUCCESS;
   }
+
 
   public List<Map<String, Object>> getSources() {
     return sources;
@@ -169,7 +178,9 @@ public class FundingSourceListAction extends BaseAction {
     queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
     // year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
     year = Integer.parseInt(StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]));
+    phase = this.getActualPhase();
   }
+
 
   public void setSources(List<Map<String, Object>> sources) {
     this.sources = sources;

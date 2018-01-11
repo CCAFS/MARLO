@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
 import java.util.List;
@@ -36,7 +37,11 @@ public interface ProjectBudgetManager {
    * @param coFinancing 1: cofinancing+no cofinancing, 2: cofinancing 3: no cofinancing
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
+    long idPhase);
+
+
+  public ProjectBudget copyProjectBudget(ProjectBudget projectBudget, Phase phase);
 
 
   /**
@@ -56,7 +61,6 @@ public interface ProjectBudgetManager {
    */
   public boolean existProjectBudget(long projectBudgetID);
 
-
   /**
    * This method gets a list of projectBudget that are active
    * 
@@ -75,7 +79,7 @@ public interface ProjectBudgetManager {
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
-    Integer coFinancing);
+    Integer coFinancing, long idPhase);
 
   /**
    * This method gets a projectBudget object by a given projectBudget identifier.
@@ -92,7 +96,9 @@ public interface ProjectBudgetManager {
    * @param year - Specific year
    * @return a remaining Budget amount.
    */
-  public double getReaminingAmount(long fundingSourceID, int year, double budget);
+  public double getReaminingAmount(long fundingSourceID, int year, double budget, long idPhase);
+
+  public double getTotalBudget(long projetId, long phaseID, int type, int year);
 
   /**
    * This method saves the information of the given projectBudget

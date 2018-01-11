@@ -63,9 +63,13 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private FundingSource fundingSource;
   @Expose
   private Date activeSince;
+  @Expose
+  private Phase phase;
+
 
   @Expose
   private String modificationJustification;
+
 
   @Override
   public boolean equals(Object obj) {
@@ -125,6 +129,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -140,6 +145,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Project getProject() {
@@ -212,6 +221,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {

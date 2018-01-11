@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,10 @@ import java.util.List;
  */
 
 public interface DeliverableFundingSourceManager {
+
+
+  public DeliverableFundingSource copyDeliverableFundingSource(DeliverableFundingSource deliverableFundingSource,
+    Phase phase);
 
 
   /**
@@ -50,7 +55,6 @@ public interface DeliverableFundingSourceManager {
    * @return a list from DeliverableFundingSource null if no exist records
    */
   public List<DeliverableFundingSource> findAll();
-
 
   /**
    * This method gets a deliverableFundingSource object by a given deliverableFundingSource identifier.

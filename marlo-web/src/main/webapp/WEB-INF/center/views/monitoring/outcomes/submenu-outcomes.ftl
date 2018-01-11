@@ -8,7 +8,7 @@
     [#assign link = "#area-${area.id}" /]
       <li role="areas" class="${isActive?string('active','')}">
         [#-- Getting first program --]
-        [#list area.researchPrograms as program][#if program_index == 0][#assign link][@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=program.id /][@s.param name="edit" value="true"/][/@s.url][/#assign][/#if][/#list]
+        [#list area.researchPrograms as program][#if program_index == 0][#assign link][@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=program.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign][/#if][/#list]
         <a href="${link}" aria-controls="home" role="tab" [#-- data-toggle="tab" --]>${area.acronym}</a>
       </li>
     [/#list]
@@ -22,7 +22,7 @@
       <ul>
         [#list area.researchPrograms as program]
           [#assign isProgramActive = (program.id == programID)/]           
-          <li class="${isProgramActive?string('active','')}"> <a href="[@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=program.id /][@s.param name="edit" value="true"/][/@s.url]">${program.name}</a> </li>
+          <li class="${isProgramActive?string('active','')}"> <a href="[@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=program.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${program.name}</a> </li>
         [/#list]
       </ul>
       [#else]

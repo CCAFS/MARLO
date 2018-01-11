@@ -26,7 +26,8 @@ import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 @Named
-public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceBudget, Long> implements FundingSourceBudgetDAO {
+public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceBudget, Long>
+  implements FundingSourceBudgetDAO {
 
 
   @Inject
@@ -34,12 +35,14 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteFundingSourceBudget(long fundingSourceBudgetId) {
     FundingSourceBudget fundingSourceBudget = this.find(fundingSourceBudgetId);
     fundingSourceBudget.setActive(false);
-    this.save(fundingSourceBudget);
+    super.update(fundingSourceBudget);
   }
+
 
   @Override
   public boolean existFundingSourceBudget(long fundingSourceBudgetID) {
@@ -82,17 +85,13 @@ public class FundingSourceBudgetMySQLDAO extends AbstractMarloDAO<FundingSourceB
   @Override
   public FundingSourceBudget save(FundingSourceBudget fundingSourceBudget) {
 
-    String query = "from " + FundingSourceBudget.class.getName() + " where funding_source_id= "
-      + fundingSourceBudget.getFundingSource().getId() + " and year= " + fundingSourceBudget.getYear()
-      + " and is_active=1";
-    List<FundingSourceBudget> list = super.findAll(query);
-    if (list.size() > 0) {
-      fundingSourceBudget.setId(list.get(0).getId());
-      fundingSourceBudget = super.update(fundingSourceBudget);
-    } else {
-      super.saveEntity(fundingSourceBudget);
-    }
 
+    if (fundingSourceBudget.getId() == null) {
+      super.saveEntity(fundingSourceBudget);
+
+    } else {
+      fundingSourceBudget = super.update(fundingSourceBudget);
+    }
 
     return fundingSourceBudget;
   }

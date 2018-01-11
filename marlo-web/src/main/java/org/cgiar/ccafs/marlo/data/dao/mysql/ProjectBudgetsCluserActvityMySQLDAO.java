@@ -34,11 +34,12 @@ public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<Projec
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity = this.find(projectBudgetsCluserActvityId);
     projectBudgetsCluserActvity.setActive(false);
-    this.save(projectBudgetsCluserActvity);
+     super.update(projectBudgetsCluserActvity);
   }
 
   @Override

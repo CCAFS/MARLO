@@ -29,7 +29,11 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -105,6 +109,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- CRP Contribution template --]
 <ul>

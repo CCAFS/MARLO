@@ -18,15 +18,15 @@
         <tr>
         [#-- ID --]
         <td class="outputId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">O${output.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /]">O${output.id}</a>
         </td>
           [#-- output statement --]
           <td class="left"> 
             [#if output.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${output.title}">
+                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${output.title}">
                 [#if output.title?length < 120] ${output.title}</a> [#else] [@utilities.wordCutter string=output.title maxPos=120 /]...</a> [/#if]
             [#else]
-                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+                <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                   [@s.text name="programImpact.outputList.title.none" /]
                 </a>
             [/#if]

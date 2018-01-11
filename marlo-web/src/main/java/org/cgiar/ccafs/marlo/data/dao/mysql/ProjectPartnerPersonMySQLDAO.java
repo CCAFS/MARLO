@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Inject;
@@ -102,6 +103,23 @@ public class ProjectPartnerPersonMySQLDAO extends AbstractMarloDAO<ProjectPartne
     List<ProjectPartnerPerson> projectPartnerPersons = createQuery.list();
 
     return projectPartnerPersons;
+  }
+
+  @Override
+  public List<Map<String, Object>> findPartner(long institutionId, long phaseId, long projectId, long userId) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select ppp.id from project_partners pp INNER JOIN project_partner_persons ppp on ppp.project_partner_id=pp.id");
+    query.append(" where pp.is_active=1 and ppp.is_active=1 and  pp.institution_id=");
+    query.append(institutionId);
+    query.append(" and pp.id_phase=");
+    query.append(phaseId);
+    query.append(" and pp.project_id= ");
+    query.append(projectId);
+    query.append(" and ppp.user_id= ");
+    query.append(userId);
+    List<Map<String, Object>> result = super.findCustomQuery(query.toString());
+    return result;
   }
 
   @Override

@@ -51,37 +51,41 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-  @Expose
-  private String indicator;
+
   @Expose
   private Integer year;
 
-
+  @Expose
+  private String indicator;
   @Expose
   private BigDecimal value;
 
-
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
-
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
 
   private Set<ProjectFurtherContribution> projectFurtherContributions = new HashSet<ProjectFurtherContribution>(0);
-
   @Expose
   private boolean active;
-
   @Expose
   private User createdBy;
   @Expose
+  private Phase phase;
+  @Expose
+  private String composeID;
+
+
+  @Expose
   private Date activeSince;
+
+
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private String modificationJustification;
@@ -90,6 +94,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private List<CrpMilestone> milestones;
 
   private List<CrpOutcomeSubIdo> subIdos;
+
 
   public CrpProgramOutcome() {
   }
@@ -115,7 +120,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.crpMilestones = crpMilestones;
     this.deliverables = deliverables;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -146,6 +150,18 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.getCrpProgram().getAcronym() + " Outcome :  " + description;
   }
 
+  public String getComposeID() {
+    if (composeID != null) {
+      return composeID;
+    } else {
+      if (id != null) {
+        return id + "-" + this.getCrpProgram().getId();
+      }
+    }
+    return null;
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -174,17 +190,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.description;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
-
-
   public String getIndicator() {
     return indicator;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -198,14 +210,20 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return milestones;
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Set<ProjectFurtherContribution> getProjectFurtherContributions() {
@@ -245,6 +263,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
+  }
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -278,8 +300,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setId(Long id) {
     this.id = id;
   }
-
-  public void setIndicator(String indicator) {
+    public void setIndicator(String indicator) {
     this.indicator = indicator;
   }
 
@@ -293,6 +314,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectFurtherContributions(Set<ProjectFurtherContribution> projectFurtherContributions) {
@@ -319,7 +344,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
-  @Override
+   @Override
   public String toString() {
     return "CrpProgramOutcome [id=" + id + ", crpProgram=" + crpProgram + ", srfTargetUnit=" + srfTargetUnit
       + ", description=" + description + ", year=" + year + ", value=" + value + "]";

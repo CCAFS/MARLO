@@ -1,0 +1,26 @@
+
+.tab-content>.active {
+  display: block;
+  background-color: #f5f5f5;
+  padding: 5px 14px;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+  
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border-top: 4px solid #1882aa;
+  border-bottom-color: transparent;
+  color: #0377a3;
+  background-color: #f5f5f5;
+}
+
+.nav-tabs>li>a {
+  color: #6f6f6f;
+  border-radius: 0 0 0;
+  padding: 9px 30px;
+}
+
+.headTitle {
+  margin-top: 0;
+  padding-top: 18px;

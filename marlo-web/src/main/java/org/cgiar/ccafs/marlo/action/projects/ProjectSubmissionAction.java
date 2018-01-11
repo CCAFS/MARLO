@@ -19,9 +19,12 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
@@ -62,36 +65,39 @@ public class ProjectSubmissionAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(ProjectSubmissionAction.class);
 
   // Manager
-  private final SubmissionManager submissionManager;
-  private final ProjectManager projectManager;
-  private final CrpManager crpManager;
-  private final SendMailS sendMail;
-  private Crp loggedCrp;
+  private SubmissionManager submissionManager;
+  private UserManager userManager;
 
+  private ProjectManager projectManager;
+  private CrpManager crpManager;
+  private SendMailS sendMail;
+  private Crp loggedCrp;
   private String cycleName;
   private final RoleManager roleManager;
+  private PhaseManager phaseManager;
 
 
   private boolean complete;
-  private Submission currentSubmission;
 
 
   private long projectID;
 
   private Project project;
 
-  private final ReportingSummaryAction reportingSummaryAction;
+  private ReportingSummaryAction reportingSummaryAction;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMailS sendMail, RoleManager roleManager, ReportingSummaryAction reportingSummaryAction) {
+    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
+    PhaseManager phaseManager, UserManager userManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
     this.roleManager = roleManager;
-    this.reportingSummaryAction = reportingSummaryAction;
+    this.userManager = userManager;
+    this.phaseManager = phaseManager;
   }
 
   @Override
@@ -99,20 +105,19 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions()
-          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
-            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        List<Submission> submissions = project.getSubmissions().stream()
+          .filter(c -> c.getCycle().equals(APConstants.PLANNING)
+            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
         if (submissions.isEmpty()) {
           this.submitProject();
           complete = true;
-
         } else {
-          this.setSubmission(submissions.get(0));
+          Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
+          submission.setUser(userManager.getUser(submission.getUser().getId()));
+          this.setSubmission(submission);
           complete = true;
-
-          currentSubmission = this.getSubmission();
         }
       }
 
@@ -121,11 +126,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
       return NOT_AUTHORIZED;
     }
-  }
-
-
-  public Submission getCurrentSubmission() {
-    return currentSubmission;
   }
 
 
@@ -148,14 +148,15 @@ public class ProjectSubmissionAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public boolean isComplete() {
     return complete;
@@ -183,14 +184,13 @@ public class ProjectSubmissionAction extends BaseAction {
       String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
       // Initializing Section Statuses:
-      // this.initializeProjectSectionStatuses(project, String.valueOf(this.getCurrentCycleYear()));
+      // this.initializeProjectSectionStatuses(project, String.valueOf(this.getActualPhase().getYear()));
     }
     cycleName = APConstants.PLANNING;
 
   }
 
-
-  private void sendNotficationEmail(Submission submission) {
+  private void sendNotficationEmail() {
     // Send email to the user that is submitting the project.
     // TO
     String toEmail = this.getCurrentUser().getEmail();
@@ -203,14 +203,17 @@ public class ProjectSubmissionAction extends BaseAction {
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
     // If Managment liason is PMU
-    if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-      ccEmails.append(project.getLiaisonUser().getUser().getEmail());
+    if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getAcronym()
+      .equals(roleCrpPmu.getAcronym())) {
+      ccEmails.append(project.getProjecInfoPhase(this.getActualPhase()).getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram() != null) {
+    } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
-      List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
-        .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
-        .collect(Collectors.toList());
+      List<CrpProgram> crpPrograms =
+        project
+          .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+            .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
+          .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -223,7 +226,7 @@ public class ProjectSubmissionAction extends BaseAction {
         }
         // CC will be also other Cluster Leaders
         for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-          .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+          .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
             .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
             ccEmails.append(crpClusterActivityLeader.getUser().getEmail());
@@ -232,7 +235,8 @@ public class ProjectSubmissionAction extends BaseAction {
         }
       }
     } else {
-      for (LiaisonUser liaisonUser : project.getLiaisonInstitution().getLiaisonUsers()) {
+      for (LiaisonUser liaisonUser : project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution()
+        .getLiaisonUsers()) {
         ccEmails.append(liaisonUser.getUser().getEmail());
         ccEmails.append(", ");
       }
@@ -240,13 +244,13 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     // Add project leader
-    if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
-      ccEmails.append(project.getLeaderPerson().getUser().getEmail());
+    if (project.getLeaderPerson(this.getActualPhase()) != null && project.getLeaderPerson(this.getActualPhase())
+      .getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
+      ccEmails.append(project.getLeaderPerson(this.getActualPhase()).getUser().getEmail());
       ccEmails.append(", ");
     }
     // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
       if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
         ccEmails.append(projectPartnerPerson.getUser().getEmail());
         ccEmails.append(", ");
@@ -285,20 +289,21 @@ public class ProjectSubmissionAction extends BaseAction {
     subject = this.getText("submit.email.subject",
       new String[] {crp, String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
 
+
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
     values[0] = this.getCurrentUser().getFirstName();
     values[1] = crp;
-    values[2] = project.getTitle();
+    values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-    values[4] = String.valueOf(this.getCurrentCycleYear());
-    values[5] = this.getCurrentCycle().toLowerCase();
+    values[4] = String.valueOf(this.getActualPhase().getYear());
+    values[5] = this.getActualPhase().getDescription().toLowerCase();
     // Message to download the pdf
     /*
      * values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
      * + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-     * + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
+     * + this.getActualPhase().getYear() + "&" + APConstants.CYCLE + "=" + this.getActualPhase().getDescription();
      */
 
     message.append(this.getText("submit.email.message", values));
@@ -314,13 +319,15 @@ public class ProjectSubmissionAction extends BaseAction {
     try {
       // Set the parameters that are assigned in the prepare by reportingSummaryAction
       reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setYear(this.getCurrentCycleYear());
+      reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
       reportingSummaryAction.setLoggedCrp(loggedCrp);
-      reportingSummaryAction.setCycle(this.getCurrentCycle());
+      reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
       reportingSummaryAction.setProjectID(projectID);
       reportingSummaryAction.setProject(projectManager.getProjectById(projectID));
       reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
-      reportingSummaryAction.setSubmission(submission);
+      reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
+        reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
+      reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
       reportingSummaryAction.execute();
       // Getting the file data.
       //
@@ -342,13 +349,9 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+
   public void setComplete(boolean complete) {
     this.complete = complete;
-  }
-
-
-  public void setCurrentSubmission(Submission currentSubmission) {
-    this.currentSubmission = currentSubmission;
   }
 
   public void setCycleName(String cycleName) {
@@ -371,21 +374,19 @@ public class ProjectSubmissionAction extends BaseAction {
   private void submitProject() {
     Submission submission = new Submission();
 
-    submission.setCycle(this.getCurrentCycle());
+    submission.setCycle(this.getActualPhase().getDescription());
     submission.setUser(this.getCurrentUser());
 
 
-    submission.setYear((short) this.getCurrentCycleYear());
+    submission.setYear((short) this.getActualPhase().getYear());
     submission.setDateTime(new Date());
     submission.setProject(project);
 
-    long result = submissionManager.saveSubmission(submission).getId();
+    submission = submissionManager.saveSubmission(submission);
     this.setSubmission(submission);
+    if (submission != null) {
 
-    if (result > 0) {
-      submission.setId(result);
-      this.sendNotficationEmail(submission);
-      currentSubmission = submission;
+      this.sendNotficationEmail();
 
     }
   }

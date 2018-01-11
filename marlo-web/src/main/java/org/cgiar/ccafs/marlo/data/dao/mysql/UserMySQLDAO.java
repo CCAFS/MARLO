@@ -61,12 +61,13 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-    StringBuilder builder = new StringBuilder();
+   StringBuilder builder = new StringBuilder();
     builder.append(" select * from user_permission");
     List<Map<String, Object>> list =
       super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
     return list;
+
   }
 
 

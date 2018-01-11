@@ -133,10 +133,6 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
     this.projectBudgets = projectBudgets;
   }
 
-  @Override
-  public String toString() {
-    return "BudgetType [id=" + id + ", name=" + name + ", description=" + description + "]";
-  }
 
 }
 

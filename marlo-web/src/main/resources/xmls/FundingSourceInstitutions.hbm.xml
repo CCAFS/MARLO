@@ -14,5 +14,9 @@
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" not-null="true" />
         </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+      fetch="select">
+      <column name="id_phase" />
+    </many-to-one>
     </class>
 </hibernate-mapping>
