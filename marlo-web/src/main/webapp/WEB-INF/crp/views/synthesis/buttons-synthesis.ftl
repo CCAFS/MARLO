@@ -7,7 +7,6 @@
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 <input type="hidden"  name="program.crpProgram.id" value="${(program.crpProgram.id)!}"/>
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-<input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
