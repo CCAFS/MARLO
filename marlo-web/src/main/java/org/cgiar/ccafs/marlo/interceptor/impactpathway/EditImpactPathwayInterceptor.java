@@ -169,16 +169,22 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
             baseAction.setEditableParameter(hasPermissionToEdit);
           }
         }
+        if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+          // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
 
+          editParameter = false;
+          // If the user is not asking for edition privileges we don't need to validate them.
+
+        }
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          canEdit = (baseAction.isAdmin()) ? true
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true
             : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, session,
               crp.getId(), crp.getAcronym(), crpProgramID + ""));
         }
 
         // Set the variable that indicates if the user can edit the section
-        baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+        baseAction.setEditableParameter(editParameter && canEdit);
         baseAction.setCanEdit(canEdit);
 
       } else {
