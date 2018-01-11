@@ -75,7 +75,7 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
     }
 
 
-    if (phase.getEditable() != null && phase.getEditable() && locations.isEmpty()) {
+    if ( locations.isEmpty()) {
       FundingSourceLocation fundingSourceLocationAdd = new FundingSourceLocation();
       fundingSourceLocationAdd.setActive(true);
       fundingSourceLocationAdd.setActiveSince(fundingSourceLocation.getActiveSince());

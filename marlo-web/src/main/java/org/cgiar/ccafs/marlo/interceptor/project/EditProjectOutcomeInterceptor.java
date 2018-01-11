@@ -112,7 +112,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
     }
     ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     if (project != null && project.isActive()) {
 
