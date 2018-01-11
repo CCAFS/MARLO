@@ -28,11 +28,14 @@
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
-    <p class="col-md-10">[#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
+    <p class="col-md-10">[#if project.projectInfo.isProjectEditLeader()] [#if reportingActive] [@s.text name="projectPartners.help3" /] [#else] [@s.text name="projectPartners.help2" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text] [/#if]  [#else] [@s.text name="projectPartners.help1" /] [/#if]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
     
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -52,13 +55,13 @@
           <div class="loadingBlock"></div>
           <div style="display:none">
             [#-- Other fields --]
-            [#if project.projectEditLeader]
+            [#if project.projectInfo.isProjectEditLeader()]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <br />
               <div class="fullBlock">
-                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=!project.bilateralProject editable=editable /]
+                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               
@@ -77,7 +80,7 @@
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" required=!project.bilateralProject editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable /]
                   </div>
                 </div>
               [/#if]
@@ -94,7 +97,7 @@
               [#else]
                 [#if !editable]
                   <p class="center">[@s.text name="projectPartners.empty" /]
-                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
+                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
                   </p>
                 [/#if]
               [/#if] 
@@ -104,7 +107,7 @@
             </div> 
             
             [#-- Request partner adition --]
-            [#if editable && project.projectEditLeader]
+            [#if editable && project.projectInfo.isProjectEditLeader()]
             <p id="addPartnerText" class="helpMessage">
               [@s.text name="projectPartners.addPartnerMessage.first" /]
               <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
@@ -122,6 +125,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Hidden Parameters Interface --]
 <input id="partners-name" type="hidden" value="project.partners" />
@@ -157,7 +161,7 @@
 <input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
 
 [#-- Can update PPA Partners --]
-<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectEditLeader)?string}"/>
+<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectInfo.isProjectEditLeader())?string}"/>
 
 [#-- Project PPA Partners --]
 <select id="projectPPAPartners" style="display:none">
@@ -292,6 +296,7 @@
     <div class="blockContent" style="display:none">
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
+       <input id="id" class="phaseId" type="hidden" name="${name}.phase.id" value="${(element.phase.id)!}" />
       
       [#-- Institution / Organization --]
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
@@ -310,7 +315,7 @@
       </div>
       
       [#-- Responsibilities --]
-      [#if project.projectEditLeader]
+      [#if project.projectInfo.isProjectEditLeader()]
       <div class="form-group partnerResponsabilities chosen"> 
         [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=partnerRespRequired editable=editable /]
         <div class="clearfix"></div>
@@ -402,7 +407,7 @@
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
   <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}" listname="partner-${partnerIndex}-person-${index}">
     [#-- Remove link for all partners --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!)]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
     [/#if]
     <div class="leftHead">
@@ -464,7 +469,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(element.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -475,7 +480,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(element.id) as deliverable]
-                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
+                <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>

@@ -17,9 +17,8 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -36,17 +35,15 @@ import javax.inject.Named;
 @Named
 public class ProjectOutputsValidator extends BaseValidator {
 
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public ProjectOutputsValidator(GlobalUnitManager crpManager) {
+  public ProjectOutputsValidator(CrpManager crpManager) {
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+    Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTPUTS.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -65,7 +62,9 @@ public class ProjectOutputsValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -111,14 +110,9 @@ public class ProjectOutputsValidator extends BaseValidator {
         action
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        ProjectSectionStatusEnum.OUTPUTS.getStatus());
 
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTPUTS.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTPUTS.getStatus());
-      }
     }
   }
 }

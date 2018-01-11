@@ -17,11 +17,11 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.Locale;
 import java.util.Map;
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import org.apache.struts2.ServletActionContext;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
@@ -43,19 +43,18 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
+  private final CrpManager crpManager;
 
-  private UserManager userManager;
+  private final LocalizedTextProvider localizedTextProvider;
 
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
   private CustomParameterManager crpParameterManager;
 
   @Inject
-  public InternationalitazionFileInterceptor(UserManager userManager, GlobalUnitManager crpManager,
-    CustomParameterManager crpParameterManager) {
-    this.userManager = userManager;
+  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager,
+    LocalizedTextProvider localizedTextProvider) {
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
+    this.localizedTextProvider = localizedTextProvider;
 
   }
 
@@ -70,10 +69,19 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       language = (String) session.get(APConstants.CRP_LANGUAGE);
     }
 
-
     Locale locale = new Locale(language);
-    LocalizedTextUtil.reset();
-    LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
     ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
@@ -81,28 +89,28 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
 
-        LocalizedTextUtil.addDefaultResourceBundle(pathFile);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 
-        LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
 
-    // if (session.containsKey(APConstants.SESSION_CRP)) {
-    // if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
-    // pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-    //
-    // LocalizedTextUtil.addDefaultResourceBundle(pathFile);
-    // } else {
-    //
-    // LocalizedTextUtil.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
-    // }
-    // }
+    if (session.containsKey(APConstants.SESSION_CENTER)) {
+      if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
 
 
-    GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
     if (crp != null) {
-      GlobalUnit loggedCrp = crpManager.getGlobalUnitById(crp.getId());
+      Crp loggedCrp = crpManager.getCrpById(crp.getId());
 
       if (this.isCrpRefresh(loggedCrp)) {
         for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
@@ -118,7 +126,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
           }
 
         }
-
+        session.remove(APConstants.CURRENT_PHASE);
+        session.remove(APConstants.PHASES);
+        session.remove(APConstants.PHASES);
+        session.remove(APConstants.ALL_PHASES);
       }
     }
 
@@ -126,10 +137,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     return invocation.invoke();
   }
 
-  public boolean isCrpRefresh(GlobalUnit crp) {
+  public boolean isCrpRefresh(Crp crp) {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getGlobalUnitById(crp.getId()).getCustomParameters().stream()
+      return Boolean.parseBoolean(crpManager.getCrpById(crp.getId()).getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
         .getValue());
     } catch (Exception e) {

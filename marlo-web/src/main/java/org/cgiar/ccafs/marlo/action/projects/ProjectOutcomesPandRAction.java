@@ -387,10 +387,8 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     }
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setStartDate(projectDB.getStartDate());
-    project.setEndDate(projectDB.getEndDate());
-    project.setAdministrative(projectDB.getAdministrative());
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
+    project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
+
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
@@ -419,8 +417,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.ouctomesNewData(project.getOutcomesPandr());
@@ -436,8 +432,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

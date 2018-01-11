@@ -1,0 +1,4 @@
+.btn-group-xs>.btn, .btn-xs {
+  padding: 1px 5px;
+  line-height: 0;
+}

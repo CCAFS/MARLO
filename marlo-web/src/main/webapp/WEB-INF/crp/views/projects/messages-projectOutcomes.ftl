@@ -11,7 +11,7 @@
       <p>[@s.text name="project.message.historyVersion" ]  
           [@s.param]<span>${projectOutcome.modifiedBy.composedName?html}</span>[/@s.param]
           [@s.param]<span>${projectOutcome.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name="projectOutcomeID" value=projectOutcomeID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name="projectOutcomeID" value=projectOutcomeID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
       [#-- Differences --]
@@ -33,7 +33,10 @@
     [#if crpClosed]
       <p class="readPrivileges">MARLO is closed.</p>
     [#else]
+      [#if !editStatus]
       <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+      [/#if]
+      
     [/#if]
   [/#if]
   

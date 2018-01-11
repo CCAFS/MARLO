@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -27,9 +28,11 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
@@ -74,6 +77,7 @@ public class FundingSourceAddAction extends BaseAction {
   private static String FILE = "fileID";
   private GlobalUnit loggedCrp;
   private FundingSourceManager fundingSourceManager;
+  private FundingSourceInfoManager fundingSourceInfoManager;
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
@@ -88,7 +92,8 @@ public class FundingSourceAddAction extends BaseAction {
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, GlobalUnitManager crpManager,
     FundingSourceBudgetManager fundingSourceBudgetManager, FileDBManager fileDBManager,
-    FundingSourceInstitutionManager fundingSourceInstitutionManager) {
+    FundingSourceInstitutionManager fundingSourceInstitutionManager,
+    FundingSourceInfoManager fundingSourceInfoManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
@@ -97,6 +102,7 @@ public class FundingSourceAddAction extends BaseAction {
     this.fileDBManager = fileDBManager;
     this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
+    this.fundingSourceInfoManager = fundingSourceInfoManager;
   }
 
 
@@ -129,66 +135,61 @@ public class FundingSourceAddAction extends BaseAction {
 
     FundingSource fundingSource = new FundingSource();
 
+    FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+
     fundingSource.setCrp(loggedCrp);
 
-    /*
-     * fundingSource.setStartDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(START_DATE))[0])));
-     * fundingSource.setEndDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(END_DATE))[0])));
-     * fundingSource.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
-     * fundingSource.setDescription(StringUtils.trim(((String[]) parameters.get(DESCRIPTION))[0]));
-     * fundingSource.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
-     * fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
-     * fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
-     */
-
-    fundingSource.setStartDate(dateFormat.parse(StringUtils.trim((parameters.get(START_DATE).getMultipleValues())[0])));
-    fundingSource.setEndDate(dateFormat.parse(StringUtils.trim(parameters.get(END_DATE).getMultipleValues()[0])));
-    fundingSource.setTitle(StringUtils.trim(parameters.get(TITLE).getMultipleValues()[0]));
-    fundingSource.setDescription(StringUtils.trim(parameters.get(DESCRIPTION).getMultipleValues()[0]));
-    fundingSource.setFinanceCode(StringUtils.trim(parameters.get(FINANCE_CODE).getMultipleValues()[0]));
-    fundingSource.setContactPersonEmail(StringUtils.trim(parameters.get(CONTACT_EMAIL).getMultipleValues()[0]));
-    fundingSource.setContactPersonName(StringUtils.trim(parameters.get(CONTACT_NAME).getMultipleValues()[0]));
+    fundingSourceInfo
+      .setStartDate(dateFormat.parse(StringUtils.trim((parameters.get(START_DATE)).getMultipleValues()[0])));
+    fundingSourceInfo.setEndDate(dateFormat.parse(StringUtils.trim((parameters.get(END_DATE)).getMultipleValues()[0])));
+    fundingSourceInfo.setTitle(StringUtils.trim((parameters.get(TITLE)).getMultipleValues()[0]));
+    fundingSourceInfo.setDescription(StringUtils.trim((parameters.get(DESCRIPTION)).getMultipleValues()[0]));
+    fundingSourceInfo.setFinanceCode(StringUtils.trim((parameters.get(FINANCE_CODE)).getMultipleValues()[0]));
+    fundingSourceInfo.setContactPersonEmail(StringUtils.trim((parameters.get(CONTACT_EMAIL)).getMultipleValues()[0]));
+    fundingSourceInfo.setContactPersonName(StringUtils.trim((parameters.get(CONTACT_NAME)).getMultipleValues()[0]));
+    fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
 
     try {
-      // fundingSource.setW1w2(Boolean.parseBoolean(StringUtils.trim(((String[]) parameters.get(W1W2))[0])));
-      fundingSource.setW1w2(Boolean.parseBoolean(StringUtils.trim(parameters.get(W1W2).getMultipleValues()[0])));
+      fundingSourceInfo.setW1w2(Boolean.parseBoolean(StringUtils.trim((parameters.get(W1W2)).getMultipleValues()[0])));
     } catch (Exception e2) {
-      fundingSource.setW1w2(null);
+      fundingSourceInfo.setW1w2(null);
     }
 
 
-    // fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
-    fundingSource.setStatus(Integer.parseInt(StringUtils.trim(parameters.get(STATUS).getMultipleValues()[0])));
+    fundingSourceInfo.setStatus(Integer.parseInt(StringUtils.trim((parameters.get(STATUS)).getMultipleValues()[0])));
     try {
-      // fundingSource.setFile(fileDBManager.getFileDBById(Long.parseLong(StringUtils.trim(((String[])
-      // parameters.get(FILE))[0]))));
-      fundingSource.setFile(
-        fileDBManager.getFileDBById(Long.parseLong(StringUtils.trim(parameters.get(FILE).getMultipleValues()[0]))));
+      fundingSourceInfo.setFile(
+        fileDBManager.getFileDBById(Long.parseLong(StringUtils.trim((parameters.get(FILE)).getMultipleValues()[0]))));
     } catch (Exception e1) {
-      fundingSource.setFile(null);
+      fundingSourceInfo.setFile(null);
     }
 
     Institution institutionDonor =
       // institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
       institutionManager
         .getInstitutionById(Long.parseLong(StringUtils.trim(parameters.get(DONOR).getMultipleValues()[0])));
-    fundingSource.setInstitution(institutionDonor);
+    fundingSourceInfo.setDirectDonor(institutionDonor);
 
     BudgetType budgetType =
       // budgetTypeManager.getBudgetTypeById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(TYPE))[0])));
       budgetTypeManager
         .getBudgetTypeById(Long.parseLong(StringUtils.trim(parameters.get(TYPE).getMultipleValues()[0])));
-    fundingSource.setBudgetType(budgetType);
+    fundingSourceInfo.setBudgetType(budgetType);
 
 
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModificationJustification("");
+    fundingSourceInfo.setModificationJustification("");
     fundingSource.setModifiedBy(this.getCurrentUser());
+    fundingSourceInfo.setModifiedBy(this.getCurrentUser());
+    fundingSourceInfo.setPhase(this.getActualPhase());
 
 
     fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
+
+    fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getId()));
+    long fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
     /*
      * LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
@@ -275,7 +276,7 @@ public class FundingSourceAddAction extends BaseAction {
 
     {
       fsProp.put("id", fundingSource.getId());
-      fsProp.put("title", fundingSource.getDescription());
+      fsProp.put("title", fundingSourceInfo.getDescription());
       fsProp.put("ammount", remaining);
       fsProp.put("type", budgetType.getName());
       fsProp.put("typeID", budgetType.getId());

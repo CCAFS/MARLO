@@ -18,14 +18,16 @@ package org.cgiar.ccafs.marlo.action.publications;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -47,56 +49,60 @@ import org.slf4j.LoggerFactory;
 
 public class PublicationListAction extends BaseAction {
 
-
   /**
    * 
    */
   private static final long serialVersionUID = -5176367401132626314L;
   private final Logger LOG = LoggerFactory.getLogger(PublicationListAction.class);
-
-
-  private GlobalUnit loggedCrp;
-
-
+  private Crp loggedCrp;
   private long deliverableID;
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-  private final DeliverableManager deliverableManager;
-  private final LiaisonUserManager liaisonUserManager;
-  private final InstitutionManager institutionManager;
-  private final DeliverableLeaderManager deliverableLeaderManager;
+  private DeliverableInfoManager deliverableInfoManager;
+  private CrpManager crpManager;
+  private DeliverableManager deliverableManager;
+  private LiaisonUserManager liaisonUserManager;
+  private InstitutionManager institutionManager;
+  private DeliverableLeaderManager deliverableLeaderManager;
 
   @Inject
-  public PublicationListAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
+  public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
-    DeliverableLeaderManager deliverableLeaderManager) {
+    DeliverableInfoManager deliverableInfoManager, DeliverableLeaderManager deliverableLeaderManager) {
 
     super(config);
     this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.institutionManager = institutionManager;
   }
+
 
   @Override
   public String add() {
     String params[] = {loggedCrp.getAcronym()};
     if (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params))) {
       Deliverable deliverable = new Deliverable();
-      deliverable.setYear(this.getCurrentCycleYear());
+
       deliverable.setCreatedBy(this.getCurrentUser());
-      deliverable.setModifiedBy(this.getCurrentUser());
-      deliverable.setModificationJustification("New publication created");
       deliverable.setActive(true);
       deliverable.setActiveSince(new Date());
       deliverable.setCrp(loggedCrp);
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
+      deliverable.setPhase(this.getActualPhase());
 
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverableID = deliverable.getId();
 
+      deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
+      DeliverableInfo deliverableInfo = new DeliverableInfo();
+      deliverableInfo.setYear(this.getCurrentCycleYear());
+      deliverableInfo.setModifiedBy(this.getCurrentUser());
+      deliverableInfo.setDeliverable(deliverable);
+      deliverableInfo.setPhase(this.getActualPhase());
+      deliverableInfo.setModificationJustification("New publication created");
+      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
       LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
       if (user != null) {
         LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
@@ -134,13 +140,13 @@ public class PublicationListAction extends BaseAction {
 
   }
 
+
   public boolean canEdit(long deliverableID) {
     String params[] = {loggedCrp.getAcronym()};
     String paramDeliverableID[] = {loggedCrp.getAcronym(), deliverableID + ""};
     return this.hasPermission(this.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
       || this.hasPermission(this.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
   }
-
 
   @Override
   public String delete() {
@@ -165,14 +171,14 @@ public class PublicationListAction extends BaseAction {
 
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
 
-  public GlobalUnit getLoggedCrp() {
+  public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<Deliverable> getPublications(boolean permission) {
 
@@ -189,8 +195,8 @@ public class PublicationListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     try {
 
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
@@ -218,10 +224,7 @@ public class PublicationListAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
+  public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
-
 }

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ import java.util.List;
  */
 
 public interface DeliverablePartnershipManager {
+
+
+  public DeliverablePartnership copyDeliverablePartnership(DeliverablePartnership deliverablePartnership, Phase phase);
 
 
   /**
@@ -50,7 +54,6 @@ public interface DeliverablePartnershipManager {
    * @return a list from DeliverablePartnership null if no exist records
    */
   public List<DeliverablePartnership> findAll();
-
 
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId);
 

@@ -19,24 +19,23 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -82,37 +81,30 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectDescriptionAction extends BaseAction {
 
-
   private static final long serialVersionUID = -793652591843623397L;
-
-
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
   // Managers
   private ProjectManager projectManager;
+  private ProjectInfoManager projectInfoManagerManager;
+
   private SectionStatusManager sectionStatusManager;
 
   private ProjectFocusManager projectFocusManager;
   private FileDBManager fileDBManager;
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
-  private GlobalUnitProjectManager globalUnitProjectManager;
+  private CrpManager crpManager;
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
+
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
-
   private ProjectScopeManager projectScopeManager;
   private LocElementTypeManager locationTypeManager;
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private LiaisonUserManager liaisonUserManager;
   private HistoryComparator historyComparator;
-  // Front-end
-  private long projectID;
-  private GlobalUnit loggedCrp;
 
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -120,37 +112,41 @@ public class ProjectDescriptionAction extends BaseAction {
    * private UserManager userManager;
    */
 
+  // Front-end
+  private long projectID;
+  private Crp loggedCrp;
   private Project project;
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
+
   private List<LiaisonInstitution> liaisonInstitutions;
+
   private List<CrpClusterOfActivity> clusterofActivites;
+
 
   private Map<String, String> projectStatuses;
 
+
   private List<LiaisonUser> allOwners;
 
-
   private Map<String, String> projectTypes;
-
-
   private Map<String, String> projectScales;
 
+
   private File file;
+
+
   private File fileReporting;
 
-
   private String fileContentType;
-
 
   private String fileFileName;
 
   private String fileReportingFileName;
-
   private ProjectDescriptionValidator validator;
 
   @Inject
-  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
+  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, FileDBManager fileDBManager,
@@ -158,10 +154,11 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectInfoManager projectInfoManagerManager,
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
     super(config);
     this.projectManager = projectManager;
+    this.projectInfoManagerManager = projectInfoManagerManager;
     this.programManager = programManager;
     this.crpManager = crpManager;
     // this.userManager = userManager;
@@ -248,7 +245,8 @@ public class ProjectDescriptionAction extends BaseAction {
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -285,6 +283,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return fileContentType;
   }
 
+
   public String getFileFileName() {
     return fileFileName;
   }
@@ -297,6 +296,7 @@ public class ProjectDescriptionAction extends BaseAction {
   public String getFileReportingFileName() {
     return fileReportingFileName;
   }
+
 
   /**
    * This method returns an array of flagship ids depending on the project.flagships attribute.
@@ -323,7 +323,7 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public GlobalUnit getLoggedCrp() {
+  public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -337,10 +337,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public Map<String, String> getProjectScales() {
     return projectScales;
@@ -388,10 +388,10 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
-
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -403,13 +403,12 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
 
-
   @Override
   public void prepare() throws Exception {
 
     // Get current CRP
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
@@ -437,23 +436,12 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // We load the differences of this version with the previous version
 
-      this.setDifferences(historyComparator.getDifferences(transaction, specialList, "project"));
-
+      this.setDifferences(new ArrayList<>());
+      this.getDifferences().addAll(historyComparator.getDifferencesList(
+        history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "project.projectInfo", "", 1));
 
       if (history != null) {
         project = history;
-        // we load the all information form the files related to the project
-        if (project.getWorkplan() != null) {
-          project.setWorkplan(fileDBManager.getFileDBById(project.getWorkplan().getId()));
-        }
-        if (project.getBilateralContractName() != null) {
-          project.setBilateralContractName(fileDBManager.getFileDBById(project.getBilateralContractName().getId()));
-        }
-        if (project.getAnnualReportToDonnor() != null) {
-          project.setAnnualReportToDonnor(fileDBManager.getFileDBById(project.getAnnualReportToDonnor().getId()));
-        }
-
-
       } else {
         // not a valid transatacion
         this.transaction = null;
@@ -492,8 +480,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.getProjectInfo()
+          .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
+        project.getProjectInfo()
+          .setAdministrative(projectDb.getProjecInfoPhase(this.getActualPhase()).getAdministrative());
         // load Cluster of activites info
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
@@ -513,19 +503,19 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         // load LiaisonUser info
-        if (project.getLiaisonUser() != null && project.getLiaisonUser().getId() != null
-          && project.getLiaisonUser().getId().longValue() != -1) {
-          project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
+        if (project.getProjectInfo().getLiaisonUser() != null
+          && project.getProjectInfo().getLiaisonUser().getId() != null) {
+          project.getProjectInfo()
+            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
         } else {
-          project.setLiaisonUser(null);
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
         }
         // load LiaisonUser info
-        if (project.getLiaisonInstitution() != null && project.getLiaisonInstitution().getId() != null
-          && project.getLiaisonInstitution().getId().longValue() != -1) {
-          project.setLiaisonInstitution(
-            liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
+        if (project.getProjectInfo().getLiaisonInstitution() != null) {
+          project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
         } else {
-          project.setLiaisonInstitution(null);
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
         }
 
         // load fps value
@@ -573,13 +563,13 @@ public class ProjectDescriptionAction extends BaseAction {
         this.setDraft(false);
 
         // Load the DB information and adjust it to the structures with which the front end
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
           if (project.getFlagshipValue().isEmpty()) {
@@ -591,12 +581,13 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         List<CrpProgram> regions = new ArrayList<>();
+
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
-          if (project.getRegionsValue().isEmpty()) {
+          if (project.getRegionsValue() != null && project.getRegionsValue().isEmpty()) {
             project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
           } else {
             project
@@ -606,7 +597,8 @@ public class ProjectDescriptionAction extends BaseAction {
         // load the info for Cluster of activities
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
           projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
             .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
           projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
@@ -620,7 +612,16 @@ public class ProjectDescriptionAction extends BaseAction {
 
           projectLocations.add(projectLocation);
         }
-        project.setClusterActivities(projectClusterActivities);
+        List<String> activities = new ArrayList<>();
+        List<ProjectClusterActivity> projectActivities = new ArrayList<>();
+        for (ProjectClusterActivity projectClusterActivity : projectClusterActivities) {
+          if (!activities.contains(projectClusterActivity.getCrpClusterOfActivity().getIdentifier())) {
+            projectActivities.add(projectClusterActivity);
+            activities.add(projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+
+          }
+        }
+        project.setClusterActivities(projectActivities);
         project.setFlagships(programs);
         project.setRegions(regions);
         project.setScopes(projectLocations);
@@ -650,16 +651,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
     for (CrpProgram crpProgram : project.getFlagships()) {
       crpProgram = programManager.getCrpProgramById(crpProgram.getId());
-      clusterofActivites
-        .addAll(crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      clusterofActivites.addAll(crpClusterOfActivityManager.findClusterProgramPhase(crpProgram, this.getActualPhase()));
     }
     // sort the clusterr of activites by identfier
-    try {
-      clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
-    } catch (NullPointerException e) {
-      // if throws null pointer sort by id
-      clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-    }
+
+    /*
+     * try {
+     * clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
+     * } catch (NullPointerException e) {
+     * // if throws null pointer sort by id
+     * clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+     * }
+     */
+
     // add regions programs
 
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
@@ -674,6 +678,15 @@ public class ProjectDescriptionAction extends BaseAction {
 
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
+
+
+    if (project.getProjecInfoPhase(this.getActualPhase()).getStatus() != null
+      && project.getProjecInfoPhase(this.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      projectStatuses.remove(ProjectStatusEnum.Ongoing.getStatusId());
+    }
+
+
     // add project scales
 
     projectScales = new HashMap<>();
@@ -697,17 +710,18 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      project.setLiaisonInstitution(null);
-      project.setLiaisonUser(null);
+      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
 
-      project.setNoRegional(null);
-      project.setCrossCuttingGender(null);
-      project.setCrossCuttingCapacity(null);
-      project.setCrossCuttingNa(null);
-      project.setCrossCuttingYouth(null);
+      project.getProjectInfo().setNoRegional(null);
+      project.getProjectInfo().setCrossCuttingGender(null);
+      project.getProjectInfo().setCrossCuttingCapacity(null);
+      project.getProjectInfo().setCrossCuttingNa(null);
+      project.getProjectInfo().setCrossCuttingYouth(null);
     }
 
   }
+
 
   @Override
   public String save() {
@@ -715,55 +729,58 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       Project projectDB = projectManager.getProjectById(project.getId());
+      projectDB.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
       // Load basic info project to be saved
 
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
       project.setCreateDate(projectDB.getCreateDate());
-      project.setPresetDate(projectDB.getPresetDate());
+      project.getProjectInfo().setPresetDate(projectDB.getProjectInfo().getPresetDate());
 
       // Validations to fill the checkbox fields
 
-      if (project.isNoRegional() == null) {
-        project.setNoRegional(false);
+      if (project.getProjectInfo().getNoRegional() == null) {
+        project.getProjectInfo().setNoRegional(false);
       }
-      if (project.getCrossCuttingCapacity() == null) {
-        project.setCrossCuttingCapacity(false);
+      if (project.getProjectInfo().getCrossCuttingCapacity() == null) {
+        project.getProjectInfo().setCrossCuttingCapacity(false);
       }
-      if (project.getCrossCuttingNa() == null) {
-        project.setCrossCuttingNa(false);
+      if (project.getProjectInfo().getCrossCuttingNa() == null) {
+        project.getProjectInfo().setCrossCuttingNa(false);
       }
-      if (project.getCrossCuttingGender() == null) {
-        project.setCrossCuttingGender(false);
+      if (project.getProjectInfo().getCrossCuttingGender() == null) {
+        project.getProjectInfo().setCrossCuttingGender(false);
       }
-      if (project.getCrossCuttingYouth() == null) {
-        project.setCrossCuttingYouth(false);
+      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
+        project.getProjectInfo().setCrossCuttingYouth(false);
       }
-      project.setStatus(projectDB.getStatus());
+      project.getProjectInfo().setStatus(projectDB.getProjectInfo().getStatus());
       if (this.isReportingActive()) {
 
-        project.setCrossCuttingCapacity(projectDB.getCrossCuttingCapacity());
-        project.setCrossCuttingNa(projectDB.getCrossCuttingNa());
-        project.setCrossCuttingGender(projectDB.getCrossCuttingGender());
-        project.setCrossCuttingYouth(projectDB.getCrossCuttingYouth());
+        project.getProjectInfo()
+          .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
+        project.getProjectInfo()
+          .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
+        project.getProjectInfo()
+          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
+        project.getProjectInfo()
+          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
 
 
       }
 
 
       // no liaison institution selected
-      if (project.getLiaisonInstitution() != null) {
-        if (project.getLiaisonInstitution().getId() == -1) {
-          project.setLiaisonInstitution(null);
+      if (project.getProjectInfo().getLiaisonInstitution() != null) {
+        if (project.getProjectInfo().getLiaisonInstitution().getId() == -1) {
+          project.getProjectInfo().setLiaisonInstitution(null);
         }
       }
       // no liaison user selected
-      if (project.getLiaisonUser() != null) {
-        if (project.getLiaisonUser().getId() == -1) {
-          project.setLiaisonUser(null);
+      if (project.getProjectInfo().getLiaisonUser() != null) {
+        if (project.getProjectInfo().getLiaisonUser().getId() == -1) {
+          project.getProjectInfo().setLiaisonUser(null);
         }
       }
       // Saving the flaghsips
@@ -771,13 +788,24 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 
         for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
 
           if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
             projectFocusManager.deleteProjectFocus(projectFocus.getId());
 
+          }
+        }
+        List<ProjectFocus> fpsPreview = projectDB.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList());
+        for (ProjectFocus projectFocus : fpsPreview) {
+          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocus.setActive(false);
+            projectFocusManager.saveProjectFocus(projectFocus);
+            // projectFocusManager.deleteProjectFocus(projectFocus.getId());
           }
         }
         for (String programID : project.getFlagshipValue().trim().split(",")) {
@@ -786,14 +814,17 @@ public class ProjectDescriptionAction extends BaseAction {
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
+            projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue()
+                && c.getPhase().equals(this.getActualPhase()))
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setActive(true);
               projectFocus.setActiveSince(new Date());
               projectFocus.setCreatedBy(this.getCurrentUser());
               projectFocus.setModifiedBy(this.getCurrentUser());
               projectFocus.setModificationJustification("");
+              projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
           }
@@ -803,11 +834,14 @@ public class ProjectDescriptionAction extends BaseAction {
 
       // Saving the regions
       List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
       for (ProjectFocus projectFocus : regionsPreview) {
         if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          projectFocus.setActive(false);
+          projectFocusManager.saveProjectFocus(projectFocus);
+          // projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
       if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
@@ -817,15 +851,17 @@ public class ProjectDescriptionAction extends BaseAction {
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
-
+            projectFocus.setPhase(this.getActualPhase());
             if (projectDB.getProjectFocuses().stream()
-              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+                && c.getCrpProgram().getId().longValue() == program.getId().longValue())
               .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setActive(true);
               projectFocus.setActiveSince(new Date());
               projectFocus.setCreatedBy(this.getCurrentUser());
               projectFocus.setModifiedBy(this.getCurrentUser());
               projectFocus.setModificationJustification("");
+              projectFocus.setPhase(this.getActualPhase());
               projectFocusManager.saveProjectFocus(projectFocus);
             }
           }
@@ -839,7 +875,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // Removing Project Cluster Activities
         for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
 
           if (project.getClusterActivities() == null) {
             project.setClusterActivities(new ArrayList<>());
@@ -868,6 +905,7 @@ public class ProjectDescriptionAction extends BaseAction {
               projectClusterActivity.setProject(project);
               projectClusterActivity.setModifiedBy(this.getCurrentUser());
               projectClusterActivity.setModificationJustification("");
+              projectClusterActivity.setPhase(this.getActualPhase());
               projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
             }
 
@@ -918,12 +956,9 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
-      globalUnitProject.setProject(projectDB);
-      globalUnitProject.setGlobalUnit(loggedCrp);
-
       // load basic info to project
-      project.setCofinancing(projectDB.isCofinancing());
+      project.setCrp(loggedCrp);
+      project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
 
 
@@ -933,11 +968,20 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
       project.setActiveSince(new Date());
-      project.setReporting(projectDB.getReporting());
-      project.setAdministrative(projectDB.getAdministrative());
-      project.setModificationJustification(this.getJustification());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      project.getProjectInfo().setModifiedBy(this.getCurrentUser());
+      project.getProjectInfo().setPhase(this.getActualPhase());
+      project.getProjectInfo().setProject(project);
+      project.getProjectInfo().setReporting(projectDB.getProjectInfo().getReporting());
+      project.getProjectInfo().setAdministrative(projectDB.getProjectInfo().getAdministrative());
+      project.getProjectInfo().setModificationJustification(this.getJustification());
+
+      projectInfoManagerManager.saveProjectInfo(project.getProjectInfo());
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+
       Path path = this.getAutoSaveFilePath();
       // delete the draft file if exists
       if (path.toFile().exists()) {
@@ -983,19 +1027,19 @@ public class ProjectDescriptionAction extends BaseAction {
     this.allOwners = allOwners;
   }
 
-
   public void setClusterofActivites(List<CrpClusterOfActivity> clusterofActivites) {
     this.clusterofActivites = clusterofActivites;
   }
+
 
   public void setFile(File file) {
     this.file = file;
   }
 
-
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
+
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
@@ -1017,7 +1061,7 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
+  public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

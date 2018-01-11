@@ -113,8 +113,8 @@ public class RequestCountryOfficeAction extends BaseAction {
         // Add Partner Request information.
         PartnerRequest partnerRequest = new PartnerRequest();
         partnerRequest.setInstitution(institutionManager.getInstitutionById(institutionID));
-        partnerRequest
-          .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+        partnerRequest.setRequestSource("Project: (" + projectID + ") - "
+          + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
         partnerRequest.setActive(true);
         partnerRequest.setActiveSince(new Date());
         partnerRequest.setCreatedBy(this.getCurrentUser());

@@ -16,10 +16,9 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -46,17 +45,15 @@ public class ProjectActivitiesValidator extends BaseValidator {
   // This is not thread safe
   BaseAction action;
 
-
-  // GlobalUnit Manager
-  private GlobalUnitManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public ProjectActivitiesValidator(GlobalUnitManager crpManager) {
+  public ProjectActivitiesValidator(CrpManager crpManager) {
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+    Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.ACTIVITIES.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -65,6 +62,9 @@ public class ProjectActivitiesValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     this.action = action;
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
@@ -98,13 +98,10 @@ public class ProjectActivitiesValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-    } else {
-      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-    }
+
+    this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+
   }
 
   public void validateActivity(Activity activity, int index, String listName) {

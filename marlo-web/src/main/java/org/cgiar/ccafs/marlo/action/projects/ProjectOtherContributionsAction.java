@@ -444,8 +444,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
-    project.setAdministrative(projectDB.getAdministrative());
+    project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
     crps = crpPandrManager.findAll();
     regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());
@@ -538,8 +537,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
       this.projectOtherContributionsNewData(project.getProjectOtherContributionsList());
       this.OtherContributionsPreviousData(project.getOtherContributionsList());
@@ -554,8 +551,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
       relationsName.add(APConstants.OTHER_CONTRIBUTIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

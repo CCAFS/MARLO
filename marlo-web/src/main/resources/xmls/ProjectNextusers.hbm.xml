@@ -17,6 +17,9 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" not-null="true" />
         </many-to-one>
+        <property name="composeID" type="string">
+           <column name="composed_id" length="20" />
+        </property>
         <property name="nextUser" type="string">
             <column name="next_user" length="65535" />
         </property>
