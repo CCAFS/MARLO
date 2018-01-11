@@ -808,7 +808,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -1667,8 +1667,6 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void updateRoles(ProjectPartnerPerson previousPartnerPerson, ProjectPartnerPerson partnerPerson, Role role) {
     long roleId = role.getId();
-    System.out.println(partnerPerson.getUser().getFirstName());
-    System.out.println(previousPartnerPerson.getUser().getFirstName());
 
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson == null && partnerPerson != null) {

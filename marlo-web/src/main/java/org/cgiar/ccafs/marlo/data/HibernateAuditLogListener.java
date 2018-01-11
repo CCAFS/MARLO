@@ -514,7 +514,7 @@ public class HibernateAuditLogListener
           try {
 
             Set<Object> set = (Set<Object>) state[i];
-
+            // Hibernate.initialize(set);
             if (set != null && !set.isEmpty()) {
               Object reObject = sessionFactory.getCurrentSession()
                 .get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
@@ -645,6 +645,7 @@ public class HibernateAuditLogListener
 
             }
           } catch (HibernateException e) {
+            e.printStackTrace();
             LOG.info("Can not load lazy relation  " + e.getLocalizedMessage());
           }
         }

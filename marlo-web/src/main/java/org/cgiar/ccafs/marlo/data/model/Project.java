@@ -645,8 +645,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   public ProjectPartnerPerson getLeaderPersonDB(Phase phase) {
 
 
-    for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
-      .collect(Collectors.toList())) {
+    for (ProjectPartner partner : projectPartners.stream()
+      .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
       for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
         if (person.isActive()) {
           if (person.getContactType().equals("PL")) {

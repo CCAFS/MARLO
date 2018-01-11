@@ -7,7 +7,7 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP PROCEDURE IF EXISTS `getPermissions`;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getPermissions`(IN v_user_id bigint(20))
+CREATE  PROCEDURE `getPermissions`(IN v_user_id bigint(20))
 BEGIN
 	 drop table if exists user_permission;
 
