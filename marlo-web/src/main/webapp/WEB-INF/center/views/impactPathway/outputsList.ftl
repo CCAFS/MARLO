@@ -102,7 +102,7 @@
             [#if outputs?has_content]
             [#if selectedResearchTopic?has_content] 
               <div class="text-right">
-                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="outcomeID"]${selectedResearchOutcome.id}[/@s.param][/@s.url]">
+                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="outcomeID"]${selectedResearchOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
@@ -114,7 +114,7 @@
             [#else]
             [#if selectedResearchTopic?has_content] 
               <div class="text-center">
-                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="outcomeID"]${selectedResearchOutcome.id}[/@s.param][/@s.url]">
+                <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param] [@s.param name="outcomeID"]${selectedResearchOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
@@ -128,11 +128,11 @@
           [/@s.form]
         [#else]
           [#if selectedResearchTopic?has_content] 
-            <p class="text-center">Before completing this section, please add at least one Outcome by <a href="[@s.url action='${centerSession}/outcomesList'][@s.param name="programID" value=programID /][@s.param name="topicID" value=selectedResearchTopic.id /][@s.param name="edit" value="true"/][/@s.url]">clicking here</a></p> 
+            <p class="text-center">Before completing this section, please add at least one Outcome by <a href="[@s.url action='${centerSession}/outcomesList'][@s.param name="programID" value=programID /][@s.param name="topicID" value=selectedResearchTopic.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
           [/#if]
         [/#if]
         [#else]
-         <p class="text-center">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/researchTopics'][@s.param name="programID" value=programID /][@s.param name="edit" value="true"/][/@s.url]">clicking here</a></p> 
+         <p class="text-center">Before completing this section, please add at least one Research Topic by <a href="[@s.url action='${centerSession}/researchTopics'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a></p> 
         [/#if]
       </div>
     </div>

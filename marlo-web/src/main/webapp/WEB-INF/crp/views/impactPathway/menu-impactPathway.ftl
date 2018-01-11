@@ -16,7 +16,7 @@
   <div class="menuList">
     [#list programs as program]
       [#assign isActive = (program.id == crpProgramID)/]
-      <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a></p>
+      <p class="${isActive?string('active','')}"><a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a></p>
     [/#list]
   </div>
   <ul>
@@ -25,7 +25,7 @@
         [#list items as item]
           [#assign hasDraft = (action.getAutoSaveFilePath(selectedProgram.class.simpleName, item.action, selectedProgram.id))!false /]
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
               [#-- Draft Tag 
               [#if hasDraft][@s.text name="message.fieldsCheck.draft" ][@s.param]section[/@s.param][/@s.text][/#if]
               --]

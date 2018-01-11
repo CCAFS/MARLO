@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -81,12 +82,14 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   }
 
   @Override
-  public Deliverable save(Deliverable deliverable, String section, List<String> relationsName) {
+  public Deliverable save(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     if (deliverable.getId() == null) {
-      super.saveEntity(deliverable, section, relationsName);
+      deliverable = super.saveEntity(deliverable, section, relationsName, phase);
     } else {
-      deliverable = super.update(deliverable, section, relationsName);
+      deliverable = super.update(deliverable, section, relationsName, phase);
     }
+
+
     return deliverable;
   }
 

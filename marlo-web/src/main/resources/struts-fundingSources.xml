@@ -20,7 +20,7 @@
         <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingSource</param>
         <param name="fundingSourceID">${fundingSourceID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -30,7 +30,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingSource</param>
         <param name="fundingSourceID">${fundingSourceID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
 

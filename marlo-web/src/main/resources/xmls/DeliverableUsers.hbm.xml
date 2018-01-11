@@ -20,5 +20,8 @@
         <property name="elementId" type="string">
             <column name="element_id" length="65535" not-null="true" />
         </property>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

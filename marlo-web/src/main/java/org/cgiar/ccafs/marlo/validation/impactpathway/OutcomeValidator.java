@@ -57,7 +57,9 @@ public class OutcomeValidator extends BaseValidator
   }
 
   public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(program);
@@ -81,7 +83,8 @@ public class OutcomeValidator extends BaseValidator
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     }
-    this.saveMissingFieldsImpactPathway(program, "outcomes");
+    this.saveMissingFieldsImpactPathway(program, "outcomes", action.getActualPhase().getYear(),
+      action.getActualPhase().getDescription());
   }
 
 

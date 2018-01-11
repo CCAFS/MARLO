@@ -16,6 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
@@ -55,6 +57,12 @@ public interface ProjectDAO {
    */
   public List<Project> findAll();
 
+  public List<Project> getCompletedProjects(long crpId);
+
+  public List<Project> getNoPhaseProjects(long crpId, Phase phase);
+
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase);
+
   /**
    * Get the list of permissions that the user can access and edit.
    * 
@@ -77,4 +85,8 @@ public interface ProjectDAO {
   public Project save(Project project);
 
   public Project save(Project project, String section, List<String> relationsName);
+
+  public Project save(Project project, String section, List<String> relationsName, Phase phase);
+
+
 }

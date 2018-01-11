@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -26,13 +27,15 @@ import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 @Named
-public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long> implements CrpClusterOfActivityDAO {
+public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfActivity, Long>
+  implements CrpClusterOfActivityDAO {
 
 
   @Inject
   public CrpClusterOfActivityMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
+
 
   @Override
   public void deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
@@ -69,12 +72,39 @@ public class CrpClusterOfActivityMySQLDAO extends AbstractMarloDAO<CrpClusterOfA
   }
 
   @Override
+  public List<CrpClusterOfActivity> findClusterProgramPhase(long crpProgramID, long phaseID) {
+    StringBuilder query = new StringBuilder();
+    query.append("from ");
+    query.append(CrpClusterOfActivity.class.getName());
+    query.append(" where is_active=1 and crp_program_id =" + crpProgramID);
+    query.append(" and id_phase=" + phaseID);
+    query.append(" order by identifier asc");
+    List<CrpClusterOfActivity> list = super.findAll(query.toString());
+    return list;
+
+  }
+
+  @Override
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase) {
+    String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1 and identifier='"
+      + crpClusterOfActivityIdentefier + "' and id_phase=" + phase.getId();
+    List<CrpClusterOfActivity> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public CrpClusterOfActivity save(CrpClusterOfActivity crpClusterOfActivity) {
     if (crpClusterOfActivity.getId() == null) {
       super.saveEntity(crpClusterOfActivity);
     } else {
       crpClusterOfActivity = super.update(crpClusterOfActivity);
     }
+
+
     return crpClusterOfActivity;
   }
 

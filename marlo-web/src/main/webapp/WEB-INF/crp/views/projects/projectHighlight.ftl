@@ -32,7 +32,10 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
   <div class="row">
     [#-- Project Menu --]
@@ -50,7 +53,7 @@
 
         [#-- Back --]
         <small class="pull-right">
-          <a href="[@s.url action='${crpSession}/highlights'][@s.param name="projectID" value=project.id /][/@s.url]">
+          <a href="[@s.url action='${crpSession}/highlights'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project highlights
           </a>
         </small>
@@ -225,6 +228,7 @@
     
   </div>  
 </section>
+[/#if]
   
 [#-- File upload template --]
 [@customForm.inputFile name="file" template=true /] 

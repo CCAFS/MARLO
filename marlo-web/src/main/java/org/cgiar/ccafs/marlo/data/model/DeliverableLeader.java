@@ -26,6 +26,8 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Institution institution;
+  @Expose
+  private Phase phase;
 
   public DeliverableLeader() {
   }
@@ -93,6 +95,11 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -117,6 +124,10 @@ public class DeliverableLeader implements java.io.Serializable, IAuditLog {
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

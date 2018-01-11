@@ -74,8 +74,9 @@ public class DeliverableStatusAction extends BaseAction {
     }
     if (this.isPlanningActive()) {
 
-      if (deliverable.getStatus() != null
-        && deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         status.remove(ProjectStatusEnum.Complete.getStatusId());
       }
       if (this.isDeliverableNew(deliverableID)) {
@@ -83,8 +84,9 @@ public class DeliverableStatusAction extends BaseAction {
         status.remove(ProjectStatusEnum.Extended.getStatusId());
 
       } else {
-        if (year < this.getReportingYear()) {
-          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+        if (year < this.getActualPhase().getYear()) {
+
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
         }
       }
     }

@@ -23,6 +23,9 @@
         <property name="journal" type="string">
             <column name="journal" length="65535" />
         </property>
+         <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
         <property name="isiPublication" type="java.lang.Boolean">
             <column name="isi_publication" />
         </property>
