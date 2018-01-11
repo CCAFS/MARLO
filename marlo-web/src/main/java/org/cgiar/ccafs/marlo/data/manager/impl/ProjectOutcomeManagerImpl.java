@@ -85,7 +85,13 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectMilestone.getCrpMilestone().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
 
           projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-          projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
+          if (projectMilestone.getExpectedUnit() != null) {
+            if (projectMilestone.getExpectedUnit().getId() == null
+              || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+              projectMilestoneAdd.setExpectedUnit(null);
+            }
+          }
+          // projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
           projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
           projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
           projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
@@ -152,7 +158,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
         && c.getCrpProgramOutcome().getComposeID().equals(projectOutcome.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && projectOutcomes.isEmpty()) {
+    if (projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
       projectOutcomeAdd.setActive(true);
       projectOutcomeAdd.setActiveSince(projectOutcome.getActiveSince());
@@ -217,7 +223,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
         && c.getCrpProgramOutcome().getComposeID().equals(projectOutcome.getCrpProgramOutcome().getComposeID()))
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && projectOutcomes.isEmpty()) {
+    if (projectOutcomes.isEmpty()) {
       ProjectOutcome projectOutcomeAdd = new ProjectOutcome();
       projectOutcomeAdd.setActive(true);
       projectOutcomeAdd.setActiveSince(projectOutcome.getActiveSince());
@@ -369,7 +375,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
                 this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
 
             projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
-            projectMilestoneAdd.setExpectedUnit(projectMilestone.getExpectedUnit());
+
+            if (projectMilestone.getExpectedUnit() != null) {
+              if (projectMilestone.getExpectedUnit().getId() == null
+                || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+                projectMilestoneAdd.setExpectedUnit(null);
+              }
+            }
+
             projectMilestoneAdd.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneAdd.setAchievedValue(projectMilestone.getAchievedValue());
             projectMilestoneAdd.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
@@ -384,7 +397,13 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
                 && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
               .collect(Collectors.toList()).get(0);
             milestone.setAchievedValue(projectMilestone.getAchievedValue());
-            milestone.setExpectedUnit(projectMilestone.getExpectedUnit());
+            if (projectMilestone.getExpectedUnit() != null) {
+              if (projectMilestone.getExpectedUnit().getId() == null
+                || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+                milestone.setExpectedUnit(null);
+              }
+            }
+
             milestone.setExpectedValue(projectMilestone.getExpectedValue());
             milestone.setAchievedValue(projectMilestone.getAchievedValue());
             milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());

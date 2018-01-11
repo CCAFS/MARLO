@@ -179,7 +179,14 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
        * }
        */
       // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+
+        editParameter = false;
+        // If the user is not asking for edition privileges we don't need to validate them.
+
+      }
+      baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
 
     } else {
