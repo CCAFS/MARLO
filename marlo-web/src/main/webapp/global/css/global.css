@@ -2661,11 +2661,13 @@ input.userName {
 
 .login-back-container{
   margin-top: 50px;
+  width: 100%;
 }
 
 .login-back-container .loginBack{
   color: #337ab7;
   cursor: pointer;
+  text-align: center;
 }
 
 .login-disclaimer{
