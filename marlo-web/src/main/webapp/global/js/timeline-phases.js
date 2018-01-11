@@ -37,23 +37,19 @@ $(document).ready(function() {
   $('.phaseBox.open').on('click', function(e,i) {
     var phaseID = $(this).attr('id').split('-')[1];
     var isClosed = $(this).find('.label-danger').exists();
+    console.log('is closed', isClosed);
     if(isClosed) {
-      console.log('is closed');
       e.preventDefault();
     } else {
-      console.log('is open');
       setPhaseID(phaseID);
     }
   });
 
-  sly.on('active', function(eventName) {
-    console.log('active');
+  sly.on('active', function(eventName,itemIndex) {
+    console.log("eventName", eventName);
+    console.log("itemIndex", itemIndex);
     var phaseID = $frame.find('li.active').attr('id').split('-')[1];
     var isClosed = $frame.find('li.active').find('.label-danger').exists();
-    if(!isClosed) {
-      // setPhaseID(phaseID);
-    }
-
   });
 
 });
