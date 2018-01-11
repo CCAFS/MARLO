@@ -275,6 +275,23 @@
       [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
 
+[#if !isTemplate]
+      [#-- Partners with deliverables --]
+      <div class="contactTags fullPartBlock clearfix">        
+          [#if action.getDeliverablesLedByPartner(element.id)?has_content]
+            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${action.getDeliverablesLedByPartner(element.id)?size}[/@s.param][/@s.text]</div>
+            <div class="deliverablesList" style="display:none">
+              <h3>Deliverables</h3>
+              <ul>
+              [#list action.getDeliverablesLedByPartner(element.id) as deliverable]
+                <li>${deliverable.deliverableInfo.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"><img class="external-link" src="${baseUrl}/global/images/external-link.png" /></a></li>
+              [/#list]
+              </ul>
+            </div>
+          [/#if]
+      </div>
+    [/#if]
+
       [#-- Tags --]
       <div class="partnerTags pull-right">
         <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>

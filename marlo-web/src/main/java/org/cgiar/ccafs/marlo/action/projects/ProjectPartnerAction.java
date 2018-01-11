@@ -318,6 +318,37 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public List<Deliverable> getDeliverablesLedByPartner(long projectPartnerID) {
+    List<Deliverable> deliverablesLeads = new ArrayList<>();
+    ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+    if (projectPartner != null) {
+      List<DeliverablePartnership> deliverablePartnerships = projectPartner.getDeliverablePartnerships().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+      for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
+        Deliverable deliverable = deliverablePartnership.getDeliverable();
+        deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+        if (!deliverablesLeads.contains(deliverable)) {
+          if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+            deliverablesLeads.add(deliverable);
+          } else {
+            if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
+                deliverablesLeads.add(deliverable);
+              }
+            }
+          }
+        }
+
+      }
+    }
+    return deliverablesLeads;
+  }
+
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
 
     /*
@@ -808,7 +839,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
