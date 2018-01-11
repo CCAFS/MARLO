@@ -723,7 +723,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
+
       return true;
     }
 

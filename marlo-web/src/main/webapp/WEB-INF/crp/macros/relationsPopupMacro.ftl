@@ -1,7 +1,7 @@
 [#ftl]
 [#macro relationsMacro element ]
   [#local className = ((element.class.name)?split('.')?last)!''/]
-  [#local composedID = "${className}-${element.id}"]
+  [#local composedID = "${className}-${(element.id)!}"]
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
   [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))!deliverablesProject /]
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]

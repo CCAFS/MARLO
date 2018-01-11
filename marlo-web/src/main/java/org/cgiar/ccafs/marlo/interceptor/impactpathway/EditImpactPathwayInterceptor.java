@@ -172,7 +172,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true
+          canEdit = (baseAction.isAdmin()) ? true
             : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, session,
               crp.getId(), crp.getAcronym(), crpProgramID + ""));
         }
