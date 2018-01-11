@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -177,26 +177,25 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
     if (projectLocation.getLocElement() != null) {
       hasLocElement = true;
     }
-    if (phase.getEditable() != null && phase.getEditable()) {
 
-      List<ProjectLocation> locations = new ArrayList<ProjectLocation>();
+    List<ProjectLocation> locations = new ArrayList<ProjectLocation>();
 
-      if (hasLocElement) {
-        locations.addAll(phase.getProjectLocations().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElement() != null
-            && projectLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
-          .collect(Collectors.toList()));
-      } else {
-        locations.addAll(phase.getProjectLocations().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElementType() != null
-            && projectLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
-          .collect(Collectors.toList()));
-      }
-      for (ProjectLocation location : locations) {
-        location.setActive(false);
-        projectLocationDAO.save(location);
-      }
+    if (hasLocElement) {
+      locations.addAll(phase.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElement() != null
+          && projectLocation.getLocElement().getId().longValue() == c.getLocElement().getId().longValue())
+        .collect(Collectors.toList()));
+    } else {
+      locations.addAll(phase.getProjectLocations().stream()
+        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID && c.getLocElementType() != null
+          && projectLocation.getLocElementType().getId().longValue() == c.getLocElementType().getId().longValue())
+        .collect(Collectors.toList()));
     }
+    for (ProjectLocation location : locations) {
+      location.setActive(false);
+      projectLocationDAO.save(location);
+    }
+
     if (phase.getNext() != null) {
       this.deleteProjectLocationPhase(phase.getNext(), projectID, projectLocation);
 

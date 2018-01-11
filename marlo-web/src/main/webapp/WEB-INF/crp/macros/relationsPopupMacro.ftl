@@ -1,7 +1,7 @@
 [#ftl]
 [#macro relationsMacro element ]
   [#local className = ((element.class.name)?split('.')?last)!''/]
-  [#local composedID = "${className}-${element.id}"]
+  [#local composedID = "${className}-${(element.id)!}"]
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
   [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))!deliverablesProject /]
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
@@ -41,7 +41,7 @@
                 </thead>
                 <tbody>
                   [#list projects as p]
-                    [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+                    [#local projectUrl][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${p.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
                       <th scope="row">P${p.id}</th>
                       <td>${(p.projectInfo.title)!'Untitled'}</td>
@@ -98,7 +98,7 @@
                 </thead>
                 <tbody>
                   [#list deliverables as d]
-                    [#local deliverableUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#local]
+                    [#local deliverableUrl][@s.url namespace="/projects" action="${(crpSession)!}/deliverable"][@s.param name='deliverableID']${d.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
                       <th scope="row">D${d.id}</th>
                       <td class="col-md-6">${(d.deliverableInfo.title)!'Untitled'}</td>

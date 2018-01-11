@@ -301,7 +301,7 @@
   [#if editable]
     <div class="partnerListMsj note">
       [@s.text name="project.deliverable.generalInformation.partnerNotList" /]
-      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]"> 
+      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> 
         [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
       </a>
     </div>

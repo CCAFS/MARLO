@@ -149,7 +149,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
 
       return list;
@@ -182,8 +182,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
       cal.setTime(projectInfo.getEndDate());
     }
 
-    if (phase.getEditable() != null && phase.getEditable()
-      && projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
+    if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
       List<ProjectInfo> projectInfos = phase.getProjectInfos().stream()
         .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
       if (!projectInfos.isEmpty()) {

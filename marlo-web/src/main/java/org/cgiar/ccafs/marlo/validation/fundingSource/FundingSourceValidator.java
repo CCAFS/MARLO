@@ -93,6 +93,9 @@ public class FundingSourceValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
+   
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     if (fundingSource.getFundingSourceInfo().getBudgetType() != null
       && fundingSource.getFundingSourceInfo().getBudgetType().getId() == null) {
       fundingSource.getFundingSourceInfo().setBudgetType(null);

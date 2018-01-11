@@ -36,7 +36,7 @@
         <tr>
           [#-- ID --]
           <td class="deliverableId">
-            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               D${deliverable.id}
             </a>
           </td>
@@ -52,7 +52,7 @@
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
             [#if deliverable.deliverableInfo.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.deliverableInfo.title}">
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
                 [#if deliverable.deliverableInfo.title?length < 120] 
                   ${deliverable.deliverableInfo.title}
                 [#else] 
@@ -61,7 +61,7 @@
                 </a> 
             [#else]
               [#if action.canEdit(deliverable.id)]
-                <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+                <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                   [@s.text name="projectsList.title.none" /]
                 </a>
               [#else]
@@ -165,7 +165,7 @@
         <tr>
           [#-- ID --]
           <td class="deliverableId">
-            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+            <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               D${deliverable.id}
             </a>
           </td>
@@ -181,7 +181,7 @@
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
             [#if deliverable.deliverableInfo.title?has_content]
-                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.deliverableInfo.title}">
+                <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="${deliverable.deliverableInfo.title}">
                 [#if deliverable.deliverableInfo.title?length < 120] 
                   ${deliverable.deliverableInfo.title}
                 [#else] 
@@ -190,7 +190,7 @@
                 </a> 
             [#else]
               [#if action.canEdit(deliverable.id)]
-                <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+                <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                   [@s.text name="projectsList.title.none" /]
                 </a>
               [#else]

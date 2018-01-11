@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -80,16 +80,16 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
 
   public void deletFundingSourceBudgetPhase(Phase next, long fundingSourceID, FundingSourceBudget fundingSourceBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets().stream()
-        .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getYear().equals(fundingSourceBudget.getYear()))
-        .collect(Collectors.toList());
-      for (FundingSourceBudget fundingSourceBudgetDB : budgets) {
-        fundingSourceBudgetDB.setActive(false);
-        fundingSourceBudgetDAO.save(fundingSourceBudgetDB);
-      }
+
+    List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets().stream()
+      .filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+        && c.getYear().equals(fundingSourceBudget.getYear()))
+      .collect(Collectors.toList());
+    for (FundingSourceBudget fundingSourceBudgetDB : budgets) {
+      fundingSourceBudgetDB.setActive(false);
+      fundingSourceBudgetDAO.save(fundingSourceBudgetDB);
     }
+
     if (phase.getNext() != null) {
       this.deletFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);
 
@@ -142,22 +142,22 @@ public class FundingSourceBudgetManagerImpl implements FundingSourceBudgetManage
 
   public void saveFundingSourceBudgetPhase(Phase next, long fundingSourceID, FundingSourceBudget fundingSourceBudget) {
     Phase phase = phaseDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets()
-        .stream().filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
-          && c.getYear() != null && c.getYear().intValue() == fundingSourceBudget.getYear().intValue())
-        .collect(Collectors.toList());
-      if (budgets.isEmpty()) {
-        FundingSourceBudget fundingSourceBudgetAdd = new FundingSourceBudget();
-        this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
-        fundingSourceBudgetDAO.save(fundingSourceBudgetAdd);
-      } else {
-        FundingSourceBudget fundingSourceBudgetAdd = budgets.get(0);
-        this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
-        fundingSourceBudgetDAO.save(fundingSourceBudgetAdd);
-      }
 
+    List<FundingSourceBudget> budgets = phase.getFundingSourceBudgets()
+      .stream().filter(c -> c.isActive() && c.getFundingSource().getId().longValue() == fundingSourceID
+        && c.getYear() != null && c.getYear().intValue() == fundingSourceBudget.getYear().intValue())
+      .collect(Collectors.toList());
+    if (budgets.isEmpty()) {
+      FundingSourceBudget fundingSourceBudgetAdd = new FundingSourceBudget();
+      this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
+      fundingSourceBudgetDAO.save(fundingSourceBudgetAdd);
+    } else {
+      FundingSourceBudget fundingSourceBudgetAdd = budgets.get(0);
+      this.cloneFundingSourceBudget(fundingSourceBudgetAdd, fundingSourceBudget, phase);
+      fundingSourceBudgetDAO.save(fundingSourceBudgetAdd);
     }
+
+
     if (phase.getNext() != null) {
       if (fundingSourceBudget.getYear() != null) {
         this.saveFundingSourceBudgetPhase(phase.getNext(), fundingSourceID, fundingSourceBudget);

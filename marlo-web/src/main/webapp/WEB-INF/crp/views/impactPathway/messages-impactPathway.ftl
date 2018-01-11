@@ -8,7 +8,7 @@
       <p>[@s.text name="CrpProgram.message.historyVersion" ]  
           [@s.param]<span>${selectedProgram.modifiedBy.composedName?html}</span>[/@s.param]
           [@s.param]<span>${selectedProgram.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
       [#-- Differences --]

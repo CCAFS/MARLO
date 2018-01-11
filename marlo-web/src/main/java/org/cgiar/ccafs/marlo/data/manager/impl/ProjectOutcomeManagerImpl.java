@@ -28,11 +28,12 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -178,21 +179,21 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       }
 
     } else {
-      if (phase.getEditable() != null && phase.getEditable()) {
-        for (ProjectOutcome projectOutcomeAdd : projectOutcomes) {
-          projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
-          projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
-          projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
-          projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
-          projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
-          projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
-          projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
-          projectOutcomeAdd.setActive(projectOutcome.isActive());
-          projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
-          this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
-          this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
-        }
+
+      for (ProjectOutcome projectOutcomeAdd : projectOutcomes) {
+        projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
+        projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
+        projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
+        projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
+        projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+        projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+        projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
+        projectOutcomeAdd.setActive(projectOutcome.isActive());
+        projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
+        this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
+        this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
       }
+
     }
 
     if (phase.getNext() != null) {
@@ -266,16 +267,16 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
   public void deletProjectOutcomePhase(Phase next, long projecID, ProjectOutcome projectOutcome) {
     Phase phase = phaseMySQLDAO.find(next.getId());
-    if (phase.getEditable() != null && phase.getEditable()) {
-      List<ProjectOutcome> outcomes = phase.getProjectOutcomes().stream()
-        .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-          && projectOutcome.getCrpProgramOutcome().getComposeID().equals(c.getCrpProgramOutcome().getComposeID()))
-        .collect(Collectors.toList());
-      for (ProjectOutcome outcome : outcomes) {
-        outcome.setActive(false);
-        projectOutcomeDAO.save(outcome);
-      }
+
+    List<ProjectOutcome> outcomes = phase.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && projectOutcome.getCrpProgramOutcome().getComposeID().equals(c.getCrpProgramOutcome().getComposeID()))
+      .collect(Collectors.toList());
+    for (ProjectOutcome outcome : outcomes) {
+      outcome.setActive(false);
+      projectOutcomeDAO.save(outcome);
     }
+
     if (phase.getNext() != null) {
       this.deletProjectOutcomePhase(phase.getNext(), projecID, projectOutcome);
 
@@ -332,6 +333,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectOutcome project outcome modified
    */
   private void updateProjectMilestones(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+    if (projectOutcome.getMilestones() == null) {
+      projectOutcome.setMilestones(new ArrayList<ProjectMilestone>());
+    }
     for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
       projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
     }

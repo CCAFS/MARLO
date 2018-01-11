@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jun 8, 2016 11:23:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -73,6 +76,20 @@ public class Auditlog implements java.io.Serializable {
   }
 
 
+  public boolean getAvailable() {
+    String inputString = "10-01-2018";
+    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    try {
+      Date inputDate = dateFormat.parse(inputString);
+      return this.createdDate.after(inputDate);
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      return false;
+    }
+
+  }
+
+
   public Date getCreatedDate() {
     return this.createdDate;
   }
@@ -91,7 +108,6 @@ public class Auditlog implements java.io.Serializable {
   public String getEntityJson() {
     return this.entityJson;
   }
-
 
   public String getEntityName() {
     return this.entityName;

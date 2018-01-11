@@ -161,7 +161,7 @@
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
   [#local projectOutcomeID =  projectOutcome.id /] 
-  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true" /]
+  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true&phaseID=${(actualPhase.id)!}" /]
   [#local hasDraft = (action.getAutoSaveFilePath(projectOutcome.class.simpleName, "contributionCrp", projectOutcome.id))!false /]
   <tr class="projectOutcome">
       [#-- Flagship outcome --]
@@ -197,7 +197,7 @@
       [#-- Remove Contribution--]
       <td class="text-center">
         [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" )]
-          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
+          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
             <img src="${baseUrl}/global/images/trash.png" />
           </a>
         [#else]
