@@ -65,10 +65,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
@@ -499,6 +500,8 @@ public class OutcomesAction extends BaseAction {
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
+
+
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());

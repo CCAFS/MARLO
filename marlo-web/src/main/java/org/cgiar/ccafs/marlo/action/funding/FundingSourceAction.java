@@ -844,13 +844,6 @@ public class FundingSourceAction extends BaseAction {
       }
 
 
-      fundingSource.setModifiedBy(this.getCurrentUser());
-      fundingSource.setModifiedBy(this.getCurrentUser());
-      fundingSource.getFundingSourceInfo().setPhase(this.getActualPhase());
-      fundingSource.getFundingSourceInfo().setFundingSource(fundingSource);
-
-      fundingSource
-        .setFundingSourceInfo(fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo()));
       /*
        * if (file != null) {
        * fundingSourceDB
@@ -939,16 +932,22 @@ public class FundingSourceAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
-      relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
+
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INFO);
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_LOCATIONS_RELATION);
-      fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
-      fundingSourceDB.setActiveSince(new Date());
-      fundingSourceDB.setModifiedBy(this.getCurrentUser());
-      fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName,
-        this.getActualPhase());
+      relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
+      // fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
+      fundingSource.getFundingSourceInfo().setPhase(this.getActualPhase());
+      fundingSource.getFundingSourceInfo().setFundingSource(fundingSource);
+      fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo());
+
+      fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+      fundingSource.setModifiedBy(this.getCurrentUser());
+      fundingSource.setActiveSince(new Date());
+      fundingSourceManager.saveFundingSource(fundingSource, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
