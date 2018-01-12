@@ -54,7 +54,7 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
         && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && projectFocuses.isEmpty()) {
+    if ( projectFocuses.isEmpty()) {
 
       ProjectFocus projectFocusAdd = new ProjectFocus();
       projectFocusAdd.setActive(true);

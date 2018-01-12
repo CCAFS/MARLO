@@ -148,6 +148,8 @@ public class CrpUsersAction extends BaseAction {
 
         for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
           .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PL")
+            && c.getProjectPartner().getPhase() != null
+            && c.getProjectPartner().getPhase().equals(this.getActualPhase())
             && phasesProjects.contains(c.getProjectPartners().getProject()))
           .collect(Collectors.toList())) {
           relations.add(projectPartnerPerson.getProjectPartner().getProject()
@@ -158,6 +160,8 @@ public class CrpUsersAction extends BaseAction {
 
         for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
           .filter(c -> c.isActive() && c.getProjectPartner().isActive() && c.getContactType().equalsIgnoreCase("PC")
+            && c.getProjectPartner().getPhase() != null
+            && c.getProjectPartner().getPhase().equals(this.getActualPhase())
             && phasesProjects.contains(c.getProjectPartners().getProject()))
           .collect(Collectors.toList())) {
           relations.add(projectPartnerPerson.getProjectPartner().getProject()
@@ -167,8 +171,10 @@ public class CrpUsersAction extends BaseAction {
       case "CL":
         for (CrpClusterActivityLeader crpClusterActivityLeader : user.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive() && c.getCrpClusterOfActivity().isActive()
-            && c.getCrpClusterOfActivity().getCrpProgram().isActive() && c.getCrpClusterOfActivity().getCrpProgram()
-              .getCrp().getId().longValue() == this.getCrpID().longValue())
+            && c.getCrpClusterOfActivity().getPhase() != null
+            && c.getCrpClusterOfActivity().getPhase().equals(this.getActualPhase())
+            && c.getCrpClusterOfActivity().getCrpProgram().isActive()
+            && c.getCrpClusterOfActivity().getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
           relations.add(crpClusterActivityLeader.getCrpClusterOfActivity().getIdentifier());
         }
