@@ -18,10 +18,12 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePartnershipDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
@@ -41,6 +43,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   private DeliverablePartnershipDAO deliverablePartnershipDAO;
   private PhaseDAO phaseDAO;
   private ProjectPartnerPersonDAO partnerPersonDao;
+  private ProjectPartnerDAO projectPartnerDao;
 
   // Managers
 
@@ -66,10 +69,10 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     Phase phase = phaseDAO.find(next.getId());
 
     List<DeliverablePartnership> deliverablePartnerships = phase.getDeliverablePartnerships().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
-        .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
+        && deliverablePartnership.getProjectPartner().getId().equals(c.getProjectPartner().getId()))
       .collect(Collectors.toList());
-    if ( deliverablePartnerships.isEmpty()) {
+    if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
       deliverablePartnershipAdd.setActive(true);
       deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());
@@ -81,10 +84,12 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
       deliverablePartnershipAdd.setPartnerDivision(deliverablePartnership.getPartnerDivision());
       deliverablePartnershipAdd
-        .setProjectPartnerPerson(this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()));
-      if (deliverablePartnershipAdd.getProjectPartnerPerson() != null) {
-        deliverablePartnershipDAO.save(deliverablePartnershipAdd);
+        .setProjectPartner(this.getProjectPartner(phase, deliverablePartnership.getProjectPartner()));
+      if (deliverablePartnership.getProjectPartnerPerson() != null) {
+        deliverablePartnershipAdd
+          .setProjectPartnerPerson(this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()));
       }
+      deliverablePartnershipDAO.save(deliverablePartnershipAdd);
 
     }
 
@@ -196,6 +201,11 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     }
     return null;
 
+  }
+
+  private ProjectPartner getProjectPartner(Phase phase, ProjectPartner projectPartner) {
+    projectPartner = projectPartnerDao.find(projectPartner.getId());
+    return projectPartnerDao.getPartnerPhase(phase, projectPartner.getProject(), projectPartner.getInstitution());
   }
 
   @Override
