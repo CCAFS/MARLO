@@ -85,7 +85,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean editParameter = false;
     BaseAction baseAction = (BaseAction) invocation.getAction();
     CenterProject project = projectService.getCenterProjectById(projectID);
-
+    baseAction.setSession(session);
     if (project != null) {
 
 
