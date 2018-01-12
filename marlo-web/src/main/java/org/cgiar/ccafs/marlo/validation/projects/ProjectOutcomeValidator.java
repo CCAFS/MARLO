@@ -38,20 +38,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectOutcomeValidator extends BaseValidator {
 
-  private ProjectManager projectManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
-
-  @Inject
-  private CrpManager crpManager;
+  private final ProjectManager projectManager;
+  private final CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
-
+  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
@@ -76,6 +77,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID());
@@ -86,7 +90,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
-    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+    if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+      && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
       this.validateProjectOutcome(action, projectOutcome);
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -95,22 +100,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
 
-      if (action.isReportingActive()) {
-        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      } else {
-        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      }
+      this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
     } else {
       this.addMissingField("");
-      if (action.isReportingActive()) {
-        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      } else {
-        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES.getStatus());
-      }
+      this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
     }
 
 
@@ -189,11 +184,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
     int startYear = 0;
     int endYear = 0;
     Calendar startDate = Calendar.getInstance();
-    startDate.setTime(project.getStartDate());
+    startDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getStartDate());
     startYear = startDate.get(Calendar.YEAR);
 
     Calendar endDate = Calendar.getInstance();
-    endDate.setTime(project.getEndDate());
+    endDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
     if (!action.isProjectNew(project.getId())) {
@@ -226,7 +221,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       // TODO: Validate outcome gender here
 
-      if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender().booleanValue() == true) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getGenderDimenssion())
           && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
@@ -236,7 +232,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
 
-      if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth().booleanValue() == true) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() != null
+        && project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == true) {
 
         if (!(this.isValidString(projectOutcome.getYouthComponent())
           && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {

@@ -53,6 +53,10 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Phase phase;
+
+
   public DeliverableActivity() {
   }
 
@@ -67,7 +71,6 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public DeliverableActivity(User modifiedBy, User createdBy, boolean active, Date activeSince,
     String modificationJustification) {
@@ -106,6 +109,7 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
   public Activity getActivity() {
     return activity;
   }
@@ -138,6 +142,10 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -188,9 +196,8 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   }
 
 
-  @Override
-  public String toString() {
-    return "DeliverableActivity [id=" + id + ", activity=" + activity + ", deliverable=" + deliverable + "]";
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

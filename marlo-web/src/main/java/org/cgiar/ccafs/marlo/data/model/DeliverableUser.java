@@ -25,6 +25,8 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
   private String lastName;
   @Expose
   private String elementId;
+  @Expose
+  private Phase phase;
 
   public DeliverableUser() {
   }
@@ -58,7 +60,6 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Deliverable getDeliverable() {
     return this.deliverable;
   }
@@ -67,10 +68,10 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
     return this.elementId;
   }
 
+
   public String getFirstName() {
     return this.firstName;
   }
-
 
   @Override
   public Long getId() {
@@ -80,6 +81,7 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
   public String getLastName() {
     return this.lastName;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -99,6 +101,10 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -133,6 +139,10 @@ public class DeliverableUser implements java.io.Serializable, IAuditLog {
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

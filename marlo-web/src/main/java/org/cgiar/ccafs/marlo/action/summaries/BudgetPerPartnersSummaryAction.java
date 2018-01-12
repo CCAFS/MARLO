@@ -15,17 +15,14 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -33,7 +30,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -53,20 +49,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
-import org.pentaho.reporting.engine.classic.core.Band;
+import javax.inject.Inject;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.ReportFooter;
-import org.pentaho.reporting.engine.classic.core.ReportHeader;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -80,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class BudgetPerPartnersSummaryAction extends BaseAction implements Summary {
+public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
@@ -89,29 +81,19 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   private static Logger LOG = LoggerFactory.getLogger(BudgetPerPartnersSummaryAction.class);
   // Parameters
-  private Crp loggedCrp;
-  private int year;
-  private String cycle;
   private Boolean hasW1W2Co;
   private long startTime;
   private Boolean hasGender;
-
-
-  private PhaseManager phaseManager;
-
-
   // Store total projects
   Integer totalProjects = 0;
-
   // Store parters budgets HashMap<Institution, List<w1w2,w3bilateralcenter>>
   HashMap<Institution, List<Double>> allPartnersBudgets = new HashMap<Institution, List<Double>>();
-
   // Store projects budgets HashMap<Project, List<totalw1w2, totalw3bilateralcenter, totalw1w2Gender, totalw3Gender>>
   HashMap<Project, List<Double>> allProjectsBudgets = new HashMap<Project, List<Double>>();
-  private CrpManager crpManager;
+
+  // Managers
   private ProjectBudgetManager projectBudgetManager;
   private CrpProgramManager programManager;
-
   private InstitutionManager institutionManager;
   // XLSX bytes
   private byte[] bytesXLSX;
@@ -122,12 +104,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     PhaseManager phaseManager) {
-    super(config);
-    this.crpManager = crpManager;
+    super(config, crpManager, phaseManager);
     this.projectBudgetManager = projectBudgetManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
-    this.phaseManager = phaseManager;
   }
 
   /**
@@ -335,7 +315,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return masterReport;
   }
 
-
   private HashMap<String, Long> calculateWidth(long width, int numColumns, String name, ArrayList<Integer> excludeIndex,
     long xPosition) {
     HashMap<String, Long> hm = new HashMap<String, Long>();
@@ -356,8 +335,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/budgetperpartner.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/budgetperpartner-Annualization.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -400,11 +379,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
+
 
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -429,67 +409,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   }
 
 
-  /**
-   * Get all subreports and store then in a hash map.
-   * If it encounters a band, search subreports in the band
-   * 
-   * @param hm List to populate with subreports found
-   * @param itemBand details section in pentaho
-   */
-  private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
-    int elementCount = itemBand.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = itemBand.getElement(i);
-      // verify if the item is a SubReport
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-          // If report footer is not null check for subreports
-          if (((SubReport) e).getReportFooter().getElementCount() != 0) {
-            this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
-          }
-          // If report footer is not null check for subreports
-          if (((SubReport) e).getReportHeader().getElementCount() != 0) {
-            this.getHeaderSubreports(hm, ((SubReport) e).getReportHeader());
-          }
-        }
-      }
-      // If is a band, find the subreport if exist
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
-
-  /**
-   * Get all subreports in the band.
-   * If it encounters a band, search subreports in the band
-   * 
-   * @param hm
-   * @param band
-   */
-  private void getBandSubreports(HashMap<String, Element> hm, Band band) {
-    int elementCount = band.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = band.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        // If report footer is not null check for subreports
-        if (((SubReport) e).getReportFooter().getElementCount() != 0) {
-          this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
-        }
-        // If report footer is not null check for subreports
-        if (((SubReport) e).getReportHeader().getElementCount() != 0) {
-          this.getHeaderSubreports(hm, ((SubReport) e).getReportHeader());
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
-
   private TypedTableModel getBudgetPerPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
@@ -502,238 +421,239 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       0);
 
     List<Project> projects = new ArrayList<>();
-    Phase phase = phaseManager.findCycle(APConstants.PLANNING, year, loggedCrp.getId().longValue());
-   
 
- if (phase != null) {
-      for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-        projects.add((projectPhase.getProject()));
-      }
+    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases()) {
+      projects.add((projectPhase.getProject()));
     }
-
-    if (projects.isEmpty()) {
-      projects = loggedCrp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    }
-
-    // Get PPA institutions with budgets
-    List<Institution> institutionsList = new ArrayList<>();
     // sort projects by id
     projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-    for (Project project : projects.stream()
-      .filter(
-        p -> p.isActive() && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList())) {
+    for (Project project : projects) {
+      // System.out.println(project.getId());
+      // Get PPA institutions with budgets
+      List<Institution> institutionsList = new ArrayList<>();
 
-      for (ProjectPartner pp : project.getProjectPartners().stream()
-        .filter(pp -> pp.isActive() && this.isPPA(pp.getInstitution())).collect(Collectors.toList())) {
-        String projectTitle = null, ppaPartner = null, flagships = "", coas = "", regions = "";
-        Long projectId = null;
-        Double budgetW1W2 = null, genderPeW1W2 = null, genderW1W2 = null, budgetW3 = null, genderPeW3 = null,
-          genderW3 = null, budgetBilateral = null, genderPeBilateral = null, genderBilateral = null,
-          budgetCenter = null, genderPeCenter = null, genderCenter = null, budgetW1W2Co = null, genderPeW1W2Co = null,
-          genderW1W2Co = null;
-
-        projectId = project.getId();
-        projectTitle = project.getTitle();
-        ppaPartner = pp.getComposedName();
-
-        // get Flagships related to the project sorted by acronym
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
+        .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getInstitution() != null
+          && pb.getInstitution().isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList())) {
+        if (this.isPPA(projectBudget.getInstitution())) {
+          institutionsList.add(projectBudget.getInstitution());
+        }
+      }
+      // remove duplicates
+      Set<Institution> institutions = new LinkedHashSet<Institution>(institutionsList);
+      if (institutions.size() > 0) {
+        totalProjects++;
+      }
+      for (Institution institution : institutions) {
+        for (ProjectPartner pp : project.getProjectPartners().stream()
+          .filter(pp -> pp.isActive() && pp.getInstitution().getId().equals(institution.getId())
+            && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
-          if (flagships == null || flagships.isEmpty()) {
-            flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-          } else {
-            flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
-          }
-        }
-        // get CoAs related to the project sorted by acronym
-        if (project.getProjectClusterActivities() != null) {
-          for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList())) {
-            if (coas == null || coas.isEmpty()) {
-              coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+          String projectTitle = null, ppaPartner = null, flagships = "", coas = "", regions = "";
+          Long projectId = null;
+          Double budgetW1W2 = null, genderPeW1W2 = null, genderW1W2 = null, budgetW3 = null, genderPeW3 = null,
+            genderW3 = null, budgetBilateral = null, genderPeBilateral = null, genderBilateral = null,
+            budgetCenter = null, genderPeCenter = null, genderCenter = null, budgetW1W2Co = null, genderPeW1W2Co = null,
+            genderW1W2Co = null;
+
+          projectId = project.getId();
+          projectTitle = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+          ppaPartner = pp.getComposedName();
+
+          // get Flagships related to the project sorted by acronym
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
+            if (flagships == null || flagships.isEmpty()) {
+              flagships = programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             } else {
-              coas += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
+              flagships += ", " + programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()).getAcronym();
             }
           }
-        }
-
-        if (this.hasProgramnsRegions()) {
-          List<CrpProgram> regionsList = new ArrayList<>();
-          // If has regions, add the regions to regionsArrayList
-          // Get Regions related to the project sorted by acronym
-          if (this.hasProgramnsRegions() != false) {
-            for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-              .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-              .filter(
-                c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          // get CoAs related to the project sorted by acronym
+          if (project.getProjectClusterActivities() != null) {
+            for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList())) {
-              regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
-            }
-          }
-
-          if (project.getNoRegional() != null && project.getNoRegional()) {
-            regions = "Global";
-            if (regionsList.size() > 0) {
-              LOG.warn("Project is global and has regions selected");
-            }
-          } else {
-            for (CrpProgram crpProgram : regionsList) {
-              if (regions.isEmpty()) {
-                regions = crpProgram.getAcronym();
+              if (coas == null || coas.isEmpty()) {
+                coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
               } else {
-                regions += ", " + crpProgram.getAcronym();
+                coas += ", " + projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
               }
             }
           }
-        }
 
-        if (regions.isEmpty()) {
-          regions = null;
-        }
-        if (coas.isEmpty()) {
-          coas = null;
-        }
-        if (flagships.isEmpty()) {
-          flagships = null;
-        }
+          if (this.hasProgramnsRegions()) {
+            List<CrpProgram> regionsList = new ArrayList<>();
+            // If has regions, add the regions to regionsArrayList
+            // Get Regions related to the project sorted by acronym
+            if (this.hasProgramnsRegions() != false) {
+              for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+                .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+                .filter(c -> c.isActive()
+                  && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
+                  && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
+                regionsList.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
+              }
+            }
 
-        if (hasW1W2Co) {
-          budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 3));
-          budgetW1W2Co = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 2));
-
-          genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 3) / 100;
-          genderPeW1W2Co = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 2) / 100;
-
-          genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 3);
-          genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 2);
-        } else {
-          budgetW1W2 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1, projectId, 1));
-          genderPeW1W2 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 1, projectId, 1) / 100;
-          genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), year, 1, projectId, 1);
-          budgetW1W2Co = 0.0;
-          genderPeW1W2Co = 0.0;
-          genderW1W2Co = 0.0;
-        }
-
-
-        budgetW3 = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2, projectId, 1));
-        budgetBilateral = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3, projectId, 1));
-        budgetCenter = Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4, projectId, 1));
-
-
-        genderPeW3 = this.getTotalGenderPer(pp.getInstitution().getId(), year, 2, projectId, 1) / 100;
-        genderPeBilateral = this.getTotalGenderPer(pp.getInstitution().getId(), year, 3, projectId, 1) / 100;
-        genderPeCenter = this.getTotalGenderPer(pp.getInstitution().getId(), year, 4, projectId, 1) / 100;
-
-
-        genderW3 = this.getTotalGender(pp.getInstitution().getId(), year, 2, projectId, 1);
-        genderBilateral = this.getTotalGender(pp.getInstitution().getId(), year, 3, projectId, 1);
-        genderCenter = this.getTotalGender(pp.getInstitution().getId(), year, 4, projectId, 1);
-
-        // Fill institutions and their budgets
-        /**
-         * allPartnersBudgets composition
-         * Pos Desc
-         * 0 totalBudgetW1W2
-         * 1 totalBudgetW1W2Co
-         * 2 totalBudgetBilateralW3Center
-         */
-        List<Double> budgetList = new ArrayList<Double>();
-        // Add institution w1w2 budget
-        Double totalBudgetW1W2 = allPartnersBudgets.containsKey(pp.getInstitution())
-          ? allPartnersBudgets.get(pp.getInstitution()).get(0) : 0.0;
-        totalBudgetW1W2 += budgetW1W2;
-        budgetList.add(totalBudgetW1W2);
-        // Add institution w1w2 budgetCo
-        Double totalBudgetW1W2Co = allPartnersBudgets.containsKey(pp.getInstitution())
-          ? allPartnersBudgets.get(pp.getInstitution()).get(1) : 0.0;
-        totalBudgetW1W2Co += budgetW1W2Co;
-        budgetList.add(totalBudgetW1W2Co);
-        // Add institution w3bilateralcenter budget
-        Double totalBudgetBilateralW3Center = allPartnersBudgets.containsKey(pp.getInstitution())
-          ? allPartnersBudgets.get(pp.getInstitution()).get(2) : 0.0;
-        totalBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
-        budgetList.add(totalBudgetBilateralW3Center);
-        allPartnersBudgets.put(pp.getInstitution(), budgetList);
-        // End institutions fill
-
-        /**
-         * Fill projects with their budgets
-         * allProjectsBudgets composition
-         * // Pos Description
-         * // 0 budgetw1w2
-         * // 1 budgetw1w2Cofinancing
-         * // 2 budgetw3BilateralCenter
-         * // 3 w1w2Gender
-         * // 4 w1w2CofinancingGender
-         * // 5 w3BilateralCenterGender
-         */
-        List<Double> projectBudgetList = new ArrayList<Double>();
-        // Add project w1w2 budget
-        Double totalProjectBudgetW1W2 =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(0) : 0.0;
-        totalProjectBudgetW1W2 += budgetW1W2;
-        projectBudgetList.add(totalProjectBudgetW1W2);
-        // Add project w1w2 Cofinancing budget
-        Double totalProjectBudgetW1W2Cofinancing =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(1) : 0.0;
-        totalProjectBudgetW1W2Cofinancing += budgetW1W2Co;
-        projectBudgetList.add(totalProjectBudgetW1W2Cofinancing);
-        // Add project w3bilateralcenter budget
-        Double totalProjectBudgetBilateralW3Center =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(2) : 0.0;
-        totalProjectBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
-        projectBudgetList.add(totalProjectBudgetBilateralW3Center);
-        // Add projects w1w2 gender
-        Double totalProjectGenderW1W2 =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(3) : 0.0;
-        totalProjectGenderW1W2 += genderW1W2;
-        projectBudgetList.add(totalProjectGenderW1W2);
-        // Add projects w1w2Cofinancing gender
-        Double totalProjectGenderW1W2w1w2Cofinancing =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(4) : 0.0;
-        totalProjectGenderW1W2w1w2Cofinancing += genderW1W2Co;
-        projectBudgetList.add(totalProjectGenderW1W2w1w2Cofinancing);
-        // Add projects w3bilateralcenter gender
-        Double totalProjectGenderW3BilateralCenter =
-          allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(5) : 0.0;
-        totalProjectGenderW3BilateralCenter += genderW3 + genderBilateral + genderCenter;
-        projectBudgetList.add(totalProjectGenderW3BilateralCenter);
-
-        allProjectsBudgets.put(project, projectBudgetList);
-        // End projects fill
-
-        model.addRow(new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2,
-          genderPeW1W2, genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral, genderBilateral,
-          budgetCenter, genderPeCenter, genderCenter, budgetW1W2Co, genderPeW1W2Co, genderW1W2Co});
-
-
-        for (ProjectBudget projectBudget : project.getProjectBudgets().stream().filter(pb -> pb.isActive()
-          && pb.getYear() == this.getYear() && pb.getInstitution() != null && pb.getInstitution().isActive())
-          .collect(Collectors.toList())) {
-          if (this.isPPA(projectBudget.getInstitution())) {
-            institutionsList.add(projectBudget.getInstitution());
+            if (project.getProjectInfo().getNoRegional() != null && project.getProjectInfo().getNoRegional()) {
+              regions = "Global";
+              if (regionsList.size() > 0) {
+                LOG.warn("Project is global and has regions selected");
+              }
+            } else {
+              for (CrpProgram crpProgram : regionsList) {
+                if (regions.isEmpty()) {
+                  regions = crpProgram.getAcronym();
+                } else {
+                  regions += ", " + crpProgram.getAcronym();
+                }
+              }
+            }
           }
+
+          if (regions.isEmpty()) {
+            regions = null;
+          }
+          if (coas.isEmpty()) {
+            coas = null;
+          }
+          if (flagships.isEmpty()) {
+            flagships = null;
+          }
+
+          if (hasW1W2Co) {
+            budgetW1W2 = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3));
+            budgetW1W2Co = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2));
+
+            genderPeW1W2 =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3) / 100;
+            genderPeW1W2Co =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2) / 100;
+
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 3);
+            genderW1W2Co = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 2);
+          } else {
+            budgetW1W2 = Double
+              .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1));
+            genderPeW1W2 =
+              this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1) / 100;
+            genderW1W2 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 1, projectId, 1);
+            budgetW1W2Co = 0.0;
+            genderPeW1W2Co = 0.0;
+            genderW1W2Co = 0.0;
+          }
+
+
+          budgetW3 = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1));
+          budgetBilateral = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1));
+          budgetCenter = Double
+            .parseDouble(this.getTotalAmount(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1));
+
+
+          genderPeW3 =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1) / 100;
+          genderPeBilateral =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1) / 100;
+          genderPeCenter =
+            this.getTotalGenderPer(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1) / 100;
+
+
+          genderW3 = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 2, projectId, 1);
+          genderBilateral = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 3, projectId, 1);
+          genderCenter = this.getTotalGender(pp.getInstitution().getId(), this.getSelectedYear(), 4, projectId, 1);
+
+          // Fill institutions and their budgets
+          /**
+           * allPartnersBudgets composition
+           * Pos Desc
+           * 0 totalBudgetW1W2
+           * 1 totalBudgetW1W2Co
+           * 2 totalBudgetBilateralW3Center
+           */
+          List<Double> budgetList = new ArrayList<Double>();
+          // Add institution w1w2 budget
+          Double totalBudgetW1W2 =
+            allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(0) : 0.0;
+          totalBudgetW1W2 += budgetW1W2;
+          budgetList.add(totalBudgetW1W2);
+          // Add institution w1w2 budgetCo
+          Double totalBudgetW1W2Co =
+            allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(1) : 0.0;
+          totalBudgetW1W2Co += budgetW1W2Co;
+          budgetList.add(totalBudgetW1W2Co);
+          // Add institution w3bilateralcenter budget
+          Double totalBudgetBilateralW3Center =
+            allPartnersBudgets.containsKey(institution) ? allPartnersBudgets.get(institution).get(2) : 0.0;
+          totalBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
+          budgetList.add(totalBudgetBilateralW3Center);
+          allPartnersBudgets.put(institution, budgetList);
+          // End institutions fill
+
+          /**
+           * Fill projects with their budgets
+           * allProjectsBudgets composition
+           * // Pos Description
+           * // 0 budgetw1w2
+           * // 1 budgetw1w2Cofinancing
+           * // 2 budgetw3BilateralCenter
+           * // 3 w1w2Gender
+           * // 4 w1w2CofinancingGender
+           * // 5 w3BilateralCenterGender
+           */
+          List<Double> projectBudgetList = new ArrayList<Double>();
+          // Add project w1w2 budget
+          Double totalProjectBudgetW1W2 =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(0) : 0.0;
+          totalProjectBudgetW1W2 += budgetW1W2;
+          projectBudgetList.add(totalProjectBudgetW1W2);
+          // Add project w1w2 Cofinancing budget
+          Double totalProjectBudgetW1W2Cofinancing =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(1) : 0.0;
+          totalProjectBudgetW1W2Cofinancing += budgetW1W2Co;
+          projectBudgetList.add(totalProjectBudgetW1W2Cofinancing);
+          // Add project w3bilateralcenter budget
+          Double totalProjectBudgetBilateralW3Center =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(2) : 0.0;
+          totalProjectBudgetBilateralW3Center += budgetW3 + budgetBilateral + budgetCenter;
+          projectBudgetList.add(totalProjectBudgetBilateralW3Center);
+          // Add projects w1w2 gender
+          Double totalProjectGenderW1W2 =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(3) : 0.0;
+          totalProjectGenderW1W2 += genderW1W2;
+          projectBudgetList.add(totalProjectGenderW1W2);
+          // Add projects w1w2Cofinancing gender
+          Double totalProjectGenderW1W2w1w2Cofinancing =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(4) : 0.0;
+          totalProjectGenderW1W2w1w2Cofinancing += genderW1W2Co;
+          projectBudgetList.add(totalProjectGenderW1W2w1w2Cofinancing);
+          // Add projects w3bilateralcenter gender
+          Double totalProjectGenderW3BilateralCenter =
+            allProjectsBudgets.containsKey(project) ? allProjectsBudgets.get(project).get(5) : 0.0;
+          totalProjectGenderW3BilateralCenter += genderW3 + genderBilateral + genderCenter;
+          projectBudgetList.add(totalProjectGenderW3BilateralCenter);
+
+          allProjectsBudgets.put(project, projectBudgetList);
+          // End projects fill
+
+          model.addRow(new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2,
+            genderPeW1W2, genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral,
+            genderBilateral, budgetCenter, genderPeCenter, genderCenter, budgetW1W2Co, genderPeW1W2Co, genderW1W2Co});
         }
       }
     }
-
-
-    // remove duplicates
-    Set<Institution> institutions = new LinkedHashSet<Institution>(institutionsList);
-    if (institutions.size() > 0) {
-      totalProjects++;
-    }
-
-
     return model;
-
   }
-
 
   private TypedTableModel getBudgetPerProjectsTableModel() {
     // projectID,
@@ -759,8 +679,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     for (Project project : allProjectsBudgets.keySet()) {
       String projectID = project.getId().toString();
       String projectTitle = null;
-      if (project.getTitle() != null && !project.getTitle().trim().isEmpty()) {
-        projectTitle = project.getTitle();
+      if (project.getProjectInfo().getTitle() != null && !project.getProjectInfo().getTitle().trim().isEmpty()) {
+        projectTitle = project.getProjectInfo().getTitle();
       }
 
       Double budgetw1w2 = allProjectsBudgets.get(project).get(0);
@@ -789,12 +709,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return "application/xlsx";
   }
 
-
-  public String getCycle() {
-    return cycle;
-  }
-
-
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -808,52 +722,16 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
 
   }
 
-  private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-
-    int elementCount = reportFooter.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = reportFooter.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
 
   public Boolean getHasGender() {
     return hasGender;
-  }
-
-  private void getHeaderSubreports(HashMap<String, Element> hm, ReportHeader reportHeader) {
-
-    int elementCount = reportHeader.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = reportHeader.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-
   }
 
   @Override
@@ -864,17 +742,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"center", "date", "year", "crp_id", "regionalAvalaible", "hasW1W2Co", "hasGender"},
       new Class[] {String.class, String.class, Integer.class, Long.class, Boolean.class, Boolean.class, Boolean.class});
 
-    String center = loggedCrp.getAcronym();
+    String center = this.getLoggedCrp().getAcronym();
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -883,8 +757,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
       zone = "+0";
     }
     String date = timezone.format(format) + "(GMT" + zone + ")";
-    model.addRow(new Object[] {center, date, this.getYear(), loggedCrp.getId(), this.hasProgramnsRegions(), hasW1W2Co,
-      this.hasGender});
+    model.addRow(new Object[] {center, date, this.getSelectedYear(), this.getLoggedCrp().getId(),
+      this.hasProgramnsRegions(), hasW1W2Co, this.hasGender});
     return model;
   }
 
@@ -942,6 +816,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return model;
   }
 
+
   /**
    * Get total amount per institution year and type
    * 
@@ -951,7 +826,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    * @return String with the total amount.
    */
   public String getTotalAmount(long institutionId, int year, long budgetType, Long projectId, Integer coFinancing) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing);
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectId, coFinancing,
+      this.getSelectedPhase().getId());
   }
 
 
@@ -965,8 +841,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
    */
   public double getTotalGender(long institutionId, int year, long budgetType, long projectID, Integer coFinancing) {
 
-    List<ProjectBudget> budgets =
-      projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID, coFinancing);
+    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID,
+      coFinancing, this.getSelectedPhase().getId());
 
     double totalGender = 0;
     if (budgets != null) {
@@ -1006,11 +882,6 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   }
 
 
-  public int getYear() {
-    return year;
-  }
-
-
   /**
    * Verify if an institution isPPA or not
    * 
@@ -1026,8 +897,9 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     if (institution.getId() != null) {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
-        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive() && c.getCrp().equals(this.getLoggedCrp()))
-          .collect(Collectors.toList()).size() > 0) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
+          .size() > 0) {
           return true;
         }
       }
@@ -1035,39 +907,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return false;
   }
 
+
   @Override
   public void prepare() {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
-
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
-
     } catch (Exception e) {
       LOG.warn("Failed to get " + APConstants.CRP_BUDGET_GENDER + " parameter. Parameter was set null. Exception: "
         + e.getMessage());
@@ -1077,26 +923,12 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
-  }
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
   public void setHasGender(Boolean hasGender) {
     this.hasGender = hasGender;
   }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
-  }
-
 
   /**
    * method that sort a map list alphabetical

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.IpProjectContributionOverviewMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(IpProjectContributionOverviewMySQLDAO.class)
 public interface IpProjectContributionOverviewDAO {
 
   /**

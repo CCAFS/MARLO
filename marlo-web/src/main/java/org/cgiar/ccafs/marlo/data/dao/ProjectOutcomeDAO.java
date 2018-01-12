@@ -16,14 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectOutcomeMySQLDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectOutcomeMySQLDAO.class)
 public interface ProjectOutcomeDAO {
 
   /**
@@ -68,5 +66,5 @@ public interface ProjectOutcomeDAO {
    */
   public ProjectOutcome save(ProjectOutcome projectOutcome);
 
-  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName);
+  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName, Phase phase);
 }

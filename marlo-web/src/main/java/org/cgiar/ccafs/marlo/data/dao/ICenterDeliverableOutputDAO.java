@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterDeliverableOutputDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterDeliverableOutputDAO.class)
 public interface ICenterDeliverableOutputDAO {
 
   /**
@@ -85,5 +82,6 @@ public interface ICenterDeliverableOutputDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput, String actionName, List<String> relationsName);
+  public CenterDeliverableOutput save(CenterDeliverableOutput deliverableOutput, String actionName,
+    List<String> relationsName);
 }

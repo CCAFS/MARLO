@@ -47,7 +47,7 @@
           
           [#-- Back --]
             <small class="pull-right">
-              <a href="[@s.url action='${centerSession}/deliverableList'][@s.param name="projectID" value=project.id /][/@s.url]">
+              <a href="[@s.url action='${centerSession}/deliverableList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the deliverables list
               </a>
             </small>  

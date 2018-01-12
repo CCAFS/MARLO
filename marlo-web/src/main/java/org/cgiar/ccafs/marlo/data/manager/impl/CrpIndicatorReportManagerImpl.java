@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class CrpIndicatorReportManagerImpl implements CrpIndicatorReportManager {
 
 

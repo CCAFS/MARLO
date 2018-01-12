@@ -23,6 +23,7 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" />
         </property>
+        
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" />
         </property>

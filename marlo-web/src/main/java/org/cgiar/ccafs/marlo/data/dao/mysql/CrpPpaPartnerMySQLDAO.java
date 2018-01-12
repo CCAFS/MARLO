@@ -20,13 +20,15 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long> implements CrpPpaPartnerDAO {
 
 

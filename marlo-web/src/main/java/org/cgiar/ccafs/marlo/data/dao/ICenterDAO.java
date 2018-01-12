@@ -16,17 +16,15 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterDAO;
 import org.cgiar.ccafs.marlo.data.model.Center;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@ImplementedBy(CenterDAO.class)
+
 public interface ICenterDAO {
 
   /**

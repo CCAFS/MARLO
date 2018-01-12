@@ -16,14 +16,14 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectPartnerMySQLDAO;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectPartnerMySQLDAO.class)
 public interface ProjectPartnerDAO {
 
   /**
@@ -56,6 +56,8 @@ public interface ProjectPartnerDAO {
    * @return a list from ProjectPartner null if no exist records
    */
   public List<ProjectPartner> findAll();
+
+  public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution);
 
 
   /**

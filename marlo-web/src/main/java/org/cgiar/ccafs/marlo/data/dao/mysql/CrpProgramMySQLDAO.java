@@ -18,12 +18,15 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> implements CrpProgramDAO {
 
 
@@ -101,12 +104,13 @@ public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> imple
     return crpProgram;
   }
 
+
   @Override
-  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName) {
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
     if (crpProgram.getId() == null) {
-      super.saveEntity(crpProgram, actionName, relationsName);
+      super.saveEntity(crpProgram, actionName, relationsName, phase);
     } else {
-      crpProgram = super.update(crpProgram, actionName, relationsName);
+      crpProgram = super.update(crpProgram, actionName, relationsName, phase);
     }
     return crpProgram;
   }

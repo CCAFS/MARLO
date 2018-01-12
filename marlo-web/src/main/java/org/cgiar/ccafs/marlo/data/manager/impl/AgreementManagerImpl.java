@@ -20,9 +20,11 @@ import org.cgiar.ccafs.marlo.data.dao.AgreementDAO;
 import org.cgiar.ccafs.marlo.data.manager.AgreementManager;
 import org.cgiar.ccafs.marlo.data.model.Agreement;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
+@Named
 public class AgreementManagerImpl implements AgreementManager {
 
   private AgreementDAO agreementDAO;

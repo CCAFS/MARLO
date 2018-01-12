@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
+     <parent>
     <groupId>org.cgiar.ccafs</groupId>
-    <artifactId>marlo</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <artifactId>marlo-parent</artifactId>
+    <version>4.2.2-SNAPSHOT</version>
+    <relativePath>../marlo-parent/pom.xml</relativePath>
   </parent>
-  <artifactId>marlo-utils</artifactId>
-  
-  <developers>
+    <artifactId>marlo-utils</artifactId>
+    <developers>
       <developer>
          <name>Hernán D. Carvajal B.</name>
          <email>h.d.carvajal@cgiar.org</email>
@@ -16,40 +16,50 @@
          <name>Héctor F. Tobón R.</name>
          <email>h.f.tobon@cgiar.org</email>
       </developer>
-   </developers>
+    </developers>
    
    <issueManagement>
       <system>Github issue tracker</system>
       <url>https://github.com/CCAFS/ccafs-ap/issues</url>
    </issueManagement>
    
-   <properties>
-      <javax-mail.version>1.5.5</javax-mail.version>
-      <com.sun.mail.version>1.5.5</com.sun.mail.version>
-      <log-properties>0.9.28</log-properties>
-   </properties>
-   
    <dependencies>
       <!-- Java Mail API -->
       <dependency>
          <groupId>javax.mail</groupId>
          <artifactId>javax.mail-api</artifactId>
-         <version>${javax-mail.version}</version>
       </dependency>
       <!-- Java Sun Mail API -->
       <dependency>
          <groupId>com.sun.mail</groupId>
          <artifactId>javax.mail</artifactId>
-         <version>${com.sun.mail.version}</version>
       </dependency>
-      
        <dependency>
          <groupId>ch.qos.logback</groupId>
          <artifactId>logback-classic</artifactId>
-         <version>${log-properties}</version>
       </dependency>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+    </dependency>
+        <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
    </dependencies>
-   
+   <build>
+    <plugins>
+      <plugin>
+        <!--To support checkstyle goals. For example: "mvn checkstyle:checkstyle" -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+   </build>
    <licenses>
     <license>
       <name>GNU General Public License (GPL)</name>

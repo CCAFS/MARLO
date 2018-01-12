@@ -32,12 +32,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.inject.Inject;
 import com.ibm.icu.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,11 +47,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Named
 public class HistoryComparator {
 
   private static final Logger LOG = LoggerFactory.getLogger(HistoryComparator.class);
 
-  private AuditLogManager auditlogManager;
+  private final AuditLogManager auditlogManager;
 
   private Class<?> c;
 

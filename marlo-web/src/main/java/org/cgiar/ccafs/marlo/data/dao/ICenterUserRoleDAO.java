@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterUserRoleDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterUserRoleDAO.class)
 public interface ICenterUserRoleDAO {
 
   /**

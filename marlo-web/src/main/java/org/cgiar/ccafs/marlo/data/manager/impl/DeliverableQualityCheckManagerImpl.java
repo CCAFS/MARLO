@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class DeliverableQualityCheckManagerImpl implements DeliverableQualityCheckManager {
 
 
@@ -60,8 +62,8 @@ public class DeliverableQualityCheckManagerImpl implements DeliverableQualityChe
   }
 
   @Override
-  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID) {
-    return deliverableQualityCheckDAO.findByDeliverable(deliverableID);
+  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID, long phaseID) {
+    return deliverableQualityCheckDAO.findByDeliverable(deliverableID, phaseID);
   }
 
   @Override

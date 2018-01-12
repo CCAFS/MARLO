@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterUserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterUserRoleManager.class)
+
 public interface ICenterUserRoleManager {
 
 

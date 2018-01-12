@@ -18,16 +18,19 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class FundingSourceManagerImpl implements FundingSourceManager {
 
 
@@ -92,14 +95,15 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public FundingSource saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+  public FundingSource saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName,
+    Phase phase) {
 
-    return fundingSourceDAO.save(fundingSource, sectionName, relationsName);
+    return fundingSourceDAO.save(fundingSource, sectionName, relationsName, phase);
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
-    return fundingSourceDAO.searchFundingSources(query, year, crpID);
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
+    return fundingSourceDAO.searchFundingSources(query, year, crpID, phaseID);
   }
 
   @Override
@@ -108,8 +112,9 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
-    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID);
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
+    long phaseID) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID, phaseID);
   }
 
   @Override

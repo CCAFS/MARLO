@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -67,8 +68,9 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
     List<Institution> institutionsPpa = new ArrayList<>();
 
-    List<CrpPpaPartner> ppaPartners = crpPpaPartnerManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID() && c.isActive()).collect(Collectors.toList());
+    List<CrpPpaPartner> ppaPartners =
+      crpPpaPartnerManager.findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
+        && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
     for (CrpPpaPartner crpPpaPartner : ppaPartners) {
       institutionsPpa.add(crpPpaPartner.getInstitution());
@@ -112,8 +114,13 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    budgetTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // budgetTypeID = Long.parseLong(StringUtils.trim(((String[])
+    // parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    budgetTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]));
 
   }
 

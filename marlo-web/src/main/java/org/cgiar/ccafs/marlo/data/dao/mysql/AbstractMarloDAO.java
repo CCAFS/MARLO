@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
@@ -50,7 +51,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
     auditLogContext.setActionName(actionName);
     auditLogContext.setRelationsNames(relationsNames);
+
   }
+
+  private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames,
+    Phase phase) {
+    LOG.debug("Adding auditing fields to AuditLogContext");
+    AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
+    auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
+    auditLogContext.setActionName(actionName);
+    auditLogContext.setRelationsNames(relationsNames);
+    auditLogContext.setPhase(phase);
+  }
+
 
   /**
    * This method deletes a record from the database.
@@ -112,7 +125,10 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public T find(Class<T> clazz, ID id) {
     T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
-    this.getSessionFactory().getCurrentSession().update(obj);
+    if (obj != null) {
+      this.getSessionFactory().getCurrentSession().refresh(obj);
+
+    }
     return obj;
   }
 
@@ -212,11 +228,17 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     return this.sessionFactory;
   }
 
-
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @return
+   */
   protected T refreshEntity(T entity) {
     sessionFactory.getCurrentSession().refresh(entity);
     return entity;
   }
+
 
   /**
    * This method saves or update a record into the database.
@@ -243,6 +265,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   /**
+   * This method persists record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected T saveEntity(T entity, String actionName, List<String> relationsName, Phase phase) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
+    sessionFactory.getCurrentSession().persist(entity);
+    return entity;
+  }
+
+  /**
    * This method saves or update a record into the database.
    * 
    * @param obj is the Object to be saved/updated.
@@ -262,6 +297,19 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected T update(T entity, String actionName, List<String> relationsName) {
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
+    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    return entity;
+  }
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected T update(T entity, String actionName, List<String> relationsName, Phase phase) {
+    this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }

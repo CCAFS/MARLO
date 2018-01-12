@@ -14,18 +14,20 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectPartnerManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectPartnerManagerImpl.class)
+
 public interface ProjectPartnerManager {
+
+
+  public ProjectPartner copyPartner(ProjectPartner projectPartner, Phase phase);
 
 
   /**
@@ -62,7 +64,6 @@ public interface ProjectPartnerManager {
    */
   public ProjectPartner getProjectPartnerById(long projectPartnerID);
 
-
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID);
 
   public List<ProjectPartner> getProjectPartnersForProjectWithActiveProjectPartnerPersons(long projectId);
@@ -76,4 +77,5 @@ public interface ProjectPartnerManager {
    *         or -1 is some error occurred.
    */
   public ProjectPartner saveProjectPartner(ProjectPartner projectPartner);
+
 }
