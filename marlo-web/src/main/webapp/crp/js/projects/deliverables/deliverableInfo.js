@@ -50,7 +50,6 @@ function init() {
     var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
     var option = $select.find("option:selected");
     var projectPartnerID = option.val();
-    console.log(option.text());
 
     $.ajax({
         url: baseURL + '/personByParnters.do',
@@ -61,23 +60,24 @@ function init() {
           $list.empty();
         },
         success: function(data) {
-          $.each(data.persons, function(i,person) {
 
-            if(isResp) {
-              var $item = $('#deliverablePerson-template.resp').clone(true);
-            } else {
-              var $item = $('#deliverablePerson-template.other').clone(true);
-              $item.find('input.projectPartnerID').val(projectPartnerID);
-            }
-            $item.removeAttr('id');
-            console.log($item);
-
-            $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
-            $item.find('label.checkbox-label, label.radio-label').text(person.user);
-
-            $list.append($item);
-            $item.show();
-          });
+          if(data.persons.length) {
+            $.each(data.persons, function(i,person) {
+              if(isResp) {
+                var $item = $('#deliverablePerson-template.resp').clone(true);
+              } else {
+                var $item = $('#deliverablePerson-template.other').clone(true);
+                $item.find('input.projectPartnerID').val(projectPartnerID);
+              }
+              $item.removeAttr('id');
+              $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
+              $item.find('label.checkbox-label, label.radio-label').text(person.user);
+              $list.append($item);
+              $item.show();
+            });
+          } else {
+            console.log("no partners persons");
+          }
 
         },
         complete: function() {

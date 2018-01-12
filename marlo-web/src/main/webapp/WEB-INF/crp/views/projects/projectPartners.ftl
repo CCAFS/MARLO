@@ -275,17 +275,12 @@
     <div class="blockTitle closed">
       [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
-
       
-      
-     
-
       [#-- Tags --]
       <div class="partnerTags pull-right">
         <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
         <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
         <span class="index ${isPPA?string('ppa','')}">${isPPA?string('Managing / PPA Partner','Partner')} </span>
-        [#if !isTemplate] [@popUps.relationsMacro element=element /][/#if]
       </div>
       
       [#-- Contacts --]
@@ -405,6 +400,11 @@
         </div>
       </div>
       
+    </div>
+    
+    [#-- Deliverables --]
+    <div class="pull-right">
+      [#if !isTemplate] [@popUps.relationsMacro element=element /][/#if]
     </div>
   
   </div>
