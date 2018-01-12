@@ -166,6 +166,18 @@ function init() {
     });
   });
 
+  /** Cross-Cutting dimensions * */
+
+  $('input.crosscutingDimension').on('change', function() {
+    var $crosscutingDimensionBlock = $('#ccDimension-' + this.id);
+
+    if($(this).is(':checked')) {
+      $crosscutingDimensionBlock.slideDown();
+    } else {
+      $crosscutingDimensionBlock.slideUp();
+    }
+  });
+
   /** Gender questions * */
 
   $('input#gender').on('change', function() {

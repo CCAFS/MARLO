@@ -181,7 +181,7 @@
   [/#if]
 </div>
 
-<h3 class="headTitle">Gender, social inclusion and/ or Youth Dimensions of the deliverable </h3>
+<h3 class="headTitle">[@s.text name="deliverable.crossCuttingDimensionsTitle" /] </h3>
 <div class="simpleBox">
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
@@ -189,10 +189,10 @@
     <div class="row">
       <div class="col-md-12">
         [#if editable]
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   class="crosscutingDimension"  id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    class="crosscutingDimension"  id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" class="crosscutingDimension"  id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       class=""                      id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
         [#else]
           [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
           [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
@@ -207,7 +207,7 @@
   </div>
   
   [#-- If gender dimension, select with ones --]
-  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
@@ -241,6 +241,17 @@
       </div>
     [/#if]
   [/#if]
+  </div>
+  
+  [#-- Cross-cutting dimensions blocks --]
+  <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
+    [@customForm.select name="" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
+    [@customForm.select name="" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
+    [@customForm.select name="" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   
   [#-- Gender Types List --]
