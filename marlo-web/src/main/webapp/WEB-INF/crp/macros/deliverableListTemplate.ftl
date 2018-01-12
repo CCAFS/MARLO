@@ -362,10 +362,16 @@
           <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
-              [#list action.getPersons(projectPartner.id) as person]
-                [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
-                [#assign personsIndex =  personsIndex + 1 /]
-              [/#list]
+              [#local deliverablePartnerships = (action.getPersons(projectPartner.id))![] /]
+              [#if deliverablePartnerships?has_content]
+                [#list action.getPersons(projectPartner.id) as person]
+                  [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
+                  [#assign personsIndex =  personsIndex + 1 /]
+                [/#list]
+              [#else]
+                [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
+              [/#if]
+              
             [/#if]
             <div class="clearfix"></div>
           </div>

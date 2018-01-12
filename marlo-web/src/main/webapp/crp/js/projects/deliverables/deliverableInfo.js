@@ -76,7 +76,14 @@ function init() {
               $item.show();
             });
           } else {
-            console.log("no partners persons");
+            if(isResp) {
+              var $item = $('#deliverablePerson-template.resp').clone(true);
+            } else {
+              var $item = $('#deliverablePerson-template.other').clone(true);
+              $item.find('input.projectPartnerID').val(projectPartnerID);
+            }
+            $item.removeAttr('id');
+            $list.append($item);
           }
 
         },
