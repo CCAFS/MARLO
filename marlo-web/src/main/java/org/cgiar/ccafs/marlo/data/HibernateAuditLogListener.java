@@ -468,21 +468,49 @@ public class HibernateAuditLogListener
 
     HashMap<String, Object> updateRecord = new HashMap<>();
     if (entity instanceof IAuditLog) {
-      updateRecord.put(IAuditLog.ENTITY, entity);
-      updateRecord.put(IAuditLog.PRINCIPAL, new Long(1));
-      auditLogContext.getUpdates().add(updateRecord);
-
       ClassMetadata classMetadata =
         postUpdateEvent.getSession().getSessionFactory().getClassMetadata(entity.getClass());
       Type[] types = classMetadata.getPropertyTypes();
 
-      auditLogContext.getUpdates().addAll(this.relations(postUpdateEvent.getState(), types,
-        ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
+      String[] propertyNamesRelation = classMetadata.getPropertyNames();
+      Phase phaseObject = null;
+      boolean hasPhase = false;
+      for (String nameAtrribute : propertyNamesRelation) {
+        if (nameAtrribute.equals("phase")) {
+          phaseObject = (Phase) classMetadata.getPropertyValue(entity, nameAtrribute);
+          if (phaseObject != null) {
+            phaseObject = (Phase) postUpdateEvent.getSession().getSessionFactory().getCurrentSession().get(Phase.class,
+              phaseObject.getId());
+            if (phaseObject != null) {
+              hasPhase = true;
+            }
+          }
+
+
+        }
+      }
+      /*
+       * if have phase and the phase is the current we are checking , we load the info
+       */
+      if (hasPhase) {
+        if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
+          updateRecord.put(IAuditLog.ENTITY, entity);
+          updateRecord.put(IAuditLog.PRINCIPAL, new Long(1));
+          auditLogContext.getUpdates().add(updateRecord);
+
+
+          auditLogContext.getUpdates().addAll(this.relations(postUpdateEvent.getState(), types,
+            ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
+          postUpdateEvent.getSession().getActionQueue()
+            .registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
+
+        }
+      }
+
+      // LOG.debug("COMPARE LOGS WITH STAGING BRANCH: " + auditLogContext.getUpdates().toString());
+
+
     }
-
-    // LOG.debug("COMPARE LOGS WITH STAGING BRANCH: " + auditLogContext.getUpdates().toString());
-    postUpdateEvent.getSession().getActionQueue().registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
-
   }
 
 

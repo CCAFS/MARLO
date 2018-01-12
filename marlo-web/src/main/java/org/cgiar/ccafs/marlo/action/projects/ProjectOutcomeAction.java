@@ -58,10 +58,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -477,7 +478,9 @@ public class ProjectOutcomeAction extends BaseAction {
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
+      projectOutcome.getCrpProgramOutcome().setSrfTargetUnit(null);
       projectOutcome.setAchievedUnit(null);
+      crpProgramOutcome.setSrfTargetUnit(null);
       projectOutcome.setExpectedUnit(null);
     }
 
@@ -498,14 +501,14 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
-      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
-      relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
+      // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
@@ -682,7 +685,7 @@ public class ProjectOutcomeAction extends BaseAction {
             if (projectMilestone.getExpectedUnit() != null) {
               if (projectMilestone.getExpectedUnit().getId() == null
                 || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
-                projectMilestone.setExpectedUnit(null);
+                projectMilestoneDB.setExpectedUnit(null);
               } else {
                 projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
               }
@@ -773,11 +776,15 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setActiveSince(new Date());
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
-      if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
-        projectOutcome.setExpectedUnit(null);
-      } else {
-        projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+      if (projectOutcome.getExpectedUnit() != null) {
+        if (projectOutcome.getExpectedUnit().getId() == null
+          || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+          projectOutcome.setExpectedUnit(new SrfTargetUnit());
+        } else {
+          projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+        }
       }
+
       // projectOutcome.setId(projectOutcomeID);
       projectOutcome.setPhase(this.getActualPhase());
 

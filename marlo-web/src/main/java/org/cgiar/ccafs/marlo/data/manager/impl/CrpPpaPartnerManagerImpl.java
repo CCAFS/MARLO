@@ -50,7 +50,7 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
         && c.getInstitution().getId().longValue() == crpPpaPartner.getInstitution().getId().longValue()
         && c.getCrp().getId().longValue() == crpID)
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && outcomes.isEmpty()) {
+    if ( outcomes.isEmpty()) {
       CrpPpaPartner crpPpaPartnerAdd = new CrpPpaPartner();
       crpPpaPartnerAdd.setActive(true);
       crpPpaPartnerAdd.setActiveSince(crpPpaPartner.getActiveSince());

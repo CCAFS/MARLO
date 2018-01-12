@@ -64,7 +64,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
       .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
         && deliverableFundingSource.getFundingSource().getId().equals(c.getFundingSource().getId()))
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && deliverableFundingSources.isEmpty()) {
+    if ( deliverableFundingSources.isEmpty()) {
       DeliverableFundingSource deliverableFundingSourceAdd = new DeliverableFundingSource();
       deliverableFundingSourceAdd.setActive(true);
       deliverableFundingSourceAdd.setActiveSince(deliverableFundingSource.getActiveSince());
