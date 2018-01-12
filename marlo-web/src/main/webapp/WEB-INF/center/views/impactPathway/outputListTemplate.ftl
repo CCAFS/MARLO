@@ -18,7 +18,7 @@
         <tr>
         [#-- ID --]
         <td class="outputId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /]">O${output.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='outputID']${output.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">O${output.id}</a>
         </td>
           [#-- output statement --]
           <td class="left"> 
