@@ -615,7 +615,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
-      projectDB.getProject().setTitle(project.getProject().getTitle());
+      projectDB.getProject().setTitle(project.getProject().getProjecInfoPhase(this.get).getTitle());
       projectDB.getProject().setStartDate(project.getProject().getStartDate());
       projectDB.getProject().setEndDate(project.getProject().getEndDate());
       projectDB.getProject().setSummary(project.getProject().getSummary());

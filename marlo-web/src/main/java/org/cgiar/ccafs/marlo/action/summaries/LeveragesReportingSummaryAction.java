@@ -15,7 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
@@ -33,9 +33,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.Band;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -68,7 +66,7 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
   InputStream inputStream;
 
   @Inject
-  public LeveragesReportingSummaryAction(APConfig config, CrpManager crpManager,
+  public LeveragesReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectLeverageManager projectLeverageManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.projectLeverageManager = projectLeverageManager;
@@ -220,11 +218,15 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget", "project_ID"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class}, 0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
-      .filter(
-        pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear() && pl.getProject() != null
-          && pl.getProject().getCrp() != null && pl.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
-          && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
+      .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
+        && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
+        && pl.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          .collect(Collectors.toList()).size() > 0
+        && pl.getProject().isActive() && pl.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
       .collect(Collectors.toList())) {
+
+
       String title = null, partnerName = null, flagship = null;
       Long projectID = null;
       Integer leverageYear = null;
