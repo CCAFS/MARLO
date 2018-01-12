@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager {
 
 
@@ -70,6 +72,11 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
     return liaisonInstitutionDAO.find(liaisonInstitutionID);
   }
 
+
+  @Override
+  public LiaisonInstitution getLiasonInstitutionByInstitutionId(Long institutionId, long crpID) {
+    return liaisonInstitutionDAO.findByInstitutionAndCrp(institutionId, crpID);
+  }
 
   @Override
   public LiaisonInstitution saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {

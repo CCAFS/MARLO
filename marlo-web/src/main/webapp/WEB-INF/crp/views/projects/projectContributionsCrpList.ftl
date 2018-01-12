@@ -19,9 +19,10 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -30,7 +31,10 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -145,6 +149,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Template Outcome List --]
 [#include "/WEB-INF/crp/macros/outcomesListSelectMacro.ftl"]
@@ -156,7 +161,7 @@
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
   [#local projectOutcomeID =  projectOutcome.id /] 
-  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true" /]
+  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true&phaseID=${(actualPhase.id)!}" /]
   [#local hasDraft = (action.getAutoSaveFilePath(projectOutcome.class.simpleName, "contributionCrp", projectOutcome.id))!false /]
   <tr class="projectOutcome">
       [#-- Flagship outcome --]
@@ -171,6 +176,11 @@
             [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<i class="indicatorText"><br /><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No Indicator'}</i>[/#if]
           [/#if]
         </a>
+       [#if !isTemplate]
+        <div class="pull-right">
+          [@popUps.relationsMacro element=projectOutcome /]
+        </div>
+      [/#if]
       </td>
       [#-- Contribution Status --]
       <td class="text-center">
@@ -186,8 +196,8 @@
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
-        [#if ((action.hasPermission("delete"))!true) && canEdit]
-          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
+        [#if ((action.hasPermission("delete"))!true) && action.canBeDeleted((projectOutcome.id)!-1,(projectOutcome.class.name)!"" )]
+          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}&phaseID=${(actualPhase.id)!}" title="">
             <img src="${baseUrl}/global/images/trash.png" />
           </a>
         [#else]

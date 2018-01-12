@@ -31,8 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -121,11 +123,16 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+
+    Map<String, Parameter> parameters = this.getParameters();
     institutionTypeID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]));
-    if (parameters.get(APConstants.COUNTRY_REQUEST_ID) != null) {
-      countryID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID).getMultipleValues()[0]));
+    if (parameters.get(APConstants.COUNTRY_REQUEST_ID).isDefined()) {
+      // countryID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]));
+      countryID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.COUNTRY_REQUEST_ID).getMultipleValues()[0]));
     }
   }
 

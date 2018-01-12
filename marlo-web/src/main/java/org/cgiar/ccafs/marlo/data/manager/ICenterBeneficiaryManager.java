@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterBeneficiaryManager;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiary;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterBeneficiaryManager.class)
+
 public interface ICenterBeneficiaryManager {
 
 

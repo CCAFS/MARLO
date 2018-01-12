@@ -1,0 +1,1 @@
+update funding_sources_info set status=2;

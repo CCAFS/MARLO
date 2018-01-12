@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -72,11 +73,11 @@ public class LoginAction extends BaseAction {
 
   // Managers
   private UserManager userManager;
-
   private CrpManager crpManager;
   private ICenterManager centerManager;
   private ICenterUserManager centerUsermanager;
   private CrpUserManager crpUserManager;
+
 
   @Inject
   public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager,
@@ -404,3 +405,4 @@ public class LoginAction extends BaseAction {
     }
   }
 }
+

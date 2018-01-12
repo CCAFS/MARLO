@@ -27,10 +27,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class LiasonUsersByInstitutionsAction extends BaseAction {
 
@@ -80,9 +82,12 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+
     liasonIntitutionId =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.LIASON_INSTITUTION_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.LIASON_INSTITUTION_ID))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.LIASON_INSTITUTION_ID).getMultipleValues()[0]));
   }
 
   public void setLiasonsUsers(List<Map<String, Object>> liasonsUsers) {

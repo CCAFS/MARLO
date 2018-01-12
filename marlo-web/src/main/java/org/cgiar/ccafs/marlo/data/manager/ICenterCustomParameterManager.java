@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterCustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterCustomParameterManager.class)
+
 public interface ICenterCustomParameterManager {
 
 

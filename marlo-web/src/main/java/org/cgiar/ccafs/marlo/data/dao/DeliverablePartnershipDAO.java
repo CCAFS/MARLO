@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.DeliverablePartnershipMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(DeliverablePartnershipMySQLDAO.class)
 public interface DeliverablePartnershipDAO {
 
   /**

@@ -75,7 +75,7 @@
           [#assign isCompleted = false /]
           [#assign hasPermission = (action.hasSynthesisPermission('update', institution.id))!false/]
           <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
-            <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${institution.acronym}: ${institution.name}</a>
+            <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">${institution.acronym}: ${institution.name}</a>
             [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrl}/global/images/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
           </li>
         [/#list]
@@ -155,8 +155,8 @@
                     <tbody>
                     [#list deliverablesCompleted as deliverable]
                       <tr>
-                        <td class="center"><a href="[@s.url action="${crpSession}/description" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(deliverable.projectId)!}</a></td>
-                        <td class="center"><a href="[@s.url action="${crpSession}/deliverable" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][@s.param name='deliverableID']${(deliverable.id)!}[/@s.param][/@s.url]">D${(deliverable.id)!}</a></td>
+                        <td class="center"><a href="[@s.url action="${crpSession}/description" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">P${(deliverable.projectId)!}</a></td>
+                        <td class="center"><a href="[@s.url action="${crpSession}/deliverable" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][@s.param name='deliverableID']${(deliverable.id)!}[/@s.param][/@s.url]">D${(deliverable.id)!}</a></td>
                         <td class="center">${deliverable.subType}</td>
                         <td class="">${deliverable.title}</td>
                         <td class="fair">
@@ -191,7 +191,7 @@
                     <tbody>
                     [#list activities as activity]
                       <tr>
-                        <td class="center"><a href="[@s.url action="${crpSession}/activities" namespace="/projects"][@s.param name='projectID']${(activity.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(activity.projectId)!}</a></td>
+                        <td class="center"><a href="[@s.url action="${crpSession}/activities" namespace="/projects"][@s.param name='projectID']${(activity.projectId)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">P${(activity.projectId)!}</a></td>
                         <td class="center">A${(activity.id)!}</td>
                         <td class="">${(activity.title)!}</td>
                       </tr>

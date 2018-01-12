@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitution, Long> implements LiaisonInstitutionDAO {
-
+@Named
+public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitution, Long>
+  implements LiaisonInstitutionDAO {
 
   @Inject
   public LiaisonInstitutionMySQLDAO(SessionFactory sessionFactory) {
@@ -78,6 +80,17 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
     return null;
   }
 
+
+  @Override
+  public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID) {
+    String query = "from " + LiaisonInstitution.class.getName() + " where institution_id=" + institutionId
+      + " and crp_id=" + crpID + " and is_active=1";
+    List<LiaisonInstitution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
 
   @Override
   public LiaisonInstitution save(LiaisonInstitution liaisonInstitution) {

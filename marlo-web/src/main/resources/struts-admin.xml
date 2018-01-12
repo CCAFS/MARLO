@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="admin" namespace="/admin" extends="marlo-default">
@@ -11,7 +13,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/management.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/management</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -23,7 +25,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/regionalMapping.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/regionalMapping</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -34,7 +36,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/siteIntegration.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/siteIntegration</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -45,21 +47,29 @@
 			<result name="input">/WEB-INF/crp/views/admin/ppaPartners.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/ppaPartners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
-		<action name="{crp}/projectPhases"
+		<action name="{crp}/crpPhases" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpPhasesAction">
+      <interceptor-ref name="crpAdminStack" />
+      <result name="input">/WEB-INF/crp/views/admin/crpPhases.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crpPhases</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/projectPhases"
       class="org.cgiar.ccafs.marlo.action.crp.admin.CrpProjectPhases">
       <!-- interceptor-ref name="autoLogin" / -->
       <interceptor-ref name="crpAdminStack" />
       <result name="input">/WEB-INF/crp/views/admin/projectPhases.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/projectPhases</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
-    
     
     <action name="{crp}/crpUsers"
       class="org.cgiar.ccafs.marlo.action.crp.admin.CrpUsersAction">
@@ -68,7 +78,7 @@
       <result name="input">/WEB-INF/crp/views/admin/crpUsers.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/crpUsers</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
 
@@ -79,7 +89,7 @@
 			<result name="input">/WEB-INF/crp/views/admin/locations.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/locations</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
@@ -90,7 +100,7 @@
       <result name="input">/WEB-INF/crp/views/admin/targetUnits.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/targetUnits</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     

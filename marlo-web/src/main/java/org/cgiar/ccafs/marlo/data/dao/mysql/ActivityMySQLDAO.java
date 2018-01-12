@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implements ActivityDAO {
 
 
@@ -31,6 +33,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   public ActivityMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
+
 
   @Override
   public void deleteActivity(long activityId) {
@@ -73,7 +76,6 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     } else {
       activity = super.update(activity);
     }
-
 
     return activity;
   }

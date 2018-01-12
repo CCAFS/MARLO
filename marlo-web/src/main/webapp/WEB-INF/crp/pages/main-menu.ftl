@@ -7,7 +7,6 @@
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
   { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActiveMenu, 'active': action.canAcessPublications() , 'help': true },
-  
   { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActiveMenu?string("synthesis","powb")}',       'action': '${(crpSession)!}/${reportingActiveMenu?string("crpIndicators","summaryHighlight")}',    'visible': logged, 'active': action.canAcessCrp() || action.canAcessSynthesisMog(),
     'subItems' : [
       { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged && reportingActiveMenu, 'active': action.canAcessCrp()},
@@ -17,9 +16,7 @@
       [#-- PHASE 2 --]
       { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesis',  'visible': logged && (!phaseOne) && reportingActiveMenu, 'active': action.canAcessCrpAdmin() },
       { 'slug': 'coasSynthesis', 'name': 'menu.synthesis.coasSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/coasSynthesis',  'visible': logged && (!phaseOne) && reportingActiveMenu, 'active': action.canAcessCrpAdmin() },
-      
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/summaryHighlight',  'visible': logged && !reportingActiveMenu, 'active': true },
-      
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged && reportingActiveMenu, 'active': false }
     ]
   },
@@ -35,7 +32,7 @@
    [#if item.visible]
     <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
       [#if item.active]
-        [#assign url][@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url][/#assign]
+        [#assign url][@s.url namespace=item.namespace action='${item.action}'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
       [#else]
         [#assign url]#[/#assign]
       [/#if]
@@ -49,7 +46,7 @@
             [#if subItem.visible]
             <li id="${subItem.slug}" class="[#if currentStage?? && currentStage == subItem.slug ]currentSection[/#if] ${(subItem.active)?string('enabled','disabled')}">
               [#if subItem.active]
-                [#assign url][@s.url namespace=subItem.namespace action='${subItem.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url][/#assign]
+                [#assign url][@s.url namespace=subItem.namespace action='${subItem.action}'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
               [#else]
                 [#assign url]#[/#assign]
               [/#if]
@@ -92,15 +89,27 @@
   	[/#if]
   </div>
 </div> 
-</nav> 
+</nav>
+
+
+
 
 <div class="subMainMenu">
-<div class="container">
-  [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
+  <div class="container">
+    [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
+  </div>
 </div>
+
+[#if logged?? && logged]
+<div class="form-group">
+  [#attempt]
+    [#include "/WEB-INF/global/pages/timeline-phases.ftl" /]
+  [#recover]
+    
+  [/#attempt]
+  <div class="clearFix"></div>
+</div>
+[/#if]
 
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
-
-</div>
-
 

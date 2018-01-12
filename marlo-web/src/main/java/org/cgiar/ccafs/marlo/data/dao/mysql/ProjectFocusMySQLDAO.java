@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> implements ProjectFocusDAO {
 
 
@@ -32,12 +34,16 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectFocus(long projectFocusId) {
     ProjectFocus projectFocus = this.find(projectFocusId);
     projectFocus.setActive(false);
-    this.save(projectFocus);
+    super.update(projectFocus);
+
+
   }
+
 
   @Override
   public boolean existProjectFocus(long projectFocusID) {
@@ -73,7 +79,6 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
     } else {
       projectFocus = super.update(projectFocus);
     }
-
 
     return projectFocus;
   }

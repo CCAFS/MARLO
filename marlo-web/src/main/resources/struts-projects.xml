@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="projects" namespace="/projects" extends="marlo-default">
@@ -9,11 +11,11 @@
 			<result name="input">/WEB-INF/crp/views/projects/projectsList.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/projectsList</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/projectsList</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 			</result>
 		</action>
@@ -117,33 +119,9 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
-		
-		<action name="{crp}/caseStudiesByYearSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.CaseStudiesByYearSummaryAction">
-      <interceptor-ref name="homeStack" />
-      <result name="success" type="stream">
-        <param name="inputName">inputStream</param>
-             
-        <param name="contentType">${contentType}</param>
-               
-        <param name="contentDisposition">filename="${fileName}"</param>
-      </result>
-     </action>
-     
+		     
      <action name="{crp}/caseStudySummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.CaseStudyPdfSummaryAction">
-      <interceptor-ref name="homeStack" />
-      <result name="success" type="stream">
-        <param name="inputName">inputStream</param>
-             
-        <param name="contentType">${contentType}</param>
-               
-        <param name="contentDisposition">filename="${fileName}"</param>
-      </result>
-     </action>
-     
-     <action name="{crp}/projectHighlightsPDFSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightsPDFSummaryAction">
+      class="org.cgiar.ccafs.marlo.action.summaries.CaseStudySummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
@@ -152,15 +130,15 @@
       </result>
      </action>
      
-     <action name="{crp}/projectHighlightsExcelSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightsExcelSummaryAction">
+     <action name="{crp}/projectHighlightsSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightsSummaryAction">
       <interceptor-ref name="homeStack" />
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
         <param name="contentDisposition">filename="${fileName}"</param>
       </result>
-     </action>
+     </action>     
 
 		<action name="{crp}/searchTermsSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.SearchTermsSummaryAction">
@@ -230,7 +208,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/description</param>
 				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 
 		</action>
@@ -242,7 +220,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/description</param>
 				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 
 		</action>
@@ -264,7 +242,7 @@
       <result name="success" type="redirectAction">
        <param name="actionName">${crpSession}/highlight</param>
        <param name="highlightID">${higlightID}</param>
-       <param name="edit">true</param>
+       <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -294,7 +272,7 @@
         <param name="actionName">${crpSession}/highlight</param>
         <param name="highlightID">${highlight.id}</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/highlight</param>
@@ -303,7 +281,7 @@
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -317,7 +295,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/description</param>
 				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -328,18 +306,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/description</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/description</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -351,17 +329,17 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/outcomes</param>    
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -372,17 +350,17 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/ccafsOutcomes</param>    
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/ccafsOutcomes</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -396,17 +374,17 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/outputs</param>    
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/outputs</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -418,17 +396,17 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/otherContributions</param>    
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/otherContributions</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -439,17 +417,17 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/outcomesPandR</param>    
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/outcomesPandR</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -461,18 +439,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/partners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/partners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -484,18 +462,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/locations</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/locations</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -507,7 +485,7 @@
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -519,7 +497,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/contributionsCrpList</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -531,7 +509,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/contributionCrp</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<!-- param name="projectID">${projectID}</param -->
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
@@ -559,18 +537,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/contributionCrp</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/contributionCrp</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -582,11 +560,11 @@
       <result name="success" type="redirectAction">   
         <param name="actionName">"${crpSession}/caseStudies"</param>    
         <param name="projectID">${project.id}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result> 
     </action> 
@@ -598,7 +576,7 @@
        <param name="actionName">${crpSession}/caseStudy</param>
         <param name="caseStudyID">${caseStudyID}</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -619,17 +597,17 @@
         <param name="actionName">${crpSession}/caseStudy</param>
         <param name="caseStudyID">${caseStudyID}</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="caseStudyID">${caseStudy.id}</param>
         <param name="projectID">${projectID}</param>
       </result> 
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/caseStudy</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
@@ -642,7 +620,7 @@
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -655,11 +633,11 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/deliverable</param>
 				<param name="deliverableID">${deliverableID}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -675,7 +653,7 @@
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -690,11 +668,11 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/deliverable</param>
 				<param name="deliverableID">${deliverable.id}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<!-- <result name="next" type="redirectAction"> <param name="actionName">impactPathway</param> 
@@ -710,18 +688,18 @@
 			<result name="input">/WEB-INF/crp/views/projects/projectBudgetByPartners.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/budgetByPartners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/budgetByPartners</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -733,18 +711,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/budgetByCoAs</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/budgetByCoAs</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -756,18 +734,18 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/activities</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="cancel" type="redirectAction">
 				<param name="actionName">${crpSession}/activities</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="cancel">true</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
 				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
@@ -779,18 +757,18 @@
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/leverages</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/leverages</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -809,3 +787,4 @@
 
 	</package>
 </struts>
+

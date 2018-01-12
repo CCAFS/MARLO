@@ -27,7 +27,7 @@
   var currentCrpSession='${(crpSession)!'-1'}';
   var currentCycleYear = ${(currentCycleYear)!1999};
   var reportingActive= ${((reportingActive)!false)?string};
-  var projectPreSetting= ${((project.projectEditLeader)!false)?string('0','1')};
+  var projectPreSetting= ${((project.projectInfo.projectEditLeader)!false)?string('0','1')};
   
   var currentCenterID=${(centerID)!'-1'};
   var centerSession="${(centerSession)!}";

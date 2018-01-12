@@ -36,29 +36,27 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
-
-
   @Expose
   private User createdBy;
 
   @Expose
   private ProjectPartnerPerson projectPartnerPerson;
 
-
   @Expose
   private Deliverable deliverable;
 
 
+  @Expose
+  private Phase phase;
   @Expose
   private String partnerType;
 
 
   @Expose
   private boolean active;
+
   @Expose
   private Date activeSince;
-
-
   @Expose
   private String modificationJustification;
 
@@ -115,7 +113,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -139,7 +136,6 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -153,6 +149,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public String getPartnerType() {
     return partnerType;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -216,6 +217,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public void setPartnerType(String partnerType) {
     this.partnerType = partnerType;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

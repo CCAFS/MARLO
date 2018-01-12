@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /***
@@ -192,7 +192,7 @@ public class ProjectCaseStudiesListAction extends BaseAction {
     // Getting the Deliverables Main Types.
 
 
-    allYears = project.getAllYears();
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
 
     // Getting the List of Expected Deliverables
 

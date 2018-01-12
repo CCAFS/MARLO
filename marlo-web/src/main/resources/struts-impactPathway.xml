@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
   <!-- Add addition packages and configuration here. -->
   <package name="impactPathway" namespace="/impactPathway" extends="marlo-default">
@@ -10,17 +12,17 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>
@@ -31,11 +33,11 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/clusterActivities</param>
         <param name="crpProgramID">${crpProgramID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>

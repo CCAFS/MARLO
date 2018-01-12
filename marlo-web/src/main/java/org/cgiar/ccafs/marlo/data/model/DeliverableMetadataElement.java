@@ -40,10 +40,11 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
   @Expose
   private Boolean hide;
+  @Expose
+  private Phase phase;
 
   public DeliverableMetadataElement() {
   }
-
 
   public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable) {
     this.metadataElement = metadataElement;
@@ -56,6 +57,7 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     this.deliverable = deliverable;
     this.elementValue = elementValue;
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -92,11 +94,16 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -124,6 +131,10 @@ public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
   public void setMetadataElement(MetadataElement metadataElement) {
     this.metadataElement = metadataElement;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

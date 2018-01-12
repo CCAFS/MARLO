@@ -1,6 +1,7 @@
 $(document).ready(init);
 var slideIndex = 1;
 function init() {
+
   /* Init Select2 plugin */
   $('form select').select2({
     width: '100%'
@@ -54,5 +55,7 @@ function showSlides(n) {
     dots[i].className = dots[i].className.replace(" active", "");
   }
   slides[slideIndex - 1].style.display = "block";
-  dots[slideIndex - 1].className += " active";
+  if(typeof dots[slideIndex - 1] !== 'undefined'){
+    dots[slideIndex - 1].className += " active";
+  }
 }

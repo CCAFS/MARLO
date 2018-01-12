@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Named
 public class CenterOutcomeDAO extends AbstractMarloDAO<CenterOutcome, Long> implements ICenterOutcomeDAO {
 
   private static Logger LOG = LoggerFactory.getLogger(CenterOutcomeDAO.class);

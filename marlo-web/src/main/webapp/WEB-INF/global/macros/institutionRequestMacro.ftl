@@ -47,7 +47,7 @@
               <span class="glyphicon glyphicon-pencil"></span> Edit Request
             </a>
             [#-- Accept --]
-            <a class="btn btn-success btn-sm" onclick="return confirm('[@s.text name="marloRequestInstitution.confirmAccept" /]');" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][/@s.url]">
+            <a class="btn btn-success btn-sm" onclick="return confirm('[@s.text name="marloRequestInstitution.confirmAccept" /]');" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <span class="glyphicon glyphicon-ok"></span> Accept
             </a>
             [#-- Reject --]

@@ -32,7 +32,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
   @Expose
-
   private User createdBy;
   @Expose
   private BigDecimal expectedValue;
@@ -50,6 +49,8 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String youthComponent;
+  @Expose
+  private Phase phase;
 
 
   @Expose
@@ -77,7 +78,9 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
 
+
   private List<ProjectNextuser> nextUsers;
+
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private ProjectComponentLesson projectComponentLesson;
@@ -132,7 +135,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public Long getAchievedValue() {
     return achievedValue;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -212,10 +214,14 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return narrativeTarget;
   }
 
+
   public List<ProjectNextuser> getNextUsers() {
     return nextUsers;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
   public Project getProject() {
     return project;
   }
@@ -348,6 +354,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setNextUsers(List<ProjectNextuser> nextUsers) {
     this.nextUsers = nextUsers;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 
