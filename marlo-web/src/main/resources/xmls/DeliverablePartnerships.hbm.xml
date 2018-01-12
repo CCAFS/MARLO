@@ -15,7 +15,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="projectPartnerPerson" class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" fetch="select">
-            <column name="partner_person_id" not-null="true" />
+            <column name="partner_person_id" not-null="false" />
         </many-to-one>
         <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
             <column name="deliverable_id" not-null="true" />
