@@ -1410,11 +1410,10 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     projectDB = projectManager.getProjectById(projectID);
-    regions =
-      new ArrayList<>(this.getDBLocations().stream()
-        .filter(
-          fl -> fl.isActive() && fl.getLocElement() != null && fl.getLocElement().getLocElementType().getId() == 1)
-        .collect(Collectors.toList()));
+    regions = new ArrayList<>(this.getDBLocations()
+      .stream().filter(fl -> fl.isActive() && fl.getLocElement() != null
+        && fl.getLocElement().getLocElementType() != null && fl.getLocElement().getLocElementType().getId() == 1)
+      .collect(Collectors.toList()));
     regions.addAll(this.getDBLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));
