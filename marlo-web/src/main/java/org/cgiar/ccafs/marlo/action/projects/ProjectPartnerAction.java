@@ -1496,9 +1496,10 @@ public class ProjectPartnerAction extends BaseAction {
   private void saveProjectPartnerPersons(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
     if (projectPartnerClient.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPersonClient : projectPartnerClient.getPartnerPersons()) {
-
-        ProjectPartnerPerson projectPartnerPersonDB =
-          this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+        if (partnerPersonClient.getUser() != null && partnerPersonClient.getUser().getId() != null) {
+          ProjectPartnerPerson projectPartnerPersonDB =
+            this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+        }
       }
 
       for (ProjectPartnerPerson partnerPerson : projectPartnerClient.getPartnerPersons()) {
