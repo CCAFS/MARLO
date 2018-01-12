@@ -403,9 +403,11 @@
     </div>
     
     [#-- Deliverables --]
+    [#if !isTemplate] 
     <div class="pull-right">
-      [#if !isTemplate] [@popUps.relationsMacro element=element /][/#if]
+      [@popUps.relationsMacro element=element /]
     </div>
+    [/#if]
   
   </div>
 [/#macro]
