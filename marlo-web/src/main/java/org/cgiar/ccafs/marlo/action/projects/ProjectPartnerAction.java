@@ -1439,6 +1439,7 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerPerson partnerPersonClient) {
     if (partnerPersonClient.getUser() == null
       || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
+      partnerPersonClient.setUser(null);
       return partnerPersonClient;
     } else {
 
