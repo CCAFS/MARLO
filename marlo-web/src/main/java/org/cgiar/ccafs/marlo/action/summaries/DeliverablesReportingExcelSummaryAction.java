@@ -15,10 +15,10 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -98,7 +98,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
   private long startTime;
 
   @Inject
-  public DeliverablesReportingExcelSummaryAction(APConfig config, CrpManager crpManager,
+  public DeliverablesReportingExcelSummaryAction(APConfig config, GlobalUnitManager crpManager,
     CrpProgramManager programManager, GenderTypeManager genderTypeManager, DeliverableManager deliverableManager,
     PhaseManager phaseManager, RepositoryChannelManager repositoryChannelManager) {
     super(config, crpManager, phaseManager);
@@ -341,29 +341,34 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     if (!deliverableManager.findAll().isEmpty()) {
 
       // get Reporting deliverables
-      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
-        && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
-        && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
-        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
-        && ((d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
-            || (d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
-          || (d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
-          || (d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
+          && d.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
+          && ((d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
               || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
-        && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
+            || (d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+            || (d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+                || (d.getDeliverableInfo().getNewExpectedYear() != null
+                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
+          && (d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())

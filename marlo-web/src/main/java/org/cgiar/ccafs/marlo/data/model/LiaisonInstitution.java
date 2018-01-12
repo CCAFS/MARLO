@@ -33,20 +33,24 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -1466921023839583918L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private CrpProgram crpProgram;
   @Expose
   private Institution institution;
-
   @Expose
   private String name;
-
   @Expose
   private String acronym;
+
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
+
   @Expose
   private boolean active;
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
@@ -65,16 +69,15 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
-
   public LiaisonInstitution(Institution institution, String name) {
     this.institution = institution;
     this.name = name;
   }
 
-
   public String getAcronym() {
     return this.acronym;
   }
+
 
   public String getComposedName() {
     if (this.getAcronym() != null) {
@@ -90,7 +93,8 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   }
 
-  public Crp getCrp() {
+
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -98,16 +102,15 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return crpProgram;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
-
 
   public Set<LiaisonUser> getLiaisonUsers() {
     return liaisonUsers;
@@ -144,15 +147,16 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
+
   public Set<ProjectInfo> getProjects() {
     return projects;
   }
-
 
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -162,9 +166,10 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
