@@ -287,7 +287,7 @@
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen"> 
-        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
         <div class="partnerPersons">
         </div>
       </div>
@@ -295,7 +295,7 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons">
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
             [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
@@ -402,8 +402,10 @@
   [#local deliverablePartnerShip =(action.getDeliverablePartnership((element.id)!-1))!{} /]
   
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
-    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">[/#if]
-    <input type="hidden" name="${customName}.projectPartner.id" value="${(projectPartner.id)!}" />
+    [#if !isResponsable]
+      <input type="hidden" class="projectPartnerID" name="${customName}.projectPartner.id" value="${(projectPartner.id)!}" />
+      <input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">
+    [/#if]
     <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
     <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
 

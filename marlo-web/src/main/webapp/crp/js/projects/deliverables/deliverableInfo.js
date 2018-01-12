@@ -49,13 +49,13 @@ function init() {
     }
     var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
     var option = $select.find("option:selected");
-
+    var projectPartnerID = option.val();
     console.log(option.text());
 
     $.ajax({
         url: baseURL + '/personByParnters.do',
         data: {
-          partnerId: option.val()
+          partnerId: projectPartnerID
         },
         beforeSend: function() {
           $list.empty();
@@ -67,8 +67,11 @@ function init() {
               var $item = $('#deliverablePerson-template.resp').clone(true);
             } else {
               var $item = $('#deliverablePerson-template.other').clone(true);
+              $item.find('input.projectPartnerID').val(projectPartnerID);
             }
             $item.removeAttr('id');
+            console.log($item);
+
             $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
             $item.find('label.checkbox-label, label.radio-label').text(person.user);
 
