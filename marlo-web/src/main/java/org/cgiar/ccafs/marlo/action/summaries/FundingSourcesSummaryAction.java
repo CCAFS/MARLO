@@ -16,9 +16,9 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -101,7 +100,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   InputStream inputStream;
 
   @Inject
-  public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);

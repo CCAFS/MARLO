@@ -23,7 +23,6 @@ import java.util.List;
  */
 public class TopicOutcomes implements Serializable {
 
-
   private static final long serialVersionUID = 1930172039006261677L;
 
   private CenterTopic topic;

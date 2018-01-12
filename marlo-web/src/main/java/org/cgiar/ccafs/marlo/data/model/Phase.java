@@ -23,7 +23,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private static final long serialVersionUID = -1603080182029677862L;
   @Expose
   private Long id;
-  private Crp crp;
+  private GlobalUnit crp;
   @Expose
   private String description;
   @Expose
@@ -76,14 +76,14 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public Phase() {
   }
 
-  public Phase(Crp crp, String description, int year) {
+  public Phase(GlobalUnit crp, String description, int year) {
     this.crp = crp;
     this.description = description;
     this.year = year;
   }
 
 
-  public Phase(Crp crp, String description, int year, Set<ProjectPhase> projectPhases) {
+  public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
     this.year = year;
@@ -117,11 +117,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
     return this.description + " - " + year;
-  }
-
-
-  public Crp getCrp() {
-    return this.crp;
   }
 
   public Set<CrpPpaPartner> getCrpPpaPartner() {
@@ -300,12 +295,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
   }
-
-
-  public void setCrp(Crp crp) {
-    this.crp = crp;
-  }
-
 
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {
     this.crpPpaPartner = crpPpaPartner;
