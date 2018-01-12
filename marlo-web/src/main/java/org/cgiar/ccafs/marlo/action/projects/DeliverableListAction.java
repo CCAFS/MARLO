@@ -17,22 +17,22 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -62,32 +63,35 @@ public class DeliverableListAction extends BaseAction {
 
   private List<Integer> allYears;
 
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
 
 
   private long deliverableID;
+
   private DeliverableManager deliverableManager;
+
+
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private FundingSourceManager fundingSourceManager;
-
   // Front-end
   private List<Deliverable> deliverables;
   private List<DeliverableType> deliverablesType;
 
   private PhaseManager phaseManager;
   private DeliverableTypeManager deliverableTypeManager;
-  private DeliverableInfoManager deliverableInfoManager;
 
-  private Crp loggedCrp;
+  private DeliverableInfoManager deliverableInfoManager;
+  private GlobalUnit loggedCrp;
   private Project project;
 
   private long projectID;
   // Managers
   private ProjectManager projectManager;
+
   private SectionStatusManager sectionStatusManager;
 
   @Inject
-  public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public DeliverableListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager, PhaseManager phaseManager,
     DeliverableInfoManager deliverableInfoManager, SectionStatusManager sectionStatusManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager, FundingSourceManager fundingSourceManager) {
@@ -102,7 +106,6 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.fundingSourceManager = fundingSourceManager;
   }
-
 
   @Override
   public String add() {
@@ -194,6 +197,7 @@ public class DeliverableListAction extends BaseAction {
     return allYears;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -212,10 +216,10 @@ public class DeliverableListAction extends BaseAction {
               && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                 || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == -1))))
+                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0
+                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == -1))))
             .collect(Collectors.toList());
           return openA;
         } else {
@@ -225,9 +229,9 @@ public class DeliverableListAction extends BaseAction {
               && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                 || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
             .collect(Collectors.toList());
 
           openA.addAll(deliverables.stream()
@@ -335,7 +339,6 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
-
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
   }
@@ -347,6 +350,11 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
+  public GlobalUnit getLoggedCrp() {
+    return loggedCrp;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -355,11 +363,10 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
-
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase = this.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     try {
@@ -420,6 +427,7 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -432,11 +440,11 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     return SUCCESS;
   }
+
 
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
@@ -452,6 +460,10 @@ public class DeliverableListAction extends BaseAction {
 
   public void setDeliverablesType(List<DeliverableType> deliverablesType) {
     this.deliverablesType = deliverablesType;
+  }
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
   public void setProject(Project project) {

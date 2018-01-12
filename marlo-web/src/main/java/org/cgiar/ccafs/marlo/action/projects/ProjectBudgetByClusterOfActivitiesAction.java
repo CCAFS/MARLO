@@ -21,14 +21,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
@@ -55,13 +55,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
+
 
   /**
    * 
@@ -81,21 +83,24 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
 
 
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
+
+
   private long projectID;
-  private Crp loggedCrp;
+
+
+  private GlobalUnit loggedCrp;
   private Project project;
   private String transaction;
   private AuditLogManager auditLogManager;
   private ProjectBudgetsCoAValidator validator;
-
   private List<BudgetType> budgetTypesList;
-
 
   @Inject
   public ProjectBudgetByClusterOfActivitiesAction(APConfig config,
-    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectManager projectManager, CrpManager crpManager,
-    ProjectBudgetManager projectBudgetManager, AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
+    CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectManager projectManager,
+    GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager, AuditLogManager auditLogManager,
+    BudgetTypeManager budgetTypeManager,
 
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
     ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager, ProjectBudgetsCoAValidator validator) {
@@ -108,7 +113,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     this.budgetTypeManager = budgetTypeManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
   }
-
 
   @Override
   public String cancel() {
@@ -155,6 +159,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public ProjectBudgetsCluserActvity getBudget(String activitiyId, int year, long type) {
     if (project.getBudgetsCluserActvities() == null) {
       project.setBudgetsCluserActvities(new ArrayList<>());
@@ -162,10 +167,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return project.getBudgetsCluserActvities().get(this.getIndexBudget(activitiyId, year, type));
   }
 
+
   public List<BudgetType> getBudgetTypesList() {
     return budgetTypesList;
   }
-
 
   public int getIndexBudget(String activitiyId, int year, long type) {
 
@@ -196,9 +201,10 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return this.getIndexBudget(activitiyId, year, type);
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -226,7 +232,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
     return remaining;
   }
-
 
   public double getRemainingGender(Long type, int year) throws ParseException {
     double remaining = 100;
@@ -261,6 +266,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
 
   }
+
 
   public Long getTotalGender(Long type, int year) {
 
@@ -319,7 +325,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return transaction;
   }
 
-
   public boolean hasBudgets(Long type, int year) {
     Project projectBD = projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets().stream()
@@ -330,11 +335,12 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return budgets.size() > 0;
   }
 
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     // Budget Types list
     budgetTypesList = budgetTypeManager.findAll();
@@ -445,7 +451,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
   }
 
-
   public double round(double value, int places) {
     if (places < 0) {
       throw new IllegalArgumentException();
@@ -455,6 +460,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     bd = bd.setScale(places, RoundingMode.HALF_UP);
     return bd.doubleValue();
   }
+
 
   @Override
   public String save() {
@@ -563,7 +569,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     this.budgetTypesList = budgetTypesList;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

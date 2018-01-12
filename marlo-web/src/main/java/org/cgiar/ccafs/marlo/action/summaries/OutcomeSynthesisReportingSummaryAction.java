@@ -15,7 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -30,9 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.Band;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -63,7 +61,8 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseSummariesAction 
   private long startTime;
 
   @Inject
-  public OutcomeSynthesisReportingSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public OutcomeSynthesisReportingSummaryAction(APConfig config, GlobalUnitManager crpManager,
+    PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
   }
 

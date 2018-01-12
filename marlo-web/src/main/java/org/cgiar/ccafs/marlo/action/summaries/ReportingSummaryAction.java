@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -179,7 +180,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private SrfTargetUnitManager srfTargetUnitManager;
 
   @Inject
-  public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
+  public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
@@ -1699,34 +1700,41 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       0);
     if (!project.getDeliverables().isEmpty()) {
       // get Reporting deliverables
-      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()
-        && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && d.getProject().getCrp() != null
-        && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
-        && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-        && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Complete.getStatusId())
-          && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
-            || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
-              .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this.getSelectedYear())))
-          || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            && (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
-              .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))
-          || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear()
-              || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this
-                  .getSelectedYear()))))
-        && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+      List<Deliverable> deliverables = new ArrayList<>(project.getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
+          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() != null
+          && d.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getProject()
+            .getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0
+          && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
+              || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this
+                  .getSelectedYear())))
+            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
+                .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))
+            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+              && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear()
+                || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                  && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this
+                    .getSelectedYear()))))
+          && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
+
       deliverables
         .sort((p1, p2) -> p1.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())
           .compareTo(p2.getDeliverableInfo(this.getSelectedPhase()).isRequieriedReporting(this.getSelectedYear())));
@@ -2542,9 +2550,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   @Override
   public String getFileName() {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-");
-    fileName.append(project.getCrp().getName() + "-");
+    fileName.append(globalUnitProject.getGlobalUnit().getName() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
@@ -2757,7 +2769,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // centerURL = this.getBaseUrl() + "/global/images/crps/" + project.getCrp().getAcronym() + ".png";
     // Add center url to LOG
     // LOG.info("Center URL is: " + centerURL);
-    centerURL = project.getCrp().getAcronym();
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
     if (projectInfo.getAdministrative() != null) {

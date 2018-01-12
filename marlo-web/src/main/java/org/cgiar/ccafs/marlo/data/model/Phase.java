@@ -21,11 +21,15 @@ public class Phase implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -1603080182029677862L;
+
+
   @Expose
   private Long id;
+
   private GlobalUnit crp;
   @Expose
   private String description;
+
   @Expose
   private int year;
   @Expose
@@ -34,16 +38,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
   private Boolean visible;
   @Expose
   private Phase next;
-
   @Expose
   private Date startDate;
   @Expose
   private Date endDate;
 
-
   private Set<ProjectPhase> projectPhases = new HashSet<ProjectPhase>(0);
-
-
   private Set<ProjectInfo> projectInfos = new HashSet<ProjectInfo>(0);
 
 
@@ -51,16 +51,20 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectClusterActivity> projectClusters = new HashSet<ProjectClusterActivity>(0);
+
+
   private Set<CrpPpaPartner> crpPpaPartner = new HashSet<CrpPpaPartner>(0);
 
 
   private Set<ProjectPartner> partners = new HashSet<ProjectPartner>(0);
-
-
   private Set<CrpProgramOutcome> outcomes = new HashSet<CrpProgramOutcome>(0);
 
+
   private Set<CrpClusterOfActivity> clusters = new HashSet<CrpClusterOfActivity>(0);
+
+
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
+
   private Set<Activity> projectActivites = new HashSet<Activity>(0);
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<DeliverableInfo> deliverableInfos = new HashSet<DeliverableInfo>(0);
@@ -82,14 +86,12 @@ public class Phase implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
-
   public Phase(GlobalUnit crp, String description, int year, Set<ProjectPhase> projectPhases) {
     this.crp = crp;
     this.description = description;
     this.year = year;
     this.projectPhases = projectPhases;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -119,19 +121,24 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return this.description + " - " + year;
   }
 
+
+  public GlobalUnit getCrp() {
+    return crp;
+  }
+
+
   public Set<CrpPpaPartner> getCrpPpaPartner() {
     return crpPpaPartner;
   }
-
 
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
 
+
   public Set<DeliverableInfo> getDeliverableInfos() {
     return deliverableInfos;
   }
-
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -172,6 +179,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return fundingSourceLocations;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
@@ -196,7 +204,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     u.setId(new Long(3));
     return u;
   }
-
 
   public Phase getNext() {
     return next;
@@ -267,6 +274,7 @@ public class Phase implements java.io.Serializable, IAuditLog {
     return visible;
   }
 
+
   public int getYear() {
     return this.year;
   }
@@ -278,7 +286,6 @@ public class Phase implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -294,6 +301,11 @@ public class Phase implements java.io.Serializable, IAuditLog {
 
   public void setClusters(Set<CrpClusterOfActivity> clusters) {
     this.clusters = clusters;
+  }
+
+
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
   }
 
   public void setCrpPpaPartner(Set<CrpPpaPartner> crpPpaPartner) {

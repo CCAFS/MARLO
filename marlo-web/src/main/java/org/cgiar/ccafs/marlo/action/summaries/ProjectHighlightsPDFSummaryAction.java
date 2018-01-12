@@ -16,10 +16,10 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -64,12 +64,16 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction implements Summary {
 
+
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
+
   // Managers
   private final ProjectHighligthManager projectHighLightManager;
   // Parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private long startTime;
   private int year;
   // XLSX bytes
@@ -78,7 +82,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
   InputStream inputStream;
 
   @Inject
-  public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsPDFSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
@@ -237,7 +241,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     return fileName.toString();
   }
 
-
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
@@ -246,6 +249,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
       + "hightlightsImage" + File.separator;
   }
+
 
   public String getHighlightsImagesUrlPath(String projectId) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
@@ -265,7 +269,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
   }
 
   @Override
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -276,6 +280,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     model.addRow(new Object[] {center, date, year});
     return model;
   }
+
 
   private TypedTableModel getProjectHighligthsTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -290,8 +295,10 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
-        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
-        && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
+        && ph.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.loggedCrp.getId()))
+          .collect(Collectors.toList()).size() > 0
+        && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && ph.getProject().getId() == 2)
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
@@ -444,7 +451,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction imple
   }
 
   @Override
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

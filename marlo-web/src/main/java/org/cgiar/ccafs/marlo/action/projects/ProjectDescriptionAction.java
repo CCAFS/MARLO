@@ -37,7 +37,6 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -961,15 +960,7 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
-      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
-      globalUnitProject.setProject(projectDB);
-      globalUnitProject.setGlobalUnit(loggedCrp);
-      
-      GlobalUnitProjectManager
-      
       // load basic info to project
-      
-      
       project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
 
