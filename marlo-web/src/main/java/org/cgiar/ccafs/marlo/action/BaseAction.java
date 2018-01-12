@@ -1063,33 +1063,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Phase getActualPhase() {
 
-    /*
-     * try {
-     * if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
-     * return (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
-     * } else {
-     * Phase phase =
-     * phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
-     * this.getSession().put(APConstants.CURRENT_PHASE, phase);
-     * return phase;
-     * }
-     * } catch (Exception e) {
-     * return new Phase(null, "", -1);
-     * }
-     */
 
     try {
-      if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
-        List<Phase> phases = phaseManager.findAll().stream()
-          .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-        phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
-        Map<Long, Phase> allPhases = new HashMap<>();
-        for (Phase phase : phases) {
-          allPhases.put(phase.getId(), phase);
+      Map<Long, Phase> allPhases = null;
+      if (this.getSession() != null) {
+        if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
+          List<Phase> phases = phaseManager.findAll().stream()
+            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+          Map<Long, Phase> allPhasesMap = new HashMap<>();
+          for (Phase phase : phases) {
+            allPhasesMap.put(phase.getId(), phase);
+          }
+          this.getSession().put(APConstants.ALL_PHASES, allPhasesMap);
         }
-        this.getSession().put(APConstants.ALL_PHASES, allPhases);
+        allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
       }
-      Map<Long, Phase> allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
+
+
       Map<String, Parameter> parameters = this.getParameters();
       if (this.getPhaseID() != null) {
         long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
@@ -1110,6 +1101,49 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
+
+  public Phase getActualPhase(Map<String, Object> session, long crpID) {
+
+
+    try {
+      Map<Long, Phase> allPhases = null;
+      if (session != null) {
+        if (session.containsKey(APConstants.ALL_PHASES)) {
+          List<Phase> phases = phaseManager.findAll().stream()
+            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+          Map<Long, Phase> allPhasesMap = new HashMap<>();
+          for (Phase phase : phases) {
+            allPhasesMap.put(phase.getId(), phase);
+          }
+          session.put(APConstants.ALL_PHASES, allPhasesMap);
+        }
+        allPhases = (Map<Long, Phase>) session.get(APConstants.ALL_PHASES);
+      }
+
+
+      Map<String, Parameter> parameters = this.getParameters();
+      if (this.getPhaseID() != null) {
+        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+        Phase phase = allPhases.get(new Long(phaseID));
+        return phase;
+      }
+      if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
+        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+        Phase phase = allPhases.get(new Long(phaseID));
+        return phase;
+      }
+      Phase phase =
+        phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+      return phase;
+    } catch (Exception e) {
+      return new Phase(null, "", -1);
+    }
+
+
+  }
+
+
   /*
    * public Phase getActualPhase(Map<String, Object> session, long crpID) {
    * try {

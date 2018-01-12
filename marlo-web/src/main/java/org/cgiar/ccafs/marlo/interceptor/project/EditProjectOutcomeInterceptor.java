@@ -87,7 +87,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;

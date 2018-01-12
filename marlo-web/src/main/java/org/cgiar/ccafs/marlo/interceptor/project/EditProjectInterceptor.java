@@ -83,6 +83,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
+    baseAction.setSession(session);
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
