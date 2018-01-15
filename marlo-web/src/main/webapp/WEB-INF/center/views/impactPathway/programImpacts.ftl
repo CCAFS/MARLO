@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Program Impacts" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "vanilla-color-picker"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programImpact.js", 

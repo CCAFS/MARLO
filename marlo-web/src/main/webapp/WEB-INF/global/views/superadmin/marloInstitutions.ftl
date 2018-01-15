@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "flat-flags", "google-diff-match-patch", "jquery-pretty-text-diff", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrl}/global/js/superadmin/marloInstitutions.js" 
