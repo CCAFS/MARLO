@@ -14,9 +14,6 @@ import com.google.gson.annotations.Expose;
  */
 public class BudgetType implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 4497778782300688556L;
 
   @Expose
