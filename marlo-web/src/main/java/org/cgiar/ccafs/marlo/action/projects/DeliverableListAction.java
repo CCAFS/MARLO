@@ -123,7 +123,7 @@ public class DeliverableListAction extends BaseAction {
     boolean hasNext = true;
     while (hasNext) {
 
-
+      phase = phaseManager.getPhaseById(phase.getId());
       DeliverableInfo deliverableInfo = new DeliverableInfo();
       deliverableInfo.setDeliverable(deliverable);
       deliverableInfo.setPhase(phase);
