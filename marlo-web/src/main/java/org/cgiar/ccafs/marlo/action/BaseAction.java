@@ -3078,11 +3078,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
             switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
 
+              case ACTIVITIES:
+                if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                  totalSections++;
+                }
+
+                break;
               case DESCRIPTION:
               case PARTNERS:
               case LOCATIONS:
               case BUDGET:
-              case ACTIVITIES:
+
                 totalSections++;
                 break;
               case DELIVERABLES:
