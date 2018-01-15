@@ -14,9 +14,6 @@ import com.google.gson.annotations.Expose;
 public class ProjectFocusPrev implements java.io.Serializable, IAuditLog {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 3449370863358014368L;
   @Expose
   private Long id;
