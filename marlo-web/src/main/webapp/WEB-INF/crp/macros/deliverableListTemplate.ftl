@@ -295,7 +295,7 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${dp_name}.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="${((dp.projectPartnerPerson.projectPartner.id)!dp.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons">
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
             [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
@@ -369,7 +369,7 @@
                   [#assign personsIndex =  personsIndex + 1 /]
                 [/#list]
               [#else]
-                [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
+                [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=true isResponsable=false /]
               [/#if]
               
             [/#if]
