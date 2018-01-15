@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/notifications.js" ] /]
 [#assign currentSection = "superadmin" /]

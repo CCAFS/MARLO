@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Output" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outputID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outputID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/output.js", 

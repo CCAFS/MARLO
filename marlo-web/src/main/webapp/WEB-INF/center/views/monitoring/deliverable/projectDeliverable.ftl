@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Deliverable" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",

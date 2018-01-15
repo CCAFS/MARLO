@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Contribution to CRP" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionCrp.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#--  --]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]

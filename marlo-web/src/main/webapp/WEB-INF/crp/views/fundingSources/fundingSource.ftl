@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
