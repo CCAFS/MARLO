@@ -3090,21 +3090,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
         if (budgetCoASection == 1) {
-          return totalSections == 8;
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 8;
+          } else {
+            return totalSections == 7;
+          }
+
         } else {
 
           if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
             if (project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())
               .size() <= 1) {
-              return totalSections == 7;
+              if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                return totalSections == 7;
+              } else {
+                return totalSections == 6;
+              }
+
             } else {
-              return totalSections == 8;
+
+              if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+                return totalSections == 8;
+              } else {
+                return totalSections == 7;
+              }
+
+
             }
 
 
           } else {
-            return totalSections == 6;
+            if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+              return totalSections == 6;
+            } else {
+              return totalSections == 5;
+            }
+
           }
 
         }
@@ -3177,9 +3199,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         if ((project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
           && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
-          return totalSections == 9;
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 9;
+          } else {
+            return totalSections == 8;
+          }
+
         } else {
-          return totalSections == 12;
+
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 12;
+          } else {
+            return totalSections == 11;
+          }
+
         }
 
       }

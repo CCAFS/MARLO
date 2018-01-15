@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
@@ -104,6 +105,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,6 +118,7 @@ import javax.inject.Named;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -143,12 +146,15 @@ import org.slf4j.LoggerFactory;
 public class ReportingSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
+
   private static Logger LOG = LoggerFactory.getLogger(ReportingSummaryAction.class);
 
   public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
     Map<Object, Boolean> seen = new ConcurrentHashMap<>();
     return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
   }
+
+  private final LocalizedTextProvider localizedTextProvider;
 
 
   // PDF bytes
@@ -184,7 +190,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
-    RepositoryChannelManager repositoryChannelManager) {
+    RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider) {
     super(config, crpManager, phaseManager);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -193,6 +199,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.locElementManager = locElementManager;
     this.ipElementManager = ipElementManager;
     this.genderTypeManager = genderTypeManager;
+    this.localizedTextProvider = localizedTextProvider;
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.repositoryChannelManager = repositoryChannelManager;
   }
@@ -243,6 +250,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     /**
      * Menus Planning & Reporting
      */
+
     masterReport.getParameterValues().put("i8nProjectMenu", this.getText("projects.menu.description"));
     masterReport.getParameterValues().put("i8nPartnersMenu", this.getText("projects.menu.partners"));
     masterReport.getParameterValues().put("i8nLocationsMenu", this.getText("projects.menu.locations"));
@@ -729,7 +737,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return false;
   }
 
-
   @Override
   public String execute() throws Exception {
     try {
@@ -938,6 +945,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return SUCCESS;
   }
 
+
   private void fillSubreport(SubReport subReport, String query, List<Object> args) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -1042,7 +1050,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     subReport.setDataFactory(cdf);
   }
 
-
   private TypedTableModel getActivitiesReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
@@ -1131,6 +1138,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
+
 
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
@@ -2599,7 +2607,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath(projectID) + File.separator;
   }
 
-
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -2607,6 +2614,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return inputStream;
   }
+
 
   private TypedTableModel getLeveragesTableModel() {
     // Decimal format
@@ -2636,7 +2644,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
-
 
   private TypedTableModel getLocationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
@@ -2687,6 +2694,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     return model;
   }
+
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader) {
@@ -3455,6 +3463,27 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return targetUnitList;
   }
 
+  @Override
+  public String getText(String aTextName) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(aTextName, locale);
+  }
+
+  @Override
+  public String getText(String key, String[] args) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(key, locale, args);
+
+  }
+
   /**
    * Get total amount per institution year and type
    * 
@@ -3629,12 +3658,59 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return !translatedOf.isEmpty();
   }
 
+  public void loadProvider(Map<String, Object> session) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+    String pathFile = APConstants.PATH_CUSTOM_FILES;
+    if (session.containsKey(APConstants.CRP_LANGUAGE)) {
+      language = (String) session.get(APConstants.CRP_LANGUAGE);
+    }
+
+    Locale locale = new Locale(language);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
+    ServletActionContext.getContext().setLocale(locale);
+
+    if (session.containsKey(APConstants.SESSION_CRP)) {
+
+      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
+
+    if (session.containsKey(APConstants.SESSION_CENTER)) {
+      if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
+  }
+
   @Override
   /**
    * Prepare the parameters of the project.
    * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class
    */
   public void prepare() {
+    this.loadProvider(this.getSession());
     this.setGeneralParameters();
 
     // Set projectID
