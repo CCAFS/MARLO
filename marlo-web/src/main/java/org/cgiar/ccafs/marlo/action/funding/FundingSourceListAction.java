@@ -119,41 +119,42 @@ public class FundingSourceListAction extends BaseAction {
     boolean hasNext = true;
     while (hasNext) {
 
-      if (phase.getNext() != null) {
-        FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
-        fundingSourceInfo.setModifiedBy(this.getCurrentUser());
-        fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
-        fundingSourceInfo.setPhase(phase);
-        fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-        fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-        fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+
+      FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+      fundingSourceInfo.setModifiedBy(this.getCurrentUser());
+      fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+      fundingSourceInfo.setPhase(phase);
+      fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+      fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
+      fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
 
-        LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-        if (user != null) {
-          LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-          try {
-            if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-              Institution institution =
-                institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+      LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+      if (user != null) {
+        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+        try {
+          if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+            Institution institution =
+              institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
 
-              FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-              fundingSourceInstitution.setFundingSource(fundingSource);
-              fundingSourceInstitution.setPhase(phase);
-              fundingSourceInstitution.setInstitution(institution);
-              fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setPhase(phase);
+            fundingSourceInstitution.setInstitution(institution);
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
 
-            }
-          } catch (Exception e) {
-            logger.error("unable to save FundingSourceInstitution", e);
-            /**
-             * Original code swallows the exception and didn't even log it. Now we at least log it,
-             * but we need to revisit to see if we should continue processing or re-throw the exception.
-             */
           }
-
-
+        } catch (Exception e) {
+          logger.error("unable to save FundingSourceInstitution", e);
+          /**
+           * Original code swallows the exception and didn't even log it. Now we at least log it,
+           * but we need to revisit to see if we should continue processing or re-throw the exception.
+           */
         }
+
+
+      }
+      if (phase.getNext() != null) {
         phase = phase.getNext();
       } else {
         hasNext = false;
