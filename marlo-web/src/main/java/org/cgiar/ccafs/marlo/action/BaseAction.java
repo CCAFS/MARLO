@@ -1657,7 +1657,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.DATE_FORMAT;
   }
 
-  public List<Deliverable> getDeliverableRelationsImpact(long id, String className) {
+  public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {
     Class<?> clazz;
     List<Deliverable> deliverables = null;
     try {
