@@ -68,8 +68,8 @@
       [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive && action.getActualPhase().editable]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addResearchProject" /]</a>
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewAdminProject'/]">[@s.text name="projectsList.addManagementProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="projectsList.addResearchProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewAdminProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="projectsList.addManagementProject" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>
