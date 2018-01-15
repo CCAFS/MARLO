@@ -90,7 +90,7 @@ public class ProjectSubmissionAction extends BaseAction {
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
     GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
-    PhaseManager phaseManager, UserManager userManager) {
+    PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -99,6 +99,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.roleManager = roleManager;
     this.userManager = userManager;
     this.phaseManager = phaseManager;
+    this.reportingSummaryAction = reportingSummaryAction;
   }
 
   @Override
@@ -327,6 +328,7 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
         reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
       reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
+      reportingSummaryAction.loadProvider(this.getSession());
       reportingSummaryAction.execute();
       // Getting the file data.
       //
@@ -335,6 +337,7 @@ public class ProjectSubmissionAction extends BaseAction {
       contentType = "application/pdf";
       //
     } catch (Exception e) {
+      e.printStackTrace();
       // // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     }
