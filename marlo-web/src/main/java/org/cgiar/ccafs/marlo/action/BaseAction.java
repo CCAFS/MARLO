@@ -3118,7 +3118,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
             && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            if (project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            if (project.getProjectClusterActivities().stream()
+              .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
               .size() <= 1) {
               if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
                 return totalSections == 7;
