@@ -72,12 +72,12 @@ public interface DeliverablePartnershipManager {
    * This method saves the information of the given deliverablePartnership
    * 
    * @param deliverablePartnership - is the deliverablePartnership object with the new information to be added/updated.
+   * @param managingPartnersRequired
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverablePartnership
    *         was
    *         updated
    *         or -1 is some error occurred.
    */
   public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
-
 
 }
