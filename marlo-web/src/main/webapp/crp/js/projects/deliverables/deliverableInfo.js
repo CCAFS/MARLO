@@ -198,6 +198,7 @@ function init() {
   $('input#na').on('change', function() {
     $('input#gender, input#youth, input#capacity').prop("checked", false);
     $('#gender-levels').slideUp();
+    $('.ccDimension').slideUp();
   });
 
   $(".subTypeSelect").on("change", function() {
