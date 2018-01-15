@@ -511,6 +511,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
 
+        // fill the project Info Phase
+        project.getProject().setProjectInfo(ProjectDB.getProject().getProjecInfoPhase(this.getActualPhase()));
+
 
       }
 
@@ -615,10 +618,14 @@ public class ProjectDescriptionAction extends BaseAction {
 
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
-      projectDB.getProject().setTitle(project.getProject().getProjecInfoPhase(this.get).getTitle());
-      projectDB.getProject().setStartDate(project.getProject().getStartDate());
-      projectDB.getProject().setEndDate(project.getProject().getEndDate());
-      projectDB.getProject().setSummary(project.getProject().getSummary());
+      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
+        .setTitle(project.getProject().getProjectInfo().getTitle());
+      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
+        .setStartDate(project.getProject().getProjectInfo().getStartDate());
+      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
+        .setEndDate(project.getProject().getProjectInfo().getEndDate());
+      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
+        .setSummary(project.getProject().getProjectInfo().getSummary());
       projectDB.setGlobal(this.bolValue(project.getsGlobal()));
       projectDB.setRegion(this.bolValue(project.getsRegion()));
       projectDB.setSuggestedName(project.getSuggestedName());
