@@ -8,15 +8,15 @@ $(document).ready(function() {
 
   $statuses = $('.description_project_status');
   $statusDescription = $('#statusDescription');
-  $endDate = $('#project\\.endDate');
+  $endDate = $('.endDate');
   var implementationStatus = $statuses.find('option[value="2"]').text();
 
   liaisonUserSelected = $('#liaisonUserSelected').text();
   liaisonInstitutionsPrograms = jQuery.parseJSON($('#liaisonInstitutionsPrograms').text());
 
   datePickerConfig({
-      "startDate": "#project\\.startDate",
-      "endDate": "#project\\.endDate",
+      "startDate": ".startDate",
+      "endDate": ".endDate",
       defaultMinDateValue: $("#minDateValue").val(),
       defaultMaxDateValue: $("#maxDateValue").val()
   });
@@ -105,7 +105,7 @@ $(document).ready(function() {
 
   flagshipsIds = function() {
     var arr = [];
-    $('#projectFlagshipsBlock input:checked').each(function(i,e) {
+    $('#projectFlagshipsBlock input:checked, input.defaultChecked').each(function(i,e) {
       arr.push($(e).val());
     });
     return arr.join()
@@ -238,7 +238,7 @@ $(document).ready(function() {
     var d = new Date($(this).val());
     checkImplementationStatus(d.getFullYear());
   }
-  
+
   function checkImplementationStatus(year) {
     if(year <= currentReportingYear) {
       $statuses.removeOption(2);
@@ -395,7 +395,7 @@ function addSelect2() {
 }
 
 function setDisabledCheckedBoxes() {
-  $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
+  // $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
 }
 
 function formatState(state) {

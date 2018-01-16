@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ClusterActivitiesValidator extends BaseValidator {
 
-  @Inject
   public ClusterActivitiesValidator() {
   }
 
@@ -49,6 +49,9 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(program);
@@ -76,7 +79,8 @@ public class ClusterActivitiesValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    this.saveMissingFieldsImpactPathway(program, "clusterActivities");
+    this.saveMissingFieldsImpactPathway(program, "clusterActivities", action.getActualPhase().getYear(),
+      action.getActualPhase().getDescription());
   }
 
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {

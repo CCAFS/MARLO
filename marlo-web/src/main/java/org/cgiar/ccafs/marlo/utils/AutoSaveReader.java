@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ public class AutoSaveReader {
 
   public static Logger LOG = LoggerFactory.getLogger(AutoSaveReader.class);
 
-  @Inject
   public AutoSaveReader() {
   }
 
@@ -173,12 +171,16 @@ public class AutoSaveReader {
     HashMap<String, Object> onetoMany = new HashMap<>();
     for (Map.Entry<String, Object> entry : result.entrySet()) {
       String key = entry.getKey();
+
       String keys[] = key.split("\\.");
       String keyList = keys[0];
 
       listNames.add(keyList);
     }
     for (String name : listNames) {
+      if (name.contains("flagshipValue")) {
+        System.out.println("a");
+      }
       HashMap<String, Object> relation = new HashMap<>();
       for (Map.Entry<String, Object> entry : result.entrySet()) {
         String key = entry.getKey();
@@ -220,8 +222,8 @@ public class AutoSaveReader {
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
 
     String className = jobj.get("className").getAsString();
-
     jobj.remove("className");
+
     try {
       Object obj = gson.fromJson(jobj, Class.forName(className));
       return obj;

@@ -25,12 +25,14 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
 /**
  * Modified by @author nmatovu last on Oct 7, 2016
  */
+@Named
 public class CenterAreaManager implements ICenterAreaManager {
 
   private ICenterAreaDAO researchAreaDao;

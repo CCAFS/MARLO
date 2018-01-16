@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterDeliverableManager.class)
+
 public interface ICenterDeliverableManager {
 
 
@@ -88,7 +86,8 @@ public interface ICenterDeliverableManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterDeliverable saveDeliverable(CenterDeliverable deliverable, String actionName, List<String> relationsName);
+  public CenterDeliverable saveDeliverable(CenterDeliverable deliverable, String actionName,
+    List<String> relationsName);
 
 
 }

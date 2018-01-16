@@ -17,13 +17,16 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Long> implements ProjectOutcomeDAO {
 
 
@@ -32,12 +35,14 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectOutcome(long projectOutcomeId) {
     ProjectOutcome projectOutcome = this.find(projectOutcomeId);
     projectOutcome.setActive(false);
-    this.save(projectOutcome);
+   	super.update(projectOutcome);
   }
+
 
   @Override
   public boolean existProjectOutcome(long projectOutcomeID) {
@@ -74,16 +79,15 @@ public class ProjectOutcomeMySQLDAO extends AbstractMarloDAO<ProjectOutcome, Lon
       projectOutcome = super.update(projectOutcome);
     }
 
-
     return projectOutcome;
   }
 
   @Override
-  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName) {
+  public ProjectOutcome save(ProjectOutcome projectOutcome, String section, List<String> relationsName, Phase phase) {
     if (projectOutcome.getId() == null) {
-      super.saveEntity(projectOutcome, section, relationsName);
+      super.saveEntity(projectOutcome, section, relationsName, phase);
     } else {
-      projectOutcome = super.update(projectOutcome, section, relationsName);
+    projectOutcome =   super.update(projectOutcome, section, relationsName, phase);
     }
 
 

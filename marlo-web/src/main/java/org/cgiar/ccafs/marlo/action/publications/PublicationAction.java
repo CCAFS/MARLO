@@ -37,14 +37,15 @@ import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
@@ -55,6 +56,7 @@ import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
@@ -68,18 +70,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PublicationAction:
+ * 
+ * @author avalencia - CCAFS
+ * @date Nov 8, 2017
+ * @time 10:30:10 AM: Added repositoryChannel List from Database
+ */
 public class PublicationAction extends BaseAction {
 
   /**
@@ -92,7 +103,6 @@ public class PublicationAction extends BaseAction {
   private Crp loggedCrp;
   private CrpManager crpManager;
   private long deliverableID;
-  private Map<String, String> channels;
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
@@ -102,7 +112,6 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> programs;
   private Map<String, String> regions;
   private Map<String, String> institutions;
-  private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableManager deliverableManager;
 
   private PublicationValidator publicationValidator;
@@ -135,6 +144,9 @@ public class PublicationAction extends BaseAction {
   private GenderTypeManager genderTypeManager;
 
   private DeliverableTypeManager deliverableTypeManager;
+  private RepositoryChannelManager repositoryChannelManager;
+  private List<RepositoryChannel> repositoryChannels;
+
 
   @Inject
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
@@ -144,11 +156,11 @@ public class PublicationAction extends BaseAction {
     DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
-    CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
-    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
-    HistoryComparator historyComparator, DeliverableMetadataElementManager deliverableMetadataElementManager,
-    IpProgramManager ipProgramManager) {
+    DeliverableCrpManager deliverableCrpManager, CrpPpaPartnerManager crpPpaPartnerManager,
+    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
+    PublicationValidator publicationValidator, HistoryComparator historyComparator,
+    DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager,
+    RepositoryChannelManager repositoryChannelManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
@@ -171,9 +183,10 @@ public class PublicationAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
-    this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.userManager = userManager;
+    this.repositoryChannelManager = repositoryChannelManager;
   }
+
 
   @Override
   public String cancel() {
@@ -207,11 +220,6 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
-  public Map<String, String> getChannels() {
-    return channels;
-  }
-
   public Map<String, String> getCrps() {
     return crps;
   }
@@ -220,11 +228,9 @@ public class PublicationAction extends BaseAction {
     return deliverable;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
-
 
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
@@ -255,9 +261,11 @@ public class PublicationAction extends BaseAction {
     return genderLevels;
   }
 
+
   public Map<String, String> getInstitutions() {
     return institutions;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -285,10 +293,13 @@ public class PublicationAction extends BaseAction {
     return null;
   }
 
+  public List<RepositoryChannel> getRepositoryChannels() {
+    return repositoryChannels;
+  }
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -315,7 +326,8 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
-        deliverable.setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
+        deliverable.getDeliverableInfo(this.getActualPhase())
+          .setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
         Map<String, String> specialList = new HashMap<>();
 
         this.setDifferences(historyComparator.getDifferences(transaction, specialList, "deliverable"));
@@ -344,14 +356,14 @@ public class PublicationAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
         this.setDraft(true);
-      
+
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
@@ -426,8 +438,8 @@ public class PublicationAction extends BaseAction {
          */
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        DeliverableQualityCheck deliverableQualityCheck = deliverableQualityCheckManager
+          .getDeliverableQualityCheckByDeliverable(deliverable.getId(), this.getActualPhase().getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         if (deliverable.getDeliverableMetadataElements() != null) {
@@ -517,10 +529,10 @@ public class PublicationAction extends BaseAction {
 
       }
 
-      deliverable.setCrossCuttingGender(null);
-      deliverable.setCrossCuttingCapacity(null);
-      deliverable.setCrossCuttingNa(null);
-      deliverable.setCrossCuttingYouth(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingGender(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingCapacity(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingNa(null);
+      deliverable.getDeliverableInfo(this.getActualPhase()).setCrossCuttingYouth(null);
 
       if (deliverable.getCrps() != null) {
         deliverable.getCrps().clear();
@@ -562,12 +574,13 @@ public class PublicationAction extends BaseAction {
 
     }
 
-    channels = new HashMap<>();
-
-
-    for (ChannelEnum channel : ChannelEnum.values()) {
-      channels.put(channel.getId(), channel.getDesc());
+    repositoryChannels = repositoryChannelManager.findAll();
+    if (repositoryChannels != null && repositoryChannels.size() > 0) {
+      repositoryChannels.sort((rc1, rc2) -> rc1.getShortName().compareTo(rc2.getShortName()));
+    } else {
+      repositoryChannels = new LinkedList<RepositoryChannel>();
     }
+
 
     genderLevels = new ArrayList<>();
     List<GenderType> genderTypes = null;
@@ -612,59 +625,59 @@ public class PublicationAction extends BaseAction {
   @Override
   public String save() {
     Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
+    DeliverableInfo deliverableInfoPrew = deliverablePrew.getDeliverableInfo(this.getActualPhase());
+    deliverableInfoPrew.setTitle(deliverable.getDeliverableInfo().getTitle());
 
-    deliverablePrew.setTitle(deliverable.getTitle());
 
-
-    if (deliverable.getAdoptedLicense() != null) {
-      deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
-      if (deliverable.getAdoptedLicense().booleanValue()) {
-        deliverablePrew.setLicense(deliverable.getLicense());
-        if (deliverable.getLicense() != null) {
-          if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
-            deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+    if (deliverable.getDeliverableInfo().getAdoptedLicense() != null) {
+      deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
+      if (deliverable.getDeliverableInfo().getAdoptedLicense().booleanValue()) {
+        deliverableInfoPrew.setLicense(deliverable.getDeliverableInfo().getLicense());
+        if (deliverable.getDeliverableInfo().getLicense() != null) {
+          if (deliverable.getDeliverableInfo().getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+            deliverableInfoPrew.setOtherLicense(deliverable.getDeliverableInfo().getOtherLicense());
+            deliverableInfoPrew.setAllowModifications(deliverable.getDeliverableInfo().getAllowModifications());
           } else {
-            deliverablePrew.setOtherLicense(null);
-            deliverablePrew.setAllowModifications(null);
+            deliverableInfoPrew.setOtherLicense(null);
+            deliverableInfoPrew.setAllowModifications(null);
           }
         }
-        deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
+        deliverableInfoPrew.setAdoptedLicense(deliverable.getDeliverableInfo().getAdoptedLicense());
       } else {
 
-        deliverablePrew.setLicense(null);
-        deliverablePrew.setOtherLicense(null);
-        deliverablePrew.setAllowModifications(null);
+        deliverableInfoPrew.setLicense(null);
+        deliverableInfoPrew.setOtherLicense(null);
+        deliverableInfoPrew.setAllowModifications(null);
       }
     } else {
-      deliverablePrew.setLicense(null);
-      deliverablePrew.setOtherLicense(null);
-      deliverablePrew.setAllowModifications(null);
+      deliverableInfoPrew.setLicense(null);
+      deliverableInfoPrew.setOtherLicense(null);
+      deliverableInfoPrew.setAllowModifications(null);
     }
-    deliverablePrew.setDeliverableType(deliverable.getDeliverableType());
+    deliverableInfoPrew.setDeliverableType(deliverable.getDeliverableInfo().getDeliverableType());
 
-    if (deliverablePrew.getDeliverableType().getId().intValue() == -1) {
-      deliverablePrew.setDeliverableType(null);
+    if (deliverablePrew.getDeliverableInfo(this.getActualPhase()).getDeliverableType().getId().intValue() == -1) {
+      deliverableInfoPrew.setDeliverableType(null);
     }
-    if (deliverable.getCrossCuttingCapacity() == null) {
-      deliverablePrew.setCrossCuttingCapacity(false);
+    if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() == null) {
+      deliverableInfoPrew.setCrossCuttingCapacity(false);
     } else {
-      deliverablePrew.setCrossCuttingCapacity(true);
+      deliverableInfoPrew.setCrossCuttingCapacity(true);
     }
-    if (deliverable.getCrossCuttingNa() == null) {
-      deliverablePrew.setCrossCuttingNa(false);
+    if (deliverable.getDeliverableInfo().getCrossCuttingNa() == null) {
+      deliverableInfoPrew.setCrossCuttingNa(false);
     } else {
-      deliverablePrew.setCrossCuttingNa(true);
+      deliverableInfoPrew.setCrossCuttingNa(true);
     }
-    if (deliverable.getCrossCuttingGender() == null) {
-      deliverablePrew.setCrossCuttingGender(false);
+    if (deliverable.getDeliverableInfo().getCrossCuttingGender() == null) {
+      deliverableInfoPrew.setCrossCuttingGender(false);
     } else {
-      deliverablePrew.setCrossCuttingGender(true);
+      deliverableInfoPrew.setCrossCuttingGender(true);
     }
-    if (deliverable.getCrossCuttingYouth() == null) {
-      deliverablePrew.setCrossCuttingYouth(false);
+    if (deliverable.getDeliverableInfo().getCrossCuttingYouth() == null) {
+      deliverableInfoPrew.setCrossCuttingYouth(false);
     } else {
-      deliverablePrew.setCrossCuttingYouth(true);
+      deliverableInfoPrew.setCrossCuttingYouth(true);
     }
     deliverableManager.saveDeliverable(deliverablePrew);
     List<String> relationsName = new ArrayList<>();
@@ -710,7 +723,7 @@ public class PublicationAction extends BaseAction {
       }
     }
 
-    if (!deliverablePrew.getCrossCuttingGender().booleanValue()) {
+    if (!deliverablePrew.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender().booleanValue()) {
       Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
       for (DeliverableGenderLevel genderLevel : deliverableDB.getDeliverableGenderLevels().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -737,10 +750,10 @@ public class PublicationAction extends BaseAction {
 
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     deliverable.setActiveSince(new Date());
-    deliverable.setModifiedBy(this.getCurrentUser());
-    deliverable.setModificationJustification(this.getJustification());
+    // deliverable.setModifiedBy(this.getCurrentUser());
+    // deliverable.setModificationJustification(this.getJustification());
 
-    deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
+    deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, this.getActualPhase());
     Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
@@ -768,6 +781,7 @@ public class PublicationAction extends BaseAction {
       return REDIRECT;
     }
   }
+
 
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
@@ -807,7 +821,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -927,6 +940,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
 
@@ -948,7 +962,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
@@ -1070,13 +1083,10 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public void setChannels(Map<String, String> channels) {
-    this.channels = channels;
-  }
-
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
+
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -1094,7 +1104,6 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
-
   public void setGenderLevels(List<GenderType> genderLevels) {
     this.genderLevels = genderLevels;
   }
@@ -1103,6 +1112,7 @@ public class PublicationAction extends BaseAction {
   public void setInstitutions(Map<String, String> institutions) {
     this.institutions = institutions;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -1114,6 +1124,10 @@ public class PublicationAction extends BaseAction {
 
   public void setRegions(Map<String, String> regions) {
     this.regions = regions;
+  }
+
+  public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
+    this.repositoryChannels = repositoryChannels;
   }
 
 

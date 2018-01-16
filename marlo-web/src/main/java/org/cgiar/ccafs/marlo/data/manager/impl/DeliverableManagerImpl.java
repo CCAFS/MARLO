@@ -15,29 +15,75 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterKeyOutputDAO;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableDAO;
+import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class DeliverableManagerImpl implements DeliverableManager {
 
+  private PhaseDAO phaseDAO;
 
   private DeliverableDAO deliverableDAO;
+  private DeliverableInfoDAO deliverableInfoDAO;
+  private CrpClusterOfActivityDAO crpClusterOfActivityDAO;
+  private CrpClusterKeyOutputDAO crpClusterKeyOutputDAO;
+
   // Managers
 
 
   @Inject
-  public DeliverableManagerImpl(DeliverableDAO deliverableDAO) {
+  public DeliverableManagerImpl(DeliverableDAO deliverableDAO, PhaseDAO phaseDAO, DeliverableInfoDAO deliverableInfoDAO,
+    CrpClusterOfActivityDAO crpClusterOfActivityDAO, CrpClusterKeyOutputDAO crpClusterKeyOutputDAO) {
     this.deliverableDAO = deliverableDAO;
+    this.phaseDAO = phaseDAO;
+    this.deliverableInfoDAO = deliverableInfoDAO;
+    this.crpClusterOfActivityDAO = crpClusterOfActivityDAO;
+    this.crpClusterKeyOutputDAO = crpClusterKeyOutputDAO;
+
+  }
+
+  @Override
+  public Deliverable copyDeliverable(Deliverable deliverable, Phase phase) {
 
 
+    DeliverableInfo deliverableInfo = new DeliverableInfo();
+    deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+
+    if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+      CrpClusterKeyOutput crpClusterKeyOutput =
+        crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+      CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO
+        .getCrpClusterOfActivityByIdentifierPhase(crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+      List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+        .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+        .collect(Collectors.toList());
+      if (!clusterKeyOutputs.isEmpty()) {
+        deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+      }
+    }
+
+    deliverableInfo.setPhase(phase);
+    deliverableInfoDAO.save(deliverableInfo);
+    return deliverableInfo.getDeliverable();
   }
 
   @Override
@@ -72,9 +118,47 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
-  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName) {
-    return deliverableDAO.save(deliverable, section, relationsName);
+  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
+    Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
+
+    Phase currentPhase = phaseDAO.find(deliverable.getDeliverableInfo().getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (deliverable.getDeliverableInfo().getPhase().getNext() != null) {
+        this.saveDeliverablePhase(deliverable.getDeliverableInfo().getPhase().getNext(), deliverable.getId(),
+          deliverable);
+      }
+    }
+    return resultDeliverable;
   }
 
+  public void saveDeliverablePhase(Phase next, long deliverableID, Deliverable deliverable) {
+    Phase phase = phaseDAO.find(next.getId());
 
+    List<DeliverableInfo> deliverablesInfo = phase.getDeliverableInfos().stream()
+      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID)
+      .collect(Collectors.toList());
+    for (DeliverableInfo deliverableInfo : deliverablesInfo) {
+      deliverableInfo.updateDeliverableInfo(deliverable.getDeliverableInfo());
+      if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+        CrpClusterKeyOutput crpClusterKeyOutput =
+          crpClusterKeyOutputDAO.find(deliverableInfo.getCrpClusterKeyOutput().getId());
+        CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityDAO.getCrpClusterOfActivityByIdentifierPhase(
+          crpClusterKeyOutput.getCrpClusterOfActivity().getIdentifier(), phase);
+        List<CrpClusterKeyOutput> clusterKeyOutputs = crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(c -> c.isActive() && c.getComposeID().equals(deliverableInfo.getCrpClusterKeyOutput().getComposeID()))
+          .collect(Collectors.toList());
+        if (!clusterKeyOutputs.isEmpty()) {
+          deliverableInfo.setCrpClusterKeyOutput(clusterKeyOutputs.get(0));
+        }
+      }
+
+      deliverableInfo.setPhase(phase);
+      deliverableInfoDAO.save(deliverableInfo);
+    }
+
+
+    if (phase.getNext() != null) {
+      this.saveDeliverablePhase(phase.getNext(), deliverableID, deliverable);
+    }
+  }
 }

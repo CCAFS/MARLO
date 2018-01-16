@@ -69,10 +69,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
@@ -170,7 +171,8 @@ public class OutcomesAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -334,7 +336,8 @@ public class OutcomesAction extends BaseAction {
       if (history != null) {
         crpProgramID = history.getId();
         selectedProgram = history;
-        outcomes.addAll(history.getCrpProgramOutcomes());
+        outcomes.addAll(history.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
         this.setEditable(false);
         this.setCanEdit(false);
@@ -423,8 +426,8 @@ public class OutcomesAction extends BaseAction {
 
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-        outcomes.addAll(
-          selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        outcomes.addAll(selectedProgram.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
 
       }
 
@@ -486,7 +489,10 @@ public class OutcomesAction extends BaseAction {
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+        if (!selectedProgram.getSubmissions().stream()
+          .filter(c -> c.getYear() == this.getActualPhase().getYear() && c.getCycle() != null
+            && c.getCycle().equals(this.getActualPhase().getDescription())
+            && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList()).isEmpty()) {
           if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
             this.setCanEdit(false);
@@ -494,7 +500,11 @@ public class OutcomesAction extends BaseAction {
           }
 
 
-          this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+          this.setSubmission(selectedProgram
+            .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+              && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+            .collect(Collectors.toList()).get(0));
+          System.out.println(submit);
         }
 
       }
@@ -525,13 +535,16 @@ public class OutcomesAction extends BaseAction {
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
+
+
+      selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       selectedProgram.setModificationJustification(this.getJustification());
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
-      selectedProgram = crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
+      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -622,7 +635,7 @@ public class OutcomesAction extends BaseAction {
      * Delete removed CrpProgramOutcomes and their child entity collections
      */
     for (CrpProgramOutcome crpProgramOutcomeDB : selectedProgram.getCrpProgramOutcomes().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       if (!outcomes.contains(crpProgramOutcomeDB)) {
         for (CrpMilestone crpMilestone : crpProgramOutcomeDB.getCrpMilestones()) {
           crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
@@ -655,7 +668,7 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcomeDB.setActive(true);
         crpProgramOutcomeDB.setCreatedBy(this.getCurrentUser());
         crpProgramOutcomeDB.setActiveSince(new Date());
-
+        crpProgramOutcomeDB.setPhase(this.getActualPhase());
       } else {
         crpProgramOutcomeDB = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcomeDetached.getId());
       }
@@ -665,6 +678,7 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setSrfTargetUnit(crpProgramOutcomeDetached.getSrfTargetUnit());
       crpProgramOutcomeDB.setValue(crpProgramOutcomeDetached.getValue());
       crpProgramOutcomeDB.setYear(crpProgramOutcomeDetached.getYear());
+        crpProgramOutcomeDB.setPhase(this.getActualPhase());
       crpProgramOutcomeDB.setCrpProgram(selectedProgram);
       if (crpProgramOutcomeDetached.getFile() != null && crpProgramOutcomeDetached.getFile().getId() == null) {
         crpProgramOutcomeDetached.setFile(null);
@@ -768,7 +782,6 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneDB.setTitle(crpMilestoneDetached.getTitle());
         crpMilestoneDB.setValue(crpMilestoneDetached.getValue());
         crpMilestoneDB.setYear(crpMilestoneDetached.getYear());
-
         crpMilestoneDB.setModifiedBy(this.getCurrentUser());
         crpMilestoneDB.setModificationJustification("");
 
@@ -857,6 +870,7 @@ public class OutcomesAction extends BaseAction {
       }
     }
   }
+
 
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;

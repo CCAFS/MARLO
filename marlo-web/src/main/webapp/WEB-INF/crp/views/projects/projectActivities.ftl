@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Activities" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
@@ -27,7 +27,11 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
+
     
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -78,6 +82,7 @@
       </div> 
     </div> 
 </section>
+[/#if]
 
 [#-- Activity Template --]
 [@projectActivityMacro element={} name="project.projectActivities"  index=-1 isTemplate=true isActive=true/]
@@ -114,6 +119,7 @@
       <div class="form-group">
         [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable && isActive /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+        <input class="activityId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}" />
         <span class="index hidden">${index}</span>
       </div>
       [#-- Description --]
@@ -183,7 +189,7 @@
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
-    <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.title" value="${(element.deliverable.title)!'null'}" />
+    <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.devliverableInfo.title" value="${(element.deliverable.devliverableInfo.title)!'null'}" />
     <span class="name">${(element.deliverable.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>

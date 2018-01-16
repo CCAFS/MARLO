@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterDeliverableTypeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterDeliverableTypeDAO.class)
 public interface ICenterDeliverableTypeDAO {
 
   /**

@@ -17,58 +17,81 @@ package org.cgiar.ccafs.marlo.utils;
 
 import java.io.File;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
-@Singleton
+@Named
 public class APConfig {
 
-
-  public static final String MYSQL_HOST = "mysql.host";
-  public static final String MYSQL_USER = "mysql.user";
-  public static final String MYSQL_PASSWORD = "mysql.password";
-  public static final String MYSQL_DATABASE = "mysql.database";
-  public static final String MYSQL_PORT = "mysql.port";
-  public static final String MYSQL_SHOW_SQL = "mysql.show_sql";
-
-  private static final String EMAIL_USER = "email.user";
-  private static final String EMAIL_NOTIFICATION = "email.notification";
-  private static final String EMAIL_PASSWORD = "email.password";
-  private static final String EMAIL_HOST = "email.host";
-  private static final String EMAIL_PORT = "email.port";
-  private static final String GOOGLE_API_KEY = "google.api.key";
-  private static final String PUSH_API_KEY = "pusher.api.key";
-  private static final String PUSH_APP_ID = "pusher.api.appid";
-  private static final String PUSH_SECRETE_KEY = "pusher.api.privatekey";
-  private static final String FILE_DOWNLOADS = "file.downloads";
-  private static final String PROJECTS_BASE_FOLDER = "file.uploads.projectsFolder";
-  private static final String PROJECT_BILATERAL_PROPOSAL_FOLDER = "file.uploads.project.bilateralProposalFolder";
-  private static final String PROJECT_BILATERAL_ANUAL_REPORT_FOLDER = "file.uploads.project.bilateralPAnualReport";
-  private static final String PROJECT_WORKPLAN_FOLDER = "file.uploads.project.WorkplanFolder";
-  private static final String RESOURCE_PATH = "resource.path";
-  private static final String AUTO_SAVE_ACTIVE = "autosave.active";
-  private static final String UPLOADS_BASE_FOLDER = "file.uploads.baseFolder";
-  private static final String PRODUCTION = "marlo.production";
-  private static final String DEBUG_MODE = "marlo.debug";
-  private static final String ADMIN_ACTIVE = "marlo.admin.active";
-  private static final String IMPACT_PATHWAY_ACTIVE = "marlo.impactPathway.active";
-  private static final String OCS_LINK = "ocs.link";
-  private static final String OCS_PASSWORD = "ocs.password";
-  private static final String OCS_USER = "ocs.user";
-
-  private static final String AUTOSAVE_FOLDER = "autosave.folder";
-
-  private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
+  @Value("${mysql.host}")
+  private String MYSQL_HOST;
+  @Value("${mysql.user}")
+  private String MYSQL_USER;
+  @Value("${mysql.password}")
+  private String MYSQL_PASSWORD;
+  @Value("${mysql.database}")
+  private String MYSQL_DATABASE;
+  @Value("${mysql.port}")
+  private String MYSQL_PORT;
+  @Value("${mysql.show_sql}")
+  private String MYSQL_SHOW_SQL;
+  @Value("${email.user}")
+  private String EMAIL_USER;
+  @Value("${email.notification}")
+  private String EMAIL_NOTIFICATION;
+  @Value("${email.password}")
+  private String EMAIL_PASSWORD;
+  @Value("${email.host}")
+  private String EMAIL_HOST;
+  @Value("${email.port}")
+  private Integer EMAIL_PORT;
+  @Value("${google.api.key}")
+  private String GOOGLE_API_KEY;
+  @Value("${pusher.api.key}")
+  private String PUSH_API_KEY;
+  @Value("${pusher.api.appid}")
+  private String PUSH_APP_ID;
+  @Value("${pusher.api.privatekey}")
+  private String PUSH_SECRETE_KEY;
+  @Value("${file.downloads}")
+  private String FILE_DOWNLOADS;
+  @Value("${file.uploads.projectsFolder}")
+  private String PROJECTS_BASE_FOLDER;
+  @Value("${file.uploads.project.bilateralProposalFolder}")
+  private String PROJECT_BILATERAL_PROPOSAL_FOLDER;
+  @Value("${file.uploads.project.bilateralPAnualReport}")
+  private String PROJECT_BILATERAL_ANUAL_REPORT_FOLDER;
+  @Value("${file.uploads.project.WorkplanFolder}")
+  private String PROJECT_WORKPLAN_FOLDER;
+  @Value("${autosave.active}")
+  private String AUTO_SAVE_ACTIVE;
+  @Value("${file.uploads.baseFolder}")
+  private String UPLOADS_BASE_FOLDER;
+  @Value("${marlo.production}")
+  private String PRODUCTION;
+  @Value("${marlo.debug}")
+  private String DEBUG_MODE;
+  @Value("${marlo.admin.active}")
+  private String ADMIN_ACTIVE;
+  @Value("${marlo.impactPathway.active}")
+  private String IMPACT_PATHWAY_ACTIVE;
+  @Value("${ocs.link}")
+  private String OCS_LINK;
+  @Value("${ocs.password}")
+  private String OCS_PASSWORD;
+  @Value("${ocs.user}")
+  private String OCS_USER;
+  @Value("${autosave.folder}")
+  private String AUTOSAVE_FOLDER;
+  @Value("${marlo.baseUrl}")
+  private String BASE_URL;
 
-  private final PropertiesManager properties;
-
-  @Inject
-  public APConfig(PropertiesManager properties) {
-    this.properties = properties;
+  public APConfig() {
   }
 
   /**
@@ -77,13 +100,14 @@ public class APConfig {
    * @return a string with the path
    */
   public String getAnualReportFolder() {
-    try {
-      return properties.getPropertiesAsString(PROJECT_BILATERAL_ANUAL_REPORT_FOLDER);
-    } catch (Exception e) {
+    if (PROJECT_BILATERAL_ANUAL_REPORT_FOLDER == null) {
       LOG.error("there is not a base folder to save the uploaded files configured.");
+      /** Should we just throw an exception? **/
+      return null;
     }
-    return null;
+    return PROJECT_BILATERAL_ANUAL_REPORT_FOLDER;
   }
+
 
   /**
    * Get the folder destination to save the autosave temporal files
@@ -91,12 +115,13 @@ public class APConfig {
    * @return a string with the auto save folder destination.
    */
   public String getAutoSaveFolder() {
-    try {
-      return properties.getPropertiesAsString(AUTOSAVE_FOLDER);
-    } catch (Exception e) {
+
+    if (AUTOSAVE_FOLDER == null) {
       LOG.error("there is not a base folder to save the uploaded files configured.");
+      /** Should we just throw an exception? **/
+      return null;
     }
-    return null;
+    return AUTOSAVE_FOLDER;
   }
 
   /**
@@ -105,11 +130,11 @@ public class APConfig {
    * @return The Base Url in the following format: http://baseurl or https://baseurl.
    */
   public String getBaseUrl() {
-    String base = properties.getPropertiesAsString(BASE_URL);
-    if (base == null) {
+    if (BASE_URL == null) {
       LOG.error("There is not a base url configured");
       return null;
     }
+    String base = new String(BASE_URL);
     while (base != null && base.endsWith("/")) {
       base = base.substring(0, base.length() - 1);
     }
@@ -126,12 +151,14 @@ public class APConfig {
    * @return a string with the path
    */
   public String getBilateralProjectContractProposalFolder() {
-    try {
-      return properties.getPropertiesAsString(PROJECT_BILATERAL_PROPOSAL_FOLDER);
-    } catch (Exception e) {
+
+    if (PROJECT_BILATERAL_PROPOSAL_FOLDER == null) {
+
       LOG.error("there is not a base folder to save the uploaded files configured.");
+      return null;
     }
-    return null;
+
+    return PROJECT_BILATERAL_PROPOSAL_FOLDER;
   }
 
   /**
@@ -140,11 +167,11 @@ public class APConfig {
    * @return a string with the path
    */
   public String getDownloadURL() {
-    String downloadsURL = properties.getPropertiesAsString(FILE_DOWNLOADS);
-    if (downloadsURL == null) {
+    if (FILE_DOWNLOADS == null) {
       LOG.error("There is not a downloads url configured");
       return null;
     }
+    String downloadsURL = new String(FILE_DOWNLOADS);
     while (downloadsURL != null && downloadsURL.endsWith("/")) {
       downloadsURL = downloadsURL.substring(0, downloadsURL.length() - 1);
     }
@@ -157,12 +184,14 @@ public class APConfig {
   }
 
   public String getEmailHost() {
-    try {
-      return properties.getPropertiesAsString(EMAIL_HOST);
-    } catch (Exception e) {
+
+    if (EMAIL_HOST == null) {
+
       LOG.error("there is not an email host configured.");
+      return null;
     }
-    return null;
+
+    return EMAIL_HOST;
   }
 
   /**
@@ -171,48 +200,67 @@ public class APConfig {
    * @return string whit the email that is in the configuration file.
    */
   public String getEmailNotification() {
-    try {
-      return properties.getPropertiesAsString(EMAIL_NOTIFICATION);
-    } catch (Exception e) {
+
+    if (EMAIL_NOTIFICATION == null) {
       LOG.error("there is not an email user configured.");
+      return null;
     }
-    return null;
+    return EMAIL_NOTIFICATION;
   }
 
   public String getEmailPassword() {
-    try {
-      return properties.getPropertiesAsString(EMAIL_PASSWORD);
-    } catch (Exception e) {
+
+    if (EMAIL_PASSWORD == null) {
       LOG.error("there is not an email password configured.");
+      return null;
     }
-    return null;
+
+    return EMAIL_PASSWORD;
   }
 
   public int getEmailPort() {
-    try {
-      return Integer.parseInt(properties.getPropertiesAsString(EMAIL_PORT));
-    } catch (Exception e) {
+
+    if (EMAIL_PORT == null) {
       LOG.error("there is not an email port configured.");
+      return 0;
     }
-    return 0;
+    return EMAIL_PORT;
+
   }
 
   public String getEmailUsername() {
-    try {
-      return properties.getPropertiesAsString(EMAIL_USER);
-    } catch (Exception e) {
+
+    if (EMAIL_USER == null) {
+
       LOG.error("there is not an email user configured.");
+      return null;
     }
-    return null;
+
+    return EMAIL_USER;
   }
 
   public String getGoogleApiKey() {
-    try {
-      return properties.getPropertiesAsString(GOOGLE_API_KEY);
-    } catch (Exception e) {
+
+    if (GOOGLE_API_KEY == null) {
       LOG.error("there is not an google api key configured.");
+      return "";
     }
-    return "";
+
+    return GOOGLE_API_KEY;
+  }
+
+  /**
+   * Get the folder where the bilateral project contract proposal should be loaded
+   * 
+   * @return a string with the path
+   */
+  public String getMysqlDatabase() {
+    if (MYSQL_DATABASE == null) {
+      LOG.error("there is no value configured for the Mysql database.");
+      /** Should we just throw an exception? **/
+      return null;
+    }
+    return MYSQL_DATABASE;
   }
 
   /**
@@ -221,8 +269,11 @@ public class APConfig {
    * @return a string with the ocs link
    */
   public String getOcsLink() {
-    String ocsLink = properties.getPropertiesAsString(OCS_LINK);
-    return ocsLink;
+    if (OCS_LINK == null) {
+      LOG.error("there is not an Ocs link configured.");
+      return null;
+    }
+    return OCS_LINK;
   }
 
 
@@ -232,8 +283,11 @@ public class APConfig {
    * @return a string with the ocs password
    */
   public String getOcsPassword() {
-    String ocsPass = properties.getPropertiesAsString(OCS_PASSWORD);
-    return ocsPass;
+    if (OCS_PASSWORD == null) {
+      LOG.error("there is not an Ocs password configured.");
+      return null;
+    }
+    return OCS_PASSWORD;
   }
 
   /**
@@ -242,8 +296,11 @@ public class APConfig {
    * @return a string with the ocs user
    */
   public String getOcsUser() {
-    String ocsUser = properties.getPropertiesAsString(OCS_USER);
-    return ocsUser;
+    if (OCS_USER == null) {
+      LOG.error("there is not an Ocs user configured.");
+      return null;
+    }
+    return OCS_USER;
   }
 
   /**
@@ -252,12 +309,14 @@ public class APConfig {
    * @return a string with the path
    */
   public String getProjectsBaseFolder(String crp) {
-    try {
-      return crp.concat(File.separator).concat(properties.getPropertiesAsString(PROJECTS_BASE_FOLDER));
-    } catch (Exception e) {
+
+    if (PROJECTS_BASE_FOLDER == null) {
       LOG.error("there is not a base folder to upload the project files configured.");
+      return null;
     }
-    return null;
+
+    return crp.concat(File.separator).concat(PROJECTS_BASE_FOLDER);
+
   }
 
   /**
@@ -266,40 +325,48 @@ public class APConfig {
    * @return a string with the path
    */
   public String getProjectWorkplanFolder() {
-    try {
-      return properties.getPropertiesAsString(PROJECT_WORKPLAN_FOLDER);
-    } catch (Exception e) {
+
+    if (PROJECT_WORKPLAN_FOLDER == null) {
+
       LOG.error("there is not a base folder to save the uploaded files configured.");
+      return null;
     }
-    return null;
+
+    return PROJECT_WORKPLAN_FOLDER;
   }
 
 
   public String getPushApiKey() {
-    try {
-      return properties.getPropertiesAsString(PUSH_API_KEY);
-    } catch (Exception e) {
+
+    if (PUSH_API_KEY == null) {
+
       LOG.error("there is not an push api key configured.");
+      return "";
     }
-    return "";
+
+    return PUSH_API_KEY;
   }
 
   public String getPushAppId() {
-    try {
-      return properties.getPropertiesAsString(PUSH_APP_ID);
-    } catch (Exception e) {
+
+    if (PUSH_APP_ID == null) {
+
       LOG.error("there is not an push api key configured.");
+      return "";
     }
-    return "";
+
+    return PUSH_APP_ID;
   }
 
   public String getPushKeySecret() {
-    try {
-      return properties.getPropertiesAsString(PUSH_SECRETE_KEY);
-    } catch (Exception e) {
+
+    if (PUSH_SECRETE_KEY == null) {
+
       LOG.error("there is not an push api key configured.");
+      return "";
     }
-    return "";
+
+    return PUSH_SECRETE_KEY;
   }
 
 
@@ -309,12 +376,14 @@ public class APConfig {
    * @return a string with the path
    */
   public String getUploadsBaseFolder() {
-    try {
-      return properties.getPropertiesAsString(UPLOADS_BASE_FOLDER);
-    } catch (Exception e) {
+
+    if (UPLOADS_BASE_FOLDER == null) {
+
       LOG.error("there is not a base folder to save the uploaded files configured.");
+      return null;
     }
-    return null;
+
+    return UPLOADS_BASE_FOLDER;
   }
 
   /**
@@ -324,21 +393,20 @@ public class APConfig {
    * @return a boolean indicating if it is active.
    */
   public boolean isAdminActive() {
-    String adminActive = properties.getPropertiesAsString(ADMIN_ACTIVE);
-    if (adminActive == null) {
+    if (ADMIN_ACTIVE == null) {
       LOG.error("There is not a Admin active configured");
       return false;
     }
-    return adminActive.equals("true");
+    return ADMIN_ACTIVE.equals("true");
   }
 
   public boolean isAutoSaveActive() {
-    String adminActive = properties.getPropertiesAsString(AUTO_SAVE_ACTIVE);
-    if (adminActive == null) {
+
+    if (AUTO_SAVE_ACTIVE == null) {
       LOG.error("There is not a auto save configured");
       return false;
     }
-    return adminActive.equals("true");
+    return AUTO_SAVE_ACTIVE.equals("true");
   }
 
   /**
@@ -347,12 +415,11 @@ public class APConfig {
    * @return true if debug mode in marlo is active, false otherwise.
    */
   public boolean isDebug() {
-    String variable = properties.getPropertiesAsString(DEBUG_MODE);
-    if (variable == null) {
+    if (DEBUG_MODE == null) {
       LOG.error("There is not a debug mode active configured");
       return false;
     }
-    return variable.equals("true");
+    return DEBUG_MODE.equals("true");
   }
 
   /**
@@ -362,12 +429,11 @@ public class APConfig {
    * @return a boolean indicating if it is active.
    */
   public boolean isImpactPathwayActive() {
-    String adminActive = properties.getPropertiesAsString(IMPACT_PATHWAY_ACTIVE);
-    if (adminActive == null) {
+    if (IMPACT_PATHWAY_ACTIVE == null) {
       LOG.error("There is not a ImpactPathway active configured");
       return false;
     }
-    return adminActive.equals("true");
+    return IMPACT_PATHWAY_ACTIVE.equals("true");
   }
 
   /**
@@ -376,24 +442,22 @@ public class APConfig {
    * @return true if Marlo is running in production mode, false if is run in testing mode.
    */
   public boolean isProduction() {
-    String variable = properties.getPropertiesAsString(PRODUCTION);
-    if (variable == null) {
+    if (PRODUCTION == null) {
       LOG.error("There is not a production/testing mode active configured");
       return false;
     }
-    return variable.equals("true");
+    return PRODUCTION.equals("true");
   }
 
   /**
    * Allow sql statements to be logged
    */
   public boolean isShowSql() {
-    String variable = properties.getPropertiesAsString(MYSQL_SHOW_SQL);
-    if (variable == null) {
+    if (MYSQL_SHOW_SQL == null) {
       LOG.warn("The property: " + MYSQL_SHOW_SQL + ", has not been configured and therefore will be set to false.");
       return false;
     }
-    return variable.equals("true");
+    return MYSQL_SHOW_SQL.equals("true");
   }
 
 

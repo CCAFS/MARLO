@@ -2,7 +2,7 @@
 <div id="top-quote">
   [#if project?has_content]
     <div id="projectID-quote" class="quote-id" title="[#if project.title?has_content]${project.title}[/#if]">
-      <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
+      <a href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
         <p><span>&nbsp${project.id}</span></p>
       </a>
     </div>

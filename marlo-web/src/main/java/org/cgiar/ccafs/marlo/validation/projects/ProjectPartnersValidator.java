@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -36,7 +35,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,29 +46,27 @@ import org.slf4j.LoggerFactory;
  * @author Hernán David Carvajal B. - CIAT/CCAFS
  * @author Héctor Fabio Tobón R. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectPartnersValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
-  @Inject
-  private CrpManager crpManager;
-  @Inject
-  private ProjectManager projectManager;
+  private final CrpManager crpManager;
+  private final ProjectManager projectManager;
+  private final InstitutionManager institutionManager;
+  private final ProjectValidator projectValidator;
 
-
-  @Inject
-  private InstitutionManager institutionManager;
+  // This is not thread safe
   private boolean hasErros;
-  private ProjectValidator projectValidator;
-
-  private UserManager userManager;
 
   @Inject
-  public ProjectPartnersValidator(ProjectValidator projectValidator, UserManager userManager) {
+  public ProjectPartnersValidator(ProjectValidator projectValidator, CrpManager crpManager,
+    ProjectManager projectManager, InstitutionManager institutionManager) {
     super();
     this.projectValidator = projectValidator;
-    this.userManager = userManager;
+    this.crpManager = crpManager;
+    this.projectManager = projectManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
@@ -100,7 +99,9 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
@@ -112,10 +113,9 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
 
-      Project projectDb = projectManager.getProjectById(project.getId());
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
-        if (action.isReportingActive() && project.isProjectEditLeader()) {
+        if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
           if (!this.isValidString(project.getOverall())) {
             this.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
@@ -132,7 +132,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         action.getInvalidFields().put("list-project.partners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
-      if (project.isProjectEditLeader()) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!action.isProjectNew(project.getId())) {
           this.validateLessonsLearn(action, project);
           if (this.validationMessage.toString().contains("Lessons")) {
@@ -157,13 +157,10 @@ public class ProjectPartnersValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
 
       }
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      }
+
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        ProjectSectionStatusEnum.PARTNERS.getStatus());
+
 
     }
   }
@@ -191,12 +188,12 @@ public class ProjectPartnersValidator extends BaseValidator {
         for (ProjectPartner partner : project.getPartners()) {
           j = 0;
           // Validating that the partner has a least one contact person
-          if (project.isProjectEditLeader()) {
+          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
             if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
               this.validatePersonResponsibilities(action, c, partner);
             }
           }
-          if (project.isProjectEditLeader()) {
+          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
             Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
             if (inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
@@ -315,7 +312,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
-    if (!projectValidator.isValidLeader(project.getLeader(), project.isBilateralProject())) {
+    if (!projectValidator.isValidLeader(project.getLeader())) {
       this.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
       action.getInvalidFields().put("list-project.partners", action.getText("projectPartners.types.PL"));
       this.addMissingField("project.leader");

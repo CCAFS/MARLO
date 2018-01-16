@@ -19,12 +19,14 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -38,8 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +55,9 @@ public class PublicationListAction extends BaseAction {
   private static final long serialVersionUID = -5176367401132626314L;
   private final Logger LOG = LoggerFactory.getLogger(PublicationListAction.class);
   private Crp loggedCrp;
-  private CrpManager crpManager;
   private long deliverableID;
+  private DeliverableInfoManager deliverableInfoManager;
+  private CrpManager crpManager;
   private DeliverableManager deliverableManager;
   private LiaisonUserManager liaisonUserManager;
   private InstitutionManager institutionManager;
@@ -61,12 +66,13 @@ public class PublicationListAction extends BaseAction {
   @Inject
   public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
-    DeliverableLeaderManager deliverableLeaderManager) {
+    DeliverableInfoManager deliverableInfoManager, DeliverableLeaderManager deliverableLeaderManager) {
 
     super(config);
     this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.deliverableInfoManager = deliverableInfoManager;
     this.deliverableLeaderManager = deliverableLeaderManager;
     this.institutionManager = institutionManager;
   }
@@ -77,19 +83,26 @@ public class PublicationListAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym()};
     if (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params))) {
       Deliverable deliverable = new Deliverable();
-      deliverable.setYear(this.getCurrentCycleYear());
+
       deliverable.setCreatedBy(this.getCurrentUser());
-      deliverable.setModifiedBy(this.getCurrentUser());
-      deliverable.setModificationJustification("New publication created");
       deliverable.setActive(true);
       deliverable.setActiveSince(new Date());
       deliverable.setCrp(loggedCrp);
       deliverable.setCreateDate(new Date());
       deliverable.setIsPublication(true);
+      deliverable.setPhase(this.getActualPhase());
 
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverableID = deliverable.getId();
 
+      deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
+      DeliverableInfo deliverableInfo = new DeliverableInfo();
+      deliverableInfo.setYear(this.getCurrentCycleYear());
+      deliverableInfo.setModifiedBy(this.getCurrentUser());
+      deliverableInfo.setDeliverable(deliverable);
+      deliverableInfo.setPhase(this.getActualPhase());
+      deliverableInfo.setModificationJustification("New publication created");
+      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
       LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
       if (user != null) {
         LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
@@ -138,10 +151,12 @@ public class PublicationListAction extends BaseAction {
   @Override
   public String delete() {
 
-
-    Map<String, Object> parameters = this.getParameters();
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     deliverableID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+      Long
+        .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);

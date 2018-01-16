@@ -38,6 +38,12 @@
 		<property name="indicator" type="string">
       <column name="indicator" length="65535"  />
     </property>
+    <property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
+     <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
 		<property name="year" type="java.lang.Integer">
 			<column name="year" not-null="false" />
 		</property>

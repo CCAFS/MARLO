@@ -39,10 +39,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -54,7 +52,6 @@ public class ProjectOutcomeListAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeListAction.class);
 
   private ProjectManager projectManager;
   private CrpManager crpManager;
@@ -91,10 +88,9 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCreatedBy(this.getCurrentUser());
       projectOutcome.setModificationJustification("");
       projectOutcome.setActiveSince(new Date());
-
+      projectOutcome.setPhase(this.getActualPhase());
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setProject(project);
-
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
@@ -112,8 +108,8 @@ public class ProjectOutcomeListAction extends BaseAction {
       for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
         sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
       }
-
-      projectOutcomeManager.deleteProjectOutcome(outcomeId);
+      outcome.setActive(false);
+      projectOutcomeManager.saveProjectOutcome(outcome);
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -155,31 +151,29 @@ public class ProjectOutcomeListAction extends BaseAction {
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-      LOG.error("unable to parse projectID", e);
-      /**
-       * Original code swallows the exception and didn't even log it. Now we at least log it,
-       * but we need to revisit to see if we should continue processing or re-throw the exception.
-       */
+
     }
     project = projectManager.getProjectById(projectID);
-
-    List<ProjectOutcome> projectOutcomes =
-      project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+    List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     project.setOutcomes(projectOutcomes);
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
 
-      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList()));
+      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
     }
 
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
     }

@@ -1,14 +1,17 @@
 [#ftl]
 [#assign title = "Project Outcome Contribution to CRP" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [
+[#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js", 
-  "${baseUrl}/global/js/autoSave.js",
+  "${baseUrl}/global/js/autoSave.js", 
   "${baseUrl}/global/js/fieldsValidation.js"
   ] 
-/]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]
+/] 
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css"
+  ] 
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 
@@ -21,12 +24,15 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
 
 
-    
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -43,7 +49,7 @@
           
           [#-- Back --]
           <small class="pull-right">
-            <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][/@s.url]">
+            <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project contributions
             </a>
           </small>
@@ -60,12 +66,7 @@
           
           
             <div class="col-md-12">
-              [#-- Program Acronym - Outcome Year : Outcome Description --]
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
-              [#-- Outcome Indicator --]
-              [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-                [#if (projectOutcome.crpProgramOutcome.indicator?has_content)!false]<p><strong>Indicator: </strong>${(projectOutcome.crpProgramOutcome.indicator)!'No indicator'}</p>[/#if]
-              [/#if]
             </div>
             <div class="clearfix"></div>
             [#if showOutcomeValue]
@@ -82,7 +83,7 @@
           [#assign showExpectedTarget = true /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
-           
+          
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
@@ -145,15 +146,15 @@
             [/#if]
             
             [#-- Cross-cutting contributions --]
-            [#if ((project.crossCuttingGender)!false) || ((project.crossCuttingYouth)!false)]
+            [#if ((project.projectInfo.crossCuttingGender)!false) || ((project.projectInfo.crossCuttingYouth)!false)]
             <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
             <div class="form-group">
-              [#if (project.crossCuttingGender)!false]
+              [#if (project.projectInfo.crossCuttingGender)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-100" editable=editable /]
                 </div>
               [/#if]
-              [#if (project.crossCuttingYouth)!false]
+              [#if (project.projectInfo.crossCuttingYouth)!false]
                 <div class="form-group">
                   [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-100" editable=editable /]
                 </div> 
@@ -238,7 +239,7 @@
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                     [#assign comunication = action.loadProjectCommunication(year) /]
                     [#assign comunicationIndex = action.getIndexCommunication(year) /]
-                   
+                    <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
                     <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
                     <div class="communicationsBlock form-group">
                       <div class="form-group">
@@ -311,6 +312,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Milestone Template --]
 [@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
@@ -343,6 +345,7 @@
       [#local projectMilestone = action.getMilestone(element.id, year) /]
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
+    
 
     [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
     
@@ -393,12 +396,12 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable && !reportingActive &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
         </div>
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
         </div>
         [/#if]
       </div>
@@ -496,8 +499,8 @@
 
 [#-- Get if the year is required--]
 [#function isYearRequired year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if project.projectInfo.endDate??]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]

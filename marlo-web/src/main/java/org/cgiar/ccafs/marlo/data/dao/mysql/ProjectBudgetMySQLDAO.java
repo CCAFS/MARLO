@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long> implements ProjectBudgetDAO {
 
 
@@ -35,26 +37,31 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   }
 
   @Override
-  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing) {
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId, Integer coFinancing,
+    long idPhase) {
     String query = null;
 
     switch (coFinancing) {
       case 1:
-        query =
-          "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId + " and year= "
-            + year + " and budget_type= " + budgetType + " and project_id= " + projectId + " and is_active=1";
+        query = "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId
+          + " and year= " + year + " and budget_type= " + budgetType + " and project_id= " + projectId
+          + " and id_phase=" + idPhase + " and is_active=1";
         break;
       case 2:
         query =
-          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
-            + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 AND fs.w1w2";
+          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id "
+            + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
+            + " where pb.institution_id= " + institutionId + " and pb.year= " + year + " and pb.budget_type= "
+            + budgetType + " and pb.project_id= " + projectId + " and pb.id_phase=" + idPhase
+            + " and pb.is_active=1 AND fsi.w1w2";
         break;
       case 3:
         query =
-          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
-            + institutionId + " and pb.year= " + year + " and pb.budget_type= " + budgetType + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 AND !fs.w1w2";
+          "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id "
+            + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
+            + " where pb.institution_id= " + institutionId + " and pb.year= " + year + " and pb.budget_type= "
+            + budgetType + " and pb.project_id= " + projectId + " and pb.id_phase=" + idPhase
+            + " and  pb.is_active=1 AND !fsi.w1w2";
         break;
 
       default:
@@ -74,9 +81,12 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
   }
 
   @Override
-  public String amountByFundingSource(long fundingSourceID, int year) {
-    String query = "select SUM(amount) as amount from project_budgets where funding_source_id= " + fundingSourceID
-      + " and year= " + year + " and is_active=1";
+  public String amountByFundingSource(long fundingSourceID, int year, long idPhase) {
+    String query =
+      "select SUM(amount) as amount from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id "
+        + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
+        + " where pb.funding_source_id= " + fundingSourceID + " and pb.year= " + year
+        + " and pb.is_active=1 and pb.id_phase=" + idPhase;
     List<Map<String, Object>> list = super.findCustomQuery(query);
     try {
       if (list.size() > 0) {
@@ -89,11 +99,13 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
     return "0";
   }
 
+
   @Override
   public void deleteProjectBudget(long projectBudgetId) {
     ProjectBudget projectBudget = this.find(projectBudgetId);
     projectBudget.setActive(false);
-    this.save(projectBudget);
+    super.update(projectBudget);
+
   }
 
   @Override
@@ -126,25 +138,28 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
 
   @Override
   public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId,
-    Integer coFinancing) {
+    Integer coFinancing, long idPhase) {
     String query = null;
 
     switch (coFinancing) {
       case 1:
-        query = "select id from project_budgets where institution_id= " + institutionID + " and year= " + year
-          + " and budget_type= " + budgetTypeId + " and project_id= " + projectId + " and is_active=1";
+        query = "select id from project_budgets pb where pb.institution_id= " + institutionID + " and pb.year= " + year
+          + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= " + projectId + " and pb.is_active=1 "
+          + "and pb.id_phase=" + idPhase;
         break;
       case 2:
-        query =
-          "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
-            + institutionID + " and pb.year= " + year + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 and fs.w1w2";
+        query = "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id "
+          + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
+          + " where pb.institution_id= " + institutionID + " and pb.year= " + year + " and pb.budget_type= "
+          + budgetTypeId + " and pb.project_id= " + projectId + " and pb.is_active=1 and fsi.w1w2 and pb.id_phase="
+          + idPhase;
         break;
       case 3:
-        query =
-          "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id where pb.institution_id= "
-            + institutionID + " and pb.year= " + year + " and pb.budget_type= " + budgetTypeId + " and pb.project_id= "
-            + projectId + " and pb.is_active=1 and !fs.w1w2";
+        query = "select pb.id from project_budgets pb INNER JOIN funding_sources fs ON fs.id = pb.funding_source_id "
+          + "INNER JOIN funding_sources_info fsi ON fsi.funding_source_id = fs.id AND fsi.id_phase=" + idPhase
+          + " where pb.institution_id= " + institutionID + " and pb.year= " + year + " and pb.budget_type= "
+          + budgetTypeId + " and pb.project_id= " + projectId + " and pb.is_active=1 and !fsi.w1w2 and pb.id_phase="
+          + idPhase;
         break;
 
       default:
@@ -164,6 +179,22 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
       return projectBudgetList;
     }
     return null;
+  }
+
+  @Override
+  public double getTotalBudget(long projetId, long phaseID, int type, int year) {
+    String query = "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId
+      + " and pb.id_phase=" + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type;
+    List<Map<String, Object>> list = super.findCustomQuery(query);
+    try {
+      if (list.size() > 0) {
+        Map<String, Object> result = list.get(0);
+        return Double.parseDouble(result.get("amount").toString());
+      }
+    } catch (Exception e) {
+      return 0;
+    }
+    return 0;
   }
 
   @Override

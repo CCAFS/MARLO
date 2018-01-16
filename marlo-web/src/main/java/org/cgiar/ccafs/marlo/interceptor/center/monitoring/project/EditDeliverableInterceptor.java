@@ -29,9 +29,12 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -40,11 +43,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private static final long serialVersionUID = 1L;
 
-  private ICenterDeliverableManager deliverableService;
-  private ICenterProjectManager projectService;
-  private ICenterProgramManager programService;
+  private final ICenterDeliverableManager deliverableService;
+  private final ICenterProjectManager projectService;
+  private final ICenterProgramManager programService;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Center researchCenter;
   private long areaID = -1;
@@ -67,7 +70,9 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
 
     try {
-      deliverableID = Long.parseLong(((String[]) parameters.get(APConstants.CENTER_DELIVERABLE_ID))[0]);
+      // deliverableID = Long.parseLong(((String[]) parameters.get(APConstants.DELIVERABLE_ID))[0]);
+      deliverableID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_DELIVERABLE_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }
@@ -86,6 +91,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
 
     if (deliverable != null) {
@@ -108,14 +114,15 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
             canEdit = true;
           } else {
 
-            if (baseAction.hasPermission(
-              baseAction.generatePermission(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params))) {
+            if (baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params))) {
               canEdit = true;
             }
           }
 
-          if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-            String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+            // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+            String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
             editParameter = stringEditable.equals("true");
             // If the user is not asking for edition privileges we don't need to validate them.
             if (!editParameter) {
@@ -125,8 +132,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
           // Check the permission if user want to edit or save the form
           if (editParameter || parameters.get("save") != null) {
-            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(
-              baseAction.generatePermission(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params));
+            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params));
           }
 
           // Set the variable that indicates if the user can edit the section

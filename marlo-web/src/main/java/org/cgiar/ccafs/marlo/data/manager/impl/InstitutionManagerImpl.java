@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class InstitutionManagerImpl implements InstitutionManager {
 
   private InstitutionDAO institutionDao;

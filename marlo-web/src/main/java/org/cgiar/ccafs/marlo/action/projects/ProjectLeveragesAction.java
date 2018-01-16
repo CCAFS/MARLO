@@ -46,10 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -68,7 +69,6 @@ public class ProjectLeveragesAction extends BaseAction {
   private Project project;
   private Map<String, String> allInstitutions;
   private Map<String, String> flagships;
-  private List<ProjectLeverage> leveragesPreview;
   private CrpManager crpManager;
   private ProjectLeverageValidator projectLeverageValidator;
   private HistoryComparator historyComparator;
@@ -289,16 +289,15 @@ public class ProjectLeveragesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
 
         if (project.getLeveragesClosed() == null) {
 
@@ -360,8 +359,6 @@ public class ProjectLeveragesAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.leveragesPreviousData(project.getLeverages(), true);
@@ -374,8 +371,6 @@ public class ProjectLeveragesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LEVERAGES_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

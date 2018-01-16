@@ -18,14 +18,17 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class CrpProgramManagerImpl implements CrpProgramManager {
 
 
@@ -78,9 +81,10 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
 
 
   @Override
-  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName) {
+  public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
 
-    return crpProgramDAO.save(crpProgram, actionName, relationsName);
+    return crpProgramDAO.save(crpProgram, actionName, relationsName, phase);
   }
+
 
 }

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CaseStudyMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CaseStudyMySQLDAO.class)
 public interface CaseStudyDAO {
 
   /**

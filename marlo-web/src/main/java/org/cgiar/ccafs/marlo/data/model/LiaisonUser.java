@@ -44,7 +44,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-  private Set<Project> projects = new HashSet<Project>(0);
+  private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
 
 
   public LiaisonUser() {
@@ -55,26 +55,49 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.user = user;
   }
 
-  public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<Project> projectses) {
+  public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<ProjectInfo> projectses) {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
     this.projects = projectses;
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    LiaisonUser other = (LiaisonUser) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public String getComposedName() {
     return user.getComposedName();
   }
+
 
   public Crp getCrp() {
     return crp;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -107,21 +130,20 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<Project> getProjects() {
+  public Set<ProjectInfo> getProjects() {
     return projects;
   }
-
 
   public User getUser() {
     return user;
   }
+
 
   @Override
   public boolean isActive() {
 
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -140,7 +162,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProjects(Set<Project> projects) {
+  public void setProjects(Set<ProjectInfo> projects) {
     this.projects = projects;
   }
 

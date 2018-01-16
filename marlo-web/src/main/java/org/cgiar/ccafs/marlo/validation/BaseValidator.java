@@ -25,32 +25,40 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
 
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Named
 public class BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseValidator.class);
 
+  /**
+   * Setter injection is ok here as this class is extended. TODO look into making this class abstract.
+   */
+
   @Inject
   protected APConfig config;
-  protected StringBuilder validationMessage;
-  protected StringBuilder missingFields;
-
   @Inject
   private SectionStatusManager sectionStatusManager;
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
+  // This is not thread safe
+  protected StringBuilder validationMessage;
 
-  @Inject
+  // This is not thread safe
+  protected StringBuilder missingFields;
+
+
   public BaseValidator() {
     validationMessage = new StringBuilder();
     missingFields = new StringBuilder();
+
   }
 
   protected void addMessage(String message) {
@@ -312,6 +320,7 @@ public class BaseValidator {
    */
   protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName) {
     // Reporting missing fields into the database.
+
     int a = 0;
     LOG.debug("save MissingField :" + a);
     SectionStatus status =
@@ -463,7 +472,14 @@ public class BaseValidator {
 
     }
 
-    status.setMissingFields(this.missingFields.toString());
+    // Validate if the form have missing fileds in project sections issue #1209
+    String sMissingField = this.missingFields.toString();
+    if (sMissingField.length() > 0) {
+      status.setMissingFields(sMissingField);
+    } else {
+      status.setMissingFields("");
+    }
+
     sectionStatusManager.saveSectionStatus(status);
 
   }
@@ -503,16 +519,19 @@ public class BaseValidator {
    * @param crpProgram is a CrpProgram.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName) {
+  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName, int year, String cyle) {
     // Reporting missing fields into the database.
-    int year = 0;
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName);
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName, cyle, year);
     if (status == null) {
 
       status = new SectionStatus();
       status.setSectionName(sectionName);
+      status.setCycle(cyle);
+      status.setYear(year);
       status.setCrpProgram(crpProgram);
+
     }
     if (this.missingFields.length() > 0) {
       status.setMissingFields(this.missingFields.toString());
@@ -529,11 +548,10 @@ public class BaseValidator {
    * @param project is a Project.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsProject(Project project, String sectionName) {
+  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year) {
     // Reporting missing fields into the database.
-    int year = 0;
 
-    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName);
+    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName, cycle, year);
     if (status == null) {
 
       status = new SectionStatus();

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Budget By Cluster of activities" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByCoAs.js", 
@@ -20,16 +20,7 @@
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
-[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
-[#assign budgetCounter = 0 /]
-[#assign type = { 
-  'w1w2': 'w1w2',
-  'w3': '2',
-  'bilateral': '3',
-  'centerFunds': 'centerFunds'
-} /]
+
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -38,7 +29,21 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
+
     
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
+[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+[#assign budgetCounter = 0 /]
+[#assign type = { 
+  'w1w2': 'w1w2',
+  'w3': '2',
+  'bilateral': '3',
+  'centerFunds': 'centerFunds'
+} /]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -58,13 +63,13 @@
           [#if project.crpActivities?has_content && project.crpActivities?size gt 1]
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
-              [#list startYear .. endYear as year]
+              [#list startYear .. selectedYear as year]
                 <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
               [/#list]
             </ul>
             [#-- Years Content --]
             <div class="tab-content budget-content">
-              [#list startYear .. endYear as year]
+              [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                   
                   [#-- Budgest cannot be editable message --]
@@ -126,6 +131,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -162,8 +168,8 @@
               [#-- Budget Type--]
               [#if action.hasBudgets(budgetType.id, selectedYear)]
                 <td class="budgetColumn">
-                  [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
-                  [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
+                  [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
                   [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
                   <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
                   <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
@@ -188,8 +194,8 @@
               [#-- Budget Type--]
               [#if action.hasBudgets(budgetType.id, selectedYear)]
               <td class="budgetColumn">
-                [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
-                [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
+                [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
                 [#assign customName = "project.budgetsCluserActvities[${budgetIndex}]" /]
                 [#if editable && isYearEditable(selectedYear)]
                   [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput context-gender type-${budgetType.id}" required=true  /]
@@ -212,8 +218,8 @@
 
 [#-- Get if the year is required--]
 [#function isYearRequired year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if project.projectInfo.endDate??]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
@@ -226,8 +232,8 @@
 
 [#-- Get if the year is editable--]
 [#function isYearEditable year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if project.projectInfo.endDate??]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year gte currentCycleYear) ]
     [#else]

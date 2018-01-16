@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CaseStudyManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CaseStudyManagerImpl.class)
+
 public interface CaseStudyManager {
 
 

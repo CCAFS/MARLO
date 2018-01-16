@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectHighligthManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectHighligthManagerImpl.class)
+
 public interface ProjectHighligthManager {
 
 
@@ -72,6 +70,7 @@ public interface ProjectHighligthManager {
    */
   public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight);
 
-  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section, List<String> relationsName);
+  public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section,
+    List<String> relationsName);
 
 }

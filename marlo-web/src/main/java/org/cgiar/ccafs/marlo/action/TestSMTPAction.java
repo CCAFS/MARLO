@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.inject.Inject;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -31,8 +32,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,7 @@ public class TestSMTPAction extends BaseAction {
   private boolean fail;
 
   // Managers
-  private APConfig config;
-  private Message sendMail;
+  private final Message sendMail;
   private boolean sent;
 
   @Inject
@@ -140,9 +140,9 @@ public class TestSMTPAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     try {
-      this.fail = Boolean.valueOf(StringUtils.trim(((String[]) parameters.get("fail"))[0]));
+      this.fail = Boolean.valueOf(StringUtils.trim(parameters.get("fail").getMultipleValues()[0]));
     } catch (Exception e) {
       this.fail = false;
     }

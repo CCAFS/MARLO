@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSourceLocation, Long>
   implements FundingSourceLocationsDAO {
 
@@ -33,11 +35,12 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
     FundingSourceLocation fundingSourceLocations = this.find(fundingSourceLocationsId);
     fundingSourceLocations.setActive(false);
-    this.save(fundingSourceLocations);
+    super.update(fundingSourceLocations);
   }
 
   @Override
@@ -75,9 +78,7 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
       fundingSourceLocations = super.update(fundingSourceLocations);
     }
 
-
     return fundingSourceLocations;
   }
-
 
 }

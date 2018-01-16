@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterCycleManager;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterCycleManager.class)
+
 public interface ICenterCycleManager {
 
 

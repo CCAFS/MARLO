@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudy.js",
@@ -34,7 +34,10 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -50,7 +53,7 @@
 
           [#-- Back --]
           <small class="pull-right">
-            <a href="[@s.url action='${crpSession}/caseStudies'][@s.param name="projectID" value=project.id /][/@s.url]">
+            <a href="[@s.url action='${crpSession}/caseStudies'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project outcome case study
             </a>
           </small>
@@ -72,6 +75,7 @@
       
     </div>  
 </section>
+[/#if]
 
 [#-- Internal parameters --]
 [#list params?keys as prop]<input id="${params[prop].id}" type="hidden" value="${params[prop].name}" />[/#list]

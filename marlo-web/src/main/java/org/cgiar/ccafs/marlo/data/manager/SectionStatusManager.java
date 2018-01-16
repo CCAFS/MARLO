@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.SectionStatusManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(SectionStatusManagerImpl.class)
+
 public interface SectionStatusManager {
 
 
@@ -72,7 +70,7 @@ public interface SectionStatusManager {
    * @param crpProgramID is the crp program identifier.
    * @return a SectionStatus object.
    */
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year);
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.

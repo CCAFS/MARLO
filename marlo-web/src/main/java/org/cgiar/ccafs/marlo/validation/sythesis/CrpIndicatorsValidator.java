@@ -31,21 +31,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class CrpIndicatorsValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
-  @Inject
   private CrpManager crpManager;
 
   @Inject
-  public CrpIndicatorsValidator() {
-    // TODO Auto-generated constructor stub
+  public CrpIndicatorsValidator(CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpLiaisonInstitution ipLiaisonInstitution, long crpID) {
@@ -60,7 +63,9 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
   public void validate(BaseAction action, List<CrpIndicatorReport> indicatorReports,
     IpLiaisonInstitution ipLiaisonInstitution, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     this.action = action;
 

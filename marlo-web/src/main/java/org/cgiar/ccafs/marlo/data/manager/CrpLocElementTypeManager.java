@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CrpLocElementTypeManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CrpLocElementTypeManagerImpl.class)
+
 public interface CrpLocElementTypeManager {
 
 

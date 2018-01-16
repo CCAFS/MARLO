@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
+@Named
 public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDAO {
 
   public static Logger LOG = LoggerFactory.getLogger(UserMySQLDAO.class);
@@ -59,12 +61,13 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-    StringBuilder builder = new StringBuilder();
+   StringBuilder builder = new StringBuilder();
     builder.append(" select * from user_permission");
     List<Map<String, Object>> list =
       super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     list = list.stream().filter(c -> c.get("crp_acronym").equals(crpId)).collect(Collectors.toList());
     return list;
+
   }
 
 
