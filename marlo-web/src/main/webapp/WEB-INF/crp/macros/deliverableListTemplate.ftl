@@ -295,11 +295,12 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="${dp_name}.projectPartner.id" value="${((dp.projectPartnerPerson.projectPartner.id)!dp.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        [#local projectPartnerObj = ((dp.projectPartnerPerson.projectPartner)!dp.projectPartner)!{} /]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="${projectPartnerObj.id}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons">
-          [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
-            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
-              [@deliverablePerson element=person name="${dp_name}" projectPartner=(dp.projectPartnerPerson.projectPartner) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
+          [#if (projectPartnerObj.id??)!false]
+            [#list action.getPersons(projectPartnerObj.id) as person]
+              [@deliverablePerson element=person name="${dp_name}" projectPartner=(projectPartnerObj) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
             [/#list]
           [/#if]
         </div>
@@ -307,7 +308,7 @@
         [#-- Division --]
         [#if action.hasSpecificities('crp_division_fs')]
           [#local ifpriDivision = false /]
-          [#if (dp.projectPartnerPerson.projectPartner.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+          [#if (projectPartnerObj.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
           <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
             <div class="col-md-7">
               [@customForm.select name="${dp_name}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
