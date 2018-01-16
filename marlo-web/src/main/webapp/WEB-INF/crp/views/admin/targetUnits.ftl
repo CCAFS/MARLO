@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Target units" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloBoard.js","${baseUrlMedia}/js/admin/targetUnits.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]

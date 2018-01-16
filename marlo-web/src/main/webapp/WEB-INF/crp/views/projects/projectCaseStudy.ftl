@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudy.js",

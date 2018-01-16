@@ -658,9 +658,9 @@ public class FundingSourceAction extends BaseAction {
             allInstitutions = institutionManager.findAll();
             for (Institution institutionObject : allInstitutions) {
               // validate if the institutions is PPA
-              if (this.isPPA(institutionObject)) {
-                institutionsDonors.add(institutionObject);
-              }
+              // if (this.isPPA(institutionObject)) {
+              institutionsDonors.add(institutionObject);
+              // }
 
             }
 

@@ -67,6 +67,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+
     crp = (Crp) session.get(APConstants.SESSION_CRP);
     crp = crpManager.getCrpById(crp.getId());
     try {
@@ -81,7 +82,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;

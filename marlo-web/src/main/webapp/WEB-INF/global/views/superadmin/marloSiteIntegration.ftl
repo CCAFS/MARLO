@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Sites Integration" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["flat-flags"] /]
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/marloSLOs.js" ] /]
 [#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]

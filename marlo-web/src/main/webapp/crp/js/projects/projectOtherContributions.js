@@ -36,7 +36,8 @@ function changeRegionFlagship(e) {
   var data = {
       flagshipID: $parent.find('select.otherContributionFlagship').val(),
       regionID: $parent.find('select.otherContributionRegion').val(),
-      projectID: $('#projectID').val()
+      projectID: $('#projectID').val(),
+      phaseID: phaseID
   }
   $.ajax({
       url: baseURL + '/iPIndicatorsByIPPrograms.do',

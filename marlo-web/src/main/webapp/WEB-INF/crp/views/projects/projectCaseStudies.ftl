@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Case Studies" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectCaseStudiesList.js",

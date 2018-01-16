@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js",

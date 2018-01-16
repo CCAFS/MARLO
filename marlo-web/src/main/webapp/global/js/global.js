@@ -437,7 +437,8 @@ var searchInstitutionsOptionsData = function(optionsData) {
             return {
                 q: params.term || '', // search term
                 withPPA: optionsData.includePPA ? 1 : 0,
-                onlyPPA: optionsData.projectPreSetting
+                onlyPPA: optionsData.projectPreSetting,
+                phaseID: phaseID
             };
           },
           processResults: function(data,params) {
