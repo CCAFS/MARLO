@@ -2749,7 +2749,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     CenterProject project = projectService.getCenterProjectById(projectID);
     CenterProgram program = project.getResearchProgram();;
     String permission =
-      this.generatePermissionCenter(Permission.PROJECT_SUBMISSION_PERMISSION, this.getCurrentCenter().getAcronym(),
+      this.generatePermissionCenter(Permission.PROJECT_SUBMISSION_PERMISSION, this.getCurrentCrp().getAcronym(),
         String.valueOf(program.getResearchArea().getId()), String.valueOf(program.getId()), String.valueOf(projectID));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
