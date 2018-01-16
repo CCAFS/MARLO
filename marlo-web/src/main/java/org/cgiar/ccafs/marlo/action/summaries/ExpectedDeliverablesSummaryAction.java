@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -266,9 +265,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
           || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
-      if (deliverable.getId() == 1016) {
-        System.out.println("Delete this comment");
-      }
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
 
       Long deliverableId = deliverable.getId();

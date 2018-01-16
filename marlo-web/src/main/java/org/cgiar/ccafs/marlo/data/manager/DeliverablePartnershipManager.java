@@ -56,7 +56,7 @@ public interface DeliverablePartnershipManager {
   public List<DeliverablePartnership> findAll();
 
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
-    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId);
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType);
 
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId);
 
