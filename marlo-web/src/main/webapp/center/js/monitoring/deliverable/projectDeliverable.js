@@ -90,7 +90,8 @@ function addOutput() {
         url: baseURL + "/outputInfo.do",
         type: 'GET',
         data: {
-          outputID: option.val()
+          outputID: option.val(),
+          phaseID: phaseID
         },
         success: function(m) {
           console.log(m);
@@ -216,7 +217,8 @@ function changeDeliverableType() {
   $.ajax({
       url: baseURL + '/centerDeliverableSubType.do',
       data: {
-        deliverableTypeId: typeID
+        deliverableTypeId: typeID,
+        phaseID: phaseID
       },
       beforeSend: function() {
         $(".loading.subtype").fadeIn();

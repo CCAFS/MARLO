@@ -16,7 +16,8 @@ $(document).ready(function() {
     $.ajax({
         url: baseURL + '/outcomeTree.do',
         data: {
-          outcomeID: outcomeID
+            outcomeID: outcomeID,
+            phaseID: phaseID
         },
         beforeSend: function() {
           $modal.find(".loading").fadeIn();
