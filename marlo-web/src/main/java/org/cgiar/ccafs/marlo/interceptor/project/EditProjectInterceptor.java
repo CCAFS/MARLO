@@ -213,7 +213,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       // baseAction
       // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
 
-
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
       // TODO Validate is the project is new
       if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
