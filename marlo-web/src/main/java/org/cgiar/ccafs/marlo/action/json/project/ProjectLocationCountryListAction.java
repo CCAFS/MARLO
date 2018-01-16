@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -68,7 +69,7 @@ public class ProjectLocationCountryListAction extends BaseAction {
         locElement.put("id", element.getId());
         locElement.put("name", element.getName());
         locElement.put("isoAlpha2", element.getIsoAlpha2());
-        if(element.getLocGeoposition()!=null && element.getLocGeoposition()!=null){
+        if (element.getLocGeoposition() != null && element.getLocGeoposition() != null) {
           locElement.put("lat", element.getLocGeoposition().getLatitude());
           locElement.put("lng", element.getLocGeoposition().getLongitude());
         }
@@ -89,8 +90,11 @@ public class ProjectLocationCountryListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    parentId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.ELEMENT_TYPE_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // parentId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.ELEMENT_TYPE_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    parentId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.ELEMENT_TYPE_ID).getMultipleValues()[0]));
   }
 
   public void setLocElements(List<Map<String, Object>> locElements) {

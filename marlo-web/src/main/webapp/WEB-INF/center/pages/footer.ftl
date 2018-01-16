@@ -3,28 +3,8 @@
     <!-- ${actionName} Content end-->
     <footer class="footer">  
       <div class="container">
-        <div class="row">
-          [#-- Contact Information --]
-          <div class="col-md-4 infoLinks text-left">
-            <strong>Contact</strong><br />
-            <ul>
-              <li><a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></li>
-            </ul>
-          </div>
-          [#-- Legal Information--]
-          <div class="col-md-4 infoLinks text-left">
-            [#-- <strong>Legal</strong><br /> --]
-            
-          </div>
-          [#-- Glossary --]
-          <div class="col-md-4 glossary text-right">
-            [@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.clickHere" /][/@s.param][/@s.text] <span class="glyphicon glyphicon-hand-left"></span> </a>
-          </div>
-        </div>
-        [#-- Copyright --]
-        <div class="copyRight">
-          <hr /><span>@ Copyright 2017 Current version ${action.getVersion()}</span>
-        </div>
+        [#-- Importing footer information --]
+        [#include "/WEB-INF/global/pages/footer-info.ftl" /]
       </div>
     </footer> 
     [#compress]
@@ -71,6 +51,7 @@
               <li><strong>canEdit:</strong> ${canEdit?string}</li>
               <li><strong>Editable:</strong> ${editable?string}</li>
               <li><strong>currentSectionString:</strong> ${(currentSectionString)!}</li>
+              <li><strong>canEditPhase:</strong> ${canEditPhase?string}</li>
             </ul> 
           </div>
           <h3>Form outputs</h3>

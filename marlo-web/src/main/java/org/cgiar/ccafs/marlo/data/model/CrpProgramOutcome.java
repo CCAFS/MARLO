@@ -76,6 +76,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectFurtherContribution> projectFurtherContributions = new HashSet<ProjectFurtherContribution>(0);
   private Set<CrpProgramOutcomeIndicator> crpProgramOutcomeIndicators = new HashSet<CrpProgramOutcomeIndicator>(0);
 
+@Expose
+  private Phase phase;
+  @Expose
+  private String composeID;
 
   @Expose
   private boolean active;
@@ -162,7 +166,16 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public Set<CrpClusterKeyOutputOutcome> getCrpClusterKeyOutputOutcomes() {
     return crpClusterKeyOutputOutcomes;
   }
-
+  public String getComposeID() {
+    if (composeID != null) {
+      return composeID;
+    } else {
+      if (id != null) {
+        return id + "-" + this.getCrpProgram().getId();
+      }
+    }
+    return null;
+  }
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
@@ -223,7 +236,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public String getModificationJustification() {
     return modificationJustification;
   }
-
+  public Phase getPhase() {
+    return phase;
+  }
 
   @Override
   public User getModifiedBy() {
@@ -267,7 +282,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
+ public void setComposeID(String composeID) {
+    this.composeID = composeID;
+  }
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -329,7 +346,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
   public void setProjectFurtherContributions(Set<ProjectFurtherContribution> projectFurtherContributions) {
     this.projectFurtherContributions = projectFurtherContributions;
   }

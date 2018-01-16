@@ -17,24 +17,29 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
-import org.cgiar.ccafs.marlo.data.model.BudgetType;
+import org.cgiar.ccafs.marlo.data.dao.FundingSourceInfoDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long> implements FundingSourceDAO {
 
+  public FundingSourceInfoDAO fundingSourceInfoDAO;
 
   @Inject
-  public FundingSourceMySQLDAO(SessionFactory sessionFactory) {
+  public FundingSourceMySQLDAO(SessionFactory sessionFactory, FundingSourceInfoDAO fundingSourceInfoDAO) {
     super(sessionFactory);
+    this.fundingSourceInfoDAO = fundingSourceInfoDAO;
   }
 
   @Override
@@ -60,6 +65,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
 
   }
 
+
   @Override
   public List<FundingSource> findAll() {
     String query = "from " + FundingSource.class.getName() + " where is_active=1";
@@ -73,6 +79,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
 
   @Override
   public List<Map<String, Object>> getFundingSource(long userId, String crp) {
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where  crp_acronym='" + crp
       + "' and permission_id = 438 and project_id is not null");
@@ -95,11 +102,11 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
-  public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+  public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase) {
     if (fundingSource.getId() == null) {
-      super.saveEntity(fundingSource, sectionName, relationsName);
+      super.saveEntity(fundingSource, sectionName, relationsName, phase);
     } else {
-      fundingSource = super.update(fundingSource, sectionName, relationsName);
+      fundingSource = super.update(fundingSource, sectionName, relationsName, phase);
     }
 
 
@@ -107,19 +114,36 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID) {
     StringBuilder q = new StringBuilder();
-    q.append("from " + FundingSource.class.getName());
-    q.append(" where crp_id=" + crpID + " and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
-      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and is_active=1 and crp_id=" + crpID
-      + " and ( type=1)");
+    q.append("SELECT fsi.id AS id ");
+    q.append("FROM  funding_sources_info fsi ");
+    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
+    q.append("AND fs.is_active ");
+    q.append("AND fs.crp_id = " + crpID);
+    q.append(" WHERE ");
+    q.append("(fsi.title LIKE '%" + query + "%' ");
+    q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
+    q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
+    q.append("AND fsi.type = 1 ");
+    q.append("AND fsi.id_phase = " + phaseID);
+    q.append(" AND fsi.end_date IS NOT NULL");
+    q.append(" AND " + year + " <= YEAR(fsi.end_date) ");
 
-    List<FundingSource> fundingSources = super.findAll(q.toString());
-    SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream()
-      .filter(c -> c.getEndDate() != null && year <= Integer.parseInt(df.format(c.getEndDate())))
-      .collect(Collectors.toList());
+    List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSourceInfo fundingSourceInfo = fundingSourceInfoDAO.find(Long.parseLong(map.get("id").toString()));
+        fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
+        fundingSources.add(fundingSourceInfo.getFundingSource());
+      }
+    }
+
+    return fundingSources;
   }
 
   @Override
@@ -135,30 +159,45 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
 
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
+    long phaseID) {
     StringBuilder q = new StringBuilder();
-    q.append("from " + FundingSource.class.getName());
-    q.append(" where is_active=1 and (title like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' or concat('FS',id) like '%" + query + "%' or (select name from "
-      + BudgetType.class.getName() + " where id=type) like '%" + query + "%') and crp_id=" + crpID);
+    q.append("SELECT fsi.id AS id ");
+    q.append("FROM  funding_sources_info fsi ");
+    q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
+    q.append("AND fs.is_active ");
+    q.append("AND fs.crp_id = " + crpID);
+    q.append(" WHERE ");
+    q.append("(fsi.title LIKE '%" + query + "%' ");
+    q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
+    q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
 
+    q.append("AND fsi.id_phase = " + phaseID);
+    q.append(" AND fsi.end_date IS NOT NULL ");
+    q.append("AND " + year + " <= YEAR(fsi.end_date) ");
 
-    List<FundingSource> fundingSources = super.findAll(q.toString());
+    List<Map<String, Object>> rList = super.findCustomQuery(q.toString());
+
+    List<FundingSource> fundingSources = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        FundingSourceInfo fundingSourceInfo = fundingSourceInfoDAO.find(Long.parseLong(map.get("id").toString()));
+        fundingSourceInfo.getFundingSource().setFundingSourceInfo(fundingSourceInfo);
+        fundingSources.add(fundingSourceInfo.getFundingSource());
+      }
+    }
+
     List<FundingSource> fundingSourcesReturn = new ArrayList<>();
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
     for (FundingSource fundingSource : fundingSources) {
       try {
-        if (fundingSource.getEndDate() != null) {
-          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))) {
-            if (fundingSource.getBudgetType().getId().intValue() != 1) {
-              if (fundingSource.hasInstitution(institutionID)) {
-                fundingSourcesReturn.add(fundingSource);
-              }
-            } else {
-              fundingSourcesReturn.add(fundingSource);
-            }
-          }
+
+        if (fundingSource.hasInstitution(institutionID, phaseID)) {
+          fundingSourcesReturn.add(fundingSource);
         }
+
 
       } catch (Exception e) {
 
@@ -182,8 +221,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.crp_id=" + crpID
       + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1   ");
+    // query.append("project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
@@ -216,8 +255,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("WHERE ");
     query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.crp_id="
       + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
-    query.append("project_budgets.is_active = 1 AND  ");
-    query.append("project_budgets.`year` =" + year);
+    query.append("project_budgets.is_active = 1   ");
+    // query.append(" AND project_budgets.`year` =" + year);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 

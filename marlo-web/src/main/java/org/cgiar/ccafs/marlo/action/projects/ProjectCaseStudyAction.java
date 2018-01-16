@@ -23,14 +23,16 @@ import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -57,7 +59,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +111,7 @@ public class ProjectCaseStudyAction extends BaseAction {
   private long projectID;
   // Manager
   private ProjectManager projectManager;
+  private PhaseManager phaseManager;
 
   private String transaction;
 
@@ -118,11 +121,11 @@ public class ProjectCaseStudyAction extends BaseAction {
     CrpManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
     CaseStudyProjectManager projectHighligthTypeManager, IpIndicatorManager ipIndicatorManager,
     HistoryComparator historyComparator, ProjectCaseStudyValidation caseStudyValidation,
-    CaseStudyIndicatorManager caseStudyIndicatorManager) {
+    CaseStudyIndicatorManager caseStudyIndicatorManager, PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.caseStudyManager = highLightManager;
-
+    this.phaseManager = phaseManager;
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
@@ -207,7 +210,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
   public int getEndYear() {
     DateFormat dateFormat = new SimpleDateFormat("yyyy");
-    return Integer.parseInt(dateFormat.format(project.getEndDate()));
+    return Integer.parseInt(dateFormat.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()));
   }
 
 
@@ -360,24 +363,16 @@ public class ProjectCaseStudyAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
+    Phase phase = this.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
 
-    if (projectManager.findAll() != null) {
-
-      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects = loggedCrp.getProjects().stream()
-          .filter(
-            p -> p.isActive() && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-        myProjects.remove(project);
-      } else {
-        myProjects = loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
-          .collect(Collectors.toList());
-
-        myProjects.remove(project);
-      }
-      Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+    myProjects = new ArrayList<>();
+    for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+      myProjects.add(projectPhase.getProject());
     }
+
+    Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
 
     if (this.isHttpPost()) {
       if (caseStudy.getProjects() != null) {

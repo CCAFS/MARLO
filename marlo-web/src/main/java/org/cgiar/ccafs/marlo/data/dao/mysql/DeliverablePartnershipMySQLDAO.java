@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
+@Named
 public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
   implements DeliverablePartnershipDAO {
 
@@ -34,12 +36,15 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    this.save(deliverablePartnership);
+    super.delete(deliverablePartnership);
+
   }
+
 
   @Override
   public boolean existDeliverablePartnership(long deliverablePartnershipID) {
@@ -67,6 +72,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     return null;
 
   }
+
 
   @Override
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
@@ -104,8 +110,6 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       deliverablePartnership = super.update(deliverablePartnership);
     }
-
-
     return deliverablePartnership;
   }
 

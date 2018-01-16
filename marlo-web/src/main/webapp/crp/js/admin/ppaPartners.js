@@ -18,18 +18,23 @@ function init() {
 
 function attachEvents() {
 
+  // Add User - Override function from userManagement.js
+  addUser = addUserItem;
+
   // Remove partner item
   $(".delete").on('click', removePartner);
 
-  
+  // Remove user item
+  $(".remove-userItem").on('click', removeUser);
+
   // Getting event of Select
   $partnerSelect.on('change', function(e) {
-    var $partner = $(this); 
+    var $partner = $(this);
 
     if($partner.val() == -1) {
-      return
+      return;
     }
-    
+
     // Check if already exist
     if(partnerContent.find('input[value=' + $partner.val() + ']').exists()) {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
@@ -39,11 +44,11 @@ function attachEvents() {
     } else {
       addPartner($partner);
     }
-    
+
     // Reset select
     $partnerSelect.val('-1');
     $partnerSelect.trigger('select2:change')
-    
+
   });
 
   updateIndex();
@@ -53,7 +58,7 @@ function attachEvents() {
 function addPartner(partner) {
   var $item = $('#institution-template').clone(true).removeAttr('id');
   $item.find('input.institutionId').val($(partner).val());
-  $item.find('.title').html($("#institutionArray-"+$(partner).val()).text());
+  $item.find('.title').html($("#institutionArray-" + $(partner).val()).text());
   partnerContent.append($item);
   $item.show("slow");
   updateIndex();
@@ -67,10 +72,49 @@ function removePartner() {
   });
 }
 
+function removeUser() {
+  var $user = $(this).parents(".userItem");
+  $user.hide(500, function() {
+    $user.remove();
+    updateIndex();
+  });
+}
+
 // Update index and position of property name
 function updateIndex() {
   $(partnerContent).find('.institution').each(function(i,item) {
-    $(item).find('.institutionId').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].institution.id');
-    $(item).find('.id').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].id');
+    $(item).setNameIndexes(1, i);
+
+    var $userItems = $(item).find('.userItem');
+
+    // Check if are there contact points added
+    if($userItems.length == 0) {
+      $(item).find('.emptyItem').slideDown();
+    } else {
+      $(item).find('.emptyItem').slideUp();
+    }
+
+    $userItems.each(function(ui,user) {
+      $(user).setNameIndexes(2, ui);
+    });
   });
+}
+
+function addUserItem(composedName,userId) {
+  $usersList = $elementSelected.parents('.ppaPartner').find(".items-list");
+  var $li = $("#user-template").clone(true).removeAttr("id");
+  var item = {
+      name: escapeHtml(composedName),
+      id: userId,
+      type: $elementSelected.parents('.usersBlock').find('.usersType').text(),
+      role: $elementSelected.parents('.usersBlock').find('.usersRole').text()
+  }
+  $li.find('.name').html(item.name);
+  $li.find('.user').val(item.id);
+
+  $usersList.find("ul").append($li);
+  $li.show('slow');
+
+  updateIndex();
+  dialog.dialog("close");
 }

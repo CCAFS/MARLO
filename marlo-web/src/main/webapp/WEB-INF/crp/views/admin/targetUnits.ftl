@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Target units" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrlMedia}/js/superadmin/marloBoard.js","${baseUrlMedia}/js/admin/targetUnits.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/superadmin/superadmin.css" ] /]
@@ -61,11 +61,7 @@
         
         [#if editable]
         [#-- Section Buttons--]
-        <div class="buttons">
-          <div class="buttons-content">
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          </div>
-        </div>
+        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         [/#if]
         
         [/@s.form]

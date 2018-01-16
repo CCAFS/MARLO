@@ -57,10 +57,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -78,20 +79,18 @@ public class ProjectOtherContributionsAction extends BaseAction {
    */
 
   // Manager
-  private ProjectManager projectManager;
-  private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgrammManager;
-  private ProjectCrpContributionManager projectCrpContributionManager;
-  private ProjectOtherContributionManager projectOtherContributionManager;
-  private OtherContributionManager otherContributionManager;
-  private CrpPandrManager crpPandrManager;
-  private IpProgramManager ipProgramManager;
-  private IpIndicatorManager ipIndicatorManager;
-  private ProjectOtherContributionsValidator projectOtherContributionsValidator;
+  private final ProjectManager projectManager;
+  private final ProjectCrpContributionManager projectCrpContributionManager;
+  private final ProjectOtherContributionManager projectOtherContributionManager;
+  private final OtherContributionManager otherContributionManager;
+  private final CrpPandrManager crpPandrManager;
+  private final IpProgramManager ipProgramManager;
+  private final IpIndicatorManager ipIndicatorManager;
+  private final ProjectOtherContributionsValidator projectOtherContributionsValidator;
   private List<CrpPandr> crps;
   private List<IpProgram> regions;
   private List<IpIndicator> otherIndicators;
-  private HistoryComparator historyComparator;
+  private final HistoryComparator historyComparator;
 
 
   private long projectID;
@@ -118,8 +117,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
     IpProgramManager ipProgramManager, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.projectCrpContributionManager = projectCrpContributionManager;
     this.crpPandrManager = crpPandrManager;
     this.ipIndicatorManager = ipIndicatorManager;
@@ -404,13 +401,13 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (project.getCrpContributions() == null) {
 
@@ -444,8 +441,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
-    project.setAdministrative(projectDB.getAdministrative());
+    project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
     crps = crpPandrManager.findAll();
     regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());
@@ -538,8 +534,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
       this.projectOtherContributionsNewData(project.getProjectOtherContributionsList());
       this.OtherContributionsPreviousData(project.getOtherContributionsList());
@@ -554,8 +548,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
       relationsName.add(APConstants.OTHER_CONTRIBUTIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
@@ -611,12 +603,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
-  }
-
 
   public void setRegions(List<IpProgram> regions) {
     this.regions = regions;

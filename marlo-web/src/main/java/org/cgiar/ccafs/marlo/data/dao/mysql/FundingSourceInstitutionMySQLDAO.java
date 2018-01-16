@@ -21,10 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO<FundingSourceInstitution, Long> implements FundingSourceInstitutionDAO {
+@Named
+public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO<FundingSourceInstitution, Long>
+  implements FundingSourceInstitutionDAO {
 
 
   @Inject
@@ -32,12 +35,15 @@ public class FundingSourceInstitutionMySQLDAO extends AbstractMarloDAO<FundingSo
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
     FundingSourceInstitution fundingSourceInstitution = this.find(fundingSourceInstitutionId);
-
     super.delete(fundingSourceInstitution);
+
+
   }
+
 
   @Override
   public boolean existFundingSourceInstitution(long fundingSourceInstitutionID) {

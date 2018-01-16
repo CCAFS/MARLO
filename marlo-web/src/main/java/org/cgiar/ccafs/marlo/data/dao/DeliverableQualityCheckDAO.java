@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.DeliverableQualityCheckMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(DeliverableQualityCheckMySQLDAO.class)
 public interface DeliverableQualityCheckDAO {
 
   /**
@@ -63,7 +60,7 @@ public interface DeliverableQualityCheckDAO {
    * @param Deliverable is the Deliverable identifier.
    * @return a DeliverableQualityCheck object.
    */
-  public DeliverableQualityCheck findByDeliverable(long id);
+  public DeliverableQualityCheck findByDeliverable(long id, long phaseID);
 
 
   /**

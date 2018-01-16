@@ -27,9 +27,11 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -39,9 +41,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private static final long serialVersionUID = 1292628953840385651L;
 
 
-  private Map<String, Object> parameters;
-  private ICenterProjectManager projectService;
-  private ICenterProgramManager programService;
+  private Map<String, Parameter> parameters;
+  private final ICenterProjectManager projectService;
+  private final ICenterProgramManager programService;
   private Map<String, Object> session;
 
   private Center researchCenter;
@@ -62,7 +64,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
 
     try {
-      projectID = Long.parseLong(((String[]) parameters.get(APConstants.PROJECT_ID))[0]);
+      // projectID = Long.parseLong(((String[]) parameters.get(APConstants.PROJECT_ID))[0]);
+      projectID = Long.parseLong(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]);
     } catch (Exception e) {
       return BaseAction.NOT_FOUND;
     }
@@ -82,7 +85,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean editParameter = false;
     BaseAction baseAction = (BaseAction) invocation.getAction();
     CenterProject project = projectService.getCenterProjectById(projectID);
-
+    baseAction.setSession(session);
     if (project != null) {
 
 
@@ -98,13 +101,15 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = true;
         } else {
 
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT_BASE_PERMISSION, params))) {
+          if (baseAction
+            .hasPermissionCenter(baseAction.generatePermissionCenter(Permission.PROJECT_BASE_PERMISSION, params))) {
             canEdit = true;
           }
         }
 
-        if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-          String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+          // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
           editParameter = stringEditable.equals("true");
           // If the user is not asking for edition privileges we don't need to validate them.
           if (!editParameter) {
@@ -114,8 +119,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-            .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
         }
 
         // Set the variable that indicates if the user can edit the section

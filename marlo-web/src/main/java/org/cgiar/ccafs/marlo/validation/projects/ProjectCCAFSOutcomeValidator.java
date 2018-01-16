@@ -17,7 +17,6 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
@@ -30,12 +29,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class ProjectCCAFSOutcomeValidator extends BaseValidator {
 
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
   public ProjectCCAFSOutcomeValidator(CrpManager crpManager) {
@@ -53,7 +54,9 @@ public class ProjectCCAFSOutcomeValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -102,14 +105,9 @@ public class ProjectCCAFSOutcomeValidator extends BaseValidator {
         action
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
 
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
-      }
     }
   }
 }

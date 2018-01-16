@@ -16,10 +16,8 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -27,35 +25,32 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
-import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian Garcia. - CIAT/CCAFS
  */
-
+@Named
 public class ProjectBudgetsValidator extends BaseValidator {
 
+  // This is not thread safe
   private boolean hasErros;
-  private ProjectValidator projectValidator;
-  private InstitutionManager institutionManager;
+
+  private final CrpManager crpManager;
+  private final FundingSourceManager fundingSourceManager;
 
   @Inject
-  private CrpManager crpManager;
-  @Inject
-  private FundingSourceManager fundingSourceManager;
-
-  @Inject
-  public ProjectBudgetsValidator(ProjectValidator projectValidator, InstitutionManager institutionManager) {
+  public ProjectBudgetsValidator(CrpManager crpManager, FundingSourceManager fundingSourceManager) {
     super();
-    this.projectValidator = projectValidator;
-    this.institutionManager = institutionManager;
+    this.crpManager = crpManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
@@ -87,6 +82,9 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
@@ -111,12 +109,15 @@ public class ProjectBudgetsValidator extends BaseValidator {
                 // the year evaluated. If it is not new this budget is excluded from the calculation
                 double remaining = 0;
                 if (projectBudget.getId() == null) {
-                  remaining = fundingSource.getRemaining(projectBudget.getYear());
+                  remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
                 } else {
-                  remaining =
-                    fundingSource.getRemainingExcludeBudget(projectBudget.getYear(), projectBudget.getId().longValue());
+                  remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
+                    projectBudget.getId().longValue(), action.getActualPhase());
                 }
-                if (remaining - projectBudget.getAmount() < 0) {
+                double currentAmount = projectBudget.getAmount().doubleValue();
+                double subBudgets = remaining - currentAmount;
+                int intValue = (int) subBudgets;
+                if (intValue < 0) {
                   this.addMessage(action.getText("projectBudgets.fundig"));
                   action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
                     InvalidFieldsMessages.EMPTYFIELD);
@@ -130,7 +131,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
           i++;
         }
-        if (total == 0) {
+        if (total < 0) {
           this.addMessage(action.getText("projectBudgets.amount"));
           i = 0;
           for (ProjectBudget projectBudget : project.getBudgets()) {
@@ -153,13 +154,10 @@ public class ProjectBudgetsValidator extends BaseValidator {
         action
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.BUDGET.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.BUDGET.getStatus());
-      }
+
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        ProjectSectionStatusEnum.BUDGET.getStatus());
+
       // Saving missing fields.
 
     }

@@ -18,10 +18,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomePandrManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -48,10 +45,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,14 +67,10 @@ public class ProjectOutcomesPandRAction extends BaseAction {
    */
 
   // Manager
-  private ProjectManager projectManager;
-  private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgrammManager;
-  private ProjectOutcomePandrManager projectOutcomePandrManager;
-  private IpElementManager ipElementManager;
-  private FileDBManager fileDBManager;
-
-  private ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+  private final ProjectManager projectManager;
+  private final ProjectOutcomePandrManager projectOutcomePandrManager;
+  private final FileDBManager fileDBManager;
+  private final ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
 
   private List<Integer> allYears;
 
@@ -97,22 +91,17 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   private String transaction;
 
-  private HistoryComparator historyComparator;
-  private AuditLogManager auditLogManager;
+  private final HistoryComparator historyComparator;
+  private final AuditLogManager auditLogManager;
 
 
   @Inject
-  public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager,
-    InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
+  public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager, AuditLogManager auditLogManager,
     CrpManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
-    HistoryComparator historyComparator, IpElementManager ipElementManager,
-    ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
+    HistoryComparator historyComparator, ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.projectOutcomePandrManager = projectOutcomePandrManager;
-    this.ipElementManager = ipElementManager;
     this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     this.crpManager = crpManager;
@@ -147,6 +136,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   }
 
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -368,13 +358,13 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (project.getOutcomesPandr() == null) {
 
@@ -404,10 +394,8 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     }
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setStartDate(projectDB.getStartDate());
-    project.setEndDate(projectDB.getEndDate());
-    project.setAdministrative(projectDB.getAdministrative());
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
+    project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
+
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
@@ -436,8 +424,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.ouctomesNewData(project.getOutcomesPandr());
@@ -453,8 +439,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
@@ -518,11 +502,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
   }
 
   public void setTransaction(String transaction) {

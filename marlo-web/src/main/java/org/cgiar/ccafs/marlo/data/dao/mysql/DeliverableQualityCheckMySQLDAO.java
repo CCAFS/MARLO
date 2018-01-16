@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<DeliverableQualityCheck, Long> implements DeliverableQualityCheckDAO {
 
 
@@ -67,9 +69,9 @@ public class DeliverableQualityCheckMySQLDAO extends AbstractMarloDAO<Deliverabl
   }
 
   @Override
-  public DeliverableQualityCheck findByDeliverable(long id) {
-    String query =
-      "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id + " and is_active=1";
+  public DeliverableQualityCheck findByDeliverable(long id, long phaseID) {
+    String query = "from " + DeliverableQualityCheck.class.getName() + " where deliverable_id=" + id
+      + " and is_active=1 and id_phase=" + phaseID;
     List<DeliverableQualityCheck> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

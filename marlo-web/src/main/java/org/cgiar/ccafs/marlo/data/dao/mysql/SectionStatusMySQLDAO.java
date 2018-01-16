@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long> implements SectionStatusDAO {
 
 
@@ -91,9 +93,9 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   }
 
   @Override
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName, String cylce, int year) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and crp_program_id=" + crpProgramID;
+      + "' and crp_program_id=" + crpProgramID + " and cycle='" + cylce + "' and year=" + year;
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -116,7 +118,7 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
   public SectionStatus getSectionStatusByFundingSource(long fundingSourceId, String cycle, Integer year,
     String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
-      + "' and funding_source_id=" + fundingSourceId;
+      + "' and funding_source_id=" + fundingSourceId + " and year=" + year + " and cycle='" + cycle + "'";
     List<SectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

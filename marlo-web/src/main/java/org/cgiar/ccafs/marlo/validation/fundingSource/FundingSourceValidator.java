@@ -19,10 +19,8 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
@@ -36,40 +34,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class FundingSourceValidator extends BaseValidator {
 
+  // This is not thread safe.
   private boolean hasErros;
 
+  // This is not thread safe.
   BaseAction action;
 
+  private final CrpManager crpManager;
+
+  private final InstitutionManager institutionManager;
 
   @Inject
-  private CrpManager crpManager;
-  @Inject
-  private InstitutionManager institutionManager;
-
-  @Inject
-  private FundingSourceManager fundingSourceManager;
-
-  /**
-   * Until I work out why the File is being set to an empty file instead of null, this will temporarily
-   * fix the problem.
-   * 
-   * @param fundingSource
-   */
-  private void checkFileIsValid(FundingSource fundingSource) {
-    FileDB file = fundingSource.getFile();
-    if (file != null) {
-
-      if (file.getId() == null) {
-        // The UI component has instantiated an empty file object instead of null.
-        fundingSource.setFile(null);
-
-      }
-    }
-
+  public FundingSourceValidator(CrpManager crpManager, InstitutionManager institutionManager) {
+    this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
@@ -109,7 +93,13 @@ public class FundingSourceValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
-
+   
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
+    if (fundingSource.getFundingSourceInfo().getBudgetType() != null
+      && fundingSource.getFundingSourceInfo().getBudgetType().getId() == null) {
+      fundingSource.getFundingSourceInfo().setBudgetType(null);
+    }
     action.setInvalidFields(new HashMap<>());
     this.action = action;
     if (!saving) {
@@ -120,57 +110,59 @@ public class FundingSourceValidator extends BaseValidator {
       }
     }
 
-    this.checkFileIsValid(fundingSource);
-
-    if (!this.isValidString(fundingSource.getTitle())) {
+    if (!this.isValidString(fundingSource.getFundingSourceInfo().getTitle())) {
       this.addMessage(action.getText("fundingSource.title"));
-      action.getInvalidFields().put("input-fundingSource.title", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (fundingSource.getStartDate() == null) {
+    if (fundingSource.getFundingSourceInfo().getStartDate() == null) {
       this.addMessage(action.getText("fundingSource.startDate"));
-      action.getInvalidFields().put("input-fundingSource.startDate", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.startDate",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (fundingSource.getEndDate() == null) {
+    if (fundingSource.getFundingSourceInfo().getEndDate() == null) {
       this.addMessage(action.getText("fundingSource.endDate"));
-      action.getInvalidFields().put("input-fundingSource.endDate", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // Validate the direct donor with id -1, beacause front end send this when there is not one selected
-
-    if (fundingSource.getDirectDonor() == null || fundingSource.getDirectDonor().getId() == null
-      || fundingSource.getDirectDonor().getId().longValue() == -1) {
-      this.addMessage(action.getText("fundingSource.directDonor.id"));
-      action.getInvalidFields().put("input-fundingSource.directDonor.id", InvalidFieldsMessages.EMPTYFIELD);
+    // Validate the donor with id -1, beacause front end send this when there is not one selected
+    if (fundingSource.getFundingSourceInfo().getDirectDonor() == null
+      || fundingSource.getFundingSourceInfo().getDirectDonor().getId() == null
+      || fundingSource.getFundingSourceInfo().getDirectDonor().getId().longValue() == -1) {
+      this.addMessage(action.getText("fundingSource.institution.id"));
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.directDonor.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (!this.isValidString(fundingSource.getContactPersonName())) {
+    if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {
       this.addMessage(action.getText("fundingSource.contactPersonName"));
-      action.getInvalidFields().put("input-fundingSource.contactPersonName", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonName",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (this.hasIFPRI(fundingSource)) {
       if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-        if (fundingSource.getPartnerDivision() == null) {
+        if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null) {
           this.addMessage(action.getText("fundingSource.division"));
-          action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (fundingSource.getPartnerDivision() != null) {
-          if (fundingSource.getPartnerDivision().getId() == null) {
+        if (fundingSource.getFundingSourceInfo().getPartnerDivision() != null) {
+          if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null) {
             this.addMessage(action.getText("fundingSource.division"));
-            action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
+              InvalidFieldsMessages.EMPTYFIELD);
           } else {
-            if (fundingSource.getPartnerDivision().getId().longValue() == -1) {
+            if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
               this.addMessage(action.getText("fundingSource.division"));
-              action.getInvalidFields().put("input-fundingSource.partnerDivision.id", InvalidFieldsMessages.EMPTYFIELD);
+              action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
           }
 
         }
       }
     }
-
 
     /**
      * Validate Grant Amount only if the Funding source is Synced.
@@ -191,12 +183,12 @@ public class FundingSourceValidator extends BaseValidator {
      */
 
 
-    if (fundingSource.getSynced() != null) {
-      if (fundingSource.getSynced()) {
+    if (fundingSource.getFundingSourceInfo().getSynced() != null) {
+      if (fundingSource.getFundingSourceInfo().getSynced()) {
 
         // if (fundingSource.getBudgetType().getId() != APConstants.BUDGET_TYPE) {
 
-        Double grantAmount = fundingSource.getGrantAmount();
+        Double grantAmount = fundingSource.getFundingSourceInfo().getGrantAmount();
         List<FundingSourceBudget> budgets = fundingSource.getBudgets();
         double currentBudget = 0;
 
@@ -228,9 +220,10 @@ public class FundingSourceValidator extends BaseValidator {
 
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
-      if (!this.isValidString(fundingSource.getContactPersonEmail())) {
+      if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonEmail())) {
         this.addMessage(action.getText("fundingSource.contactPersonEmail"));
-        action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonEmail",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
@@ -246,7 +239,8 @@ public class FundingSourceValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-    this.saveMissingFields(fundingSource, null, null, ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
+    this.saveMissingFields(fundingSource, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
 
 
   }

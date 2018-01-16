@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Program Impacts" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "vanilla-color-picker"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programImpact.js", 
@@ -111,7 +111,7 @@
     </div>
     [#-- According to SLO/IDO selected, please select a SUB-IDO --]
     <div class="form-group impactSubIdo" style="display:${isSRFSelected?string('block','none')}">
-      [@customForm.select name="${customName}.srfSubIdo.id"  i18nkey="programImpact.srfSubIdo" listName="${customName}.researchImpactStatement.srfIdo.srfSubIdos" keyFieldName="id"  displayFieldName="description" required=true  className="impactSubIdoSelect" editable=editable/]
+      [@customForm.select name="${customName}.srfSubIdo.id"  i18nkey="programImpact.srfSubIdo" listName="${customName}.researchImpactStatement.srfIdo.srfSubIdos" keyFieldName="id"  displayFieldName="description" required=false  className="impactSubIdoSelect" editable=editable/]
     </div> 
     
     [#-- Short name--]

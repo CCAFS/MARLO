@@ -27,8 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -99,8 +100,8 @@ public class TargetUnitAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    queryParameter = StringUtils.trim(parameters.get(APConstants.TARGET_UNIT_NAME).getMultipleValues()[0]);
   }
 
   public void setMessage(String message) {

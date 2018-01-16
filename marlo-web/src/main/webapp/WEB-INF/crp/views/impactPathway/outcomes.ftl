@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
@@ -28,6 +28,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
@@ -46,18 +47,18 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
           [#list programs as program]
             [#assign isActive = (program.id == crpProgramID)/]
             <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
             </li>
           [/#list]
         </ul>
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
@@ -158,10 +159,18 @@
     </div>
     [#-- Outcome ID Parameter --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
+    <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     [/#if]
+    
+    [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=outcome /]
+      </div>
+    [/#if]
+    
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
@@ -303,6 +312,7 @@
     </div>
     
     <br />
+    
   </div>
 [/#macro]
 
@@ -315,9 +325,17 @@
       <span class="elementId">[@s.text name="outcome.milestone.index.title"/]</span>
     </div>
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
+     <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
+     
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
+    [/#if]
+    
+    [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=milestone /]
+      </div>
     [/#if]
     
     [#-- Milestone Statement --]
@@ -361,7 +379,7 @@
     
     
     [#-- Remove Button --]
-    [#if editable]
+    [#if editable && action.canBeDeleted((subIdo.id)!-1,(subIdo.class.name)!"" )]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />

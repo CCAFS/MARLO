@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="monitoring" namespace="/monitoring"
@@ -20,17 +22,17 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -43,17 +45,17 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectPartners</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${centerSession}/projectPartners</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
@@ -66,7 +68,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDescription</param>
         <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>     
     </action>
     
@@ -94,17 +96,17 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDeliverable</param>
         <param name="deliverableID">${deliverableID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${centerSession}/projectDeliverable</param>
         <param name="deliverableID">${deliverableID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="deliverableID">${deliverableID}</param>
       </result>
     </action>
@@ -117,7 +119,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/projectDeliverable</param>
         <param name="deliverableID">${deliverableID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>     
     </action>
     
@@ -146,13 +148,13 @@
         <param name="actionName">${centerSession}/monitoringOutcome</param>
         <param name="outcomeID">${outcomeID}</param>
         <param name="programID">${programID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${centerSession}/monitoringOutcome</param>
         <param name="outcomeID">${outcomeID}</param>
         <param name="programID">${programID}</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
       </result>
     </action>

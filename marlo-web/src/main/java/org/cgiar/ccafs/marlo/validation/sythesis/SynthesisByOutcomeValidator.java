@@ -31,21 +31,24 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class SynthesisByOutcomeValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public SynthesisByOutcomeValidator() {
-    // TODO Auto-generated constructor stub
+  public SynthesisByOutcomeValidator(CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {
@@ -68,7 +71,9 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, List<OutcomeSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     this.action = action;
 

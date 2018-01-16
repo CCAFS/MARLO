@@ -31,14 +31,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ProjectPartnerValidator extends BaseValidator {
 
-  private ICenterManager centerService;
+  private final ICenterManager centerService;
 
   @Inject
   public ProjectPartnerValidator(ICenterManager centerService) {
@@ -56,7 +58,9 @@ public class ProjectPartnerValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterProject project, CenterProgram selectedProgram, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {

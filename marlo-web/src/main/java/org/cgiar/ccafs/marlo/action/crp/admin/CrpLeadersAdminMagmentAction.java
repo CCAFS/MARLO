@@ -38,7 +38,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
+import org.apache.commons.collections.CollectionUtils;
 
 /**
  * @author Christian Garcia
@@ -131,7 +133,7 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
               if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
                 List<UserRole> fplUserRoles =
                   user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
-                if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+                if (CollectionUtils.isNotEmpty(fplUserRoles)) {
                   for (UserRole userRole : fplUserRoles) {
                     userRoleManager.deleteUserRole(userRole.getId());
                   }
@@ -139,7 +141,7 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
               } else if (crpProgram.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
                 List<UserRole> rplUserRoles =
                   user.getUserRoles().stream().filter(ur -> ur.getRole().equals(rplRole)).collect(Collectors.toList());
-                if (rplUserRoles != null || !rplUserRoles.isEmpty()) {
+                if (CollectionUtils.isNotEmpty(rplUserRoles)) {
                   for (UserRole userRole : rplUserRoles) {
                     userRoleManager.deleteUserRole(userRole.getId());
                   }

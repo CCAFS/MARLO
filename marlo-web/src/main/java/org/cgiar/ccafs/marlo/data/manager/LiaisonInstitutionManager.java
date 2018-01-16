@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.LiaisonInstitutionManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(LiaisonInstitutionManagerImpl.class)
+
 public interface LiaisonInstitutionManager {
 
 
@@ -70,6 +68,17 @@ public interface LiaisonInstitutionManager {
    */
   public LiaisonInstitution getLiaisonInstitutionById(long liaisonInstitutionID);
 
+  /**
+   * This method gets a liaisonInstitution object by a given Institution and Crp identifier.
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 20, 2017
+   * @time 10:28:58 AM
+   * @param institutionId is the institution identifier.
+   * @param crpID is the crp identifier
+   * @return a List of LiaisonInstitution.
+   */
+  public LiaisonInstitution getLiasonInstitutionByInstitutionId(Long institutionId, long crpID);
 
   /**
    * This method saves the information of the given liaisonInstitution

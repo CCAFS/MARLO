@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.validation.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -34,22 +33,24 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class PublicationValidator extends BaseValidator {
 
+  // This is not thread safe
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
-  @Inject
-  private ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
-  public PublicationValidator() {
+  public PublicationValidator(CrpManager crpManager) {
+    super();
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
@@ -64,7 +65,9 @@ public class PublicationValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     this.action = action;
 
@@ -80,12 +83,14 @@ public class PublicationValidator extends BaseValidator {
         }
       }
 
-      if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 15)) {
+      if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
+        && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 15)) {
         this.addMessage(action.getText("project.deliverable.generalInformation.title"));
         action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
       }
-      if (deliverable.getDeliverableType() != null) {
-        if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
+          || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
           this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
           action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -97,7 +102,8 @@ public class PublicationValidator extends BaseValidator {
       }
 
 
-      if (deliverable.getCrossCuttingGender() != null && deliverable.getCrossCuttingGender().booleanValue() == true) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
         if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
           this.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
@@ -120,7 +126,7 @@ public class PublicationValidator extends BaseValidator {
       this.validatePublicationMetadata(deliverable);
 
       // Deliverable Licenses
-      if (deliverable.getAdoptedLicense() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
         this.validateLicense(deliverable);
       } else {
         this.addMessage(action.getText("project.deliverable.v.ALicense"));
@@ -296,17 +302,18 @@ public class PublicationValidator extends BaseValidator {
 
 
   public void validateLicense(Deliverable deliverable) {
-    if (deliverable.getAdoptedLicense().booleanValue()) {
-      if (deliverable.getLicense() != null) {
-        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          if (deliverable.getOtherLicense() != null) {
-            if (!(this.isValidString(deliverable.getOtherLicense())
-              && this.wordCount(deliverable.getOtherLicense()) <= 100)) {
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
+          .equals(LicensesTypeEnum.OTHER.getValue())) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense() != null) {
+            if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense())
+              && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense()) <= 100)) {
               this.addMessage(action.getText("project.deliverable.license.v.other"));
               action.getInvalidFields().put("input-deliverable.otherLicense", InvalidFieldsMessages.EMPTYFIELD);
             }
 
-            if (deliverable.getAllowModifications() == null) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getAllowModifications() == null) {
               this.addMessage(action.getText("project.deliverable.license.v.allowModification"));
               action.getInvalidFields().put("input-deliverable.dissemination.allowModification",
                 InvalidFieldsMessages.EMPTYFIELD);

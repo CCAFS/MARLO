@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.FundingSourceBudgetManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(FundingSourceBudgetManagerImpl.class)
+
 public interface FundingSourceBudgetManager {
 
 

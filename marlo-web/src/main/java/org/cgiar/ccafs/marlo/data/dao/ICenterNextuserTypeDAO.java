@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterNextuserTypeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterNextuserTypeDAO.class)
 public interface ICenterNextuserTypeDAO {
 
   /**

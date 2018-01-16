@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.LiaisonInstitutionMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(LiaisonInstitutionMySQLDAO.class)
 public interface LiaisonInstitutionDAO {
 
   /**
@@ -64,6 +61,18 @@ public interface LiaisonInstitutionDAO {
    * @return a LiaisonInstitution object.
    */
   public LiaisonInstitution findByAcronym(String acronym);
+
+  /**
+   * This method gets a liaisonInstitution object by a given institution and Crp identifier.
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 20, 2017
+   * @time 10:37:38 AM
+   * @param institutionId is the institution identifier.
+   * @param crpID is the crp identifier
+   * @return a LiaisonInstitution object.
+   */
+  public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID);
 
   /**
    * This method saves the information of the given liaisonInstitution

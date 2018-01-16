@@ -21,10 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
-public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClusterActivity, Long> implements ProjectClusterActivityDAO {
+@Named
+public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClusterActivity, Long>
+  implements ProjectClusterActivityDAO {
 
 
   @Inject
@@ -32,12 +35,15 @@ public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClus
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectClusterActivity(long projectClusterActivityId) {
     ProjectClusterActivity projectClusterActivity = this.find(projectClusterActivityId);
     projectClusterActivity.setActive(false);
-    this.save(projectClusterActivity);
+    super.update(projectClusterActivity);
+
   }
+
 
   @Override
   public boolean existProjectClusterActivity(long projectClusterActivityID) {
@@ -73,8 +79,6 @@ public class ProjectClusterActivityMySQLDAO extends AbstractMarloDAO<ProjectClus
     } else {
       projectClusterActivity = super.update(projectClusterActivity);
     }
-
-
     return projectClusterActivity;
   }
 

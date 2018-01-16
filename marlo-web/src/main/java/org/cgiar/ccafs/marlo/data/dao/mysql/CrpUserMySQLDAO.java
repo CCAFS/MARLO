@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.CrpUser;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements CrpUserDAO {
 
 
@@ -37,6 +39,17 @@ public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements 
     CrpUser crpUser = this.find(crpUserId);
     crpUser.setActive(false);
     this.save(crpUser);
+  }
+
+  @Override
+  public boolean existActiveCrpUser(long userId, long crpId) {
+    String query =
+      "from " + CrpUser.class.getName() + " where user_id=" + userId + " and crp_id=" + crpId + " and is_active=1";
+    List<CrpUser> crpUser = super.findAll(query);
+    if (crpUser != null && crpUser.size() > 0) {
+      return true;
+    }
+    return false;
   }
 
   @Override

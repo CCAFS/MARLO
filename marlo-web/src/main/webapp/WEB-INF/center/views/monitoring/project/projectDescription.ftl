@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Description" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
@@ -51,7 +51,7 @@
            
           [#-- Back --]
         <div class="pull-right">
-          <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>

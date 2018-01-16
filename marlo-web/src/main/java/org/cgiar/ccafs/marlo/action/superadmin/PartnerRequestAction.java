@@ -41,8 +41,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +62,13 @@ import org.slf4j.LoggerFactory;
 public class PartnerRequestAction extends BaseAction {
 
   private static final long serialVersionUID = -4592281983603538935L;
+
   private static Logger LOG = LoggerFactory.getLogger(PartnerRequestAction.class);
-  // Managers
-  private PartnerRequestManager partnerRequestManager;
-  private InstitutionManager institutionManager;
-  private InstitutionTypeManager institutionTypeManager;
-  private InstitutionLocationManager institutionLocationManager;
-  private LocElementManager locElementManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final InstitutionManager institutionManager;
+  private final InstitutionTypeManager institutionTypeManager;
+  private final InstitutionLocationManager institutionLocationManager;
+  private final LocElementManager locElementManager;
 
   // Variables
   private List<LocElement> countriesList = new ArrayList<>();
@@ -74,7 +76,7 @@ public class PartnerRequestAction extends BaseAction {
   private List<CountryOfficePOJO> countryOfficesList = new ArrayList<>();
   private List<PartnerRequest> partners;
   private long requestID;
-  private SendMailS sendMail;
+  private final SendMailS sendMail;
   private boolean success;
   private boolean sendNotification;
 
@@ -296,10 +298,10 @@ public class PartnerRequestAction extends BaseAction {
   public String rejectCountryOffices() {
     try {
       try {
-        Map<String, Object> parameters = this.getParameters();
-        justification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
-        sendNotification = Boolean
-          .valueOf(StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION))[0]));
+        Map<String, Parameter> parameters = this.getParameters();
+        justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
+        sendNotification = Boolean.valueOf(
+          StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
       } catch (Exception e) {
         System.out.println(e.getMessage());
         justification = "";

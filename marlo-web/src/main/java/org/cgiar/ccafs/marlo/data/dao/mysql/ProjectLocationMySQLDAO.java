@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, Long> implements ProjectLocationDAO {
 
 
@@ -33,12 +35,15 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    this.save(projectLocation);
+    super.update(projectLocation);
+
   }
+
 
   @Override
   public boolean existProjectLocation(long projectLocationID) {
@@ -95,7 +100,6 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
 
 
     return projectLocation;
+
   }
-
-
 }

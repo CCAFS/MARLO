@@ -125,7 +125,6 @@ function getInputElement(fieldName,message) {
 
 $(".errorTag").on("click", function() {
   var $this = $(this).parents(".expandableBlock").find(".blockTitle");
-  console.log($this);
   $($this).next().slideToggle('slow', function() {
     $($this).find('textarea').autoGrow();
   });
@@ -160,10 +159,6 @@ function showHiddenTags(element) {
       var tagElement = $(element).find("span.errorTag");
       var left = $(element).outerWidth();
       var top = $(element).outerHeight();
-      console.log(element);
-      console.log(tagElement);
-      console.log(left);
-      console.log(top);
       tagElement.css("top", (top / 2));
       tagElement.css("left", left);
     }
