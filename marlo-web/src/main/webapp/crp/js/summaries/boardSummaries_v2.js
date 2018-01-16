@@ -110,7 +110,8 @@ function getProjectsByCycleYear(parent, cycle, year) {
       type: 'GET',
       data: {
         cycle: cycle,
-        year: year
+        year: year,
+        phaseID: phaseID
       },
       success: function(m) {
         $.each(m.projects, function(i,e) {

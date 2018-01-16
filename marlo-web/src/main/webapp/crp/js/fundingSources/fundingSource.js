@@ -288,7 +288,8 @@ function addContactAutoComplete() {
     $.ajax({
         url: baseURL + '/searchUsers.do',
         data: {
-          q: request.term
+            q: request.term,
+            phaseID: phaseID
         },
         success: function(data) {
           response(data.users);

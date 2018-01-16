@@ -7,7 +7,8 @@ $(function() { // on dom ready
 
   if(crpProgram != "" && crpProgram != null) {
     data = {
-      programID: crpProgram
+        programID: crpProgram,
+        phaseID: phaseID
     };
 
     ajaxService(url, data, graphicContent, panningEnable, false, 'breadthfirst', false);
@@ -479,7 +480,8 @@ $("#overlay .btn").on("click", function() {
         var url = baseURL + "/impactPathwayGraphByProgram.do";
         var crpProgram = $("input[name='programID']").val();
         var data = {
-          programID: crpProgram
+            programID: crpProgram,
+            phaseID: phaseID
         }
         ajaxService(url, data, "impactGraphic", true, true, 'breadthfirst', false);
       }

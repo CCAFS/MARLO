@@ -452,8 +452,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canAcessCrpAdmin() {
-    String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
-    return securityContext.hasPermission(permission);
+    try {
+      String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
+      return securityContext.hasPermission(permission);
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   public boolean canAcessFunding() {
