@@ -447,8 +447,8 @@ public class DeliverableAction extends BaseAction {
     } else {
       deliverablePartnership.setPartnerDivision(null);
     }
+    deliverablePartnership.setPartnerType(partnershipResponsibleDB.getPartnerType());
     return deliverablePartnership;
-
   }
 
 
@@ -1545,8 +1545,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.setOtherPartners(new ArrayList<>());
       }
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getProjectPartnerPerson() == null
-          && deliverablePartnership.getProjectPartner() == null) {
+        if (deliverablePartnership.getProjectPartner() == null) {
           deliverablePartnership.setId(null);
         } else {
           if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
@@ -1656,12 +1655,12 @@ public class DeliverableAction extends BaseAction {
       } else {
         deliverableManagedState.getDeliverableInfo(this.getActualPhase()).setNewExpectedYear(null);
       }
-      // This gets a DeliverablePartnership entity in managed state.
+      // This gets a DeliverablePartnership responsible entity in managed state.
       DeliverablePartnership partnershipResponsibleManaged = deliverable.getResponsiblePartner();
-      Deliverable deliverableBase = deliverableManager.getDeliverableById(deliverableID);
-      DeliverablePartnership partnershipResponsibleDB = this.getDeliverablePartnershipDB(deliverableBase);
+      Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+      // gets delivetablePartnership responsible from database
+      DeliverablePartnership partnershipResponsibleDB = this.getDeliverablePartnershipDB(deliverableDB);
       this.saveUpdateDeliverablePartnershipResponsible(partnershipResponsibleDB, partnershipResponsibleManaged);
-
 
       this.removeOthersDeliverablePartnerships(deliverableManagedState);
       this.updateOtherDeliverablePartnerships();
@@ -2182,7 +2181,12 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
-
+  /**
+   * Save, update or delete partnership's responsible
+   * 
+   * @param partnershipResponsibleDB partnership responsible from database
+   * @param partnershipResponsibleManaged partnership responsible from interface
+   */
   private void saveUpdateDeliverablePartnershipResponsible(DeliverablePartnership partnershipResponsibleDB,
     DeliverablePartnership partnershipResponsibleManaged) {
     if (partnershipResponsibleManaged.getProjectPartner() != null
@@ -2491,159 +2495,30 @@ public class DeliverableAction extends BaseAction {
   }
 
   /**
-   * This is for updating the list of other Deliverable Partnerships.
-   * This method needs refactoring as it is big and confusing.
+   * This is for updating the list of Other Deliverable Partnerships.
    */
   private void updateOtherDeliverablePartnerships() {
     if (deliverable.getOtherPartners() != null) {
       // Iterate through the list of detached entities.
-      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getProjectPartnerPerson() != null) {
-
-          if (deliverablePartnership.getId() == null
-            && (deliverablePartnership.getProjectPartnerPerson().getId() != null)) {
-
-
-            ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
-              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
-
-            if (partnerPerson != null) {
-              DeliverablePartnership partnership = new DeliverablePartnership();
-              partnership.setProjectPartnerPerson(partnerPerson);
-              partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-              partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-              partnership.setActive(true);
-              partnership.setCreatedBy(this.getCurrentUser());
-              partnership.setModifiedBy(this.getCurrentUser());
-              partnership.setModificationJustification("");
-              partnership.setActiveSince(new Date());
-              partnership.setPhase(this.getActualPhase());
-              if (deliverablePartnership.getPartnerDivision() != null
-                && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-                try {
-                  PartnerDivision division =
-                    partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                  partnership.setPartnerDivision(division);
-                } catch (Exception e) {
-                  // NEVER EVER JUST SWALLOW UNCHECKED EXCEPTIONS! Logging this now.
-                  logger.error("unable to set PartnerDivision with id : " + deliverablePartnership.getPartnerDivision()
-                    + ", on partnership: " + partnership, e);
-                  /**
-                   * Generally when an unchecked exception occurs you don't try and continue processing, something is
-                   * wrong and you need to deal with it. We need to review this logic at some point in time, as the user
-                   * will not be aware that the partnerDivision has not been saved and that is confusing.
-                   */
-                  partnership.setPartnerDivision(null);
-                }
-              } else {
-                // This means that a partnerDivision can be set to -1, if yes how so? Should something be doing that?
-                partnership.setPartnerDivision(null);
-              }
-
-              deliverablePartnershipManager.saveDeliverablePartnership(partnership);
-
-            } else {
-              logger.debug("Unable to find projectPartnerPerson with id: "
-                + deliverablePartnership.getProjectPartnerPerson().getId());
-            }
-
-            /**
-             * This has met one of two conditions; the deliverablePartnership is existing or it
-             * does not have a projectPartnerPerson.
-             */
+      for (DeliverablePartnership deliverablePartnershipOther : deliverable.getOtherPartners()) {
+        if (deliverablePartnershipOther.getProjectPartner() != null) {
+          if (deliverablePartnershipOther.getId() == null) {
+            this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
+              DeliverablePartnershipTypeEnum.OTHER.getValue());
           } else {
-
-            long partnerShipPrewId = 0;
-            // This looks like a NPE waiting to happen.
-            partnerShipPrewId = deliverablePartnershipManager
-              .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
-
-
-            long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
-            // Check to see if this deliverablePartnership is different from what we already had.
-            if (partnerShipPrewId != partnerShipId) {
-
-              ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
-                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
-
-              deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-
-              if (partnerPerson != null) {
-
-                DeliverablePartnership partnershipNew = new DeliverablePartnership();
-                partnershipNew.setProjectPartnerPerson(partnerPerson);
-                partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-                partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-                partnershipNew.setActive(true);
-                partnershipNew.setCreatedBy(this.getCurrentUser());
-                partnershipNew.setModifiedBy(this.getCurrentUser());
-                partnershipNew.setModificationJustification("");
-                partnershipNew.setActiveSince(new Date());
-                partnershipNew.setPhase(this.getActualPhase());
-                if (deliverablePartnership.getPartnerDivision() != null
-                  && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-                  try {
-                    PartnerDivision division = partnerDivisionManager
-                      .getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                    partnershipNew.setPartnerDivision(division);
-                  } catch (Exception e) {
-                    // NEVER EVER JUST SWALLOW UNCHECKED EXCEPTIONS! Logging this now.
-                    logger.error("unable to set PartnerDivision with id : "
-                      + deliverablePartnership.getPartnerDivision() + ", on partnership: " + deliverablePartnership, e);
-                    /**
-                     * Generally when an unchecked exception occurs you don't try and continue processing, something is
-                     * wrong and you need to deal with it. We need to review this logic at some point in time, as the
-                     * user
-                     * will not be aware that the partnerDivision has not been saved and that is confusing.
-                     */
-                    partnershipNew.setPartnerDivision(null);
-                  }
-                } else {
-                  partnershipNew.setPartnerDivision(null);
-                }
-                deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
-              }
-
+            DeliverablePartnership partnershipResponsibleDB =
+              deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnershipOther.getId());
+            if (deliverablePartnershipOther.getProjectPartner().getId()
+              .equals(partnershipResponsibleDB.getProjectPartner().getId())) {
+              this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, deliverablePartnershipOther,
+                DeliverablePartnershipTypeEnum.OTHER.getValue());
             } else {
-              DeliverablePartnership partnershipDB =
-                deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnership.getId());
-
-              ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
-                .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
-
-              partnershipDB.setProjectPartnerPerson(partnerPerson);
-              if (deliverablePartnership.getPartnerDivision() != null
-                && deliverablePartnership.getPartnerDivision().getId().longValue() != -1) {
-                try {
-                  PartnerDivision division =
-                    partnerDivisionManager.getPartnerDivisionById(deliverablePartnership.getPartnerDivision().getId());
-                  partnershipDB.setPartnerDivision(division);
-                } catch (Exception e) {
-                  // NEVER EVER JUST SWALLOW UNCHECKED EXCEPTIONS! Logging this now.
-                  logger.error("unable to set PartnerDivision with id : " + deliverablePartnership.getPartnerDivision()
-                    + ", on partnership: " + partnershipDB, e);
-                  /**
-                   * Generally when an unchecked exception occurs you don't try and continue processing, something is
-                   * wrong and you need to deal with it. We need to review this logic at some point in time, as the user
-                   * will not be aware that the partnerDivision has not been saved and that is confusing.
-                   */
-                  partnershipDB.setPartnerDivision(null);
-                }
-
-              } else {
-                partnershipDB.setPartnerDivision(null);
-              }
-
-              deliverablePartnershipManager.saveDeliverablePartnership(partnershipDB);
-
+              deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
+              this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
+                DeliverablePartnershipTypeEnum.OTHER.getValue());
             }
           }
-        } else {
-          // This seems like something I am interested in.
-          logger
-            .debug("deliverablePartnership.getProjectPartnerPerson is null so not updating the deliverablePartnership");
         }
-
       }
     }
   }

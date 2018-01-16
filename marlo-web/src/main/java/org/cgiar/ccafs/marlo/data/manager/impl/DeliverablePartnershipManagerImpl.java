@@ -85,9 +85,14 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       partnerDivisionId = deliverablePartnership.getPartnerDivision().getId();
     }
 
+    String partnerType = null;
+    if (deliverablePartnership.getPartnerType() != null) {
+      partnerType = deliverablePartnership.getPartnerType();
+    }
+
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
 
     if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
@@ -173,9 +178,14 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       partnerDivisionId = deliverablePartnership.getPartnerDivision().getId();
     }
 
+    String partnerType = null;
+    if (deliverablePartnership.getPartnerType() != null) {
+      partnerType = deliverablePartnership.getPartnerType();
+    }
+
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
 
     for (DeliverablePartnership dePartnership : deliverablePartnerships) {
       dePartnership.setActive(false);
@@ -199,9 +209,9 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
   @Override
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
-    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId) {
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType) {
     return deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase,
-      projectPartnerId, projectPartnerPersonId, partnerDivisionId);
+      projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
   }
 
   @Override
@@ -297,9 +307,14 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       partnerDivisionId = partnershipResponsibleDBUpdated.getPartnerDivision().getId();
     }
 
+    String partnerType = null;
+    if (partnershipResponsibleDBUpdated.getPartnerType() != null) {
+      partnerType = partnershipResponsibleDBUpdated.getPartnerType();
+    }
+
     List<DeliverablePartnership> deliverablePartnershipsUpdated =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId, partnerType);
 
     ProjectPartner projectPartnerDB = this.getProjectPartner(phase, partnershipResponsibleDB.getProjectPartner());
     Long projectPartnerDBId = null;
@@ -317,9 +332,13 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       && partnershipResponsibleDB.getPartnerDivision().getId() != -1) {
       partnerDivisionDBId = partnershipResponsibleDB.getPartnerDivision().getId();
     }
+    String partnerTypeDB = null;
+    if (partnershipResponsibleDB.getPartnerType() != null) {
+      partnerTypeDB = partnershipResponsibleDB.getPartnerType();
+    }
     List<DeliverablePartnership> deliverablePartnershipsDB =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerDBId, projectPartnerPersonDBId, partnerDivisionDBId);
+        projectPartnerDBId, projectPartnerPersonDBId, partnerDivisionDBId, partnerTypeDB);
 
     if (deliverablePartnershipsUpdated.isEmpty() && !deliverablePartnershipsDB.isEmpty()) {
       for (DeliverablePartnership deliverablePartnershipDB : deliverablePartnershipsDB) {
