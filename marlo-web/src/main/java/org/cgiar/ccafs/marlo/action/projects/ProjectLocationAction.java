@@ -215,6 +215,7 @@ public class ProjectLocationAction extends BaseAction {
 
     project.setLocations((this.getDBLocations().stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
+        && p.getLocElement().getLocElementType() != null && p.getLocElement().getLocElementType().getId() != null
         && p.getLocElement().getLocElementType().getId().longValue() != 1 && p.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())));
     Map<String, Object> locationParent;
@@ -1294,7 +1295,7 @@ public class ProjectLocationAction extends BaseAction {
       projectLocation.setCreatedBy(this.getCurrentUser());
       projectLocation.setModificationJustification("");
       projectLocation.setModifiedBy(this.getCurrentUser());
-
+      projectLocation.setPhase(this.getActualPhase());
       projectLocationManager.saveProjectLocation(projectLocation);
     }
 

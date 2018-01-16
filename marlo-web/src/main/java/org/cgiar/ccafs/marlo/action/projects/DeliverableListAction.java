@@ -121,27 +121,26 @@ public class DeliverableListAction extends BaseAction {
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
 
-    List<Integer> years = project.getProjecInfoPhase(this.getActualPhase()).getAllYearsPhase();
-    for (Integer year : years) {
+    Phase phase = this.getActualPhase();
+    boolean hasNext = true;
+    while (hasNext) {
+
+      phase = phaseManager.getPhaseById(phase.getId());
       DeliverableInfo deliverableInfo = new DeliverableInfo();
       deliverableInfo.setDeliverable(deliverable);
-      deliverableInfo.setPhase(phaseManager.findCycle(APConstants.PLANNING, year, this.getCrpID()));
+      deliverableInfo.setPhase(phase);
       deliverableInfo.setYear(this.getCurrentCycleYear());
 
       deliverableInfo.setModifiedBy(this.getCurrentUser());
       deliverableInfo.setModificationJustification("New expected deliverable created");
       deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
 
-      DeliverableInfo deliverableInfoReporting = new DeliverableInfo();
-      deliverableInfoReporting.setDeliverable(deliverable);
-      deliverableInfoReporting.setPhase(phaseManager.findCycle(APConstants.REPORTING, year, this.getCrpID()));
-      deliverableInfoReporting.setYear(this.getCurrentCycleYear());
 
-      deliverableInfoReporting.setModifiedBy(this.getCurrentUser());
-      deliverableInfoReporting.setModificationJustification("New expected deliverable created");
-      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-
-
+      if (phase.getNext() != null) {
+        phase = phase.getNext();
+      } else {
+        hasNext = false;
+      }
     }
 
 

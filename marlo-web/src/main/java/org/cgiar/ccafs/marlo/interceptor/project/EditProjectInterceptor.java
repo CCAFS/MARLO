@@ -59,7 +59,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private final GlobalUnitManager crpManager;
   private final ProjectManager projectManager;
   private final PhaseManager phaseManager;
-  private GlobalUnitProjectManager globalUnitProjectManager;
+  private final GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, GlobalUnitManager crpManager, PhaseManager phaseManager,
@@ -115,6 +115,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     GlobalUnitProject globalUnitProject =
       globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     if (globalUnitProject != null) {
+
       if (project != null && project.isActive() && globalUnitProject.isOrigin()) {
 
         String params[] =
@@ -171,14 +172,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
         }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
-          canEdit = false;
-          canSwitchProject = false;
-          baseAction.setEditStatus(true);
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+            canEdit = false;
+            canSwitchProject = false;
+            baseAction.setEditStatus(true);
+
+          }
 
         }
 

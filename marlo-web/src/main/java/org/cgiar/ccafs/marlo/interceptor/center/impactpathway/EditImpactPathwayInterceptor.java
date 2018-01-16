@@ -91,10 +91,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           area.getResearchPrograms().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
         programID = programs.get(0).getId();
       } else {
-        List<CenterLeader> userProgramLeads = new ArrayList<>(user.getResearchLeaders().stream()
-          .filter(
-            rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
-          .collect(Collectors.toList()));
+        List<CenterLeader> userProgramLeads =
+          new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(rl -> rl.isActive()
+              && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_PROGRAM_LEADER_TYPE.getValue())
+            .collect(Collectors.toList()));
         if (!userProgramLeads.isEmpty()) {
           programID = userProgramLeads.get(0).getResearchProgram().getId();
         } else {
@@ -158,8 +159,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         canEdit = true;
       } else {
 
-        if (baseAction
-          .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+        if (baseAction.hasPermissionCenter(
+          baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
           canEdit = true;
         }
       }
@@ -176,8 +177,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+        hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+          baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
       }
 
       if (baseAction.isSubmitIP(programID)) {

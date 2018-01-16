@@ -96,7 +96,7 @@ public class ProjectListAction extends BaseAction {
   public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
-    ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -105,6 +105,7 @@ public class ProjectListAction extends BaseAction {
     this.liaisonUserManager = liaisonUserManager;
     this.projectInfoManager = projectInfoManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.sectionStatusManager = sectionStatusManager;
     this.projectBudgetManager = projectBudgetManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
   }
@@ -197,6 +198,45 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
+  public void addProjectOnPhase(Phase phase, Project project, LiaisonInstitution liaisonInstitution,
+    LiaisonUser liaisonUser, String type, boolean admin) {
+    if (phase != null) {
+      ProjectPhase projectPhase = new ProjectPhase();
+      projectPhase.setPhase(phase);
+      projectPhase.setProject(project);
+      projectPhaseManager.saveProjectPhase(projectPhase);
+    }
+    ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo.setModifiedBy(this.getCurrentUser());
+    projectInfo.setModificationJustification("New expected Project created");
+    projectInfo.setType(type);
+    projectInfo.setLiaisonUser(liaisonUser);
+    projectInfo.setLiaisonInstitution(liaisonInstitution);
+    projectInfo.setScale(0);
+    projectInfo.setCofinancing(false);
+    projectInfo.setProjectEditLeader(false);
+    projectInfo.setPresetDate(new Date());
+    projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    projectInfo.setAdministrative(new Boolean(admin));
+    projectInfo.setPhase(phase);
+    projectInfo.setProject(project);
+    projectInfoManager.saveProjectInfo(projectInfo);
+    SectionStatus status = null;
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(this.getCurrentCycle());
+      status.setYear(this.getCurrentCycleYear());
+      status.setProject(project);
+      status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+
+
+    }
+    status.setMissingFields("");
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
+
   /**
    * This method validates if a project can be deleted or not.
    * Keep in mind that a project can be deleted if it was created in the current planning cycle.
@@ -252,43 +292,20 @@ public class ProjectListAction extends BaseAction {
       globalUnitProject.setOrigin(true);
       globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
-      ProjectInfo projectInfo = new ProjectInfo();
-      projectInfo.setModifiedBy(this.getCurrentUser());
-      projectInfo.setModificationJustification("New expected Project created");
-      projectInfo.setType(type);
-      projectInfo.setLiaisonUser(liaisonUser);
-      projectInfo.setLiaisonInstitution(liaisonInstitution);
-      projectInfo.setScale(0);
-      projectInfo.setCofinancing(false);
-      projectInfo.setProjectEditLeader(false);
-      projectInfo.setPresetDate(new Date());
-      projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-      projectInfo.setAdministrative(new Boolean(admin));
+
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
-      if (phase != null) {
-        ProjectPhase projectPhase = new ProjectPhase();
-        projectPhase.setPhase(phase);
-        projectPhase.setProject(project);
-        projectPhaseManager.saveProjectPhase(projectPhase);
+
+      this.addProjectOnPhase(phase, project, liaisonInstitution, liaisonUser, type, admin);
+
+      boolean hasNext = true;
+
+      while (hasNext) {
+        if (phase.getNext() != null) {
+          this.addProjectOnPhase(phase.getNext(), project, liaisonInstitution, liaisonUser, type, admin);
+          phase = phase.getNext();
+        }
+        hasNext = false;
       }
-      projectInfo.setPhase(phase);
-      projectInfo.setProject(project);
-      projectInfoManager.saveProjectInfo(projectInfo);
-      SectionStatus status = null;
-      if (status == null) {
-
-        status = new SectionStatus();
-        status.setCycle(this.getCurrentCycle());
-        status.setYear(this.getCurrentCycleYear());
-        status.setProject(project);
-        status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-
-
-      }
-
-      status.setMissingFields("");
-      sectionStatusManager.saveSectionStatus(status);
-
       if (projectID > 0) {
         return true;
       }
