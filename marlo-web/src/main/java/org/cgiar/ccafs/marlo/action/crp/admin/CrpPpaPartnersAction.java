@@ -622,6 +622,9 @@ public class CrpPpaPartnersAction extends BaseAction {
               }
             }
           }
+        } else {
+          partner = crpPpaPartnerManager.getCrpPpaPartnerById(partner.getId());
+          crpPpaPartnerManager.saveCrpPpaPartner(partner);
         }
       }
 
