@@ -256,8 +256,8 @@ public class FundingSourceListAction extends BaseAction {
             && fs.getFundingSourceInfo(this.getActualPhase()).getPhase().equals(this.getActualPhase())
             && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == null
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-                && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                && (fs.getFundingSourceInfo(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                   || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
@@ -271,8 +271,8 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList()));
       } else {
         /*
@@ -289,8 +289,8 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
 
       }
@@ -311,7 +311,8 @@ public class FundingSourceListAction extends BaseAction {
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
-          .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())));
         if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
           fundingSources.add(fundingSource);
         }

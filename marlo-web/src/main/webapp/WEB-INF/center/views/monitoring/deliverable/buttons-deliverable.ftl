@@ -6,7 +6,7 @@
 <input type="hidden"  name="id" value="${(deliverable.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
-
+<input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
 [#assign recordsList = (action.getListLog(deliverable))!{} /]

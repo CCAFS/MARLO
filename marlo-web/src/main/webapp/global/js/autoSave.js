@@ -130,7 +130,9 @@ function validateThisSection() {
   var sectionName = ($sectionMenu.attr('id')).split("-")[1];
 
   var validateService = "";
-  var sectionData = {};
+  var sectionData = {
+    phaseID: phaseID
+  };
   sectionData.sectionName = sectionName;
 
   // Validate projects

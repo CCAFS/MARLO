@@ -105,7 +105,8 @@ function validateSyncCode(createProject) {
       url: baseURL + '/validateSyncCode.do',
       data: {
           syncCode: syncCode,
-          syncTypeID: syncTypeID
+          syncTypeID: syncTypeID,
+          phaseID: phaseID
       },
       beforeSend: function(xhr,opts) {
         $syncCode.removeClass('fieldChecked fieldError');

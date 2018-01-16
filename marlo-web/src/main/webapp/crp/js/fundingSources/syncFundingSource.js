@@ -171,7 +171,8 @@ function getOCSMetadata() {
   $.ajax({
       'url': baseURL + '/ocsService.do',
       'data': {
-        ocsCode: $('input.financeCode').val()
+        ocsCode: $('input.financeCode').val(),
+        phaseID: phaseID
       },
       beforeSend: function() {
         $('.loading.syncBlock').show(); 

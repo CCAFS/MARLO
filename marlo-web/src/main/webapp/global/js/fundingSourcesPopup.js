@@ -47,7 +47,8 @@ $(document).ready(
         var option = $(this).find("option:selected");
         var url = baseURL + "/institutionsByBudgetType.do";
         var data = {
-          budgetTypeID: option.val()
+            budgetTypeID: option.val(),
+            phaseID: phaseID
         };
         ajaxService(url, data);
 
@@ -130,7 +131,9 @@ $(document).ready(
       $dialogContent.find(".create-button").on("click", function() {
         $dialogContent.find('.warning-info').empty().hide();
         var invalidFields = [];
-        var project = {};
+        var project = {
+          phaseID: phaseID
+        };
         // project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
         project.description = $dialogContent.find("#description").val().trim();
         project.title = $dialogContent.find("#title").val().trim();
@@ -346,7 +349,8 @@ $(document).ready(
             'data': {
                 q: query,
                 institutionID: institutionSelected,
-                year: selectedYear
+                year: selectedYear,
+                phaseID: phaseID
             },
             'dataType': "json",
             beforeSend: function(xhr,opts) {
@@ -638,7 +642,8 @@ function addContactAutoComplete() {
     $.ajax({
         url: baseURL + '/searchUsers.do',
         data: {
-          q: request.term
+            q: request.term,
+            phaseID: phaseID
         },
         success: function(data) {
           response(data.users);

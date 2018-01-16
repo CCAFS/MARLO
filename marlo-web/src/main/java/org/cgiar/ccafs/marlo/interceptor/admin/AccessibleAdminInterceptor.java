@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -33,7 +34,9 @@ public class AccessibleAdminInterceptor extends AbstractInterceptor implements S
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    Map<String, Object> session = invocation.getInvocationContext().getSession();
     baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
       return invocation.invoke();
     } else {

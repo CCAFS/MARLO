@@ -501,17 +501,17 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
-      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setActiveSince(new Date());
-      projectOutcome.setPhase(this.getActualPhase());
-      projectOutcome.setModificationJustification(this.getJustification());
+      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
+      projectOutcomeDB.setActiveSince(new Date());
+      projectOutcomeDB.setPhase(this.getActualPhase());
+      projectOutcomeDB.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
+      projectOutcomeManager.saveProjectOutcome(projectOutcomeDB, this.getActionName(), relationsName,
         this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
