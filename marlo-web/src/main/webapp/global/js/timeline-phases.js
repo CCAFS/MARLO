@@ -34,15 +34,9 @@ $(document).ready(function() {
       nextPage: $example.find('.nextPage')
   }).init();
 
-  $('.phaseBox.open.phaseNoSelected').on('click', function(e,i) {
+  $('.phaseBox.phaseNoSelected').on('click', function(e,i) {
     var phaseID = $(this).attr('id').split('-')[1];
-    var isClosed = $(this).find('.label-danger').exists();
-
-    if(isClosed) {
-      e.preventDefault();
-    } else {
-      setPhaseID(phaseID);
-    }
+    setPhaseID(phaseID);
   });
 
   sly.on('active', function(eventName,itemIndex) {
