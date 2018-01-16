@@ -56,7 +56,7 @@ public interface DeliverablePartnershipManager {
   public List<DeliverablePartnership> findAll();
 
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
-    Long projectPartnerId, Long projectPartnerPersonId);
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId);
 
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId);
 
@@ -82,5 +82,9 @@ public interface DeliverablePartnershipManager {
    *         or -1 is some error occurred.
    */
   public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
+
+
+  public DeliverablePartnership updateDeliverablePartnership(DeliverablePartnership partnershipResponsibleDBUpdated,
+    DeliverablePartnership partnershipResponsibleDB);
 
 }

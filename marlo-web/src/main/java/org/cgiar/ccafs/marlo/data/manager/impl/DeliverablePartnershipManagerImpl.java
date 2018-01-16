@@ -79,10 +79,15 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     if (projectPartnerPerson != null) {
       projectPartnerPersonId = projectPartnerPerson.getId();
     }
+    Long partnerDivisionId = null;
+    if (deliverablePartnership.getPartnerDivision() != null
+      && deliverablePartnership.getPartnerDivision().getId() != -1) {
+      partnerDivisionId = deliverablePartnership.getPartnerDivision().getId();
+    }
 
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerId, projectPartnerPersonId);
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
 
     if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
@@ -162,10 +167,15 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     if (projectPartnerPerson != null) {
       projectPartnerPersonId = projectPartnerPerson.getId();
     }
+    Long partnerDivisionId = null;
+    if (deliverablePartnership.getPartnerDivision() != null
+      && deliverablePartnership.getPartnerDivision().getId() != -1) {
+      partnerDivisionId = deliverablePartnership.getPartnerDivision().getId();
+    }
 
     List<DeliverablePartnership> deliverablePartnerships =
       deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
-        projectPartnerId, projectPartnerPersonId);
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
 
     for (DeliverablePartnership dePartnership : deliverablePartnerships) {
       dePartnership.setActive(false);
@@ -189,9 +199,9 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
   @Override
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
-    Long projectPartnerId, Long projectPartnerPersonId) {
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId) {
     return deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase,
-      projectPartnerId, projectPartnerPersonId);
+      projectPartnerId, projectPartnerPersonId, partnerDivisionId);
   }
 
   @Override
@@ -249,6 +259,94 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       }
     }
     return dePartnership;
+  }
+
+  @Override
+  public DeliverablePartnership updateDeliverablePartnership(DeliverablePartnership partnershipResponsibleDBUpdated,
+    DeliverablePartnership partnershipResponsibleDB) {
+    DeliverablePartnership dePartnership = deliverablePartnershipDAO.save(partnershipResponsibleDBUpdated);
+    Phase currentPhase = phaseDAO.find(partnershipResponsibleDBUpdated.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (partnershipResponsibleDBUpdated.getPhase().getNext() != null) {
+        this.updateDeliverablePartnershipPhase(partnershipResponsibleDBUpdated.getPhase().getNext(),
+          partnershipResponsibleDBUpdated.getDeliverable().getId(), partnershipResponsibleDBUpdated,
+          partnershipResponsibleDB);
+      }
+    }
+    return dePartnership;
+  }
+
+  private void updateDeliverablePartnershipPhase(Phase next, Long deliverableID,
+    DeliverablePartnership partnershipResponsibleDBUpdated, DeliverablePartnership partnershipResponsibleDB) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    ProjectPartner projectPartner = this.getProjectPartner(phase, partnershipResponsibleDBUpdated.getProjectPartner());
+    Long projectPartnerId = null;
+    if (projectPartner != null) {
+      projectPartnerId = projectPartner.getId();
+    }
+    ProjectPartnerPerson projectPartnerPerson =
+      this.getPartnerPerson(phase, partnershipResponsibleDBUpdated.getProjectPartnerPerson());
+    Long projectPartnerPersonId = null;
+    if (projectPartnerPerson != null) {
+      projectPartnerPersonId = projectPartnerPerson.getId();
+    }
+    Long partnerDivisionId = null;
+    if (partnershipResponsibleDBUpdated.getPartnerDivision() != null
+      && partnershipResponsibleDBUpdated.getPartnerDivision().getId() != -1) {
+      partnerDivisionId = partnershipResponsibleDBUpdated.getPartnerDivision().getId();
+    }
+
+    List<DeliverablePartnership> deliverablePartnershipsUpdated =
+      deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
+        projectPartnerId, projectPartnerPersonId, partnerDivisionId);
+
+    ProjectPartner projectPartnerDB = this.getProjectPartner(phase, partnershipResponsibleDB.getProjectPartner());
+    Long projectPartnerDBId = null;
+    if (projectPartnerDB != null) {
+      projectPartnerDBId = projectPartnerDB.getId();
+    }
+    ProjectPartnerPerson projectPartnerPersonDB =
+      this.getPartnerPerson(phase, partnershipResponsibleDB.getProjectPartnerPerson());
+    Long projectPartnerPersonDBId = null;
+    if (projectPartnerPersonDB != null) {
+      projectPartnerPersonDBId = projectPartnerPersonDB.getId();
+    }
+    Long partnerDivisionDBId = null;
+    if (partnershipResponsibleDB.getPartnerDivision() != null
+      && partnershipResponsibleDB.getPartnerDivision().getId() != -1) {
+      partnerDivisionDBId = partnershipResponsibleDB.getPartnerDivision().getId();
+    }
+    List<DeliverablePartnership> deliverablePartnershipsDB =
+      deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
+        projectPartnerDBId, projectPartnerPersonDBId, partnerDivisionDBId);
+
+    if (deliverablePartnershipsUpdated.isEmpty() && !deliverablePartnershipsDB.isEmpty()) {
+      for (DeliverablePartnership deliverablePartnershipDB : deliverablePartnershipsDB) {
+        deliverablePartnershipDB.setActive(true);
+        deliverablePartnershipDB.setActiveSince(partnershipResponsibleDBUpdated.getActiveSince());
+        deliverablePartnershipDB.setCreatedBy(partnershipResponsibleDBUpdated.getCreatedBy());
+        deliverablePartnershipDB
+          .setModificationJustification(partnershipResponsibleDBUpdated.getModificationJustification());
+        deliverablePartnershipDB.setModifiedBy(partnershipResponsibleDBUpdated.getModifiedBy());
+        deliverablePartnershipDB.setPhase(phase);
+        deliverablePartnershipDB.setDeliverable(partnershipResponsibleDBUpdated.getDeliverable());
+        deliverablePartnershipDB.setPartnerType(partnershipResponsibleDBUpdated.getPartnerType());
+        deliverablePartnershipDB.setPartnerDivision(partnershipResponsibleDBUpdated.getPartnerDivision());
+        if (partnershipResponsibleDBUpdated.getProjectPartner() != null) {
+          deliverablePartnershipDB.setProjectPartner(projectPartner);
+        }
+        if (partnershipResponsibleDBUpdated.getProjectPartnerPerson() != null) {
+          deliverablePartnershipDB.setProjectPartnerPerson(projectPartnerPerson);
+        }
+        deliverablePartnershipDAO.save(partnershipResponsibleDBUpdated);
+      }
+    }
+
+    if (phase.getNext() != null) {
+      this.updateDeliverablePartnershipPhase(phase.getNext(), deliverableID, partnershipResponsibleDBUpdated,
+        partnershipResponsibleDB);
+    }
   }
 
 
