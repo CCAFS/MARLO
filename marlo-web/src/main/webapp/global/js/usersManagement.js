@@ -212,7 +212,8 @@ $(document)
             $.ajax({
                 'url': baseURL + '/searchUsers.do',
                 'data': {
-                  q: query
+                    q: query,
+                    phaseID: phaseID
                 },
                 'dataType': "json",
                 beforeSend: function() {
