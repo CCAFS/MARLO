@@ -79,7 +79,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
 
   @Override
   public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
-    Long projectPartnerId, Long projectPartnerPersonId) {
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT DISTINCT  ");
     query.append("dp.id as id ");
@@ -94,8 +94,11 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       query.append(" and dp.partner_person_id IS NULL");
     }
-
-    System.out.println("Query: " + query);
+    if (partnerDivisionId != null) {
+      query.append(" and dp.division_id = " + partnerDivisionId);
+    } else {
+      query.append(" and dp.division_id IS NULL");
+    }
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
