@@ -220,6 +220,10 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         // If the user is not asking for edition privileges we don't need to validate them.
 
       }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
