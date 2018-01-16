@@ -47,7 +47,8 @@ function requestService() {
       url: baseURL + "/targetUnitRequest.do",
       type: 'GET',
       data: {
-        targetUnitName: $(".newTargetUnit").val()
+          targetUnitName: $(".newTargetUnit").val(),
+          phaseID: phaseID
       },
       success: function(m) {
         console.log(m);

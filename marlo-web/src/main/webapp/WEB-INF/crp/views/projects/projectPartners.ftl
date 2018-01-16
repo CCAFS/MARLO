@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Partners" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js", 

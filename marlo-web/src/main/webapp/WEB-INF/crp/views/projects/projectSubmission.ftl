@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Submission" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "Submission" /]

@@ -91,6 +91,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
 
     if (deliverable != null) {

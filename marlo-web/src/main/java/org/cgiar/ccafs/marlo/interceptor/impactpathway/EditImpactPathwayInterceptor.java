@@ -106,11 +106,12 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     crpProgramID = this.getCrpProgramId();
 
-    if (!baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, session,
-      crp.getId(), crp.getAcronym()))) {
+    if (!baseAction
+      .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, crp.getAcronym()))) {
       return BaseAction.NOT_AUTHORIZED;
     }
 
@@ -126,10 +127,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   public void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
 
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
@@ -143,7 +145,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           canEdit = true;
         } else {
           if (baseAction.hasPermissionNoBase(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
-            session, crp.getId(), crp.getAcronym(), crpProgramID + ""))) {
+            crp.getAcronym(), crpProgramID + ""))) {
             canEdit = true;
           }
 
@@ -154,6 +156,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
         if (!phase.getEditable()) {
           canEdit = false;
+          baseAction.setCanEditPhase(false);
         }
         if (phase.getDescription().equals(APConstants.REPORTING)) {
           canEdit = false;
@@ -178,9 +181,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
         }
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true
-            : baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, session,
-              crp.getId(), crp.getAcronym(), crpProgramID + ""));
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(baseAction
+            .generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym(), crpProgramID + ""));
         }
 
         // Set the variable that indicates if the user can edit the section

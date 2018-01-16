@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Phases" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["bootstrap-select","jquery-ui"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/admin/projectPhases.js",

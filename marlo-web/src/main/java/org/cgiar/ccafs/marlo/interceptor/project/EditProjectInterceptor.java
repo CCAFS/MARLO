@@ -88,6 +88,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
+    baseAction.setSession(session);
     loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
@@ -245,7 +246,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
           editParameter = false;
           // If the user is not asking for edition privileges we don't need to validate them.
-
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
         }
         if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
           if (baseAction.isReportingActive()) {

@@ -64,7 +64,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
   public void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;

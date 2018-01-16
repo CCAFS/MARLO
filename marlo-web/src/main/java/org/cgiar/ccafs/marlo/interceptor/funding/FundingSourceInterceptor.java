@@ -79,6 +79,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
     phase = baseAction.getActualPhase();

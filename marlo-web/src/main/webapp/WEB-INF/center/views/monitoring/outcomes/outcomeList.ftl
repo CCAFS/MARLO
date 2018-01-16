@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO - ${centerSession} - outcomes monitoring" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/monitoring/outcomes/outcomesList.js" 

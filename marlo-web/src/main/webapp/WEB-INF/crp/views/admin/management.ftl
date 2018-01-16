@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Management" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 

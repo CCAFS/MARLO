@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Budget By Partners" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js", 
