@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "PPA Partners" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -54,8 +54,10 @@
       			[/#if]
       	</div>
       	
-      	[#-- Section Buttons--]
-        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
+      	[#-- Section Buttons
+      	[#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
+      	--]
+        
         
         [/@s.form]
       	

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Regional Mapping" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flat-flags", "vanilla-color-picker"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 

@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -45,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -112,6 +114,9 @@ public class ProjectListAction extends BaseAction {
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
+  // TODO fix Phases without globalUnit
+  private PhaseManager phaseManager;
+
   @Inject
   public ProjectListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
@@ -119,7 +124,7 @@ public class ProjectListAction extends BaseAction {
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
     ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
-    ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager) {
+    ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager, PhaseManager phaseManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -136,6 +141,7 @@ public class ProjectListAction extends BaseAction {
     this.partnerService = partnerService;
     this.partnerPersonService = partnerPersonService;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.phaseManager = phaseManager;
 
   }
 
@@ -185,14 +191,25 @@ public class ProjectListAction extends BaseAction {
     long pID = Long.parseLong(syncCode);
     Project project = projectManager.getProjectById(pID);
 
+
+    // TODO add phase call the parameters
+    Crp crp = project.getCrp();
+
+
+    CustomParameter customParameter = crp.getCustomParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_PLANNING_YEAR))
+      .collect(Collectors.toList()).get(0);
+
+    Phase phase = phaseManager.findCycle("Planning", Integer.parseInt(customParameter.getValue()), crp.getId());
+
     CenterProject centerProject = this.createCenterProject(project, true);
 
     // Add Project Leader
-    centerProject.setProjectLeader(project.getLeaderPerson(this.getActualPhase()).getUser());
+    centerProject.setProjectLeader(project.getLeaderPerson(phase).getUser());
 
     // Add Project Status
     centerProject
-      .setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(this.getActualPhase()).getStatus(), true));
+      .setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(phase).getStatus(), true));
 
     // Add Crp Project CrossCutting to Center Project
     this.crpCrossCuttingInformation(project, centerProject);

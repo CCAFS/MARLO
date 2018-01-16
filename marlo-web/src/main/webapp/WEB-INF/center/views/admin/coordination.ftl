@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Coordination" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = ["${baseUrl}/global/js/usersManagement.js", "${baseUrlMedia}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "coordination" /]
