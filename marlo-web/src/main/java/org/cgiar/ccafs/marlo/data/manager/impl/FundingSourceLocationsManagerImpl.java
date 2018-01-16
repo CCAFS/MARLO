@@ -75,7 +75,7 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
     }
 
 
-    if ( locations.isEmpty()) {
+    if (locations.isEmpty()) {
       FundingSourceLocation fundingSourceLocationAdd = new FundingSourceLocation();
       fundingSourceLocationAdd.setActive(true);
       fundingSourceLocationAdd.setActiveSince(fundingSourceLocation.getActiveSince());
@@ -138,8 +138,10 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   @Override
   public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
 
-    fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);
+    // fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);
     FundingSourceLocation fundingSourceLocations = this.getFundingSourceLocationsById(fundingSourceLocationsId);
+    fundingSourceLocations.setActive(false);
+    fundingSourceLocations = fundingSourceLocationsDAO.save(fundingSourceLocations);
     Phase currentPhase = phaseDAO.find(fundingSourceLocations.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
 
