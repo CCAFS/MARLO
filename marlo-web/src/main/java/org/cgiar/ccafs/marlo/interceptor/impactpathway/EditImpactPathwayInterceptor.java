@@ -155,6 +155,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
         if (!phase.getEditable()) {
           canEdit = false;
+          baseAction.setCanEditPhase(false);
         }
         if (phase.getDescription().equals(APConstants.REPORTING)) {
           canEdit = false;
