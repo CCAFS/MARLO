@@ -3691,17 +3691,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
-
-    if (session.containsKey(APConstants.SESSION_CENTER)) {
-      if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
-        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-
-        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else {
-
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
-      }
-    }
   }
 
   @Override
