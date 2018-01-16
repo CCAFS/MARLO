@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,12 +68,22 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     DeliverablePartnership deliverablePartnership) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<DeliverablePartnership> deliverablePartnerships = phase.getDeliverablePartnerships().stream()
-      .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID
-        && this.getProjectPartner(phase, deliverablePartnership.getProjectPartner()).equals(c.getProjectPartner())
-        && this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson())
-          .equals(c.getProjectPartnerPerson()))
-      .collect(Collectors.toList());
+    ProjectPartner projectPartner = this.getProjectPartner(phase, deliverablePartnership.getProjectPartner());
+    Long projectPartnerId = null;
+    if (projectPartner != null) {
+      projectPartnerId = projectPartner.getId();
+    }
+    ProjectPartnerPerson projectPartnerPerson =
+      this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson());
+    Long projectPartnerPersonId = null;
+    if (projectPartnerPerson != null) {
+      projectPartnerPersonId = projectPartnerPerson.getId();
+    }
+
+    List<DeliverablePartnership> deliverablePartnerships =
+      deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
+        projectPartnerId, projectPartnerPersonId);
+
     if (deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
       deliverablePartnershipAdd.setActive(true);
@@ -87,12 +96,10 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       deliverablePartnershipAdd.setPartnerType(deliverablePartnership.getPartnerType());
       deliverablePartnershipAdd.setPartnerDivision(deliverablePartnership.getPartnerDivision());
       if (deliverablePartnership.getProjectPartner() != null) {
-        deliverablePartnershipAdd
-          .setProjectPartner(this.getProjectPartner(phase, deliverablePartnership.getProjectPartner()));
+        deliverablePartnershipAdd.setProjectPartner(projectPartner);
       }
       if (deliverablePartnership.getProjectPartnerPerson() != null) {
-        deliverablePartnershipAdd
-          .setProjectPartnerPerson(this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()));
+        deliverablePartnershipAdd.setProjectPartnerPerson(projectPartnerPerson);
       }
       deliverablePartnershipDAO.save(deliverablePartnershipAdd);
     }
@@ -144,14 +151,23 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
   public void deleteDeliverablePartnership(Phase next, long deliverableID,
     DeliverablePartnership deliverablePartnership) {
     Phase phase = phaseDAO.find(next.getId());
+    ProjectPartner projectPartner = this.getProjectPartner(phase, deliverablePartnership.getProjectPartner());
+    Long projectPartnerId = null;
+    if (projectPartner != null) {
+      projectPartnerId = projectPartner.getId();
+    }
+    ProjectPartnerPerson projectPartnerPerson =
+      this.getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson());
+    Long projectPartnerPersonId = null;
+    if (projectPartnerPerson != null) {
+      projectPartnerPersonId = projectPartnerPerson.getId();
+    }
 
-    List<DeliverablePartnership> partnerships = phase.getDeliverablePartnerships().stream().filter(c -> c.isActive()
-      && c.getDeliverable().getId().longValue() == deliverableID
-      && this.getProjectPartner(phase, deliverablePartnership.getProjectPartner()).equals(c.getProjectPartner()) && this
-        .getPartnerPerson(phase, deliverablePartnership.getProjectPartnerPerson()).equals(c.getProjectPartnerPerson()))
-      .collect(Collectors.toList());
+    List<DeliverablePartnership> deliverablePartnerships =
+      deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase.getId(),
+        projectPartnerId, projectPartnerPersonId);
 
-    for (DeliverablePartnership dePartnership : partnerships) {
+    for (DeliverablePartnership dePartnership : deliverablePartnerships) {
       dePartnership.setActive(false);
       deliverablePartnershipDAO.save(dePartnership);
     }
@@ -163,15 +179,19 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
   @Override
   public boolean existDeliverablePartnership(long deliverablePartnershipID) {
-
     return deliverablePartnershipDAO.existDeliverablePartnership(deliverablePartnershipID);
   }
 
   @Override
   public List<DeliverablePartnership> findAll() {
-
     return deliverablePartnershipDAO.findAll();
+  }
 
+  @Override
+  public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
+    Long projectPartnerId, Long projectPartnerPersonId) {
+    return deliverablePartnershipDAO.findByDeliverablePhasePartnerAndPartnerperson(deliverableID, phase,
+      projectPartnerId, projectPartnerPersonId);
   }
 
   @Override
@@ -188,7 +208,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
 
   @Override
   public DeliverablePartnership getDeliverablePartnershipById(long deliverablePartnershipID) {
-
     return deliverablePartnershipDAO.find(deliverablePartnershipID);
   }
 
@@ -231,5 +250,6 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
     }
     return dePartnership;
   }
+
 
 }
