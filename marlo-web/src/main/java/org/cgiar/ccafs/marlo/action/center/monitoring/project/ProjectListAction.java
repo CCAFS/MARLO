@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -124,7 +125,8 @@ public class ProjectListAction extends BaseAction {
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
     ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
-    ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager, PhaseManager phaseManager) {
+    ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager,
+    PhaseManager phaseManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -192,8 +194,12 @@ public class ProjectListAction extends BaseAction {
     Project project = projectManager.getProjectById(pID);
 
 
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCenter.getId());
+
     // TODO add phase call the parameters
-    Crp crp = project.getCrp();
+    GlobalUnit crp = globalUnitProject.getGlobalUnit();
 
 
     CustomParameter customParameter = crp.getCustomParameters().stream()
@@ -208,8 +214,7 @@ public class ProjectListAction extends BaseAction {
     centerProject.setProjectLeader(project.getLeaderPerson(phase).getUser());
 
     // Add Project Status
-    centerProject
-      .setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(phase).getStatus(), true));
+    centerProject.setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(phase).getStatus(), true));
 
     // Add Crp Project CrossCutting to Center Project
     this.crpCrossCuttingInformation(project, centerProject);
@@ -223,7 +228,7 @@ public class ProjectListAction extends BaseAction {
     project = projectManager.saveProject(project);
     projectID = project.getId();
 
-    GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+    globalUnitProject = new GlobalUnitProject();
     globalUnitProject.setActive(true);
     globalUnitProject.setActiveSince(new Date());
     globalUnitProject.setModifiedBy(this.getCurrentUser());
