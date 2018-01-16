@@ -103,9 +103,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   public String intercept(ActionInvocation invocation) throws Exception {
 
     BaseAction baseAction = (BaseAction) invocation.getAction();
-    baseAction.setSession(session);
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     crp = (Crp) session.get(APConstants.SESSION_CRP);
     crpProgramID = this.getCrpProgramId();
 
