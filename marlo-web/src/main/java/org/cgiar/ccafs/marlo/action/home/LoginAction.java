@@ -247,7 +247,7 @@ public class LoginAction extends BaseAction {
         this.getSession().put("color", this.randomColor());
       } else {
 
-        this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
+        this.addFieldError("loginMessage", this.getText("login.error.invalidUserCenter"));
         this.setCenterSession(loggedCenter.getAcronym());
         this.getSession().clear();
         SecurityUtils.getSubject().logout();
