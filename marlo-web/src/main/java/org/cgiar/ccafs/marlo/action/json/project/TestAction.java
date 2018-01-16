@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
@@ -50,12 +49,12 @@ public class TestAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     List<GlobalUnit> crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
-    for (GlobalUnit crp : crps) {
-      List<Project> projects = crp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (Project project : projects) {
-        validateProject.validateProjectOutcomes(this, project.getId());
-      }
-    }
+    // for (GlobalUnit crp : crps) {
+    // List<Project> projects = crp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    // for (Project project : projects) {
+    // validateProject.validateProjectOutcomes(this, project.getId());
+    // }
+    // }
 
     return SUCCESS;
 
