@@ -54,8 +54,10 @@
       			[/#if]
       	</div>
       	
-      	[#-- Section Buttons--]
-        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
+      	[#-- Section Buttons
+      	[#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
+      	--]
+        
         
         [/@s.form]
       	
