@@ -200,14 +200,14 @@
           [#if (deliverable.deliverableInfo.crossCuttingNa)!false ] <p class="checked"> N/A</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingNa" value="true">[/#if]
           
           [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-          [#if (!deliverable.crossCuttingGender?has_content) && (!deliverable.crossCuttingYouth?has_content) && (!deliverable.crossCuttingCapacity?has_content) && (!deliverable.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
+          [#if (!deliverable.deliverableInfo.crossCuttingGender?has_content) && (!deliverable.deliverableInfo.crossCuttingYouth?has_content) && (!deliverable.deliverableInfo.crossCuttingCapacity?has_content) && (!deliverable.deliverableInfo.crossCuttingNa?has_content)]<p>[@s.text name="form.values.fieldEmpty" /]</p>[/#if]
         [/#if]
       </div>
     </div>
   </div>
   
   [#-- If gender dimension, select with ones --]
-  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+  <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
