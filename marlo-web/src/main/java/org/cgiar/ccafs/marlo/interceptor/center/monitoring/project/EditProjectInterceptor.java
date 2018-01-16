@@ -101,7 +101,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = true;
         } else {
 
-          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT_BASE_PERMISSION, params))) {
+          if (baseAction
+            .hasPermissionCenter(baseAction.generatePermissionCenter(Permission.PROJECT_BASE_PERMISSION, params))) {
             canEdit = true;
           }
         }
@@ -118,8 +119,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         // Check the permission if user want to edit or save the form
         if (editParameter || parameters.get("save") != null) {
-          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-            .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+            baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
         }
 
         // Set the variable that indicates if the user can edit the section

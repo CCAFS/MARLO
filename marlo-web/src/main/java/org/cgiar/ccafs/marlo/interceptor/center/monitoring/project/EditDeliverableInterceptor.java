@@ -113,8 +113,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
             canEdit = true;
           } else {
 
-            if (baseAction.hasPermission(
-              baseAction.generatePermission(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params))) {
+            if (baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params))) {
               canEdit = true;
             }
           }
@@ -131,8 +131,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
           // Check the permission if user want to edit or save the form
           if (editParameter || parameters.get("save") != null) {
-            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(
-              baseAction.generatePermission(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params));
+            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params));
           }
 
           // Set the variable that indicates if the user can edit the section
