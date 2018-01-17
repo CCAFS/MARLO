@@ -47,6 +47,7 @@ function init() {
     } else {
       var $list = $select.parents(".deliverablePartner").find(".partnerPersons");
     }
+
     var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
     var option = $select.find("option:selected");
     var projectPartnerID = option.val();
@@ -96,10 +97,12 @@ function init() {
           }
 
           var $division = $select.parents('.projectPartnerPerson').find('.division-IFPRI');
+
           // Show IFPRI Division
           if((option.text()).indexOf("IFPRI") > -1) {
             $division.show();
           } else {
+            $division.find('.divisionField').val("-1")
             $division.hide();
           }
 
