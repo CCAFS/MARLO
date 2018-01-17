@@ -635,7 +635,7 @@ public class DeliverableValidator extends BaseValidator {
         || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
 
-        action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+        action.getInvalidFields().put("list-deliverable.responsiblePartner.projectPartnerPerson.id",
           InvalidFieldsMessages.EMPTYFIELD);
 
       } else {
@@ -674,7 +674,7 @@ public class DeliverableValidator extends BaseValidator {
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-      action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+      action.getInvalidFields().put("list-deliverable.responsiblePartner.projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
 
     }
