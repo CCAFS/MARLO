@@ -5,6 +5,7 @@
 <input type="hidden"  name="id" value="${(project.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
+<input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
@@ -29,7 +30,7 @@
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
     [#elseif canEdit]
       [#-- Edit Button --]
-      <a href="[@s.url][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+      <a href="[@s.url][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
     [/#if]
   </div>
 </div>
