@@ -153,23 +153,20 @@
     <div class="leftHead">
       <span class="index">${index+1}</span>
       <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="outcome.index.title"/]</span>
-         [@popUps.relationsMacro element=outcome /]
-        [#if !isTemplate]
-      <div class="pull-right">
-     
-      </div>
-    [/#if]
     </div>
     [#-- Outcome ID Parameter --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
-    
     [#-- Remove Button --]
     [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     [/#if]
     
-  
+    [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=outcome /]
+      </div>
+    [/#if]
     
     <br />
     [#-- Outcome Statement --]
