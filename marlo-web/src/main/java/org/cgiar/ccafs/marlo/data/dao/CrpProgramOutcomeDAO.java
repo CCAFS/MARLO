@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -55,6 +56,8 @@ public interface CrpProgramOutcomeDAO {
   public List<CrpProgramOutcome> findAll();
 
 
+  public CrpProgramOutcome getCrpProgramOutcome(String composedId, Phase phase);
+
   /**
    * This method saves the information of the given crpProgramOutcome
    * 
@@ -64,4 +67,5 @@ public interface CrpProgramOutcomeDAO {
    *         or -1 is some error occurred.
    */
   public CrpProgramOutcome save(CrpProgramOutcome crpProgramOutcome);
+
 }

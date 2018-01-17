@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Overview by MOGs" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectOverviewByMogs.js",
@@ -21,6 +21,9 @@
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
     
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -107,6 +110,6 @@
       </div>
     </div>  
 </section>
-
+[/#if]
   
 [#include "/WEB-INF/crp/pages/footer.ftl"]

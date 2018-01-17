@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
@@ -94,3 +95,101 @@
 		</set>
 	</class>
 </hibernate-mapping>
+=======
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome"
+		table="crp_program_outcomes" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="indicator" type="string">
+      <column name="indicator" length="65535"  />
+    </property>
+		<property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="false" />
+		</many-to-one>
+		 <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="crpProgram"
+			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+			<column name="crp_program_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="srfTargetUnit"
+			class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+			<column name="target_unit_id" not-null="false" />
+		</many-to-one>
+		<property name="description" type="string">
+			<column name="description" length="65535" not-null="false" />
+		</property>
+		<property name="year" type="java.lang.Integer">
+			<column name="year" not-null="false" />
+		</property>
+		<property name="value" type="java.math.BigDecimal">
+			<column name="value" precision="20" not-null="false" />
+		</property>
+		<set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos"
+			order-by="id" inverse="true" fetch="select">
+			<key>
+				<column name="crp_program_outcome_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo" />
+		</set>
+		<set lazy="true" name="crpMilestones" table="crp_milestones"
+			inverse="true" order-by="id" fetch="select">
+			<key>
+				<column name="crp_program_outcome_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
+		</set>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<set name="projectOutcomes" order-by="id" table="project_outcomes"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="outcome_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
+		</set>
+		
+		<set name="crpClusterKeyOutputOutcomes" order-by="id"
+			table="crp_cluster_key_outputs_outcome" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="outcome_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome" />
+		</set>
+		<set name="projectFurtherContributions" table="project_further_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="outcome_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" />
+		</set>
+	</class>
+</hibernate-mapping>
+>>>>>>> branch 'newLoginForm' of https://github.com/CCAFS/MARLO.git

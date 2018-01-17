@@ -524,7 +524,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
     }
     // Get all years
-    allYears = project.getAllYears();
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     allYears.add(this.getMidOutcomeYear());
 
     projectFocusList = new ArrayList<>();
@@ -544,10 +544,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       
 
         Project projectDB = projectManager.getProjectById(projectID);
-        project.setStartDate(projectDB.getStartDate());
-        project.setEndDate(projectDB.getEndDate());
-        project.setProjectEditLeader(projectDB.isProjectEditLeader());
-        project.setAdministrative(projectDB.getAdministrative());
+        project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectIndicators() == null) {
           project.setProjectIndicators(new ArrayList<IpProjectIndicator>());
         } else {
@@ -666,8 +663,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
       Path path = this.getAutoSaveFilePath();
 
@@ -715,8 +710,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_CCFASOTUCOME_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
 
 

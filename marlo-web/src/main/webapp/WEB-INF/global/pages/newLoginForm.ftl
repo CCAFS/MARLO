@@ -7,10 +7,6 @@
   [/#if]
   [#-- Form --]
   [@s.form method="POST" namespace="/" action="login"]
-    [#-- Login error message --]
-    [#-- COMMENTED FOR REMODELING
-    [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
-     --]
      <div class="crps-select hidden">
       <div class="name-type-container">
         <span class="selection-bar-title">CRPs:</span>
@@ -117,10 +113,8 @@
             </div>
           </div>
         </div>
-        <div class="row login-back-container hidden">
-          <div class="col-xs-6 col-center">
-            <p class="loginBack">Login with different user</p>
-          </div>
+        <div class="login-back-container hidden">
+          <p class="loginBack">Login with different user</p>
         </div>
      </div>
      </div>

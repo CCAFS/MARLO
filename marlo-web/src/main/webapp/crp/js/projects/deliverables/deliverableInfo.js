@@ -27,7 +27,7 @@ function init() {
   $('.helpMessage3').on("click", openDialog);
 
   // select name
-  $(".keyOutput").attr("name", "deliverable.crpClusterKeyOutput.id");
+  $(".keyOutput").attr("name", "deliverable.deliverableInfo.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
   keyOutputs();
@@ -55,7 +55,8 @@ function init() {
     $.ajax({
         url: baseURL + '/personByParnters.do',
         data: {
-          partnerId: option.val()
+            partnerId: option.val(),
+            phaseID: phaseID
         },
         beforeSend: function() {
           $list.empty();
@@ -354,7 +355,8 @@ function validateCurrentDate() {
       url: baseURL + '/deliverableStatus.do',
       data: {
           deliverableId: $('input[name=deliverableID]').val(),
-          year: year()
+          year: year(),
+          phaseID: phaseID
       },
       beforeSend: function() {
         $statusSelect.empty();
@@ -486,7 +488,8 @@ function subTypes() {
 
     if(option.val() != "-1") {
       var data = {
-        deliverableTypeId: option.val()
+          deliverableTypeId: option.val(),
+          phaseID: phaseID
       }
       $.ajax({
           url: url,

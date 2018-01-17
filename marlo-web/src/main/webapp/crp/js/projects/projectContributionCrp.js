@@ -49,7 +49,8 @@ function loadMilestonesByYear(i,e) {
       url: baseURL + '/milestonesYear.do',
       data: {
           year: currentCycleYear,
-          outcomeID: outcomeID
+          outcomeID: outcomeID,
+          phaseID: phaseID
       },
       success: function(data) {
         for(var i = 0, len = data.crpMilestones.length; i < len; i++) {
@@ -96,7 +97,8 @@ function addMilestone() {
   $.ajax({
       url: baseURL + '/milestoneInformation.do',
       data: {
-        milestoneID: milestonId
+          milestoneID: milestonId,
+          phaseID: phaseID
       },
       success: function(data) {
 

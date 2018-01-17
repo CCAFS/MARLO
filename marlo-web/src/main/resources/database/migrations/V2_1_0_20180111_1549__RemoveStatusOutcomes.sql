@@ -1,0 +1,1 @@
+delete from section_statuses where project_outcome_id is not null

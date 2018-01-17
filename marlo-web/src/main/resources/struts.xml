@@ -25,7 +25,9 @@
 
 	<constant name="struts.rest.namespace" value="/api" />
 	<constant name="struts.rest.defaultExtension" value="json" />
-
+	  
+  <constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
+		
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
 

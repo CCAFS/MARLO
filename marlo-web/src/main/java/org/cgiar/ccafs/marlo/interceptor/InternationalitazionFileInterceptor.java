@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -42,12 +43,11 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
+  private final CrpManager crpManager;
 
-  private CrpManager crpManager;
+  private final LocalizedTextProvider localizedTextProvider;
 
   private CustomParameterManager crpParameterManager;
-
-  private LocalizedTextProvider localizedTextProvider;
 
   @Inject
   public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager,
@@ -55,6 +55,7 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
     this.localizedTextProvider = localizedTextProvider;
+
   }
 
   @Override
@@ -68,15 +69,19 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       language = (String) session.get(APConstants.CRP_LANGUAGE);
     }
 
-
     Locale locale = new Locale(language);
 
     /**
-     * Please test to see if the reset was necessary. Note that the LocalizedTextProvider will be a singleton,
-     * so should not be stateful.
-     **/
-    // this.localizedTextProvider.reset();
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
     this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
     ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
@@ -121,7 +126,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
           }
 
         }
-
+        session.remove(APConstants.CURRENT_PHASE);
+        session.remove(APConstants.PHASES);
+        session.remove(APConstants.PHASES);
+        session.remove(APConstants.ALL_PHASES);
       }
     }
 

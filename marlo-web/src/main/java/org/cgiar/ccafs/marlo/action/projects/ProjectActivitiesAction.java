@@ -135,6 +135,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityNew.setModificationJustification("");
           activityNew.setActiveSince(new Date());
 
+
           Project project = projectManager.getProjectById(this.project.getId());
 
           activityNew.setProject(project);
@@ -142,7 +143,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityNew.setDescription(activity.getDescription());
           activityNew.setStartDate(activity.getStartDate());
           activityNew.setEndDate(activity.getEndDate());
-
+          activityNew.setPhase(this.getActualPhase());
           if (activity.getActivityStatus() != -1) {
             activityNew.setActivityStatus(activity.getActivityStatus());
           } else {
@@ -173,7 +174,7 @@ public class ProjectActivitiesAction extends BaseAction {
               deliverableActivityNew.setModifiedBy(this.getCurrentUser());
               deliverableActivityNew.setModificationJustification("");
               deliverableActivityNew.setActiveSince(new Date());
-
+              deliverableActivityNew.setPhase(this.getActualPhase());
               Deliverable deliverable =
                 deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
 
@@ -192,7 +193,7 @@ public class ProjectActivitiesAction extends BaseAction {
           activityUpdate.setModifiedBy(this.getCurrentUser());
           activityUpdate.setModificationJustification("");
           activityUpdate.setActiveSince(new Date());
-
+          activityUpdate.setPhase(this.getActualPhase());
           activityUpdate.setTitle(activity.getTitle());
           activityUpdate.setDescription(activity.getDescription());
           activityUpdate.setStartDate(activity.getStartDate());
@@ -204,10 +205,16 @@ public class ProjectActivitiesAction extends BaseAction {
           }
           activityUpdate.setActivityProgress(activity.getActivityProgress());
 
-          ProjectPartnerPerson partnerPerson =
-            projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
 
-          activityUpdate.setProjectPartnerPerson(partnerPerson);
+          if (activity.getProjectPartnerPerson() != null
+            && activity.getProjectPartnerPerson().getId().longValue() != -1) {
+            ProjectPartnerPerson partnerPerson =
+              projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+            activityUpdate.setProjectPartnerPerson(partnerPerson);
+          } else {
+            activityUpdate.setProjectPartnerPerson(null);
+          }
+
 
           activityUpdate = activityManager.saveActivity(activityUpdate);
 
@@ -234,6 +241,7 @@ public class ProjectActivitiesAction extends BaseAction {
                 deliverableActivityNew.setModifiedBy(this.getCurrentUser());
                 deliverableActivityNew.setModificationJustification("");
                 deliverableActivityNew.setActiveSince(new Date());
+                deliverableActivityNew.setPhase(this.getActualPhase());
 
                 Deliverable deliverable =
                   deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
@@ -257,7 +265,8 @@ public class ProjectActivitiesAction extends BaseAction {
     Project projectBD = projectManager.getProjectById(projectID);
 
 
-    activitiesPrew = projectBD.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+    activitiesPrew = projectBD.getActivities().stream()
+      .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
 
 
     for (Activity activity : activitiesPrew) {
@@ -327,8 +336,11 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
+    // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    // concatane name and add the .json extension
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -417,14 +429,14 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         project.setProjectLocations(projectDb.getProjectLocations());
 
 
@@ -436,6 +448,7 @@ public class ProjectActivitiesAction extends BaseAction {
               if (deliverableActivity.getId() == -1) {
                 Deliverable deliverable =
                   deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                deliverable.getDeliverableInfo(this.getActualPhase());
                 deliverableActivity.setDeliverable(deliverable);
               }
             }
@@ -455,17 +468,19 @@ public class ProjectActivitiesAction extends BaseAction {
          * }
          * }
          */
-      
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setProjectActivities(new ArrayList<Activity>(
-          project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
-
+        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
         if (project.getProjectActivities() != null) {
           for (Activity openActivity : project.getProjectActivities()) {
-            openActivity.setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities()
-              .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+            openActivity
+              .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
+                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase()))
+                .collect(Collectors.toList())));
           }
         }
         /*
@@ -494,16 +509,20 @@ public class ProjectActivitiesAction extends BaseAction {
       if (project.getDeliverables() != null) {
         if (project.getDeliverables().isEmpty()) {
           project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
-            .getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+            .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())));
         } else {
-          project.setProjectDeliverables(new ArrayList<Deliverable>(
-            project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+          project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+            .collect(Collectors.toList())));
         }
       }
 
       partnerPersons = new ArrayList<>();
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+        .filter(
+          pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList())) {
 
         for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
           .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
@@ -561,8 +580,6 @@ public class ProjectActivitiesAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.activitiesPreviousData(project.getProjectActivities(), true);
@@ -573,10 +590,11 @@ public class ProjectActivitiesAction extends BaseAction {
        */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(project, this.getActionName(), relationsName);
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

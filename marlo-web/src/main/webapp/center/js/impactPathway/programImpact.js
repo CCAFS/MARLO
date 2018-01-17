@@ -29,7 +29,8 @@ function attachEvents() {
     var $select = $(this).parents(".beneficiary").find(".focusSelect ");
     var url = baseURL + "/beneficiaryByType.do";
     var data = {
-      "beneficiaryTypeID": option.val()
+        "beneficiaryTypeID": option.val(),
+        phaseID: phaseID
     }
     // remove options
     $select.find("option").each(function(i,e) {
@@ -67,7 +68,8 @@ function attachEvents() {
       $.ajax({
           url: baseURL + '/impactSubIdo.do',
           data: {
-            idoID: optionValue
+              idoID: optionValue,
+              phaseID: phaseID
           },
           beforeSend: function(xhr,opts) {
             $parent.find(".loading").fadeIn();

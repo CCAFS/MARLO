@@ -1,0 +1,21 @@
+/* START Picker */
+.picker__button--today, .picker__button--clear, .picker__button--close {
+  color: #444;
+}
+
+.picker__input {
+  cursor: pointer;
+  background: #fff url(../../global/images/calendar.png) no-repeat scroll 99% 2px !important;
+}
+
+/**
+ * The month and year selectors.
+ */
+.picker__select--month,
+.picker__select--year {
+  height: 1.5em;
+  padding: .0em;
+}
+
+/* END Picker */
+

@@ -94,7 +94,11 @@ public class MARLOCustomPersistFilter implements Filter {
       // Continue filter chain
       chain.doFilter(request, response);
 
-      sessionFactory.getCurrentSession().getTransaction().commit();
+      if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+      }
+
 
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");
@@ -105,6 +109,8 @@ public class MARLOCustomPersistFilter implements Filter {
       // fresh data... what you do here depends on your applications design.
       throw staleEx;
     } catch (Throwable ex) {
+
+      ex.printStackTrace();
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");
       try {

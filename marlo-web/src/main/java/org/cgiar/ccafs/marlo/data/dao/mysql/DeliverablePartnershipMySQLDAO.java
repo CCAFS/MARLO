@@ -36,12 +36,15 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    this.save(deliverablePartnership);
+    super.delete(deliverablePartnership);
+
   }
+
 
   @Override
   public boolean existDeliverablePartnership(long deliverablePartnershipID) {
@@ -69,6 +72,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     return null;
 
   }
+
 
   @Override
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId) {
@@ -106,8 +110,6 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       deliverablePartnership = super.update(deliverablePartnership);
     }
-
-
     return deliverablePartnership;
   }
 

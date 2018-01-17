@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -185,8 +186,9 @@ public class AutoSaveWriterAction extends BaseAction {
       }
 
       try {
-
-        String fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
+        Phase phase = this.getActualPhase();
+        String fileName =
+          fileId + "_" + fileClass + "_" + phase.getDescription() + "_" + phase.getYear() + "_" + fileAction + ".json";
         String pathFile = config.getAutoSaveFolder();
         LOG.debug("PathFile: " + pathFile);
         Path path = Paths.get(pathFile);

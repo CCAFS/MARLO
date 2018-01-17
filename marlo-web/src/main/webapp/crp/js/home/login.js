@@ -68,7 +68,19 @@ function init() {
 
   //Next button click
   $("input#login_next").on('click',function(e){
-    if(!loginSwitch){
+    if($(".loginForm #login-email .user-email").val() == ""){
+      e.preventDefault();
+      $('input.login-input').addClass("wrongData");
+      $('.loginForm p.invalidEmail').removeClass("hidden");
+      $('.loginForm p.invalidEmail').text("Please enter a valid email");
+      $(".loginForm #login-email .user-email").focus();
+    }else if(!isEmail($(".loginForm #login-email .user-email").val())){
+      e.preventDefault();
+      $('input.login-input').addClass("wrongData");
+      $('.loginForm p.invalidEmail').removeClass("hidden");
+      $('.loginForm p.invalidEmail').text("Please enter a valid email");
+      $(".loginForm #login-email .user-email").focus();
+    }else if(!loginSwitch){
       e.preventDefault();
       loadAvailableItems(username.val());
     }
@@ -210,7 +222,7 @@ function loadAvailableItems(email){
           $('input.login-input').removeClass("wrongData");
           $('.loginForm p.invalidEmail').addClass("hidden");
         });
-      }else if(crpPreselected){
+      }/*else if(crpPreselected){
         $.each(data.crps, function(i){
           if(data.crps[i].acronym == crpPreselected){
             hasAccess=true;
@@ -223,7 +235,7 @@ function loadAvailableItems(email){
           $('.loginForm p.invalidEmail').removeClass("hidden");
           $('.loginForm p.invalidEmail').text("You don't have access to this crp");
         }
-      }else{
+      }*/else{
         //Change form style
         changeFormStyle(data,false);
       }
@@ -260,6 +272,11 @@ $.fn.enableScroll = function() {
 };
 
 function changeFormStyle(data,preselected){
+  //Hide the invalidEmail field
+  $('.loginForm p.invalidEmail').addClass("hidden");
+  //Remove wrongData class to input field
+  $('input.login-input').removeClass("wrongData");
+
   $(".welcome-message-container .username span").text(data.user.name);
 
   $.each(data.crps, function(i){

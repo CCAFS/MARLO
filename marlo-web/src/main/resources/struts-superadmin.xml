@@ -12,7 +12,7 @@
 			<result name="input">/WEB-INF/global/views/superadmin/marloBoard.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloBoard</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -23,7 +23,7 @@
 			<result name="input">/WEB-INF/global/views/superadmin/marloSLOs.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloSLOs</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -34,7 +34,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">guestUser</param>
 				<param name="userID">${userID}</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -45,7 +45,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloCrossCutting</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -55,7 +55,7 @@
 			<result name="input">/WEB-INF/global/views/superadmin/marloIDOs.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloIDOs</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -66,7 +66,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloSiteIntegration</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -76,7 +76,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">notifications</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -87,7 +87,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloParameters</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
@@ -96,7 +96,7 @@
       <result name="input">/WEB-INF/global/views/superadmin/marloLocations.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">customLocations</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>   
 		
@@ -108,7 +108,7 @@
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">marloInstitutions</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 
@@ -119,7 +119,7 @@
 			</result>
 			<result name="success" type="redirectAction">
         <param name="actionName">marloInstitutions</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
 		</action>
 		

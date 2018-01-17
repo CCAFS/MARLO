@@ -40,6 +40,8 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String responsibilities;
+  @Expose
+  private Phase phase;
 
   @Expose
   private String modificationJustification;
@@ -64,8 +66,8 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private List<InstitutionLocation> selectedLocations = new ArrayList<>();
 
   private List<ProjectPartnerPerson> partnerPersons = new ArrayList<>();
-
   private List<ProjectPartnerContribution> partnerContributors = new ArrayList<>();
+
 
   public ProjectPartner() {
   }
@@ -218,6 +220,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -233,6 +239,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Set<ProjectPartnerLocation> getProjectPartnerLocations() {
     return projectPartnerLocations;
   }
+
 
   public Set<ProjectPartnerOverall> getProjectPartnerOveralls() {
     return this.projectPartnerOveralls;
@@ -342,6 +349,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {
