@@ -296,7 +296,7 @@
       <div class="form-group partnerName chosen"> 
       [#if editable]
         [#local projectPartnerObj = ((dp.projectPartnerPerson.projectPartner)!dp.projectPartner)!{} /]
-        [@customForm.select name="${dp_name}.projectPartner.id" value="${projectPartnerObj.id}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="${(projectPartnerObj.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
         <div class="partnerPersons">
           [#if (projectPartnerObj.id??)!false]
             [#list action.getPersons(projectPartnerObj.id) as person]
@@ -346,7 +346,7 @@
       [#-- Remove --]
       [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
       [#-- Index --]
-      <div class="leftHead"><span class="index">${dp_index+1}</span></div>
+      <div class="leftHead"><span class="index">${projectPartner_index+1}</span></div>
   
       [#if template]
         [#-- Partner Name --]
@@ -370,7 +370,9 @@
                   [#assign personsIndex =  personsIndex + 1 /]
                 [/#list]
               [#else]
+               <div style="display:none">
                 [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=true isResponsable=false /]
+               </div>
               [/#if]
               
             [/#if]

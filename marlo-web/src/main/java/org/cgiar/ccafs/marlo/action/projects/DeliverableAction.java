@@ -376,63 +376,63 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
-  private void checkChangesAndUpdateDeliverablePartnership(DeliverablePartnership partnershipResponsibleDBUpdated,
-    DeliverablePartnership partnershipResponsibleManaged, String partnershipType) {
+  /**
+   * Check changes and update the partnership existing in DB
+   * 
+   * @param partnershipDBUpdated: Partnership from DB
+   * @param partnershipManaged: Partnership sent from interface
+   * @param partnershipType: partnership type
+   */
+  private void checkChangesAndUpdateDeliverablePartnership(DeliverablePartnership partnershipDBUpdated,
+    DeliverablePartnership partnershipManaged) {
     Boolean hasChanges = false;
-    DeliverablePartnership partnershipResponsibleDB = this.copyDeliverablePartnership(partnershipResponsibleDBUpdated);
+    DeliverablePartnership partnershipDB = this.copyDeliverablePartnership(partnershipDBUpdated);
 
 
-    if (partnershipResponsibleDBUpdated.getProjectPartnerPerson() != null) {
-      if (partnershipResponsibleManaged.getProjectPartnerPerson() != null) {
-        partnershipResponsibleManaged.setProjectPartnerPerson(projectPartnerPersonManager
-          .getProjectPartnerPersonById(partnershipResponsibleManaged.getProjectPartnerPerson().getId()));
-        if (!partnershipResponsibleDBUpdated.getProjectPartnerPerson().getUser().getId()
-          .equals(partnershipResponsibleManaged.getProjectPartnerPerson().getUser().getId())) {
+    if (partnershipDBUpdated.getProjectPartnerPerson() != null) {
+      if (partnershipManaged.getProjectPartnerPerson() != null) {
+        partnershipManaged.setProjectPartnerPerson(projectPartnerPersonManager
+          .getProjectPartnerPersonById(partnershipManaged.getProjectPartnerPerson().getId()));
+        if (!partnershipDBUpdated.getProjectPartnerPerson().getUser().getId()
+          .equals(partnershipManaged.getProjectPartnerPerson().getUser().getId())) {
           hasChanges = true;
-          partnershipResponsibleDBUpdated
-            .setProjectPartnerPerson(partnershipResponsibleManaged.getProjectPartnerPerson());
+          partnershipDBUpdated.setProjectPartnerPerson(partnershipManaged.getProjectPartnerPerson());
         }
 
-        if (partnershipResponsibleManaged.getPartnerDivision() != null
-          && partnershipResponsibleManaged.getPartnerDivision().getId() != -1) {
-          if (partnershipResponsibleDBUpdated.getPartnerDivision() != null) {
-            if (!partnershipResponsibleManaged.getPartnerDivision()
-              .equals(partnershipResponsibleDBUpdated.getPartnerDivision())) {
+        if (partnershipManaged.getPartnerDivision() != null && partnershipManaged.getPartnerDivision().getId() != -1) {
+          if (partnershipDBUpdated.getPartnerDivision() != null) {
+            if (!partnershipManaged.getPartnerDivision().equals(partnershipDBUpdated.getPartnerDivision())) {
               hasChanges = true;
-              partnershipResponsibleDBUpdated.setPartnerDivision(partnershipResponsibleManaged.getPartnerDivision());
+              partnershipDBUpdated.setPartnerDivision(partnershipManaged.getPartnerDivision());
             }
           } else {
             hasChanges = true;
-            partnershipResponsibleDBUpdated.setPartnerDivision(partnershipResponsibleManaged.getPartnerDivision());
+            partnershipDBUpdated.setPartnerDivision(partnershipManaged.getPartnerDivision());
           }
         } else {
-          if (partnershipResponsibleDBUpdated.getPartnerDivision() != null) {
+          if (partnershipDBUpdated.getPartnerDivision() != null) {
             hasChanges = true;
-            partnershipResponsibleDBUpdated.setPartnerDivision(null);
+            partnershipDBUpdated.setPartnerDivision(null);
           }
         }
 
       } else {
         if (!isManagingPartnerPersonRequerid) {
           hasChanges = true;
-          partnershipResponsibleDBUpdated.setProjectPartnerPerson(null);
+          partnershipDBUpdated.setProjectPartnerPerson(null);
         }
       }
     } else {
-      if (partnershipResponsibleManaged.getProjectPartnerPerson() != null) {
+      if (partnershipManaged.getProjectPartnerPerson() != null) {
         hasChanges = true;
-        partnershipResponsibleDBUpdated
-          .setProjectPartnerPerson(partnershipResponsibleManaged.getProjectPartnerPerson());
-        if (partnershipResponsibleManaged.getPartnerDivision() != null
-          && partnershipResponsibleManaged.getPartnerDivision().getId() != -1) {
-          partnershipResponsibleDBUpdated.setPartnerDivision(partnershipResponsibleManaged.getPartnerDivision());
+        partnershipDBUpdated.setProjectPartnerPerson(partnershipManaged.getProjectPartnerPerson());
+        if (partnershipManaged.getPartnerDivision() != null && partnershipManaged.getPartnerDivision().getId() != -1) {
+          partnershipDBUpdated.setPartnerDivision(partnershipManaged.getPartnerDivision());
         }
       }
     }
     if (hasChanges) {
-      deliverablePartnershipManager.updateDeliverablePartnership(partnershipResponsibleDBUpdated,
-        partnershipResponsibleDB);
+      deliverablePartnershipManager.updateDeliverablePartnership(partnershipDBUpdated, partnershipDB);
     }
   }
 
@@ -463,7 +463,12 @@ public class DeliverableAction extends BaseAction {
     String value) {
     // Create a new one.
     DeliverablePartnership partnership = new DeliverablePartnership();
-    partnership.setProjectPartnerPerson(partnershipResponsibleManaged.getProjectPartnerPerson());
+    if (partnershipResponsibleManaged.getProjectPartnerPerson() != null
+      && partnershipResponsibleManaged.getProjectPartnerPerson().getId() != null) {
+      partnership.setProjectPartnerPerson(partnershipResponsibleManaged.getProjectPartnerPerson());
+    } else {
+      partnership.setProjectPartnerPerson(null);
+    }
     partnership.setPartnerType(value);
     partnership.setDeliverable(deliverable);
     partnership.setProjectPartner(partnershipResponsibleManaged.getProjectPartner());
@@ -473,7 +478,7 @@ public class DeliverableAction extends BaseAction {
     partnership.setModificationJustification("");
     partnership.setActiveSince(new Date());
     partnership.setPhase(this.getActualPhase());
-    partnership = this.saveUpdateDeliverablePartnershipDivision(partnership);
+    partnership = this.saveUpdateDeliverablePartnershipDivision(partnership, partnershipResponsibleManaged);
     return partnership;
   }
 
@@ -1503,6 +1508,9 @@ public class DeliverableAction extends BaseAction {
           projectOutcome.clear();
         }
 
+        if (deliverable.getResponsiblePartner() != null) {
+          deliverable.setResponsiblePartner(null);
+        }
 
         if (deliverable.getOtherPartners() != null) {
           deliverable.getOtherPartners().clear();
@@ -2158,12 +2166,13 @@ public class DeliverableAction extends BaseAction {
   }
 
 
-  private DeliverablePartnership saveUpdateDeliverablePartnershipDivision(DeliverablePartnership partnership) {
-    if (deliverable.getResponsiblePartner().getPartnerDivision() != null
-      && deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() != -1) {
+  private DeliverablePartnership saveUpdateDeliverablePartnershipDivision(DeliverablePartnership partnership,
+    DeliverablePartnership partnershipResponsibleManaged) {
+    if (partnershipResponsibleManaged.getPartnerDivision() != null
+      && partnershipResponsibleManaged.getPartnerDivision().getId().longValue() != -1) {
       try {
-        PartnerDivision division = partnerDivisionManager
-          .getPartnerDivisionById(deliverable.getResponsiblePartner().getPartnerDivision().getId());
+        PartnerDivision division =
+          partnerDivisionManager.getPartnerDivisionById(partnershipResponsibleManaged.getPartnerDivision().getId());
         partnership.setPartnerDivision(division);
       } catch (Exception e) {
         // NEVER EVER JUST SWALLOW UNCHECKED EXCEPTIONS! Logging this now.
@@ -2204,8 +2213,7 @@ public class DeliverableAction extends BaseAction {
       } else {
         if (partnershipResponsibleDB.getProjectPartner().getId()
           .equals(partnershipResponsibleManaged.getProjectPartner().getId())) {
-          this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, partnershipResponsibleManaged,
-            DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+          this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, partnershipResponsibleManaged);
         } else {
           deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
           this.createAndSaveNewDeliverablePartnership(partnershipResponsibleManaged,
@@ -2510,8 +2518,7 @@ public class DeliverableAction extends BaseAction {
               deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnershipOther.getId());
             if (deliverablePartnershipOther.getProjectPartner().getId()
               .equals(partnershipResponsibleDB.getProjectPartner().getId())) {
-              this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, deliverablePartnershipOther,
-                DeliverablePartnershipTypeEnum.OTHER.getValue());
+              this.checkChangesAndUpdateDeliverablePartnership(partnershipResponsibleDB, deliverablePartnershipOther);
             } else {
               deliverablePartnershipManager.deleteDeliverablePartnership(partnershipResponsibleDB.getId());
               this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
