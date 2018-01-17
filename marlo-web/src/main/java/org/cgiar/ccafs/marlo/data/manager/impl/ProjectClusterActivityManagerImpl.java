@@ -54,7 +54,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID && projectCluster
         .getCrpClusterOfActivity().getId().longValue() == c.getCrpClusterOfActivity().getId().longValue())
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && clusters.isEmpty()) {
+    if ( clusters.isEmpty()) {
 
       ProjectClusterActivity projectClusterAdd = new ProjectClusterActivity();
       projectClusterAdd.setActive(true);

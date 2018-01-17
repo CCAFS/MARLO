@@ -9,6 +9,7 @@
       <p>[@s.text name="fundingSource.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="fundingSource.message.historyVersion" ]  
+   
           [@s.param]<span>${fundingSource.modifiedBy.composedName?html}</span>[/@s.param]
           [@s.param]<span>${fundingSource.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="projectID" value=fundingSourceID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]

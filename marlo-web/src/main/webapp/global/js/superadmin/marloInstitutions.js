@@ -32,7 +32,8 @@ $(document).ready(function() {
         data: {
             requestID: requestID,
             justification: justificationText,
-            sendNotification : ($modal.find('.sendEmailInput').is(':checked'))? true : false
+            sendNotification : ($modal.find('.sendEmailInput').is(':checked'))? true : false,
+            phaseID: phaseID
         },
         beforeSend: function() {
           $modal.find('.loading').fadeIn();

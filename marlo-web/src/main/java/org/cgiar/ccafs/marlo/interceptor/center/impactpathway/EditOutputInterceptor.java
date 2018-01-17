@@ -106,8 +106,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
             canEdit = true;
           } else {
 
-            if (baseAction
-              .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+            if (baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
               canEdit = true;
             }
           }
@@ -124,8 +124,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
           // Check the permission if user want to edit or save the form
           if (editParameter || parameters.get("save") != null) {
-            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-              .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
           }
 
           if (baseAction.isSubmitIP(programID)) {

@@ -182,7 +182,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
       .collect(Collectors.toList());
 
-    if (phase.getEditable() != null && phase.getEditable() && partners.isEmpty()) {
+    if ( partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
       projectPartnerAdd.setActive(true);
       projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());
@@ -230,7 +230,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
       .collect(Collectors.toList());
 
-    if (phase.getEditable() != null && phase.getEditable() && partners.isEmpty()) {
+    if ( partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
       projectPartnerAdd.setActive(true);
       projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());

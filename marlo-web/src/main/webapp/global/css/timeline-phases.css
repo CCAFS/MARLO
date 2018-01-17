@@ -174,17 +174,19 @@ div#tl-adnyds {
 }
 
 .example .frame ul li.active {
-  border: none;
-  color: #fff;
+  color: #4c4c4c;
 }
 
-.example .frame ul li.active.planning {
+.example .frame ul li.planning.phaseSelected {
   color: #fff;
   background-color: #337ab7;
+  border: none;
 }
 
-.example .frame ul li.active.reporting {
+.example .frame ul li.reporting.phaseSelected {
   background-color: #777;
+  color: #fff;
+  border: none;
 }
 
 .example .frame ul li h4 {

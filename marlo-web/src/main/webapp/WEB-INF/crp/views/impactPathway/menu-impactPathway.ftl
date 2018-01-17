@@ -56,14 +56,14 @@
 [#-- Submit button --]
 [#if canEdit]
   [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
-  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][/@s.url]" >
+  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
 
 [#-- Unsubmit button --]
-[#if canUnSubmit && submission?has_content]
-  <a id="submitProject-${crpProgramID}" class="impactUnSubmitButton projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${crpProgramID}[/@s.param][/@s.url]" >
+[#if canUnSubmit && canEditPhase && submission?has_content]
+  <a id="submitProject-${crpProgramID}" class="impactUnSubmitButton projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${crpProgramID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
 [/#if]

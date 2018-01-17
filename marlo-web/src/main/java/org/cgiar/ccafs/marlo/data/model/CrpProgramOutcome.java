@@ -65,7 +65,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
 
@@ -118,7 +117,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.value = value;
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpMilestones = crpMilestones;
-    this.deliverables = deliverables;
+
   }
 
   @Override
@@ -182,9 +181,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.crpProgram;
   }
 
-  public Set<Deliverable> getDeliverables() {
-    return deliverables;
-  }
 
   public String getDescription() {
     return this.description;
@@ -194,6 +190,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
   public String getIndicator() {
     return indicator;
   }
@@ -289,9 +286,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.crpProgram = crpProgram;
   }
 
-  public void setDeliverables(Set<Deliverable> deliverables) {
-    this.deliverables = deliverables;
-  }
 
   public void setDescription(String description) {
     this.description = description;
@@ -300,7 +294,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setId(Long id) {
     this.id = id;
   }
-    public void setIndicator(String indicator) {
+
+  public void setIndicator(String indicator) {
     this.indicator = indicator;
   }
 
@@ -344,7 +339,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
-   @Override
+  @Override
   public String toString() {
     return "CrpProgramOutcome [id=" + id + ", crpProgram=" + crpProgram + ", srfTargetUnit=" + srfTargetUnit
       + ", description=" + description + ", year=" + year + ", value=" + value + "]";

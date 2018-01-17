@@ -89,7 +89,7 @@ public class ProjectSubmissionAction extends BaseAction {
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
     CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
-    PhaseManager phaseManager, UserManager userManager) {
+    PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -98,6 +98,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.roleManager = roleManager;
     this.userManager = userManager;
     this.phaseManager = phaseManager;
+    this.reportingSummaryAction = reportingSummaryAction;
   }
 
   @Override
@@ -106,7 +107,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
         List<Submission> submissions = project.getSubmissions().stream()
-          .filter(c -> c.getCycle().equals(APConstants.PLANNING)
+          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
             && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
@@ -213,7 +214,7 @@ public class ProjectSubmissionAction extends BaseAction {
         project
           .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
             .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
@@ -328,6 +329,7 @@ public class ProjectSubmissionAction extends BaseAction {
       reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
         reportingSummaryAction.getSelectedYear(), loggedCrp.getId().longValue()));
       reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
+      reportingSummaryAction.loadProvider(this.getSession());
       reportingSummaryAction.execute();
       // Getting the file data.
       //
@@ -336,6 +338,7 @@ public class ProjectSubmissionAction extends BaseAction {
       contentType = "application/pdf";
       //
     } catch (Exception e) {
+      e.printStackTrace();
       // // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     }

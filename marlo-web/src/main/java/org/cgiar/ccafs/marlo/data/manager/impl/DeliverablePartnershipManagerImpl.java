@@ -69,7 +69,7 @@ public class DeliverablePartnershipManagerImpl implements DeliverablePartnership
       .filter(c -> c.isActive() && c.getDeliverable().getId().longValue() == deliverableID && deliverablePartnership
         .getProjectPartnerPerson().getUser().getId().equals(c.getProjectPartnerPerson().getUser().getId()))
       .collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && deliverablePartnerships.isEmpty()) {
+    if ( deliverablePartnerships.isEmpty()) {
       DeliverablePartnership deliverablePartnershipAdd = new DeliverablePartnership();
       deliverablePartnershipAdd.setActive(true);
       deliverablePartnershipAdd.setActiveSince(deliverablePartnership.getActiveSince());

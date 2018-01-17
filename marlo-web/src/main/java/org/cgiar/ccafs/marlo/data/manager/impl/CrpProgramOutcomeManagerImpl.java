@@ -109,7 +109,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     List<CrpProgramOutcome> outcomes =
       phase.getOutcomes().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
         && c.getComposeID().equals(outcome.getComposeID())).collect(Collectors.toList());
-    if (phase.getEditable() != null && phase.getEditable() && outcomes.isEmpty()) {
+    if ( outcomes.isEmpty()) {
       CrpProgramOutcome outcomeAdd = new CrpProgramOutcome();
       outcomeAdd.setActive(true);
       outcomeAdd.setActiveSince(outcome.getActiveSince());
