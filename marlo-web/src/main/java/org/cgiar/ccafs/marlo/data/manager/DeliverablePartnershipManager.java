@@ -84,7 +84,7 @@ public interface DeliverablePartnershipManager {
   public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
 
 
-  public DeliverablePartnership updateDeliverablePartnership(DeliverablePartnership partnershipResponsibleDBUpdated,
-    DeliverablePartnership partnershipResponsibleDB);
+  public DeliverablePartnership updateDeliverablePartnership(DeliverablePartnership partnershipDBUpdated,
+    DeliverablePartnership partnershipDBpreview);
 
 }

@@ -100,7 +100,6 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       query.append(" and dp.division_id IS NULL");
     }
-    System.out.println(query);
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
 
