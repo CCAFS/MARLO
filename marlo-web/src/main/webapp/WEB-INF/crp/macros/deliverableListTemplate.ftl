@@ -278,7 +278,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
+[#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=true template=false editable=true]
   <div id="deliverablePartner-${template?string('template', dp_index)}" class="responsiblePartner projectPartnerPerson row" style="display:${template?string('none','')}">
     [#-- Remove --]
     [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
@@ -286,7 +286,7 @@
     <input class="element" type="hidden" name="${dp_name}.id" value="${(dp.id)!}">
     [#if template]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen"> 
+      <div class="form-group partnerName chosen"> 
         [@customForm.select name="${dp_name}.projectPartner.id" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
         <div class="partnerPersons">
         </div>
@@ -297,7 +297,7 @@
       [#if editable]
         [#local projectPartnerObj = ((dp.projectPartnerPerson.projectPartner)!dp.projectPartner)!{} /]
         [@customForm.select name="${dp_name}.projectPartner.id" value="${(projectPartnerObj.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
-        <div class="partnerPersons">
+        <div class="partnerPersons" listname="deliverable.responsiblePartner.projectPartnerPerson.id">
           [#if (projectPartnerObj.id??)!false]
             [#list action.getPersons(projectPartnerObj.id) as person]
               [@deliverablePerson element=person name="${dp_name}" projectPartner=(projectPartnerObj) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
