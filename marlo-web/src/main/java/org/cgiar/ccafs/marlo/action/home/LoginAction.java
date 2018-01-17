@@ -62,8 +62,6 @@ public class LoginAction extends BaseAction {
   private String crp;
 
 
-  private String type;
-
   // Managers
   private UserManager userManager;
   // GlobalUnit Manager
@@ -132,9 +130,6 @@ public class LoginAction extends BaseAction {
     }
   }
 
-  public String getType() {
-    return type;
-  }
 
   @Override
   public String getUrl() {
@@ -313,11 +308,6 @@ public class LoginAction extends BaseAction {
 
   public void setCrp(String crp) {
     this.crp = crp;
-  }
-
-
-  public void setType(String type) {
-    this.type = type;
   }
 
   @Override

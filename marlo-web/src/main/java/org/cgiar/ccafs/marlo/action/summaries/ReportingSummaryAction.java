@@ -3684,7 +3684,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
         this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 

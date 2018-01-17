@@ -88,14 +88,15 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
         this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 
         this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
       }
     }
-
 
     GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     if (crp != null) {

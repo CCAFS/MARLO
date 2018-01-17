@@ -193,10 +193,8 @@ public class ProjectListAction extends BaseAction {
     long pID = Long.parseLong(syncCode);
     Project project = projectManager.getProjectById(pID);
 
-
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject =
-      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCenter.getId());
+    GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
 
     // TODO add phase call the parameters
     GlobalUnit crp = globalUnitProject.getGlobalUnit();

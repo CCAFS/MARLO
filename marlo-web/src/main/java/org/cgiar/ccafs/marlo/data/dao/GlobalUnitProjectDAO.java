@@ -63,6 +63,14 @@ public interface GlobalUnitProjectDAO {
   public GlobalUnitProject findByProjectAndGlobalUnitId(long projectId, long globalUnitId);
 
   /**
+   * This method find a globalUnitProject by the project and global unit
+   * 
+   * @param globalUnitProject - is the globalUnitProject object with the new information to be added/updated.
+   * @return GlobalUnitProject object created or updated.
+   */
+  public GlobalUnitProject findByProjectId(long projectId);
+
+  /**
    * This method saves the information of the given globalUnitProject
    * 
    * @param globalUnitProject - is the globalUnitProject object with the new information to be added/updated.
