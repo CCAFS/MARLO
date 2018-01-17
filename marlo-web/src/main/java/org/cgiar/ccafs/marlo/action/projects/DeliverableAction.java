@@ -673,7 +673,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
 
       return list;
@@ -830,7 +830,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1025,7 +1025,8 @@ public class DeliverableAction extends BaseAction {
 
         for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
 
-
+          deliverableFundingSource.setFundingSource(
+            fundingSourceManager.getFundingSourceById(deliverableFundingSource.getFundingSource().getId()));
           deliverableFundingSource.getFundingSource().setFundingSourceInfo(
             deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
           if (deliverableFundingSource.getFundingSource().getFundingSourceInfo() == null) {
@@ -1212,7 +1213,7 @@ public class DeliverableAction extends BaseAction {
           .addAll(deliverableTypeManager.findAll()
             .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1319,7 +1320,7 @@ public class DeliverableAction extends BaseAction {
           if (o1.getFundingSourceInfo(this.getActualPhase()) != null
             && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
 
-            o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
             && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
             && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
@@ -1419,7 +1420,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1877,6 +1878,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
       deliverableManagedState.setActiveSince(new Date());
+      deliverableManagedState.setCreatedBy(this.getCurrentUser());
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();

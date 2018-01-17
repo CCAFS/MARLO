@@ -33,7 +33,7 @@
     </div>
   </div>
   <script>
-    var currenPhaseIndex = ${currenPhaseIndex};
+    var currenPhaseIndex = ${(currenPhaseIndex)!0};
   </script>
   
   [#if pageLibs??]
