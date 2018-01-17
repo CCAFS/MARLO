@@ -52,8 +52,7 @@ public class ProjectLeaderEditAction extends BaseAction {
   private ProjectSectionValidator<ProjectLeaderEditAction> validateProject;
 
   @Inject
-  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager,
-    ProjectInfoManager projectInfoManager,
+  public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager, ProjectInfoManager projectInfoManager,
     SectionStatusManager sectionStatusManager, ProjectSectionValidator<ProjectLeaderEditAction> validateProject) {
     super(config);
     this.projectInfoManager = projectInfoManager;
@@ -79,6 +78,7 @@ public class ProjectLeaderEditAction extends BaseAction {
 
       for (ProjectSectionStatusEnum projectSectionStatusEnum : ProjectSectionStatusEnum.values()) {
         switch (projectSectionStatusEnum) {
+
           case LOCATIONS:
             validateProject.validateProjectLocations(this, this.projectId);
             break;
