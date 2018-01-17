@@ -56,6 +56,9 @@
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]
+            [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.startDate??)!false) ]
+              <p><small class="text-gray">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small></p>
+            [/#if]
           </td>
           [#-- Project Leader --]
           <td class=""> 
