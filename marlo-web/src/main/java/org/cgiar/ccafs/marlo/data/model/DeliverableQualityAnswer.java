@@ -41,7 +41,6 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
 
   private Set<DeliverableQualityCheck> checksForQualityAssurance = new HashSet<DeliverableQualityCheck>(0);
 
-
   private Set<DeliverableQualityCheck> checksForDataDictionary = new HashSet<DeliverableQualityCheck>(0);
 
 
@@ -51,11 +50,9 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   public DeliverableQualityAnswer() {
   }
 
-
   public DeliverableQualityAnswer(boolean active) {
     this.active = active;
   }
-
 
   public DeliverableQualityAnswer(User modifiedBy, User createdBy, String name, boolean active,
     String modificationJustification, Date activeSince, Set<DeliverableQualityCheck> checksForQualityAssurance,
@@ -110,6 +107,7 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -123,6 +121,7 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   public String getName() {
     return name;
   }
+
 
   @Override
   public boolean isActive() {
@@ -160,6 +159,7 @@ public class DeliverableQualityAnswer implements java.io.Serializable, IAuditLog
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
 
   public void setModifiedBy(User modifiedBy) {

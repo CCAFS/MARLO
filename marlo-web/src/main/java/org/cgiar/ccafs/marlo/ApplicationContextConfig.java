@@ -15,8 +15,9 @@
 
 package org.cgiar.ccafs.marlo;
 
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
+
 import com.opensymphony.xwork2.LocalizedTextProvider;
-import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -40,13 +41,19 @@ public class ApplicationContextConfig {
 
   /**
    * Returns a LocalizedTextProvider to be used by our internationalization interceptor.
+   * Ensure beans that use or extend struts2 classes are listed as constants within the struts.xml config file.
+   * For example the bean defined below needs the following entry otherwise the default implementation will be
+   * used. Note that the value field references the bean name attribute.
+   * <constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
+   * Also note that the @DefaultConfiguration createBootstrapContainer method creates the default
+   * StrutsLocalizedTextProvider anyway, which seems strange.
    * 
    * @return
    */
-  @Bean
+  @Bean(name = "marloLocalizedTextProvider")
   public LocalizedTextProvider getLocalizedTextProvider() {
-    // If this is not suitable try the GlobalLocalizedTextProvider
-    return new StrutsLocalizedTextProvider();
+    return new MarloLocalizedTextProvider();
   }
+
 
 }

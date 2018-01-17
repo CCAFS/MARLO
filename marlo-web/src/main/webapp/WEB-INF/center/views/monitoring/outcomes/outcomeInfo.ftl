@@ -40,7 +40,7 @@
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
       [#-- Back --]
       <div class="pull-right">
-        <a href="[@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=selectedProgram.id /][/@s.url]">
+        <a href="[@s.url action='${centerSession}/monitoringOutcomesList'][@s.param name="programID" value=selectedProgram.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
           <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outcome list
         </a>
       </div>  

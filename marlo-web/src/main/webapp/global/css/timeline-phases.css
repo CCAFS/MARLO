@@ -1,0 +1,296 @@
+.tl-slidenav-previous {
+  top: 5px !important;
+  display: none !important;
+}
+
+.tl-slidenav-next {
+  top: 5px !important;
+  display: none !important;
+}
+
+.tl-slidenav-content-container {
+  width: 506px;
+}
+
+.tl-slidenav-description {
+  display: none;
+}
+
+.tl-slidenav-title {
+  display: none;
+}
+
+.tl-text-content-container {
+  /* margin-top: 0.2em; */
+}
+
+.tl-text h2.tl-headline-title, .tl-text h2.tl-headline {
+  font-size: 1.4em;
+  margin: 0;
+}
+
+h3.tl-headline-date {
+  display: none;
+}
+
+.tl-slide-text-only .tl-slide-content-container .tl-slide-content .tl-text {
+  width: 90% !important;
+  max-width: 90% !important;
+  padding: 5px;
+}
+
+.tl-attribution span {
+  display: none !important;
+}
+
+.tl-menubar-button {
+  padding: 5px;
+  font-size: 15px;
+}
+
+.tl-slide-content-container {
+}
+
+.tl-slide-scrollable-container {
+}
+
+div#ccafs-planning-2018 {
+}
+
+.tl-storyslider {
+  /* border-radius: 5px; */
+  /* display: none; */
+  width: 12%;
+  float: left;
+  height: 100% !important;
+}
+
+span.tl-icon-goback {
+  /* display: none; */
+}
+
+div#tl-adnyds {
+}
+
+.tl-menubar {
+  /* display: none; */
+  left: 12%;
+  top: 1px !important;
+}
+
+.tl-timenav {
+  width: 88%;
+  float: right;
+  border: 1px solid #f1f1f1;
+}
+
+.tl-slidenav-icon {
+}
+
+.tl-slide-content {
+  width: 100% !important;
+}
+
+.tl-timeaxis-background {
+  height: 35px;
+}
+
+.tl-timenav-line {
+}
+
+.tl-timegroup-message {
+  font-size: 0.9em;
+}
+
+.tl-attribution {
+  display: none;
+}
+
+/* ******************************************************************************* */
+/* Header example */
+.example {
+}
+
+.example button, .example button {
+  background: transparent;
+  border: 0;
+  color: #7b7676;
+  opacity: .5;
+}
+
+.example button:hover, .example button:hover {
+  opacity: 1;
+}
+
+.example button:disabled, .example button:disabled {
+  opacity: .2;
+}
+
+.example .forward, .example .backward {
+  float: left;
+  width: 5%;
+  height: 100%;
+  font-size: 30px;
+  padding: 0;
+}
+
+.example .forward {
+  float: right;
+}
+
+.example .frame {
+  margin: 0 auto;
+  width: 90%;
+  height: 53px;
+  /* line-height: 200px; */
+  overflow: hidden;
+  text-shadow: none;
+  background: #f5f5f5;
+}
+
+.example .frame ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 1em;
+}
+
+.example .frame ul li {
+  float: left;
+  width: 260px;
+  height: 100%;
+  margin: 0 4px 0 0;
+  padding: 0px 11px;
+  background: #f3f0f0;
+  color: #3a3c47;
+  /* text-align: center; */
+  cursor: pointer;
+  /* background-color: #eee !important; */
+  /* opacity: 0.2; */
+  color: #949494;
+  border-top: 0px solid;
+  border: 1px dashed #d8d8d8;
+}
+
+.example .frame ul li.active {
+  border: none;
+  color: #fff;
+}
+
+.example .frame ul li.active.planning {
+  color: #fff;
+  background-color: #337ab7;
+}
+
+.example .frame ul li.active.reporting {
+  background-color: #777;
+}
+
+.example .frame ul li h4 {
+  margin: 7px 0 1px 0px;
+}
+
+.example .scrollbar {
+  margin: 10px auto 0px;
+  width: 940px;
+  height: 2px;
+  line-height: 0;
+}
+
+.example .scrollbar .handle {
+  width: 100px;
+  height: 100%;
+  background: #eee;
+  cursor: pointer;
+}
+
+.example .scrollbar .handle .mousearea {
+  position: absolute;
+  top: -9px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.example .pages {
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+  text-align: center;
+}
+
+.example .pages li {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 4px;
+  text-indent: -999px;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+}
+
+.example .pages li:hover {
+  background: #aaa;
+}
+
+.example .pages li.active {
+  background: #666;
+}
+
+.example .controls {
+  margin: 50px 0 0;
+  text-align: center;
+}
+
+.example .controls .divider {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.example .controls button {
+  line-height: 32px;
+  vertical-align: middle;
+  font-family: Novecento, sans-serif;
+}
+
+.example .controls button i {
+  position: relative;
+  top: -2px;
+  margin: 5px;
+  padding: 0;
+  font-size: 32px;
+  vertical-align: middle;
+}
+
+.phaseTag {
+  
+}
+
+.phaseTag span {
+  background: #eee;
+  padding: 2px 12px;
+  position: fixed;
+  top: 35px;
+  /* font-weight: bold; */
+  color: #fff;
+  z-index: 100;
+  border-radius: 0px 0px 2px 2px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.phaseTag span.planning {
+  background-color: #337ab7;
+}
+
+.phaseTag span.reporting {
+  background-color: #777;
+}
+
+.example .frame ul li.closed {
+  cursor:not-allowed;
+  opacity: 0.4;
+}

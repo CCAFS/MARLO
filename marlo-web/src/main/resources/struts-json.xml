@@ -101,7 +101,13 @@
 			</result>
 		</action>
 
-
+    <action name="testAction"
+      class="org.cgiar.ccafs.marlo.action.json.project.TestAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="milestonesYear"
 			class="org.cgiar.ccafs.marlo.action.json.global.MilestonesbyYearAction">
@@ -194,14 +200,6 @@
 			</result>
 		</action>
 
-		<action name="searchUserByEmail"
-			class="org.cgiar.ccafs.marlo.action.json.global.SearchUserAction">
-			<result type="json">
-				<param name="noCache">true</param>
-				<param name="excludeNullProperties">true</param>
-			</result>
-		</action>
-
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
 			<result type="json">
@@ -280,6 +278,14 @@
 			</result>
 		</action>
 
+		<action name="changePhase"
+      class="org.cgiar.ccafs.marlo.action.json.global.ChangePhaseAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+		
 		<action name="flaghshipsByCrpAction"
 			class="org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction">
 			<result type="json">

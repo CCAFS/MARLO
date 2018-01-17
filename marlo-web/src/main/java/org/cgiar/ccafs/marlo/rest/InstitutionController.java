@@ -101,7 +101,7 @@ public class InstitutionController implements ModelDriven<Object> {
   }
 
 
-  // DELETE /orders/1
+  // DELETE /institutions/1
   public HttpHeaders destroy() {
     LOG.debug("Delete institution with id: {}", id);
     institutionManager.deleteInstitution(id);
@@ -114,7 +114,7 @@ public class InstitutionController implements ModelDriven<Object> {
    * 
    * @return
    */
-  // GET /orders/1/edit
+  // GET /institutions/1/edit
   public HttpHeaders edit() {
     LOG.warn("Deliberately not implementing this method, to update an entity use PUT instead.");
     return new DefaultHttpHeaders("edit");
@@ -126,7 +126,7 @@ public class InstitutionController implements ModelDriven<Object> {
    * 
    * @return
    */
-  // GET /orders/new
+  // GET /institutions/new
   public String editNew() {
     LOG.warn("Deliberately not implementing this method, to create an entity use POST instead.");
     return "editNew";

@@ -99,7 +99,9 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
@@ -111,10 +113,9 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
 
-      Project projectDb = projectManager.getProjectById(project.getId());
       if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
-        if (action.isReportingActive() && project.isProjectEditLeader()) {
+        if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
           if (!this.isValidString(project.getOverall())) {
             this.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
@@ -131,7 +132,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         action.getInvalidFields().put("list-project.partners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
-      if (project.isProjectEditLeader()) {
+      if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!action.isProjectNew(project.getId())) {
           this.validateLessonsLearn(action, project);
           if (this.validationMessage.toString().contains("Lessons")) {
@@ -156,13 +157,10 @@ public class ProjectPartnersValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
 
       }
-      if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.PARTNERS.getStatus());
-      }
+
+      this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        ProjectSectionStatusEnum.PARTNERS.getStatus());
+
 
     }
   }
@@ -190,12 +188,12 @@ public class ProjectPartnersValidator extends BaseValidator {
         for (ProjectPartner partner : project.getPartners()) {
           j = 0;
           // Validating that the partner has a least one contact person
-          if (project.isProjectEditLeader()) {
+          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
             if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
               this.validatePersonResponsibilities(action, c, partner);
             }
           }
-          if (project.isProjectEditLeader()) {
+          if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
             Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
             if (inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
@@ -314,7 +312,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
-    if (!projectValidator.isValidLeader(project.getLeader(), project.isBilateralProject())) {
+    if (!projectValidator.isValidLeader(project.getLeader())) {
       this.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
       action.getInvalidFields().put("list-project.partners", action.getText("projectPartners.types.PL"));
       this.addMissingField("project.leader");

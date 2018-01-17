@@ -16,7 +16,13 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.dao.InstitutionLocationDAO;
+import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerLocationDAO;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 
 import java.util.List;
@@ -29,17 +35,25 @@ import org.hibernate.SessionFactory;
 @Named
 public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Long> implements ProjectPartnerDAO {
 
+  private LocElementDAO locElementDAO;
+  private InstitutionLocationDAO institutionDAO;
+  private ProjectPartnerLocationDAO projectPartnerLocationDAO;
 
   @Inject
-  public ProjectPartnerMySQLDAO(SessionFactory sessionFactory) {
+  public ProjectPartnerMySQLDAO(SessionFactory sessionFactory, LocElementDAO locElementDAO,
+    InstitutionLocationDAO institutionDAO, ProjectPartnerLocationDAO projectPartnerLocationDAO) {
     super(sessionFactory);
+    this.locElementDAO = locElementDAO;
+    this.institutionDAO = institutionDAO;
+    this.projectPartnerLocationDAO = projectPartnerLocationDAO;
   }
+
 
   @Override
   public void deleteProjectPartner(long projectPartnerId) {
     ProjectPartner projectPartner = this.find(projectPartnerId);
     projectPartner.setActive(false);
-    this.save(projectPartner);
+    super.update(projectPartner);
   }
 
   @Override
@@ -51,6 +65,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     return true;
 
   }
+
 
   @Override
   public ProjectPartner find(long id) {
@@ -70,12 +85,38 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   }
 
   @Override
+  public ProjectPartner getPartnerPhase(Phase phase, Project project, Institution institution) {
+    String query = "select distinct pp from ProjectPartner pp "
+      + " where project.id = :projectId and institution.id= :institutionId and phase.id= :phaseId and active=true";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("projectId", project.getId());
+    createQuery.setParameter("institutionId", institution.getId());
+    createQuery.setParameter("phaseId", phase.getId());
+
+
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    if (projectPartner != null) {
+      projectPartner = super.refreshEntity(projectPartner);
+    }
+
+
+    return projectPartner;
+  }
+
+
+  @Override
   public ProjectPartner getProjectPartnerByIdAndEagerFetchLocations(long projectPartnerID) {
     String query = "select distinct pp from ProjectPartner pp left join fetch pp.projectPartnerLocations ppl "
       + "where pp.id = :projectPartnerID";
     Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
     createQuery.setParameter("projectPartnerID", projectPartnerID);
-    ProjectPartner projectPartner = super.findSingleResult(ProjectPartner.class, createQuery);
+
+    Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
+    ProjectPartner projectPartner = (ProjectPartner) findSingleResult;
+    projectPartner = super.refreshEntity(projectPartner);
+    // projectPartner.getProjectPartnerLocations().size();
+
     return projectPartner;
   }
 
@@ -99,6 +140,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     } else {
       projectPartner = super.update(projectPartner);
     }
+
     return projectPartner;
   }
 

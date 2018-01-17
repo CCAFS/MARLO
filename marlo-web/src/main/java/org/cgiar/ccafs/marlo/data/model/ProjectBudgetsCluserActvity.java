@@ -46,6 +46,10 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Phase phase;
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -67,6 +71,7 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
     }
     return true;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -112,6 +117,10 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Project getProject() {
@@ -173,6 +182,10 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {

@@ -35,12 +35,15 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectLocation(long projectLocationId) {
     ProjectLocation projectLocation = this.find(projectLocationId);
     projectLocation.setActive(false);
-    this.save(projectLocation);
+    super.update(projectLocation);
+
   }
+
 
   @Override
   public boolean existProjectLocation(long projectLocationID) {
@@ -97,7 +100,6 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
 
 
     return projectLocation;
+
   }
-
-
 }

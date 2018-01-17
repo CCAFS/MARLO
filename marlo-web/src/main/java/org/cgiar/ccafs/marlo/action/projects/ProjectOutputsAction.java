@@ -337,9 +337,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setAdministrative(projectDB.getAdministrative());
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
-    allYears = projectDB.getAllYears();
+    allYears = projectDB.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     project.setMogs(new ArrayList<>());
     List<IpProjectContribution> ipProjectContributions =
       projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -376,8 +374,6 @@ public class ProjectOutputsAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
 
@@ -390,8 +386,6 @@ public class ProjectOutputsAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OVERVIEWS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

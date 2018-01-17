@@ -29,6 +29,8 @@
   
   <bean type="org.apache.struts2.rest.handler.ContentTypeHandler" name="jackson" class="org.apache.struts2.rest.handler.JacksonLibHandler"/>
   <constant name="struts.rest.handlerOverride.json" value="jackson"/>
+	  
+  <constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
 
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
@@ -380,6 +382,8 @@
 		<global-exception-mappings>
 			<exception-mapping exception="java.lang.Exception"
 				result="unhandledException" />
+      <exception-mapping exception="org.apache.shiro.authz.AuthorizationException"
+        result="403"/>
 		</global-exception-mappings>
 
 		<action name="unhandledExceptionAction"

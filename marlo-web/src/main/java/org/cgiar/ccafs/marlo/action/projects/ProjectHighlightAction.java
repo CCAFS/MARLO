@@ -199,7 +199,7 @@ public class ProjectHighlightAction extends BaseAction {
 
   public int getEndYear() {
     DateFormat dateFormat = new SimpleDateFormat("yyyy");
-    return Integer.parseInt(dateFormat.format(project.getEndDate()));
+    return Integer.parseInt(dateFormat.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()));
   }
 
 
@@ -431,7 +431,7 @@ public class ProjectHighlightAction extends BaseAction {
     }
 
     // Getting all years from project
-    allYears = project.getAllYears();
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     List<Integer> listYears = new ArrayList<Integer>();
     for (int i = 0; i < allYears.size(); i++) {
       if ((allYears.get(i) <= this.getCurrentCycleYear())) {

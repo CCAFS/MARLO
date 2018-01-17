@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 
 import java.util.List;
@@ -24,6 +25,10 @@ import java.util.List;
  */
 
 public interface ProjectBudgetsCluserActvityManager {
+
+
+  public ProjectBudgetsCluserActvity
+    copyProjectBudgetsCluserActvity(ProjectBudgetsCluserActvity projectBudgetsCluserActvity, Phase phase);
 
 
   /**
@@ -50,7 +55,6 @@ public interface ProjectBudgetsCluserActvityManager {
    * @return a list from ProjectBudgetsCluserActvity null if no exist records
    */
   public List<ProjectBudgetsCluserActvity> findAll();
-
 
   /**
    * This method gets a projectBudgetsCluserActvity object by a given projectBudgetsCluserActvity identifier.

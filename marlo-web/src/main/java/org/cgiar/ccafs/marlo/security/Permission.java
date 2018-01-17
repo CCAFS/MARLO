@@ -138,4 +138,6 @@ public class Permission {
   public static final String CENTER_PROJECT_SUBMISSION_PERMISSION =
     "center:{0}:area:{1}:program:{2}:project:{3}:submitProject";
 
+  public static final String FULL_REST_API_PERMISSION = "api:*";
+
 }

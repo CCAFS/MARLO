@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jun 8, 2016 11:23:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -39,13 +42,15 @@ public class Auditlog implements java.io.Serializable {
   private String relationName;
   private User user;
   private String modificationJustification;
+  private Long phase;
 
   public Auditlog() {
   }
 
 
   public Auditlog(String action, String detail, Date createdDate, String entityId, String entityName, String entityJson,
-    Long userId, String transactionId, Long principal, String relationName, String modificationJustification) {
+    Long userId, String transactionId, Long principal, String relationName, String modificationJustification,
+    Long phase) {
     this.action = action;
     this.detail = detail;
     this.createdDate = createdDate;
@@ -57,6 +62,7 @@ public class Auditlog implements java.io.Serializable {
     this.main = principal;
     this.relationName = relationName;
     this.modificationJustification = modificationJustification;
+    this.phase = phase;
   }
 
 
@@ -67,6 +73,20 @@ public class Auditlog implements java.io.Serializable {
 
   public Long getAuditLogId() {
     return this.auditLogId;
+  }
+
+
+  public boolean getAvailable() {
+    String inputString = "10-01-2018";
+    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    try {
+      Date inputDate = dateFormat.parse(inputString);
+      return this.createdDate.after(inputDate);
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      return false;
+    }
+
   }
 
 
@@ -89,7 +109,6 @@ public class Auditlog implements java.io.Serializable {
     return this.entityJson;
   }
 
-
   public String getEntityName() {
     return this.entityName;
   }
@@ -102,6 +121,11 @@ public class Auditlog implements java.io.Serializable {
 
   public String getModificationJustification() {
     return modificationJustification;
+  }
+
+
+  public Long getPhase() {
+    return phase;
   }
 
 
@@ -157,6 +181,10 @@ public class Auditlog implements java.io.Serializable {
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setPhase(Long phase) {
+    this.phase = phase;
   }
 
   public void setRelationName(String relationName) {
