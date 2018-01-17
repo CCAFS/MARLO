@@ -1094,9 +1094,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         Phase phase = allPhases.get(new Long(phaseID));
         return phase;
       }
-      Phase phase =
-        phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
-      return phase;
+      if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
+        Phase phase = (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
+        return phase;
+      } else {
+        Phase phase =
+          phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+        this.getSession().put(APConstants.CURRENT_PHASE, phase);
+        return phase;
+      }
+
+
     } catch (Exception e) {
       return new Phase(null, "", -1);
     }
