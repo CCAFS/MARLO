@@ -71,14 +71,14 @@
           </td>
           [#-- Deliverable Type --]
           <td >
-            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'None'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
           [#if deliverable.deliverableInfo.year== -1]
-            none
+            None
           [#else]
-            ${(deliverable.deliverableInfo.year)!'none'}
+            ${(deliverable.deliverableInfo.year)!'None'}
             [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
               Extended to ${deliverable.newExpectedYear}
             [/#if]
@@ -102,11 +102,11 @@
           <td class="text-center">
             [#attempt]
               <div class="status-container">
-                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
-                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</span>
               </div>
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable required fields --]
@@ -200,14 +200,14 @@
           </td>
           [#-- Deliverable Type --]
           <td>
-            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'None'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
           [#if deliverable.deliverableInfo.year== -1]
-          none
+          None
           [#else]
-          ${(deliverable.deliverableInfo.year)!'none'}
+          ${(deliverable.deliverableInfo.year)!'None'}
             [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
@@ -229,12 +229,12 @@
           <td class="text-center">
             [#attempt]
               <div class="status-container">
-                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
-                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</span>
               </div>
               [#-- ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'} --]
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable required fields --]
@@ -248,27 +248,27 @@
           [#-- Deliverable Responsible Partner --]
           <td class="text-center">
             [#attempt]
-              ${(deliverable.responsiblePartner.projectPartnerPerson.projectPartner.institution.acronym)!'none'}
+              ${(deliverable.responsiblePartner.projectPartnerPerson.projectPartner.institution.acronym)!'None'}
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable Funding source(s) --]
           <td>
             [#if deliverable.fundingSources?? && deliverable.fundingSources?size > 0]
               [#list deliverable.fundingSources as deliverableFundingSource]
-                <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}">
-                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'none'}</div>
+                <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}">
+                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'None'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'None'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
                    [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
-                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}</span>
+                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
                    [#else] 
                      <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
                    [/#if]
                 </div>
               [/#list]
             [#else]
-              <span>none<span>
+              <span>None<span>
             [/#if]
           </td>
         </tr>  
