@@ -3,85 +3,74 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Jul 29, 2016 8:50:04 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.ProjectPartner"
-		table="project_partners" optimistic-lock="version">
-		<id name="id" type="java.lang.Long">
-			<column name="id" />
-			<generator class="identity" />
-		</id>
-		<many-to-one name="institution"
-			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-			<column name="institution_id" not-null="true">
-				<comment>Foreign key to institutions table</comment>
-			</column>
-		</many-to-one>
-		<many-to-one name="project"
-			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
-			<column name="project_id" not-null="true">
-				<comment>Foreign key to projects table</comment>
-			</column>
-		</many-to-one>
-		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="created_by" not-null="true" />
-		</many-to-one>
-		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
-			fetch="select">
-			<column name="modified_by" not-null="true" />
-		</many-to-one>
-		<property name="active" type="boolean">
-			<column name="is_active" not-null="true" />
-		</property>
-		<property name="responsibilities" type="string">
-			<column name="responsibilities" length="65535" />
-		</property>
-		<property name="activeSince" type="timestamp">
-			<column name="active_since" length="19" not-null="true" />
-		</property>
-		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
-				not-null="true" />
-		</property>
-		<set name="projectPartnerContributions" table="project_partner_contributions"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="project_partner_id" not-null="true" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution" />
-		</set>
-		<set name="projectPartnerContributors" table="project_partner_contributions"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="project_partner_contributor_id" not-null="true" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution" />
-		</set>
-		<set name="projectPartnerOveralls" table="project_partner_overall"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="project_partner_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall" />
-		</set>
-		<set name="projectPartnerPersons" table="project_partner_persons"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="project_partner_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
-		</set>
-		<set name="projectPartnerLocations" table="project_partner_locations"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="project_partner_id" not-null="true" />
-			</key>
-			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
-		</set>
-		<property name="subDepartment" type="string">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectPartner" table="project_partners"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+            <column name="institution_id" not-null="true">
+                <comment>Foreign key to institutions table</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" not-null="true">
+                <comment>Foreign key to projects table</comment>
+            </column>
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+         <property name="responsibilities" type="string">
+            <column name="responsibilities" length="65535" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <set name="projectPartnerContributions" table="project_partner_contributions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution" />
+        </set>
+        <set name="projectPartnerContributors" table="project_partner_contributions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_contributor_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution" />
+        </set>
+        <set name="projectPartnerOveralls" table="project_partner_overall" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall" />
+        </set>
+        <set name="projectPartnerPersons" table="project_partner_persons" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
+        </set>
+        <set name="projectPartnerLocations" table="project_partner_locations" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
+        </set>
+        	<property name="subDepartment" type="string">
 			<column name="sub_department" length="65535" not-null="false" />
 		</property>
-	</class>
+    </class>
 </hibernate-mapping>
