@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Partners" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -57,7 +57,7 @@
 
         [#-- Back --]
         <div class="pull-right">
-          <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/projectList'][@s.param name="programID" value=programID /][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project list
           </a>
         </div>

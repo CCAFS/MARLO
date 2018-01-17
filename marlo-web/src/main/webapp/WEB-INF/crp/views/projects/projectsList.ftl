@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Projects" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
 [#assign customJS = ["${baseUrlMedia}/js/projects/projectsList.js" ] /]
 [#assign customCSS = [
@@ -60,16 +60,16 @@
           <div role="tabpanel" class="tab-pane" id="archived-tab">
             [#-- Archived Projects List (My Projects) --]
             <h3 class="headTitle text-center">[@s.text name="projectsList.archivedProjects"/]</h3>
-            [@projectList.projectsListArchived projects=closedProjects canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+            [@projectList.projectsListArchived projects=(closedProjects)! canValidate=false canEdit=false namespace="/projects" defaultAction="${(crpSession)!}/description" /]
           </div>
         </div>
       </div>
       [#-- Section Buttons --]
-      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive]
+      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive && action.getActualPhase().editable]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addResearchProject" /]</a>
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewAdminProject'/]">[@s.text name="projectsList.addManagementProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="projectsList.addResearchProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewAdminProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="projectsList.addManagementProject" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>

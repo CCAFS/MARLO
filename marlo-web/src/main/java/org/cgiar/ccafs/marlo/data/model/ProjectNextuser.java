@@ -42,7 +42,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
   private String strategies;
 
   @Expose
+  private String composeID;
+
+  @Expose
   private boolean active;
+
 
   @Expose
   private Date activeSince;
@@ -100,6 +104,10 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public String getComposeID() {
+    return composeID;
   }
 
   public User getCreatedBy() {
@@ -178,6 +186,11 @@ public class ProjectNextuser implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
 

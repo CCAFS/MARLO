@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js",
@@ -27,7 +27,7 @@
     <div id="decisionTree" class="borderBox">
       <div id="newImpactPathway" class="option">
         [#if action.centerImpactPathwayActive()]
-        <a href="[@s.url action="centerImpactPathway/${centerSession}/programimpacts"][@s.param name="edit" value="true"/][/@s.url]">
+        <a href="[@s.url action="centerImpactPathway/${centerSession}/programimpacts"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
           <p>[@s.text name="dashboard.decisionTree.defineImpact" /]</p>
         </a>
         [#else]
@@ -37,7 +37,7 @@
       
       <div id="startMonitoring" class="option">
       [#if action.centerMonitoringActive()]
-      <a href="[@s.url action="monitoring/${centerSession}/projectList"][@s.param name="edit" value="true"/][/@s.url]">
+      <a href="[@s.url action="monitoring/${centerSession}/projectList"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
         <p>[@s.text name="dashboard.decisionTree.startMonitoring" /]</p>
       </a>  
       [#else]
@@ -46,7 +46,7 @@
       </div>
       <div id="finalDes" class="option">
       [#if action.centerSummariesActive()]
-        <a href="[@s.url action="centerSummaries/${centerSession}/summaries"][@s.param name="edit" value="true"/][/@s.url]">
+        <a href="[@s.url action="centerSummaries/${centerSession}/summaries"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
           <p>[@s.text name="dashboard.decisionTree.finishDes" /]</p>
         </a>  
       [#else]

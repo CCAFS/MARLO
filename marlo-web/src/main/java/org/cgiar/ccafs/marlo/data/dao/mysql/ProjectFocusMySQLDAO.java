@@ -34,12 +34,16 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectFocus(long projectFocusId) {
     ProjectFocus projectFocus = this.find(projectFocusId);
     projectFocus.setActive(false);
-    this.save(projectFocus);
+    super.update(projectFocus);
+
+
   }
+
 
   @Override
   public boolean existProjectFocus(long projectFocusID) {
@@ -75,7 +79,6 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
     } else {
       projectFocus = super.update(projectFocus);
     }
-
 
     return projectFocus;
   }

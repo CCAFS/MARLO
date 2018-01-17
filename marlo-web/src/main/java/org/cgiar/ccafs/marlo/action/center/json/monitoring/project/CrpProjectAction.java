@@ -58,11 +58,13 @@ public class CrpProjectAction extends BaseAction {
     if (project != null) {
       SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
       json.put("id", project.getId());
-      json.put("description", project.getTitle());
-      json.put("objectives", project.getSummary());
-      json.put("startDate", sdf.parse(project.getStartDate().toString()));
-      json.put("endDate", sdf.parse(project.getEndDate().toString()));
-      json.put("crp", project.getCrp().getId());
+      /*
+       * json.put("description", project.getTitle());
+       * json.put("objectives", project.getSummary());
+       * json.put("startDate", sdf.parse(project.getStartDate().toString()));
+       * json.put("endDate", sdf.parse(project.getEndDate().toString()));
+       * json.put("crp", project.getCrp().getId());
+       */
     }
 
     return SUCCESS;

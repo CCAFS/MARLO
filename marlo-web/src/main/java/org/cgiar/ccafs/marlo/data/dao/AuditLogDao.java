@@ -54,4 +54,7 @@ public interface AuditLogDao {
 
   public List<Auditlog> getHistoryBeforeList(String transactionID, String className, String entityID);
 
+
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID);
+
 }

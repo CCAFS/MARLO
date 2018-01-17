@@ -28,8 +28,13 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   @Expose
   private Deliverable deliverable;
 
+  @Expose
+  private Phase phase;
+
+
   public DeliverableCrp() {
   }
+
 
   public DeliverableCrp(Deliverable deliverable) {
 
@@ -67,6 +72,7 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return deliverable;
   }
 
+
   @Override
   public Long getId() {
     return id;
@@ -90,11 +96,16 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   @Override
@@ -129,6 +140,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

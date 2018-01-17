@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ import java.util.List;
  */
 
 public interface ActivityManager {
+
+
+  public Activity copyActivity(Activity activity, Phase phase);
 
 
   /**
@@ -51,7 +55,6 @@ public interface ActivityManager {
    */
   public List<Activity> findAll();
 
-
   /**
    * This method gets a activity object by a given activity identifier.
    * 
@@ -69,6 +72,5 @@ public interface ActivityManager {
    *         or -1 is some error occurred.
    */
   public Activity saveActivity(Activity activity);
-
 
 }

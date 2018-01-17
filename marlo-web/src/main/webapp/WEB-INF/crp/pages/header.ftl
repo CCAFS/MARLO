@@ -66,22 +66,30 @@
         [#include "/WEB-INF/global/pages/superadmin-menu.ftl" /]
         
         <div class="container">
-          <div id="marlo-logo" class="animated fadeIn">
-            <a href="${baseUrl}">
-            <div id="title" >MARLO</div>    
-            <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
+          <div class="marlo-header">
+            <div id="marlo-logo" class="animated fadeIn">
+              <a href="${baseUrl}">
+                <div id="title" >MARLO</div>    
+                <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
+                <div class="clearfix"></div>
+              </a>
+            </div>
+            
+            [#-- Image/Logo--]
+            [#if namespace?contains('superadmin')]
+              <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
+            [#else]
+              [#if crpSession??]<img id="crp-image" src="${baseUrl}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+            [/#if]
             <div class="clearfix"></div>
             [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span> </h4>[/#if]
             <h4 class="">
               [#-- Planning / Reporting tag --]
-              [#if reportingActive??]
-                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')} ${(currentCycleYear)!}</span> 
-              [/#if]
+              
               [#if crpClosed] <span class="label label-default text-left">Closed</span> [/#if]
             </h4>
             </a>
           </div>
-          
           [#if namespace?contains('superadmin')]
             <img id="crp-image" src="${baseUrl}/global/images/cgiar.png" alt="" />
           [#else]

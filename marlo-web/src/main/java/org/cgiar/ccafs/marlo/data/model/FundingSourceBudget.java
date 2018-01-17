@@ -43,6 +43,9 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Phase phase;
+
   public FundingSourceBudget() {
   }
 
@@ -107,9 +110,14 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Integer getYear() {
@@ -152,6 +160,10 @@ public class FundingSourceBudget implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setYear(Integer year) {

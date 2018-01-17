@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Publication" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/publications/publication.js",
@@ -34,7 +34,7 @@
     
     [#-- Back --]
     <small class="pull-left">
-      <a href="[@s.url action='${crpSession}/publicationsList'][/@s.url]">
+      <a href="[@s.url action='${crpSession}/publicationsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
         <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to publications
       </a>
     </small>

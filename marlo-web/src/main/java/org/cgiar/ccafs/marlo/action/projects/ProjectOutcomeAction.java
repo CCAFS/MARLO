@@ -58,10 +58,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -320,6 +321,18 @@ public class ProjectOutcomeAction extends BaseAction {
     try {
       projectOutcomeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
+
+      ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      if (!outcome.getPhase().equals(this.getActualPhase())) {
+        List<ProjectOutcome> projectOutcomes = outcome.getProject().getProjectOutcomes().stream()
+          .filter(c -> c.isActive()
+            && c.getCrpProgramOutcome().getComposeID().equals(outcome.getCrpProgramOutcome().getComposeID())
+            && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        if (!projectOutcomes.isEmpty()) {
+          projectOutcomeID = projectOutcomes.get(0).getId();
+        }
+      }
     } catch (Exception e) {
       LOG.error("unable to parse projectOutcomeID", e);
       /**
@@ -359,21 +372,19 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         projectOutcome = (ProjectOutcome) autoSaveReader.readFromJson(jReader);
 
 
-      
         this.setDraft(true);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
         Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        project.setAdministrative(projectDb.getAdministrative());
+        project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
         List<ProjectMilestone> milestones = new ArrayList<>();
 
         if (projectOutcome.getMilestones() != null) {
@@ -392,7 +403,7 @@ public class ProjectOutcomeAction extends BaseAction {
         this.setDraft(false);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());
         projectID = project.getId();
-
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
         projectOutcome.setMilestones(
           projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -412,7 +423,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     Set<CrpMilestone> crpMilestones = new HashSet<>();
-    if (projectOutcome.getMilestones() != null) {
+    if (projectOutcome.getMilestones() != null)
+
+    {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
         CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
 
@@ -425,7 +438,9 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
-    if (projectOutcome != null) {
+    if (projectOutcome != null)
+
+    {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
 
@@ -441,7 +456,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-    if (this.isHttpPost()) {
+    if (this.isHttpPost())
+
+    {
       /**
        * This might seem very strange what is going on here, but this is due to issue #1124. The Struts2 Prepare
        * interceptor will set the values on the projectOutcome entity during save, but if we leave the values here and
@@ -461,9 +478,12 @@ public class ProjectOutcomeAction extends BaseAction {
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
+      projectOutcome.getCrpProgramOutcome().setSrfTargetUnit(null);
       projectOutcome.setAchievedUnit(null);
+      crpProgramOutcome.setSrfTargetUnit(null);
       projectOutcome.setExpectedUnit(null);
     }
+
   }
 
 
@@ -481,16 +501,18 @@ public class ProjectOutcomeAction extends BaseAction {
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
-      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setActiveSince(new Date());
-      projectOutcome.setModificationJustification(this.getJustification());
+      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
+      projectOutcomeDB.setActiveSince(new Date());
+      projectOutcomeDB.setPhase(this.getActualPhase());
+      projectOutcomeDB.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
-      relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
+      // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
+      projectOutcomeManager.saveProjectOutcome(projectOutcomeDB, this.getActionName(), relationsName,
+        this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
 
@@ -663,7 +685,7 @@ public class ProjectOutcomeAction extends BaseAction {
             if (projectMilestone.getExpectedUnit() != null) {
               if (projectMilestone.getExpectedUnit().getId() == null
                 || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
-                projectMilestone.setExpectedUnit(null);
+                projectMilestoneDB.setExpectedUnit(null);
               } else {
                 projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
               }
@@ -735,40 +757,43 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectOutcome saveProjectOutcome() {
 
-    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
-    int endYear = 0;
+    // ProjectOutcome projectOutcomeDB = new ProjectOutcome();
+
+
     Calendar startDate = Calendar.getInstance();
-    startDate.setTime(project.getStartDate());
+    startDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getStartDate());
 
     Calendar endDate = Calendar.getInstance();
-    endDate.setTime(project.getEndDate());
-    endYear = endDate.get(Calendar.YEAR);
+    endDate.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+    int endYear = endDate.get(Calendar.YEAR);
 
-    if (this.isPlanningActive() || this.getCurrentCycleYear() == endYear) {
-      projectOutcomeDB.setActive(true);
-      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
-      projectOutcomeDB.setCreatedBy(this.getCurrentUser());
-      projectOutcomeDB.setActiveSince(new Date());
-      projectOutcomeDB.setCrpProgramOutcome(crpProgramOutcome);
-      projectOutcomeDB.setProject(project);
-      if (projectOutcome.getExpectedUnit() != null && projectOutcome.getExpectedUnit().getId() == null) {
-        projectOutcomeDB.setExpectedUnit(null);
-      } else {
-        projectOutcomeDB.setExpectedUnit(projectOutcome.getExpectedUnit());
+    if (this.isPlanningActive()) {
+      // projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcome.setActive(true);
+      projectOutcome.setModifiedBy(this.getCurrentUser());
+      projectOutcome.setCreatedBy(this.getCurrentUser());
+      projectOutcome.setActiveSince(new Date());
+      projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+      projectOutcome.setProject(project);
+      if (projectOutcome.getExpectedUnit() != null) {
+        if (projectOutcome.getExpectedUnit().getId() == null
+          || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+          projectOutcome.setExpectedUnit(new SrfTargetUnit());
+        } else {
+          projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
+        }
       }
 
-      projectOutcomeDB.setExpectedValue(projectOutcome.getExpectedValue());
-      projectOutcomeDB.setGenderDimenssion(projectOutcome.getGenderDimenssion());
-      projectOutcomeDB.setYouthComponent(projectOutcome.getYouthComponent());
-      projectOutcomeDB.setNarrativeTarget(projectOutcome.getNarrativeTarget());
+      // projectOutcome.setId(projectOutcomeID);
+      projectOutcome.setPhase(this.getActualPhase());
 
-      projectOutcomeDB.setModificationJustification("");
-      projectOutcomeDB = projectOutcomeManager.saveProjectOutcome(projectOutcomeDB);
+      projectOutcome.setModificationJustification("");
+      projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }
 
-    return projectOutcomeDB;
+    return projectOutcome;
 
   }
 

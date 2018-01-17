@@ -61,6 +61,8 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   private Long id;
 
   @Expose
+  private Phase phase;
+  @Expose
   private String identifier;
 
 
@@ -184,6 +186,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public Set<ProjectBudgetsCluserActvity> getProjectBudgetsCluserActvities() {
     return projectBudgetsCluserActvities;
   }
@@ -261,6 +267,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProjectBudgetsCluserActvities(Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities) {

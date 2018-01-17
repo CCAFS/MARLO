@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Budget By Partners" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js", 
@@ -19,19 +19,24 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
+
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 [#if !reportingActive]
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
     <p class="col-md-10">
-      [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+      [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
 [/#if]
-    
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -48,10 +53,10 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
           
-          [#if project.startDate?? && project.endDate??]
+          [#if project.projectInfo.startDate?? && project.projectInfo.endDate??]
           
-            [#assign startYear = (project.startDate?string.yyyy)?number /]
-            [#assign endYear = (project.endDate?string.yyyy)?number /]
+            [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+            [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
             
             [#if currentCycleYear gt endYear]
               [#assign selectedYear = endYear /]
@@ -63,19 +68,19 @@
 
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
-              [#list startYear .. endYear as year]
+              [#list startYear .. selectedYear as year]
                 <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingActive /] </a></li>
               [/#list]
             </ul>
             
             [#-- Years Content --]
             <div class="tab-content budget-content">
-              [#list startYear .. endYear as year]
+              [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                   [#-- No Budget available for this year --]
            
                     [#-- Budgest cannot be editable message --]
-                    [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                    [#if !isYearEditable(year) && editable]<div class="note"> ${year} budgets for cannot be editable.</div>[/#if]
                   
                     <div class="overallYearBudget clearfix">
                       [#-- Total year --]
@@ -98,7 +103,7 @@
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
                       [/#list]
                     [#else]
-                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
+                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
                     [/#if]
 
                 
@@ -113,7 +118,7 @@
           [#else]
             <div class="simpleBox emptyMessage text-center">
               [@s.text name="projectBudgetByPartners.beforeFillingSections"]
-                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>[/@s.param]
+                [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section </a>[/@s.param]
                 [@s.param]<span class="label label-success">save</span>[/@s.param]
               [/@s.text]
             </div>  
@@ -123,6 +128,7 @@
       </div>
     </div>  
 </section>
+[/#if]
 
 [#-- Budget tab index --]
 <span id="budgetIndex" style="display:none">${budgetIndex+1}</span>
@@ -195,7 +201,7 @@
             [/#list]
           </tr>
           [#-- Gender Budget Percentage --]
-          [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
+          [#if project.projectInfo.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
           <tr>
             <td class="amountType"> Gender %:</td>
             [#list budgetTypesList as budgetType]
@@ -220,7 +226,7 @@
           [#attempt]
             [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
                 [#assign fundingSources++ /]
-                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.budgetType.id,budget.fundingSource.id) ]
+                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.fundingSourceInfo.budgetType.id,budget.fundingSource.id) ]
                 [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
             [/#list]
           [#recover]
@@ -252,37 +258,49 @@
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
  
-    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
+    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
+     [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
+       <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
+     [/#if]  
+          [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=element /]
+      </div>
+    [/#if]
+    [/#if]
     
     [#-- Project Title --]
     <p class="checked">
-      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear))!0)?number /]
+      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear,action.getActualPhase()))!0)?number /]
       <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
+     [#if isYearEditable(selectedYear)]
       <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
+    [/#if]
     </p> 
     
     [#if !isTemplate]
-    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][@s.param name="edit" value="true" /][/@s.url]" class="" target="_BLANK"> 
+    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="" target="_BLANK"> 
     [/#if]
-      <p> <span class="title">${(element.fundingSource.title)!}</span> </p>
+      <p> <span class="title">${(element.fundingSource.fundingSourceInfo.title)!}</span> </p>
     [#if !isTemplate]
     </a>
     [/#if]
-    
+
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
     <input type="hidden" class="projectId institution-${(element.institution.id)!} year-${(selectedYear)!}" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
+    <input type="hidden"  name="${customName}.phase.id" value="${(element.phase.id)!}"/>
     
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-4">
         <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
-          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!} 
-            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
+          <span class="budgetTypeName">${(element.fundingSource.fundingSourceInfo.budgetType.name)!} 
+            [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(element.fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
           </span> 
-          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
+          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.fundingSourceInfo.budgetType.id)!}" />
         </div>
       </div>
       <div class="col-md-4">
@@ -304,7 +322,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        [#if project.projectEditLeader && action.hasSpecificities('crp_budget_gender')]
+        [#if ((project.projectInfo.projectEditLeader)!false) && action.hasSpecificities('crp_budget_gender')]
           <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
           [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
@@ -327,8 +345,8 @@
 
 [#-- Get if the year is required--]
 [#function isYearRequired year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if (project.projectInfo.endDate??)!false]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
@@ -341,8 +359,8 @@
 
 [#-- Get if the year is editable--]
 [#function isYearEditable year]
-  [#if project.endDate??]
-    [#assign endDate = (project.endDate?string.yyyy)?number]
+  [#if (project.projectInfo.endDate??)!false]
+    [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
     [#if reportingActive]
       [#return  (year gte currentCycleYear) ]
     [#else]

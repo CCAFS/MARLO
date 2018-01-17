@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -86,7 +87,20 @@ public class CrpProjectPhases extends BaseAction {
     Collections.sort(allProjects, (tu1, tu2) -> tu1.getId().compareTo(tu2.getId()));
 
     Collections.sort(phasesProjects, (tu1, tu2) -> tu1.getId().compareTo(tu2.getId()));
+    for (Project project : phasesProjects) {
+      project.getProjecInfoPhase(this.getActualPhase());
+    }
 
+    for (Project project : allProjects) {
+      List<ProjectInfo> projectInfos =
+        project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (!projectInfos.isEmpty()) {
+        project.setProjectInfo(projectInfos.get(projectInfos.size() - 1));
+      } else {
+        System.out.println(project.getId());
+      }
+
+    }
     if (this.isHttpPost()) {
       if (allProjects != null) {
         allProjects.clear();

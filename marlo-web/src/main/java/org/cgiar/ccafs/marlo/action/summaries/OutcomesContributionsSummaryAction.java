@@ -15,11 +15,10 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -43,11 +42,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -56,7 +53,6 @@ import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
@@ -70,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class OutcomesContributionsSummaryAction extends BaseAction implements Summary {
+public class OutcomesContributionsSummaryAction extends BaseSummariesAction implements Summary {
 
   /**
    * 
@@ -79,14 +75,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   private static Logger LOG = LoggerFactory.getLogger(OutcomesContributionsSummaryAction.class);
 
   // Parameters
-  private Crp loggedCrp;
   private long startTime;
-  private int year;
-  private String cycle;
   private HashMap<Long, String> targetUnitList;
   // Managers
-  private final CrpManager crpManager;
-  private final SrfTargetUnitManager srfTargetUnitManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -94,9 +86,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   @Inject
   public OutcomesContributionsSummaryAction(APConfig config, CrpManager crpManager,
-    SrfTargetUnitManager srfTargetUnitManager) {
-    super(config);
-    this.crpManager = crpManager;
+    SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.srfTargetUnitManager = srfTargetUnitManager;
   }
 
@@ -121,11 +112,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       this.getText("projectOutcomeMilestone.expectedValue"));
     masterReport.getParameterValues().put("i8nMilestoneExpectedNarrative",
       this.getText("outcome.expectedNarrativeMilestone"));
-    masterReport.getParameterValues().put("i8nOutcomeIndicator", this.getText("outcome.inidicator.readText"));
     masterReport.getParameterValues().put("i8nOutcomesTitle",
       this.getText("summaries.outcomesContributions.titleOutcomes"));
     masterReport.getParameterValues().put("i8nMilestonesTitle",
       this.getText("summaries.outcomesContributions.titleMilestones"));
+    masterReport.getParameterValues().put("i8nOutcomeIndicator", this.getText("outcome.inidicator.readText"));
     return masterReport;
   }
 
@@ -137,9 +128,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     manager.registerDefaults();
     try {
       Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/OutcomesContributionsSummary_OutcomeIndicator.prpt"), MasterReport.class);
+        this.getClass().getResource("/pentaho/OutcomesContributionsSummary-Annualization.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = loggedCrp.getAcronym();
+      String center = this.getLoggedCrp().getAcronym();
       // Get datetime
       ZonedDateTime timezone = ZonedDateTime.now();
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -177,9 +168,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
+      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
+      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -199,59 +190,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     subReport.setDataFactory(cdf);
   }
 
-  /**
-   * Get all subreports and store then in a hash map.
-   * If it encounters a band, search subreports in the band
-   * 
-   * @param hm List to populate with subreports found
-   * @param itemBand details section in pentaho
-   */
-  private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
-    int elementCount = itemBand.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = itemBand.getElement(i);
-      // verify if the item is a SubReport
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-          // If report footer is not null check for subreports
-          if (((SubReport) e).getReportFooter().getElementCount() != 0) {
-            this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
-          }
-        }
-      }
-      // If is a band, find the subreport if exist
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
-
-  /**
-   * Get all subreports in the band.
-   * If it encounters a band, search subreports in the band
-   * 
-   * @param hm
-   * @param band
-   */
-  private void getBandSubreports(HashMap<String, Element> hm, Band band) {
-    int elementCount = band.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = band.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        // If report footer is not null check for subreports
-        if (((SubReport) e).getReportFooter().getElementCount() != 0) {
-          this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
-
 
   @Override
   public int getContentLength() {
@@ -261,10 +199,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   @Override
   public String getContentType() {
     return "application/xlsx";
-  }
-
-  public String getCycle() {
-    return cycle;
   }
 
   @SuppressWarnings("unused")
@@ -279,26 +213,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ImpactPathWayContributionsSummary-");
-    fileName.append(this.year + "_");
+    fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
     return fileName.toString();
-  }
-
-  private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-    int elementCount = reportFooter.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = reportFooter.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
   }
 
   @Override
@@ -309,9 +227,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return inputStream;
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
@@ -334,21 +249,26 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class},
       0);
-    for (CrpProgram crpProgram : loggedCrp.getCrpPrograms().stream().filter(cp -> cp.isActive())
-      .collect(Collectors.toList())) {
+    for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream()
+      .filter(cp -> cp.isActive() && cp.getCrp().equals(this.getLoggedCrp())).collect(Collectors.toList())) {
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
-        .filter(cpo -> cpo.isActive()).collect(Collectors.toList())) {
+        .filter(cpo -> cpo.isActive() && cpo.getPhase().equals(this.getSelectedPhase())).collect(Collectors.toList())) {
         for (CrpMilestone crpMilestone : crpProgramOutcome.getCrpMilestones().stream().filter(cm -> cm.isActive())
           .collect(Collectors.toList())) {
           for (ProjectMilestone projectMilestone : crpMilestone.getProjectMilestones().stream()
-            .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
+            .filter(pm -> pm.isActive() && pm.getProjectOutcome().getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList())) {
 
             if (projectMilestone.getProjectOutcome().isActive()) {
               String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
                 expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
               Long expectedValue = -1L;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
-              title = projectMilestone.getProjectOutcome().getProject().getTitle();
+              if (projectMilestone.getProjectOutcome().getProject()
+                .getProjecInfoPhase(this.getSelectedPhase()) != null) {
+                title = projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
+                  .getTitle();
+              }
               flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
               outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
               if (this.hasSpecificities(APConstants.CRP_IP_OUTCOME_INDICATOR)
@@ -374,6 +294,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return model;
   }
 
+
   private TypedTableModel getProjectsOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
@@ -381,9 +302,14 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
         String.class, String.class},
       0);
-    for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
+    for (Project project : this.getLoggedCrp().getProjects().stream()
+      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
+      .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
+        && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
-      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(po -> po.isActive())
+      for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
+        .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
+        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         String projectId = "";
         String title = "";
@@ -396,7 +322,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         String projectUrl = "";
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
-        title = project.getTitle();
+        title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
         if (projectOutcome.getCrpProgramOutcome() != null) {
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
@@ -420,42 +346,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return model;
   }
 
-  public int getYear() {
-    return year;
-  }
-
   @Override
   public void prepare() {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      // Map<String, Object> parameters = this.getParameters();
-      Map<String, Parameter> parameters = this.getParameters();
-      // year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-      year = Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
-    // Get cycle
-    try {
-      // Map<String, Object> parameters = this.getParameters();
-      Map<String, Parameter> parameters = this.getParameters();
-      // cycle = (StringUtils.trim(((String[]) parameters.get(APConstants.CYCLE))[0]));
-      cycle = (StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0]));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.CYCLE + " parameter. Parameter will be set as CurrentCycle. Exception: "
-        + e.getMessage());
-      cycle = this.getCurrentCycle();
-    }
+    this.setGeneralParameters();
     // Fill target unit list
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
@@ -463,7 +356,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       List<SrfTargetUnit> targetUnits = new ArrayList<>();
 
       List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+        this.getLoggedCrp().getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
 
       for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
         targetUnits.add(crpTargetUnit.getSrfTargetUnit());
@@ -480,19 +373,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     startTime = System.currentTimeMillis();
     LOG.info(
       "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.loggedCrp.getAcronym() + ". Cycle: " + cycle);
-  }
-
-  public void setCycle(String cycle) {
-    this.cycle = cycle;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
-  public void setYear(int year) {
-    this.year = year;
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
   }
 
 }

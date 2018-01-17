@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 
 import java.util.List;
 
@@ -53,6 +54,8 @@ public interface CrpMilestoneDAO {
    * @return a list from CrpMilestone null if no exist records
    */
   public List<CrpMilestone> findAll();
+
+  public CrpMilestone getCrpMilestone(String composedId, CrpProgramOutcome crpProgramOutcome);
 
 
   /**
