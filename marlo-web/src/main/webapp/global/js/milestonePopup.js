@@ -61,7 +61,8 @@ $(document).ready(function() {
           targetUnit: targetUnit,
           value: targetValue,
           year: targetYear,
-          outcomeID: $("input[name='outcomeID']").val()
+          outcomeID: $("input[name='outcomeID']").val(),
+          phaseID: phaseID
       }
       $.ajax({
           'url': baseURL + '/addMilestone.do',

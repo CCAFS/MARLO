@@ -67,6 +67,7 @@
               <li><strong>canEdit:</strong> ${canEdit?string}</li>
               <li><strong>Editable:</strong> ${editable?string}</li>
               <li><strong>currentSectionString:</strong> ${(currentSectionString)!}</li>
+              <li><strong>canEditPhase:</strong> ${canEditPhase?string}</li>
             </ul> 
           </div>
           <h3>Form outputs</h3>

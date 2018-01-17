@@ -87,7 +87,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -112,7 +112,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       }
     }
     ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     if (project != null && project.isActive()) {
 
@@ -213,8 +213,19 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         baseAction.setEditStatus(false);
       }
 
+      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+
+        editParameter = false;
+        // If the user is not asking for edition privileges we don't need to validate them.
+
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
       // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
 

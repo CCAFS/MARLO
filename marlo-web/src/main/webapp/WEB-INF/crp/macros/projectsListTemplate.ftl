@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="4">General Information</th>
+        <th colspan="5">General Information</th>
         [#if !reportingActive]
           <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         [/#if]
@@ -14,7 +14,7 @@
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-        [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
+        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
         <th id="projectFlagships">
           [#if action.hasProgramnsRegions()]
             [@s.text name="projectsList.projectFlagshipsRegions" /] 
@@ -60,6 +60,10 @@
           [#-- Project Leader --]
           <td class=""> 
             [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+          </td>
+          
+          <td class=""> 
+            [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Project Type 
           <td>
@@ -182,6 +186,7 @@
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
+          <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">
           [#if action.hasProgramnsRegions()]
@@ -221,6 +226,9 @@
           [#-- Project Leader --]
           <td class=""> 
             [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
+          </td>
+              <td class=""> 
+            [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Flagship / Regions --]
           <td>

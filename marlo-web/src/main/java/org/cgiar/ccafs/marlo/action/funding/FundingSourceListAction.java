@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -101,49 +102,67 @@ public class FundingSourceListAction extends BaseAction {
   @Override
   public String add() {
     FundingSource fundingSource = new FundingSource();
-    FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+
     fundingSource.setCreatedBy(this.getCurrentUser());
     fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSourceInfo.setModifiedBy(this.getCurrentUser());
-    fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
-    fundingSourceInfo.setPhase(this.getActualPhase());
-    fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+
     // project.setCrp(loggedCrp);
     fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
     fundingSourceID = fundingSource.getId();
 
-    fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
-    fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
+    Phase phase = this.getActualPhase();
+    boolean hasNext = true;
+    while (hasNext) {
 
 
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-    if (user != null) {
-      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-      try {
-        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+      FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
+      fundingSourceInfo.setModifiedBy(this.getCurrentUser());
+      fundingSourceInfo.setModificationJustification("New expected project bilateral cofunded created");
+      fundingSourceInfo.setPhase(phase);
+      fundingSourceInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+      fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
+      fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
 
-          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
-          fundingSourceInstitution.setFundingSource(fundingSource);
-          fundingSourceInstitution.setPhase(this.getActualPhase());
-          fundingSourceInstitution.setInstitution(institution);
-          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
 
+      LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+      if (user != null) {
+        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+        try {
+          if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+            Institution institution =
+              institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+
+            FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+            fundingSourceInstitution.setFundingSource(fundingSource);
+            fundingSourceInstitution.setPhase(phase);
+            fundingSourceInstitution.setInstitution(institution);
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+
+          }
+        } catch (Exception e) {
+          logger.error("unable to save FundingSourceInstitution", e);
+          /**
+           * Original code swallows the exception and didn't even log it. Now we at least log it,
+           * but we need to revisit to see if we should continue processing or re-throw the exception.
+           */
         }
-      } catch (Exception e) {
-        logger.error("unable to save FundingSourceInstitution", e);
-        /**
-         * Original code swallows the exception and didn't even log it. Now we at least log it,
-         * but we need to revisit to see if we should continue processing or re-throw the exception.
-         */
+
+
+      }
+      if (phase.getNext() != null) {
+        phase = phase.getNext();
+      } else {
+        hasNext = false;
       }
 
 
     }
+
     this.clearPermissionsCache();
     if (fundingSourceID > 0) {
       return SUCCESS;
@@ -237,8 +256,8 @@ public class FundingSourceListAction extends BaseAction {
             && fs.getFundingSourceInfo(this.getActualPhase()).getPhase().equals(this.getActualPhase())
             && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == null
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-                && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                && (fs.getFundingSourceInfo(this.getActualPhase())
+                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                   || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
@@ -252,8 +271,8 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList()));
       } else {
         /*
@@ -270,8 +289,8 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
 
       }
@@ -292,7 +311,8 @@ public class FundingSourceListAction extends BaseAction {
     if (myProjects != null) {
       for (FundingSource fundingSource : myProjects) {
         fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
-          .filter(pb -> pb.isActive() && pb.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
+          .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())));
         if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
           fundingSources.add(fundingSource);
         }

@@ -113,6 +113,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     User user = (User) session.get(APConstants.SESSION_USER);
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -120,7 +121,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     baseAction.setSession(session);
     // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
@@ -254,7 +255,20 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
       // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+
+        editParameter = false;
+        // If the user is not asking for edition privileges we don't need to validate them.
+
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+        baseAction.setEditStatus(false);
+      }
+      // Set the variable that indicates if the user can edit the section
+      baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
 
