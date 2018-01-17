@@ -139,8 +139,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -3618,33 +3616,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     Project project = projectManager.getProjectById(projectID);
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
 
     if (this.isReportingActive()) {
 
       try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        Date reportingDate = this.getActualPhase().getStartDate();
         if (project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
         }
 
-      } catch (ParseException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return false;
       }
 
     } else {
       try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        Date reportingDate = this.getActualPhase().getStartDate();
         if (project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
         }
 
-      } catch (ParseException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return false;
       }
