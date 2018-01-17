@@ -1156,7 +1156,11 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-          status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+          }
+
         }
       } else {
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
