@@ -89,6 +89,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -139,8 +140,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -517,8 +516,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CrpProgram.class) {
         CrpProgram crpProgram = crpProgramManager.getCrpProgramById(id);
 
-        List<ProjectFocus> programs =
-          crpProgram.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<ProjectFocus> programs = crpProgram.getProjectFocuses().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
         boolean deleted = true;
         if (programs.size() > 0) {
 
@@ -581,8 +581,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == FundingSource.class) {
         FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
-        if (fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-          .size() > 0) {
+        if (fundingSource.getProjectBudgets().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()).size() > 0) {
           return false;
         }
       }
@@ -590,8 +591,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         FundingSourceInstitution fundingSourceInstitution =
           fundingSourceInstitutionManager.getFundingSourceInstitutionById(id);
         if (fundingSourceInstitution.getFundingSource().getProjectBudgets().stream()
-          .filter(
-            c -> c.isActive() && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getInstitution().getId().equals(fundingSourceInstitution.getInstitution().getId()))
           .collect(Collectors.toList()).size() > 0) {
           return false;
         }
@@ -639,14 +640,52 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == ProjectPartnerPerson.class) {
         ProjectPartnerPerson partnerPerson = partnerPersonManager.getProjectPartnerPersonById(id);
+        /*
+         * if (partnerPerson != null) {
+         * if (partnerPerson.getDeliverablePartnerships().stream()
+         * .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getActualPhase()))
+         * .collect(Collectors.toList()).size() > 0) {
+         * return false;
+         * }
+         * }
+         */
+        List<Deliverable> deliverablesLeads = new ArrayList<>();
         if (partnerPerson != null) {
-          if (partnerPerson.getDeliverablePartnerships().stream()
-            .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getActualPhase()))
-            .collect(Collectors.toList()).size() > 0) {
-            return false;
+          List<DeliverablePartnership> deliverablePartnerships = partnerPerson.getDeliverablePartnerships().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList());
+          for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
+            Deliverable deliverable = deliverablePartnership.getDeliverable();
+
+
+            deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+            if (deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || deliverable.getDeliverableInfo().getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+              if (!deliverablesLeads.contains(deliverable)) {
+                if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+                  deliverablesLeads.add(deliverable);
+                } else {
+                  if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                      && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
+                      deliverablesLeads.add(deliverable);
+                    }
+                  }
+                }
+              }
+            }
+
+
           }
         }
-
+        if (!deliverablesLeads.isEmpty()) {
+          return false;
+        }
 
       }
 
@@ -3618,33 +3657,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     Project project = projectManager.getProjectById(projectID);
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
 
     if (this.isReportingActive()) {
 
       try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        Date reportingDate = this.getActualPhase().getStartDate();
         if (project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
         }
 
-      } catch (ParseException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return false;
       }
 
     } else {
       try {
-        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        Date reportingDate = this.getActualPhase().getStartDate();
         if (project.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;
         } else {
           return false;
         }
 
-      } catch (ParseException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return false;
       }
