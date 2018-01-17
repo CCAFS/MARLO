@@ -43,10 +43,19 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Project project;
+
+  @Expose
+  private Phase phase;
+
+
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private boolean active;
   @Expose
@@ -67,7 +76,6 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -98,22 +106,29 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
     } else if (!this.getProject().getId().equals(other.getProject().getId())) {
       return false;
     }
+    if (this.getPhase() == null) {
+      if (other.getPhase() != null) {
+        return false;
+      }
+    } else if (!this.getPhase().getId().equals(other.getPhase().getId())) {
+      return false;
+    }
     return true;
   }
-
 
   public Date getActiveSince() {
     return this.activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
-
 
   @Override
   public Long getId() {
@@ -130,6 +145,7 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
@@ -138,6 +154,10 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Project getProject() {
@@ -154,11 +174,11 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -186,6 +206,10 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {

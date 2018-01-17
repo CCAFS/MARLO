@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +32,15 @@ public final class AuditLogContext {
   private Set<Map<String, Object>> inserts = new HashSet<>();
   private Set<Map<String, Object>> updates = new HashSet<>();
   private Set<Map<String, Object>> deletes = new HashSet<>();
+  private Phase phase;
 
   private String actionName;
+
 
   private String entityCanonicalName;
 
 
   private List<String> relationsNames;
-
 
   public AuditLogContext() {
 
@@ -61,6 +64,11 @@ public final class AuditLogContext {
 
   public Set<Map<String, Object>> getInserts() {
     return inserts;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -91,6 +99,11 @@ public final class AuditLogContext {
 
   public void setInserts(Set<Map<String, Object>> inserts) {
     this.inserts = inserts;
+  }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
 

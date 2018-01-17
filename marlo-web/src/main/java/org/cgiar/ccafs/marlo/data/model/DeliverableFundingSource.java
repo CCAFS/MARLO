@@ -37,6 +37,8 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  @Expose
+  private Phase phase;
 
   public DeliverableFundingSource() {
   }
@@ -51,6 +53,7 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -118,6 +121,11 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
     return this.modifiedBy;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -169,6 +177,10 @@ public class DeliverableFundingSource implements java.io.Serializable, IAuditLog
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

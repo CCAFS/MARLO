@@ -5,7 +5,7 @@
     "Sebastian Amariles <sebas932@gmail.com>"
   ],
   "description": "",
-  "main": "src/main/webapp/css/style.css",
+  "main": "src/main/webapp/global/css/global.css",
   "license": "GPL",
   "private": true,
   "ignore": [
@@ -13,7 +13,8 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "docs"
   ],
   "dependencies": {
     "jquery": "^1.12.3",
@@ -42,7 +43,11 @@
     "font-awesome": "^4.7.0",
     "blueimp-file-upload": "^9.14.1",
     "qtip2": "^2.2.1",
-    "jquery-pretty-text-diff": "^1.0.5"
+    "jquery-pretty-text-diff": "^1.0.5",
+    "TimelineJS3": "^3.3.9",
+    "jquery-tag-editor": "^1.0.20",
+    "sly": "https://github.com/darsain/sly.git#^1.6.1",
+    "pickadate": "^3.5.6"
   },
   "overrides": {
     "jquery": {
@@ -93,6 +98,27 @@
     "font-awesome": {
       "main": [
         "css/font-awesome.css"
+      ]
+    },
+    "jquery-tag-editor": {
+      "main": [
+        "jquery.tag-editor.min.js",
+        "jquery.tag-editor.css"
+      ]
+    },
+    "sly": {
+      "main": [
+        "dist/sly.min.js"
+      ]
+    },
+    "pickadate": {
+      "main": [
+        "lib/picker.js",
+        "lib/picker.date.js",
+        "lib/picker.time.js",
+        "lib/themes/classic.css",
+        "lib/themes/classic.date.css",
+        "lib/themes/classic.time.css"
       ]
     }
   }

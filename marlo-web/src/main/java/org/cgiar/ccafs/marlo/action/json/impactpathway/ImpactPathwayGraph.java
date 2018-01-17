@@ -102,8 +102,8 @@ public class ImpactPathwayGraph extends BaseAction {
     dataNodes.add(data);
 
     int i = 1;
-    for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
+    for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
       HashMap<String, Object> dataSubIdos = new HashMap<>();
       HashMap<String, Object> dataIdos = new HashMap<>();
@@ -247,7 +247,7 @@ public class ImpactPathwayGraph extends BaseAction {
     int i1 = 1;
     int j = 1;
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
       HashMap<String, Object> dataDetailOutcome = new HashMap<>();
       dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());

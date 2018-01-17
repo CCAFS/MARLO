@@ -299,20 +299,21 @@ public class PartnersSaveAction extends BaseAction {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
-      message.append(projectManager.getProjectById(projectID).getTitle());
-      partnerRequest
-        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
-      partnerRequestModifications
-        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+      message.append(projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+      partnerRequest.setRequestSource("Project: (" + projectID + ") - "
+        + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+      partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - "
+        + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
     } else if (fundingSourceID > 0) {
       message.append("Funding Source: (");
       message.append(fundingSourceID);
       message.append(") - ");
-      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
-      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
-        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
-      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
-        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID)
+        .getFundingSourceInfo(this.getActualPhase()).getTitle());
+      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
+        .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
+      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
+        .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
     }
 
     partnerRequestManager.savePartnerRequest(partnerRequest);

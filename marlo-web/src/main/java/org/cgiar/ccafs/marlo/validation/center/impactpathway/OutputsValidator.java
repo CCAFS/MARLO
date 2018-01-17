@@ -58,6 +58,9 @@ public class OutputsValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterOutput output, CenterProgram selectedProgram, boolean saving) {
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
     this.missingFields.setLength(0);
     if (!saving) {

@@ -63,6 +63,18 @@ public interface LiaisonInstitutionDAO {
   public LiaisonInstitution findByAcronym(String acronym);
 
   /**
+   * This method gets a liaisonInstitution object by a given institution and Crp identifier.
+   * 
+   * @author avalencia - CCAFS
+   * @date Oct 20, 2017
+   * @time 10:37:38 AM
+   * @param institutionId is the institution identifier.
+   * @param crpID is the crp identifier
+   * @return a LiaisonInstitution object.
+   */
+  public LiaisonInstitution findByInstitutionAndCrp(long institutionId, long crpID);
+
+  /**
    * This method saves the information of the given liaisonInstitution
    * 
    * @param liaisonInstitution - is the liaisonInstitution object with the new information to be added/updated.

@@ -35,11 +35,12 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
     FundingSourceLocation fundingSourceLocations = this.find(fundingSourceLocationsId);
     fundingSourceLocations.setActive(false);
-    this.save(fundingSourceLocations);
+    super.update(fundingSourceLocations);
   }
 
   @Override
@@ -77,9 +78,7 @@ public class FundingSourceLocationsMySQLDAO extends AbstractMarloDAO<FundingSour
       fundingSourceLocations = super.update(fundingSourceLocations);
     }
 
-
     return fundingSourceLocations;
   }
-
 
 }

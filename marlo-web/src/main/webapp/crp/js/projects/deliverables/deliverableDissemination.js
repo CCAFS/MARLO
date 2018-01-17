@@ -299,9 +299,10 @@ function changeDisseminationChannel() {
   $("#metadata-output").empty();
   $(".exampleUrl-block").hide();
 
-  var channelsList = [
-      "cgspace", "dataverse", "ifpri", "ilri", "cimmyt"
-  ];
+  // Find the list in deliverablesMacros.ftl
+  var channelsList = jQuery.map($('ul#channelsList li'), function(e) {
+    return $(e).find('span.id').text();
+  });
 
   if(channel != "-1") {
     $('#disseminationUrl').slideDown("slow");

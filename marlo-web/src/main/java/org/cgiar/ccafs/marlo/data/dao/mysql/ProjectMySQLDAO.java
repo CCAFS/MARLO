@@ -16,10 +16,16 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectInfoDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,35 +33,31 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Named
 public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements ProjectDAO {
 
+  private ProjectInfoDAO projectInfoDAO;
+  private CrpProgramDAO crpProgramDAO;
   private APConfig apConfig;
 
-  private Logger Log = LoggerFactory.getLogger(ProjectMySQLDAO.class);
 
   @Inject
-  public ProjectMySQLDAO(SessionFactory sessionFactory, APConfig apConfig) {
+  public ProjectMySQLDAO(SessionFactory sessionFactory, ProjectInfoDAO projectInfoDAO, CrpProgramDAO crpProgramDAO,
+    APConfig apConfig) {
     super(sessionFactory);
+    this.projectInfoDAO = projectInfoDAO;
+
+    this.crpProgramDAO = crpProgramDAO;
     this.apConfig = apConfig;
   }
 
-  /**
-   * This looks like it is generic functionality, why is it here in the ProjectDAO?
-   * 
-   * @param tableName
-   * @param columnName
-   * @param columnValue
-   * @param userID
-   * @param justification
-   */
-  public void deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
+
+  public boolean deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
     String justification) {
 
     StringBuilder query = new StringBuilder();
+
 
     try {
 
@@ -108,10 +110,15 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
       }
 
 
-    } catch (Exception e) {
-      Log.error("Delete on cascade failed for tableName: " + tableName + ", columnName : " + columnName
-        + " , columnValue: " + columnValue + " , and userId ; " + userID + " , with error = " + e.getMessage());
+    } catch (Exception e)
+
+    {
+
+      e.printStackTrace();
+      return false;
     }
+
+    return true;
 
   }
 
@@ -121,7 +128,8 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
     this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
       project.getModificationJustification());
-    this.saveEntity(project);
+    project.setActive(false);
+    this.save(project);
   }
 
   @Override
@@ -134,13 +142,14 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   }
 
-
   @Override
   public Project find(long id) {
     Project project = super.find(Project.class, id);
-
+    project = super.refreshEntity(project);
     return project;
+
   }
+
 
   @Override
   public List<Project> findAll() {
@@ -154,7 +163,72 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   }
 
   @Override
+  public List<Project> getCompletedProjects(long crpId) {
+    StringBuilder query = new StringBuilder();
+    query.append(
+      "select distinct p.id as projectId,pi.id as info  from projects p inner join projects_info pi on pi.project_id=p.id ");
+    query.append("where p.is_active=1 and p.crp_id =");
+    query.append(crpId);
+    query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
+      + ProjectStatusEnum.Complete.getStatusId() + " )");
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+
+    List<Project> projects = new ArrayList<Project>();
+    for (Map<String, Object> map : list) {
+      Project project = this.find(Long.parseLong(map.get("projectId").toString()));
+      project.setProjectInfo(projectInfoDAO.find(Long.parseLong(map.get("info").toString())));
+      projects.add(project);
+    }
+    return projects;
+
+  }
+
+  @Override
+  public List<Project> getNoPhaseProjects(long crpId, Phase phase) {
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("select distinct  p.* from projects p inner JOIN project_phases ph ");
+    builder.append("on ph.project_id=p.id ");
+    builder.append("inner join phases fa on fa.id=ph.id_phase ");
+    builder.append("where p.is_active=1 and p.crp_id=" + crpId + " ");
+    builder.append("and (select COUNT('x') from project_phases ph2 where ph2.id_phase in (" + phase.getId()
+      + ") and ph2.project_id=p.id) =0 ");
+    builder.append("and fa.`year`<" + phase.getYear() + " ;");
+    List<Project> list = new ArrayList<>();
+    List<Map<String, Object>> maps = super.findCustomQuery(builder.toString());
+    for (Map<String, Object> map : maps) {
+      Project project = this.find(Long.parseLong(map.get("id").toString()));
+      project.getProjectInfoLast(phase);
+      if (project.getProjectInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+
+        project.getProjectInfo().setStatusName(ProjectStatusEnum.Complete.getStatus());
+      }
+
+      list.add(project);
+    }
+    return list;
+
+  }
+
+  @Override
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(" select pr.* from project_focuses pf  inner join crp_programs pr on pf.program_id=pr.id");
+    builder.append(" where pf.project_id= " + projectID + " and pf.id_phase=" + idPhase + " and pr.program_type=" + type
+      + " and pf.is_active=1");
+    List<CrpProgram> list = new ArrayList<>();
+    List<Map<String, Object>> maps = super.findCustomQuery(builder.toString());
+    for (Map<String, Object> map : maps) {
+      list.add(crpProgramDAO.find(Long.parseLong(map.get("id").toString())));
+
+    }
+    return list;
+  }
+
+  @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id not in (438,462)");
@@ -165,30 +239,33 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   @Override
   public List<Map<String, Object>> getUserProjectsReporting(long userId, String crp) {
+
     StringBuilder builder = new StringBuilder();
     builder.append("select DISTINCT project_id from user_permission where crp_acronym='" + crp
       + "' and project_id is not null and  permission_id  in (110,195)");
     List<Map<String, Object>> list =
       super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
     return list;
+
   }
 
   @Override
   public Project save(Project project) {
     if (project.getId() == null) {
-      project = super.saveEntity(project);
+      super.saveEntity(project);
     } else {
-      project = project = super.update(project);
+      project = super.update(project);
     }
 
 
     return project;
   }
 
+
   @Override
   public Project save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
-      super.saveEntity(project, sectionName, relationsName);
+      project = super.saveEntity(project, sectionName, relationsName);
     } else {
       project = super.update(project, sectionName, relationsName);
     }
@@ -197,5 +274,16 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return project;
   }
 
+  @Override
+  public Project save(Project project, String sectionName, List<String> relationsName, Phase phase) {
+    if (project.getId() == null) {
+      project = super.saveEntity(project, sectionName, relationsName, phase);
+    } else {
+      project = super.update(project, sectionName, relationsName, phase);
+    }
+
+
+    return project;
+  }
 
 }

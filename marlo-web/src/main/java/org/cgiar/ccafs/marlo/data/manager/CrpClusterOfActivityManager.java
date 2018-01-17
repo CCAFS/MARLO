@@ -15,6 +15,8 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -51,6 +53,15 @@ public interface CrpClusterOfActivityManager {
    */
   public List<CrpClusterOfActivity> findAll();
 
+  /**
+   * This method gets a list of crpClusterOfActivity that are active for a program and phase
+   * 
+   * @param crpProgram the program to filter clusters
+   * @param phase the phase to filter clusters
+   * @return a list from CrpClusterOfActivity null if no exist records
+   */
+  public List<CrpClusterOfActivity> findClusterProgramPhase(CrpProgram crpProgram, Phase phase);
+
 
   /**
    * This method gets a crpClusterOfActivity object by a given crpClusterOfActivity identifier.
@@ -59,6 +70,9 @@ public interface CrpClusterOfActivityManager {
    * @return a CrpClusterOfActivity object.
    */
   public CrpClusterOfActivity getCrpClusterOfActivityById(long crpClusterOfActivityID);
+
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase);
 
   /**
    * This method saves the information of the given crpClusterOfActivity

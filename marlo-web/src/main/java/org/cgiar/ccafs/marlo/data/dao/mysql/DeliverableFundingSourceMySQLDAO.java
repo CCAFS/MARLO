@@ -26,7 +26,8 @@ import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 @Named
-public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<DeliverableFundingSource, Long> implements DeliverableFundingSourceDAO {
+public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<DeliverableFundingSource, Long>
+  implements DeliverableFundingSourceDAO {
 
 
   @Inject
@@ -34,12 +35,16 @@ public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<Deliverab
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
     DeliverableFundingSource deliverableFundingSource = this.find(deliverableFundingSourceId);
     deliverableFundingSource.setActive(false);
-    this.save(deliverableFundingSource);
+    super.update(deliverableFundingSource);
+
+
   }
+
 
   @Override
   public boolean existDeliverableFundingSource(long deliverableFundingSourceID) {
@@ -75,7 +80,6 @@ public class DeliverableFundingSourceMySQLDAO extends AbstractMarloDAO<Deliverab
     } else {
       deliverableFundingSource = super.update(deliverableFundingSource);
     }
-
 
     return deliverableFundingSource;
   }

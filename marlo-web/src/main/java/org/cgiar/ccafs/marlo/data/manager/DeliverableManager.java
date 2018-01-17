@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ import java.util.List;
  */
 
 public interface DeliverableManager {
+
+
+  public Deliverable copyDeliverable(Deliverable deliverable, Phase phase);
 
 
   /**
@@ -43,14 +47,12 @@ public interface DeliverableManager {
    */
   public boolean existDeliverable(long deliverableID);
 
-
   /**
    * This method gets a list of deliverable that are active
    * 
    * @return a list from Deliverable null if no exist records
    */
   public List<Deliverable> findAll();
-
 
   /**
    * This method gets a deliverable object by a given deliverable identifier.
@@ -78,7 +80,7 @@ public interface DeliverableManager {
    * @param relationsName - the model class relations of deliverables that save in the auditlog.
    * @return
    */
-  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName);
+  public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase);
 
 
 }

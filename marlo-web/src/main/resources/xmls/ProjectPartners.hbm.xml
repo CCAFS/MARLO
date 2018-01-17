@@ -18,6 +18,9 @@
                 <comment>Foreign key to projects table</comment>
             </column>
         </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" not-null="true" />
         </many-to-one>
@@ -66,5 +69,8 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
         </set>
+        	<property name="subDepartment" type="string">
+			<column name="sub_department" length="65535" not-null="false" />
+		</property>
     </class>
 </hibernate-mapping>

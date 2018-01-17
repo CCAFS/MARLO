@@ -57,9 +57,13 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
 
   private boolean scope;
+  @Expose
+  private Phase phase;
+
 
   public FundingSourceLocation() {
   }
+
 
   public FundingSourceLocation(Long id, LocElement locElement, User modifiedBy, User createdBy,
     FundingSource fundingSource, boolean active, Date activeSince, String modificationJustification) {
@@ -140,6 +144,11 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Phase getPhase() {
+    return phase;
+  }
+
+
   public BigDecimal getPercentage() {
     return percentage;
   }
@@ -199,6 +208,10 @@ public class FundingSourceLocation implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setPercentage(BigDecimal percentage) {

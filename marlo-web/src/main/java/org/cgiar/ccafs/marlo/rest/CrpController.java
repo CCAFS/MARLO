@@ -89,7 +89,7 @@ public class CrpController implements ModelDriven<Object> {
     return new DefaultHttpHeaders("create");
   }
 
-  // DELETE /orders/1
+  // DELETE /crps/1
   public HttpHeaders destroy() {
     LOG.debug("Delete crp with id: {}", id);
     crpManager.deleteCrp(id);
@@ -102,7 +102,7 @@ public class CrpController implements ModelDriven<Object> {
    * 
    * @return
    */
-  // GET /orders/1/edit
+  // GET /crps/1/edit
   public HttpHeaders edit() {
     LOG.warn("Deliberately not implementing this method, to update an entity use PUT instead.");
     return new DefaultHttpHeaders("edit");
@@ -114,7 +114,7 @@ public class CrpController implements ModelDriven<Object> {
    * 
    * @return
    */
-  // GET /orders/new
+  // GET /crp/new
   public String editNew() {
     LOG.warn("Deliberately not implementing this method, to create an entity use POST instead.");
     return "editNew";

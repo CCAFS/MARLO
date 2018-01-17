@@ -47,7 +47,7 @@
             <div id="allProjectList" class="dragProjectList">
             [#list allProjects as project]
               <div id="project-${project.id}" class="borderBox  project" >
-                [@utils.wordCutter string=(project.composedName) maxPos=70 substr=" "/]
+                [@utils.wordCutter string=(project.projectInfo.composedName) maxPos=70 substr=" "/]
                 <input type="hidden" name="" value="${project.id}"/>
               </div>
             [/#list]
@@ -59,7 +59,7 @@
             <div id="phasesProjectList" class="dragProjectList">
             [#list phasesProjects as project]
               <div id="project-${project.id}" class="borderBox  project">
-                [@utils.wordCutter string=(project.composedName) maxPos=70 substr=" "/]
+                [@utils.wordCutter string=(project.projectInfo.composedName) maxPos=70 substr=" "/]
                 <input type="hidden" name="phasesProjects[${project_index}].id" value="${project.id}"/>
               </div>
             [/#list]
@@ -68,18 +68,7 @@
         </div>
         
         [#-- Section Buttons--]
-        <div class="buttons">
-          <div class="buttons-content">
-          [#if editable]
-            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          [#else]
-            [#if canEdit]
-              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
-            [/#if]
-          [/#if]
-          </div>
-        </div>
+        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         
         [/@s.form]
         
