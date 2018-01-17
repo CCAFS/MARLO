@@ -265,6 +265,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (!baseAction.getActualPhase().getEditable()) {
         canEdit = false;
         baseAction.setCanEditPhase(false);
+        baseAction.setEditStatus(false);
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(editParameter && canEdit);
