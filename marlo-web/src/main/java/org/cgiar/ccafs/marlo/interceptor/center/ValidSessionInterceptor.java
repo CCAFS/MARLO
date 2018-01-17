@@ -50,6 +50,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
   @Inject
   public ValidSessionInterceptor(CrpUserManager userService, GlobalUnitManager crpManager) {
     this.userService = userService;
+    this.crpManager = crpManager;
   }
 
   private void changeSessionSection(Map<String, Object> session) {

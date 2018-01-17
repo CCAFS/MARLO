@@ -58,6 +58,14 @@ public interface GlobalUnitProjectManager {
   public GlobalUnitProject findByProjectAndGlobalUnitId(long projectId, long globalUnitId);
 
   /**
+   * This method find a globalUnitProject by the project and global unit
+   * 
+   * @param globalUnitProject - is the globalUnitProject object with the new information to be added/updated.
+   * @return GlobalUnitProject object created or updated.
+   */
+  public GlobalUnitProject findByProjectId(long projectId);
+
+  /**
    * This method gets a globalUnitProject object by a given globalUnitProject identifier.
    * 
    * @param globalUnitProjectID is the globalUnitProject identifier.
