@@ -66,6 +66,7 @@ FROM
         `cp`.`id` = `crp`.`global_unit_id`
       )
     )
+  JOIN phases ph ON cp.id = ph.crp_id
   )
 WHERE
   (
@@ -197,6 +198,7 @@ UNION
             )
           )
         )
+    JOIN phases ph ON cp.id = ph.crp_id
       )
     WHERE
       (
@@ -278,7 +280,12 @@ UNION
                 )
               )
             )
-            JOIN `liaison_institutions` `lin` ON (
+      JOIN phases ph ON cp.id = ph.crp_id
+            JOIN project_phases pph ON pph.project_id = pro.id
+            AND pph.id_phase = ph.id
+            INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+            AND pinf.project_id = pph.project_id
+            INNER JOIN `liaison_institutions` `lin` ON (
               (
                 `lin`.`id` = `pro`.`liaison_institution_id`
               )
@@ -383,7 +390,12 @@ UNION
                   )
                 )
               )
-              JOIN `liaison_institutions` `lin` ON (
+        JOIN phases ph ON cp.id = ph.crp_id
+              JOIN project_phases pph ON pph.project_id = pro.id
+              AND pph.id_phase = ph.id
+              INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+              AND pinf.project_id = pph.project_id
+              INNER JOIN `liaison_institutions` `lin` ON (
                 (
                   `lin`.`id` = `pro`.`liaison_institution_id`
                 )
@@ -488,7 +500,12 @@ UNION
                     )
                   )
                 )
-                JOIN `project_cluster_activities` `lin` ON (
+        JOIN phases ph ON cp.id = ph.crp_id
+                JOIN project_phases pph ON pph.project_id = pro.id
+                AND pph.id_phase = ph.id
+                INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                AND pinf.project_id = pph.project_id
+                INNER JOIN `project_cluster_activities` `lin` ON (
                   (
                     `lin`.`project_id` = `pro`.`id`
                     AND lin.is_active = 1
@@ -582,7 +599,12 @@ UNION
                     )
                   )
                 )
-                JOIN `liaison_users` `lus` ON (
+        JOIN phases ph ON cp.id = ph.crp_id
+                JOIN project_phases pph ON pph.project_id = pro.id
+                AND pph.id_phase = ph.id
+                INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                AND pinf.project_id = pph.project_id
+                INNER JOIN `liaison_users` `lus` ON (
                   (
                     (
                       `lus`.`id` = `pro`.`liaison_user_id`
@@ -679,6 +701,11 @@ UNION
                         AND (`pro`.`is_active` = 1)
                       )
                     )
+          JOIN phases ph ON cp.id = ph.crp_id
+                    JOIN project_phases pph ON pph.project_id = pro.id
+                    AND pph.id_phase = ph.id
+                    INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                    AND pinf.project_id = pph.project_id
                   )
                 )
               WHERE
@@ -758,6 +785,11 @@ UNION
                             AND (`pro`.`is_active` = 1)
                           )
                         )
+            JOIN phases ph ON cp.id = ph.crp_id
+                        JOIN project_phases pph ON pph.project_id = pro.id
+                        AND pph.id_phase = ph.id
+                        INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                        AND pinf.project_id = pph.project_id
                       )
                       JOIN `project_partners` `pp` ON (
                         (
@@ -856,6 +888,11 @@ UNION
                               AND (`pro`.`is_active` = 1)
                             )
                           )
+              JOIN phases ph ON cp.id = ph.crp_id
+                          JOIN project_phases pph ON pph.project_id = pro.id
+                          AND pph.id_phase = ph.id
+                          INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                          AND pinf.project_id = pph.project_id
                         )
                         JOIN `project_partners` `pp` ON (
                           (
@@ -1032,6 +1069,11 @@ UNION
                         INNER JOIN global_units cp ON cp.id = cpu.global_unit_id
                         INNER JOIN global_unit_projects gup ON gup.global_unit_id = cp.id
                         INNER JOIN projects pro ON pro.id = gup.project_id
+            JOIN phases ph ON cp.id = ph.crp_id
+                        JOIN project_phases pph ON pph.project_id = pro.id
+                        AND pph.id_phase = ph.id
+                        INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                        AND pinf.project_id = pph.project_id
                         INNER JOIN role_permissions rp ON rp.role_id = ro.id
                         INNER JOIN permissions per ON per.id = rp.permission_id
                         WHERE
@@ -1146,6 +1188,11 @@ UNION
                                         AND (`pro`.`is_active` = 1)
                                       )
                                     )
+                  JOIN phases ph ON cp.id = ph.crp_id
+                                    JOIN project_phases pph ON pph.project_id = pro.id
+                                    AND pph.id_phase = ph.id
+                                    INNER JOIN projects_info pinf ON pinf.id_phase = pph.id_phase
+                                    AND pinf.project_id = pph.project_id
                                   )
                                   JOIN `liaison_users` `lus` ON (
                                     (
@@ -1966,8 +2013,7 @@ UNION
                                                         `cp`.`global_unit_type_id` = 2
                                                       )
                                                       AND u.id = v_user_id
-                                                    )
-                                                  UNION
+                                                    ) UNION
                                                     SELECT
                                                       `u`.`id` AS `id`,
                                                       `r`.`acronym` AS `ro_acronym`,
@@ -2008,7 +2054,8 @@ UNION
                                                         AND (
                                                           `cp`.`global_unit_type_id` = 3
                                                         )
-                                                      )
+                                                        JOIN phases ph ON cp.id = ph.crp_id
+                                                      )                                                      
                                                     AND u.id = v_user_id ;
                                                     END;;
 DELIMITER ;
