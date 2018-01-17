@@ -656,22 +656,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             .collect(Collectors.toList());
           for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
             Deliverable deliverable = deliverablePartnership.getDeliverable();
+
+
             deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-            if (!deliverablesLeads.contains(deliverable)) {
-              if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+            if (deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || deliverable.getDeliverableInfo().getStatus() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+              if (!deliverablesLeads.contains(deliverable)) {
+                if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
-                deliverablesLeads.add(deliverable);
-              } else {
-                if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                  if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                    && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+                  deliverablesLeads.add(deliverable);
+                } else {
+                  if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                      && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
-                    deliverablesLeads.add(deliverable);
+                      deliverablesLeads.add(deliverable);
+                    }
                   }
                 }
               }
             }
+
 
           }
         }
