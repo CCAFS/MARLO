@@ -2297,7 +2297,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
       }
+      if (clazz == CrpPpaPartner.class) {
+        CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
+        List<ProjectPartner> partners = crpPpaPartner.getInstitution().getProjectPartners().stream()
+          .filter(
+            c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
+              && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
+          .collect(Collectors.toList());
+        Set<Project> projectsSet = new HashSet<>();
+        for (ProjectPartner projectPartner : partners) {
+          projectsSet.add(projectPartner.getProject());
+        }
+        projects = new ArrayList<>();
+        projects.addAll(projectsSet);
 
+      }
     } catch (Exception e) {
 
     }
