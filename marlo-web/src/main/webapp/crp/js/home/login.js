@@ -280,7 +280,11 @@ function changeFormStyle(data,preselected){
   $(".welcome-message-container .username span").text(data.user.name);
 
   $.each(data.crps, function(i){
+    if(data.crps.length<7){
       $('.selection-bar-options ul #crp-'+data.crps[i].acronym).removeClass("hidden");
+    }else{
+
+    }
   });
 
   //change height value to form
@@ -303,7 +307,7 @@ function changeFormStyle(data,preselected){
     //move crps select side bar
     var sideBarPosition=-$(".loginForm").position().left-120;
     $(".crps-select").css("left",sideBarPosition);
-    }
+  }
   //click to the first crps loaded
   $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
 

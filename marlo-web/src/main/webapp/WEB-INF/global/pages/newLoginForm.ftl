@@ -105,6 +105,14 @@
             </div>
           </div>
         </div>
+        [#-- Terms and conditions checkbox --]
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="terms-container hidden">
+              <input type="checkbox" name="terms" id="terms" class="terms"> I agree to the <a href="">Terms and Conditions</a>
+            </div>
+          </div>
+        </div>
         [#-- Submit button --]
         <div class="row">
           <div class="col-sm-12">
@@ -129,7 +137,8 @@
 </div><!-- End loginFormContainer -->
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} hidden" title="">
-    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} " title="">
+    <img class="animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+    <div class="selection-bar-acronym">${element.acronym}</div>
   </li>
 [/#macro]
