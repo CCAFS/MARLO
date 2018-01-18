@@ -641,7 +641,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
                 && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
                   .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
         List<Deliverable> onDeliverables = new ArrayList<>();
         for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
           if (deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase())
@@ -1110,6 +1110,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public Phase getActualPhase(Map<String, Object> session, long crpID) {
 
 
@@ -1151,6 +1152,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * ************************ CENTER METHOD ******************************
+   * This method calculates all the years between the start date and the end date.
+   * ********************************************************************
+   * 
+   * @return a List of numbers representing all the years, or an empty list if nothing found.
+   */
+  public List<Integer> getAllYears() {
+    List<Integer> allYears = new ArrayList<>();
+
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.set(Calendar.YEAR, 2014);
+    Calendar calendarEnd = Calendar.getInstance();
+    calendarEnd.set(Calendar.YEAR, 2050);
+
+    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+      // Adding the year to the list.
+      allYears.add(calendarStart.get(Calendar.YEAR));
+      // Adding a year (365 days) to the start date.
+      calendarStart.add(Calendar.YEAR, 1);
+    }
+
+    return allYears;
+  }
+
 
   /*
    * public Phase getActualPhase(Map<String, Object> session, long crpID) {
@@ -1178,31 +1204,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
 
 
-  /**
-   * ************************ CENTER METHOD ******************************
-   * This method calculates all the years between the start date and the end date.
-   * ********************************************************************
-   * 
-   * @return a List of numbers representing all the years, or an empty list if nothing found.
-   */
-  public List<Integer> getAllYears() {
-    List<Integer> allYears = new ArrayList<>();
-
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, 2014);
-    Calendar calendarEnd = Calendar.getInstance();
-    calendarEnd.set(Calendar.YEAR, 2050);
-
-    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
-      // Adding the year to the list.
-      allYears.add(calendarStart.get(Calendar.YEAR));
-      // Adding a year (365 days) to the start date.
-      calendarStart.add(Calendar.YEAR, 1);
-    }
-
-    return allYears;
-  }
-
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
@@ -1215,10 +1216,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return basePermission;
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   /**
    * Get the front end libraries acording to Center o CRP access
@@ -1246,6 +1247,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<CrpCategoryEnum> getCategories() {
 
     return Arrays.asList(CrpCategoryEnum.values());
+  }
+
+  /**
+   * ************************ CENTER METHOD ******************************
+   * Get The phase that extract the crp information.
+   * ********************************************************************
+   * 
+   * @return a Crp Phase Object
+   */
+  public Phase getCenterCrpPhase(GlobalUnit crp) {
+
+    try {
+      String cycle = this.getSession().get(APConstants.CENTER_CRP_PHASE_CYCLE).toString();
+      int year = Integer.parseInt(this.getSession().get(APConstants.CENTER_CRP_PHASE_YEAR).toString());
+
+      if (this.getSession().containsKey(APConstants.CENTER_CRP_PHASE)) {
+        Phase phase = (Phase) this.getSession().get(APConstants.CENTER_CRP_PHASE);
+        return phase;
+      } else {
+        Phase phase = phaseManager.findCycle(cycle, year, crp.getId());
+        this.getSession().put(APConstants.CENTER_CRP_PHASE, phase);
+        return phase;
+      }
+
+    } catch (Exception e) {
+      return null;
+    }
+
   }
 
   /**
@@ -1456,7 +1485,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the actual year
    */
   public int getCenterYear() {
-    return Calendar.getInstance().get(Calendar.YEAR);
+    try {
+      return Integer.parseInt(this.getSession().get(APConstants.CENTER_YEAR).toString());
+    } catch (Exception e) {
+      return 0;
+    }
+    // return Calendar.getInstance().get(Calendar.YEAR);
   }
 
   public long getCGIARInstitution() {
@@ -1590,6 +1624,61 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.crpSession;
+  }
+
+  /**
+   * ************************ CENTER METHOD ******************************
+   * Gets the current center phase
+   * ********************************************************************
+   * 
+   * @return a Current Phase Object
+   */
+  public Phase getCurrentCenterPhase() {
+
+
+    try {
+      Map<Long, Phase> allPhases = null;
+      if (this.getSession() != null) {
+        if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
+          List<Phase> phases = phaseManager.findAll().stream()
+            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+          Map<Long, Phase> allPhasesMap = new HashMap<>();
+          for (Phase phase : phases) {
+            allPhasesMap.put(phase.getId(), phase);
+          }
+          this.getSession().put(APConstants.ALL_PHASES, allPhasesMap);
+        }
+
+      }
+      allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
+
+      Map<String, Parameter> parameters = this.getParameters();
+      if (this.getPhaseID() != null) {
+        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+        Phase phase = allPhases.get(new Long(phaseID));
+        return phase;
+      }
+      if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
+        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+        Phase phase = allPhases.get(new Long(phaseID));
+        return phase;
+      }
+      if (this.getSession().containsKey(APConstants.CENTER_CURRENT_PHASE)) {
+        Phase phase = (Phase) this.getSession().get(APConstants.CENTER_CURRENT_PHASE);
+        return phase;
+      } else {
+        Phase phase = phaseManager.findCycle(APConstants.REPORTING, this.getCenterYear(), this.getCrpID());
+        this.getSession().put(APConstants.CENTER_CURRENT_PHASE, phase);
+        return phase;
+      }
+
+
+    } catch (Exception e) {
+      return new Phase(null, "", -1);
+    }
+
+
   }
 
   public GlobalUnit getCurrentCrp() {
@@ -2374,7 +2463,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+                    && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())
                     || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -2386,9 +2475,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
               .collect(Collectors.toList());
 
             openA.addAll(deliverables.stream()
@@ -2947,7 +3036,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       cpCrpProgram
         .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
           && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
@@ -3065,10 +3154,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
           || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
-        || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
+          || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
         .collect(Collectors.toList());
 
       if (this.isReportingActive()) {
@@ -3713,7 +3802,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

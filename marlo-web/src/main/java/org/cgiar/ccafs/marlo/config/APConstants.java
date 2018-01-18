@@ -408,6 +408,11 @@ public final class APConstants {
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
   public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
   public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
+  public static final String CENTER_YEAR = "center_year";
+  public static final String CENTER_CURRENT_PHASE = "center_current_phase";
+  public static final String CENTER_CRP_PHASE_YEAR = "center_crp_phase_year";
+  public static final String CENTER_CRP_PHASE_CYCLE = "center_crp_phase_cycle";
+  public static final String CENTER_CRP_PHASE = "center_crp_phase";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";

@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -43,12 +44,12 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
-import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
@@ -115,8 +116,9 @@ public class ProjectListAction extends BaseAction {
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
-  // TODO fix Phases without globalUnit
+  // Phases globalUnit
   private PhaseManager phaseManager;
+  private ProjectInfoManager projectInfoManager;
 
   @Inject
   public ProjectListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
@@ -126,7 +128,7 @@ public class ProjectListAction extends BaseAction {
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
     ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
     ICenterProjectPartnerPersonManager partnerPersonService, GlobalUnitProjectManager globalUnitProjectManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, ProjectInfoManager projectInfoManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -144,6 +146,7 @@ public class ProjectListAction extends BaseAction {
     this.partnerPersonService = partnerPersonService;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.phaseManager = phaseManager;
+    this.projectInfoManager = projectInfoManager;
 
   }
 
@@ -199,12 +202,12 @@ public class ProjectListAction extends BaseAction {
     // TODO add phase call the parameters
     GlobalUnit crp = globalUnitProject.getGlobalUnit();
 
+    //
+    // CustomParameter customParameter = crp.getCustomParameters().stream()
+    // .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_PLANNING_YEAR))
+    // .collect(Collectors.toList()).get(0);
 
-    CustomParameter customParameter = crp.getCustomParameters().stream()
-      .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_PLANNING_YEAR))
-      .collect(Collectors.toList()).get(0);
-
-    Phase phase = phaseManager.findCycle("Planning", Integer.parseInt(customParameter.getValue()), crp.getId());
+    Phase phase = this.getCenterCrpPhase(crp);
 
     CenterProject centerProject = this.createCenterProject(project, true);
 
@@ -215,13 +218,13 @@ public class ProjectListAction extends BaseAction {
     centerProject.setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(phase).getStatus(), true));
 
     // Add Crp Project CrossCutting to Center Project
-    this.crpCrossCuttingInformation(project, centerProject);
+    this.crpCrossCuttingInformation(project, centerProject, phase);
 
     // Add Crp Project Locations to Center Project
-    this.crpProjectLocation(project, centerProject);
+    this.crpProjectLocation(project, centerProject, phase);
 
     // Add Crp Project Partners to Center Project
-    this.crpProjectPartners(project, centerProject);
+    this.crpProjectPartners(project, centerProject, phase);
 
     project = projectManager.saveProject(project);
     projectID = project.getId();
@@ -247,30 +250,31 @@ public class ProjectListAction extends BaseAction {
 
     agreement = ocsClient.getagreement(syncCode);
 
+    Phase phase = this.getCurrentCenterPhase();
+
     Project project = new Project();
     project.setCreatedBy(this.getCurrentUser());
     project.setModifiedBy(this.getCurrentUser());
     project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification("New expected Project created");
     project.setActive(true);
     project.setActiveSince(new Date());
-    project.getProjecInfoPhase(this.getActualPhase()).setScale(0);
-    project.getProjecInfoPhase(this.getActualPhase()).setCofinancing(false);
     project.setCreateDate(new Date());
-    project.getProjecInfoPhase(this.getActualPhase()).setProjectEditLeader(false);
-    project.getProjecInfoPhase(this.getActualPhase()).setPresetDate(new Date());
-    project.getProjecInfoPhase(this.getActualPhase())
-      .setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-    project.getProjecInfoPhase(this.getActualPhase()).setAdministrative(new Boolean(false));
+
+    project.getProjecInfoPhase(phase).setScale(0);
+    project.getProjecInfoPhase(phase).setCofinancing(false);
+    project.getProjecInfoPhase(phase).setProjectEditLeader(false);
+    project.getProjecInfoPhase(phase).setPresetDate(new Date());
+    project.getProjecInfoPhase(phase).setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    project.getProjecInfoPhase(phase).setAdministrative(new Boolean(false));
     project = projectManager.saveProject(project);
     projectID = project.getId();
 
     CenterProject centerProject = this.createCenterProject(project, true);
 
-    project.getProjecInfoPhase(this.getActualPhase())
-      .setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
-    project.getProjecInfoPhase(this.getActualPhase()).setSummary(agreement.getDescription());
-    project.getProjecInfoPhase(this.getActualPhase()).setStartDate(agreement.getStartDate());
-    project.getProjecInfoPhase(this.getActualPhase()).setEndDate(agreement.getEndDate());
+    project.getProjecInfoPhase(phase).setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
+    project.getProjecInfoPhase(phase).setSummary(agreement.getDescription());
+    project.getProjecInfoPhase(phase).setStartDate(agreement.getStartDate());
+    project.getProjecInfoPhase(phase).setEndDate(agreement.getEndDate());
 
     centerProject.setSync(true);
     centerProject.setSyncDate(new Date());
@@ -290,6 +294,21 @@ public class ProjectListAction extends BaseAction {
 
 
     project = projectManager.saveProject(project);
+
+    ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo.setScale(0);
+    projectInfo.setCofinancing(false);
+    projectInfo.setProjectEditLeader(false);
+    projectInfo.setPresetDate(new Date());
+    projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    projectInfo.setAdministrative(new Boolean(false));
+    projectInfo.setPhase(phase);
+    projectInfo.setModifiedBy(this.getCurrentUser());
+    projectInfo.setModificationJustification("");
+    projectInfo.setProject(project);
+
+    projectInfo = projectInfoManager.saveProjectInfo(projectInfo);
+
 
     // CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
     //
@@ -422,20 +441,14 @@ public class ProjectListAction extends BaseAction {
    */
   public void createEmptyProject() {
 
+    Phase phase = this.getCurrentCenterPhase();
+
     Project project = new Project();
     project.setCreatedBy(this.getCurrentUser());
     project.setModifiedBy(this.getCurrentUser());
     project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification("New expected Project created");
     project.setActive(true);
     project.setActiveSince(new Date());
-    project.getProjecInfoPhase(this.getActualPhase()).setScale(0);
-    project.getProjecInfoPhase(this.getActualPhase()).setCofinancing(false);
-    project.setCreateDate(new Date());
-    project.getProjecInfoPhase(this.getActualPhase()).setProjectEditLeader(false);
-    project.getProjecInfoPhase(this.getActualPhase()).setPresetDate(new Date());
-    project.getProjecInfoPhase(this.getActualPhase())
-      .setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-    project.getProjecInfoPhase(this.getActualPhase()).setAdministrative(new Boolean(false));
 
     CenterProject centerProject = new CenterProject();
     centerProject.setActive(true);
@@ -475,6 +488,7 @@ public class ProjectListAction extends BaseAction {
     project = projectManager.saveProject(project);
     projectID = project.getId();
 
+
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
     globalUnitProject.setActive(true);
     globalUnitProject.setActiveSince(new Date());
@@ -485,6 +499,22 @@ public class ProjectListAction extends BaseAction {
     globalUnitProject.setOrigin(true);
     globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
+    project = projectManager.saveProject(project);
+
+    ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo.setScale(0);
+    projectInfo.setCofinancing(false);
+    projectInfo.setProjectEditLeader(false);
+    projectInfo.setPresetDate(new Date());
+    projectInfo.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
+    projectInfo.setAdministrative(new Boolean(false));
+    projectInfo.setPhase(phase);
+    projectInfo.setModifiedBy(this.getCurrentUser());
+    projectInfo.setModificationJustification("");
+    projectInfo.setProject(project);
+
+    projectInfo = projectInfoManager.saveProjectInfo(projectInfo);
+
   }
 
   /**
@@ -494,26 +524,26 @@ public class ProjectListAction extends BaseAction {
    * @param centerProject
    */
 
-  public void crpCrossCuttingInformation(Project project, CenterProject centerProject) {
+  public void crpCrossCuttingInformation(Project project, CenterProject centerProject, Phase phase) {
 
     boolean hasChanges = false;
 
     CenterProjectCrosscutingTheme crosscutingThemeSave = centerProject.getProjectCrosscutingTheme();
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender()) {
+    if (project.getProjecInfoPhase(phase).getCrossCuttingGender() != null
+      && project.getProjecInfoPhase(phase).getCrossCuttingGender()) {
       hasChanges = true;
       crosscutingThemeSave.setGender(true);
     }
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth()) {
+    if (project.getProjecInfoPhase(phase).getCrossCuttingYouth() != null
+      && project.getProjecInfoPhase(phase).getCrossCuttingYouth()) {
       hasChanges = true;
       crosscutingThemeSave.setYouth(true);
     }
 
-    if (project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity() != null
-      && project.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity()) {
+    if (project.getProjecInfoPhase(phase).getCrossCuttingCapacity() != null
+      && project.getProjecInfoPhase(phase).getCrossCuttingCapacity()) {
       hasChanges = true;
       crosscutingThemeSave.setCapacityDevelopment(true);
     }
@@ -533,10 +563,10 @@ public class ProjectListAction extends BaseAction {
    * @param centerProject
    */
 
-  public void crpProjectLocation(Project project, CenterProject centerProject) {
+  public void crpProjectLocation(Project project, CenterProject centerProject, Phase phase) {
 
     List<ProjectLocation> projectLocations = new ArrayList<>(project.getProjectLocations().stream()
-      .filter(pl -> pl.isActive()
+      .filter(pl -> pl.isActive() && pl.getPhase().getId() == phase.getId()
         && (pl.getLocElement().getLocElementType().getId() == 1 || pl.getLocElement().getLocElementType().getId() == 2))
       .collect(Collectors.toList()));
 
@@ -581,11 +611,11 @@ public class ProjectListAction extends BaseAction {
    * @param project
    * @param centerProject
    */
-  public void crpProjectPartners(Project project, CenterProject centerProject) {
+  public void crpProjectPartners(Project project, CenterProject centerProject, Phase phase) {
 
 
-    List<ProjectPartner> projectPartners =
-      new ArrayList<>(project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()));
+    List<ProjectPartner> projectPartners = new ArrayList<>(project.getProjectPartners().stream()
+      .filter(pp -> pp.isActive() && pp.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
 
     for (ProjectPartner projectPartner : projectPartners) {
 
@@ -830,6 +860,24 @@ public class ProjectListAction extends BaseAction {
 
       for (CenterProject centerProject : centerProjects) {
         projects.add(centerProject.getProject());
+      }
+
+
+      for (Project project : projects) {
+        /* Get The Crp/Center/Platform where the project was created */
+        GlobalUnitProject globalUnitProject =
+          globalUnitProjectManager.findByProjectIdOutOrigin(project.getId(), loggedCenter.getId());
+        Phase phase = new Phase();
+        if (globalUnitProject.isOrigin()) {
+          phase = this.getCurrentCenterPhase();
+        } else {
+          globalUnitProject =
+            globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCenter.getId());
+          phase = this.getCenterCrpPhase(globalUnitProject.getGlobalUnit());
+        }
+
+        project.setProjectInfo(project.getProjecInfoPhase(phase));
+
       }
 
       syncTypes = new ArrayList<>(

@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CenterFundingSyncTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterFundingSourceTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectCrosscutingThemeManager;
@@ -47,8 +48,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectType;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OutcomeOutputs;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -148,6 +151,8 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<LocElement> countryLists;
 
+  private GlobalUnitProjectManager globalUnitProjectManager;
+
 
   private List<GlobalUnit> crps;
   private List<CenterProjectType> projectTypes;
@@ -168,7 +173,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ICenterProjectCrosscutingThemeManager projectCrosscutingThemeService,
     ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
     AuditLogManager auditLogService, GlobalUnitManager crpService, ICenterProjectTypeManager projectTypeService,
-    ICenterProjectStatusManager projectStatusService, CenterFundingSyncTypeManager centerFundingSyncTypeManager) {
+    ICenterProjectStatusManager projectStatusService, CenterFundingSyncTypeManager centerFundingSyncTypeManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
@@ -186,6 +192,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectTypeService = projectTypeService;
     this.projectStatusService = projectStatusService;
     this.centerFundingSyncTypeManager = centerFundingSyncTypeManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   public Boolean bolValue(String value) {
@@ -511,8 +518,14 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
 
+        // Get The Crp/Center/Platform where the project was created
+        GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(ProjectDB.getId());
+
+        // TODO add phase call the parameters
+        GlobalUnit crp = globalUnitProject.getGlobalUnit();
+
         // fill the project Info Phase
-        project.getProject().setProjectInfo(ProjectDB.getProject().getProjecInfoPhase(this.getActualPhase()));
+        project.getProject().setProjectInfo(ProjectDB.getProject().getProjecInfoPhase(this.getCenterCrpPhase(crp)));
 
 
       }
@@ -618,14 +631,19 @@ public class ProjectDescriptionAction extends BaseAction {
 
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
-      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
-        .setTitle(project.getProject().getProjectInfo().getTitle());
-      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
+      // Get The Crp/Center/Platform where the project was created
+      GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectDB.getId());
+
+      // TODO add phase call the parameters
+      GlobalUnit crp = globalUnitProject.getGlobalUnit();
+
+      Phase phase = this.getCenterCrpPhase(crp);
+
+      projectDB.getProject().getProjecInfoPhase(phase).setTitle(project.getProject().getProjectInfo().getTitle());
+      projectDB.getProject().getProjecInfoPhase(phase)
         .setStartDate(project.getProject().getProjectInfo().getStartDate());
-      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
-        .setEndDate(project.getProject().getProjectInfo().getEndDate());
-      projectDB.getProject().getProjecInfoPhase(this.getActualPhase())
-        .setSummary(project.getProject().getProjectInfo().getSummary());
+      projectDB.getProject().getProjecInfoPhase(phase).setEndDate(project.getProject().getProjectInfo().getEndDate());
+      projectDB.getProject().getProjecInfoPhase(phase).setSummary(project.getProject().getProjectInfo().getSummary());
       projectDB.setGlobal(this.bolValue(project.getsGlobal()));
       projectDB.setRegion(this.bolValue(project.getsRegion()));
       projectDB.setSuggestedName(project.getSuggestedName());
