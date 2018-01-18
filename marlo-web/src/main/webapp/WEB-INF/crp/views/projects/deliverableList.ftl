@@ -86,7 +86,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="subTitle headTitle">On going deliverables</h3>
                 <hr />
-                  [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
+                  [@deliverableList.deliverablesListExtended deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit FAIRColumn=false namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
               </div>
             </div>
           </div>

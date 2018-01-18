@@ -130,7 +130,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction=""]
+[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false FAIRColumn=true namespace="/" defaultAction=""]
   <table class="deliverableList" id="deliverables" width="100%">
     <thead>
       <tr class="subHeader">
@@ -138,7 +138,9 @@
         <th id="deliverableTitles" width="30%">[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType" width="0%">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY" width="0%">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [#if isReportingActive || FAIRColumn]
+          <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [/#if]
         <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
         <th id="deliverableRF" width="0%"></th>
         <th id="deliverableRP" width="0%">Responsible partner</th>
@@ -215,16 +217,18 @@
             
           </td>
           [#-- Deliverable FAIR compliance --]
-          <td class="fair text-center"> 
-          [#if deliverable.deliverableInfo.requeriedFair()]
-            <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
-            <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
-            <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
-            <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
-          [#else]
-            <p class="message">Not applicable</p>
+          [#if isReportingActive || FAIRColumn]
+            <td class="fair text-center"> 
+            [#if deliverable.deliverableInfo.requeriedFair()]
+              <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
+              <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
+              <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
+              <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
+            [#else]
+              <p class="message">Not applicable</p>
+            [/#if]
+            </td>
           [/#if]
-          </td>
           [#-- Deliverable Status --]
           <td class="text-center">
             [#attempt]
