@@ -21,10 +21,15 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
-public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProgramOutcomeIndicator, Long> implements CrpProgramOutcomeIndicatorDAO {
+@Named
+
+public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProgramOutcomeIndicator, Long>
+  implements CrpProgramOutcomeIndicatorDAO {
 
 
   @Inject
