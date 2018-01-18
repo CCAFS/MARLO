@@ -1,3 +1,4 @@
+drop table if exist project_outcome_indicators;
 CREATE TABLE `project_outcome_indicators` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `crp_outcome_indicator`  bigint(20) NULL ,
