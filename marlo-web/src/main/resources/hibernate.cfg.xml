@@ -201,6 +201,7 @@
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 	 <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
+	 <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
 
