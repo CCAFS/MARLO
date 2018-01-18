@@ -66,7 +66,7 @@ public class FundingSourceAddAction extends BaseAction {
 
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
-  private static String DONOR = "institution";
+  private static String DONOR = "originalDonor";
   private static String LEADER = "liaisonInstitution";
 
   private static String W1W2 = "w1w2";
