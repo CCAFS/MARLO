@@ -34,9 +34,13 @@ public class CrpProgramOutcomeIndicator implements java.io.Serializable, IAuditL
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  @Expose
+  private String composeID;
+
 
   public CrpProgramOutcomeIndicator() {
   }
+
 
   public CrpProgramOutcomeIndicator(CrpProgramOutcome crpProgramOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String indicator, boolean isActive, Date activeSince, String modificationJustification) {
@@ -73,6 +77,9 @@ public class CrpProgramOutcomeIndicator implements java.io.Serializable, IAuditL
     return activeSince;
   }
 
+  public String getComposeID() {
+    return composeID;
+  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -137,6 +144,11 @@ public class CrpProgramOutcomeIndicator implements java.io.Serializable, IAuditL
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setComposeID(String composeID) {
+    this.composeID = composeID;
   }
 
 

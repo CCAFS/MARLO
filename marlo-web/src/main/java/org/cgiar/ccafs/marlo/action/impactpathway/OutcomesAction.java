@@ -678,7 +678,7 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setSrfTargetUnit(crpProgramOutcomeDetached.getSrfTargetUnit());
       crpProgramOutcomeDB.setValue(crpProgramOutcomeDetached.getValue());
       crpProgramOutcomeDB.setYear(crpProgramOutcomeDetached.getYear());
-        crpProgramOutcomeDB.setPhase(this.getActualPhase());
+      crpProgramOutcomeDB.setPhase(this.getActualPhase());
       crpProgramOutcomeDB.setCrpProgram(selectedProgram);
       if (crpProgramOutcomeDetached.getFile() != null && crpProgramOutcomeDetached.getFile().getId() == null) {
         crpProgramOutcomeDetached.setFile(null);
@@ -686,6 +686,9 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setFile(crpProgramOutcomeDetached.getFile());
       crpProgramOutcomeDB.setModifiedBy(this.getCurrentUser());
       crpProgramOutcomeDB.setModificationJustification("");
+      crpProgramOutcomeDB.setIndicators(crpProgramOutcomeDetached.getIndicators());
+      crpProgramOutcomeDB.setMilestones(crpProgramOutcomeDetached.getMilestones());
+      crpProgramOutcomeDB.setSubIdos(crpProgramOutcomeDetached.getSubIdos());
 
       crpProgramOutcomeDB = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcomeDB);
 
@@ -725,7 +728,7 @@ public class OutcomesAction extends BaseAction {
           crpProgramOutcomeIndicatorDB.setActive(true);
           crpProgramOutcomeIndicatorDB.setCreatedBy(this.getCurrentUser());
           crpProgramOutcomeIndicatorDB.setActiveSince(new Date());
-
+          crpProgramOutcomeIndicatorDB.setComposeID(crpProgramOutcomeIndicatorDetached.getComposeID());
         } else {
           crpProgramOutcomeIndicatorDB = crpProgramOutcomeIndicatorManager
             .getCrpProgramOutcomeIndicatorById(crpProgramOutcomeIndicatorDetached.getId());

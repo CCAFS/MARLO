@@ -453,6 +453,9 @@
     [#if editable]<div class="removeBaselineIndicator removeElement sm" title="Remove Indicators"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
+  
+    <input type="hidden"  name="${customName}.composeID" value="${(indicator.composeID)!}"/>
+    
     [#if editable] 
       [@customForm.input name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" type="text" showTitle=true placeholder="" className="statement limitWords-50" required=true editable=editable /]
     [#else]
