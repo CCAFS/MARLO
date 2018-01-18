@@ -1,4 +1,4 @@
-drop table if exist project_outcome_indicators;
+drop table if EXISTS project_outcome_indicators;
 CREATE TABLE `project_outcome_indicators` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `crp_outcome_indicator`  bigint(20) NULL ,
@@ -15,6 +15,6 @@ FOREIGN KEY (`crp_outcome_indicator`) REFERENCES `crp_program_outcome_indicator`
 FOREIGN KEY (`project_outcome_id`) REFERENCES `project_outcomes` (`id`),
 FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`),
 FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
-)
+)ENGINE=InnoDB
 ;
 

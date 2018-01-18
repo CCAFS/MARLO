@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 18, 2018 4:07:48 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator" table="project_outcome_indicators" catalog="ccafs_marlo" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="crpProgramOutcomeIndicator" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator" fetch="select">
+            <column name="crp_outcome_indicator" />
+        </many-to-one>
+        <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
+            <column name="project_outcome_id" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by">
+                <comment>foreign key to the table users</comment>
+            </column>
+        </many-to-one>
+        <property name="value" type="java.lang.Double">
+            <column name="value" precision="10" scale="0" />
+        </property>
+        <property name="narrative" type="string">
+            <column name="narrative" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
