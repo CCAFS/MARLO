@@ -551,6 +551,10 @@ h3.subTitle.headTitle{
     height: 25px;
     width: 30%;
 }
+
+.fundingSource-container span{
+    display: block;
+}
 tr:hover td{
     background-color: #f0f0f0 !important;
 }
