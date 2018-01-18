@@ -3340,6 +3340,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         project = projectManager.getProjectById(projectID);
+        if (project.getProjecInfoPhase(this.getActualPhase()).getProjectEditLeader() == null
+          || project.getProjecInfoPhase(this.getActualPhase()).getProjectEditLeader().booleanValue() == false) {
+          return false;
+        }
 
         List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
           .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
