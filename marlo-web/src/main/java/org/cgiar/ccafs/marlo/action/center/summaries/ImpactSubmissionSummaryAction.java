@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -65,6 +67,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
+@Named
 public class ImpactSubmissionSummaryAction extends BaseAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;

@@ -11,6 +11,8 @@
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/ppaPartners.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "ppaPartners" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
+
 
 [#assign breadCrumb = [
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
@@ -55,9 +57,9 @@
       	</div>
       	
       	[#-- Section Buttons
-      	[#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
+      
       	--]
-        
+          [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         
         [/@s.form]
       	
@@ -100,6 +102,12 @@
     [#else]
       <div class="removeLink"><div class="removeElement sm removeLink disable" title="Cannot be removed"></div></div>
     [/#if]
+     [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=ppaPartner /]
+      </div>
+    [/#if]
+    
     
     [#-- Title --]
     <h5 class="title sectionSubTitle">${(ppaPartner.institution.composedName)!'Null'} </h5>
