@@ -2440,7 +2440,7 @@ input.userName {
 .wrongData{
   border-bottom-color: red !important;
 }
-.loginForm input {
+.loginForm input:not(#terms) {
   display: block;
   position: absolute;
   box-sizing: border-box;
@@ -2456,7 +2456,7 @@ input.userName {
 
 .loginForm input:not(.login-form-button){
   background: none;
-  border-bottom: 1px solid rgb(224, 224, 224);
+  border-bottom: 1px solid rgb(224, 224, 224) !important;
 }
 
 .loginForm label {
@@ -2697,17 +2697,23 @@ input.userName {
   width: 130px;
   height: 50px;
 }
+.selection-bar-options ul li .selection-bar-acronym{
+  text-align: center;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 18px;
+}
 
-.selection-bar-options ul li img{
+.selection-bar-options ul li img, .selection-bar-options ul li .selection-bar-acronym{
   border: 1px dashed #d3d3d3;
   background-color: rgba(255, 255, 255, 0.1);
   width: 130px;
-  height: 50px;
+  height: 100%;
   margin: 3px;
   cursor: pointer;
 }
 
-.selection-bar-options ul li img:hover{
+.selection-bar-options ul li img:hover, .selection-bar-options ul li .selection-bar-acronym:hover{
   background-color: rgba(255, 255, 255, 0.767);
 }
 
