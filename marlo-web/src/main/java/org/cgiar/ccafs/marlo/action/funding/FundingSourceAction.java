@@ -658,9 +658,9 @@ public class FundingSourceAction extends BaseAction {
             allInstitutions = institutionManager.findAll();
             for (Institution institutionObject : allInstitutions) {
               // validate if the institutions is PPA
-              if (this.isPPA(institutionObject)) {
-                institutionsDonors.add(institutionObject);
-              }
+              // if (this.isPPA(institutionObject)) {
+              institutionsDonors.add(institutionObject);
+              // }
 
             }
 
@@ -675,7 +675,7 @@ public class FundingSourceAction extends BaseAction {
               // if the funding source is type bilateral -- institutions are not cgiar center
               institutionsDonors =
                 institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
-              institutionsDonors.removeAll(institutions);
+              // institutionsDonors.removeAll(institutions);
             }
 
           }

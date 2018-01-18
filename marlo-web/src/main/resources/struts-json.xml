@@ -113,14 +113,6 @@
 			</result>
 		</action>
 
-    <action name="testAction"
-      class="org.cgiar.ccafs.marlo.action.json.project.TestAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-
 		<action name="milestonesYear"
 			class="org.cgiar.ccafs.marlo.action.json.global.MilestonesbyYearAction">
 			<result type="json">

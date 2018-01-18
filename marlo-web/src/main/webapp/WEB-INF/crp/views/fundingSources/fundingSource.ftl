@@ -476,7 +476,7 @@
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">
-                <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
+                <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</span></p>
                  <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
               </div>
                 

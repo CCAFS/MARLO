@@ -322,6 +322,12 @@ public class ValidateProjectSectionAction extends BaseAction {
           sectionStatus = new SectionStatus();
           sectionStatus.setMissingFields("");
           section.put("missingFields", "");
+        } else {
+          if (openA.isEmpty()) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("");
+            section.put("missingFields", "Empty Deliverables");
+          }
         }
 
 
