@@ -26,6 +26,9 @@
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
         </property>
+         <property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
