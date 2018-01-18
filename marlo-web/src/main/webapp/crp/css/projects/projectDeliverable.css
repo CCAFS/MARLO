@@ -472,18 +472,24 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 
 /* Project deliverables table*/
 
+form#CCAFS_deliverableList {
+    margin-top: 10px;
+}
+
 h3.subTitle.headTitle{
     display: inline;
 }
 
 .deliverables-extended-version{
+    float: right;
     display: inline-block;
     width: 25px;
     height: 25px;
     background-color: #0b7ba6;
     border-radius: 5px;
     text-align: center;
-    margin-left: 20px;
+    margin-right: 10px;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -495,6 +501,8 @@ h3.subTitle.headTitle{
 }
 
 .extended-simple-version{
+    margin-top: 10px;
+    float: right;
     color: #0b7ba6;
     cursor: pointer;
     font-size: 12px;
