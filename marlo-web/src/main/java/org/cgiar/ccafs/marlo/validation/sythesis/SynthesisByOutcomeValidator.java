@@ -69,15 +69,13 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
 
   public void validate(BaseAction action, List<OutcomeSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
     // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(ipProgram, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
@@ -89,13 +87,13 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
       this.validateSynthesisGender(action, outcomeSynthesy.getSynthesisGender(), ipElement.getComposedId(), 200, index);
 
       if (outcomeSynthesy.getAchieved() == null || outcomeSynthesy.getAchieved().doubleValue() < 0) {
-        this.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
+        action.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
         action.getInvalidFields().put("input-program.synthesisOutcome[" + index + "].achieved",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       this.validateLessonsLearn(action, ipProgram);
-      if (this.validationMessage.toString().contains("Lessons")) {
-        this.replaceAll(validationMessage, "Lessons",
+      if (action.getValidationMessage().toString().contains("Lessons")) {
+        this.replaceAll(action.getValidationMessage(), "Lessons",
           "Lessons regarding partnerships and possible implications for the coming planning cycle");
         action.getInvalidFields().put("input-program.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -106,16 +104,16 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     } else {
       this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     }
 
   }
@@ -123,7 +121,7 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
   private void validateSynthesisAnual(BaseAction action, String synthesisAnual, String midOutcome, int numberWords,
     int i) {
     if (!(this.isValidString(synthesisAnual) && this.wordCount(synthesisAnual) <= numberWords)) {
-      this.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
+      action.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
       action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisAnual",
         InvalidFieldsMessages.EMPTYFIELD);
 
@@ -133,7 +131,7 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
   private void validateSynthesisGender(BaseAction action, String synthesisGender, String midOutcome, int numberWords,
     int i) {
     if (!(this.isValidString(synthesisGender) && this.wordCount(synthesisGender) <= numberWords)) {
-      this.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
+      action.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
       action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisGender",
         InvalidFieldsMessages.EMPTYFIELD);
 

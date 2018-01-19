@@ -59,16 +59,13 @@ public class CenterDeliverableValidator extends BaseValidator {
 
   public void validate(BaseAction baseAction, CenterDeliverable deliverable, CenterProject project,
     CenterProgram selectedProgram, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(deliverable, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("programImpact.action.draft");
+        baseAction.addMissingField("programImpact.action.draft");
       }
     }
 
@@ -78,7 +75,7 @@ public class CenterDeliverableValidator extends BaseValidator {
 
     this.validateDeliverable(baseAction, deliverable);
 
-    this.saveMissingFields(deliverable, project, "deliverableList");
+    this.saveMissingFields(deliverable, project, "deliverableList", baseAction);
 
   }
 
@@ -87,42 +84,42 @@ public class CenterDeliverableValidator extends BaseValidator {
 
     if (deliverable.getName() != null) {
       if (!this.isValidString(deliverable.getName()) && this.wordCount(deliverable.getName()) <= 50) {
-        this.addMessage(baseAction.getText("deliverable.action.deliverablesName"));
+        baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesName"));
         baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("deliverable.action.deliverablesName"));
+      baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesName"));
       baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getStartDate() == null) {
-      this.addMessage(baseAction.getText("deliverable.action.deliverablesStartDate"));
+      baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesStartDate"));
       baseAction.getInvalidFields().put("input-deliverable.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (deliverable.getEndDate() == null) {
-      this.addMessage(baseAction.getText("deliverable.action.deliverablesEndDate"));
+      baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesEndDate"));
       baseAction.getInvalidFields().put("input-deliverable.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
         deliverable.setDeliverableType(null);
-        this.addMessage(baseAction.getText("deliverable.action.deliverablesType"));
+        baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesType"));
         baseAction.getInvalidFields().put("input-deliverable.deliverableType", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("deliverable.action.deliverablesType"));
+      baseAction.addMessage(baseAction.getText("deliverable.action.deliverablesType"));
       baseAction.getInvalidFields().put("input-deliverable.deliverableType", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getOutputs() == null || deliverable.getOutputs().isEmpty()) {
-      this.addMessage(baseAction.getText("projectDescription.actio.outputs"));
+      baseAction.addMessage(baseAction.getText("projectDescription.actio.outputs"));
       baseAction.getInvalidFields().put("list-deliverable.outputs",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
     }
 
     if (deliverable.getDocuments() == null || deliverable.getDocuments().isEmpty()) {
-      this.addMessage(baseAction.getText("deliverable.action.documents"));
+      baseAction.addMessage(baseAction.getText("deliverable.action.documents"));
       baseAction.getInvalidFields().put("list-deliverable.documents",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Suporting Documents"}));
     } else {
@@ -136,7 +133,7 @@ public class CenterDeliverableValidator extends BaseValidator {
 
   public void validateDocument(BaseAction baseAction, CenterDeliverableDocument document, int i) {
     if (!this.isValidString(document.getLink()) && this.wordCount(document.getLink()) <= 200) {
-      this.addMessage(baseAction.getText("deliverable.action.documents.link", String.valueOf(i + 1)));
+      baseAction.addMessage(baseAction.getText("deliverable.action.documents.link", String.valueOf(i + 1)));
       baseAction.getInvalidFields().put("input-deliverable.documents[" + i + "].link",
         InvalidFieldsMessages.EMPTYFIELD);
     }
