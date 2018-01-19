@@ -69,6 +69,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation" />
         </set>
+        <set name="deliverablePartnerships" table="deliverable_partnerships" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_partner_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
+        </set>
         	<property name="subDepartment" type="string">
 			<column name="sub_department" length="65535" not-null="false" />
 		</property>

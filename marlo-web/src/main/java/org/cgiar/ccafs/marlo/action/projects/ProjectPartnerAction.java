@@ -320,6 +320,40 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public List<Deliverable> getDeliverablesLedByPartner(long projectPartnerID) {
+    List<Deliverable> deliverablesLeads = new ArrayList<>();
+    if (projectPartnerID != 0) {
+      ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
+      if (projectPartner != null) {
+        List<DeliverablePartnership> deliverablePartnerships = projectPartner.getDeliverablePartnerships().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
+          Deliverable deliverable = deliverablePartnership.getDeliverable();
+          deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
+          if (!deliverablesLeads.contains(deliverable)) {
+            if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+
+              deliverablesLeads.add(deliverable);
+            } else {
+              if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+
+                  deliverablesLeads.add(deliverable);
+                }
+              }
+            }
+          }
+
+        }
+      }
+
+    }
+    return deliverablesLeads;
+  }
+
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
 
     /*
@@ -347,21 +381,26 @@ public class ProjectPartnerAction extends BaseAction {
       for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
         Deliverable deliverable = deliverablePartnership.getDeliverable();
         deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
-        if (!deliverablesLeads.contains(deliverable)) {
-          if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+        if (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || deliverable.getDeliverableInfo().getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          if (!deliverablesLeads.contains(deliverable)) {
+            if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
 
-            deliverablesLeads.add(deliverable);
-          } else {
-            if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
+              deliverablesLeads.add(deliverable);
+            } else {
+              if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
+                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
-                deliverablesLeads.add(deliverable);
+                  deliverablesLeads.add(deliverable);
+                }
               }
             }
           }
         }
+
 
       }
     }
@@ -1416,46 +1455,53 @@ public class ProjectPartnerAction extends BaseAction {
 
   private ProjectPartnerPerson saveProjectPartnerPerson(ProjectPartner projectPartnerDB,
     ProjectPartnerPerson partnerPersonClient) {
-    if (partnerPersonClient.getId() == null) {
-      partnerPersonClient.setActive(true);
-
-      partnerPersonClient.setCreatedBy(this.getCurrentUser());
-      partnerPersonClient.setModifiedBy(this.getCurrentUser());
-      partnerPersonClient.setModificationJustification("");
-      partnerPersonClient.setActiveSince(new Date());
-      partnerPersonClient.setProjectPartner(projectPartnerDB);
-      if (partnerPersonClient.getUser() == null
-        || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
-        partnerPersonClient.setUser(null);
-      } else {
-        partnerPersonClient.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
-      }
-      if (partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
-        || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
-        this.notifyNewUserCreated(partnerPersonClient.getUser());
-      }
-      partnerPersonClient = projectPartnerPersonManager.saveProjectPartnerPerson(partnerPersonClient);
-
+    if (partnerPersonClient.getUser() == null
+      || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
+      partnerPersonClient.setUser(null);
+      return partnerPersonClient;
     } else {
 
-      ProjectPartnerPerson dbPerson =
-        projectPartnerPersonManager.getProjectPartnerPersonById(partnerPersonClient.getId());
-      dbPerson.setActive(true);
-      dbPerson.setModifiedBy(this.getCurrentUser());
-      dbPerson.setModificationJustification("");
-      dbPerson.setContactType(partnerPersonClient.getContactType());
-      if (partnerPersonClient.getUser() == null
-        || (partnerPersonClient.getUser().getId() == null || partnerPersonClient.getUser().getId().longValue() == -1)) {
-        dbPerson.setUser(null);
+      if (partnerPersonClient.getId() == null) {
+        partnerPersonClient.setActive(true);
+
+        partnerPersonClient.setCreatedBy(this.getCurrentUser());
+        partnerPersonClient.setModifiedBy(this.getCurrentUser());
+        partnerPersonClient.setModificationJustification("");
+        partnerPersonClient.setActiveSince(new Date());
+        partnerPersonClient.setProjectPartner(projectPartnerDB);
+        if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
+          || partnerPersonClient.getUser().getId().longValue() == -1)) {
+          partnerPersonClient.setUser(null);
+        } else {
+          partnerPersonClient.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
+        }
+        if (partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+          || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+          this.notifyNewUserCreated(partnerPersonClient.getUser());
+        }
+        partnerPersonClient = projectPartnerPersonManager.saveProjectPartnerPerson(partnerPersonClient);
+
       } else {
-        dbPerson.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
+
+        ProjectPartnerPerson dbPerson =
+          projectPartnerPersonManager.getProjectPartnerPersonById(partnerPersonClient.getId());
+        dbPerson.setActive(true);
+        dbPerson.setModifiedBy(this.getCurrentUser());
+        dbPerson.setModificationJustification("");
+        dbPerson.setContactType(partnerPersonClient.getContactType());
+        if (partnerPersonClient.getUser() == null || (partnerPersonClient.getUser().getId() == null
+          || partnerPersonClient.getUser().getId().longValue() == -1)) {
+          dbPerson.setUser(null);
+        } else {
+          dbPerson.setUser(userManager.getUser(partnerPersonClient.getUser().getId()));
+        }
+        if (dbPerson.getUser() != null && partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+          || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+          this.notifyNewUserCreated(dbPerson.getUser());
+        }
+        dbPerson = projectPartnerPersonManager.saveProjectPartnerPerson(dbPerson);
+        return dbPerson;
       }
-      if (dbPerson.getUser() != null && partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
-        || partnerPersonClient.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
-        this.notifyNewUserCreated(dbPerson.getUser());
-      }
-      dbPerson = projectPartnerPersonManager.saveProjectPartnerPerson(dbPerson);
-      return dbPerson;
     }
 
     return partnerPersonClient;
@@ -1468,9 +1514,10 @@ public class ProjectPartnerAction extends BaseAction {
   private void saveProjectPartnerPersons(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
     if (projectPartnerClient.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPersonClient : projectPartnerClient.getPartnerPersons()) {
-
-        ProjectPartnerPerson projectPartnerPersonDB =
-          this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+        if (partnerPersonClient.getUser() != null && partnerPersonClient.getUser().getId() != null) {
+          ProjectPartnerPerson projectPartnerPersonDB =
+            this.saveProjectPartnerPerson(projectPartnerDB, partnerPersonClient);
+        }
       }
 
       for (ProjectPartnerPerson partnerPerson : projectPartnerClient.getPartnerPersons()) {

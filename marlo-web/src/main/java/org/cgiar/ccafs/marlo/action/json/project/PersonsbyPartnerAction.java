@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -63,12 +64,14 @@ public class PersonsbyPartnerAction extends BaseAction {
     persons = new ArrayList<>();
     Map<String, Object> person;
     ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(partnerID);
-    for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      person = new HashMap<String, Object>();
-      person.put("id", partnerPerson.getId());
-      person.put("user", partnerPerson.getComposedCompleteName());
-      persons.add(person);
+    if (projectPartner != null) {
+      for (ProjectPartnerPerson partnerPerson : projectPartner.getProjectPartnerPersons().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        person = new HashMap<String, Object>();
+        person.put("id", partnerPerson.getId());
+        person.put("user", partnerPerson.getComposedCompleteName());
+        persons.add(person);
+      }
     }
     return SUCCESS;
 

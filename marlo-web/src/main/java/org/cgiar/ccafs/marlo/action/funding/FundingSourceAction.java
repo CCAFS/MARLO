@@ -765,7 +765,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setW1w2(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setFile(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setDirectDonor(null);
-      fundingSource.getFundingSourceInfo(this.getActualPhase()).setInstitution(null);
+      fundingSource.getFundingSourceInfo(this.getActualPhase()).setOriginalDonor(null);
       fundingSource.setBudgets(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setBudgetType(null);
       fundingSource.setFundingRegions(null);
@@ -797,12 +797,12 @@ public class FundingSourceAction extends BaseAction {
       } else {
         fundingSource.getFundingSourceInfo().setDirectDonor(null);
       }
-      if (fundingSource.getFundingSourceInfo().getInstitution() != null
-        && fundingSource.getFundingSourceInfo().getInstitution().getId() != null
-        && fundingSource.getFundingSourceInfo().getInstitution().getId().longValue() != -1) {
-        fundingSource.getFundingSourceInfo().setInstitution(fundingSource.getFundingSourceInfo().getInstitution());
+      if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null
+        && fundingSource.getFundingSourceInfo().getOriginalDonor().getId() != null
+        && fundingSource.getFundingSourceInfo().getOriginalDonor().getId().longValue() != -1) {
+        fundingSource.getFundingSourceInfo().setOriginalDonor(fundingSource.getFundingSourceInfo().getOriginalDonor());
       } else {
-        fundingSource.getFundingSourceInfo().setInstitution(null);
+        fundingSource.getFundingSourceInfo().setOriginalDonor(null);
       }
 
       fundingSource.getFundingSourceInfo().setTitle(fundingSource.getFundingSourceInfo().getTitle());

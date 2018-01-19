@@ -55,6 +55,9 @@ public interface DeliverablePartnershipManager {
    */
   public List<DeliverablePartnership> findAll();
 
+  public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType);
+
   public List<DeliverablePartnership> findForDeliverableIdAndPartnerTypeOther(long deliverableId);
 
   public List<DeliverablePartnership> findForDeliverableIdAndProjectPersonIdPartnerTypeOther(long deliverableId,
@@ -72,6 +75,7 @@ public interface DeliverablePartnershipManager {
    * This method saves the information of the given deliverablePartnership
    * 
    * @param deliverablePartnership - is the deliverablePartnership object with the new information to be added/updated.
+   * @param managingPartnersRequired
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverablePartnership
    *         was
    *         updated
@@ -79,5 +83,8 @@ public interface DeliverablePartnershipManager {
    */
   public DeliverablePartnership saveDeliverablePartnership(DeliverablePartnership deliverablePartnership);
 
+
+  public DeliverablePartnership updateDeliverablePartnership(DeliverablePartnership partnershipDBUpdated,
+    DeliverablePartnership partnershipDBpreview);
 
 }
