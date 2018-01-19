@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -52,20 +51,15 @@ public class ProjectPartnersValidator extends BaseValidator {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
   private final CrpManager crpManager;
-  private final ProjectManager projectManager;
   private final InstitutionManager institutionManager;
   private final ProjectValidator projectValidator;
 
-  // This is not thread safe
-  private boolean hasErros;
-
   @Inject
   public ProjectPartnersValidator(ProjectValidator projectValidator, CrpManager crpManager,
-    ProjectManager projectManager, InstitutionManager institutionManager) {
+    InstitutionManager institutionManager) {
     super();
     this.projectValidator = projectValidator;
     this.crpManager = crpManager;
-    this.projectManager = projectManager;
     this.institutionManager = institutionManager;
   }
 
@@ -79,11 +73,6 @@ public class ProjectPartnersValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public boolean isHasErros() {
-    return hasErros;
-  }
-
-
   public void replaceAll(StringBuilder builder, String from, String to) {
     int index = builder.indexOf(from);
     while (index != -1) {
@@ -94,16 +83,22 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
 
-  public void setHasErros(boolean hasErros) {
-    this.hasErros = hasErros;
-  }
+  /**
+   * Returns false if no errors and false if there are errors
+   * 
+   * @param action
+   * @param project
+   * @param saving
+   * @return
+   */
+  public boolean validate(BaseAction action, Project project, boolean saving) {
+    boolean hasErros = false;
 
-  public void validate(BaseAction action, Project project, boolean saving) {
     // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    hasErros = false;
+
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -160,9 +155,9 @@ public class ProjectPartnersValidator extends BaseValidator {
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         ProjectSectionStatusEnum.PARTNERS.getStatus());
-
-
     }
+
+    return hasErros;
   }
 
   private void validateCCAFSProject(BaseAction action, Project project) {

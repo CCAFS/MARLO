@@ -42,9 +42,6 @@ import com.ibm.icu.util.Calendar;
 @Named
 public class ProjectActivitiesValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
   private final CrpManager crpManager;
 
   @Inject
@@ -65,7 +62,6 @@ public class ProjectActivitiesValidator extends BaseValidator {
     // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
-    this.action = action;
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -83,7 +79,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
         if (activity != null && activity.getActivityStatus() != null) {
           if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
-            this.validateActivity(activity, i, "projectActivities");
+            this.validateActivity(activity, i, "projectActivities", action);
           }
 
         }
@@ -104,7 +100,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
   }
 
-  public void validateActivity(Activity activity, int index, String listName) {
+  public void validateActivity(Activity activity, int index, String listName, BaseAction action) {
 
     List<String> params = new ArrayList<>();
     params.add(String.valueOf(activity.getId()));

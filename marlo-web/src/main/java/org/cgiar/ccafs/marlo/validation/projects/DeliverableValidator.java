@@ -52,9 +52,6 @@ public class DeliverableValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
-  // This is not thread safe
-  BaseAction action;
-
   private final CrpManager crpManager;
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
@@ -83,7 +80,6 @@ public class DeliverableValidator extends BaseValidator {
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     boolean validate = false;
     if (action.isPlanningActive()) {
@@ -343,7 +339,7 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable Dissemination
         if (deliverable.getDissemination() != null) {
-          this.validateDissemination(deliverable.getDissemination(), saving);
+          this.validateDissemination(deliverable.getDissemination(), saving, action);
         } else {
           this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
@@ -364,13 +360,13 @@ public class DeliverableValidator extends BaseValidator {
           .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
           if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
             .getId() == 49) {
-            this.validatePublicationMetadata(deliverable);
+            this.validatePublicationMetadata(deliverable, action);
           }
         }
 
         // Deliverable Licenses
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
-          this.validateLicense(deliverable);
+          this.validateLicense(deliverable, action);
         } else {
           this.addMessage(action.getText("project.deliverable.v.ALicense"));
           action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
@@ -422,7 +418,7 @@ public class DeliverableValidator extends BaseValidator {
   }
 
 
-  public void validateDissemination(DeliverableDissemination dissemination, boolean saving) {
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
 
     if (dissemination.getIsOpenAccess() != null) {
 
@@ -535,7 +531,7 @@ public class DeliverableValidator extends BaseValidator {
   }
 
 
-  public void validateLicense(Deliverable deliverable) {
+  public void validateLicense(Deliverable deliverable, BaseAction action) {
     if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
       if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
@@ -562,7 +558,7 @@ public class DeliverableValidator extends BaseValidator {
     }
   }
 
-  public void validateMetadata(List<DeliverableMetadataElement> elements) {
+  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
 
     boolean description = false;
 
@@ -591,7 +587,7 @@ public class DeliverableValidator extends BaseValidator {
 
   }
 
-  public void validatePublicationMetadata(Deliverable deliverable) {
+  public void validatePublicationMetadata(Deliverable deliverable, BaseAction action) {
 
     if (deliverable.getPublication() != null && deliverable.getPublication().getId() != null
       && deliverable.getPublication().getId().intValue() != -1) {

@@ -42,9 +42,6 @@ import javax.inject.Named;
 @Named
 public class PublicationValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
   private final CrpManager crpManager;
 
   @Inject
@@ -69,7 +66,6 @@ public class PublicationValidator extends BaseValidator {
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     boolean validate = true;
 
@@ -115,7 +111,7 @@ public class PublicationValidator extends BaseValidator {
 
       // Deliverable Dissemination
       if (deliverable.getDissemination() != null) {
-        this.validateDissemination(deliverable.getDissemination(), saving);
+        this.validateDissemination(deliverable.getDissemination(), saving, action);
       } else {
         this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
         action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
@@ -123,11 +119,11 @@ public class PublicationValidator extends BaseValidator {
 
 
       // Deliverable Publication Meta-data
-      this.validatePublicationMetadata(deliverable);
+      this.validatePublicationMetadata(deliverable, action);
 
       // Deliverable Licenses
       if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
-        this.validateLicense(deliverable);
+        this.validateLicense(deliverable, action);
       } else {
         this.addMessage(action.getText("project.deliverable.v.ALicense"));
         action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
@@ -195,7 +191,7 @@ public class PublicationValidator extends BaseValidator {
   }
 
 
-  public void validateDissemination(DeliverableDissemination dissemination, boolean saving) {
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving, BaseAction action) {
 
     if (dissemination.getIsOpenAccess() != null) {
 
@@ -301,7 +297,7 @@ public class PublicationValidator extends BaseValidator {
   }
 
 
-  public void validateLicense(Deliverable deliverable) {
+  public void validateLicense(Deliverable deliverable, BaseAction action) {
     if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
       if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
@@ -327,7 +323,7 @@ public class PublicationValidator extends BaseValidator {
     }
   }
 
-  public void validateMetadata(List<DeliverableMetadataElement> elements) {
+  public void validateMetadata(List<DeliverableMetadataElement> elements, BaseAction action) {
 
     boolean description = false;
 
@@ -356,7 +352,7 @@ public class PublicationValidator extends BaseValidator {
 
   }
 
-  public void validatePublicationMetadata(Deliverable deliverable) {
+  public void validatePublicationMetadata(Deliverable deliverable, BaseAction action) {
 
     if (deliverable.getPublication() != null && deliverable.getPublication().getId() != null
       && deliverable.getPublication().getId().intValue() != -1) {
