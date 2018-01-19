@@ -122,16 +122,13 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
         if (path.toFile().exists()) {
-          this.addMissingField("draft");
+          action.addMissingField("draft");
         }
       }
       Project projectDB = projectManager.getProjectById(project.getId());
@@ -173,20 +170,20 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           }
 
         } else {
-          this.addMessage(action.getText("project.budgets"));
+          action.addMessage(action.getText("project.budgets"));
         }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
+        ProjectSectionStatusEnum.BUDGETBYCOA.getStatus(), action);
 
 
       // Saving missing fields.
@@ -218,13 +215,13 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
     if (amount != 100) {
       action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
-      this.addMessage(action.getText("project.budget.coa.amount", params));
+      action.addMessage(action.getText("project.budget.coa.amount", params));
     }
     if (genderTotal > 0) {
       if (gender != 100) {
 
         action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
-        this.addMessage(action.getText("project.budget.coa.gender", params));
+        action.addMessage(action.getText("project.budget.coa.gender", params));
       }
     }
 

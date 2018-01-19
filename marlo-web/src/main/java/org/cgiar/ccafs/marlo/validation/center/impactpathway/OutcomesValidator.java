@@ -59,16 +59,13 @@ public class OutcomesValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterOutcome outcome, CenterProgram selectedProgram, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(outcome, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField(baseAction.getText("outcome.action.draft"));
+        baseAction.addMissingField(baseAction.getText("outcome.action.draft"));
       }
     }
 
@@ -78,7 +75,7 @@ public class OutcomesValidator extends BaseValidator {
 
     this.validateOutcome(baseAction, outcome);
 
-    this.saveMissingFields(selectedProgram, outcome, "outcomesList");
+    this.saveMissingFields(selectedProgram, outcome, "outcomesList", baseAction);
 
   }
 
@@ -87,25 +84,25 @@ public class OutcomesValidator extends BaseValidator {
     params.add(String.valueOf(i + 1));
 
     if (!this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 50) {
-      this.addMessage(baseAction.getText("outcome.milestone.action.statement.required"));
+      baseAction.addMessage(baseAction.getText("outcome.milestone.action.statement.required"));
       baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (milestone.getTargetYear() != null) {
       if (milestone.getTargetYear() == -1) {
-        this.addMessage(baseAction.getText("outcome.milestone.action.targetYear.required"));
+        baseAction.addMessage(baseAction.getText("outcome.milestone.action.targetYear.required"));
         baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].targetYear",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("outcome.milestone.action.targetYear.required"));
+      baseAction.addMessage(baseAction.getText("outcome.milestone.action.targetYear.required"));
       baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].targetYear",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (milestone.getTargetUnit() == null) {
-      this.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
+      baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
       baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].targetUnit.id",
         InvalidFieldsMessages.EMPTYFIELD);
 
@@ -113,7 +110,7 @@ public class OutcomesValidator extends BaseValidator {
     } else {
       if (milestone.getTargetUnit().getId() != -1 && milestone.getValue() != null) {
         if (!this.isValidNumber(String.valueOf(milestone.getValue()))) {
-          this.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
+          baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
           baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
             InvalidFieldsMessages.EMPTYFIELD);
 
@@ -123,7 +120,7 @@ public class OutcomesValidator extends BaseValidator {
 
     if (!this.isValidNumber(String.valueOf(milestone.getValue()))) {
       if (milestone.getTargetUnit().getId() != -1) {
-        this.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
+        baseAction.addMessage(baseAction.getText("outcome.milestone.action.value.required"));
         baseAction.getInvalidFields().put("input-outcome.milestones[" + i + "].value",
           InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -135,42 +132,42 @@ public class OutcomesValidator extends BaseValidator {
 
     if (outcome.getResearchImpact() != null) {
       if (outcome.getResearchImpact().getId() == -1) {
-        this.addMessage(baseAction.getText("outcome.action.impactPathway.required"));
+        baseAction.addMessage(baseAction.getText("outcome.action.impactPathway.required"));
         baseAction.getInvalidFields().put("input-outcome.researchImpact.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("outcome.action.impactPathway.required"));
+      baseAction.addMessage(baseAction.getText("outcome.action.impactPathway.required"));
       baseAction.getInvalidFields().put("input-outcome.researchImpact.id", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (outcome.getDescription() != null) {
       if (!this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) >= 50) {
-        this.addMessage(baseAction.getText("outcome.action.statement.required"));
+        baseAction.addMessage(baseAction.getText("outcome.action.statement.required"));
         baseAction.getInvalidFields().put("input-outcome.description", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("outcome.action.statement.required"));
+      baseAction.addMessage(baseAction.getText("outcome.action.statement.required"));
       baseAction.getInvalidFields().put("input-outcome.description", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (outcome.getTargetYear() != null) {
       if (outcome.getTargetYear() == -1) {
-        this.addMessage(baseAction.getText("outcome.action.targetYear.required"));
+        baseAction.addMessage(baseAction.getText("outcome.action.targetYear.required"));
         baseAction.getInvalidFields().put("input-outcome.targetYear", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("outcome.action.targetYear.required"));
+      baseAction.addMessage(baseAction.getText("outcome.action.targetYear.required"));
       baseAction.getInvalidFields().put("input-outcome.targetYear", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (outcome.getTargetUnit() == null) {
-      this.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
+      baseAction.addMessage(baseAction.getText("outcome.action.targetUnit.required"));
       baseAction.getInvalidFields().put("input-outcome.targetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
 
 
     } else {
       if (outcome.getTargetUnit().getId() != -1 && outcome.getValue() != null) {
         if (!this.isValidNumber(String.valueOf(outcome.getValue()))) {
-          this.addMessage(baseAction.getText("outcome.action.value.required"));
+          baseAction.addMessage(baseAction.getText("outcome.action.value.required"));
           baseAction.getInvalidFields().put("input-outcome.value", InvalidFieldsMessages.EMPTYFIELD);
 
         }
@@ -179,7 +176,7 @@ public class OutcomesValidator extends BaseValidator {
 
 
     if (outcome.getMilestones() == null || outcome.getMilestones().isEmpty()) {
-      this.addMessage(baseAction.getText("outcome.action.milestones"));
+      baseAction.addMessage(baseAction.getText("outcome.action.milestones"));
       baseAction.getInvalidFields().put("list-outcome.milestones",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     } else {
