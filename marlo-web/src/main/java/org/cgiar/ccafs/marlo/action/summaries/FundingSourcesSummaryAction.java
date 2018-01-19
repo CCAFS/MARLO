@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -445,7 +444,14 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
       String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
-      String donor = null;
+      String originalDonor = null;
+      if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null) {
+        originalDonor = fundingSource.getFundingSourceInfo().getOriginalDonor().getComposedName();
+      }
+      String directDonor = null;
+      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
+        directDonor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
+      }
 
 
       String fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
@@ -453,9 +459,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
       }
-      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
-        donor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
-      }
+
 
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
@@ -511,10 +515,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
         totalBudget = projectBudget.getAmount();
 
-        String directDonor = "";
-        if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getDirectDonor() != null) {
-          directDonor = fundingSource.getFundingSourceInfo(this.getActualPhase()).getDirectDonor().getComposedName();
-        }
 
         // Funding sources locations
         String globalDimension = null;
@@ -567,7 +567,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
 
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, donor, directDonor, globalDimension, regionalDimension, specificCountries});
+          coas, originalDonor, directDonor, globalDimension, regionalDimension, specificCountries});
       }
 
     }
@@ -626,11 +626,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       if (showPIEmail) {
         piEmail = fundingSource.getFundingSourceInfo().getContactPersonEmail();
       }
-      String donor = "";
-      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
-        donor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
+      String originalDonor = null;
+      if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null) {
+        originalDonor = fundingSource.getFundingSourceInfo().getOriginalDonor().getComposedName();
       }
 
+      String directDonor = null;
+      if (fundingSource.getFundingSourceInfo().getDirectDonor() != null) {
+        directDonor = fundingSource.getFundingSourceInfo().getDirectDonor().getComposedName();
+      }
 
       for (FundingSourceInstitution fsIns : fundingSource.getFundingSourceInstitutions().stream()
         .filter(fsi -> fsi.isActive() && fsi.getPhase() != null && fsi.getPhase().equals(this.getSelectedPhase()))
@@ -769,8 +773,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         deliverables = null;
       }
 
-      String directDonor = "";
-
       // Funding sources locations
       String globalDimension = null;
       globalDimension = fundingSource.getFundingSourceInfo().isGlobal() ? "Yes" : "No";
@@ -822,8 +824,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       }
 
       model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
-        starDate, endDate, contract, status, piName, piEmail, donor, totalBudgetProjects, contractName, flagships, coas,
-        deliverables, directDonor, globalDimension, regionalDimension, specificCountries});
+        starDate, endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName,
+        flagships, coas, deliverables, directDonor, globalDimension, regionalDimension, specificCountries});
     }
     return model;
   }
