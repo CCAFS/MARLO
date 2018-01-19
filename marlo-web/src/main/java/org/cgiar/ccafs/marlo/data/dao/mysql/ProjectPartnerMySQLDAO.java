@@ -27,8 +27,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -92,7 +93,6 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
     createQuery.setParameter("projectId", project.getId());
     createQuery.setParameter("institutionId", institution.getId());
     createQuery.setParameter("phaseId", phase.getId());
-
 
     Object findSingleResult = super.findSingleResult(ProjectPartner.class, createQuery);
     ProjectPartner projectPartner = (ProjectPartner) findSingleResult;

@@ -48,7 +48,7 @@
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
-            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} 
+            ${(project.fundingSourceInfo.budgetType.name)!'Not defined'} <p><small> US$ <span> ${((action.getFundingSourceBudgetPerPhase(project))!0)?number?string(",##0.00")}</span></small></p>
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
@@ -86,7 +86,7 @@
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
           </td>
           
           [#-- Field Check --]
@@ -205,7 +205,7 @@
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
           </td>
         </tr>  
       [/#list]

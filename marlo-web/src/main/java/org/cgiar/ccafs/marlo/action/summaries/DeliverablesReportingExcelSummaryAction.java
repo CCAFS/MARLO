@@ -346,7 +346,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
           && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
           && d.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .filter(gup -> gup.isActive() && gup.isOrigin()
+              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
           && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
           && ((d.getDeliverableInfo().getStatus().intValue() == Integer

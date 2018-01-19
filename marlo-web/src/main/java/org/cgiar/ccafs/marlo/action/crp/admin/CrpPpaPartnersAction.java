@@ -562,15 +562,17 @@ public class CrpPpaPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       List<CrpPpaPartner> ppaPartnerReview;
+      ppaPartnerReview = crpPpaPartnerManager.findAll();
+      if (ppaPartnerReview != null) {
 
-      if (crpPpaPartnerManager.findAll() != null) {
-        ppaPartnerReview = crpPpaPartnerManager.findAll();
 
         for (CrpPpaPartner partner : ppaPartnerReview.stream()
           .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
             crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
+
+            this.disableCrpPpaPartnerContactPoints(partner);
           }
         }
       }
@@ -587,8 +589,11 @@ public class CrpPpaPartnersAction extends BaseAction {
           partner.setModificationJustification("");
           partner.setActiveSince(new Date());
           partner.setPhase(this.getActualPhase());
-          crpPpaPartnerManager.saveCrpPpaPartner(partner);
+          partner = crpPpaPartnerManager.saveCrpPpaPartner(partner);
           // save liaison institution if don't exists
+          if (institution.getId().intValue() == 52) {
+            System.out.println("holi");
+          }
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
             .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
           // Add LiaisonInstitution if don't exists
@@ -601,6 +606,11 @@ public class CrpPpaPartnersAction extends BaseAction {
             liaisonInstitution.setAcronym(partner.getInstitution().getAcronym());
             liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
           }
+
+        } else {
+          LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
+            .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
+
           if (partner.getContactPoints() != null && partner.getContactPoints().size() > 0) {
             for (LiaisonUser liaisonUser : partner.getContactPoints()) {
               // new User?
@@ -610,43 +620,52 @@ public class CrpPpaPartnersAction extends BaseAction {
                   new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
                 liaisonUserSave.setCrp(loggedCrp);
                 liaisonUserSave.setActive(true);
-                liaisonUserManager.saveLiaisonUser(liaisonUserSave);
-                // If is new user active it
-                if (!liaisonUser.getUser().isActive()) {
-                  this.notifyNewUserCreated(liaisonUser.getUser());
+                liaisonUserSave.setLiaisonInstitution(liaisonInstitution);
+                if (liaisonInstitution != null) {
+                  liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+                  // If is new user active it
+                  if (!liaisonUser.getUser().isActive()) {
+                    this.notifyNewUserCreated(liaisonUser.getUser());
+                  }
+                  this.addCrpUserIfNotExist(liaisonUser.getUser());
+                  // add userRole
+                  if (cpRole != null) {
+                    UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                    userRoleManager.saveUserRole(userRole);
+                    this.notifyRoleContactPointAssigned(userRole, partner);
+                  }
                 }
-                this.addCrpUserIfNotExist(liaisonUser.getUser());
-                // add userRole
-                if (cpRole != null) {
-                  UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
-                  userRoleManager.saveUserRole(userRole);
-                  this.notifyRoleContactPointAssigned(userRole, partner);
-                }
+
+
               }
             }
           }
         }
       }
-
       if (loggedCrp.getCrpPpaPartners() != null) {
         loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
           .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       }
-      if (crpPpaPartnerManager.findAll() != null) {
-        ppaPartnerReview = crpPpaPartnerManager.findAll();
-        for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
-          .collect(Collectors.toList())) {
+      ppaPartnerReview = crpPpaPartnerManager.findAll();
+      if (ppaPartnerReview != null) {
+
+        for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp)
+          && ppa.getPhase() != null && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           partnerDB = crpPpaPartnerManager.getCrpPpaPartnerById(partnerDB.getId());
           // Check if the CrpPpaPartner was disabled
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partnerDB)) {
             // Disable Contact Points of a CrpPpaPartner
             this.disableCrpPpaPartnerContactPoints(partnerDB);
-            crpPpaPartnerManager.deleteCrpPpaPartner(partnerDB.getId());
+            // crpPpaPartnerManager.deleteCrpPpaPartner(partnerDB.getId());
           } else {
             // Check changes in the crpPpaPartner contactPoints
+
+            this.fillContactPoints(partnerDB);
             this.checkChangesCrpPpaPartnerContactPoints(partnerDB);
           }
+
         }
+
       }
 
       Collection<String> messages = this.getActionMessages();
