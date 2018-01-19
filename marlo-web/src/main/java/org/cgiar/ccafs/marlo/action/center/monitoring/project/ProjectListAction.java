@@ -856,6 +856,7 @@ public class ProjectListAction extends BaseAction {
       List<CenterProject> centerProjects =
         new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
 
+
       projects = new ArrayList<>();
 
       for (CenterProject centerProject : centerProjects) {
@@ -871,8 +872,7 @@ public class ProjectListAction extends BaseAction {
         if (globalUnitProject.isOrigin()) {
           phase = this.getCurrentCenterPhase();
         } else {
-          globalUnitProject =
-            globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCenter.getId());
+          globalUnitProject = globalUnitProjectManager.findByProjectId(project.getId());
           phase = this.getCenterCrpPhase(globalUnitProject.getGlobalUnit());
         }
 
