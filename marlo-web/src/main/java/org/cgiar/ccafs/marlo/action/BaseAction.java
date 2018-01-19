@@ -601,11 +601,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
 
-        List<ProjectPartner> partners = crpPpaPartner.getInstitution().getProjectPartners().stream()
-          .filter(
-            c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
-              && c.getProject().getCrp().getId().longValue() == this.getCrpID().longValue())
-          .collect(Collectors.toList());
+        List<Project> partners = this.getProjectRelationsImpact(id, CrpPpaPartner.class.getName());
         if (partners.size() > 0) {
           return false;
         }
@@ -1140,7 +1136,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       Map<String, Parameter> parameters = this.getParameters();
       if (this.getPhaseID() != null) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+        long phaseID = this.getPhaseID();
         Phase phase = allPhases.get(new Long(phaseID));
         return phase;
       }
@@ -2320,7 +2316,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (projects != null) {
       for (Project project : projects) {
         if (project.getProjecInfoPhase(this.getActualPhase()).getPhase().equals(this.getActualPhase())) {
-          avaliableProjects.add(project);
+          if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+              Calendar cal = Calendar.getInstance();
+              cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+              if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+                avaliableProjects.add(project);
+              }
+            }
+
+          }
+
+
         }
 
       }
@@ -3330,6 +3340,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         project = projectManager.getProjectById(projectID);
+        if (project.getProjecInfoPhase(this.getActualPhase()).getProjectEditLeader() == null
+          || project.getProjecInfoPhase(this.getActualPhase()).getProjectEditLeader().booleanValue() == false) {
+          return false;
+        }
 
         List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
           .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())

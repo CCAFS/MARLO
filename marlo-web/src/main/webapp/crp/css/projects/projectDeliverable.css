@@ -550,6 +550,10 @@ h3.subTitle.headTitle {
   display: inline;
 }
 
+form#CCAFS_deliverableList {
+    margin-top: 10px;
+}
+
 .deliverables-extended-version {
   display: inline-block;
   width: 25px;
@@ -620,6 +624,10 @@ h3.subTitle.headTitle {
 
 tr:hover td {
   background-color: #f0f0f0 !important;
+}
+
+.fundingSource-container span{
+    display: block;
 }
 
 td:last-child {

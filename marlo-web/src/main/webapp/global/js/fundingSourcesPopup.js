@@ -146,7 +146,7 @@ $(document).ready(
         project.budgetType = $dialogContent.find("#budgetType").val().trim();
         project.fileName = $dialogContent.find('input[name="file"]').val();
         project.liaisonInstitution = institutionSelected;
-        project.institution = $dialogContent.find("#institution").val().trim();
+        project.originalDonor = $dialogContent.find("#institution").val().trim();
         project.contactName = $dialogContent.find("#contactName").val().trim();
         project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
         project.selectedYear = selectedYear;
@@ -169,7 +169,7 @@ $(document).ready(
         if($dialogContent.find("#contactEmail").classParam('validate') === "true") {
           projectValidate.contactEmail = project.contactEmail;
         }
-        projectValidate.institution = project.institution;
+        projectValidate.institution = project.originalDonor;
 
         // Validate if fields are filled
         $.each(projectValidate, function(key,value) {
