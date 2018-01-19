@@ -161,6 +161,17 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
+
+
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
+      + File.separator;
+  }
+
+
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -178,7 +189,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexCommunication(year);
 
   }
-
 
   public int getIndexMilestone(long milestoneId, int year) {
 
@@ -220,10 +230,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
-
 
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
@@ -245,6 +255,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectID;
   }
 
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
@@ -253,7 +264,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
-
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -265,12 +275,12 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
 
-
   private String getSummaryPath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + "outcome" + File.separator;
   }
+
 
   public String getSummaryURL() {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
@@ -453,7 +463,10 @@ public class ProjectOutcomeAction extends BaseAction {
      * Loading basic List
      */
     targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-
+    projectOutcome.setCrpProgramOutcome(
+      crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+    projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
+      .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));;
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost())
@@ -485,7 +498,6 @@ public class ProjectOutcomeAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
