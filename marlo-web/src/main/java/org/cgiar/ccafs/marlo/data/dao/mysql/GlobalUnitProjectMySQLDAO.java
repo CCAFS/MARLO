@@ -95,7 +95,7 @@ public class GlobalUnitProjectMySQLDAO extends AbstractMarloDAO<GlobalUnitProjec
   @Override
   public GlobalUnitProject findByProjectIdOutOrigin(long projectId, long globalUnitId) {
     String query = "from " + GlobalUnitProject.class.getName() + " where project_id=" + projectId
-      + " and global_unit_id=" + globalUnitId + " and is_active=1 and origin = 1";
+      + " and global_unit_id=" + globalUnitId + " and is_active=1";
     List<GlobalUnitProject> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
