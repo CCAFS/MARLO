@@ -3,7 +3,14 @@
   [#local className = ((element.class.name)?split('.')?last)!''/]
   [#local composedID = "${className}-${(element.id)!}"]
   [#local deliverablesProject = (action.getDeliverableRelationsProject(element.id, element.class.name,(element.project.id)!-1))! /]
-  [#local deliverables = (action.getDeliverableRelationsImpact(element.id, element.class.name))!deliverablesProject /]
+  [#local deliverablesImpact = (action.getDeliverableRelationsImpact(element.id, element.class.name))! /]
+  [#local deliverablesPartner = (action.getDeliverablesLedByPartner(element.id))! /]
+  
+  [#if className == "ProjectPartner"] 
+    [#local deliverables = deliverablesPartner /]
+  [#else]
+    [#local deliverables = ((deliverablesImpact)!deliverablesProject)!deliverablesPartner /]
+  [/#if]
   [#local projects = (action.getProjectRelationsImpact(element.id, element.class.name))! /]
   
   [#local elementTitle = (element.keyOutput)!((element.title)!((element.description)!'')) /]
