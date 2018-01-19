@@ -40,12 +40,6 @@ import javax.inject.Named;
 @Named
 public class FundingSourceValidator extends BaseValidator {
 
-  // This is not thread safe.
-  private boolean hasErros;
-
-  // This is not thread safe.
-  BaseAction action;
-
   private final CrpManager crpManager;
 
   private final InstitutionManager institutionManager;
@@ -84,16 +78,8 @@ public class FundingSourceValidator extends BaseValidator {
     return false;
   }
 
-  public boolean isHasErros() {
-    return hasErros;
-  }
-
-  public void setHasErros(boolean hasErros) {
-    this.hasErros = hasErros;
-  }
-
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
-   
+
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     if (fundingSource.getFundingSourceInfo().getBudgetType() != null
@@ -101,7 +87,6 @@ public class FundingSourceValidator extends BaseValidator {
       fundingSource.getFundingSourceInfo().setBudgetType(null);
     }
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
     if (!saving) {
       Path path = this.getAutoSaveFilePath(fundingSource, action.getCrpID());
 
@@ -229,7 +214,6 @@ public class FundingSourceValidator extends BaseValidator {
 
 
     if (!action.getFieldErrors().isEmpty()) {
-      hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));
       action.setCanEdit(true);
       action.setEditable(true);

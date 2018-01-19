@@ -50,9 +50,6 @@ import org.apache.commons.collections.CollectionUtils;
 @Named
 public class ProjectBudgetsCoAValidator extends BaseValidator {
 
-  // This is not thread safe
-  private boolean hasErros;
-
   private final BudgetTypeManager budgetTypeManager;
   private final ProjectManager projectManager;
   private final CrpManager crpManager;
@@ -103,10 +100,6 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     return budgets.size() > 0;
   }
 
-  public boolean isHasErros() {
-    return hasErros;
-  }
-
   public void replaceAll(StringBuilder builder, String from, String to) {
     int index = builder.indexOf(from);
     while (index != -1) {
@@ -128,16 +121,11 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   }
 
 
-  public void setHasErros(boolean hasErros) {
-    this.hasErros = hasErros;
-  }
-
   public void validate(BaseAction action, Project project, boolean saving) {
     // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    hasErros = false;
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -190,7 +178,6 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       }
 
       if (!action.getFieldErrors().isEmpty()) {
-        hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {
         action

@@ -40,9 +40,6 @@ import javax.inject.Named;
 @Named
 public class SynthesisByOutcomeValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
   private final CrpManager crpManager;
 
   @Inject
@@ -75,7 +72,6 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(ipProgram, action.getCrpID());

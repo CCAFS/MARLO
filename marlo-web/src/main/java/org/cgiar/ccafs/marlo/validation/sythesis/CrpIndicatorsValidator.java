@@ -40,9 +40,6 @@ import javax.inject.Named;
 @Named
 public class CrpIndicatorsValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
   private CrpManager crpManager;
 
   @Inject
@@ -67,7 +64,6 @@ public class CrpIndicatorsValidator extends BaseValidator {
     this.missingFields.setLength(0);
     this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(ipLiaisonInstitution, action.getCrpID());
