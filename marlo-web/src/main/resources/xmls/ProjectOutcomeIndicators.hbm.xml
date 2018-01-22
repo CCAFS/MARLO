@@ -23,7 +23,7 @@
             </column>
         </many-to-one>
         <property name="value" type="java.lang.Double">
-            <column name="value" precision="10" scale="0" />
+            <column name="value" precision="10" scale="2" />
         </property>
         <property name="narrative" type="string">
             <column name="narrative" length="65535" />
