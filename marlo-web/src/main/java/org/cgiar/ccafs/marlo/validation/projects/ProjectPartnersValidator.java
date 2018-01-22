@@ -144,6 +144,15 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
 
       }
+      if (project.getProjectInfo().getNewPartnershipsPlanned() == null
+        || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
+        this.addMessage(
+          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
+        this.addMissingField("project.projectInfo.newPartnershipsPlanned");
+        action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
       this.validateCCAFSProject(action, project);
 
       if (!action.getFieldErrors().isEmpty()) {
