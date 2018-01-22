@@ -23,6 +23,7 @@ $(document).ready(function() {
   showNotificationMessages();
   showHelpText();
 
+
   // Changes detected
   $('p.changesDetected strong').text($('.changedField').length);
 
@@ -79,11 +80,12 @@ $(document).ready(function() {
     if(justification.exists() && justification.val().trim().length == 0) {
       e.preventDefault();
       return
+
     }
     // Turn save button in saving button
     $(this).addClass('disabled animated flipInY');
     $(this).find('.glyphicon').hide();
-    $(this).find('.saveText').html('Saving ... <img src="' + baseUrl + '/global/images/loading_3.gif" />');
+    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/global/images/loading_3.gif" />');
   });
 
   // Yes / No Event
@@ -108,6 +110,23 @@ $(document).ready(function() {
         $('#mainMenu .menuContent').addClass('positionFixedTop');
       } else {
         $('#mainMenu .menuContent').removeClass('positionFixedTop');
+      }
+    });
+  }
+  
+  // Phase tag visible
+  if($('#phaseTag').exists()) {
+    var phaseTagPos = $('#timelineScroll').parent().position().top + 20;
+    
+    $('#phaseTag').find('span').css({
+      right: $(document).width() - ($('.phaseTag').offset().left + $('.phaseTag').width())
+    });
+    
+    $(window).scroll(function() {
+      if($(window).scrollTop() >= phaseTagPos) {
+        $('#phaseTag span').fadeIn();
+      } else {
+        $('#phaseTag span').hide();
       }
     });
   }
@@ -282,7 +301,7 @@ $(document).ready(function() {
 
   // Datatables language
   if($.fn.dataTable) {
-    $.extend( true, $.fn.dataTable.defaults, {
+    $.extend(true, $.fn.dataTable.defaults, {
       "language": {
         "infoFiltered": "(filtered from a total of _MAX_ entries)"
       }
@@ -403,8 +422,8 @@ function isStatusOnGoing(statusId) {
 var placeholderText = 'Search the organization here...'
 var searchInstitutionsOptions = function(includePPA) {
   return searchInstitutionsOptionsData({
-    includePPA: includePPA,
-    projectPreSetting: projectPreSetting
+      includePPA: includePPA,
+      projectPreSetting: projectPreSetting
   });
 }
 
@@ -418,7 +437,8 @@ var searchInstitutionsOptionsData = function(optionsData) {
             return {
                 q: params.term || '', // search term
                 withPPA: optionsData.includePPA ? 1 : 0,
-                onlyPPA: optionsData.projectPreSetting
+                onlyPPA: optionsData.projectPreSetting,
+                phaseID: phaseID
             };
           },
           processResults: function(data,params) {
@@ -471,7 +491,7 @@ function formatRepoSelection(repo) {
   return repo.composedName;
 }
 
-function notificationError(message){
+function notificationError(message) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
   notyOptions.text = message;
   noty(notyOptions);

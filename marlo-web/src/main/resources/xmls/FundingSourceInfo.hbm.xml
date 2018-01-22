@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 18, 2017 3:03:15 PM by Hibernate Tools 5.2.3.Final -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.FundingSourceInfo"
+		table="funding_sources_info" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="title" type="string">
+			<column name="title" length="65535" />
+		</property>
+		<property name="description" type="string">
+			<column name="description" length="65535" />
+		</property>
+		<property name="startDate" type="date">
+			<column name="start_date" length="10" />
+		</property>
+		<property name="endDate" type="date">
+			<column name="end_date" length="10" />
+		</property>
+		<property name="financeCode" type="string">
+			<column name="finance_code" length="65535" />
+		</property>
+		<property name="contactPersonName" type="string">
+			<column name="contact_person_name" length="65535" />
+		</property>
+		<property name="contactPersonEmail" type="string">
+			<column name="contact_person_email" length="65535" />
+		</property>
+		<many-to-one name="file"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="file" not-null="false" />
+		</many-to-one>
+		<many-to-one name="originalDonor" not-null="false"
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="donor" />
+    </many-to-one>
+    <many-to-one name="directDonor"
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="direct_donor" />
+    </many-to-one>
+		<property name="status" type="java.lang.Integer">
+			<column name="status" />
+		</property>
+		<many-to-one name="budgetType"
+			class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
+			<column name="type" />
+		</many-to-one>
+		<many-to-one name="partnerDivision"
+			class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
+			<column name="division_id" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" not-null="true" />
+		</many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		<property name="global" type="boolean">
+			<column name="global" not-null="true" />
+		</property>
+		<property name="w1w2" type="java.lang.Boolean">
+			<column name="w1w2" default="0" />
+		</property>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+			fetch="select">
+			<column name="id_phase" />
+		</many-to-one>
+		<many-to-one name="fundingSource"
+			class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
+			<column name="funding_source_id" not-null="true" />
+		</many-to-one>
+		<property name="synced" type="java.lang.Boolean">
+      <column name="sync"  default="0"/>
+    </property>
+    <property name="syncedDate" type="date">
+      <column name="syn_date" length="10" />
+    </property>
+    <property name="extensionDate" type="date">
+      <column name="extended_date" length="10" />
+    </property>
+	</class>
+</hibernate-mapping>

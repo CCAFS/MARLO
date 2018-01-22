@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.security;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterUserRole;
@@ -34,8 +33,9 @@ import org.cgiar.ciat.auth.LDAPUser;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
  * @author Chirstian David Garcia
  * @author Hermes Jimenez
  */
-
 public class APCustomRealm extends AuthorizingRealm {
 
   // Logger
@@ -74,26 +73,20 @@ public class APCustomRealm extends AuthorizingRealm {
   private APConfig config;
 
 
-  // Managers
+  // Managers -- use setter injection here is ok.
+  @Inject
   private UserManager userManager;
-  private UserRoleManager userRoleManager;
 
-
+  @Inject
   @Named("DB")
   private Authenticator dbAuthenticator;
 
+  @Inject
   @Named("LDAP")
   private Authenticator ldapAuthenticator;
 
-  @Inject
-  public APCustomRealm(UserManager userManager, UserRoleManager userRoleManager,
-    @Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator, APConfig config) {
+  public APCustomRealm() {
     super(new MemoryConstrainedCacheManager());
-    this.userManager = userManager;
-    this.userRoleManager = userRoleManager;
-    this.dbAuthenticator = dbAuthenticator;
-    this.ldapAuthenticator = ldapAuthenticator;
-    this.config = config;
     this.setName("APCustomRealm");
   }
 

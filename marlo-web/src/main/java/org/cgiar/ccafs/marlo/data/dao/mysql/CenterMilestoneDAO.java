@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Named
 public class CenterMilestoneDAO extends AbstractMarloDAO<CenterMilestone, Long> implements ICenterMilestoneDAO {
 
   private static Logger LOG = LoggerFactory.getLogger(CenterMilestoneDAO.class);

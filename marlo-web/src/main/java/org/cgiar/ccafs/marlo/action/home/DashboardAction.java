@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -83,8 +83,10 @@ public class DashboardAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
+          projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
           myProjects.add(projectPhase.getProject());
         }
+
 
       } else {
 
@@ -106,7 +108,7 @@ public class DashboardAction extends BaseAction {
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
         for (Project project : mProjects) {
-
+          project.getProjecInfoPhase(this.getActualPhase());
 
           if (!allProjects.contains(project)) {
             myProjects.remove(project);

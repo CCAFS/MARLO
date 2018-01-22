@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="centerAdmin" namespace="/centerAdmin" extends="marlo-default">
@@ -10,7 +12,7 @@
 			<result name="input">/WEB-INF/center/views/admin/coordination.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/coordination</param>
-				<param name="edit">true</param>
+				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
 		
@@ -20,7 +22,7 @@
       <result name="input">/WEB-INF/center/views/admin/strategicObjectives.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/objectives</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     
@@ -30,7 +32,7 @@
       <result name="input">/WEB-INF/center/views/admin/researchManagement.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${centerSession}/researchManagement</param>
-        <param name="edit">true</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
       </result>
     </action>
     

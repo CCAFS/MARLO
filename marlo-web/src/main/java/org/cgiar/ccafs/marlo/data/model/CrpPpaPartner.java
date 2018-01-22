@@ -45,6 +45,9 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Phase phase;
+
 
   private Crp crp;
 
@@ -53,7 +56,6 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   public CrpPpaPartner() {
   }
-
 
   public CrpPpaPartner(Institution institution, Crp crp) {
     this.institution = institution;
@@ -96,6 +98,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Crp getCrp() {
     return crp;
   }
@@ -104,7 +107,6 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -117,16 +119,21 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
+
+  public Phase getPhase() {
+    return phase;
+  }
+
 
   @Override
   public boolean isActive() {
@@ -170,6 +177,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

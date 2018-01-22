@@ -31,14 +31,16 @@ public class DeliverableDataSharing implements java.io.Serializable {
   @Expose
   private Boolean ccfasHostSmaller;
 
+  @Expose
+  private Phase phase;
+
+
   public DeliverableDataSharing() {
   }
-
 
   public DeliverableDataSharing(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public DeliverableDataSharing(Deliverable deliverable, Boolean institutionalRepository,
     String linkInstitutionalRepository, Boolean ccfasHostGreater, String linkCcfasHostGreater,
@@ -50,7 +52,6 @@ public class DeliverableDataSharing implements java.io.Serializable {
     this.linkCcfasHostGreater = linkCcfasHostGreater;
     this.ccfasHostSmaller = ccfasHostSmaller;
   }
-
 
   public Boolean getCcfasHostGreater() {
     return ccfasHostGreater;
@@ -76,12 +77,17 @@ public class DeliverableDataSharing implements java.io.Serializable {
     return institutionalRepository;
   }
 
+
   public String getLinkCcfasHostGreater() {
     return linkCcfasHostGreater;
   }
 
   public String getLinkInstitutionalRepository() {
     return linkInstitutionalRepository;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public void setCcfasHostGreater(Boolean ccfasHostGreater) {
@@ -111,6 +117,10 @@ public class DeliverableDataSharing implements java.io.Serializable {
 
   public void setLinkInstitutionalRepository(String linkInstitutionalRepository) {
     this.linkInstitutionalRepository = linkInstitutionalRepository;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

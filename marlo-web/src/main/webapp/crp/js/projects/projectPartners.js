@@ -113,7 +113,8 @@ function attachEvents() {
     $.ajax({
         url: baseURL + "/institutionBranchList.do",
         data: {
-          institutionID: $(this).val()
+          institutionID: $(this).val(),
+          phaseID: phaseID
         },
         beforeSend: function() {
           partner.startLoader();

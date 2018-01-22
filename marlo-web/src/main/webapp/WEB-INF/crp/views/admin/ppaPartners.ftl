@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "PPA Partners" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -11,6 +11,8 @@
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/ppaPartners.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "ppaPartners" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
+
 
 [#assign breadCrumb = [
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
@@ -54,19 +56,10 @@
       			[/#if]
       	</div>
       	
-      	[#-- Section Buttons--]
-        <div class="buttons">
-          <div class="buttons-content">
-          [#if editable]
-            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          [#else]
-            [#if canEdit]
-              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
-            [/#if]
-          [/#if]
-          </div>
-        </div>
+      	[#-- Section Buttons
+      
+      	--]
+          [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         
         [/@s.form]
       	
@@ -109,6 +102,12 @@
     [#else]
       <div class="removeLink"><div class="removeElement sm removeLink disable" title="Cannot be removed"></div></div>
     [/#if]
+     [#if !isTemplate]
+      <div class="pull-right">
+        [@popUps.relationsMacro element=ppaPartner /]
+      </div>
+    [/#if]
+    
     
     [#-- Title --]
     <h5 class="title sectionSubTitle">${(ppaPartner.institution.composedName)!'Null'} </h5>

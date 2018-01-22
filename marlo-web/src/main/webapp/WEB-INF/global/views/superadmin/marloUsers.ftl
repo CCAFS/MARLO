@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Users" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ "${baseUrl}/global/js/superadmin/marloUsers.js" ] /]
 [#assign customCSS = [ "${baseUrl}/global/css/superadmin/superadmin.css" ] /]

@@ -18,8 +18,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -49,10 +47,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -66,13 +65,11 @@ public class ProjectOutputsAction extends BaseAction {
    */
   private static final long serialVersionUID = 5027543384132820515L;
   // Manager
-  private ProjectManager projectManager;
-  private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgrammManager;
-  private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
-  private IpElementManager ipElementManager;
-  private ProjectOutputsValidator projectOutputsValidator;
-  private HistoryComparator historyComparator;
+  private final ProjectManager projectManager;
+  private final IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
+  private final IpElementManager ipElementManager;
+  private final ProjectOutputsValidator projectOutputsValidator;
+  private final HistoryComparator historyComparator;
 
   private List<Integer> allYears;
 
@@ -82,23 +79,21 @@ public class ProjectOutputsAction extends BaseAction {
 
   private Project project;
 
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
   private Crp loggedCrp;
 
   private String transaction;
 
-  private AuditLogManager auditLogManager;
+  private final AuditLogManager auditLogManager;
 
 
   @Inject
-  public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
-    CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
-    IpProjectContributionOverviewManager ipProjectContributionOverviewManager, IpElementManager ipElementManager,
-    ProjectOutputsValidator projectOutputsValidator, HistoryComparator historyComparator) {
+  public ProjectOutputsAction(APConfig config, ProjectManager projectManager, AuditLogManager auditLogManager,
+    CrpManager crpManager, IpProjectContributionOverviewManager ipProjectContributionOverviewManager,
+    IpElementManager ipElementManager, ProjectOutputsValidator projectOutputsValidator,
+    HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
-    this.institutionManager = institutionManager;
-    this.crpProgrammManager = crpProgrammManager;
     this.ipProjectContributionOverviewManager = ipProjectContributionOverviewManager;
     this.ipElementManager = ipElementManager;
     this.historyComparator = historyComparator;
@@ -132,6 +127,7 @@ public class ProjectOutputsAction extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -306,13 +302,13 @@ public class ProjectOutputsAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         if (project.getOverviews() == null) {
 
@@ -341,9 +337,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-    project.setAdministrative(projectDB.getAdministrative());
-    project.setProjectEditLeader(projectDB.isProjectEditLeader());
-    allYears = projectDB.getAllYears();
+    allYears = projectDB.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     project.setMogs(new ArrayList<>());
     List<IpProjectContribution> ipProjectContributions =
       projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -380,8 +374,6 @@ public class ProjectOutputsAction extends BaseAction {
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
 
@@ -394,8 +386,6 @@ public class ProjectOutputsAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OVERVIEWS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
@@ -445,11 +435,6 @@ public class ProjectOutputsAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
-  }
-
-
-  public void setProjectManager(ProjectManager projectManager) {
-    this.projectManager = projectManager;
   }
 
   public void setTransaction(String transaction) {

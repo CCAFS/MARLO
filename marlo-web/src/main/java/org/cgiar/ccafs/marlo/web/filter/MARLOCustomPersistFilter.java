@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -28,7 +30,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.inject.Inject;
 import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author GrantL
  */
+@Named("MARLOCustomPersistFilter")
 public class MARLOCustomPersistFilter implements Filter {
 
   @Inject
@@ -92,7 +94,11 @@ public class MARLOCustomPersistFilter implements Filter {
       // Continue filter chain
       chain.doFilter(request, response);
 
-      sessionFactory.getCurrentSession().getTransaction().commit();
+      if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
+        sessionFactory.getCurrentSession().getTransaction().commit();
+
+      }
+
 
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");
@@ -103,6 +109,8 @@ public class MARLOCustomPersistFilter implements Filter {
       // fresh data... what you do here depends on your applications design.
       throw staleEx;
     } catch (Throwable ex) {
+
+      ex.printStackTrace();
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");
       try {

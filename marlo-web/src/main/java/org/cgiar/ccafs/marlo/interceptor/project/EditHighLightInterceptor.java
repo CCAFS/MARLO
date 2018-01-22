@@ -31,9 +31,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -43,14 +45,14 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   private static final long serialVersionUID = 7287623847333177230L;
 
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private Map<String, Object> session;
   private Crp crp;
   private long highLightId = 0;
 
-  private ProjectHighligthManager projectHighligthManager;
-  private ProjectManager projectManager;
-  private CrpManager crpManager;
+  private final ProjectHighligthManager projectHighligthManager;
+  private final ProjectManager projectManager;
+  private final CrpManager crpManager;
 
   @Inject
   public EditHighLightInterceptor(ProjectHighligthManager deliverableManager, ProjectManager projectManager,
@@ -65,6 +67,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+
     crp = (Crp) session.get(APConstants.SESSION_CRP);
     crp = crpManager.getCrpById(crp.getId());
     try {
@@ -79,13 +82,14 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   void setPermissionParameters(ActionInvocation invocation) {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
     boolean canSwitchProject = false;
     baseAction.setSession(session);
-    String projectParameter = ((String[]) parameters.get(APConstants.HIGHLIGHT_REQUEST_ID))[0];
+    // String projectParameter = ((String[]) parameters.get(APConstants.HIGHLIGHT_REQUEST_ID))[0];
+    String projectParameter = parameters.get(APConstants.HIGHLIGHT_REQUEST_ID).getMultipleValues()[0];
 
     highLightId = Long.parseLong(projectParameter);
 
@@ -121,8 +125,9 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
       }
 
       // TODO Validate is the project is new
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);

@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -39,32 +38,33 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class DeliverableValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
+  // This is not thread safe
   BaseAction action;
 
-  @Inject
-  private CrpManager crpManager;
-  @Inject
+  private final CrpManager crpManager;
   private ProjectManager projectManager;
-
-  @Inject
-  private InstitutionManager institutionManager;
-
-  @Inject
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
-  public DeliverableValidator() {
+  public DeliverableValidator(CrpManager crpManager, ProjectManager projectManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
+    this.crpManager = crpManager;
+    this.projectManager = projectManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
@@ -79,15 +79,26 @@ public class DeliverableValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
-
+    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
+    this.missingFields.setLength(0);
+    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     this.action = action;
 
     boolean validate = false;
     if (action.isPlanningActive()) {
-      validate = deliverable.getYear() >= action.getCurrentCycleYear();
+      if (deliverable.getDeliverableInfo().getStatus() != null
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
+      }
+      if (deliverable.getDeliverableInfo().getStatus() != null
+        && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        validate = true;
+      }
+
     } else {
-      validate = deliverable.isRequieriedReporting(action.getCurrentCycleYear());
+      validate =
+        deliverable.getDeliverableInfo(action.getActualPhase()).isRequieriedReporting(action.getCurrentCycleYear());
     }
     if (validate) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
@@ -99,178 +110,121 @@ public class DeliverableValidator extends BaseValidator {
           this.addMissingField("draft");
         }
       }
-      if (!(deliverable.getStatus() != null
-        && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
-        if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 25)) {
+      if (!(deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle())
+          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getTitle()) <= 25)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.title"));
-          action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.title", InvalidFieldsMessages.EMPTYFIELD);
         }
         // test
         // Add description validator
-        if (!(this.isValidString(deliverable.getDescription()) && this.wordCount(deliverable.getDescription()) <= 50)) {
+        if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription())
+          && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getDescription()) <= 50)) {
           this.addMessage(action.getText("project.deliverable.generalInformation.description"));
-          action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.description",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
         /*
          * if (!(this.isValidString(deliverable.getStatusDescription())
          * && this.wordCount(deliverable.getStatusDescription()) <= 15)) {
          * this.addMessage(action.getText("project.deliverable.generalInformation.description"));
-         * action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
+         * action.getInvalidFields().put("input-deliverable.deliverableInfo.description",
+         * InvalidFieldsMessages.EMPTYFIELD);
          * }
          */
-        if (deliverable.getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == null
+            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-            action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+            deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
           } else {
-            if (deliverable.getDeliverableType().getDeliverableType() != null) {
-              if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
+              .getDeliverableType() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+                .getId() == -1) {
                 this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-                action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
                   InvalidFieldsMessages.EMPTYFIELD);
+                deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
+
               }
             } else {
               this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-              action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
                 InvalidFieldsMessages.EMPTYFIELD);
+              deliverable.getDeliverableInfo(action.getActualPhase()).setDeliverableType(null);
             }
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-          action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
-          action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getStatus() != null) {
-          if (deliverable.getStatus() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.status"));
-            action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.status"));
-          action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
         }
 
 
-        if (deliverable.getYear() == -1) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getYear() == -1) {
           this.addMessage(action.getText("project.deliverable.generalInformation.year"));
-          action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.year", InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getNewExpectedYear() != null && deliverable.getStatus() != null
-          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-          && deliverable.getNewExpectedYear().intValue() == action.getCurrentCycleYear()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() == null) {
           this.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
-          action.getInvalidFields().put("input-deliverable.newExpectedYear", InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-          if (deliverable.getCrpClusterKeyOutput() != null) {
-            if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
-              this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-              action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          } else {
-            this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-            action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
-
-        if (deliverable.getResponsiblePartner() != null
-          && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
-          if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
-            || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
-            this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-
-            action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-
-          } else {
-            if (deliverable.getResponsiblePartner() != null
-              && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
-
-
-              if (projectPartnerPersonManager
-                .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-                .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
-                if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-                  if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
-                    this.addMessage(action.getText("deliverable.division"));
-                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-                  if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
-                    if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
-                      this.addMessage(action.getText("deliverable.division"));
-                      action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                        InvalidFieldsMessages.EMPTYFIELD);
-                    } else {
-                      if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
-                        this.addMessage(action.getText("deliverable.division"));
-                        action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
-                          InvalidFieldsMessages.EMPTYFIELD);
-                      }
-                    }
-
-                  }
-
-                }
-
-              }
-            }
-          }
-        } else {
-          this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-          action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.newExpectedYear",
             InvalidFieldsMessages.EMPTYFIELD);
-
         }
+        if (!action.isReportingActive()) {
+          if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
+            && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput() != null
+              && deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrpClusterKeyOutput().getId() == -1) {
+                this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
 
+                deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
 
-        if (deliverable.getOtherPartners() != null) {
-          int i = 0;
-          for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-            try {
-              if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
-                && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
-                if (projectPartnerPersonManager
-                  .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId())
-                  .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
-                  if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
-                    if (deliverablePartnership.getPartnerDivision() == null) {
-                      this.addMessage(action.getText("deliverable.division"));
-                      action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
-                        InvalidFieldsMessages.EMPTYFIELD);
-                    }
-                    if (deliverablePartnership.getPartnerDivision() != null) {
-                      if (deliverablePartnership.getPartnerDivision().getId() == null) {
-                        this.addMessage(action.getText("deliverable.division"));
-                        action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
-                          InvalidFieldsMessages.EMPTYFIELD);
-                      } else {
-                        if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
-                          this.addMessage(action.getText("deliverable.division"));
-                          action.getInvalidFields().put("input-deliverable.otherPartners[" + i + "].partnerDivision.id",
-                            InvalidFieldsMessages.EMPTYFIELD);
-                        }
-                      }
-
-                    }
-
-                  }
-
-                }
               }
-            } catch (NullPointerException e) {
-              LOG.error("No comple Deliverable Partner " + e.getLocalizedMessage());
+            } else {
+              this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.crpClusterKeyOutput.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+              deliverable.getDeliverableInfo(action.getActualPhase()).setCrpClusterKeyOutput(null);
             }
-
-            i++;
           }
         }
+
+        Boolean isManagingPartnerPersonRequerid =
+          action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
+        if (isManagingPartnerPersonRequerid) {
+          this.validatePartnershipResponsiblePersonRequired(deliverable, action);
+          this.validatePartnershipOthersPersonRequired(deliverable, action);
+        } else {
+          this.validatePartnershipResponsibleNoPersonRequired(deliverable, action);
+          this.validatePartnershipOthersNoPersonRequired(deliverable, action);
+        }
+
+
         if (!action.isReportingActive()) {
           if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
             this.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
@@ -278,7 +232,8 @@ public class DeliverableValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
           }
         }
-        if (deliverable.getCrossCuttingGender() != null && deliverable.getCrossCuttingGender().booleanValue() == true) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
           if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
             this.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
@@ -292,11 +247,12 @@ public class DeliverableValidator extends BaseValidator {
       if (action.isReportingActive()) {
 
 
-        if (deliverable.getStatus() != null
-          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
 
           this.addMessage(action.getText("project.deliverable.generalInformation.status"));
-          action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
         }
 
 
@@ -305,7 +261,7 @@ public class DeliverableValidator extends BaseValidator {
           this.validateDissemination(deliverable.getDissemination(), saving);
         } else {
           this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
@@ -314,44 +270,48 @@ public class DeliverableValidator extends BaseValidator {
           // this.validateMetadata(deliverable.getMetadataElements());
         } else {
           this.addMessage(action.getText("project.deliverable.v.metadata"));
-          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
         // Deliverable Publication Meta-data
-        if (deliverable.getDeliverableType() != null && deliverable.getDeliverableType().getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
+          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+            .getId() == 49) {
             this.validatePublicationMetadata(deliverable);
           }
         }
 
         // Deliverable Licenses
-        if (deliverable.getAdoptedLicense() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense() != null) {
           this.validateLicense(deliverable);
         } else {
           this.addMessage(action.getText("project.deliverable.v.ALicense"));
-          action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.adoptedLicense",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
 
         // Deliverable Quality Check
-        if (deliverable.getDeliverableType() != null && (deliverable.getDeliverableType().getId().intValue() == 51
-          || deliverable.getDeliverableType().getId().intValue() == 74)) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
+          && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
+            || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 74)) {
           if (deliverable.getQualityCheck() != null) {
             if (deliverable.getQualityCheck().getQualityAssurance() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.qualityAssurance.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataDictionary() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.dataDictionary.id",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.dataDictionary.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataTools() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-              action.getInvalidFields().put("input-deliverable.qualityCheck.dataTools.id",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.qualityCheck.dataTools.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
@@ -370,13 +330,10 @@ public class DeliverableValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    if (action.isReportingActive()) {
-      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
-    } else {
-      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
-    }
+
+    this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      ProjectSectionStatusEnum.DELIVERABLES.getStatus());
+
   }
 
 
@@ -392,13 +349,14 @@ public class DeliverableValidator extends BaseValidator {
 
 
             this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-            action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.type",
+              InvalidFieldsMessages.EMPTYFIELD);
           } else {
             if (dissemination.getType().equals("restrictedUseAgreement")) {
 
               if (dissemination.getRestrictedAccessUntil() == null) {
                 this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-                action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedAccessUntil",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
@@ -408,7 +366,7 @@ public class DeliverableValidator extends BaseValidator {
 
               if (dissemination.getRestrictedEmbargoed() == null) {
                 this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-                action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+                action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedEmbargoed",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
@@ -431,7 +389,7 @@ public class DeliverableValidator extends BaseValidator {
             hasOne = true;
             if (dissemination.getRestrictedAccessUntil() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-              action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedAccessUntil",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
@@ -440,14 +398,15 @@ public class DeliverableValidator extends BaseValidator {
             hasOne = true;
             if (dissemination.getRestrictedEmbargoed() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
-              action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.restrictedEmbargoed",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
 
           if (!hasOne) {
             this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-            action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.type",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
@@ -456,7 +415,8 @@ public class DeliverableValidator extends BaseValidator {
 
     } else {
       this.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
-      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
@@ -465,51 +425,53 @@ public class DeliverableValidator extends BaseValidator {
         if (dissemination.getDisseminationChannel() != null) {
           if (dissemination.getDisseminationChannel().equals("-1")) {
             this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-            action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationChannel",
               InvalidFieldsMessages.EMPTYFIELD);
           } else {
             if (!(this.isValidString(dissemination.getDisseminationUrl())
               && this.wordCount(dissemination.getDisseminationUrl()) <= 100)) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
-              action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationUrl",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         } else {
           this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
-          action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.disseminationChannel",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       this.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
-      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.isOpenAccess",
+        InvalidFieldsMessages.EMPTYFIELD);
 
     }
   }
 
-
   public void validateLicense(Deliverable deliverable) {
-    if (deliverable.getAdoptedLicense().booleanValue()) {
-      if (deliverable.getLicense() != null) {
-        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          if (deliverable.getOtherLicense() != null) {
-            if (!(this.isValidString(deliverable.getOtherLicense())
-              && this.wordCount(deliverable.getOtherLicense()) <= 100)) {
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getAdoptedLicense().booleanValue()) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense() != null) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getLicense()
+          .equals(LicensesTypeEnum.OTHER.getValue())) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense() != null) {
+            if (!(this.isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense())
+              && this.wordCount(deliverable.getDeliverableInfo(action.getActualPhase()).getOtherLicense()) <= 100)) {
               this.addMessage(action.getText("project.deliverable.license.v.other"));
-              action.getInvalidFields().put("input-deliverable.otherLicense", InvalidFieldsMessages.EMPTYFIELD);
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.otherLicense",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
 
-            if (deliverable.getAllowModifications() == null) {
+            if (deliverable.getDeliverableInfo(action.getActualPhase()).getAllowModifications() == null) {
               this.addMessage(action.getText("project.deliverable.license.v.allowModification"));
-              action.getInvalidFields().put("input-deliverable.dissemination.allowModification",
+              action.getInvalidFields().put("input-deliverable.deliverableInfo.dissemination.allowModification",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }
       } else {
         this.addMessage(action.getText("project.deliverable.v.license"));
-        action.getInvalidFields().put("input-deliverable.license", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.license", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
   }
@@ -536,11 +498,186 @@ public class DeliverableValidator extends BaseValidator {
     }
     if (!description) {
       this.addMessage(action.getText("project.deliverable.metadata.v.description"));
-      action.getInvalidFields().put("input-deliverable.metadataElements[7].elementValue",
+      action.getInvalidFields().put("input-deliverable.deliverableInfo.metadataElements[7].elementValue",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
+  }
+
+  private void validatePartnershipOthersNoPersonRequired(Deliverable deliverable, BaseAction action) {
+    if (deliverable.getOtherPartners() != null) {
+      int i = 0;
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+        try {
+          if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
+            && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
+            if (projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
+              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+              if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+                if (deliverablePartnership.getPartnerDivision() == null) {
+                  this.addMessage(action.getText("deliverable.division"));
+                  action.getInvalidFields().put(
+                    "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+                if (deliverablePartnership.getPartnerDivision() != null) {
+                  if (deliverablePartnership.getPartnerDivision().getId() == null) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put(
+                      "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  } else {
+                    if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
+                      this.addMessage(action.getText("deliverable.division"));
+                      action.getInvalidFields().put(
+                        "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (NullPointerException e) {
+          LOG.error("No comple Deliverable Partner " + e.getLocalizedMessage());
+        }
+
+        i++;
+      }
+    }
+  }
+
+  private void validatePartnershipOthersPersonRequired(Deliverable deliverable, BaseAction action2) {
+    if (deliverable.getOtherPartners() != null) {
+      int i = 0;
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
+        try {
+          if (deliverablePartnership != null && deliverablePartnership.getProjectPartnerPerson() != null
+            && deliverablePartnership.getProjectPartnerPerson().getId() != null) {
+            if (projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId()).getProjectPartner()
+              .getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+              if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+                if (deliverablePartnership.getPartnerDivision() == null) {
+                  this.addMessage(action.getText("deliverable.division"));
+                  action.getInvalidFields().put(
+                    "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+                if (deliverablePartnership.getPartnerDivision() != null) {
+                  if (deliverablePartnership.getPartnerDivision().getId() == null) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put(
+                      "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  } else {
+                    if (deliverablePartnership.getPartnerDivision().getId().longValue() == -1) {
+                      this.addMessage(action.getText("deliverable.division"));
+                      action.getInvalidFields().put(
+                        "input-deliverable.deliverableInfo.otherPartners[" + i + "].partnerDivision.id",
+                        InvalidFieldsMessages.EMPTYFIELD);
+                    }
+                  }
+
+                }
+
+              }
+
+            }
+          }
+        } catch (NullPointerException e) {
+          LOG.error("No comple Deliverable Partner " + e.getLocalizedMessage());
+        }
+
+        i++;
+      }
+    }
+  }
+
+
+  private void validatePartnershipResponsibleNoPersonRequired(Deliverable deliverable, BaseAction action) {
+    if (deliverable.getResponsiblePartner() != null
+      && deliverable.getResponsiblePartner().getProjectPartner() != null) {
+      if (deliverable.getResponsiblePartner() != null
+        && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
+        if (projectPartnerPersonManager
+          .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
+          .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+          if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+            if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
+              this.addMessage(action.getText("deliverable.division"));
+              action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            } else {
+              if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null
+                || deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
+                this.addMessage(action.getText("deliverable.division"));
+                action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
+      action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartner.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  private void validatePartnershipResponsiblePersonRequired(Deliverable deliverable, BaseAction action) {
+    if (deliverable.getResponsiblePartner() != null
+      && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
+      if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
+        || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
+        this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
+
+        action.getInvalidFields().put("list-deliverable.responsiblePartner.projectPartnerPerson.id",
+          InvalidFieldsMessages.EMPTYFIELD);
+
+      } else {
+        if (deliverable.getResponsiblePartner() != null
+          && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
+
+
+          if (projectPartnerPersonManager
+            .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
+            .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+            if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
+              if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
+                this.addMessage(action.getText("deliverable.division"));
+                action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+              if (deliverable.getResponsiblePartner().getPartnerDivision() != null) {
+                if (deliverable.getResponsiblePartner().getPartnerDivision().getId() == null) {
+                  this.addMessage(action.getText("deliverable.division"));
+                  action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                } else {
+                  if (deliverable.getResponsiblePartner().getPartnerDivision().getId().longValue() == -1) {
+                    this.addMessage(action.getText("deliverable.division"));
+                    action.getInvalidFields().put("input-deliverable.responsiblePartner.partnerDivision.id",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
+                }
+
+              }
+
+            }
+
+          }
+        }
+      }
+    } else {
+      this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
+      action.getInvalidFields().put("list-deliverable.responsiblePartner.projectPartnerPerson.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+
+    }
   }
 
   public void validatePublicationMetadata(Deliverable deliverable) {
@@ -552,17 +689,20 @@ public class DeliverableValidator extends BaseValidator {
 
       if (!(this.isValidString(metadata.getVolume()) && this.wordCount(metadata.getVolume()) <= 100)) {
         // this.addMessage(action.getText("project.deliverable.publication.v.volume"));
-        // action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+        // action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.volume",
+        // InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
         this.addMessage(action.getText("project.deliverable.publication.v.journal"));
-        action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.journal",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
 
       boolean indicators = false;
 
-      if (deliverable.getDeliverableType().getId() != 63 || deliverable.getDeliverableType().getId() != 79) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 63
+        || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != 79) {
         indicators = true;
       }
 
@@ -586,18 +726,20 @@ public class DeliverableValidator extends BaseValidator {
 
       if (!indicators) {
         this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-        action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.nasr",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (metadata.getPublicationAcknowledge() == null) {
         this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
-        action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
+        action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.publicationAcknowledge",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
       // else {
       // this.addMessage(action.getText("project.deliverable.v.publication"));
-      // action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
+      // action.getInvalidFields().put("input-deliverable.deliverableInfo.publication.nasr",
+      // InvalidFieldsMessages.EMPTYFIELD);
       // }
     }
   }

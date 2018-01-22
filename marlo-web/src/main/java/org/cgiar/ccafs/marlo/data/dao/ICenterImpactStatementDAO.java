@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterImpactStatementDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactStatement;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterImpactStatementDAO.class)
 public interface ICenterImpactStatementDAO {
 
   /**
@@ -88,5 +85,6 @@ public interface ICenterImpactStatementDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement, String actionName, List<String> relationsName);
+  public CenterImpactStatement save(CenterImpactStatement researchImpactStatement, String actionName,
+    List<String> relationsName);
 }

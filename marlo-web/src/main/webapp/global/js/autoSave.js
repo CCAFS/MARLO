@@ -19,52 +19,65 @@ $(document).ready(function() {
 
 });
 
+// Event to be able to hit Ctrl+S to execute autosave function
+$(window).on('keydown', function(e) {
+  if(event.ctrlKey || event.metaKey) {
+    if(String.fromCharCode(event.which).toLowerCase() == 's') {
+      e.preventDefault();
+      autoSave();
+      return false;
+    }
+  }
+});
+
 function autoSave() {
-  $.ajax({
-      dataType: 'json',
-      method: 'POST',
-      url: baseURL + '/autosaveWriter.do',
-      data: {
-        autoSave: JSON.stringify($('form:first').serializeObject())
-      },
-      beforeSend: function(xhr,opts) {
-        if(autoSaveActive) {
-          $draftTag.text('... Saving');
-        } else {
-          // Auto save Cancelled
-          xhr.abort();
+  if(isChanged()) {
+    $.ajax({
+        dataType: 'json',
+        method: 'POST',
+        url: baseURL + '/autosaveWriter.do',
+        data: {
+          autoSave: JSON.stringify($('form:first').serializeObject())
+        },
+        beforeSend: function(xhr,opts) {
+          if(autoSaveActive) {
+            $draftTag.text('... Saving');
+          } else {
+            // Auto save Cancelled
+            xhr.abort();
+          }
+        },
+        success: function(data) {
+          if(data.status.status) {
+            successNotification('Draft saved...');
+            // $draftTag.text('Confirm changes').addClass('animated flipInX');
+            // $cancelButton.css('display', 'inline-block');
+            $editedBy.find('.datetime').text(data.status.activeSince);
+            $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
+
+            draft = true;
+            forceChange = true;
+
+            // Validate section
+            validateThisSection();
+
+            // Re-Generating hash from form information
+            setFormHash();
+
+            // Send push for saving
+            pushSave();
+
+          } else {
+            errorNotification('Auto save error' + data.status.statusMessage);
+          }
+        },
+        complete: function() {
+        },
+        error: function(e) {
+          errorNotification('Auto save ' + e.statusText);
         }
-      },
-      success: function(data) {
-        if(data.status.status) {
-          successNotification('Draft saved...');
-          // $draftTag.text('Confirm changes').addClass('animated flipInX');
-          // $cancelButton.css('display', 'inline-block');
-          $editedBy.find('.datetime').text(data.status.activeSince);
-          $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
-
-          draft = true;
-          forceChange = true;
-
-          // Validate section
-          validateThisSection();
-
-          // Re-Generating hash from form information
-          setFormHash();
-
-          // Send push for saving
-          pushSave();
-
-        } else {
-          errorNotification('Auto save error' + data.status.statusMessage);
-        }
-      },
-      complete: function() {
-      },
-      error: function(e) {
-        errorNotification('Auto save ' + e.statusText);
-      }
-  });
+    });
+  }
 }
 
 function successNotification(msj) {
@@ -102,9 +115,7 @@ function changeDetected(e) {
     }
     // Start a timer that will execute autosave function
     timeoutAutoSave = setTimeout(function() {
-      if(isChanged()) {
-        autoSave();
-      }
+      autoSave();
     }, 6 * 1000);
   }
 }
@@ -118,7 +129,9 @@ function validateThisSection() {
   var sectionName = ($sectionMenu.attr('id')).split("-")[1];
 
   var validateService = "";
-  var sectionData = {};
+  var sectionData = {
+    phaseID: phaseID
+  };
   sectionData.sectionName = sectionName;
 
   // Validate projects

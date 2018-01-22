@@ -1,18 +1,3 @@
-/*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
- * Outcomes Platform (MARLO).
- * MARLO is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * MARLO is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
 package org.cgiar.ccafs.marlo.action.json.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
@@ -28,8 +13,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.Date;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class EditPartnerRequestAction extends BaseAction {
 
@@ -38,9 +25,9 @@ public class EditPartnerRequestAction extends BaseAction {
    */
   private static final long serialVersionUID = 821788435993637711L;
   // Managers
-  private PartnerRequestManager partnerRequestManager;
-  private InstitutionTypeManager institutionTypeManager;
-  private LocElementManager locElementManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final InstitutionTypeManager institutionTypeManager;
+  private final LocElementManager locElementManager;
   // Variables
   private String requestID;
   private String name;
@@ -163,14 +150,15 @@ public class EditPartnerRequestAction extends BaseAction {
   public void prepare() throws Exception {
     success = true;
     try {
-      Map<String, Object> parameters = this.getParameters();
-      requestID = StringUtils.trim(((String[]) parameters.get(APConstants.PARTNER_REQUEST_ID))[0]);
-      name = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_NAME))[0]);
-      acronym = StringUtils.trim(((String[]) parameters.get("institutionAcronym"))[0]);
-      webPage = StringUtils.trim(((String[]) parameters.get("institutionWebPage"))[0]);
-      type = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID))[0]);
-      country = StringUtils.trim(((String[]) parameters.get(APConstants.COUNTRY_REQUEST_ID))[0]);
-      modificationJustification = StringUtils.trim(((String[]) parameters.get(APConstants.JUSTIFICATION_REQUEST))[0]);
+      Map<String, Parameter> parameters = this.getParameters();
+      requestID = StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_ID).getMultipleValues()[0]);
+      name = StringUtils.trim(parameters.get(APConstants.INSTITUTION_NAME).getMultipleValues()[0]);
+      acronym = StringUtils.trim(parameters.get("institutionAcronym").getMultipleValues()[0]);
+      webPage = StringUtils.trim(parameters.get("institutionWebPage").getMultipleValues()[0]);
+      type = StringUtils.trim(parameters.get(APConstants.INSTITUTION_TYPE_REQUEST_ID).getMultipleValues()[0]);
+      country = StringUtils.trim(parameters.get(APConstants.COUNTRY_REQUEST_ID).getMultipleValues()[0]);
+      modificationJustification =
+        StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       success = false;

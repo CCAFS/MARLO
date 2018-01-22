@@ -14,18 +14,20 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.ProjectOutcomeManagerImpl;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(ProjectOutcomeManagerImpl.class)
+
 public interface ProjectOutcomeManager {
+
+
+  public ProjectOutcome copyProjectOutcome(ProjectOutcome projectOutcome, Phase phase);
 
 
   /**
@@ -53,7 +55,6 @@ public interface ProjectOutcomeManager {
    */
   public List<ProjectOutcome> findAll();
 
-
   /**
    * This method gets a projectOutcome object by a given projectOutcome identifier.
    * 
@@ -72,6 +73,7 @@ public interface ProjectOutcomeManager {
    */
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome);
 
-  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName);
+  public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome, String section, List<String> relationsName,
+    Phase phase);
 
 }

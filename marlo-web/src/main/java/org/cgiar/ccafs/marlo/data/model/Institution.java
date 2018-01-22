@@ -63,7 +63,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
-  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+  private Set<FundingSource> fundingSourcesOriginalDonor = new HashSet<FundingSource>(0);
   private Set<FundingSource> fundingSourcesDirectDonor = new HashSet<FundingSource>(0);
 
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
@@ -87,7 +87,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public Institution(InstitutionType institutionType, String name, String acronym, String websiteLink, Long programId,
     Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, Set<ProjectPartnerPerson> projectPartnerPersons,
-    Set<FundingSource> fundingSources, Set<FundingSource> fundingSourcesDirectDonor) {
+    Set<FundingSource> fundingSourcesOriginalDonor, Set<FundingSource> fundingSourcesDirectDonor) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -98,7 +98,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
 
     this.projectPartnerPersons = projectPartnerPersons;
-    this.fundingSources = fundingSources;
+    this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
     this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
   }
 
@@ -174,8 +174,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<FundingSource> getFundingSources() {
-    return fundingSources;
+  public Set<FundingSource> getFundingSourcesOriginalDonor() {
+    return fundingSourcesOriginalDonor;
   }
 
   public Set<FundingSource> getFundingSourcesDirectDonor() {
@@ -292,8 +292,9 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public boolean isPPA(long crpID) {
-    if (this.getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == crpID && c.isActive())
+  public boolean isPPA(long crpID, Phase phase) {
+    if (this.getCrpPpaPartners().stream()
+      .filter(c -> c.getCrp().getId().longValue() == crpID && c.isActive() && c.getPhase().equals(phase))
       .collect(Collectors.toList()).size() > 0) {
       return true;
     }
@@ -317,8 +318,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
   }
 
-  public void setFundingSources(Set<FundingSource> fundingSources) {
-    this.fundingSources = fundingSources;
+  public void setFundingSourcesOriginalDonor(Set<FundingSource> fundingSourcesOriginalDonor) {
+    this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
   }
 
   public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {

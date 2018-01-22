@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CrpUserMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CrpUserMySQLDAO.class)
 public interface CrpUserDAO {
 
   /**

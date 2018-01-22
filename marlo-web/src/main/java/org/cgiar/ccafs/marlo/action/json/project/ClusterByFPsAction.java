@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +63,8 @@ public class ClusterByFPsAction extends BaseAction {
     for (String string : flagships) {
 
       CrpProgram crpProgram = crpManager.getCrpProgramById(Long.parseLong(string));
-      List<CrpClusterOfActivity> crpPrograms =
-        crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());;
+      List<CrpClusterOfActivity> crpPrograms = crpProgram.getCrpClusterOfActivities().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());;
       for (CrpClusterOfActivity ccActivity : crpPrograms) {
         try {
           flagShip = new HashMap<String, Object>();
@@ -92,8 +93,11 @@ public class ClusterByFPsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    flagshipID = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // flagshipID = (StringUtils.trim(((String[]) parameters.get(APConstants.FLAGSHIP_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    flagshipID = (StringUtils.trim(parameters.get(APConstants.FLAGSHIP_ID).getMultipleValues()[0]));
   }
 
 

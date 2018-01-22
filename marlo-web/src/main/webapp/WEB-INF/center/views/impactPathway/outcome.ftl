@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Outcome" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -53,7 +53,7 @@
         
         [#-- Back --]
         <h5 class="pull-right">
-          <a href="[@s.url action='${centerSession}/outcomesList'][@s.param name="programID" value=programID /][@s.param name="topicID" value=topicID /][@s.param name="edit" value=true /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/outcomesList'][@s.param name="programID" value=programID /][@s.param name="topicID" value=topicID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outcomes list
           </a>
         </h5>

@@ -1,3 +1,4 @@
+
 /*****************************************************************
  * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -15,9 +16,8 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -38,20 +38,18 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
@@ -64,13 +62,12 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Valencia - CIAT/CCAFS
  */
-public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Summary {
+public class ProjectHighlightsPDFSummaryAction extends BaseSummariesAction implements Summary {
 
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsPDFSummaryAction.class);
   // Managers
-  private CrpManager crpManager;
-  private ProjectHighligthManager projectHighLightManager;
+  private final ProjectHighligthManager projectHighLightManager;
   // Parameters
   private Crp loggedCrp;
   private long startTime;
@@ -82,9 +79,8 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   @Inject
   public ProjectHighlightsPDFSummaryAction(APConfig config, CrpManager crpManager,
-    ProjectHighligthManager projectHighLightManager) {
-    super(config);
-    this.crpManager = crpManager;
+    ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
+    super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
   }
 
@@ -186,35 +182,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
   }
 
   /**
-   * Get all subreports and store then in a hash map.
-   * If it encounters a band, search subreports in the band
-   * 
-   * @param hm List to populate with subreports found
-   * @param itemBand details section in pentaho
-   */
-  private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
-    int elementCount = itemBand.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = itemBand.getElement(i);
-      // verify if the item is a SubReport
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-          // If report footer is not null check for subreports
-          if (((SubReport) e).getReportFooter().getElementCount() != 0) {
-            this.getFooterSubreports(hm, ((SubReport) e).getReportFooter());
-          }
-        }
-      }
-      // If is a band, find the subreport if exist
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
-
-  /**
    * Get all subreports in the band.
    * If it encounters a band, search subreports in the band
    * 
@@ -270,22 +237,6 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     return fileName.toString();
   }
 
-  private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
-
-    int elementCount = reportFooter.getElementCount();
-    for (int i = 0; i < elementCount; i++) {
-      Element e = reportFooter.getElement(i);
-      if (e instanceof SubReport) {
-        hm.put(e.getName(), e);
-        if (((SubReport) e).getElementCount() != 0) {
-          this.getAllSubreports(hm, ((SubReport) e).getItemBand());
-        }
-      }
-      if (e instanceof Band) {
-        this.getBandSubreports(hm, (Band) e);
-      }
-    }
-  }
 
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
@@ -313,6 +264,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     return inputStream;
   }
 
+  @Override
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -339,7 +291,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
         && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
-        && ph.getProject().getReporting())
+        && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting())
       .collect(Collectors.toList())) {
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "", image = "",
@@ -476,23 +428,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
 
   @Override
   public void prepare() throws Exception {
-    // Get loggerCrp
-    try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-    }
-    // Get parameters from URL
-    // Get year
-    try {
-      Map<String, Object> parameters = this.getParameters();
-      year = Integer.parseInt((StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0])));
-    } catch (Exception e) {
-      LOG.warn("Failed to get " + APConstants.YEAR_REQUEST
-        + " parameter. Parameter will be set as CurrentCycleYear. Exception: " + e.getMessage());
-      year = this.getCurrentCycleYear();
-    }
+    this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: "
@@ -507,6 +443,7 @@ public class ProjectHighlightsPDFSummaryAction extends BaseAction implements Sum
     this.inputStream = inputStream;
   }
 
+  @Override
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }

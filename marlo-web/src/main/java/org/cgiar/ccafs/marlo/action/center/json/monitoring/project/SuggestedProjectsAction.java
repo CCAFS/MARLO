@@ -34,8 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * Search the possibles OCS or Project codes to being a funding source in a center project
@@ -96,7 +97,7 @@ public class SuggestedProjectsAction extends BaseAction {
             if (projectBudget.getProject().isActive()) {
               Project project = projectBudget.getProject();
               dataSuggestion.put("code", project.getId());
-              dataSuggestion.put("title", project.getTitle());
+              // dataSuggestion.put("title", project.getTitle());
               dataSuggestions.add(dataSuggestion);
             }
           }
@@ -148,7 +149,7 @@ public class SuggestedProjectsAction extends BaseAction {
 
     Map<String, Object> dataProject = new HashMap<>();
     dataProject.put("id", project.getId());
-    dataProject.put("name", project.getTitle());
+    // dataProject.put("name", project.getTitle());
 
     List<ProjectBudget> projectBudgets = new ArrayList<>(project.getProjectBudgets().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == this.getCenterYear()).collect(Collectors.toList()));
@@ -167,19 +168,19 @@ public class SuggestedProjectsAction extends BaseAction {
       fundingSources = new ArrayList<>(hashFundignSources);
 
       List<Map<String, Object>> dataSuggestions = new ArrayList<>();
-      for (FundingSource fundingSource : fundingSources) {
-        if (fundingSource.getFinanceCode() != null) {
-          agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
-          Map<String, Object> dataSuggestion = new HashMap<>();
-          if (agreement != null) {
-            dataSuggestion.put("code", fundingSource.getFinanceCode());
-            dataSuggestion.put("title", agreement.getShortTitle());
-            dataSuggestions.add(dataSuggestion);
-          }
-
-        }
-      }
-
+      /*
+       * for (FundingSource fundingSource : fundingSources) {
+       * if (fundingSource.getFinanceCode() != null) {
+       * agreement = ocsClient.getagreement(fundingSource.getFinanceCode());
+       * Map<String, Object> dataSuggestion = new HashMap<>();
+       * if (agreement != null) {
+       * dataSuggestion.put("code", fundingSource.getFinanceCode());
+       * dataSuggestion.put("title", agreement.getShortTitle());
+       * dataSuggestions.add(dataSuggestion);
+       * }
+       * }
+       * }
+       */
       dataProject.put("suggestions", dataSuggestions);
 
     }
@@ -189,9 +190,10 @@ public class SuggestedProjectsAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
-    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    syncTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE).getMultipleValues()[0]));
+    syncCode = StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE).getMultipleValues()[0]);
 
     if (syncTypeID == 2) {
       if (syncCode.toUpperCase().contains("P")) {

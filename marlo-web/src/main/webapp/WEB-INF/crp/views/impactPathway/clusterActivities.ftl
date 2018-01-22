@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
@@ -30,6 +30,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
@@ -50,18 +51,18 @@
         [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
-        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
           [#list programs as program]
             [#assign isActive = (program.id == crpProgramID)/]
             <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">Flagship ${program.acronym}</a>
             </li>
           [/#list]
         </ul>
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
 
@@ -132,9 +133,16 @@
         <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="global.sClusterOfActivities"/]</span>
       </div>
       [#-- Remove Button --]
-      [#if editable]
+      [#if editable && action.canBeDeleted((cluster.id)!-1,(cluster.class.name)!"" )]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
+      
+      [#if !isTemplate]
+        <div class="pull-right">
+          [@popUps.relationsMacro element=cluster /]
+        </div>
+      [/#if]
+      
       [#-- Cluster Activity identifier --]
       <div class=" form-group cluster-identifier ">
         [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. Cluster 1.1"   className="clusterIdentifier" editable=editable /]
@@ -185,8 +193,9 @@
       </div>
       [/#if]
     </div>    
-    <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
-           
+    <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>
+    
+    <div class="clearfix"></div>
   </div>
 [/#macro]
 
@@ -209,12 +218,10 @@
 [#macro keyOutputItem element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
-     
+    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!"" )] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
-     
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
@@ -235,6 +242,7 @@
         <div class="form-group col-md-3">
             [@customForm.input name="${customName}.contribution" i18nkey="cluster.keyOutput.contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
         </div>
+        <input class="composeId" type="hidden" name="${customName}.composeID" value="${(element.composeID)!}"/>
       </div>
             
       [#-- Outcomes list --]
@@ -255,6 +263,10 @@
       </div>
       [/#if]
     </div>
+    
+    [#if !isTemplate]
+      [@popUps.relationsMacro element=element /]
+    [/#if]
   
   </div>
 
@@ -278,13 +290,12 @@
         </span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
-        
-      </div>
+        <input class="outcomeComposeID" type="hidden" name="${customName}.crpProgramOutcome.composeID" value="${(element.crpProgramOutcome.composeID)!}"/>
+        </div>
       [#-- Contribution --]
       <div class="hidden">
           [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution)!}" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
   
   </div>
-
 [/#macro]

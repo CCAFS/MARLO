@@ -41,10 +41,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
+import org.apache.struts2.dispatcher.Parameter;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -56,7 +58,6 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
   private static final long serialVersionUID = 2904862716714197942L;
-
 
   private String autoSave[];
 
@@ -187,8 +188,13 @@ public class AutoSaveWriterAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
+    /*
+     * Map<String, Object> parameters = this.getParameters();
+     * autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
+     */
+
+    Map<String, Parameter> parameters = this.getParameters();
+    autoSave = parameters.get(APConstants.AUTOSAVE_REQUEST).getMultipleValues();
   }
 
   public void setStatus(Map<String, Object> status) {

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.IpProjectContributionOverviewManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(IpProjectContributionOverviewManagerImpl.class)
+
 public interface IpProjectContributionOverviewManager {
 
 
@@ -88,7 +86,8 @@ public interface IpProjectContributionOverviewManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public IpProjectContributionOverview saveIpProjectContributionOverview(IpProjectContributionOverview ipProjectContributionOverview);
+  public IpProjectContributionOverview
+    saveIpProjectContributionOverview(IpProjectContributionOverview ipProjectContributionOverview);
 
 
 }

@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class SendMailTest extends BaseAction {
 
@@ -57,10 +57,10 @@ public class SendMailTest extends BaseAction {
       String contentType = null;
 
 
-      reportingSummaryAction.setYear(2017);
+      reportingSummaryAction.setSelectedYear(2017);
       //
       reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setCycle("Planning");
+      reportingSummaryAction.setSelectedCycle("Planning");
       reportingSummaryAction.setProjectID(60);
       reportingSummaryAction.execute();
       // // Getting the file data.
