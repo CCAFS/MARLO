@@ -51,6 +51,8 @@
               [#list project.expectedStudies as expectedStudy]
                 [@expectedStudyMacro element=expectedStudy name="project.expectedStudies"  index=expectedStudy_index isEditable=editable  /]
               [/#list]
+            [#else]
+              [@expectedStudyMacro element={} name="project.expectedStudies"  index=0 isEditable=editable  /]
             [/#if]
             </div>
             [#if canEdit && editable]
@@ -85,6 +87,37 @@
     [#if isEditable]<div class="removeExpectedStudy removeIcon" title="Remove Expected Study"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
-     
+    <br />
+    
+    
+    <div class="form-group"> 
+      [#-- Title --] 
+      [@customForm.input name="${customName}.topicStudy" i18nkey="expectedStudy.topicStudy"  placeholder="" className="" required=true editable=isEditable /]
+    </div>
+    
+    <div class="form-group row"> 
+      [#-- Type --] 
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.type" label="" i18nkey="expectedStudy.type" listName="types"  required=true  className="" editable=isEditable/]
+      </div>
+      [#-- Geographic Scope --]
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.scope" label=""  i18nkey="expectedStudy.scope" listName="scopes"  required=true  className="" editable=isEditable/]
+      </div>
+    </div>
+    
+    [#-- Relevant to Sub-IDO --] 
+    <div class="form-group "> 
+      [@customForm.select name="${customName}.srfSubIdo" label=""  i18nkey="expectedStudy.srfSubIdo" listName="srfSubIdos"  required=true  className="" editable=isEditable/]
+    </div>
+    
+    [#-- SRF target if appropriate --] 
+    <div class="form-group "> 
+      [@customForm.select name="${customName}.srfSloIndicator" label=""  i18nkey="expectedStudy.srfSloIndicator" listName="srfSloIndicators"  required=false  className="" editable=isEditable/]
+    </div>
+    
+    <div class="form-group "> 
+      [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+    </div>
   </div>
 [/#macro]
