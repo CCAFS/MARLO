@@ -121,6 +121,25 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  public void expectedStudiesPreviousData(List<ProjectExpectedStudy> expectedStudies) {
+
+    List<ProjectExpectedStudy> expectedStudiesPrev;
+    Project projectBD = projectManager.getProjectById(projectID);
+
+
+    expectedStudiesPrev = projectBD.getProjectExpectedStudies().stream()
+      .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+
+
+    for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesPrev) {
+      if (!expectedStudies.contains(projectExpectedStudy)) {
+        projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
+      }
+    }
+
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -147,24 +166,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
-
   public Map<Long, String> getSubIdos() {
     return subIdos;
   }
+
 
   public Map<Long, String> getTargets() {
     return targets;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
 
+
   public Map<Integer, String> getTypes() {
     return types;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -275,7 +293,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
       project.setActiveSince(projectDB.getActiveSince());
-
+      if (project.getExpectedStudies() == null) {
+        project.setExpectedStudies(new ArrayList<>());
+      }
+      this.expectedStudiesPreviousData(project.getExpectedStudies());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
