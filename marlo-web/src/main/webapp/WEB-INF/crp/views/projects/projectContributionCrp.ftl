@@ -458,21 +458,21 @@
     <div class="form-group grayBox">
       <strong>${element.indicator}</strong>
     </div>
-    [#assign projectIndicatorID = "projectOutcome.indicators[${index}.id" /]
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
+    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
     <div class="form-group row">
       <div class="col-md-3">
-        [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=true editable=editable && !reportingActive /]
+        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
       </div>
       <div class="col-md-3">
         [#if reportingActive]
-          [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=true editable=editable /]
         [/#if]
       </div>
       <div class="col-md-3"></div>
     </div>
     <div class="form-group">
-      [@customForm.textArea name="${customName}.expectedNarrative" i18nkey="projectOutcomeBaseline.expectedNarrative" required=true className="limitWords-100" editable=editable && !reportingActive /]
+      [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
     </div>
     [#if reportingActive]
       <div class="form-group">
