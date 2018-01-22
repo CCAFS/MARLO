@@ -61,7 +61,7 @@
               
               [#if !reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.partnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.newPartnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               
