@@ -338,7 +338,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       targets = new HashMap<>();
       for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
-        targets.put(srfSloIndicator.getId(), srfSloIndicator.getDescription());
+        targets.put(srfSloIndicator.getId(), srfSloIndicator.getTitle());
       }
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
