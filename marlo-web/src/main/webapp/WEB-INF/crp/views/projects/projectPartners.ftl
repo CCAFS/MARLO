@@ -61,14 +61,14 @@
               
               [#if !reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.partnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.newPartnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" paramText="${currentCycleYear}" className="limitWords-100" required=true editable=editable /]
               </div>
               [/#if]
               
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <div class="form-group">
-                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="project.projectInfo.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
               

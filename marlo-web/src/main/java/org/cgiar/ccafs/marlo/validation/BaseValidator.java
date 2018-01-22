@@ -48,37 +48,8 @@ public class BaseValidator {
   @Inject
   private ICenterSectionStatusManager centerSectionStatusManager;
 
-  // This is not thread safe
-  protected StringBuilder validationMessage;
-
-  // This is not thread safe
-  protected StringBuilder missingFields;
-
 
   public BaseValidator() {
-    validationMessage = new StringBuilder();
-    missingFields = new StringBuilder();
-
-  }
-
-  protected void addMessage(String message) {
-    validationMessage.append("<p> - ");
-    validationMessage.append(message);
-    validationMessage.append("</p>");
-
-    this.addMissingField(message);
-  }
-
-  /**
-   * This method add a missing field separated by a semicolon (;).
-   * 
-   * @param field is the name of the field.
-   */
-  protected void addMissingField(String field) {
-    if (missingFields.length() != 0) {
-      missingFields.append(";");
-    }
-    missingFields.append(field);
   }
 
 
@@ -133,7 +104,8 @@ public class BaseValidator {
    * @param project is a CenterProject.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterDeliverable deliverable, CenterProject project, String sectionName) {
+  protected void saveMissingFields(CenterDeliverable deliverable, CenterProject project, String sectionName,
+    BaseAction action) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
     CenterSectionStatus status =
@@ -146,8 +118,8 @@ public class BaseValidator {
       status.setProject(project);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -165,7 +137,8 @@ public class BaseValidator {
    * @param outcome is a CenterOutcome.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterOutcome outcome, String sectionName) {
+  protected void saveMissingFields(CenterProgram program, CenterOutcome outcome, String sectionName,
+    BaseAction action) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
     CenterSectionStatus status =
@@ -178,8 +151,8 @@ public class BaseValidator {
       status.setResearchOutcome(outcome);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -197,7 +170,7 @@ public class BaseValidator {
    * @param output is a CenterOutput.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterOutput output, String sectionName) {
+  protected void saveMissingFields(CenterProgram program, CenterOutput output, String sectionName, BaseAction action) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
     CenterSectionStatus status =
@@ -210,8 +183,8 @@ public class BaseValidator {
       status.setResearchOutput(output);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -229,7 +202,8 @@ public class BaseValidator {
    * @param project is a CenterProject.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName) {
+  protected void saveMissingFields(CenterProgram program, CenterProject project, String sectionName,
+    BaseAction action) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
     CenterSectionStatus status =
@@ -241,8 +215,8 @@ public class BaseValidator {
       status.setProject(project);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -259,7 +233,7 @@ public class BaseValidator {
    * @param program is a CenterProgram.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CenterProgram program, String sectionName) {
+  protected void saveMissingFields(CenterProgram program, String sectionName, BaseAction action) {
 
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -272,8 +246,8 @@ public class BaseValidator {
       status.setResearchProgram(program);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -289,7 +263,8 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Deliverable deliverable, String cycle, int year, String sectionName) {
+  protected void saveMissingFields(Deliverable deliverable, String cycle, int year, String sectionName,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
@@ -304,9 +279,10 @@ public class BaseValidator {
       status.setProject(deliverable.getProject());
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
 
 
   }
@@ -318,7 +294,8 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName) {
+  protected void saveMissingFields(FundingSource fundingSource, String cycle, Integer year, String sectionName,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
     int a = 0;
@@ -334,9 +311,10 @@ public class BaseValidator {
       status.setSectionName(sectionName);
       fundingSource.getSectionStatuses().add(status);
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
   }
 
 
@@ -348,7 +326,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section inside deliverables.
    */
   protected void saveMissingFields(IpLiaisonInstitution ipLiaisonInstitution, String cycle, int year,
-    String sectionName) {
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
@@ -362,9 +340,10 @@ public class BaseValidator {
       status.setSectionName(sectionName);
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
 
 
   }
@@ -377,7 +356,7 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(IpProgram program, String cycle, int year, String sectionName) {
+  protected void saveMissingFields(IpProgram program, String cycle, int year, String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status = sectionStatusManager.getSectionStatusByIpProgram(program.getId(), cycle, year, sectionName);
@@ -390,9 +369,10 @@ public class BaseValidator {
       status.setSectionName(sectionName);
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
 
 
   }
@@ -404,7 +384,8 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Project project, CaseStudy caseStudy, String cycle, int year, String sectionName) {
+  protected void saveMissingFields(Project project, CaseStudy caseStudy, String cycle, int year, String sectionName,
+    BaseAction action) {
     // Reporting missing fields into the database.
     SectionStatus status =
       sectionStatusManager.getSectionStatusByCaseStudy(caseStudy.getId(), cycle, year, sectionName);
@@ -418,9 +399,10 @@ public class BaseValidator {
       status.setProject(project);
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
   }
 
   /**
@@ -431,7 +413,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section inside deliverables.
    */
   protected void saveMissingFields(Project project, ProjectHighlight highlight, String cycle, int year,
-    String sectionName) {
+    String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
     SectionStatus status =
       sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle, year, sectionName);
@@ -445,9 +427,10 @@ public class BaseValidator {
       status.setProject(project);
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
   }
 
   /**
@@ -457,7 +440,7 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(Project project, String cycle, int year, String sectionName) {
+  protected void saveMissingFields(Project project, String cycle, int year, String sectionName, BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status = sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, sectionName);
@@ -473,7 +456,7 @@ public class BaseValidator {
     }
 
     // Validate if the form have missing fileds in project sections issue #1209
-    String sMissingField = this.missingFields.toString();
+    String sMissingField = action.getMissingFields().toString();
     if (sMissingField.length() > 0) {
       status.setMissingFields(sMissingField);
     } else {
@@ -492,7 +475,8 @@ public class BaseValidator {
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
-  protected void saveMissingFields(ProjectOutcome projectOutcome, String cycle, int year, String sectionName) {
+  protected void saveMissingFields(ProjectOutcome projectOutcome, String cycle, int year, String sectionName,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
@@ -507,9 +491,10 @@ public class BaseValidator {
       status.setProject(projectOutcome.getProject());
 
     }
-    status.setMissingFields(this.missingFields.toString());
+    status.setMissingFields(action.getMissingFields().toString());
     sectionStatusManager.saveSectionStatus(status);
-    this.missingFields.setLength(0);
+    // Not sure if this is still required to set the missingFields to length zero???
+    action.getMissingFields().setLength(0);
   }
 
 
@@ -519,7 +504,8 @@ public class BaseValidator {
    * @param crpProgram is a CrpProgram.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName, int year, String cyle) {
+  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName, int year, String cyle,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status =
@@ -533,8 +519,8 @@ public class BaseValidator {
       status.setCrpProgram(crpProgram);
 
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -548,7 +534,8 @@ public class BaseValidator {
    * @param project is a Project.
    * @param sectionName is the name of the section (description, partners, etc.).
    */
-  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year) {
+  protected void saveMissingFieldsProject(Project project, String sectionName, String cycle, int year,
+    BaseAction action) {
     // Reporting missing fields into the database.
 
     SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName, cycle, year);
@@ -558,8 +545,8 @@ public class BaseValidator {
       status.setSectionName(sectionName);
       status.setProject(project);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -572,9 +559,9 @@ public class BaseValidator {
       ProjectComponentLesson lesson = program.getProjectComponentLesson();
       if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
         // Let them save.
-        this.addMessage("Lessons");
+        action.addMessage("Lessons");
 
-        this.addMissingField("projectLessons.lessons");
+        action.addMissingField("projectLessons.lessons");
 
       }
     }
@@ -586,9 +573,9 @@ public class BaseValidator {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();
       if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
         // Let them save.
-        this.addMessage("Lessons");
+        action.addMessage("Lessons");
 
-        this.addMissingField("projectLessons.lessons");
+        action.addMissingField("projectLessons.lessons");
 
       }
     }
@@ -600,9 +587,9 @@ public class BaseValidator {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();
       if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
         // Let them save.
-        this.addMessage("Lessons");
+        action.addMessage("Lessons");
 
-        this.addMissingField("projectLessons.lessons");
+        action.addMissingField("projectLessons.lessons");
 
       }
     }
