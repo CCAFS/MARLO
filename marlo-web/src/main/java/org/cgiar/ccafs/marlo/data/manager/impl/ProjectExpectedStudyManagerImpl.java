@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,20 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -30,15 +36,44 @@ import javax.inject.Inject;
 @Named
 public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyManager {
 
+  private PhaseDAO phaseDAO;
+  private ProjectDAO projectDAO;
 
   private ProjectExpectedStudyDAO projectExpectedStudyDAO;
   // Managers
 
 
   @Inject
-  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO) {
+  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDA, PhaseDAO phaseDAOO,
+    ProjectDAO projectDAO) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
+    this.phaseDAO = phaseDAO;
+    this.projectDAO = projectDAO;
+  }
 
+  /**
+   * clone the activity info
+   * 
+   * @param activityAdd activity to clone
+   * @param activity base
+   * @param phase the current phase
+   */
+  public void cloneProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudyAdd,
+    ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    projectExpectedStudyAdd.setActive(true);
+    projectExpectedStudyAdd.setActiveSince(new Date());
+    projectExpectedStudyAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
+    projectExpectedStudyAdd.setComments(projectExpectedStudy.getComments());
+    projectExpectedStudyAdd.setComposedId(projectExpectedStudy.getComposedId());
+    projectExpectedStudyAdd.setOtherType(projectExpectedStudy.getOtherType());
+    projectExpectedStudyAdd.setScope(projectExpectedStudy.getScope());
+    projectExpectedStudyAdd.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
+    projectExpectedStudyAdd.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
+    projectExpectedStudyAdd.setTopicStudy(projectExpectedStudy.getTopicStudy());
+    projectExpectedStudyAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
+    projectExpectedStudyAdd.setModifiedBy(projectExpectedStudy.getCreatedBy());
+    projectExpectedStudyAdd.setPhase(phase);
+    projectExpectedStudyAdd.setProject(projectDAO.find(projectExpectedStudy.getProject().getId()));
 
   }
 
@@ -67,10 +102,51 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     return projectExpectedStudyDAO.find(projectExpectedStudyID);
   }
 
+
   @Override
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+    ProjectExpectedStudy projectExpectedStudyResult = projectExpectedStudyDAO.save(projectExpectedStudy);
+    Phase currentPhase = phaseDAO.find(projectExpectedStudy.getPhase().getId());
+    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
+      if (projectExpectedStudy.getPhase().getNext() != null) {
+        this.saveProjectExpectedStudyPhase(projectExpectedStudy.getPhase().getNext(),
+          projectExpectedStudy.getProject().getId(), projectExpectedStudy);
+      }
+    }
+    return projectExpectedStudyResult;
+  }
 
-    return projectExpectedStudyDAO.save(projectExpectedStudy);
+  public void saveProjectExpectedStudyPhase(Phase next, long projecID, ProjectExpectedStudy projectExpectedStudy) {
+    Phase phase = phaseDAO.find(next.getId());
+
+    List<ProjectExpectedStudy> expectedStudies = phase.getProjectExpectedStudies().stream()
+      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
+        && c.getComposedId().equals(projectExpectedStudy.getComposedId()))
+      .collect(Collectors.toList());
+    if (expectedStudies.isEmpty()) {
+      ProjectExpectedStudy projectExpectedStudyAdd = new ProjectExpectedStudy();
+      this.cloneProjectExpectedStudy(projectExpectedStudyAdd, projectExpectedStudy, phase);
+      projectExpectedStudyAdd = projectExpectedStudyDAO.save(projectExpectedStudyAdd);
+      if (projectExpectedStudyAdd.getComposedId() == null) {
+        projectExpectedStudy
+          .setComposedId(projectExpectedStudy.getProject().getId() + "-" + projectExpectedStudyAdd.getId());
+        projectExpectedStudyAdd.setComposedId(projectExpectedStudy.getComposedId());
+        projectExpectedStudyDAO.save(projectExpectedStudyAdd);
+      }
+
+    } else {
+      ProjectExpectedStudy projectExpectedStudyAdd = expectedStudies.get(0);
+      this.cloneProjectExpectedStudy(projectExpectedStudyAdd, projectExpectedStudy, phase);
+      projectExpectedStudyAdd = projectExpectedStudyDAO.save(projectExpectedStudyAdd);
+    }
+
+    if (phase.getNext() != null)
+
+    {
+      this.saveProjectExpectedStudyPhase(phase.getNext(), projecID, projectExpectedStudy);
+    }
+
+
   }
 
 
