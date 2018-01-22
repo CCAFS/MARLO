@@ -248,7 +248,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<ProjectOutcomePandr> outcomesPandr;
 
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
-  private List<ProjectExpectedStudy> ExpectedStudies;
+  private List<ProjectExpectedStudy> expectedStudies;
 
 
   private double coreBudget;
@@ -482,7 +482,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   public List<ProjectExpectedStudy> getExpectedStudies() {
-    return ExpectedStudies;
+    return expectedStudies;
   }
 
 
@@ -1116,7 +1116,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
   public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
-    ExpectedStudies = expectedStudies;
+    expectedStudies = expectedStudies;
   }
 
 
