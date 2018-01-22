@@ -49,21 +49,18 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(program);
 
       if (path.toFile().exists()) {
-        this.addMissingField("program.activites.draft");
+        action.addMissingField("program.activites.draft");
       }
     }
 
 
     if (activities.size() == 0) {
-      this.addMissingField("program.activites");
+      action.addMissingField("program.activites");
       action.getInvalidFields().put("list-clusterofActivities",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities"}));
     }
@@ -75,26 +72,26 @@ public class ClusterActivitiesValidator extends BaseValidator {
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     this.saveMissingFieldsImpactPathway(program, "clusterActivities", action.getActualPhase().getYear(),
-      action.getActualPhase().getDescription());
+      action.getActualPhase().getDescription(), action);
   }
 
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 20)) {
-      this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
+      action.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
       action.getInvalidFields().put("input-clusterofActivities[" + i + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
 
     }
 
     if (!(this.isValidString(activity.getIdentifier()) && this.wordCount(activity.getIdentifier()) <= 20)) {
-      this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
+      action.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
       action.getInvalidFields().put("input-clusterofActivities[" + i + "].identifier",
         InvalidFieldsMessages.EMPTYFIELD);
 
@@ -102,14 +99,14 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
     if (!action.hasSpecificities(APConstants.CRP_CLUSTER_LEADER)) {
       if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
-        this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
+        action.addMessage(action.getText("outcome.action.cluster.leader.required", params));
         action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities Leaders"}));
       }
     }
 
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
-      this.addMessage(action.getText("outcome.action.cluster.key.required", params));
+      action.addMessage(action.getText("outcome.action.cluster.key.required", params));
 
       action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Key Outputs"}));
@@ -121,14 +118,14 @@ public class ClusterActivitiesValidator extends BaseValidator {
         paramsOutcomes.add(String.valueOf(j));
 
         if (!this.isValidString(crpClusterKeyOutput.getKeyOutput())) {
-          this.addMessage(action.getText("outcome.action.cluster.key.statment", params));
+          action.addMessage(action.getText("outcome.action.cluster.key.statment", params));
           action.getInvalidFields().put("input-clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutput",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
         if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
-          this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
+          action.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
           action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutputOutcomes",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Key Output Outcomes"}));
 
