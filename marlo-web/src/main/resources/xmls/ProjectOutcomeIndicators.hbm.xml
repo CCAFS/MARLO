@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Jan 18, 2018 4:07:48 PM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator" table="project_outcome_indicators" catalog="ccafs_marlo" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator" table="project_outcome_indicators"  optimistic-lock="version">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />

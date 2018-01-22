@@ -205,10 +205,7 @@
 
     </div>
     [#if editable && targetUnitList?has_content]<div class="form-group note">[@s.text name = "outcomes.addNewTargetUnit" /]</div>[/#if]
-    
-    
 
-    
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
