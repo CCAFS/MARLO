@@ -176,10 +176,10 @@
 [@deliverableList.deliverablePartnerOther dp=[{}] dp_name="" template=true dp_index=0 editable=editable /]
 
 [#-- Deliverable person template --]
-[@deliverableList.deliverablePerson element={} name="deliverable.otherPartners" index=-1 checked=false isTemplate=true/]
+[@deliverableList.deliverablePerson element={} projectPartner={} name="deliverable.otherPartners" index=-1 checked=false isTemplate=true/]
 
 [#-- Deliverable person template --]
-[@deliverableList.deliverablePerson element={} name="deliverable.responsiblePartner" index=-1 isResponsable=true checked=false isTemplate=true/]
+[@deliverableList.deliverablePerson element={} projectPartner={} name="deliverable.responsiblePartner" index=-1 isResponsable=true checked=false isTemplate=true/]
 
 [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
