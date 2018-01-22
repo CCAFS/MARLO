@@ -21,9 +21,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
+import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -36,6 +41,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,20 +91,30 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+  private SrfSloIndicatorManager srfSloIndicatorManager;
+  private SrfSubIdoManager srfSubIdoManager;
+
+  private Map<Long, String> subIdos;
+  private Map<Long, String> targets;
+  private Map<Integer, String> types;
+
 
   private String transaction;
 
+
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    ProjectExpectedStudyManager projectExpectedStudyManager,
-
-    AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
+    ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
+    SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
     HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.auditLogManager = auditLogManager;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.srfSloIndicatorManager = srfSloIndicatorManager;
+
     this.historyComparator = historyComparator;
     this.activitiesValidator = activitiesValidator;
 
@@ -116,6 +132,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -131,8 +148,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  public Map<Long, String> getSubIdos() {
+    return subIdos;
+  }
+
+  public Map<Long, String> getTargets() {
+    return targets;
+  }
+
+
   public String getTransaction() {
     return transaction;
+  }
+
+  public Map<Integer, String> getTypes() {
+    return types;
   }
 
 
@@ -209,7 +239,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
 
-
+      types = new HashMap<>();
+      List<TypeExpectedStudiesEnum> list = Arrays.asList(TypeExpectedStudiesEnum.values());
+      for (TypeExpectedStudiesEnum typeExpectedStudiesEnum : list) {
+        types.put(typeExpectedStudiesEnum.getId(), typeExpectedStudiesEnum.getType());
+      }
+      subIdos = new HashMap<>();
+      for (SrfSubIdo srfSubIdo : srfSubIdoManager.findAll()) {
+        subIdos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+      }
+      targets = new HashMap<>();
+      for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
+        targets.put(srfSloIndicator.getId(), srfSloIndicator.getDescription());
+      }
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
@@ -286,8 +328,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
+  public void setSubIdos(Map<Long, String> subIdos) {
+    this.subIdos = subIdos;
+  }
+
+
+  public void setTargets(Map<Long, String> targets) {
+    this.targets = targets;
+  }
+
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  public void setTypes(Map<Integer, String> types) {
+    this.types = types;
   }
 
 
