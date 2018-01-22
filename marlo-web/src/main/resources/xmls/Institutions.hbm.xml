@@ -76,7 +76,7 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
 		</set>
-		<set name="fundingSources" table="funding_sources" inverse="true"
+		<set name="fundingSourcesOriginalDonor" table="funding_sources" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="donor" />

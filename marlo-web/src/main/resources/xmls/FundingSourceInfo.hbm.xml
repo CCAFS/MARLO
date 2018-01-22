@@ -34,7 +34,7 @@
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
 			<column name="file" not-null="false" />
 		</many-to-one>
-		<many-to-one name="institution" not-null="false"
+		<many-to-one name="originalDonor" not-null="false"
       class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
       <column name="donor" />
     </many-to-one>

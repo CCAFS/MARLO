@@ -86,7 +86,7 @@
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
           </td>
           
           [#-- Field Check --]
@@ -205,7 +205,7 @@
           
           [#-- Original Donor --]
           <td class=""> 
-            ${(project.fundingSourceInfo.institution.composedNameLoc)!'Not defined'}
+            ${(project.fundingSourceInfo.originalDonor.composedNameLoc)!'Not defined'}
           </td>
         </tr>  
       [/#list]
