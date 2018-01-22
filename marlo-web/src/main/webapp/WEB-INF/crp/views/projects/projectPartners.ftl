@@ -58,10 +58,16 @@
             [#-- Other fields --]
             [#if project.projectInfo.isProjectEditLeader()]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
+              
+              [#if !reportingActive]
+              <div class="form-group">
+                [@customForm.textArea name="project.partnershipsPlanned" i18nkey="projectPartners.partnershipsPlanned" className="limitWords-100" editable=editable /]
+              </div>
+              [/#if]
+              
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
-              <br />
-              <div class="fullBlock">
+              <div class="form-group">
                 [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" editable=editable /]
               </div>
               [/#if]
