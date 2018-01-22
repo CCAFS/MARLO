@@ -137,11 +137,9 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
       if (project.getProjectInfo().getNewPartnershipsPlanned() == null
         || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
-        this.addMessage(
-          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
-        this.addMissingField("project.projectInfo.newPartnershipsPlanned");
+        action.addMissingField("project.projectInfo.newPartnershipsPlanned");
         action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
-          InvalidFieldsMessages.EMPTYFIELD);
+          action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
       }
 
       this.validateCCAFSProject(action, project);
@@ -149,13 +147,9 @@ public class ProjectPartnersValidator extends BaseValidator {
       if (!action.getFieldErrors().isEmpty()) {
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
-        System.out.println(action.getFieldErrors());
-
-
       } else if (action.getValidationMessage().length() > 0) {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
