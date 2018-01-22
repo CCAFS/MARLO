@@ -1116,7 +1116,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
   public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
-    expectedStudies = expectedStudies;
+    this.expectedStudies = expectedStudies;
   }
 
 
