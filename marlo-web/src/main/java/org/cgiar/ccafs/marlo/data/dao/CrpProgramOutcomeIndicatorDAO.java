@@ -16,6 +16,7 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 
 import java.util.List;
@@ -53,6 +54,9 @@ public interface CrpProgramOutcomeIndicatorDAO {
    * @return a list from CrpProgramOutcomeIndicator null if no exist records
    */
   public List<CrpProgramOutcomeIndicator> findAll();
+
+  public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicator(String composedId,
+    CrpProgramOutcome crpProgramOutcome);
 
 
   /**

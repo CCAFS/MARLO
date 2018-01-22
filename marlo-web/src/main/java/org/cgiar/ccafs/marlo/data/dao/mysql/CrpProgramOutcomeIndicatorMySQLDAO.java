@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +71,25 @@ public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProg
     }
     return null;
 
+  }
+
+  @Override
+  public CrpProgramOutcomeIndicator getCrpProgramOutcomeIndicator(String composedId,
+    CrpProgramOutcome crpProgramOutcome) {
+    String query = "select distinct pp from CrpProgramOutcomeIndicator  pp "
+      + "where composeID=:id and crpProgramOutcome.id=:crpProgramOutcomeID and active=true";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("id", composedId);
+    createQuery.setParameter("crpProgramOutcomeID", crpProgramOutcome.getId());
+    Object findSingleResult = super.findSingleResult(CrpProgramOutcomeIndicator.class, createQuery);
+    CrpProgramOutcomeIndicator crpProgramOutcomeIndicator = (CrpProgramOutcomeIndicator) findSingleResult;
+    if (crpProgramOutcomeIndicator != null) {
+      crpProgramOutcomeIndicator = super.refreshEntity(crpProgramOutcomeIndicator);
+    }
+
+    // projectPartner.getProjectPartnerLocations().size();
+
+    return crpProgramOutcomeIndicator;
   }
 
   @Override
