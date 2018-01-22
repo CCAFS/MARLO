@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
+import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.utils.BigDecimalTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
@@ -37,7 +38,8 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -49,13 +51,16 @@ import org.hibernate.type.Type;
 /**
  * @author Christian Garcia
  */
+@Named
 public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implements AuditLogDao {
 
   public String baseModelPakcage = "org.cgiar.ccafs.marlo.data.model";
+  public UserDAO userDao;
 
   @Inject
-  public AuditLogMySQLDao(SessionFactory sessionFactory) {
+  public AuditLogMySQLDao(SessionFactory sessionFactory, UserDAO userDao) {
     super(sessionFactory);
+    this.userDao = userDao;
   }
 
   @Override
@@ -168,6 +173,26 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
     return logs;
 
   }
+
+
+  @Override
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseId) {
+
+    List<Auditlog> auditLogs = super.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
+      + classAudit.getName() + "' and ENTITY_ID=" + id + " and main=1 and id_phase=" + phaseId
+      + " and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc ");
+    // " and principal=1 order by CREATED_DATE desc LIMIT 10");
+    for (Auditlog auditlog : auditLogs) {
+      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
+    }
+
+    if (auditLogs.size() > 11) {
+      return auditLogs.subList(0, 11);
+    }
+    return auditLogs;
+
+  }
+
 
   public IAuditLog loadFromAuditLog(Auditlog auditlog) {
     try {

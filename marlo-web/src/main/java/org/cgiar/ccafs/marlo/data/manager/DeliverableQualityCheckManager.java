@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DeliverableQualityCheckManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DeliverableQualityCheckManagerImpl.class)
+
 public interface DeliverableQualityCheckManager {
 
 
@@ -58,9 +56,10 @@ public interface DeliverableQualityCheckManager {
    * This method gets a deliverableQualityCheck object by a given Deliverable identifier.
    * 
    * @param Deliverable is the Deliverable identifier.
+   * @param phaseID the phase we wanto to search
    * @return a DeliverableQualityCheck object.
    */
-  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID);
+  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID, long phaseID);
 
   /**
    * This method gets a deliverableQualityCheck object by a given deliverableQualityCheck identifier.

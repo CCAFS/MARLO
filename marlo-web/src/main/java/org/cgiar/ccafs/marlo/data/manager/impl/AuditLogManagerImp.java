@@ -24,8 +24,10 @@ import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
+@Named
 public class AuditLogManagerImp implements AuditLogManager {
 
   private final AuditLogDao auditLogDao;
@@ -83,5 +85,11 @@ public class AuditLogManagerImp implements AuditLogManager {
       return auditLogs.subList(0, 11);
     }
     return auditLogs;
+  }
+
+  @Override
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID) {
+    return auditLogDao.listLogs(classAudit, id, actionName, phaseID);
+
   }
 }

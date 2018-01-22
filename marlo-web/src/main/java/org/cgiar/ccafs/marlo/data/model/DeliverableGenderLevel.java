@@ -41,9 +41,10 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   private String descriptionGenderLevel;
 
+  @Expose
+  private Phase phase;
   public DeliverableGenderLevel() {
   }
-
 
   public DeliverableGenderLevel(Deliverable deliverable, User usersByCreatedBy, User usersByModifiedBy,
     long genderLevel, boolean isActive, Date activeSince, String modificationJustification) {
@@ -55,7 +56,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -89,6 +89,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -101,6 +102,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   public long getGenderLevel() {
     return genderLevel;
   }
+
 
   @Override
   public Long getId() {
@@ -117,7 +119,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
@@ -132,6 +133,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   public String getNameGenderLevel() {
     return nameGenderLevel;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -197,6 +203,10 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
   public void setNameGenderLevel(String nameGenderLevel) {
     this.nameGenderLevel = nameGenderLevel;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   @Override

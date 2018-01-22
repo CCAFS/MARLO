@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.impl.CenterProjectManager;
@@ -44,7 +45,10 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -63,8 +67,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -110,6 +116,9 @@ public class ProjectListAction extends BaseAction {
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
+  // TODO fix Phases without globalUnit
+  private PhaseManager phaseManager;
+
   @Inject
   public ProjectListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
     CenterProjectManager projectService, UserManager userService, ICenterAreaManager researchAreaService,
@@ -117,7 +126,7 @@ public class ProjectListAction extends BaseAction {
     ProjectManager projectManager, ICenterProjectFundingSourceManager centerProjectFudingSourceManager,
     CenterFundingSyncTypeManager fundingSyncTypeManager, ICenterFundingSourceTypeManager centerFundingTypeManager,
     ICenterProjectLocationManager projectLocationService, ICenterProjectPartnerManager partnerService,
-    ICenterProjectPartnerPersonManager partnerPersonService) {
+    ICenterProjectPartnerPersonManager partnerPersonService, PhaseManager phaseManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -133,6 +142,7 @@ public class ProjectListAction extends BaseAction {
     this.projectLocationService = projectLocationService;
     this.partnerService = partnerService;
     this.partnerPersonService = partnerPersonService;
+    this.phaseManager = phaseManager;
 
   }
 
@@ -177,9 +187,10 @@ public class ProjectListAction extends BaseAction {
     /**
      * Add Project sync information
      */
-    Map<String, Object> parameters = this.getParameters();
-    syncTypeID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE))[0]));
-    syncCode = StringUtils.trim(((String[]) parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    syncTypeID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_TYPE).getMultipleValues()[0]));
+    syncCode = StringUtils.trim(parameters.get(APConstants.CENTER_PROJECT_SYNC_CODE).getMultipleValues()[0]);
 
 
     switch (Math.toIntExact(syncTypeID)) {
@@ -213,54 +224,45 @@ public class ProjectListAction extends BaseAction {
     long pID = Long.parseLong(syncCode);
     Project project = projectManager.getProjectById(pID);
 
+
+    // TODO add phase call the parameters
+    Crp crp = project.getCrp();
+
+
+    CustomParameter customParameter = crp.getCustomParameters().stream()
+      .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_PLANNING_YEAR))
+      .collect(Collectors.toList()).get(0);
+
+    Phase phase = phaseManager.findCycle("Planning", Integer.parseInt(customParameter.getValue()), crp.getId());
+
     CenterProject centerProject = projectService.getCenterProjectById(centerProjectID);
 
-    centerProject.setName(project.getTitle());
-    centerProject.setDescription(project.getSummary());
-    centerProject.setStartDate(project.getStartDate());
-    centerProject.setEndDate(project.getEndDate());
-    centerProject.setProjectLeader(project.getLeaderPerson().getUser());
-    centerProject.setSync(true);
-    centerProject.setSyncDate(new Date());
-    centerProject.setAutoFill(true);
-
-    // Add Project Status
-    centerProject.setProjectStatus(new CenterProjectStatus(project.getStatus(), true));
-
-    // Add Crp Project CrossCutting to Center Project
-    this.crpCrossCuttingInformation(project, centerProject);
-
-    // Add Crp Project Locations to Center Project
-    this.crpProjectLocation(project, centerProject);
-
-    // Add Crp Project Partners to Center Project
-    this.crpProjectPartners(project, centerProject);
-
+    centerProject.setName(project.getProjecInfoPhase(phase).getTitle());
+    centerProject.setDescription(project.getProjecInfoPhase(phase).getSummary());
+    centerProject.setStartDate(project.getProjecInfoPhase(phase).getStartDate());
+    centerProject.setEndDate(project.getProjecInfoPhase(phase).getEndDate());
+    centerProject.setProjectLeader(project.getLeaderPerson(phase).getUser());
     projectService.saveCenterProject(centerProject);
 
-    CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+    // CenterProjectFundingSource fundingSource = new CenterProjectFundingSource();
+    // fundingSource.setCenterProject(centerProject);
+    // fundingSource.setCode("P" + syncCode);
+    // fundingSource.setSync(true);
+    // fundingSource.setSyncDate(new Date());
+    // fundingSource.setCrp(project.getCrp());
+    // fundingSource.setTitle(project.getTitle());
+    // fundingSource.setDescription(project.getSummary());
+    // fundingSource.setStartDate(project.getStartDate());
+    // fundingSource.setEndDate(project.getEndDate());
+    // // Setting the sync type (2 = MARLO-CRP)
+    // CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
+    // fundingSource.setCenterFundingSyncType(fundingSyncType);
+    // fundingSource.setActive(true);
+    // fundingSource.setCreatedBy(this.getCurrentUser());
+    // fundingSource.setModifiedBy(this.getCurrentUser());
+    // fundingSource.setActiveSince(new Date());
+    // centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
-    fundingSource.setCenterProject(centerProject);
-    fundingSource.setCode("P" + syncCode);
-    fundingSource.setSync(true);
-    fundingSource.setSyncDate(new Date());
-    fundingSource.setAutoFill(true);
-    fundingSource.setCrp(project.getCrp());
-    fundingSource.setTitle(project.getTitle());
-    fundingSource.setDescription(project.getSummary());
-    fundingSource.setStartDate(project.getStartDate());
-    fundingSource.setEndDate(project.getEndDate());
-
-    // Setting the sync type (2 = MARLO-CRP)
-    CenterFundingSyncType fundingSyncType = fundingSyncTypeManager.getCenterFundingSyncTypeById(2);
-    fundingSource.setCenterFundingSyncType(fundingSyncType);
-
-    fundingSource.setActive(true);
-    fundingSource.setCreatedBy(this.getCurrentUser());
-    fundingSource.setModifiedBy(this.getCurrentUser());
-    fundingSource.setActiveSince(new Date());
-
-    centerProjectFudingSourceManager.saveProjectFundingSource(fundingSource);
 
   }
 
@@ -380,27 +382,24 @@ public class ProjectListAction extends BaseAction {
     boolean hasChanges = false;
 
     CenterProjectCrosscutingTheme crosscutingThemeSave = centerProject.getProjectCrosscutingTheme();
-
-    if ((project.getCrossCuttingGender() != null) && project.getCrossCuttingGender()) {
-      hasChanges = true;
-      crosscutingThemeSave.setGender(true);
-    }
-
-    if ((project.getCrossCuttingYouth() != null) && project.getCrossCuttingYouth()) {
-      hasChanges = true;
-      crosscutingThemeSave.setYouth(true);
-    }
-
-    if ((project.getCrossCuttingCapacity() != null) && project.getCrossCuttingCapacity()) {
-      hasChanges = true;
-      crosscutingThemeSave.setCapacityDevelopment(true);
-    }
-
-    if (hasChanges) {
-      crosscutingThemeSave.setProject(centerProject);
-      projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
-    }
-
+    /*
+     * if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setGender(true);
+     * }
+     * if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setYouth(true);
+     * }
+     * if (project.getCrossCuttingCapacity() != null && project.getCrossCuttingCapacity()) {
+     * hasChanges = true;
+     * crosscutingThemeSave.setCapacityDevelopment(true);
+     * }
+     * if (hasChanges) {
+     * crosscutingThemeSave.setProject(centerProject);
+     * projectCrosscutingService.saveProjectCrosscutingTheme(crosscutingThemeSave);
+     * }
+     */
 
   }
 
@@ -521,8 +520,10 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public String delete() {
-    Map<String, Object> parameters = this.getParameters();
-    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
+    // projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
+    projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]));
 
     CenterProject project = projectService.getCenterProjectById(projectID);
 
@@ -623,7 +624,6 @@ public class ProjectListAction extends BaseAction {
           programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
-
           // Check if the User is an Area Leader
           List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream().filter(
             rl -> rl.isActive() && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))

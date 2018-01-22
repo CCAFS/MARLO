@@ -16,14 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CrpProgramMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CrpProgramMySQLDAO.class)
 public interface CrpProgramDAO {
 
   /**
@@ -83,7 +81,9 @@ public interface CrpProgramDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName);
+
+  public CrpProgram save(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase);
+
 
 }
 

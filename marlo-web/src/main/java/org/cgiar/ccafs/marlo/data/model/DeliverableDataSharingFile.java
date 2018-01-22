@@ -32,8 +32,13 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
   @Expose
   private String externalFile;
 
+  @Expose
+  private Phase phase;
+
+
   public DeliverableDataSharingFile() {
   }
+
 
   public DeliverableDataSharingFile(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -89,7 +94,6 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -110,6 +114,11 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  public Phase getPhase() {
+    return phase;
   }
 
 
@@ -149,6 +158,10 @@ public class DeliverableDataSharingFile implements java.io.Serializable, IAuditL
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setTypeId(Integer typeId) {

@@ -32,6 +32,8 @@ import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry;
 import org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 
 import org.slf4j.Logger;
@@ -71,7 +74,15 @@ public class WsThread implements Runnable {
    * @return the client to use the service
    */
   public WSMarlo getWSClient() {
-    MarloService service = new MarloService();
+
+    MarloService service;
+    try {
+      service = new MarloService(new URL(apConfig.getOcsLink()));
+    } catch (MalformedURLException e) {
+      String msg = "OCSLINK property is not a valid URL";
+      LOG.error(msg);
+      throw new WebServiceException(e);
+    }
     WSMarlo client = service.getMarloPort();
     Map<String, Object> reqCtx = ((BindingProvider) client).getRequestContext();
     reqCtx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, apConfig.getOcsLink());

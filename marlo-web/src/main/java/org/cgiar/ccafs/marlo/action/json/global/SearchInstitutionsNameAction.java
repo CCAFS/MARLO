@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +73,11 @@ public class SearchInstitutionsNameAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    name = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_NAME))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // name = StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_NAME))[0]);
+
+    Map<String, Parameter> parameters = this.getParameters();
+    name = StringUtils.trim(parameters.get(APConstants.INSTITUTION_NAME).getMultipleValues()[0]);
 
 
   }
@@ -99,7 +103,7 @@ public class SearchInstitutionsNameAction extends BaseAction {
       institutionMap.put("type", institution.getInstitutionType().getName());
 
 
-      institutionMap.put("isPPA", institution.isPPA(this.getCrpID()));
+      institutionMap.put("isPPA", institution.isPPA(this.getCrpID(), this.getActualPhase()));
       this.institutions.add(institutionMap);
     }
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,14 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CrpClusterOfActivityMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CrpClusterOfActivityMySQLDAO.class)
 public interface CrpClusterOfActivityDAO {
 
   /**
@@ -57,6 +55,18 @@ public interface CrpClusterOfActivityDAO {
    */
   public List<CrpClusterOfActivity> findAll();
 
+  /**
+   * This method gets a list of crpClusterOfActivity that are active for a program and phase
+   * 
+   * @param crpProgram id the program to filter clusters
+   * @param phase id the phase to filter clusters
+   * @return a list from CrpClusterOfActivity null if no exist records
+   */
+  public List<CrpClusterOfActivity> findClusterProgramPhase(long crpProgramID, long phaseID);
+
+
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase);
 
   /**
    * This method saves the information of the given crpClusterOfActivity
@@ -67,4 +77,5 @@ public interface CrpClusterOfActivityDAO {
    *         or -1 is some error occurred.
    */
   public CrpClusterOfActivity save(CrpClusterOfActivity crpClusterOfActivity);
+
 }

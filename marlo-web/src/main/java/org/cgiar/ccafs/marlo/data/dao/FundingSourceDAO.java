@@ -16,15 +16,13 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.FundingSourceMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(FundingSourceMySQLDAO.class)
 public interface FundingSourceDAO {
 
   /**
@@ -59,6 +57,7 @@ public interface FundingSourceDAO {
    */
   public List<FundingSource> findAll();
 
+
   public List<Map<String, Object>> getFundingSource(long userId, String crp);
 
 
@@ -72,7 +71,8 @@ public interface FundingSourceDAO {
    */
   public FundingSource save(FundingSource fundingSource);
 
-  public FundingSource save(FundingSource fundingSource, String section, List<String> relationsName);
+
+  public FundingSource save(FundingSource fundingSource, String sectionName, List<String> relationsName, Phase phase);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
@@ -81,7 +81,7 @@ public interface FundingSourceDAO {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSources(String query, int year, long crpID);
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID, long phaseID);
 
   /**
    * This method get the list of FundingSource that use the specific finance code
@@ -99,7 +99,8 @@ public interface FundingSourceDAO {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID);
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID,
+    long phaseID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

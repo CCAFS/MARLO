@@ -41,7 +41,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,15 +67,16 @@ public class PartnersSaveAction extends BaseAction {
 
   private ActivityPartner activityPartner;
   // Managers
-  private LocElementManager locationManager;
-  private InstitutionTypeManager institutionManager;
-  private InstitutionManager institutionsManager;
-  private ActivityManager activityManager;
-  private ProjectManager projectManager;
-  private FundingSourceManager fundingSourceManager;
-  private PartnerRequestManager partnerRequestManager;
-  private CrpManager crpManager;
+  private final LocElementManager locationManager;
+  private final InstitutionTypeManager institutionManager;
+  private final InstitutionManager institutionsManager;
+  private final ActivityManager activityManager;
+  private final ProjectManager projectManager;
+  private final FundingSourceManager fundingSourceManager;
+  private final PartnerRequestManager partnerRequestManager;
+  private final CrpManager crpManager;
 
+  private final SendMailS sendMail;
 
   // Model
   private List<LocElement> countriesList;
@@ -96,7 +98,7 @@ public class PartnersSaveAction extends BaseAction {
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
     InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
     ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    FundingSourceManager fundingSourceManager, CrpManager crpManager) {
+    FundingSourceManager fundingSourceManager, CrpManager crpManager, SendMailS sendMail) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
@@ -106,6 +108,7 @@ public class PartnersSaveAction extends BaseAction {
     this.partnerRequestManager = partnerRequestManager;
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
+    this.sendMail = sendMail;
   }
 
   public int getActivityID() {
@@ -296,20 +299,21 @@ public class PartnersSaveAction extends BaseAction {
       message.append("Project: (");
       message.append(projectID);
       message.append(") - ");
-      message.append(projectManager.getProjectById(projectID).getTitle());
-      partnerRequest
-        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
-      partnerRequestModifications
-        .setRequestSource("Project: (" + projectID + ") - " + projectManager.getProjectById(projectID).getTitle());
+      message.append(projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+      partnerRequest.setRequestSource("Project: (" + projectID + ") - "
+        + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+      partnerRequestModifications.setRequestSource("Project: (" + projectID + ") - "
+        + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
     } else if (fundingSourceID > 0) {
       message.append("Funding Source: (");
       message.append(fundingSourceID);
       message.append(") - ");
-      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
-      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
-        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
-      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - "
-        + fundingSourceManager.getFundingSourceById(fundingSourceID).getTitle());
+      message.append(fundingSourceManager.getFundingSourceById(fundingSourceID)
+        .getFundingSourceInfo(this.getActualPhase()).getTitle());
+      partnerRequest.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
+        .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
+      partnerRequestModifications.setRequestSource("Funding Source: (" + fundingSourceID + ") - " + fundingSourceManager
+        .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
     }
 
     partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -320,7 +324,6 @@ public class PartnersSaveAction extends BaseAction {
     message.append(".</br>");
     message.append("</br>");
     try {
-      SendMailS sendMail = new SendMailS(this.config);
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {

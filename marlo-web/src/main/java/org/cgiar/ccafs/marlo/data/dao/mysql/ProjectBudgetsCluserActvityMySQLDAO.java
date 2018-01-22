@@ -21,9 +21,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
+@Named
 public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<ProjectBudgetsCluserActvity, Long> implements ProjectBudgetsCluserActvityDAO {
 
 
@@ -32,11 +34,12 @@ public class ProjectBudgetsCluserActvityMySQLDAO extends AbstractMarloDAO<Projec
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteProjectBudgetsCluserActvity(long projectBudgetsCluserActvityId) {
     ProjectBudgetsCluserActvity projectBudgetsCluserActvity = this.find(projectBudgetsCluserActvityId);
     projectBudgetsCluserActvity.setActive(false);
-    this.save(projectBudgetsCluserActvity);
+     super.update(projectBudgetsCluserActvity);
   }
 
   @Override

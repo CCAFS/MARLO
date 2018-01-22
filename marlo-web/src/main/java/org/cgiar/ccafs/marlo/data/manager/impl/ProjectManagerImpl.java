@@ -17,17 +17,21 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class ProjectManagerImpl implements ProjectManager {
 
 
@@ -59,6 +63,22 @@ public class ProjectManagerImpl implements ProjectManager {
 
     return projectDAO.findAll();
 
+  }
+
+  @Override
+
+  public List<Project> getCompletedProjects(long crpId) {
+    return projectDAO.getCompletedProjects(crpId);
+  }
+
+  @Override
+  public List<Project> getNoPhaseProjects(long crpId, Phase phase) {
+    return projectDAO.getNoPhaseProjects(crpId, phase);
+  }
+
+  @Override
+  public List<CrpProgram> getPrograms(long projectID, int type, long idPhase) {
+    return projectDAO.getPrograms(projectID, type, idPhase);
   }
 
   @Override
@@ -110,6 +130,12 @@ public class ProjectManagerImpl implements ProjectManager {
   public Project saveProject(Project project, String sectionName, List<String> relationsName) {
 
     return projectDAO.save(project, sectionName, relationsName);
+  }
+
+  @Override
+  public Project saveProject(Project project, String sectionName, List<String> relationsName, Phase phase) {
+
+    return projectDAO.save(project, sectionName, relationsName, phase);
   }
 
 }

@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CenterProjectCrosscutingThemeDAO;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CenterProjectCrosscutingThemeDAO.class)
 public interface ICenterProjectCrosscutingThemeDAO {
 
   /**

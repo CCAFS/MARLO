@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Leverage" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
@@ -29,7 +29,10 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
@@ -87,6 +90,7 @@
       </div> 
     </div> 
 </section>
+[/#if]
 
 [#-- Leverage Template --]
 [@leverageMacro leverage={} name="project.leverages"  index=-1 template=true/]

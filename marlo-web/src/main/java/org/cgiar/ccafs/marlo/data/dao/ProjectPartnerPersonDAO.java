@@ -16,14 +16,12 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectPartnerPersonMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
 import java.util.List;
+import java.util.Map;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectPartnerPersonMySQLDAO.class)
 public interface ProjectPartnerPersonDAO {
 
   /**
@@ -63,6 +61,8 @@ public interface ProjectPartnerPersonDAO {
 
 
   public List<ProjectPartnerPerson> findAllForProjectPartner(long projectPartnerId);
+
+  public List<Map<String, Object>> findPartner(long institutionId, long phaseId, long projectId, long userId);
 
   /**
    * This method saves the information of the given projectPartnerPerson

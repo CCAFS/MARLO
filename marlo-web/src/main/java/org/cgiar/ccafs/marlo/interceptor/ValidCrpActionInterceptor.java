@@ -22,7 +22,8 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -37,7 +38,7 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = 2239276003694732851L;
 
   // managers
-  private CrpManager crpManager;
+  private final CrpManager crpManager;
 
   @Inject
   public ValidCrpActionInterceptor(CrpManager crpManager) {

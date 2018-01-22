@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -35,8 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -72,7 +74,7 @@ public class SearchUserAction extends BaseAction {
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
     crpUserFound = new ArrayList<>();;
-
+    Phase currentPhase = this.getActualPhase();
     boolean emailExists = false;
     // We need to validate that the email does not exist yet into our database.
     emailExists = userManager.getUserByEmail(userEmail) == null ? false : true;
@@ -137,7 +139,7 @@ public class SearchUserAction extends BaseAction {
                 List<ProjectPartnerPerson> partnerPLPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
                   .filter(pp -> pp.isActive() && pp.getContactType().equals("PL")).collect(Collectors.toList()));
                 for (ProjectPartnerPerson partnerPerson : partnerPLPersons) {
-                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName(currentPhase));
                 }
                 role.put("roleInfo", roleInfo);
                 break;
@@ -146,7 +148,7 @@ public class SearchUserAction extends BaseAction {
                 List<ProjectPartnerPerson> partnerPCPersons = new ArrayList<>(user.getProjectPartnerPersons().stream()
                   .filter(pp -> pp.isActive() && pp.getContactType().equals("PC")).collect(Collectors.toList()));
                 for (ProjectPartnerPerson partnerPerson : partnerPCPersons) {
-                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName());
+                  roleInfo.add(partnerPerson.getProjectPartner().getProject().getComposedName(currentPhase));
                 }
                 role.put("roleInfo", roleInfo);
                 break;
@@ -249,8 +251,11 @@ public class SearchUserAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
+    // Map<String, Object> parameters = this.getParameters();
+    // userEmail = StringUtils.trim(((String[]) parameters.get(APConstants.USER_EMAIL))[0]);
+
+    Map<String, Parameter> parameters = this.getParameters();
+    userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
   }
 
 

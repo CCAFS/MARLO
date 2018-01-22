@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
 
 

@@ -535,7 +535,8 @@ function syncMetadata() {
 function getMetadata(channel,url) {
   var data = {
       pageID: channel,
-      metadataID: url
+      metadataID: url,
+      phaseID: phaseID
   }
 
   // get data from url

@@ -14,17 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CenterSectionStatusManager.class)
+
 public interface ICenterSectionStatusManager {
 
 

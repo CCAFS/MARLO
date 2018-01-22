@@ -25,8 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -57,11 +58,13 @@ public class CrpProjectAction extends BaseAction {
     if (project != null) {
       SimpleDateFormat sdf = new SimpleDateFormat(APConstants.DATE_FORMAT);
       json.put("id", project.getId());
-      json.put("description", project.getTitle());
-      json.put("objectives", project.getSummary());
-      json.put("startDate", sdf.parse(project.getStartDate().toString()));
-      json.put("endDate", sdf.parse(project.getEndDate().toString()));
-      json.put("crp", project.getCrp().getId());
+      /*
+       * json.put("description", project.getTitle());
+       * json.put("objectives", project.getSummary());
+       * json.put("startDate", sdf.parse(project.getStartDate().toString()));
+       * json.put("endDate", sdf.parse(project.getEndDate().toString()));
+       * json.put("crp", project.getCrp().getId());
+       */
     }
 
     return SUCCESS;
@@ -73,8 +76,8 @@ public class CrpProjectAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_ID))[0]));
+    Map<String, Parameter> parameters = this.getParameters();
+    projectID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]));
   }
 
   public void setJson(Map<String, Object> json) {

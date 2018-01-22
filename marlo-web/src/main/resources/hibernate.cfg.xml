@@ -5,7 +5,6 @@
 
 <hibernate-configuration>
 	<session-factory>
-
 		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="hibernate.search.autoregister_listeners">false</property>
@@ -16,13 +15,7 @@
 		<property name="show_sql">false</property>
 		<property name="use_sql_comments">false</property>
 		<property name="generate_statistics">false</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		<property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
-		<property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
-		<property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
-		<property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
-		<property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
-		<property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
 		<property name="hibernate.current_session_context_class">thread</property>
 
 		<!-- Model Mappings -->
@@ -33,7 +26,6 @@
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
@@ -92,6 +84,7 @@
 		<mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml" />
 		<mapping resource="xmls/ProjectLocationElementTypes.hbm.xml" />
 		<mapping resource="xmls/FundingSources.hbm.xml" />
+		<mapping resource="xmls/FundingSourceInfo.hbm.xml" />
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
@@ -150,7 +143,7 @@
 		<mapping resource="xmls/CustomParameters.hbm.xml" />
 		<mapping resource="xmls/InstitutionsLocations.hbm.xml" />
 		<mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
-
+		<mapping resource="xmls/ProjectsInfo.hbm.xml" />
 		<mapping resource="xmls/CenterUsers.hbm.xml" />
 		<mapping resource="xmls/CenterAllTypes.hbm.xml" />
 		<mapping resource="xmls/CenterMilestones.hbm.xml" />
@@ -197,6 +190,7 @@
 		<mapping resource="xmls/CenterParameters.hbm.xml" />
 		<mapping resource="xmls/CenterCustomParameters.hbm.xml" />
 		<mapping resource="xmls/CenterImpactStatement.hbm.xml" />
+		<mapping resource="xmls/DeliverablesInfo.hbm.xml" />
 		<mapping resource="xmls/CapacityDevelopment.hbm.xml" />
 		<mapping resource="xmls/CapacityDevelopmentTypes.hbm.xml" />
 		<mapping resource="xmls/CapdevLocations.hbm.xml" />
@@ -216,11 +210,11 @@
 		<mapping resource="xmls/CountryAgreement.hbm.xml" />
 		<mapping resource="xmls/CrpAgreement.hbm.xml" />
 		<mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
-		<mapping resource="xmls/PlaAgreement.hbm.xml" />
-		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
+		<mapping resource="xmls/PlaAgreement.hbm.xml" />		
 		<mapping resource="xmls/AdUser.hbm.xml" />
 		<mapping resource="xmls/CapdevRangeAge.hbm.xml" />
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
+		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

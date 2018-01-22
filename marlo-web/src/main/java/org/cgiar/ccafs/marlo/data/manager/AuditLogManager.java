@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.manager.impl.AuditLogManagerImp;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(AuditLogManagerImp.class)
 public interface AuditLogManager {
 
   public Auditlog getAuditlog(String transactionID);
@@ -53,4 +50,7 @@ public interface AuditLogManager {
    */
 
   public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName);
+
+  public List<Auditlog> listLogs(Class<?> classAudit, long id, String actionName, Long phaseID);
+
 }

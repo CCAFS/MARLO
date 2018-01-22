@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +199,7 @@ public class ProjectHighlightAction extends BaseAction {
 
   public int getEndYear() {
     DateFormat dateFormat = new SimpleDateFormat("yyyy");
-    return Integer.parseInt(dateFormat.format(project.getEndDate()));
+    return Integer.parseInt(dateFormat.format(project.getProjecInfoPhase(this.getActualPhase()).getEndDate()));
   }
 
 
@@ -431,7 +431,7 @@ public class ProjectHighlightAction extends BaseAction {
     }
 
     // Getting all years from project
-    allYears = project.getAllYears();
+    allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
     List<Integer> listYears = new ArrayList<Integer>();
     for (int i = 0; i < allYears.size(); i++) {
       if ((allYears.get(i) <= this.getCurrentCycleYear())) {

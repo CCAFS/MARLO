@@ -36,7 +36,6 @@ public class StringTypeAdapter extends TypeAdapter<String> {
 
     try {
       String value = jsonReader.nextString();
-
       return value;
 
     } catch (IllegalStateException e) {
@@ -57,13 +56,11 @@ public class StringTypeAdapter extends TypeAdapter<String> {
   }
 
   @Override
-  public void write(JsonWriter out, String value) throws IOException {
-    if (value == null) {
-      out.nullValue();
+  public void write(JsonWriter jsonWriter, String number) throws IOException {
+    if (number == null) {
+      jsonWriter.nullValue();
       return;
     }
-    out.value(value);
-
+    jsonWriter.value(number);
   }
-
 }

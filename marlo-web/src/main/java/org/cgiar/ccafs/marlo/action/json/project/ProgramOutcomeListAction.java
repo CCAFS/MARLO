@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -66,9 +67,11 @@ public class ProgramOutcomeListAction extends BaseAction {
     CrpProgram program = crpProgramManager.getCrpProgramById(crpProgramId);
 
     if (program != null) {
-      if (program.getCrpProgramOutcomes().stream().filter(po -> po.isActive()).collect(Collectors.toList()) != null) {
-        for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
-          .collect(Collectors.toList())) {
+      if (program.getCrpProgramOutcomes().stream()
+        .filter(po -> po.isActive() && po.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList()) != null) {
+        for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream()
+          .filter(po -> po.isActive() && po.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           if (outcome != null) {
             programOutcome = new HashMap<String, Object>();
             programOutcome.put("id", outcome.getId());
@@ -78,10 +81,11 @@ public class ProgramOutcomeListAction extends BaseAction {
         }
       }
 
-      if (program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
+      if (program.getCrpClusterOfActivities().stream()
+        .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList()) != null) {
-        for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
-          .collect(Collectors.toList())) {
+        for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream()
+          .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
           if (activity != null) {
             clusterOfActivity = new HashMap<String, Object>();
             clusterOfActivity.put("id", activity.getId());
@@ -106,8 +110,11 @@ public class ProgramOutcomeListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    crpProgramId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+    // Map<String, Object> parameters = this.getParameters();
+    // crpProgramId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+
+    Map<String, Parameter> parameters = this.getParameters();
+    crpProgramId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CRP_PROGRAM_ID).getMultipleValues()[0]));
   }
 
   public void setClusterOfActivities(List<Map<String, Object>> clusterOfActivities) {

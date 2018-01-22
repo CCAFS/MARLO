@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,17 +14,17 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CrpClusterOfActivityManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CrpClusterOfActivityManagerImpl.class)
+
 public interface CrpClusterOfActivityManager {
 
 
@@ -53,6 +53,15 @@ public interface CrpClusterOfActivityManager {
    */
   public List<CrpClusterOfActivity> findAll();
 
+  /**
+   * This method gets a list of crpClusterOfActivity that are active for a program and phase
+   * 
+   * @param crpProgram the program to filter clusters
+   * @param phase the phase to filter clusters
+   * @return a list from CrpClusterOfActivity null if no exist records
+   */
+  public List<CrpClusterOfActivity> findClusterProgramPhase(CrpProgram crpProgram, Phase phase);
+
 
   /**
    * This method gets a crpClusterOfActivity object by a given crpClusterOfActivity identifier.
@@ -61,6 +70,9 @@ public interface CrpClusterOfActivityManager {
    * @return a CrpClusterOfActivity object.
    */
   public CrpClusterOfActivity getCrpClusterOfActivityById(long crpClusterOfActivityID);
+
+  public CrpClusterOfActivity getCrpClusterOfActivityByIdentifierPhase(String crpClusterOfActivityIdentefier,
+    Phase phase);
 
   /**
    * This method saves the information of the given crpClusterOfActivity

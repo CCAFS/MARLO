@@ -40,6 +40,8 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String responsibilities;
+  @Expose
+  private Phase phase;
 
   @Expose
   private String modificationJustification;
@@ -60,8 +62,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerLocation> projectPartnerLocations = new HashSet<ProjectPartnerLocation>(0);
 
+  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
   private List<InstitutionLocation> selectedLocations = new ArrayList<>();
+
 
   private List<ProjectPartnerPerson> partnerPersons = new ArrayList<>();
 
@@ -80,6 +84,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification,
@@ -121,7 +126,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -148,8 +152,13 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   }
 
+
   public User getCreatedBy() {
     return this.createdBy;
+  }
+
+  public Set<DeliverablePartnership> getDeliverablePartnerships() {
+    return deliverablePartnerships;
   }
 
   @Override
@@ -171,7 +180,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
@@ -187,6 +195,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public List<ProjectPartnerContribution> getPartnerContributors() {
     return partnerContributors;
   }
+
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
@@ -218,6 +227,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return "";
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -242,6 +255,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return this.projectPartnerPersons;
   }
+
 
   public String getResponsibilities() {
     return responsibilities;
@@ -312,9 +326,13 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
+  }
+
+
+  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
+    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public void setId(Long id) {
@@ -342,6 +360,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
+  }
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
   }
 
   public void setProject(Project project) {

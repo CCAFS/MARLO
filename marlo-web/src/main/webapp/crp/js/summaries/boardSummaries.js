@@ -125,7 +125,8 @@ function ajaxService() {
       type: 'GET',
       data: {
           cycle: $("input[name='cycle']:checked").val(),
-          year: $("select#reportYears").find("option:selected").val()
+          year: $("select#reportYears").find("option:selected").val(),
+          phaseID: phaseID
       },
       success: function(m) {
         console.log(m);

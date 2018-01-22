@@ -39,7 +39,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +89,12 @@ public class ImpactSubmissionAction extends BaseAction {
       if (this.isCompleteImpact(progamID)) {
         List<Submission> submissions = submissionManager.findAll();
         if (submissions != null) {
-          submissions =
-            submissions.stream().filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)
-              && (c.isUnSubmit() == null || !c.isUnSubmit())).collect(Collectors.toList());
+          submissions = submissions.stream()
+            .filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)
+              && (c.isUnSubmit() == null || !c.isUnSubmit()) && c.getYear() != null
+              && c.getYear().intValue() == this.getActualPhase().getYear()
+              && c.getCycle().equals(this.getActualPhase().getDescription()))
+            .collect(Collectors.toList());
           for (Submission theSubmission : submissions) {
             submission = theSubmission;
             alreadySubmitted = true;
@@ -194,7 +198,7 @@ public class ImpactSubmissionAction extends BaseAction {
     }
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (ccEmail.isEmpty()) {

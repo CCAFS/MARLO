@@ -19,12 +19,17 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.DeliverablePartnershipDAO;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
+@Named
 public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<DeliverablePartnership, Long>
   implements DeliverablePartnershipDAO {
 
@@ -34,12 +39,15 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     super(sessionFactory);
   }
 
+
   @Override
   public void deleteDeliverablePartnership(long deliverablePartnershipId) {
     DeliverablePartnership deliverablePartnership = this.find(deliverablePartnershipId);
     deliverablePartnership.setActive(false);
-    this.save(deliverablePartnership);
+    super.delete(deliverablePartnership);
+
   }
+
 
   @Override
   public boolean existDeliverablePartnership(long deliverablePartnershipID) {
@@ -66,6 +74,44 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     }
     return null;
 
+  }
+
+
+  @Override
+  public List<DeliverablePartnership> findByDeliverablePhasePartnerAndPartnerperson(long deliverableID, Long phase,
+    Long projectPartnerId, Long projectPartnerPersonId, Long partnerDivisionId, String partnerType) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("dp.id as id ");
+    query.append("FROM ");
+    query.append("deliverable_partnerships dp ");
+    query.append("WHERE ");
+    query.append("dp.deliverable_id = " + deliverableID);
+    query.append(" and dp.id_phase = " + phase);
+    query.append(" and dp.partner_type = '" + partnerType + "'");
+    query.append(" and dp.project_partner_id = " + projectPartnerId);
+    if (projectPartnerPersonId != null) {
+      query.append(" and dp.partner_person_id = " + projectPartnerPersonId);
+    } else {
+      query.append(" and dp.partner_person_id IS NULL");
+    }
+    if (partnerDivisionId != null) {
+      query.append(" and dp.division_id = " + partnerDivisionId);
+    } else {
+      query.append(" and dp.division_id IS NULL");
+    }
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+
+    List<DeliverablePartnership> DeliverablePartnerships = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverablePartnership DeliverablePartnership = this.find(Long.parseLong(map.get("id").toString()));
+        DeliverablePartnerships.add(DeliverablePartnership);
+      }
+    }
+    return DeliverablePartnerships;
   }
 
   @Override
@@ -97,6 +143,7 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     return deliverablePartnerships;
   }
 
+
   @Override
   public DeliverablePartnership save(DeliverablePartnership deliverablePartnership) {
     if (deliverablePartnership.getId() == null) {
@@ -104,8 +151,6 @@ public class DeliverablePartnershipMySQLDAO extends AbstractMarloDAO<Deliverable
     } else {
       deliverablePartnership = super.update(deliverablePartnership);
     }
-
-
     return deliverablePartnership;
   }
 
