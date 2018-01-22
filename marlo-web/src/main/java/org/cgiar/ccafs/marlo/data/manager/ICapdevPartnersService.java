@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CapdevPartnersService;
 import org.cgiar.ccafs.marlo.data.model.CapdevPartners;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CapdevPartnersService.class)
 public interface ICapdevPartnersService {
 
 

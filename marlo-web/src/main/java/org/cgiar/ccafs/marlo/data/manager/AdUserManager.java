@@ -14,17 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.AdUserManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.AdUser;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(AdUserManagerImpl.class)
+
 public interface AdUserManager {
 
 

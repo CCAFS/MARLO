@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CapacityDevelopmentService.class)
 public interface ICapacityDevelopmentService {
 
 

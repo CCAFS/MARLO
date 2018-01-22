@@ -27,25 +27,32 @@ import org.cgiar.ciat.auth.LDAPUser;
 import java.util.Date;
 import java.util.List;
 
-import com.google.inject.Injector;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerContext;
-import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+@Named
 public class ADUsersJob implements Job {
 
-
   public static Logger LOG = LoggerFactory.getLogger(ADUsersJob.class);
-  private AdUserManager adUsermanager;
 
-  private Injector injector;
-  private SessionFactory sessionFactory;
+
+  private final AdUserManager adUsermanager;
+  private final SessionFactory sessionFactory;
+
+  @Inject
+  public ADUsersJob(AdUserManager adUsermanager, SessionFactory sessionFactory) {
+    super();
+    this.adUsermanager = adUsermanager;
+    this.sessionFactory = sessionFactory;
+  }
 
 
   public String deleteSpecialCaracter(String string) {
@@ -63,18 +70,8 @@ public class ADUsersJob implements Job {
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
-    SchedulerContext schedulerContext = null;
-    try {
-      schedulerContext = context.getScheduler().getContext();
-    } catch (SchedulerException e1) {
-      e1.printStackTrace();
-    }
-    injector = (Injector) schedulerContext.get("injector");
-    sessionFactory = injector.getInstance(SessionFactory.class);
+
     sessionFactory.getCurrentSession().beginTransaction();
-
-    adUsermanager = injector.getInstance(AdUserManager.class);
-
 
     String genericUser = APConstants.GENERICUSER_AD;
     String genericPassword = APConstants.GENERICPASSWORD_AD;
@@ -105,8 +102,7 @@ public class ADUsersJob implements Job {
                 adUsermanager.saveAdUser(adUser);
               }
             } catch (Exception e) {
-              e.printStackTrace();
-              LOG.error("Could not save entity!" + user.getLogin());
+              LOG.error("Could not save entity for user login : " + user.getLogin(), e);
             }
           }
         }

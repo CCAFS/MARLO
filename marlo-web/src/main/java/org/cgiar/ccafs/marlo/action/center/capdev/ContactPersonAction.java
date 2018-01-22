@@ -29,8 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ContactPersonAction extends BaseAction {
 
@@ -80,9 +82,9 @@ public class ContactPersonAction extends BaseAction {
   }
 
   public String searchADUser() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     LDAPService service = new LDAPService();
-    String queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
+    String queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
     String genericUser = APConstants.GENERICUSER_AD;
     String genericPassword = APConstants.GENERICPASSWORD_AD;
     String hostName = APConstants.HOSTNAME_AD;

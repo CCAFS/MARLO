@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CapdevTargetgroupService;
 import org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CapdevTargetgroupService.class)
 public interface ICapdevTargetgroupService {
 
 

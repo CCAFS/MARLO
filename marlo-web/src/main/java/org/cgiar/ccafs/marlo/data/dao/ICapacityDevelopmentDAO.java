@@ -17,14 +17,11 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CapacityDevelopmentDAO;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CapacityDevelopmentDAO.class)
 public interface ICapacityDevelopmentDAO {
 
   /**

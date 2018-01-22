@@ -23,8 +23,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class ResourceOCSServiceAction extends BaseAction {
 
@@ -61,8 +63,8 @@ public class ResourceOCSServiceAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
-    resourceID = (StringUtils.trim(((String[]) parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC))[0]));
+    Map<String, Parameter> parameters = this.getParameters();
+    resourceID = StringUtils.trim(parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC).getMultipleValues()[0]);
   }
 
 

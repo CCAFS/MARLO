@@ -16,14 +16,11 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CapdevFoundingTypeMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CapdevFoundingType;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
 
-@ImplementedBy(CapdevFoundingTypeMySQLDAO.class)
 public interface CapdevFoundingTypeDAO {
 
   /**
