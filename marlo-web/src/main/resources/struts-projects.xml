@@ -756,12 +756,12 @@
       <result name="input">/WEB-INF/crp/views/projects/projectExpectedStudies.ftl
       </result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/activities</param>
+        <param name="actionName">${crpSession}/expectedStudies</param>
         <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="projectID">${projectID}</param>
       </result>
       <result name="cancel" type="redirectAction">
-        <param name="actionName">${crpSession}/activities</param>
+        <param name="actionName">${crpSession}/expectedStudies</param>
         <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
         <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
