@@ -57,15 +57,12 @@ public class ProjectLeverageValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
     if (project != null) {
@@ -80,8 +77,8 @@ public class ProjectLeverageValidator extends BaseValidator {
           if (project.getLeverages().get(c).getInstitution() != null) {
             this.validatePartner(action, project.getLeverages().get(c).getInstitution().getId(), c);
           } else {
-            this.addMessage("Leverage #" + (c + 1) + ": Partner");
-            this.addMissingField("project.leverages[" + c + "].Partner");
+            action.addMessage("Leverage #" + (c + 1) + ": Partner");
+            action.addMissingField("project.leverages[" + c + "].Partner");
             action.getInvalidFields().put("input-project.leverages[" + c + "].institution.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -89,8 +86,8 @@ public class ProjectLeverageValidator extends BaseValidator {
           if (project.getLeverages().get(c).getCrpProgram() != null) {
             this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
           } else {
-            this.addMessage("Leverage #" + (c + 1) + ": FlagShip");
-            this.addMissingField("project.leverages[" + c + ".flagship");
+            action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+            action.addMissingField("project.leverages[" + c + ".flagship");
             action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -104,20 +101,20 @@ public class ProjectLeverageValidator extends BaseValidator {
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.LEVERAGES.getStatus());
+      ProjectSectionStatusEnum.LEVERAGES.getStatus(), action);
   }
 
 
   public void validateBudget(BaseAction action, Double budget, int c) {
     if (budget == null || budget < 0) {
-      this.addMessage("Leverage #" + (c + 1) + ": Budget");
-      this.addMissingField("project.leverages[" + c + ".budget");
+      action.addMessage("Leverage #" + (c + 1) + ": Budget");
+      action.addMissingField("project.leverages[" + c + ".budget");
       action.getInvalidFields().put("input-project.leverages[" + c + "].budget", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -125,8 +122,8 @@ public class ProjectLeverageValidator extends BaseValidator {
 
   public void validateFlagship(BaseAction action, Long flagship, int c) {
     if (flagship.longValue() == -1 || flagship == null) {
-      this.addMessage("Leverage #" + (c + 1) + ": FlagShip");
-      this.addMissingField("project.leverages[" + c + ".flagship");
+      action.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+      action.addMissingField("project.leverages[" + c + ".flagship");
       action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -135,8 +132,8 @@ public class ProjectLeverageValidator extends BaseValidator {
 
   public void validatePartner(BaseAction action, Long partner, int c) {
     if (partner.intValue() == -1 || partner == null) {
-      this.addMessage("Leverage #" + (c + 1) + ": Partner");
-      this.addMissingField("project.leverages[" + c + "].Partner");
+      action.addMessage("Leverage #" + (c + 1) + ": Partner");
+      action.addMissingField("project.leverages[" + c + "].Partner");
       action.getInvalidFields().put("input-project.leverages[" + c + "].institution.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -145,8 +142,8 @@ public class ProjectLeverageValidator extends BaseValidator {
 
   public void validateTitleLeverage(BaseAction action, String title, int c) {
     if (!(this.isValidString(title) && this.wordCount(title) <= 50)) {
-      this.addMessage("Leverage #" + (c + 1) + ": Title");
-      this.addMissingField("project.leverages[" + c + "].Title");
+      action.addMessage("Leverage #" + (c + 1) + ": Title");
+      action.addMissingField("project.leverages[" + c + "].Title");
       action.getInvalidFields().put("input-project.leverages[" + c + "].title", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
