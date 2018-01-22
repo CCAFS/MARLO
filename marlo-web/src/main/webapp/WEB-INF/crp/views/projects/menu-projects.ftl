@@ -10,7 +10,7 @@
     }
     
   ]/]
-[#else] 
+[#else]
   [#assign menus= [
     { 'title': 'General Information', 'show': true,
       'items': [
@@ -25,7 +25,8 @@
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne  },
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne },
       { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': phaseOne, 'show': reportingActive  },
-      { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': false, 'show': reportingActive }
+      { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': false, 'show': reportingActive },
+      { 'slug': 'expectedStudies',  'name': 'projects.menu.expectedStudies',  'action': 'expectedStudies',  'active': true, 'show': !reportingActive }
       ]
     },
     { 'title': 'Outputs', 'show': true,

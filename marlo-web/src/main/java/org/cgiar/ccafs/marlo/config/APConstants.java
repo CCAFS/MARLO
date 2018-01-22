@@ -223,6 +223,9 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
+  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =

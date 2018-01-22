@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 22, 2018 1:53:05 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" table="project_expected_studies"  optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
+        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+            <column name="project_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="srfSubIdo" class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" fetch="select">
+            <column name="sub_ido" />
+        </many-to-one>
+         <many-to-one name="srfSloIndicator" class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
+            <column name="srf_target" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by" not-null="true" />
+        </many-to-one>
+        <property name="composedId" type="string">
+            <column name="composed_id" length="20" />
+        </property>
+        <property name="topicStudy" type="string">
+            <column name="topic_study" length="65535" />
+        </property>
+        <property name="scope" type="java.lang.Integer">
+            <column name="scope" />
+        </property>
+        <property name="type" type="java.lang.Integer">
+            <column name="type" />
+        </property>
+        <property name="otherType" type="string">
+            <column name="other_type" length="65535" />
+        </property>
+      
+        <property name="comments" type="string">
+            <column name="comments" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
