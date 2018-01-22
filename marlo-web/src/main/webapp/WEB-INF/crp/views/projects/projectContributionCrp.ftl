@@ -163,7 +163,7 @@
             [/#if]
             
             [#-- Baseline Indicators --]
-            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false)]
+            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
               <h5 class="sectionSubTitle">Baseline Indicators</h5>
               <div class="form-group">
                 <div class="" id="baseline">
