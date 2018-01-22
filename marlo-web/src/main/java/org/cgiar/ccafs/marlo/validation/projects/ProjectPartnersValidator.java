@@ -159,7 +159,9 @@ public class ProjectPartnersValidator extends BaseValidator {
   private void validateCCAFSProject(BaseAction action, Project project) {
     this.validateInstitutionsEmpty(action, project);
     this.validateProjectLeader(action, project);
-    this.validateContactPersons(action, project);
+    if (action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS)) {
+      this.validateContactPersons(action, project);
+    }
     if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
       this.validateOffices(action, project);
     }
