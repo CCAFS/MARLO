@@ -19,7 +19,7 @@ function attachEvents() {
       e.preventDefault();
       
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = "Should be at least one valid phase visible";
+      notyOptions.text = "You must switch at least one phase to visible";
       noty(notyOptions);
       
       // Turn off the saving button state
