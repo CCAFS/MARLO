@@ -24,9 +24,12 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class EditCapacityDevInterceptor extends AbstractInterceptor implements Serializable {
 
@@ -35,7 +38,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
    */
   private static final long serialVersionUID = -6274702832951538448L;
 
-  private Map<String, Object> parameters;
+  private Map<String, Parameter> parameters;
   private final ICapacityDevelopmentService capacityDevelopmentService;
   private Map<String, Object> session;
 
@@ -56,7 +59,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
 
     try {
-      capdevID = Long.parseLong(((String[]) parameters.get(APConstants.CAPDEV_ID))[0]);
+      capdevID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CAPDEV_ID).getMultipleValues()[0]));
     } catch (final Exception e) {
       return BaseAction.NOT_FOUND;
     }
@@ -95,7 +98,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
 
 
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         // If the user is not asking for edition privileges we don't need to validate them.
         if (!editParameter) {

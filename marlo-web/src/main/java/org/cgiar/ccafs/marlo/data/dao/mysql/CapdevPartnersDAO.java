@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.CapdevPartners;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.hibernate.SessionFactory;
 
 public class CapdevPartnersDAO extends AbstractMarloDAO<CapdevPartners, Long> implements ICapdevPartnersDAO {

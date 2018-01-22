@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.DisciplineService;
 import org.cgiar.ccafs.marlo.data.model.Discipline;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(DisciplineService.class)
 public interface IDisciplineService {
 
 

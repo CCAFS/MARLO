@@ -44,10 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class FilterListsAction extends BaseAction {
 
@@ -103,9 +105,10 @@ public class FilterListsAction extends BaseAction {
 
 
   public String filterCountry() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     jsonCountries = new ArrayList<>();
-    final long regionID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    final long regionID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
 
     List<LocElement> countryList = new ArrayList<>();
     if (regionID > 0) {
@@ -136,16 +139,19 @@ public class FilterListsAction extends BaseAction {
   }
 
   public String filterDeliverablesSubtypes() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     jsonDeliverableSubtypes = new ArrayList<>();
     final long deliverableTypeParentId =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
+
 
     List<CenterDeliverableType> deliverablesSubtypesList = new ArrayList<>();
     if (deliverableTypeParentId > 0) {
-      deliverablesSubtypesList = new ArrayList<>(centerDeliverableService.findAll().stream()
-        .filter(dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
-        .collect(Collectors.toList()));
+      deliverablesSubtypesList =
+        new ArrayList<>(centerDeliverableService.findAll().stream()
+          .filter(
+            dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
+          .collect(Collectors.toList()));
       Collections.sort(deliverablesSubtypesList, (ra1, ra2) -> ra1.getName().compareTo(ra2.getName()));
     } else {
 
@@ -164,9 +170,10 @@ public class FilterListsAction extends BaseAction {
   }
 
   public String filterPartners_Outputs() throws Exception {
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     jsonPartners_output = new ArrayList<>();
-    long projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+    long projectID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
 
     List<CenterProjectPartner> projectPartners = new ArrayList<>();
     List<CenterProjectOutput> projectOutputs = new ArrayList<>();
@@ -256,10 +263,10 @@ public class FilterListsAction extends BaseAction {
   }
 
   public String filterProject() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     jsonProjects = new ArrayList<>();
     final long researchProgramID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
 
     List<CenterProject> projects = new ArrayList<>();
     if (researchProgramID > 0) {
@@ -286,9 +293,9 @@ public class FilterListsAction extends BaseAction {
   }
 
   public String filterResearchProgram() throws Exception {
-    final Map<String, Object> parameters = this.getParameters();
+    Map<String, Parameter> parameters = this.getParameters();
     final long researchAreaID =
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]));
     this.jsonResearchPrograms = new ArrayList<>();
     List<CenterProgram> researchPrograms = new ArrayList<>();
     if (researchAreaID > 0) {

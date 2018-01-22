@@ -22,7 +22,8 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.HashMap;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 
 public class CapdevSupportingDocsValidator extends BaseValidator {
 

@@ -710,7 +710,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
                 && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
                   .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
         List<Deliverable> onDeliverables = new ArrayList<>();
         for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
           if (deliverableFundingSource.getDeliverable().getDeliverableInfo(this.getActualPhase())
@@ -2025,7 +2025,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-private boolean getFundingSourceStatus(FundingSource fundingSource) {
+  private boolean getFundingSourceStatus(FundingSource fundingSource) {
     fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
     if (fundingSource.getFundingSourceInfo(this.getActualPhase()) != null) {
       List<SectionStatus> sectionStatuses = fundingSource.getSectionStatuses().stream()
@@ -2153,8 +2153,8 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
     final List<Deliverable> openDeliverables = new ArrayList<>();
 
     for (final Deliverable a : deliverables) {
-    
-			if (a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
+
+      if (a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
         || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
         || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2177,7 +2177,7 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
             openDeliverables.add(a);
           }
         }
-      }      
+      }
     }
 
 
@@ -2425,7 +2425,7 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
           return true;
         }
 
-        for (final ProjectOutcome projectOutcome : project.getOutcomes()) {
+        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
           if (sectionStatus == null) {
@@ -2442,14 +2442,13 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
 
       case CASESTUDIES:
         project = projectManager.getProjectById(projectID);
-        final List<CaseStudyProject> caseStudies =
+        List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        final List<CaseStudy> caStudies = new ArrayList<>();
+        List<CaseStudy> caStudies = new ArrayList<>();
 
 
-        for (final CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isCreated()
-            && (caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear())) {
+        for (CaseStudyProject caseStudyProject : caseStudies) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
             caStudies.add(caseStudyProject.getCaseStudy());
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -2471,14 +2470,14 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
 
       case HIGHLIGHT:
         project = projectManager.getProjectById(projectID);
-        final List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive() && (d.getYear().intValue() == this.getCurrentCycleYear()))
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
         if (highlights.isEmpty()) {
           return true;
         }
 
-        for (final ProjectHighlight highlight : highlights) {
+        for (ProjectHighlight highlight : highlights) {
 
           sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -2513,7 +2512,7 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+                    && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())
                     || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -2525,16 +2524,9 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
-                .collect(Collectors.toList());
-          } else {
-            openA = deliverables.stream()
-              .filter(a -> a.isActive() && (((a.getStatus() == null)
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-                || ((a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))
-                  || (a.getStatus().intValue() == 0)))))
+                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
               .collect(Collectors.toList());
 
             openA.addAll(deliverables.stream()
@@ -2571,10 +2563,13 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
             if (sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
-            returnValue = true;
+
           }
 
+          returnValue = true;
         }
+
+
         break;
 
       case ACTIVITIES:
@@ -3140,13 +3135,13 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
     if (sectionsBD == null) {
       return false;
     }
-    
+
     CrpProgram cpCrpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
     List<SectionStatus> sections =
       cpCrpProgram
         .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
           && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
     for (final SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
@@ -3264,10 +3259,10 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
         .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
           || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
-        || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
+          || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
         .collect(Collectors.toList());
 
       if (this.isReportingActive()) {
@@ -3801,8 +3796,6 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
 
     final Project project = projectManager.getProjectById(projectID);
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
-
     if (this.isReportingActive()) {
 
       try {
@@ -3831,6 +3824,7 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
         e.printStackTrace();
         return false;
       }
+
     }
   }
 
@@ -3848,7 +3842,7 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
 
   public Boolean isR(long deliverableID) {
     try {
-      final Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
       if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() == null) {
         return null;
       }
@@ -3873,11 +3867,12 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
               return false;
             }
             return true;
+          }
 
         }
       }
       return false;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -4028,15 +4023,6 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
       project.setProjectComponentLesson(lessons.get(0));
     }
     if (this.isReportingActive()) {
-
-      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
-        .filter(
-          c -> c.isActive() && (c.getYear() == this.getReportingYear()) && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
-        .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
-      }
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING)
@@ -4044,16 +4030,6 @@ private boolean getFundingSourceStatus(FundingSource fundingSource) {
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
         project.setProjectComponentLessonPreview(lessonsPreview.get(0));
-      }
-    } else {
-
-      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
-        .filter(
-          c -> c.isActive() && (c.getYear() == this.getPlanningYear()) && c.getCycle().equals(APConstants.PLANNING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
-        .collect(Collectors.toList());
-      if (!lessons.isEmpty()) {
-        project.setProjectComponentLesson(lessons.get(0));
       }
     }
   }

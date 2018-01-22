@@ -17,14 +17,10 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CapdevParticipantDAO;
 import org.cgiar.ccafs.marlo.data.model.CapdevParticipant;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
-@ImplementedBy(CapdevParticipantDAO.class)
 public interface ICapdevParticipantDAO {
 
   /**

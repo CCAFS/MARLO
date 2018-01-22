@@ -21,7 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.CapdevTargetgroup;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 
 /**
  * @author Christian Garcia

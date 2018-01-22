@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 
 public class CapacityDevelopmentValidator extends BaseValidator {
 

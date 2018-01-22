@@ -16,14 +16,10 @@
 
 package org.cgiar.ccafs.marlo.data.dao;
 
-import org.cgiar.ccafs.marlo.data.dao.mysql.CapdevSupportingDocsMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
-@ImplementedBy(CapdevSupportingDocsMySQLDAO.class)
 public interface CapdevSupportingDocsDAO {
 
   /**

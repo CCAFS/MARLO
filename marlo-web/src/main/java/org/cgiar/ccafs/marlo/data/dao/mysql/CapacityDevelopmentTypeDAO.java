@@ -21,9 +21,12 @@ import org.cgiar.ccafs.marlo.data.model.CapacityDevelopmentType;
 
 import java.util.List;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
+@Named
 public class CapacityDevelopmentTypeDAO extends AbstractMarloDAO<CapacityDevelopmentType, Long>
   implements ICapacityDevelopmentTypeDAO {
 

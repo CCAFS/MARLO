@@ -63,15 +63,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.apache.struts2.dispatcher.Parameter;
 
 public class CapacityDevelopmentDetailAction extends BaseAction {
 
@@ -1124,8 +1126,9 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public void syncParticipant() {
-    Map<String, Object> parameters = this.getParameters();
-    String resourceID = StringUtils.trim(((String[]) parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC))[0]);
+    Map<String, Parameter> parameters = this.getParameters();
+    String resourceID =
+      StringUtils.trim(parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC).getMultipleValues()[0]);
     resourceOCS = ocsClient.getHRInformation(resourceID);
 
     Map<String, Object> map = new HashMap<>();

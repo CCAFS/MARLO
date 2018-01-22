@@ -14,17 +14,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.CapdevSupportingDocsManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * @author Christian Garcia
  */
-@ImplementedBy(CapdevSupportingDocsManagerImpl.class)
 public interface CapdevSupportingDocsManager {
 
 
