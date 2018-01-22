@@ -211,7 +211,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-      this.setBasePermission(this.getText(Permission.PROJECT_ACTIVITIES_BASE_PERMISSION, params));
+      this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
     if (this.isHttpPost()) {
       if (project.getProjectActivities() != null) {
