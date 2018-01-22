@@ -169,12 +169,12 @@
               <div class="form-group">
                 <div class="" id="baseline"> 
                   <div class="form-group text-right">
-                    <a href="${action.getBaseLineFileURL(projectOutcome.crpProgramOutcome.id.toString())}${ projectOutcome.crpProgramOutcome.file.fileName}" class="downloadBaseline"><img src="${baseUrl}/global/images//pdf.png" width="20px" alt="" />${ projectOutcome.crpProgramOutcome.file.fileName}</a> 
+                    <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrl}/global/images//pdf.png" width="20px" alt="" />${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
                   </div>
             
                   [#-- Indicators --]
                   [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                    [@baselineIndicatorMacro element=indicator name="projectOutcome.baselines" index=indicator_index  /]
+                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
                   [/#list]
                 </div>
               </div>
@@ -458,6 +458,8 @@
     <div class="form-group grayBox">
       <strong>${element.indicator}</strong>
     </div>
+    [#assign projectIndicatorID = "projectOutcome.indicators[${index}.id" /]
+    <input type="hidden" name="${customName}.id" value="${(projectIndicatorID)!}" >
     <div class="form-group row">
       <div class="col-md-3">
         [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=true editable=editable && !reportingActive /]
