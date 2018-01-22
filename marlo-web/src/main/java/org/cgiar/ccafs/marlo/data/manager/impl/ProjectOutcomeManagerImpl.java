@@ -425,7 +425,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             projectOutcomeIndicatorAdd.setNarrative(projectOutcomeIndicator.getNarrative());
             projectOutcomeIndicatorAdd.setProjectOutcome(projectOutcomePrev);
 
-            projectOutcomeIndicatorDAO.save(projectOutcomeIndicatorAdd);
+            projectOutcomeIndicatorAdd = projectOutcomeIndicatorDAO.save(projectOutcomeIndicatorAdd);
 
           } else {
             ProjectOutcomeIndicator indicator = projectOutcomePrev.getProjectOutcomeIndicators().stream()
@@ -438,7 +438,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             indicator.setNarrative(projectOutcomeIndicator.getNarrative());
 
 
-            projectOutcomeIndicatorDAO.save(indicator);
+            indicator = projectOutcomeIndicatorDAO.save(indicator);
 
           }
         }

@@ -523,7 +523,9 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getNextUsers() != null) {
         projectOutcome.getNextUsers().clear();
       }
-
+      if (projectOutcome.getIndicators() != null) {
+        projectOutcome.getIndicators().clear();
+      }
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
@@ -557,6 +559,8 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcomeDB.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
+      relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
+
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
