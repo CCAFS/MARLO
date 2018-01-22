@@ -53,6 +53,12 @@ public class CrpProgramOutcomeIndicator implements java.io.Serializable, IAuditL
     this.modificationJustification = modificationJustification;
   }
 
+  public CrpProgramOutcomeIndicator(Long id) {
+    super();
+    this.id = id;
+  }
+
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

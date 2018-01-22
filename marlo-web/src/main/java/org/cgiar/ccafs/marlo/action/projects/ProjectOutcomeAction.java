@@ -26,17 +26,20 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -90,6 +93,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private ProjectNextuserManager projectNextuserManager;
+  private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
+
   // Front-end
   private long projectID;
   private long projectOutcomeID;
@@ -114,7 +119,7 @@ public class ProjectOutcomeAction extends BaseAction {
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
-    ProjectOutcomeValidator projectOutcomeValidator) {
+    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -127,6 +132,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.crpMilestoneManager = crpMilestoneManager;
     this.projectNextuserManager = projectNextuserManager;
     this.projectOutcomeValidator = projectOutcomeValidator;
+    this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
   @Override
@@ -190,6 +196,21 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+  public int getIndexIndicator(Long indicatorID) {
+
+    ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+    int i = 0;
+    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+        .getCrpProgramOutcomeIndicator().getId().longValue()) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
+  }
+
+
   public int getIndexMilestone(long milestoneId, int year) {
 
     int i = 0;
@@ -209,6 +230,19 @@ public class ProjectOutcomeAction extends BaseAction {
     return this.getIndexMilestone(milestoneId, year);
   }
 
+
+  public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
+  }
 
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
@@ -246,6 +280,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestonesProject;
   }
 
+
   public Project getProject() {
     return project;
   }
@@ -255,15 +290,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectID;
   }
 
-
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
 
-
   public long getProjectOutcomeID() {
     return projectOutcomeID;
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -310,7 +344,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
     List<ProjectMilestone> projectMilestones =
@@ -320,6 +353,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -423,6 +457,8 @@ public class ProjectOutcomeAction extends BaseAction {
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        projectOutcome.setIndicators(
+          projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         if (this.isLessonsActive()) {
           this.loadLessonsOutcome(loggedCrp, projectOutcome);
         }
@@ -499,6 +535,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -509,7 +546,7 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveMilestones(projectOutcomeDB);
       this.saveCommunications(projectOutcomeDB);
       this.saveNextUsers(projectOutcomeDB);
-
+      this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
@@ -557,7 +594,6 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -633,6 +669,62 @@ public class ProjectOutcomeAction extends BaseAction {
 
         }
 
+
+      }
+    }
+  }
+
+  public void saveIndicators(ProjectOutcome projectOutcomeDB) {
+
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (projectOutcome.getIndicators() == null) {
+        projectOutcome.setIndicators(new ArrayList<>());
+      }
+      if (!projectOutcome.getIndicators().contains(projectOutcomeIndicator)) {
+        projectOutcomeIndicatorManager.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+
+      }
+    }
+
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator != null) {
+          if (projectOutcomeIndicator.getId() == null) {
+            // Create new entity
+            projectOutcomeIndicator.setCreatedBy(this.getCurrentUser());
+
+            projectOutcomeIndicator.setActiveSince(new Date());
+            projectOutcomeIndicator.setActive(true);
+            projectOutcomeIndicator.setProjectOutcome(projectOutcomeDB);
+            projectOutcomeIndicator.setModifiedBy(this.getCurrentUser());
+            projectOutcomeIndicator.setModificationJustification("");
+
+            projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicator);
+
+          } else {
+            // Update existing entity
+            ProjectOutcomeIndicator projectOutcomeIndicatorDB =
+              projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+
+            projectOutcomeIndicatorDB.setActive(true);
+            projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
+
+            projectOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
+            projectOutcomeIndicatorDB.setModificationJustification("");
+
+            // update existing fields
+            projectOutcomeIndicatorDB.setNarrative(projectOutcomeIndicator.getNarrative());
+            projectOutcomeIndicatorDB.setValue(projectOutcomeIndicator.getValue());
+
+
+            projectOutcomeIndicatorDB =
+              projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
+          }
+
+
+        }
 
       }
     }
