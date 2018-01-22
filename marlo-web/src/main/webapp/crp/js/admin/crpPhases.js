@@ -10,6 +10,25 @@ function init() {
 }
 
 function attachEvents() {
+  
+  $('.button-save').on('click', function(e) {
+    var visiblePhases = $('input.visible-yes:checked').length;
+    
+    // Validate if there is a valid phase
+    if(visiblePhases < 1) {
+      e.preventDefault();
+      
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = "Should be at least one valid phase visible";
+      noty(notyOptions);
+      
+      // Turn off the saving button state
+      turnSavingStateOff(this);
+      
+      return
+    }
+
+  });
 }
 
 function setDatePickers() {
