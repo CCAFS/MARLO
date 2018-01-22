@@ -37,6 +37,7 @@ public final class APConstants {
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
   public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
+  public static final String CRP_MANAGING_PARTNERS_CONTACT_PERSONS = "crp_managing_partners_contact_persons";
   public static final String CRP_CL_ROLE = "crp_cl_rol";
 
   public static final String CRP_CLOSED = "crp_closed";

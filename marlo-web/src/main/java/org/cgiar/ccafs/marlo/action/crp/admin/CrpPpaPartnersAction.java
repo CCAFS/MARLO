@@ -617,18 +617,23 @@ public class CrpPpaPartnersAction extends BaseAction {
                   new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
                 liaisonUserSave.setCrp(loggedCrp);
                 liaisonUserSave.setActive(true);
-                liaisonUserManager.saveLiaisonUser(liaisonUserSave);
-                // If is new user active it
-                if (!liaisonUser.getUser().isActive()) {
-                  this.notifyNewUserCreated(liaisonUser.getUser());
+                liaisonUserSave.setLiaisonInstitution(liaisonInstitution);
+                if (liaisonInstitution != null) {
+                  liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+                  // If is new user active it
+                  if (!liaisonUser.getUser().isActive()) {
+                    this.notifyNewUserCreated(liaisonUser.getUser());
+                  }
+                  this.addCrpUserIfNotExist(liaisonUser.getUser());
+                  // add userRole
+                  if (cpRole != null) {
+                    UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                    userRoleManager.saveUserRole(userRole);
+                    this.notifyRoleContactPointAssigned(userRole, partner);
+                  }
                 }
-                this.addCrpUserIfNotExist(liaisonUser.getUser());
-                // add userRole
-                if (cpRole != null) {
-                  UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
-                  userRoleManager.saveUserRole(userRole);
-                  this.notifyRoleContactPointAssigned(userRole, partner);
-                }
+
+
               }
             }
           }
