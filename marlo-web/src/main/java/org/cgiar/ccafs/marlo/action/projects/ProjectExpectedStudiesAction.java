@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalScopeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
@@ -97,6 +98,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private Map<Long, String> subIdos;
   private Map<Long, String> targets;
   private Map<Integer, String> types;
+  private Map<Integer, String> scopes;
 
 
   private String transaction;
@@ -117,6 +119,63 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     this.historyComparator = historyComparator;
     this.activitiesValidator = activitiesValidator;
+
+  }
+
+
+  public void expectedStudiesNewData(List<ProjectExpectedStudy> expectedStudies) {
+
+    for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+      if (projectExpectedStudy != null) {
+        if (projectExpectedStudy.getId() == null || projectExpectedStudy.getId() == -1) {
+
+          ProjectExpectedStudy projectExpectedStudyNew = new ProjectExpectedStudy();
+          projectExpectedStudyNew.setActive(true);
+          projectExpectedStudyNew.setCreatedBy(this.getCurrentUser());
+          projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
+          projectExpectedStudyNew.setModificationJustification("");
+          projectExpectedStudyNew.setActiveSince(new Date());
+          Project project = projectManager.getProjectById(this.project.getId());
+          projectExpectedStudyNew.setProject(project);
+          projectExpectedStudyNew.setComments(projectExpectedStudy.getComments());
+          projectExpectedStudyNew.setComposedId(projectExpectedStudy.getComposedId());
+          projectExpectedStudyNew.setOtherType(projectExpectedStudy.getOtherType());
+          projectExpectedStudyNew.setPhase(this.getActualPhase());
+          projectExpectedStudyNew.setScope(projectExpectedStudy.getScope());
+          projectExpectedStudyNew.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
+          projectExpectedStudyNew.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
+          projectExpectedStudyNew.setTopicStudy(projectExpectedStudy.getTopicStudy());
+          projectExpectedStudyNew.setType(projectExpectedStudy.getType());
+          projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
+
+
+        } else {
+
+          ProjectExpectedStudy projectExpectedUpdate =
+            projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudy.getId());
+          projectExpectedUpdate.setActive(true);
+          projectExpectedUpdate.setCreatedBy(this.getCurrentUser());
+          projectExpectedUpdate.setModifiedBy(this.getCurrentUser());
+          projectExpectedUpdate.setModificationJustification("");
+          projectExpectedUpdate.setActiveSince(new Date());
+          projectExpectedUpdate.setPhase(this.getActualPhase());
+          projectExpectedUpdate.setComments(projectExpectedStudy.getComments());
+          projectExpectedUpdate.setComposedId(projectExpectedStudy.getComposedId());
+          projectExpectedUpdate.setOtherType(projectExpectedStudy.getOtherType());
+          projectExpectedUpdate.setPhase(this.getActualPhase());
+          projectExpectedUpdate.setScope(projectExpectedStudy.getScope());
+          projectExpectedUpdate.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
+          projectExpectedUpdate.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
+          projectExpectedUpdate.setTopicStudy(projectExpectedStudy.getTopicStudy());
+          projectExpectedUpdate.setType(projectExpectedStudy.getType());
+
+          projectExpectedUpdate = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedUpdate);
+
+
+        }
+      }
+
+    }
 
   }
 
@@ -166,6 +225,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
+
+  public Map<Integer, String> getScopes() {
+    return scopes;
+  }
+
   public Map<Long, String> getSubIdos() {
     return subIdos;
   }
@@ -183,6 +247,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public Map<Integer, String> getTypes() {
     return types;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -262,6 +327,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (TypeExpectedStudiesEnum typeExpectedStudiesEnum : list) {
         types.put(typeExpectedStudiesEnum.getId(), typeExpectedStudiesEnum.getType());
       }
+      scopes = new HashMap<>();
+      List<GlobalScopeEnum> listScope = Arrays.asList(GlobalScopeEnum.values());
+      for (GlobalScopeEnum globalScopeEnum : listScope) {
+        scopes.put(globalScopeEnum.getId(), globalScopeEnum.getType());
+      }
       subIdos = new HashMap<>();
       for (SrfSubIdo srfSubIdo : srfSubIdoManager.findAll()) {
         subIdos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
@@ -284,7 +354,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -297,6 +366,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         project.setExpectedStudies(new ArrayList<>());
       }
       this.expectedStudiesPreviousData(project.getExpectedStudies());
+      this.expectedStudiesNewData(project.getExpectedStudies());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
@@ -347,6 +417,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setScopes(Map<Integer, String> scopes) {
+    this.scopes = scopes;
   }
 
 
