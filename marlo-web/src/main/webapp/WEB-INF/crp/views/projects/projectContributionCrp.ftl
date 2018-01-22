@@ -166,9 +166,13 @@
             [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false)]
               <h5 class="sectionSubTitle">Baseline Indicators</h5>
               <div class="form-group">
-                <div class="" id="baseline"> 
+                <div class="" id="baseline">
                   <div class="form-group text-right">
-                    <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrl}/global/images//pdf.png" width="20px" alt="" />${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrl}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                    [#else]
+                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                    [/#if]
                   </div>
                   [#-- Indicators --]
                   [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
