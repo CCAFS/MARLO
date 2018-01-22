@@ -1801,8 +1801,8 @@ public class ProjectPartnerAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      projectPartnersValidator.validate(this, project, true);
-      if (projectPartnersValidator.isHasErros()) {
+      boolean hasErrors = projectPartnersValidator.validate(this, project, true);
+      if (hasErrors) {
         if (project.getPartners() != null) {
           for (ProjectPartner projectPartner : project.getPartners()) {
 
