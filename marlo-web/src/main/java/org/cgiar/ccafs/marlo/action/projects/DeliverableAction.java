@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -207,6 +209,9 @@ public class DeliverableAction extends BaseAction {
 
   private FundingSourceManager fundingSourceManager;
 
+  private CrossCuttingScoringManager crossCuttingManager;
+
+
   private List<FundingSource> fundingSources;
 
   private List<GenderType> genderLevels;
@@ -253,6 +258,9 @@ public class DeliverableAction extends BaseAction {
 
 
   private List<PartnerDivision> divisions;
+
+  private List<CrossCuttingScoring> crossCuttingScores;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -519,10 +527,14 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<CrossCuttingScoring> getCrossCuttingScores() {
+    return crossCuttingScores;
+  }
+
+
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -531,6 +543,7 @@ public class DeliverableAction extends BaseAction {
   public long getDeliverableID() {
     return deliverableID;
   }
+
 
   public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
 
@@ -549,7 +562,6 @@ public class DeliverableAction extends BaseAction {
     return null;
 
   }
-
 
   private DeliverablePartnership getDeliverablePartnershipDB(Deliverable deliverableDB) {
 
@@ -594,6 +606,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
@@ -603,16 +616,15 @@ public class DeliverableAction extends BaseAction {
     return deliverableTypeParent;
   }
 
-
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
   }
+
 
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
-
 
   public List<PartnerDivision> getDivisions() {
     return divisions;
@@ -621,6 +633,7 @@ public class DeliverableAction extends BaseAction {
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   public List<GenderType> getGenderLevels() {
     return genderLevels;
@@ -631,15 +644,14 @@ public class DeliverableAction extends BaseAction {
     return indexTab;
   }
 
-
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   /**
    * Get the ProjectPartnerPerson from the submitted form.
@@ -663,6 +675,7 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
+
   private ProjectPartner getPartnerResponsible() {
     ProjectPartner projectPartner = null;
 
@@ -674,7 +687,6 @@ public class DeliverableAction extends BaseAction {
     }
     return projectPartner;
   }
-
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -698,19 +710,19 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
-
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
 
+
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
@@ -782,13 +794,14 @@ public class DeliverableAction extends BaseAction {
     return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
   }
 
+
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list =
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;
@@ -829,7 +842,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -950,7 +962,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -971,6 +983,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -1338,7 +1351,7 @@ public class DeliverableAction extends BaseAction {
           .addAll(deliverableTypeManager
             .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1448,7 +1461,7 @@ public class DeliverableAction extends BaseAction {
           if (o1.getFundingSourceInfo(this.getActualPhase()) != null
             && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
 
-          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+            o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
             && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
             && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
@@ -1479,6 +1492,9 @@ public class DeliverableAction extends BaseAction {
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+
+      // Read all the cross cutting scoring from database
+      this.crossCuttingScores = this.crossCuttingManager.findAll();
 
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
@@ -1552,7 +1568,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1588,7 +1604,6 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
-
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1751,6 +1766,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
 
@@ -1886,7 +1902,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -2033,6 +2048,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   /**
    * All we are doing here is setting the modification justification.
    */
@@ -2171,7 +2187,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   private DeliverablePartnership saveUpdateDeliverablePartnershipDivision(DeliverablePartnership partnership,
     DeliverablePartnership partnershipResponsibleManaged) {
     if (partnershipResponsibleManaged.getPartnerDivision() != null
@@ -2195,6 +2210,7 @@ public class DeliverableAction extends BaseAction {
     }
     return partnership;
   }
+
 
   /**
    * Save, update or delete partnership's responsible
@@ -2258,9 +2274,13 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
+  }
+
+
+  public void setCrossCuttingScores(List<CrossCuttingScoring> crossCuttingScores) {
+    this.crossCuttingScores = crossCuttingScores;
   }
 
   public void setCrps(Map<String, String> crps) {
@@ -2272,15 +2292,14 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
 
-
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
-
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
@@ -2342,13 +2361,16 @@ public class DeliverableAction extends BaseAction {
     this.repositoryChannels = repositoryChannels;
   }
 
+
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   private Deliverable updateDeliverable() {
     // deliverableDb is in a managed state, deliverable is in a detached state.
@@ -2542,4 +2564,6 @@ public class DeliverableAction extends BaseAction {
       deliverableValidator.validate(this, deliverable, true);
     }
   }
+
+
 }
