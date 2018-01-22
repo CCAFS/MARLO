@@ -108,14 +108,15 @@
     
     [#-- Relevant to Sub-IDO --] 
     <div class="form-group "> 
-      [@customForm.select name="${customName}.srfSubIdo" label=""  i18nkey="expectedStudy.srfSubIdo" listName="srfSubIdos"  required=true  className="" editable=isEditable/]
+      [@customForm.select name="${customName}.srfSubIdo.id" label=""  i18nkey="expectedStudy.srfSubIdo" listName="subIdos"  required=true  className="" editable=isEditable/]
     </div>
     
     [#-- SRF target if appropriate --] 
     <div class="form-group "> 
-      [@customForm.select name="${customName}.srfSloIndicator" label=""  i18nkey="expectedStudy.srfSloIndicator" listName="srfSloIndicators"  required=false  className="" editable=isEditable/]
+      [@customForm.select name="${customName}.srfSloIndicator.id" label=""  i18nkey="expectedStudy.srfSloIndicator" listName="targets"  required=false  className="" editable=isEditable/]
     </div>
     
+    [#-- Comments --] 
     <div class="form-group "> 
       [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
