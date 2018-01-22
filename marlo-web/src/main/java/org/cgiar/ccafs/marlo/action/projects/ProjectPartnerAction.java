@@ -318,9 +318,9 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
-  public List<Deliverable> getDeliverablesLedByPartner(long projectPartnerID) {
+  public List<Deliverable> getDeliverablesLedByPartner(Long projectPartnerID) {
     List<Deliverable> deliverablesLeads = new ArrayList<>();
-    if (projectPartnerID != 0) {
+    if (projectPartnerID != null && projectPartnerID != 0) {
       ProjectPartner projectPartner = projectPartnerManager.getProjectPartnerById(projectPartnerID);
       if (projectPartner != null) {
         List<DeliverablePartnership> deliverablePartnerships = projectPartner.getDeliverablePartnerships().stream()
@@ -847,7 +847,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
