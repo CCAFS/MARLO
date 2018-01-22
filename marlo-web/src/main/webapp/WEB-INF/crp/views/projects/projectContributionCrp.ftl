@@ -163,15 +163,13 @@
             [/#if]
             
             [#-- Baseline Indicators --]
-
-            [#if action.hasSpecificities('crp_baseline_indicators') && (projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false && false]
+            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false)]
               <h5 class="sectionSubTitle">Baseline Indicators</h5>
               <div class="form-group">
                 <div class="" id="baseline"> 
                   <div class="form-group text-right">
                     <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrl}/global/images//pdf.png" width="20px" alt="" />${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
                   </div>
-            
                   [#-- Indicators --]
                   [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
                     [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
@@ -451,7 +449,9 @@
 
 [#macro baselineIndicatorMacro element name index isTemplate=false]
   <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]" /]
+    [#local indexIndicator = action.getIndexIndicator(element.id) /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local customName = "${name}[${indexIndicator}]" /]
     <div class="leftHead gray sm">
       <span class="index">${index+1}</span>
     </div>
@@ -459,7 +459,7 @@
       <strong>${element.indicator}</strong>
     </div>
     [#assign projectIndicatorID = "projectOutcome.indicators[${index}.id" /]
-    <input type="hidden" name="${customName}.id" value="${(projectIndicatorID)!}" >
+    <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <div class="form-group row">
       <div class="col-md-3">
         [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeBaseline.expectedValue" className="" required=true editable=editable && !reportingActive /]
