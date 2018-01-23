@@ -132,7 +132,7 @@
 </div>
       
 [#-- Outcome Template --]
-[@outcomeMacro outcome={} name="outcome" index=-1 isTemplate=true /]
+[@outcomeMacro outcome={} name="outcomes" index=-1 isTemplate=true /]
 
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true /]
