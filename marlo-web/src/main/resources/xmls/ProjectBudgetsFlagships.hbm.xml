@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Jan 23, 2018 9:31:17 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship" table="project_budgets_flagships" catalog="marlo_crp">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship" table="project_budgets_flagships" >
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
