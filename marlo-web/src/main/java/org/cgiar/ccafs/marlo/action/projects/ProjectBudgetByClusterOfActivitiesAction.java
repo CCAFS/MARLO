@@ -536,9 +536,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
               .getProjectBudgetsCluserActvityById(projectBudgetCluserActivityUI.getId());
             ProjectBudgetDB.setGenderPercentage(projectBudgetCluserActivityUI.getGenderPercentage());
             ProjectBudgetDB.setAmount(projectBudgetCluserActivityUI.getAmount());
-            if (projectBudgetCluserActivityUI.getId() == 1056) {
-              System.out.println("holi");
-            }
             projectBudgetCluserActivityUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
             projectBudgetCluserActivityUI.setPhase(this.getActualPhase());
             projectBudgetCluserActivityUI.setActiveSince(ProjectBudgetDB.getActiveSince());

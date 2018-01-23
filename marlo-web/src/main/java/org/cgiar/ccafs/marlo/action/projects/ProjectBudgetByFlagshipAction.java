@@ -28,8 +28,10 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -40,8 +42,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -118,6 +122,15 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     return SUCCESS;
   }
 
+  /**
+   * This method clears the cache and re-load the user permissions in the next iteration.
+   */
+  @Override
+  public void clearPermissionsCache() {
+    ((APCustomRealm) securityContext.getRealm())
+      .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -129,8 +142,56 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  /**
+   * @param programID
+   * @param year
+   * @param type
+   * @return
+   */
+  public ProjectBudgetsFlagship getBudget(long programID, int year, long type) {
+    if (project.getBudgetsFlagship() == null) {
+      project.setBudgetsFlagship(new ArrayList<>());
+    }
+    return project.getBudgetsFlagship().get(this.getIndexBudget(programID, year, type));
+  }
+
   public List<BudgetType> getBudgetTypesList() {
     return budgetTypesList;
+  }
+
+
+  /**
+   * @param programID
+   * @param year
+   * @param type
+   * @return
+   */
+  public int getIndexBudget(long programID, int year, long type) {
+
+    if (project.getBudgetsFlagship() != null) {
+      int i = 0;
+      for (ProjectBudgetsFlagship projectBudget : project.getBudgetsFlagship()) {
+        if (projectBudget.getCrpProgram() != null) {
+          if (projectBudget.getCrpProgram().getId() == programID && year == projectBudget.getYear()
+            && type == projectBudget.getBudgetType().getId().longValue()) {
+            return i;
+          }
+
+        }
+        i++;
+      }
+
+    } else {
+      project.setBudgetsCluserActvities(new ArrayList<>());
+    }
+
+    ProjectBudgetsFlagship projectBudget = new ProjectBudgetsFlagship();
+    projectBudget.setCrpProgram(crpProgramManager.getCrpProgramById(programID));
+    projectBudget.setYear(year);
+    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
+    project.getBudgetsFlagship().add(projectBudget);
+
+    return this.getIndexBudget(programID, year, type);
   }
 
   public Crp getLoggedCrp() {
@@ -141,14 +202,85 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
+  /**
+   * @param type
+   * @param year
+   * @return
+   * @throws ParseException
+   */
+  public double getRemaining(Long type, int year) throws ParseException {
+    double remaining = 100;
+
+    if (project.getBudgetsFlagship() != null) {
+      for (ProjectBudgetsFlagship budgetsFlagship : project.getBudgetsFlagship()) {
+        if (budgetsFlagship.getYear() == year
+          && budgetsFlagship.getBudgetType().getId().longValue() == type.longValue()) {
+          if (budgetsFlagship.getAmount() != null) {
+
+            remaining = remaining - budgetsFlagship.getAmount().doubleValue();
+            remaining = this.round(remaining, 2);
+          }
+        }
+      }
+    }
+
+    return remaining;
+  }
+
+  /**
+   * @param type
+   * @param year
+   * @return
+   */
+  public Long getTotalAmount(Long type, int year) {
+
+    long totalAmount = 0;
+    double porcentage;
+    try {
+      porcentage = Math.abs(this.getRemaining(type, year) - 100);
+      totalAmount = (long) (this.getTotalYearPartners(year, type) * (porcentage / 100));
+      return totalAmount;
+    } catch (ParseException e) {
+      return new Long(0);
+    }
+
+
+  }
+
+  /**
+   * @param year
+   * @param type
+   * @return
+   */
+  public double getTotalYearPartners(int year, long type) {
+    double total = 0;
+    Project projectBD = projectManager.getProjectById(projectID);
+
+
+    for (ProjectBudget projectBudget : projectBD.getProjectBudgets()) {
+      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()
+        && projectBudget.getPhase().equals(this.getActualPhase()) && projectBudget.isActive()) {
+        if (projectBudget.getAmount() != null) {
+          total = total + projectBudget.getAmount();
+        }
+
+      }
+
+
+    }
+    return total;
+  }
 
   public String getTransaction() {
     return transaction;
   }
+
+  // private ProjectBudgetsCoAValidator validator;
 
   @Override
   public void prepare() throws Exception {
@@ -272,6 +404,106 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     return bd.doubleValue();
   }
 
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+      this.saveBasicBudgets();
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_BUDGETS_FLAGSHIP_RELATION);
+      relationsName.add(APConstants.PROJECT_INFO_RELATION);
+
+      project = projectManager.getProjectById(projectID);
+      project.setActiveSince(new Date());
+      project.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+      Collection<String> messages = this.getActionMessages();
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+
+      return NOT_AUTHORIZED;
+    }
+  }
+
+  /**
+   * 
+   */
+  public void saveBasicBudgets() {
+    Project projectDB = projectManager.getProjectById(projectID);
+
+
+    for (ProjectBudgetsFlagship projectBudget : projectDB.getProjectBudgetsFlagships().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+
+      if (project.getBudgetsFlagship() == null) {
+        project.setBudgetsFlagship(new ArrayList<>());
+      }
+      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
+        if (!project.getBudgetsFlagship().contains(projectBudget)) {
+          projectBudgetsFlagshipManager.deleteProjectBudgetsFlagship(projectBudget.getId());
+
+        }
+
+      }
+    }
+    if (project.getBudgetsFlagship() != null) {
+      for (ProjectBudgetsFlagship budgetsFlagshipUI : project.getBudgetsFlagship()) {
+        if (budgetsFlagshipUI != null) {
+          if (budgetsFlagshipUI.getId() == null) {
+            budgetsFlagshipUI.setCreatedBy(this.getCurrentUser());
+
+            budgetsFlagshipUI.setActiveSince(new Date());
+            budgetsFlagshipUI.setActive(true);
+            budgetsFlagshipUI.setProject(project);
+            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
+            budgetsFlagshipUI.setModificationJustification("");
+            budgetsFlagshipUI.setPhase(this.getActualPhase());
+
+            if (budgetsFlagshipUI.getCrpProgram() != null) {
+              projectBudgetsFlagshipManager.saveProjectBudgetsFlagship(budgetsFlagshipUI);
+            }
+
+
+          } else {
+            ProjectBudgetsFlagship ProjectBudgetDB =
+              projectBudgetsFlagshipManager.getProjectBudgetsFlagshipById(budgetsFlagshipUI.getId());
+            ProjectBudgetDB.setAmount(budgetsFlagshipUI.getAmount());
+            budgetsFlagshipUI.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+            budgetsFlagshipUI.setPhase(this.getActualPhase());
+            budgetsFlagshipUI.setActiveSince(ProjectBudgetDB.getActiveSince());
+            budgetsFlagshipUI.setActive(true);
+            budgetsFlagshipUI.setProject(project);
+            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
+            budgetsFlagshipUI.setModificationJustification("");
+            budgetsFlagshipUI.setModifiedBy(this.getCurrentUser());
+            budgetsFlagshipUI = projectBudgetsFlagshipManager.saveProjectBudgetsFlagship(budgetsFlagshipUI);
+          }
+
+
+        }
+
+
+      }
+
+    }
+  }
+
   public void setBudgetTypesList(List<BudgetType> budgetTypesList) {
     this.budgetTypesList = budgetTypesList;
   }
@@ -279,8 +511,6 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
-  // private ProjectBudgetsCoAValidator validator;
 
   public void setProject(Project project) {
     this.project = project;
@@ -293,6 +523,5 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
 }
