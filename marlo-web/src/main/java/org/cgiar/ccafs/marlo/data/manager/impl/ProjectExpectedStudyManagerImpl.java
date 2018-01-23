@@ -44,7 +44,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
 
   @Inject
-  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDA, PhaseDAO phaseDAOO,
+  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO, PhaseDAO phaseDAO,
     ProjectDAO projectDAO) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
     this.phaseDAO = phaseDAO;
