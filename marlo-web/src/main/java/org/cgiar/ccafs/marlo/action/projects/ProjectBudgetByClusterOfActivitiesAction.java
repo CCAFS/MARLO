@@ -55,10 +55,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {

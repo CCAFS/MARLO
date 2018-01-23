@@ -772,6 +772,29 @@
         <param name="projectID">${projectID}</param>
       </result>
     </action>
+    
+    <action name="budgetByFlagship"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByFlagshipAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/crp/views/projects/projectBudgetByFlagships.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/budgetByFlagship</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/budgetByFlagship</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+        <param name="cancel">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param> <param name="phaseID">${phaseID}</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
 		
 		<action name="{crp}/leverages"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectLeveragesAction">
