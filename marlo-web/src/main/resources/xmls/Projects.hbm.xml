@@ -253,7 +253,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.OtherContribution" />
         </set>
-        <set name="projectExpectedStudies" table="project_expected_studies" inverse="true" lazy="true" fetch="select">
+        <set name="projectExpectedStudies" table="project_expected_studies" order-by="id" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="project_id" not-null="true" />
             </key>

@@ -62,9 +62,7 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     ProjectExpectedStudy other = (ProjectExpectedStudy) obj;
     if (id == null) {
       if (other.id != null) {
@@ -160,15 +158,6 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public Integer getType() {
     return type;
-  }
-
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    return result;
   }
 
 
