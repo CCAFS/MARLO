@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.EmailLog;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -37,8 +38,8 @@ public class EmailLogMySQLDAO extends AbstractMarloDAO<EmailLog, Long> implement
   @Override
   public void deleteEmailLog(long emailLogId) {
     EmailLog emailLog = this.find(emailLogId);
-    emailLog.setActive(false);
-    this.save(emailLog);
+
+    this.delete(emailLog);
   }
 
   @Override

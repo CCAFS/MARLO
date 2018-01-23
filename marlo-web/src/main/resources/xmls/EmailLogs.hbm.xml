@@ -9,13 +9,13 @@
             <generator class="identity" />
         </id>
         <property name="to" type="string">
-            <column name="to" length="65535" />
+            <column name="to_email" length="65535" />
         </property>
         <property name="cc" type="string">
-            <column name="cc" length="65535" />
+            <column name="cc_email" length="65535" />
         </property>
         <property name="bbc" type="string">
-            <column name="bbc" length="65535" />
+            <column name="bbc_email" length="65535" />
         </property>
         <property name="subject" type="string">
             <column name="subject" length="65535" />
@@ -27,13 +27,13 @@
             <column name="tried" />
         </property>
         <property name="date" type="timestamp">
-            <column name="date" length="19" />
+            <column name="date_email" length="19" />
         </property>
         <property name="error" type="string">
-            <column name="error" length="65535" />
+            <column name="error_email" length="65535" />
         </property>
         <property name="succes" type="java.lang.Boolean">
-            <column name="succes" />
+            <column name="succes_email" />
         </property>
     </class>
 </hibernate-mapping>

@@ -14,6 +14,9 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
+import org.cgiar.ccafs.marlo.data.model.EmailLog;
+
 import java.util.Date;
 import java.util.Properties;
 
@@ -33,6 +36,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +48,14 @@ public class SendMailS {
 
   // Managers
   private APConfig config;
+  private EmailLogManager emailLogManager;
+  private final SessionFactory sessionFactory;
 
   @Inject
-  public SendMailS(APConfig config) {
+  public SendMailS(APConfig config, EmailLogManager emailLogManager, SessionFactory sessionFactory) {
     this.config = config;
+    this.emailLogManager = emailLogManager;
+    this.sessionFactory = sessionFactory;
   }
 
   /**
@@ -110,9 +118,19 @@ public class SendMailS {
       e1.printStackTrace();
     }
 
+    EmailLog emailLog = new EmailLog();
+    emailLog.setBbc(bbcEmail);
+    emailLog.setCc(ccEmail);
+    emailLog.setTo(bbcEmail);
+    emailLog.setDate(new Date());
+    emailLog.setMessage(messageContent);
+    emailLog.setSubject(subject);
+
+
     // Set the FROM and TO fields
     try {
       if (!config.isProduction()) {
+
         // Adding TEST words.
         // Set the Test Header to list the emails that will send in production
         StringBuilder testingHeader = new StringBuilder();
@@ -176,7 +194,7 @@ public class SendMailS {
 
       LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
-      ThreadSendMail thread = new ThreadSendMail(msg, subject);
+      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory);
       thread.start();
 
 
