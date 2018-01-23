@@ -17,7 +17,7 @@ CREATE TABLE `cross_cutting_scoring` (
  
  
   
- -- ----------------------------
+-- ----------------------------
 -- Records of cross_cutting_scoring
 -- ----------------------------
 INSERT INTO `cross_cutting_scoring` VALUES (0, '0-Not Targeted', 'Not Targeted',null);
@@ -25,7 +25,9 @@ INSERT INTO `cross_cutting_scoring` VALUES (1, '1-Significant', 'Significant',nu
 INSERT INTO `cross_cutting_scoring` VALUES (2, '2-Principal', 'Principal',null);
 
 
- 
+ALTER TABLE deliverables_info ADD cross_cutting_score_gender bigint(20) null; 
+ALTER TABLE deliverables_info ADD cross_cutting_score_youth bigint(20) null;
+ALTER TABLE deliverables_info ADD cross_cutting_score_capacity bigint(20) null;
  
   
   
