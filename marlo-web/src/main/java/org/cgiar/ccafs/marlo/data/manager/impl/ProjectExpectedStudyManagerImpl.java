@@ -112,7 +112,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         this.saveProjectExpectedStudyPhase(projectExpectedStudy.getPhase().getNext(),
           projectExpectedStudy.getProject().getId(), projectExpectedStudy);
       }
-    }
+    }u
     return projectExpectedStudyResult;
   }
 
