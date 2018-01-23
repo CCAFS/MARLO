@@ -61,15 +61,15 @@
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.input name="project.project.projectInfo.title" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.project.projectInfo.title" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
-              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable /]
             </div>
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
-              [@customForm.textArea name="project.project.projectInfo.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.project.projectInfo.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable /]
             </div> 
           
            

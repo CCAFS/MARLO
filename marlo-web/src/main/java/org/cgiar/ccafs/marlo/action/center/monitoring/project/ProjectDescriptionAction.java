@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProjectOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterFundingSourceType;
@@ -52,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OutcomeOutputs;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.TopicOutcomes;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -153,6 +155,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private GlobalUnitProjectManager globalUnitProjectManager;
 
+  private ProjectInfoManager projectInfoManager;
 
   private List<GlobalUnit> crps;
   private List<CenterProjectType> projectTypes;
@@ -174,7 +177,7 @@ public class ProjectDescriptionAction extends BaseAction {
     ICenterProjectLocationManager projectLocationService, LocElementManager locElementService,
     AuditLogManager auditLogService, GlobalUnitManager crpService, ICenterProjectTypeManager projectTypeService,
     ICenterProjectStatusManager projectStatusService, CenterFundingSyncTypeManager centerFundingSyncTypeManager,
-    GlobalUnitProjectManager globalUnitProjectManager) {
+    GlobalUnitProjectManager globalUnitProjectManager, ProjectInfoManager projectInfoManager) {
     super(config);
     this.centerService = centerService;
     this.projectService = projectService;
@@ -193,6 +196,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectStatusService = projectStatusService;
     this.centerFundingSyncTypeManager = centerFundingSyncTypeManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
+    this.projectInfoManager = projectInfoManager;
   }
 
   public Boolean bolValue(String value) {
@@ -518,16 +522,28 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
 
+
         // Get The Crp/Center/Platform where the project was created
-        GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(ProjectDB.getId());
-
-        // TODO add phase call the parameters
-        GlobalUnit crp = globalUnitProject.getGlobalUnit();
-
+        GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectID);
+        // add phase call the parameters
+        GlobalUnit globalUnit = globalUnitProject.getGlobalUnit();
+        ProjectInfo info = new ProjectInfo();
+        Phase phase = new Phase();
         // fill the project Info Phase
-        project.getProject().setProjectInfo(ProjectDB.getProject().getProjecInfoPhase(this.getCenterCrpPhase(crp)));
-
-
+        switch (globalUnit.getGlobalUnitType().getId().intValue()) {
+          case 1:
+            phase = this.getCenterCrpPhase(globalUnit);
+            info = projectInfoManager.getProjectInfoByProjectPhase(projectID, phase.getId());
+            project.getProject().setProjectInfo(info);
+            break;
+          case 2:
+            phase = this.getCurrentCenterPhase();
+            info = projectInfoManager.getProjectInfoByProjectPhase(projectID, phase.getId());
+            project.getProject().setProjectInfo(info);
+            break;
+          default:
+            break;
+        }
       }
 
 
@@ -606,6 +622,10 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getProjectCrosscutingTheme().setImpactAssessment(null);
       }
 
+      if (project.getProject() != null) {
+        project.setProject(null);
+      }
+
       if (project.getFundingSources() != null) {
         project.getFundingSources().clear();
       }
@@ -629,15 +649,28 @@ public class ProjectDescriptionAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
 
+      Phase phase = this.getCurrentCenterPhase();
+
       CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
       // Get The Crp/Center/Platform where the project was created
       GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectDB.getId());
 
-      // TODO add phase call the parameters
-      GlobalUnit crp = globalUnitProject.getGlobalUnit();
+      // add phase call the parameters
+      GlobalUnit globalUnit = globalUnitProject.getGlobalUnit();
 
-      Phase phase = this.getCenterCrpPhase(crp);
+      // fill the project Info Phase
+      switch (globalUnit.getGlobalUnitType().getId().intValue()) {
+        case 1:
+          phase = this.getCenterCrpPhase(globalUnit);
+          break;
+        case 2:
+          phase = this.getCurrentCenterPhase();
+          break;
+        default:
+          break;
+      }
+
 
       projectDB.getProject().getProjecInfoPhase(phase).setTitle(project.getProject().getProjectInfo().getTitle());
       projectDB.getProject().getProjecInfoPhase(phase)
