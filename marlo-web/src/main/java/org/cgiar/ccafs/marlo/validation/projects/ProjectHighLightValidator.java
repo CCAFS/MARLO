@@ -76,15 +76,12 @@ public class ProjectHighLightValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, ProjectHighlight highLigths, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
     this.checkFileIsValid(highLigths);
@@ -97,21 +94,21 @@ public class ProjectHighLightValidator extends BaseValidator {
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
+      ProjectSectionStatusEnum.HIGHLIGHT.getStatus(), action);
 
   }
 
   private void ValidateHightAuthor(BaseAction action, ProjectHighlight higligth) {
 
     if (!this.isValidString(higligth.getAuthor())) {
-      this.addMessage("Author");
-      this.addMissingField("reporting.projectHighligth.author");
+      action.addMessage("Author");
+      action.addMissingField("reporting.projectHighligth.author");
       action.getInvalidFields().put("input-highlight.author", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -119,8 +116,8 @@ public class ProjectHighLightValidator extends BaseValidator {
   private void ValidateHightLigth(BaseAction action, ProjectHighlight higligth) {
 
     if (higligth.getTypesids().size() == 0) {
-      this.addMessage(action.getText("reporting.projectHighligth.types").toLowerCase());
-      this.addMissingField("reporting.projectHighligth.types");
+      action.addMessage(action.getText("reporting.projectHighligth.types").toLowerCase());
+      action.addMissingField("reporting.projectHighligth.types");
       action.getInvalidFields().put("input-highlight.typesids", InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -130,8 +127,8 @@ public class ProjectHighLightValidator extends BaseValidator {
   private void ValidateHightTitle(BaseAction action, ProjectHighlight higligth) {
 
     if (!this.isValidString(higligth.getTitle())) {
-      this.addMessage(action.getText("Title"));
-      this.addMissingField("reporting.projectHighligth.title");
+      action.addMessage(action.getText("Title"));
+      action.addMissingField("reporting.projectHighligth.title");
       action.getInvalidFields().put("input-highlight.title", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -140,8 +137,8 @@ public class ProjectHighLightValidator extends BaseValidator {
   private void ValidateYear(BaseAction action, ProjectHighlight higligth) {
 
     if (!(higligth.getYear() > 0)) {
-      this.addMessage("Year");
-      this.addMissingField("reporting.projectHighligth.year");
+      action.addMessage("Year");
+      action.addMissingField("reporting.projectHighligth.year");
       action.getInvalidFields().put("input-highlight.year", InvalidFieldsMessages.EMPTYFIELD);
 
     }

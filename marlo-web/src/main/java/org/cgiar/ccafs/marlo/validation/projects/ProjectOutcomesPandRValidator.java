@@ -64,15 +64,12 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
     if (project != null) {
@@ -86,14 +83,14 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
 
               if (!(this.isValidString(projectOutcomePandr.getAnualProgress())
                 && this.wordCount(projectOutcomePandr.getAnualProgress()) <= 300)) {
-                this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": anualProgress");
+                action.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": anualProgress");
                 action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].anualProgress",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
               if (!(this.isValidString(projectOutcomePandr.getComunication())
                 && this.wordCount(projectOutcomePandr.getComunication()) <= 100)) {
-                this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": comunication");
+                action.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": comunication");
                 action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].comunication",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
@@ -107,8 +104,8 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
 
       if (!action.isProjectNew(project.getId())) {
         this.validateLessonsLearn(action, project);
-        if (this.validationMessage.toString().contains("Lessons")) {
-          this.replaceAll(validationMessage, "Lessons",
+        if (action.getValidationMessage().toString().contains("Lessons")) {
+          this.replaceAll(action.getValidationMessage(), "Lessons",
             "Lessons regarding partnerships and possible implications for the coming planning cycle");
           action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
             InvalidFieldsMessages.EMPTYFIELD);
@@ -116,17 +113,17 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
       }
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
       if (action.isReportingActive()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus());
+          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       } else {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus());
+          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       }
     }
   }

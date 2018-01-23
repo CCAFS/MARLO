@@ -82,9 +82,6 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
@@ -92,7 +89,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
         if (path.toFile().exists()) {
-          this.addMissingField("draft");
+          action.addMissingField("draft");
         }
       }
       action.getFieldErrors().clear();
@@ -118,7 +115,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
                 double subBudgets = remaining - currentAmount;
                 int intValue = (int) subBudgets;
                 if (intValue < 0) {
-                  this.addMessage(action.getText("projectBudgets.fundig"));
+                  action.addMessage(action.getText("projectBudgets.fundig"));
                   action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
                     InvalidFieldsMessages.EMPTYFIELD);
 
@@ -132,7 +129,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
           i++;
         }
         if (total < 0) {
-          this.addMessage(action.getText("projectBudgets.amount"));
+          action.addMessage(action.getText("projectBudgets.amount"));
           i = 0;
           for (ProjectBudget projectBudget : project.getBudgets()) {
             action.getInvalidFields().put("input-project.budgets[" + i + "].amount", InvalidFieldsMessages.EMPTYFIELD);
@@ -140,7 +137,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
         }
       } else {
-        this.addMessage(action.getText("projectBudgets"));
+        action.addMessage(action.getText("projectBudgets"));
         action.getInvalidFields().put("list-project.budgets",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
@@ -150,13 +147,13 @@ public class ProjectBudgetsValidator extends BaseValidator {
         System.out.println(action.getFieldErrors());
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.BUDGET.getStatus());
+        ProjectSectionStatusEnum.BUDGET.getStatus(), action);
 
       // Saving missing fields.
 

@@ -59,16 +59,13 @@ public class ProjectPartnerValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterProject project, CenterProgram selectedProgram, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("programImpact.action.draft");
+        baseAction.addMissingField("programImpact.action.draft");
       }
     }
 
@@ -78,12 +75,12 @@ public class ProjectPartnerValidator extends BaseValidator {
 
     if (project.getPartners() != null) {
       if (project.getPartners().size() == 0) {
-        this.addMessage(baseAction.getText("output.action.partner.required"));
+        baseAction.addMessage(baseAction.getText("output.action.partner.required"));
         baseAction.getInvalidFields().put("list-output.partners",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"partners"}));
       }
     } else {
-      this.addMessage(baseAction.getText("output.action.partner.required"));
+      baseAction.addMessage(baseAction.getText("output.action.partner.required"));
       baseAction.getInvalidFields().put("list-output.partners",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"partners"}));
     }
@@ -95,7 +92,7 @@ public class ProjectPartnerValidator extends BaseValidator {
     }
 
 
-    this.saveMissingFields(selectedProgram, project, "projectPartners");
+    this.saveMissingFields(selectedProgram, project, "projectPartners", baseAction);
 
   }
 
@@ -106,13 +103,13 @@ public class ProjectPartnerValidator extends BaseValidator {
 
     if (partner.getUsers() != null) {
       if (partner.getUsers().size() == 0) {
-        this.addMessage(baseAction.getText("output.action.partner.user"));
+        baseAction.addMessage(baseAction.getText("output.action.partner.user"));
         baseAction.getInvalidFields().put("list-project.partners[" + i + "].users",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"users"}));
 
       }
     } else {
-      this.addMessage(baseAction.getText("output.action.partner.user"));
+      baseAction.addMessage(baseAction.getText("output.action.partner.user"));
       baseAction.getInvalidFields().put("list-project.partners[" + i + "].users",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"users"}));
 
