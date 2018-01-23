@@ -851,15 +851,15 @@ public class ProjectListAction extends BaseAction {
       List<CenterProject> centerProjects =
         new ArrayList<>(selectedProgram.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
 
-
+      List<Project> pList = new ArrayList<>();
       projects = new ArrayList<>();
 
       for (CenterProject centerProject : centerProjects) {
-        projects.add(centerProject.getProject());
+        pList.add(centerProject.getProject());
       }
 
 
-      for (Project project : projects) {
+      for (Project project : pList) {
         /* Get The Crp/Center/Platform where the project was created */
         GlobalUnitProject globalUnitProject =
           globalUnitProjectManager.findByProjectIdOutOrigin(project.getId(), loggedCenter.getId());
@@ -871,7 +871,11 @@ public class ProjectListAction extends BaseAction {
           phase = this.getCenterCrpPhase(globalUnitProject.getGlobalUnit());
         }
 
-        project.setProjectInfo(project.getProjecInfoPhase(phase));
+        ProjectInfo projectInfo = project.getProjecInfoPhase(phase);
+
+        project.setProjectInfo(projectInfo);
+
+        projects.add(project);
 
       }
 
