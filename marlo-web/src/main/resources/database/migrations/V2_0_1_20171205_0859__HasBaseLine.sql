@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 ALTER TABLE `crp_programs`
 ADD COLUMN `base_line`  tinyint(1) NULL DEFAULT 0 AFTER `modification_justification`;
 

@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 drop table if exists crp_program_outcome_indicator; 
 CREATE TABLE `crp_program_outcome_indicator` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,

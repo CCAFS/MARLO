@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 drop table if EXISTS project_outcome_indicators;
 CREATE TABLE `project_outcome_indicators` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
