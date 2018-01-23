@@ -40,9 +40,6 @@ import javax.inject.Named;
 @Named
 public class CrpIndicatorsValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
@@ -64,17 +61,13 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
   public void validate(BaseAction action, List<CrpIndicatorReport> indicatorReports,
     IpLiaisonInstitution ipLiaisonInstitution, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(ipLiaisonInstitution, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
@@ -85,12 +78,12 @@ public class CrpIndicatorsValidator extends BaseValidator {
       try {
         if (crpIndicatorReport.getActual() == null || Double.parseDouble(crpIndicatorReport.getActual()) < 0) {
 
-          this.addMessage("crpIndicatorReport.validator.target");
+          action.addMessage("crpIndicatorReport.validator.target");
           action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } catch (Exception e) {
-        this.addMessage("crpIndicatorReport.validator.target");
+        action.addMessage("crpIndicatorReport.validator.target");
 
         action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].actual",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -98,12 +91,12 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
       try {
         if (crpIndicatorReport.getNextTarget() == null || Double.parseDouble(crpIndicatorReport.getNextTarget()) < 0) {
-          this.addMessage("crpIndicatorReport.validator.nextTarget");
+          action.addMessage("crpIndicatorReport.validator.nextTarget");
           action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } catch (Exception e) {
-        this.addMessage("crpIndicatorReport.validator.nextTarget");
+        action.addMessage("crpIndicatorReport.validator.nextTarget");
         action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
           InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -112,16 +105,16 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus());
+        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
     } else {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus());
+        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
     }
 
 

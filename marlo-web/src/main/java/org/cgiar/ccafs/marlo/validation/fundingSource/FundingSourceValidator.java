@@ -40,12 +40,6 @@ import javax.inject.Named;
 @Named
 public class FundingSourceValidator extends BaseValidator {
 
-  // This is not thread safe.
-  private boolean hasErros;
-
-  // This is not thread safe.
-  BaseAction action;
-
   private final GlobalUnitManager crpManager;
 
   private final InstitutionManager institutionManager;
@@ -84,44 +78,32 @@ public class FundingSourceValidator extends BaseValidator {
     return false;
   }
 
-  public boolean isHasErros() {
-    return hasErros;
-  }
-
-  public void setHasErros(boolean hasErros) {
-    this.hasErros = hasErros;
-  }
-
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
-
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     if (fundingSource.getFundingSourceInfo().getBudgetType() != null
       && fundingSource.getFundingSourceInfo().getBudgetType().getId() == null) {
       fundingSource.getFundingSourceInfo().setBudgetType(null);
     }
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
     if (!saving) {
       Path path = this.getAutoSaveFilePath(fundingSource, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
     if (!this.isValidString(fundingSource.getFundingSourceInfo().getTitle())) {
-      this.addMessage(action.getText("fundingSource.title"));
+      action.addMessage(action.getText("fundingSource.title"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (fundingSource.getFundingSourceInfo().getStartDate() == null) {
-      this.addMessage(action.getText("fundingSource.startDate"));
+      action.addMessage(action.getText("fundingSource.startDate"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.startDate",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (fundingSource.getFundingSourceInfo().getEndDate() == null) {
-      this.addMessage(action.getText("fundingSource.endDate"));
+      action.addMessage(action.getText("fundingSource.endDate"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -129,12 +111,12 @@ public class FundingSourceValidator extends BaseValidator {
     if (fundingSource.getFundingSourceInfo().getDirectDonor() == null
       || fundingSource.getFundingSourceInfo().getDirectDonor().getId() == null
       || fundingSource.getFundingSourceInfo().getDirectDonor().getId().longValue() == -1) {
-      this.addMessage(action.getText("fundingSource.institution.id"));
+      action.addMessage(action.getText("fundingSource.institution.id"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.directDonor.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonName())) {
-      this.addMessage(action.getText("fundingSource.contactPersonName"));
+      action.addMessage(action.getText("fundingSource.contactPersonName"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonName",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -143,18 +125,18 @@ public class FundingSourceValidator extends BaseValidator {
     if (this.hasIFPRI(fundingSource)) {
       if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
         if (fundingSource.getFundingSourceInfo().getPartnerDivision() == null) {
-          this.addMessage(action.getText("fundingSource.division"));
+          action.addMessage(action.getText("fundingSource.division"));
           action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
         if (fundingSource.getFundingSourceInfo().getPartnerDivision() != null) {
           if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId() == null) {
-            this.addMessage(action.getText("fundingSource.division"));
+            action.addMessage(action.getText("fundingSource.division"));
             action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
               InvalidFieldsMessages.EMPTYFIELD);
           } else {
             if (fundingSource.getFundingSourceInfo().getPartnerDivision().getId().longValue() == -1) {
-              this.addMessage(action.getText("fundingSource.division"));
+              action.addMessage(action.getText("fundingSource.division"));
               action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.partnerDivision.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
@@ -203,7 +185,7 @@ public class FundingSourceValidator extends BaseValidator {
 
 
           for (int i = 0; i < budgets.size(); i++) {
-            this.addMessage(action.getText("fundingSource.budgetWrongValue"));
+            action.addMessage(action.getText("fundingSource.budgetWrongValue"));
             action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
               InvalidFieldsMessages.WRONGVALUE);
 
@@ -221,7 +203,7 @@ public class FundingSourceValidator extends BaseValidator {
 
     if (action.hasSpecificities(APConstants.CRP_EMAIL_FUNDING_SOURCE)) {
       if (!this.isValidString(fundingSource.getFundingSourceInfo().getContactPersonEmail())) {
-        this.addMessage(action.getText("fundingSource.contactPersonEmail"));
+        action.addMessage(action.getText("fundingSource.contactPersonEmail"));
         action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonEmail",
           InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -229,18 +211,17 @@ public class FundingSourceValidator extends BaseValidator {
 
 
     if (!action.getFieldErrors().isEmpty()) {
-      hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));
       action.setCanEdit(true);
       action.setEditable(true);
 
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
     this.saveMissingFields(fundingSource, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
+      ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus(), action);
 
 
   }

@@ -561,8 +561,9 @@ form#CCAFS_deliverableList {
   background-color: #0b7ba6;
   border-radius: 5px;
   text-align: center;
-  margin-left: 20px;
+  margin-right: 10px;
   cursor: pointer;
+  float: right;
 }
 
 .deliverables-extended-version span {
@@ -576,6 +577,8 @@ form#CCAFS_deliverableList {
   color: #0b7ba6;
   cursor: pointer;
   font-size: 12px;
+  float: right;
+  margin-top: 3px;
 }
 
 .deliverableList .status-indicator {

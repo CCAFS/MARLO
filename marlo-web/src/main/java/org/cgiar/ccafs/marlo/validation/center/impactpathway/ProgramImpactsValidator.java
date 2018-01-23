@@ -61,16 +61,13 @@ public class ProgramImpactsValidator extends BaseValidator {
 
   public void validate(BaseAction baseAction, List<CenterImpact> researchImpacts, CenterProgram selectedProgram,
     boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField(baseAction.getText("programImpact.action.draft"));
+        baseAction.addMissingField(baseAction.getText("programImpact.action.draft"));
       }
     }
 
@@ -80,7 +77,7 @@ public class ProgramImpactsValidator extends BaseValidator {
     }
 
     if (researchImpacts.size() == 0) {
-      this.addMessage(baseAction.getText("programImpact.action.required"));
+      baseAction.addMessage(baseAction.getText("programImpact.action.required"));
       baseAction.getInvalidFields().put("list-researchImpacts",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Program Impacts"}));
 
@@ -92,7 +89,7 @@ public class ProgramImpactsValidator extends BaseValidator {
       this.validateProgramImpact(baseAction, researchImpact, i);
     }
 
-    this.saveMissingFields(selectedProgram, "programimpacts");
+    this.saveMissingFields(selectedProgram, "programimpacts", baseAction);
   }
 
   public void validateBeneficiaries(BaseAction baseAction, CenterImpactBeneficiary impactBeneficiary, int i, int j) {
@@ -105,17 +102,17 @@ public class ProgramImpactsValidator extends BaseValidator {
       if (impactBeneficiary.getResearchRegion().getId() != null) {
 
         if (impactBeneficiary.getResearchRegion().getId() == -1) {
-          this.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
+          baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
           baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].researchRegion.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
-        this.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
+        baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
         baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].researchRegion.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
+      baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.region", params));
       baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].researchRegion.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -123,17 +120,17 @@ public class ProgramImpactsValidator extends BaseValidator {
     if (impactBeneficiary.getBeneficiary() != null) {
       if (impactBeneficiary.getBeneficiary().getId() != null) {
         if (impactBeneficiary.getBeneficiary().getId() == -1) {
-          this.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
+          baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
           baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
-        this.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
+        baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
         baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
+      baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.focus", params));
       baseAction.getInvalidFields().put("input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -141,14 +138,14 @@ public class ProgramImpactsValidator extends BaseValidator {
     if (impactBeneficiary.getBeneficiary() != null) {
       if (impactBeneficiary.getBeneficiary().getId() != null) {
         if (impactBeneficiary.getBeneficiary().getBeneficiaryType().getId() == -1) {
-          this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+          baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
           baseAction.getInvalidFields().put(
             "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
-      this.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
+      baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary.type", params));
       baseAction.getInvalidFields().put(
         "input-impacts[" + i + "].beneficiaries[" + j + "].beneficiary.beneficiaryType.id",
         InvalidFieldsMessages.EMPTYFIELD);
@@ -176,11 +173,11 @@ public class ProgramImpactsValidator extends BaseValidator {
         if (researchImpact.getDescription() != null) {
           if (!this.isValidString(researchImpact.getDescription())
             && this.wordCount(researchImpact.getDescription()) <= 50) {
-            this.addMessage(baseAction.getText("programImpact.action.description.required", params));
+            baseAction.addMessage(baseAction.getText("programImpact.action.description.required", params));
             baseAction.getInvalidFields().put("input-impacts[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
           }
         } else {
-          this.addMessage(baseAction.getText("programImpact.action.description.required", params));
+          baseAction.addMessage(baseAction.getText("programImpact.action.description.required", params));
           baseAction.getInvalidFields().put("input-impacts[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
         }
 
@@ -190,18 +187,18 @@ public class ProgramImpactsValidator extends BaseValidator {
 
     if (researchImpact.getObjectiveValue() != null) {
       if (researchImpact.getObjectiveValue().length() < 1) {
-        this.addMessage(baseAction.getText("programImpact.action.objectiveValue.empty", params));
+        baseAction.addMessage(baseAction.getText("programImpact.action.objectiveValue.empty", params));
         baseAction.getInvalidFields().put("input-impacts[" + i + "].objectiveValue", InvalidFieldsMessages.CHECKBOX);
       }
     } else {
-      this.addMessage(baseAction.getText("programImpact.action.objectiveValue.empty", params));
+      baseAction.addMessage(baseAction.getText("programImpact.action.objectiveValue.empty", params));
       baseAction.getInvalidFields().put("input-impacts[" + i + "].objectiveValue", InvalidFieldsMessages.CHECKBOX);
     }
 
 
     if (researchImpact.getBeneficiaries() != null) {
       if (researchImpact.getBeneficiaries().size() == 0) {
-        this.addMessage(baseAction.getText("programImpact.action.beneficiary", params));
+        baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary", params));
         baseAction.getInvalidFields().put("list-impacts[" + i + "].beneficiaries",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"beneficiaries"}));
       } else {
@@ -211,7 +208,7 @@ public class ProgramImpactsValidator extends BaseValidator {
         }
       }
     } else {
-      this.addMessage(baseAction.getText("programImpact.action.beneficiary", params));
+      baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary", params));
       baseAction.getInvalidFields().put("list-impacts[" + i + "].beneficiaries",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"beneficiaries"}));
     }
