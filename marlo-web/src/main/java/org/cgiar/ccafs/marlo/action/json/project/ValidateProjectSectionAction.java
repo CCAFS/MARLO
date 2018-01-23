@@ -107,7 +107,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
           break;
         case EXPECTEDSTUDIES:
-          this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
+          this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
           break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
@@ -209,7 +209,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -266,6 +266,20 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         break;
 
+      case EXPECTEDSTUDIES:
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
+          this.getActualPhase().getYear(), sectionName);
+        section = new HashMap<String, Object>();
+        if (sectionStatus != null) {
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        } else {
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "empty");
+        }
+
+
+        break;
       case CASESTUDIES:
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
