@@ -101,9 +101,11 @@
             [/#if]
           </div>
           [#if action.getDeliverables(false,false)?has_content]
-            <h3 class="subTitle headTitle">Completed deliverables</h3>
-            <span class="extended-simple-version" data-toggle="modal" data-target=".completed-modal">Extended version</span>
-            <div class="deliverables-extended-version" data-toggle="modal" data-target=".completed-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+            <div class="deliverables-table-header">
+              <h3 class="subTitle headTitle">Completed deliverables</h3>
+              <span class="extended-simple-version" data-toggle="modal" data-target=".completed-modal">Extended version</span>
+              <div class="deliverables-extended-version" data-toggle="modal" data-target=".completed-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+            </div>
             <hr />
             [#-- Completed Extended table (Modal) --]
             <div class="modal fade extended-table-modal completed-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
@@ -121,10 +123,11 @@
           [/#if]
 
           [#if action.getDeliverables(false,true)?has_content]
-            <h3 class="subTitle headTitle">Cancelled deliverables</h3>
-            <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
-            <div class="deliverables-extended-version" data-toggle="modal" data-target=".cancelled-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
-            <hr />
+            <div class="deliverables-table-header">
+              <h3 class="subTitle headTitle">Cancelled deliverables</h3>
+              <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
+              <div class="deliverables-extended-version" data-toggle="modal" data-target=".cancelled-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+            </div>
             <hr />
             [#-- Cancelled Extended table (Modal) --]
             <div class="modal fade extended-table-modal cancelled-modal" tabindex="-1" role="dialog" aria-labelledby="extendedTableModal" aria-hidden="true">
