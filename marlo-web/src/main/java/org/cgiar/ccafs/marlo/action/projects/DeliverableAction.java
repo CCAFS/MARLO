@@ -2390,8 +2390,11 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == null) {
       deliverableInfoDb.setCrossCuttingCapacity(false);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(null);
     } else {
       deliverableInfoDb.setCrossCuttingCapacity(true);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(
+        deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreCapacity());
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == null) {
       deliverableInfoDb.setCrossCuttingNa(false);
@@ -2400,13 +2403,19 @@ public class DeliverableAction extends BaseAction {
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == null) {
       deliverableInfoDb.setCrossCuttingGender(false);
+      deliverableInfoDb.setCrossCuttingScoreGender(null);
     } else {
       deliverableInfoDb.setCrossCuttingGender(true);
+      deliverableInfoDb
+        .setCrossCuttingScoreGender(deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreGender());
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == null) {
       deliverableInfoDb.setCrossCuttingYouth(false);
+      deliverableInfoDb.setCrossCuttingScoreYouth(null);
     } else {
       deliverableInfoDb.setCrossCuttingYouth(true);
+      deliverableInfoDb
+        .setCrossCuttingScoreYouth(deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreYouth());
     }
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
@@ -2431,7 +2440,11 @@ public class DeliverableAction extends BaseAction {
 
     deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
+
+
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
+
+
     return deliverableBase;
   }
 

@@ -201,6 +201,7 @@
 		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
 		<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml"/>
 		<mapping resource="xmls/CrossCuttingScoring.hbm.xml"/>		
+		<mapping resource="xmls/EmailLogs.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
 
