@@ -26,7 +26,6 @@
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
@@ -145,7 +144,6 @@
 		<mapping resource="xmls/InstitutionsLocations.hbm.xml" />
 		<mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
 		<mapping resource="xmls/ProjectsInfo.hbm.xml" />
-
 		<mapping resource="xmls/CenterUsers.hbm.xml" />
 		<mapping resource="xmls/CenterAllTypes.hbm.xml" />
 		<mapping resource="xmls/CenterMilestones.hbm.xml" />
@@ -201,6 +199,7 @@
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
+		<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml"/>		
 	</session-factory>
 </hibernate-configuration>
 
