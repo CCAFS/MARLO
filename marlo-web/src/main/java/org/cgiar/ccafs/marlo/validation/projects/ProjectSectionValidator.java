@@ -112,6 +112,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   private final ProjectOtherContributionsValidator projectOtherContributionsValidator;
 
   private final ProjectOutputsValidator projectOutputsValidator;
+  private final ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
 
   @Inject
@@ -125,7 +126,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectCaseStudyValidation projectCaseStudyValidation, ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator,
     ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
     ProjectOtherContributionsValidator projectOtherContributionsValidator,
-    ProjectOutputsValidator projectOutputsValidator) {
+    ProjectOutputsValidator projectOutputsValidator, ProjectExpectedStudiesValidator projectExpectedStudiesValidator) {
     this.projectManager = projectManager;
     this.locationValidator = locationValidator;
     this.projectBudgetsValidator = projectBudgetsValidator;
@@ -145,7 +146,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectOutcomesPandRValidator = projectOutcomesPandRValidator;
     this.projectOtherContributionsValidator = projectOtherContributionsValidator;
     this.projectOutputsValidator = projectOutputsValidator;
-
+    this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
   }
 
 
@@ -542,7 +543,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-
   public void validateProjectBudgetsCoAs(BaseAction action, Long projectID) {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -554,6 +554,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
   }
+
 
   public void validateProjectDeliverables(BaseAction action, Long projectID) {
     // Getting the project information.
@@ -723,6 +724,17 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     project.setScopes(projectLocations);
 
     descriptionValidator.validate(action, project, false);
+  }
+
+  public void validateProjectExpectedStudies(BaseAction action, Long projectID) {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setExpectedStudies(project.getProjectExpectedStudies().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+    projectExpectedStudiesValidator.validate(action, project, false);
+
+
   }
 
   public void validateProjectLocations(BaseAction action, Long projectID) {
