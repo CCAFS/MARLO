@@ -123,56 +123,50 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
-  public void expectedStudiesNewData(List<ProjectExpectedStudy> expectedStudies) {
+  public void expectedStudiesNewData() {
 
-    for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+    for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
+      ProjectExpectedStudy projectExpectedStudyNew = null;
       if (projectExpectedStudy != null) {
-        if (projectExpectedStudy.getId() == null || projectExpectedStudy.getId() == -1) {
 
-          ProjectExpectedStudy projectExpectedStudyNew = new ProjectExpectedStudy();
+        if (projectExpectedStudy.getSrfSloIndicator() != null
+          && projectExpectedStudy.getSrfSloIndicator().getId() > 0) {
+          projectExpectedStudy.setSrfSloIndicator(
+            srfSloIndicatorManager.getSrfSloIndicatorById(projectExpectedStudy.getSrfSloIndicator().getId()));
+        }
+        if (projectExpectedStudy.getSrfSubIdo() != null && projectExpectedStudy.getSrfSubIdo().getId() > 0) {
+          projectExpectedStudy
+            .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectExpectedStudy.getSrfSubIdo().getId()));
+        }
+
+        if (projectExpectedStudy.getId() == null) {
+
+          projectExpectedStudyNew = new ProjectExpectedStudy();
           projectExpectedStudyNew.setActive(true);
           projectExpectedStudyNew.setCreatedBy(this.getCurrentUser());
           projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
           projectExpectedStudyNew.setModificationJustification("");
           projectExpectedStudyNew.setActiveSince(new Date());
-          Project project = projectManager.getProjectById(this.project.getId());
           projectExpectedStudyNew.setProject(project);
-          projectExpectedStudyNew.setComments(projectExpectedStudy.getComments());
-          projectExpectedStudyNew.setComposedId(projectExpectedStudy.getComposedId());
-          projectExpectedStudyNew.setOtherType(projectExpectedStudy.getOtherType());
           projectExpectedStudyNew.setPhase(this.getActualPhase());
-          projectExpectedStudyNew.setScope(projectExpectedStudy.getScope());
-          projectExpectedStudyNew.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
-          projectExpectedStudyNew.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
-          projectExpectedStudyNew.setTopicStudy(projectExpectedStudy.getTopicStudy());
-          projectExpectedStudyNew.setType(projectExpectedStudy.getType());
-          projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
-
-
+          projectExpectedStudyNew.setComposedId(projectExpectedStudy.getComposedId());
         } else {
 
-          ProjectExpectedStudy projectExpectedUpdate =
+          projectExpectedStudyNew =
             projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudy.getId());
-          projectExpectedUpdate.setActive(true);
-          projectExpectedUpdate.setCreatedBy(this.getCurrentUser());
-          projectExpectedUpdate.setModifiedBy(this.getCurrentUser());
-          projectExpectedUpdate.setModificationJustification("");
-          projectExpectedUpdate.setActiveSince(new Date());
-          projectExpectedUpdate.setPhase(this.getActualPhase());
-          projectExpectedUpdate.setComments(projectExpectedStudy.getComments());
-          projectExpectedUpdate.setComposedId(projectExpectedStudy.getComposedId());
-          projectExpectedUpdate.setOtherType(projectExpectedStudy.getOtherType());
-          projectExpectedUpdate.setPhase(this.getActualPhase());
-          projectExpectedUpdate.setScope(projectExpectedStudy.getScope());
-          projectExpectedUpdate.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
-          projectExpectedUpdate.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
-          projectExpectedUpdate.setTopicStudy(projectExpectedStudy.getTopicStudy());
-          projectExpectedUpdate.setType(projectExpectedStudy.getType());
-
-          projectExpectedUpdate = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedUpdate);
+          projectExpectedStudyNew.setModifiedBy(this.getCurrentUser());
 
 
         }
+        projectExpectedStudyNew.setComments(projectExpectedStudy.getComments());
+        projectExpectedStudyNew.setOtherType(projectExpectedStudy.getOtherType());
+        projectExpectedStudyNew.setScope(projectExpectedStudy.getScope());
+        projectExpectedStudyNew.setSrfSloIndicator(projectExpectedStudy.getSrfSloIndicator());
+        projectExpectedStudyNew.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
+        projectExpectedStudyNew.setTopicStudy(projectExpectedStudy.getTopicStudy());
+        projectExpectedStudyNew.setType(projectExpectedStudy.getType());
+        projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
+
       }
 
     }
@@ -344,8 +338,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
     if (this.isHttpPost()) {
-      if (project.getProjectActivities() != null) {
-        project.getProjectActivities().clear();
+      if (project.getExpectedStudies() != null) {
+        project.getExpectedStudies().clear();
+        // project.setIndicators(null);
       }
 
 
@@ -366,7 +361,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         project.setExpectedStudies(new ArrayList<>());
       }
       this.expectedStudiesPreviousData(project.getExpectedStudies());
-      this.expectedStudiesNewData(project.getExpectedStudies());
+      this.expectedStudiesNewData();
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
@@ -382,6 +377,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
+        if (this.getInvalidFields() == null) {
+          this.setInvalidFields(new HashMap<>());
+        }
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -447,7 +445,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      activitiesValidator.validate(this, project, true);
+      // activitiesValidator.validate(this, project, true);
+      if (project.getExpectedStudies() != null) {
+        for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
+          if (projectExpectedStudy.getSrfSloIndicator() != null
+            && projectExpectedStudy.getSrfSloIndicator().getId().longValue() == -1) {
+            projectExpectedStudy.setSrfSloIndicator(null);
+          }
+          if (projectExpectedStudy.getSrfSubIdo() != null
+            && projectExpectedStudy.getSrfSubIdo().getId().longValue() == -1) {
+            projectExpectedStudy.setSrfSubIdo(null);
+          }
+        }
+      }
+
     }
   }
 
