@@ -21,9 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.opensymphony.xwork2.inject.Inject;
 import org.hibernate.SessionFactory;
 
 @Named

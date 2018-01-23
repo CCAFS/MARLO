@@ -201,6 +201,7 @@
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
+		<mapping resource="xmls/CrossCuttingScoring.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
 
