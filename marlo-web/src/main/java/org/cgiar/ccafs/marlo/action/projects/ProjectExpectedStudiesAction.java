@@ -35,7 +35,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectExpectedStudiesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -69,7 +69,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private static final long serialVersionUID = 597647662288518417L;
 
 
-  private ProjectActivitiesValidator activitiesValidator;
+  private ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
 
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
@@ -107,8 +107,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
-    SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
-    HistoryComparator historyComparator) {
+    SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
+    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -118,7 +118,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.srfSloIndicatorManager = srfSloIndicatorManager;
 
     this.historyComparator = historyComparator;
-    this.activitiesValidator = activitiesValidator;
+    this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
 
   }
 
@@ -445,7 +445,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // activitiesValidator.validate(this, project, true);
+      //
       if (project.getExpectedStudies() != null) {
         for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
           if (projectExpectedStudy.getSrfSloIndicator() != null
@@ -458,6 +458,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
       }
+      projectExpectedStudiesValidator.validate(this, project, true);
 
     }
   }
