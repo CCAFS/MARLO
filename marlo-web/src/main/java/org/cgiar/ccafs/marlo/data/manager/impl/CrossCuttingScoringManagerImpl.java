@@ -22,11 +22,20 @@ import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named
 public class CrossCuttingScoringManagerImpl implements CrossCuttingScoringManager {
 
 
   private CrossCuttingScoringDAO crossCuttingDAO;
+
+
+  @Inject
+  public CrossCuttingScoringManagerImpl(CrossCuttingScoringDAO crossCuttingDAO) {
+    this.crossCuttingDAO = crossCuttingDAO;
+  }
 
   @Override
   public boolean existCrossCuttingScoring(long crossCuttingId) {

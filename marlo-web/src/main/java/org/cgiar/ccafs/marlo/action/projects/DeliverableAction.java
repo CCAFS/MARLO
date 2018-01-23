@@ -259,7 +259,7 @@ public class DeliverableAction extends BaseAction {
 
   private List<PartnerDivision> divisions;
 
-  private List<CrossCuttingScoring> crossCuttingScores;
+  private List<CrossCuttingScoring> crossCuttingDimensions;
 
 
   @Inject
@@ -279,7 +279,8 @@ public class DeliverableAction extends BaseAction {
     InstitutionManager institutionManager, MetadataElementManager metadataElementManager,
     DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
     IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
-    RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager) {
+    RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager,
+    CrossCuttingScoringManager crossCuttingManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -312,6 +313,7 @@ public class DeliverableAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
     this.partnerDivisionManager = partnerDivisionManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.crossCuttingManager = crossCuttingManager;
   }
 
 
@@ -527,8 +529,8 @@ public class DeliverableAction extends BaseAction {
   }
 
 
-  public List<CrossCuttingScoring> getCrossCuttingScores() {
-    return crossCuttingScores;
+  public List<CrossCuttingScoring> getCrossCuttingDimensions() {
+    return crossCuttingDimensions;
   }
 
 
@@ -1494,7 +1496,7 @@ public class DeliverableAction extends BaseAction {
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
       // Read all the cross cutting scoring from database
-      this.crossCuttingScores = this.crossCuttingManager.findAll();
+      this.crossCuttingDimensions = this.crossCuttingManager.findAll();
 
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
@@ -2279,8 +2281,8 @@ public class DeliverableAction extends BaseAction {
   }
 
 
-  public void setCrossCuttingScores(List<CrossCuttingScoring> crossCuttingScores) {
-    this.crossCuttingScores = crossCuttingScores;
+  public void setcrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingScores) {
+    this.crossCuttingDimensions = crossCuttingScores;
   }
 
   public void setCrps(Map<String, String> crps) {
