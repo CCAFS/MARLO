@@ -255,32 +255,18 @@ public class ProjectListAction extends BaseAction {
     Project project = new Project();
     project.setCreatedBy(this.getCurrentUser());
     project.setModifiedBy(this.getCurrentUser());
-    project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification("New expected Project created");
     project.setActive(true);
     project.setActiveSince(new Date());
     project.setCreateDate(new Date());
-
-    project.getProjecInfoPhase(phase).setScale(0);
-    project.getProjecInfoPhase(phase).setCofinancing(false);
-    project.getProjecInfoPhase(phase).setProjectEditLeader(false);
-    project.getProjecInfoPhase(phase).setPresetDate(new Date());
-    project.getProjecInfoPhase(phase).setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-    project.getProjecInfoPhase(phase).setAdministrative(new Boolean(false));
     project = projectManager.saveProject(project);
     projectID = project.getId();
 
     CenterProject centerProject = this.createCenterProject(project, true);
 
-    project.getProjecInfoPhase(phase).setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
-    project.getProjecInfoPhase(phase).setSummary(agreement.getDescription());
-    project.getProjecInfoPhase(phase).setStartDate(agreement.getStartDate());
-    project.getProjecInfoPhase(phase).setEndDate(agreement.getEndDate());
-
     centerProject.setSync(true);
     centerProject.setSyncDate(new Date());
     centerProject.setAutoFill(true);
     centerProject.setOcsCode(syncCode.trim());
-
 
     GlobalUnitProject globalUnitProject = new GlobalUnitProject();
     globalUnitProject.setActive(true);
@@ -296,6 +282,11 @@ public class ProjectListAction extends BaseAction {
     project = projectManager.saveProject(project);
 
     ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo.setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
+    projectInfo.setModificationJustification("New expected Project created");
+    projectInfo.setSummary(agreement.getDescription());
+    projectInfo.setStartDate(agreement.getStartDate());
+    projectInfo.setEndDate(agreement.getEndDate());
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
     projectInfo.setProjectEditLeader(false);
@@ -446,7 +437,6 @@ public class ProjectListAction extends BaseAction {
     Project project = new Project();
     project.setCreatedBy(this.getCurrentUser());
     project.setModifiedBy(this.getCurrentUser());
-    project.getProjecInfoPhase(this.getActualPhase()).setModificationJustification("New expected Project created");
     project.setActive(true);
     project.setActiveSince(new Date());
 
@@ -502,6 +492,11 @@ public class ProjectListAction extends BaseAction {
     project = projectManager.saveProject(project);
 
     ProjectInfo projectInfo = new ProjectInfo();
+    projectInfo.setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
+    projectInfo.setModificationJustification("New expected Project created");
+    projectInfo.setSummary(agreement.getDescription());
+    projectInfo.setStartDate(agreement.getStartDate());
+    projectInfo.setEndDate(agreement.getEndDate());
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
     projectInfo.setProjectEditLeader(false);
