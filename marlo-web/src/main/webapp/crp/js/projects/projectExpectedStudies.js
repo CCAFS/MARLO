@@ -12,10 +12,10 @@ function init() {
 
 function attachEvents() {
 
-  // Add a next User
+  // Add a Expected Study
   $('.addExpectedStudy').on('click', addExpectedStudy);
 
-  // Remove a next User
+  // Remove a Expected Study
   $('.removeExpectedStudy').on('click', removeExpectedStudy);
 
 }

@@ -44,7 +44,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
 
   @Inject
-  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO, PhaseDAO phaseDAO,
+  public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDA, PhaseDAO phaseDAOO,
     ProjectDAO projectDAO) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
     this.phaseDAO = phaseDAO;
@@ -112,7 +112,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         this.saveProjectExpectedStudyPhase(projectExpectedStudy.getPhase().getNext(),
           projectExpectedStudy.getProject().getId(), projectExpectedStudy);
       }
-    }u
+    }
     return projectExpectedStudyResult;
   }
 
