@@ -171,5 +171,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CustomParameter" />
         </set>
+        <set name="crossCuttingScores" table="cross_cutting_scoring" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring" />
+        </set>
 	</class>
 </hibernate-mapping>
