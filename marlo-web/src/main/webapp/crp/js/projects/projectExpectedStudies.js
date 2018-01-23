@@ -29,7 +29,6 @@ function addExpectedStudy() {
 }
 
 function removeExpectedStudy() {
-
   var $item = $(this).parents('.expectedStudy');
   $item.hide(function() {
     $item.remove();
@@ -38,8 +37,6 @@ function removeExpectedStudy() {
 }
 
 function updateIndexes() {
-
-// Update beneficiaries
   $(".expectedStudies-list").find(".expectedStudy").each(function(i,e) {
     $(e).setNameIndexes(1, i);
     $(e).find(".index").html(i + 1);
