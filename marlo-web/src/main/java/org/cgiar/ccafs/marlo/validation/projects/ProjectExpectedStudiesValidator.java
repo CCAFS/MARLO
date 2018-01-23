@@ -70,6 +70,9 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       project.setExpectedStudies(new ArrayList<>());
     }
 
+    if (project.getExpectedStudies().isEmpty()) {
+      action.addMessage(action.getText("empty expected"));
+    }
     int i = 0;
     for (ProjectExpectedStudy projectExpectedStudy : project.getExpectedStudies()) {
 
