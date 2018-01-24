@@ -234,7 +234,7 @@
           <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.fileResearch.id" value="${(fileResearch.id)!}" />
           [#-- Input File --]
           [#if editable]
-          <div class="fileUpload" style="display:${hasFileResearch?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+          <div class="fileUpload" style="display:${hasFileResearch?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSourceResearch.do"></div>
           [/#if]
           [#-- Uploaded File --]
           <p class="fileUploaded textMessage checked" style="display:${hasFileResearch?string('block','none')}">
