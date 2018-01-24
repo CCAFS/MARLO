@@ -164,9 +164,8 @@
         <div class="summariesOptions">
           [#list reportsTypes as reportType]
             <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-              
-              [#-- CHRISTIAN PORFAVOR VALIDAR AQUI --]
-              [#if false]
+              [#-- Temporal Validation --]
+              [#if action.canAcessSumaries()]
                 [#list reportType.reportsList as report]
                   [#if report.active][@reportMacro report /][/#if]
                 [/#list]
