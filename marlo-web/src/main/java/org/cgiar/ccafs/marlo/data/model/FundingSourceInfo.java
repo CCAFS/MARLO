@@ -91,6 +91,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private Double grantAmount;
 
+  @Expose
+  private FileDB fileResearch;
+
 
   public FundingSourceInfo() {
   }
@@ -189,24 +192,29 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public FileDB getFileResearch() {
+    return fileResearch;
+  }
+
+
   public String getFinanceCode() {
     return financeCode;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
   }
 
+
   public Double getGrantAmount() {
     return grantAmount;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -214,7 +222,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -240,6 +247,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
+
   public Date getStartDate() {
     return startDate;
   }
@@ -248,7 +256,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public Integer getStatus() {
     return status;
   }
-
 
   public String getStatusName() {
     if (status != null && status.intValue() != -1) {
@@ -265,10 +272,10 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return synced;
   }
 
+
   public Date getSyncedDate() {
     return syncedDate;
   }
-
 
   public String getTitle() {
     return title;
@@ -291,6 +298,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public boolean isGlobal() {
     return global;
   }
@@ -304,7 +312,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setContactPersonEmail(String contactPersonEmail) {
     this.contactPersonEmail = contactPersonEmail;
   }
-
 
   public void setContactPersonName(String contactPersonName) {
     this.contactPersonName = contactPersonName;
@@ -322,6 +329,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.endDate = endDate;
   }
 
+
   public void setExtensionDate(Date extensionDate) {
     this.extensionDate = extensionDate;
   }
@@ -329,6 +337,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   public void setFile(FileDB file) {
     this.file = file;
+  }
+
+
+  public void setFileResearch(FileDB fileResearch) {
+    this.fileResearch = fileResearch;
   }
 
 
@@ -341,11 +354,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.fundingSource = fundingSource;
   }
 
-
   public void setGlobal(boolean global) {
     this.global = global;
   }
-
 
   public void setGrantAmount(Double grantAmount) {
     this.grantAmount = grantAmount;
@@ -371,27 +382,29 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.partnerDivision = partnerDivision;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
 
-
   public void setStatus(Integer status) {
     this.status = status;
   }
-
 
   public void setSynced(Boolean synced) {
     this.synced = synced;
   }
 
+
   public void setSyncedDate(Date syncedDate) {
     this.syncedDate = syncedDate;
   }
+
 
   public void setTitle(String title) {
     this.title = title;
@@ -401,6 +414,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setW1w2(Boolean w1w2) {
     this.w1w2 = w1w2;
   }
+
 
   public void updateFundingSourceInfo(FundingSourceInfo fundingSourceInfoUpdate) {
     this.setBudgetType(fundingSourceInfoUpdate.getBudgetType());
@@ -419,6 +433,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.setDirectDonor(fundingSourceInfoUpdate.getDirectDonor());
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
+    this.setFileResearch(fundingSourceInfoUpdate.getFileResearch());
   }
 
 }
