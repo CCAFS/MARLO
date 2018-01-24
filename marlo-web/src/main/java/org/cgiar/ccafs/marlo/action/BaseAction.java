@@ -1100,9 +1100,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
-    String paramsRefactor[] = Arrays.copyOf(params, params.length);
-    paramsRefactor[0] = paramsRefactor[0] + ":" + phase.getDescription() + ":" + phase.getYear();
-    return this.getText(permission, paramsRefactor);
+    // TODO global unit.
+    if (phase != null && phase.getId() != null) {
+
+      String paramsRefactor[] = Arrays.copyOf(params, params.length);
+      paramsRefactor[0] = paramsRefactor[0] + ":" + phase.getDescription() + ":" + phase.getYear();
+      return this.getText(permission, paramsRefactor);
+    } else {
+
+      String paramsRefactor[] = Arrays.copyOf(params, params.length);
+
+      return this.getText(permission, paramsRefactor);
+    }
 
   }
 
