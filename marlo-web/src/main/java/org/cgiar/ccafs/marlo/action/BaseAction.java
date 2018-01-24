@@ -1582,12 +1582,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Return the number of flagship the the project contribute it
+   * Check if the project contributes two or more flagships
    * 
    * @param projectID - the project ID
-   * @return number of the flagship that the project contribute
+   * @return true if the project contribute two or more flagships
    */
-  public int getCountProjectFlagships(long projectID) {
+  public boolean getCountProjectFlagships(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
     if (project != null) {
@@ -1597,11 +1597,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList()));
         if (projectFocuses != null) {
-          return projectFocuses.size();
+          if (projectFocuses.size() >= 2) {
+            return true;
+          }
         }
       }
     }
-    return 0;
+    return false;
   }
 
   public List<Crp> getCrpCategoryList(String category) {
