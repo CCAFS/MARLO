@@ -154,26 +154,32 @@ function init() {
     onChangeFundingType(optionValue);
   });
 
-  // Set file upload (blueimp-tmpl)
+  /**
+   * File upload (blueimp-tmpl)
+   */
+
   var $uploadBlock = $('.fileUploadContainer');
-  var $fileUpload = $uploadBlock.find('.upload')
+  var $fileUpload = $uploadBlock.find('.upload');
   $fileUpload.fileupload({
       dataType: 'json',
       start: function(e) {
-        $uploadBlock.addClass('blockLoading');
+        var $ub = $(e.target).parents('.fileUploadContainer');
+        $ub.addClass('blockLoading');
       },
       stop: function(e) {
-        $uploadBlock.removeClass('blockLoading');
+        var $ub = $(e.target).parents('.fileUploadContainer');
+        $ub.removeClass('blockLoading');
       },
       done: function(e,data) {
         var r = data.result;
         console.log(r);
         if(r.saved) {
-          $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
-          $uploadBlock.find('.textMessage').show();
-          $uploadBlock.find('.fileUpload').hide();
+          var $ub = $(e.target).parents('.fileUploadContainer');
+          $ub.find('.textMessage .contentResult').html(r.fileFileName);
+          $ub.find('.textMessage').show();
+          $ub.find('.fileUpload').hide();
           // Set file ID
-          $('input#fileID').val(r.fileID);
+          $ub.find('input.fileID').val(r.fileID);
         }
       },
       progressall: function(e,data) {
@@ -181,13 +187,22 @@ function init() {
       }
   });
 
+  // Prepare data
+  $fileUpload.bind('fileuploadsubmit', function(e,data) {
+
+  });
+
   // Remove file event
   $uploadBlock.find('.removeIcon').on('click', function() {
-    $uploadBlock.find('.textMessage .contentResult').html("");
-    $uploadBlock.find('.textMessage').hide();
-    $uploadBlock.find('.fileUpload').show();
-    $('input#fileID').val('');
+    var $ub = $(this).parents('.fileUploadContainer');
+    $ub.find('.textMessage .contentResult').html("");
+    $ub.find('.textMessage').hide();
+    $ub.find('.fileUpload').show();
+    $ub.find('input.fileID').val('');
+    $ub.find('input.outcomeID').val('');
   });
+
+  /** End File upload* */
 
   // Add Principal investigator auto-complete
   addContactAutoComplete();

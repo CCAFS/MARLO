@@ -216,30 +216,40 @@
           [/#if]
         </div>
       </div>
+      <hr />
       
-      [#-- Upload bilateral contract --]
-      <div class="form-group fileUploadContainer">
-        <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign hasFile = fundingSource.fundingSourceInfo.file?? && fundingSource.fundingSourceInfo.file.id?? /]
-        <input id="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(fundingSource.fundingSourceInfo.file.id)!}" />
-        [#-- Input File --]
-        [#if editable]
-        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
-        [/#if]
-        [#-- Uploaded File --]
-        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if fundingSource.fundingSourceInfo.file??]${(fundingSource.fundingSourceInfo.file.fileName)!('No file name')} [/#if]</span> 
-          [#if editable]<span class="removeIcon"> </span> [/#if]
-        </p>
+      [#--  Does this study involve research with human subjects? --]
+      [#if true]
+      <div class="form-group">
+        <label>[@s.text name="Does this study involve research with human subjects?" /]:</label>
+        [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.humanSubjects" label="Yes" value="true" checked=false cssClass="humanSubjects-yes" cssClassLabel="radio-label-yes"/]
+        [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.humanSubjects" label="No" value="false" checked=true cssClass="humanSubjects-no" cssClassLabel="radio-label-no"/]
+        
+        [#-- Upload File (Human subjects research) fileResearch --]
+        <div class="form-group fileUploadContainer">
+          <label>[@customForm.text name="fundingSource.uploadHumanSubjects" readText=!editable /]:</label>
+          [#assign hasFileResearch = (fundingSource.fundingSourceInfo.fileResearch.id??)!false /]
+          [#assign fileResearch = (fundingSource.fundingSourceInfo.fileResearch)!{} /]
+          <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.fileResearch.id" value="${(fileResearch.id)!}" />
+          [#-- Input File --]
+          [#if editable]
+          <div class="fileUpload" style="display:${hasFileResearch?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+          [/#if]
+          [#-- Uploaded File --]
+          <p class="fileUploaded textMessage checked" style="display:${hasFileResearch?string('block','none')}">
+            <span class="contentResult">${(fileResearch.fileName)!('No file name')}</span> 
+            [#if editable]<span class="removeIcon"> </span> [/#if]
+          </p>
+        </div>
+        
       </div>
-       
+      <hr />
+      [/#if]
       
       <div class="form-group">
         <div class="row">
           [#-- Funding Window --]
           <div class="col-md-6 metadataElement-fundingTypeId">
-
-          
             [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
@@ -267,14 +277,31 @@
         </div>
       </div>
       
+      [#-- Upload bilateral contract --]
+      <div class="form-group fileUploadContainer">
+        <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
+        [#assign hasFile = (fundingSource.fundingSourceInfo.file.id??)!false /]
+        [#assign file = (fundingSource.fundingSourceInfo.file)!{} /]
+        <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(file.id)!}" />
+        [#-- Input File --]
+        [#if editable]
+        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+        [/#if]
+        [#-- Uploaded File --]
+        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+          <span class="contentResult">${(file.fileName)!('No file name')}</span> 
+          [#if editable]<span class="removeIcon"> </span>[/#if]
+        </p>
+      </div>
+      <hr />
+      
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-      
-      <br />
+      <hr />
         
       <div class="form-group-donor">
         [#-- Direct Donor --]
@@ -282,13 +309,11 @@
           <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-             [#if editable]
-           
-            [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
-           [#else]
-             <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
-             
-             [/#if]
+            [#if editable]
+              [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
+            [#else]
+              <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
+            [/#if]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
@@ -298,12 +323,11 @@
           <div class="col-md-12 metadataElement-originalDonorName">
             <label for="">[@s.text name="projectCofunded.donor" /]:</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-             [#if editable]
-            [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
-             [#else]
-             <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
-             
-             [/#if]
+            [#if editable]
+              [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            [#else]
+              <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
+            [/#if]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
