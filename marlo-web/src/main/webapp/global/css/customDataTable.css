@@ -18,10 +18,16 @@ table tr:first-child th:last-child{
     border-top-right-radius: 5px;
 }
 
-
 .dataTables_wrapper {
-    
   margin-bottom: 30px;
+}
+
+#deliverables_wrapper.dataTables_wrapper {
+  margin-bottom: 20px;
+}
+
+.deliverables-table-header{
+  margin-top: 30px;
 }
 
 /* Search Bar */
