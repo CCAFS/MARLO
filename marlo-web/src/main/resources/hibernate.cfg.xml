@@ -200,8 +200,10 @@
 		<mapping resource="xmls/PlaAgreement.hbm.xml" />
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
-	 <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
-	 <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
+	  <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
+	  <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
+		<mapping resource="xmls/EmailLogs.hbm.xml"/>
+		
 	</session-factory>
 </hibernate-configuration>
 
