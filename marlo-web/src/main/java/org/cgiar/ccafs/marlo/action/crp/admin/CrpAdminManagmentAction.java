@@ -431,7 +431,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase() != null && cl.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (ccEmail.isEmpty()) {
@@ -517,7 +518,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase() != null && cl.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (ccEmail.isEmpty()) {
