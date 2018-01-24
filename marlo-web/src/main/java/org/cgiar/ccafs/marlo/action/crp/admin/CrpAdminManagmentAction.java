@@ -658,19 +658,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
     // Subject
-    String managementRoleAcronym = this.getText("programManagement.role.acronym");
-    String subject =
-      this.getText("email.programManagement.assigned.subject", new String[] {crp, managementRoleAcronym});
+    String subject = this.getText("email.programManagement.assigned.subject", new String[] {crp});
 
-    String managementRole =
-      this.getText("programManagement.role") + " (" + this.getText("programManagement.role.acronym") + ")";
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.programManagement.assigned",
-      new String[] {managementRole, crp, this.getText("email.programManagement.responsibilities")}));
+      new String[] {crp, this.getText("email.programManagement.responsibilities")}));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
