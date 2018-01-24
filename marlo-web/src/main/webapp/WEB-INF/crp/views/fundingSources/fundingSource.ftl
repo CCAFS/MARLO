@@ -221,15 +221,16 @@
       [#--  Does this study involve research with human subjects? --]
       [#if true]
       <div class="form-group">
-        <label>[@s.text name="Does this study involve research with human subjects?" /]:</label>
-        [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.humanSubjects" label="Yes" value="true" checked=false cssClass="humanSubjects-yes" cssClassLabel="radio-label-yes"/]
-        [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.humanSubjects" label="No" value="false" checked=true cssClass="humanSubjects-no" cssClassLabel="radio-label-no"/]
+        [#assign hasHumanSubjects = true /]
+        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]:</label>
+        [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.humanSubjects" label="Yes" value="true" checked=hasHumanSubjects cssClass="humanSubjects-yes" cssClassLabel="radio-label-yes"/]
+        [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.humanSubjects" label="No" value="false" checked=!hasHumanSubjects cssClass="humanSubjects-no" cssClassLabel="radio-label-no"/]
         
         [#-- Upload File (Human subjects research) fileResearch --]
-        <div class="form-group fileUploadContainer">
+        <div class="form-group fileUploadContainer" style="display:${hasHumanSubjects?string('block', 'none')}">
           <label>[@customForm.text name="fundingSource.uploadHumanSubjects" readText=!editable /]:</label>
-          [#assign hasFileResearch = (fundingSource.fundingSourceInfo.fileResearch.id??)!false /]
           [#assign fileResearch = (fundingSource.fundingSourceInfo.fileResearch)!{} /]
+          [#assign hasFileResearch = (fileResearch.id??)!false /]
           <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.fileResearch.id" value="${(fileResearch.id)!}" />
           [#-- Input File --]
           [#if editable]
@@ -237,8 +238,7 @@
           [/#if]
           [#-- Uploaded File --]
           <p class="fileUploaded textMessage checked" style="display:${hasFileResearch?string('block','none')}">
-            <span class="contentResult">${(fileResearch.fileName)!('No file name')}</span> 
-            [#if editable]<span class="removeIcon"> </span> [/#if]
+            <span class="contentResult">${(fileResearch.fileName)!('No file name')}</span> [#if editable]<span class="removeIcon"> </span> [/#if]
           </p>
         </div>
         
@@ -280,8 +280,8 @@
       [#-- Upload bilateral contract --]
       <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign hasFile = (fundingSource.fundingSourceInfo.file.id??)!false /]
         [#assign file = (fundingSource.fundingSourceInfo.file)!{} /]
+        [#assign hasFile = (file.id??)!false /]
         <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(file.id)!}" />
         [#-- Input File --]
         [#if editable]
@@ -289,8 +289,7 @@
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">${(file.fileName)!('No file name')}</span> 
-          [#if editable]<span class="removeIcon"> </span>[/#if]
+          <span class="contentResult">${(file.fileName)!('No file name')}</span> [#if editable]<span class="removeIcon"> </span>[/#if]
         </p>
       </div>
       <hr />
