@@ -3199,6 +3199,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       int totalSections = 0;
       int deliverableSection = 0;
       int budgetCoASection = 0;
+      int budgetFlagshipSection = 0;
       int outcomeSection = 0;
       int caseStudySection = 0;
       int highlightSection = 0;
@@ -3311,17 +3312,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   totalSections++;
                 }
                 break;
+              case BUDGETBYFLAGSHIP:
+                if (budgetFlagshipSection == 0) {
+                  budgetFlagshipSection = 1;
+                  totalSections++;
+                }
+                break;
             }
 
           }
         }
-        if (budgetCoASection == 1) {
+
+        if (budgetCoASection == 1 && budgetFlagshipSection == 0) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 9;
           } else {
             return totalSections == 8;
           }
-
+        } else if (budgetCoASection == 0 && budgetFlagshipSection == 1) {
+          return totalSections == 8;
+        } else if (budgetCoASection == 1 && budgetFlagshipSection == 1) {
+          if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
+            return totalSections == 10;
+          } else {
+            return totalSections == 9;
+          }
         } else {
 
           if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
