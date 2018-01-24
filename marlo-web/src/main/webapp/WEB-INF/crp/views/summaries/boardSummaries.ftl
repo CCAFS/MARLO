@@ -146,29 +146,38 @@
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
 <section class="container">
-  <article id="" class="" > 
-    [#--  Reports Tabs --]
-    <div class="summariesButtons col-md-3">
-      [#list reportsTypes as reportType]
-        <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
-          <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
-        </div>
-      [/#list]
-    </div>
-    [#--  Reports Content --]
-    <div class="summariesContent col-md-9" style="min-height:550px;">
-      <h3 class="headTitle text-center">Summaries</h3>
-      <div class="loading" style="display:none"></div>
-      <div class="summariesOptions">
+  <article id="" class="">
+    
+    
+      [#--  Reports Tabs --]
+      <div class="summariesButtons col-md-3">
         [#list reportsTypes as reportType]
-        <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-          [#list reportType.reportsList as report]
-            [#if report.active][@reportMacro report /][/#if]
-          [/#list]
-        </div>
-        [/#list] 
+          <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
+            <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
+          </div>
+        [/#list]
       </div>
-    </div> 
+      [#--  Reports Content --]
+      <div class="summariesContent col-md-9" style="min-height:550px;">
+        <h3 class="headTitle text-center">Summaries</h3>
+        <div class="loading" style="display:none"></div>
+        <div class="summariesOptions">
+          [#list reportsTypes as reportType]
+            <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
+              
+              [#-- CHRISTIAN PORFAVOR VALIDAR AQUI --]
+              [#if false]
+                [#list reportType.reportsList as report]
+                  [#if report.active][@reportMacro report /][/#if]
+                [/#list]
+              [#else]
+                <div class="borderBox text-center"><p>This section is under maintenance and will be available soon.</p></div>
+              [/#if]
+            </div>
+          [/#list] 
+        </div>
+      </div>
+      
   </article>
 </section>
 
