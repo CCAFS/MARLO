@@ -128,7 +128,7 @@ public class DeliverableListAction extends BaseAction {
       deliverableInfo.setDeliverable(deliverable);
       deliverableInfo.setPhase(phase);
       deliverableInfo.setYear(this.getCurrentCycleYear());
-
+      deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
       deliverableInfo.setModifiedBy(this.getCurrentUser());
       deliverableInfo.setModificationJustification("New expected deliverable created");
       deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
