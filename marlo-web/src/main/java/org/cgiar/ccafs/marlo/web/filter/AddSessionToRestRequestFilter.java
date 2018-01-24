@@ -13,7 +13,8 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.interceptor;
+package org.cgiar.ccafs.marlo.web.filter;
+
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
@@ -21,10 +22,17 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
 
-import javax.inject.Inject;
+import java.io.IOException;
 
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.session.Session;
@@ -32,25 +40,33 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RestApiAuthorizationInterceptor extends AbstractInterceptor {
-
-  private static final long serialVersionUID = 3747497854060930008L;
-
-  private static final Logger LOG = LoggerFactory.getLogger(RestApiAuthorizationInterceptor.class);
-
-  private final BaseSecurityContext securityContext;
-
-  private final CrpManager crpManager;
+/**
+ * Our REST Requests need to have a CRP or Center in the session in order to pass
+ * any authorization checks.
+ * 
+ * @author GrantL
+ */
+@Named("AddSessionToRestRequestFilter")
+public class AddSessionToRestRequestFilter implements Filter {
 
   @Inject
-  public RestApiAuthorizationInterceptor(BaseSecurityContext securityContext, CrpManager crpManager) {
-    this.securityContext = securityContext;
-    this.crpManager = crpManager;
-  }
+  private BaseSecurityContext securityContext;
 
+  @Inject
+  private CrpManager crpManager;
+
+  private final Logger LOG = LoggerFactory.getLogger(AddSessionToRestRequestFilter.class);
 
   @Override
-  public String intercept(ActionInvocation invocation) throws Exception {
+  public void destroy() {
+  }
+
+  /**
+   * Filters requests to remove URL-based session identifiers.
+   */
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    throws IOException, ServletException {
 
     Subject subject = securityContext.getSubject();
 
@@ -70,16 +86,21 @@ public class RestApiAuthorizationInterceptor extends AbstractInterceptor {
       session.setAttribute(APConstants.SESSION_CRP, bigData);
     }
 
-
     if (securityContext.hasPermission(Permission.FULL_REST_API_PERMISSION)) {
-      return invocation.invoke();
+      chain.doFilter(request, response);
+    } else {
+
+      String message = "User with id: " + subject.getPrincipal() + ", does not have permission to access rest api";
+
+      LOG.error(message);
+
+      throw new AuthorizationException(message);
     }
 
-    String message = "User with id: " + subject.getPrincipal() + ", does not have permission to access rest api";
-
-    LOG.error(message);
-
-    throw new AuthorizationException(message);
   }
 
+  @Override
+  public void init(FilterConfig config) throws ServletException {
+    LOG.debug("initializing AddSessionToRestRequestFilter");
+  }
 }

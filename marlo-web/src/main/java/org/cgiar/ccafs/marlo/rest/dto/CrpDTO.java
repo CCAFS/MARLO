@@ -17,14 +17,18 @@ package org.cgiar.ccafs.marlo.rest.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 public class CrpDTO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   private Long id;
 
+  @NotNull
   private String name;
 
+  @NotNull
   private String acronym;
 
   private Integer category;
