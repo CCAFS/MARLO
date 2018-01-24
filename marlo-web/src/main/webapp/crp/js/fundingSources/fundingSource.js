@@ -73,7 +73,7 @@ function init() {
   // Add Data Table
   addDataTable();
 
-  // Lead partner
+  // Partner(s) managing the funding source
   $(".institution").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -406,7 +406,6 @@ function checkLeadPartnerItems(block) {
 
   // Check if CIAT is in the partners list
   var CIAT_ID = 46;
-  console.log(">> " + $('input.fId').val());
   if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
     allowExtensionDate = true;
@@ -645,7 +644,7 @@ function settingDate(start,end,extensionDate) {
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
           if(allowExtensionDate) {
-            $(extensionDate).datepicker("option", "minDate", selectedDate);
+            // $(extensionDate).datepicker("option", "minDate", selectedDate);
           }
         }
         refreshYears();
@@ -698,8 +697,17 @@ function settingDate(start,end,extensionDate) {
 
   // Event when a datelabel is clicked
   $('.dateLabel').on('click', function() {
+    var $dateInput = $(this).parent().find('input');
+    var $dateLabel = $(this);
     if(!isSynced) {
-      $(this).parent().find('input').datepicker("show");
+      $dateInput.datepicker("show");
+
+      // Set a Date if the input is empty
+      if(!$dateInput.val()) {
+        $dateInput.datepicker("setDate", new Date());
+        $dateLabel.html(getDateLabel($dateInput));
+        refreshYears();
+      }
     }
   });
 
@@ -708,6 +716,9 @@ function settingDate(start,end,extensionDate) {
     if(!isSynced) {
       $(this).parent().find('input').val('');
       $(this).parent().find('.dateLabel').text('');
+
+      // Clear endDate maxlimit
+      $(to).datepicker("option", "maxDate", "");
       refreshYears();
     }
   });

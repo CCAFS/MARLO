@@ -9,6 +9,7 @@ function init() {
 
   /* Init Select2 plugin */
   $('.outcomes-list select').select2();
+
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
 
@@ -82,6 +83,23 @@ function attachEvents() {
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
   $('.removeAssumption').on('click', removeAssumption);
+
+  // Add an baseline indicator
+  $('.addBaselineIndicator').on('click', addBaselineIndicator);
+  // Remove baseline indicator
+  $('.removeBaselineIndicator').on('click', removeBaselineIndicator);
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    // e.target // newly activated tab
+    // e.relatedTarget // previous active tab
+    var $parent = $(e.target).parents('.outcome');
+    var $selects = $parent.find('select');
+    var $textAreas = $parent.find('textarea');
+    $selects.select2({
+      width: '100%'
+    });
+    $textAreas.autoGrow();
+  })
 
   // PopUp Select SubIdos (Graphic)
   $(".selectSubIDO").on("click", function() {
@@ -286,7 +304,7 @@ function addAssumption() {
   var $item = $('#assumption-template').clone(true).removeAttr("id");
   $assumptionsList.append($item);
   updateAllIndexes();
-// Hide empty message
+  // Hide empty message
   $(this).parents('.subIdo').find('.assumptions-list p.message').hide();
   $item.show('slow');
 
@@ -302,124 +320,116 @@ function removeAssumption() {
 }
 
 /**
+ * Baseline Indicator Functions
+ */
+
+function addBaselineIndicator() {
+  var $list = $(this).parents('.outcome').find('.baselineIndicators-list');
+  var $item = $('#baselineIndicator-template').clone(true).removeAttr("id");
+  $list.append($item);
+  updateAllIndexes();
+  // Hide empty message
+  $(this).parents('.outcome').find('.baselineIndicators-list p.message').hide();
+  $item.show('slow');
+
+}
+
+function removeBaselineIndicator() {
+  var $item = $(this).parents('.baselineIndicator');
+  $item.hide(function() {
+    $item.remove();
+    updateAllIndexes();
+  });
+}
+
+/**
+ * File upload (blueimp-tmpl)
+ */
+
+var $uploadBlock = $('.fileUploadContainer');
+var $fileUpload = $uploadBlock.find('.upload');
+$fileUpload.fileupload({
+    dataType: 'json',
+    start: function(e) {
+      var $ub = $(e.target).parents('.fileUploadContainer');
+      $ub.addClass('blockLoading');
+    },
+    stop: function(e) {
+      var $ub = $(e.target).parents('.fileUploadContainer');
+      $ub.removeClass('blockLoading');
+    },
+    done: function(e,data) {
+      var r = data.result;
+      console.log(r);
+      if(r.saved) {
+        var $ub = $(e.target).parents('.fileUploadContainer');
+        $ub.find('.textMessage .contentResult').html(r.fileFileName);
+        $ub.find('.textMessage').show();
+        $ub.find('.fileUpload').hide();
+        // Set file ID
+        $ub.find('input.fileID').val(r.fileID);
+        $ub.find('input.outcomeID').val(r.outcomeID);
+      }
+    },
+    progressall: function(e,data) {
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+    }
+});
+
+// Prepare data
+$fileUpload.bind('fileuploadsubmit', function(e,data) {
+  var outcomeID = $(e.target).parents('.outcome').find('.outcomeId').val();
+  data.formData = {
+    outcomeID: outcomeID
+  };
+});
+
+// Remove file event
+$uploadBlock.find('.removeIcon').on('click', function() {
+  var $ub = $(this).parents('.fileUploadContainer');
+  $ub.find('.textMessage .contentResult').html("");
+  $ub.find('.textMessage').hide();
+  $ub.find('.fileUpload').show();
+  $ub.find('input.fileID').val('');
+  $ub.find('input.outcomeID').val('');
+});
+
+/**
  * General Function
  */
 
 function updateAllIndexes() {
   // All Outcomes List
   $('.outcomes-list').find('.outcome').each(function(i,outcome) {
-    var outcomesName = 'outcomes' + '[' + i + '].';
     $(outcome).find('span.index').html(i + 1);
-    $(outcome).find('.outcome-statement').attr('name', outcomesName + 'description');
-    $(outcome).find('.targetValue').attr('name', outcomesName + 'value');
-    $(outcome).find('.targetYear').attr('name', outcomesName + 'year');
-    $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
-    $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
+    $(outcome).setNameIndexes(1, i);
 
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
-      var milestoneName = outcomesName + 'milestones' + '[' + i + '].';
       $(milestone).find('span.index').text(i + 1);
-      $(milestone).find('.milestone-statement').attr('name', milestoneName + 'title');
-      $(milestone).find('.targetValue').attr('name', milestoneName + 'value');
-      $(milestone).find('.targetYear').attr('name', milestoneName + 'year');
-      $(milestone).find('.targetUnit').attr('name', milestoneName + 'srfTargetUnit.id');
-      $(milestone).find('.mileStoneId').attr('name', milestoneName + 'id');
+      $(milestone).setNameIndexes(2, i);
     });
 
     // Update SubIdos
     $(outcome).find('.subIdo').each(function(i,subIdo) {
-      var subIdoName = outcomesName + 'subIdos' + '[' + i + '].';
       $(subIdo).find('span.index').text(i + 1);
-      $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.id');
-      $(subIdo).find('.idoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
-      $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
-      $(subIdo).find('.programSubIDOId').attr('name', subIdoName + 'id');
+      $(subIdo).setNameIndexes(2, i);
 
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {
-        var assumptionName = subIdoName + 'assumptions' + '[' + i + '].';
-        $(assumption).find('.assumptionId').attr('name', assumptionName + 'id');
         $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
-        $(assumption).find('.statement').attr('name', assumptionName + 'description');
+        $(assumption).setNameIndexes(3, i);
       });
+    });
+
+    // Update Baseline Indicators
+    $(outcome).find('.baselineIndicator').each(function(i,indicator) {
+      $(indicator).find('span.index').text(i + 1);
+      $(indicator).setNameIndexes(2, i);
     });
   });
 
   // Update component event
   $(document).trigger('updateComponent');
 
-  // JUST FOR TESTING
-  // setCurrentObject();
-}
-
-function setCurrentObject() {
-  saveObj = {}
-
-  // Outcomes
-  var outcomesArray = []
-  $('.outcomes-list').find('.outcome').each(function(i,outcome) {
-    var outcomeObj = {
-        description: $(outcome).find('.outcome-statement').val(),
-        value: $(outcome).find('.targetValue').val(),
-        year: $(outcome).find('.targetYear').val(),
-        srfTargetUnit: {
-          id: $(outcome).find('.targetUnit').val()
-        },
-        id: $(outcome).find('.outcomeId').val()
-    }
-
-    // Milestones
-    var milestonesArray = [];
-    $(outcome).find('.milestone').each(function(i,milestone) {
-      var milestonObj = {
-          title: $(milestone).find('.milestone-statement').val(),
-          value: $(milestone).find('.targetValue').val(),
-          year: $(milestone).find('.targetYear').val(),
-          srfTargetUnit: {
-            id: $(milestone).find('.targetUnit').val()
-          },
-          id: $(milestone).find('.mileStoneId')
-      }
-      milestonesArray.push(milestonObj);
-    });
-
-    // SubIdos
-    var subIdosArray = []
-    $(outcome).find('.subIdo').each(function(i,subIdo) {
-      var subIdoObj = {
-          srfSubIdo: {
-              id: $(subIdo).find('.subIdoId').val(),
-              srfIdo: {
-                id: $(subIdo).find('.idoId').val()
-              }
-          },
-          contribution: $(subIdo).find('.contribution').val(),
-          id: $(subIdo).find('.programSubIDOId').val()
-      }
-
-      // Assumptions
-      var assumptionsArray = [];
-      $(subIdo).find('.assumption').each(function(i,assumption) {
-        var assumptionObj = {
-            id: $(assumption).find('.assumptionId').val(),
-            name: $(assumption).find('.statement').val()
-        }
-        assumptionsArray.push(assumptionObj);
-      });
-
-      subIdoObj.assumptions = assumptionsArray;
-      subIdosArray.push(subIdoObj);
-    });
-
-    outcomeObj.subIdos = subIdosArray;
-    outcomeObj.milestones = milestonesArray;
-    outcomesArray.push(outcomeObj);
-  });
-
-  saveObj.outcomes = outcomesArray;
-  saveObj.crpProgramID = $('#crpProgramID').val();
-
-  console.log(saveObj);
-  console.log(JSON.stringify(saveObj));
 }
