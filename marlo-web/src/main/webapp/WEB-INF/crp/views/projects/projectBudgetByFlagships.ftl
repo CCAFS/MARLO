@@ -88,6 +88,10 @@
             </div>  
           [/#if]
           
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
+          <div class="clearfix"></div>
+         
         [/@s.form] 
       </div>
     </div>  
