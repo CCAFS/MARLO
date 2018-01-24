@@ -141,11 +141,11 @@
             <td class="amountType"> % of total:</td>
             [#list budgetTypesList as budgetType]
               <td class="budgetColumn">
-                [#assign budgetIndex= action.getIndexBudget(element.identifier,selectedYear, budgetType.id) /]
-                [#assign budgetObject= action.getBudget(element.identifier,selectedYear, budgetType.id) /]
+                [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
+                [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
                 [#assign customName = "project.budgetsFlagship[${budgetIndex}]" /]
                 <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
-                <input type="hidden" name="${customName}.crpClusterOfActivity.id" value="${(element.id)!}"/>
+                <input type="hidden" name="${customName}.crpProgram.id" value="${(element.id)!}"/>
                 <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
                 <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
                 [#if editable && isYearEditable(selectedYear)]
