@@ -96,9 +96,6 @@
     </div>  
 </section>
 
-[#-- Budget tab index --]
-<span id="budgetIndex" style="display:none">${budgetIndex+1}</span>
-
 [#-- Budget types JSON --]
 <span id="budgetTypeJson" style="display:none">
 
