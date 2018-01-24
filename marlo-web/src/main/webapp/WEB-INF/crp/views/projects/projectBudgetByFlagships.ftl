@@ -29,9 +29,6 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
-[#if (!availabePhase)!false]
-  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
-[#else]
 [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
 [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
 [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
@@ -75,12 +72,12 @@
                 [#-- Budgest cannot be editable message --]
                 [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
 
-                [#if project.budgetsFlagship?has_content]
-                  [#list project.budgetsFlagship as budgetFlagship]
-                    [@BudgetByFlagshipsMacro element=budgetFlagship name="project.budgetsFlagship" index=budgetFlagship_index selectedYear=year/]
+                [#if project.flagships?has_content]
+                  [#list project.flagships as budgetFlagship]
+                    [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
                   [/#list]
                 [#else]
-                  [@BudgetByFlagshipsMacro element={} name="project.budgetsFlagship" index=0 selectedYear=year/]
+                  [@BudgetByFlagshipsMacro element={} name="project.flagships" index=0 selectedYear=year/]
                 [/#if]
                 </div>
               [/#list]  
@@ -127,7 +124,7 @@
     [#-- Partner Title --]
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span class="partnerTitle">F3: Low emissions development</span>
+      <span class="partnerTitle">${(element.composedName)!''}</span>
       <div class="clearfix"></div>
     </div>
     
