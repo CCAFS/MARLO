@@ -15,10 +15,14 @@
 
 package org.cgiar.ccafs.marlo.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 public class InstitutionTypeDTO {
 
+  @NotNull
   private Long id;
 
+  @NotNull
   private String name;
 
   private String acronym;

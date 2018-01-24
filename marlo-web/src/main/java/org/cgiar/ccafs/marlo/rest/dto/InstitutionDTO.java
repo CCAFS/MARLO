@@ -18,13 +18,19 @@ package org.cgiar.ccafs.marlo.rest.dto;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class InstitutionDTO {
 
 
   private Long id;
 
+  @NotNull
   private InstitutionTypeDTO institutionType;
 
+  @NotNull
   private String name;
 
   private String acronym;
@@ -35,6 +41,7 @@ public class InstitutionDTO {
 
   private Date added;
 
+  @NotEmpty
   private List<InstitutionLocationDTO> institutionsLocations;
 
 

@@ -23,12 +23,14 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 import org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * This is the servlet 3.0 way to load a web context wihtout (or combined with) a web.xml file.
@@ -68,10 +70,28 @@ public class WebAppInitializer implements WebApplicationInitializer {
     shiroFilter.setInitParameter("targetFilterLifecycle", "true");
     shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
+
+    /** This should ignore the /api/* mapping **/
     FilterRegistration.Dynamic struts2Filter =
       servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
     struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
     struts2Filter.setInitParameter("targetFilterLifecycle", "true");
-    struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+    struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json", "/");
+
+    /** Ensure our REST requests have a valid session values for authorization **/
+    FilterRegistration.Dynamic addSessionToRestRequestFilter = servletContext.addFilter("AddSessionToRestRequestFilter",
+      new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
+    addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/api/*");
+    
+    /** Now add the Spring MVC dispatacher servlet config for our REST api **/
+    AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
+    dispatcherContext.register(MarloRestApiConfig.class);
+
+    ServletRegistration.Dynamic dispatcher =
+      servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+    dispatcher.setLoadOnStartup(1);
+    dispatcher.addMapping("/api/*");
+
+
   }
 }

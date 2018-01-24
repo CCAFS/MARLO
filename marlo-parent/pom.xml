@@ -54,6 +54,7 @@
     <jackson.version>2.9.2</jackson.version>
     <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
     <slack.webhook.version>1.3.0</slack.webhook.version>
+    <hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
 	</properties>
 	<developers>
 		<developer>
@@ -128,15 +129,10 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!--  Struts 2 Rest Plugin -->
+      <!--  Struts Convention plugin may not be required anymore after we ditched the struts-rest plugin -->
       <dependency>
         <groupId>org.apache.struts</groupId>
         <artifactId>struts2-convention-plugin</artifactId>
-        <version>${struts2.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.struts</groupId>
-        <artifactId>struts2-rest-plugin</artifactId>
         <version>${struts2.version}</version>
       </dependency>
       <!-- Struts JSON library -->
@@ -510,6 +506,11 @@
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct-jdk8</artifactId>
         <version>${org.mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
       </dependency>
       <dependency>
         <groupId>net.gpedro.integrations.slack</groupId>
