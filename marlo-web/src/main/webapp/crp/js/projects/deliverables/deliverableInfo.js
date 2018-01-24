@@ -47,34 +47,46 @@ function init() {
     } else {
       var $list = $select.parents(".deliverablePartner").find(".partnerPersons");
     }
+
     var $list = $select.parents(".deliverablePartner, .responsiblePartner").find(".partnerPersons");
     var option = $select.find("option:selected");
-
-    console.log(option.text());
+    var projectPartnerID = option.val();
 
     $.ajax({
         url: baseURL + '/personByParnters.do',
         data: {
-          partnerId: option.val()
+            partnerId: projectPartnerID,
+            phaseID: phaseID
         },
         beforeSend: function() {
           $list.empty();
         },
         success: function(data) {
-          $.each(data.persons, function(i,person) {
 
+          if(data.persons.length) {
+            $.each(data.persons, function(i,person) {
+              if(isResp) {
+                var $item = $('#deliverablePerson-template.resp').clone(true);
+              } else {
+                var $item = $('#deliverablePerson-template.other').clone(true);
+                $item.find('input.projectPartnerID').val(projectPartnerID);
+              }
+              $item.removeAttr('id');
+              $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
+              $item.find('label.checkbox-label, label.radio-label').text(person.user);
+              $list.append($item);
+              $item.show();
+            });
+          } else {
             if(isResp) {
               var $item = $('#deliverablePerson-template.resp').clone(true);
             } else {
               var $item = $('#deliverablePerson-template.other').clone(true);
+              $item.find('input.projectPartnerID').val(projectPartnerID);
             }
             $item.removeAttr('id');
-            $item.find('input[type="checkbox"], input[type="radio"]').val(person.id);
-            $item.find('label.checkbox-label, label.radio-label').text(person.user);
-
             $list.append($item);
-            $item.show();
-          });
+          }
 
         },
         complete: function() {
@@ -85,10 +97,12 @@ function init() {
           }
 
           var $division = $select.parents('.projectPartnerPerson').find('.division-IFPRI');
+
           // Show IFPRI Division
           if((option.text()).indexOf("IFPRI") > -1) {
             $division.show();
           } else {
+            $division.find('.divisionField').val("-1")
             $division.hide();
           }
 
@@ -354,7 +368,8 @@ function validateCurrentDate() {
       url: baseURL + '/deliverableStatus.do',
       data: {
           deliverableId: $('input[name=deliverableID]').val(),
-          year: year()
+          year: year(),
+          phaseID: phaseID
       },
       beforeSend: function() {
         $statusSelect.empty();
@@ -486,7 +501,8 @@ function subTypes() {
 
     if(option.val() != "-1") {
       var data = {
-        deliverableTypeId: option.val()
+          deliverableTypeId: option.val(),
+          phaseID: phaseID
       }
       $.ajax({
           url: url,

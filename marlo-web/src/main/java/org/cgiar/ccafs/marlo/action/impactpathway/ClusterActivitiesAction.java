@@ -399,14 +399,17 @@ public class ClusterActivitiesAction extends BaseAction {
       }
     }
     // Also crp program Leaders
-    for (CrpProgramLeader crpProgramLeader : crpClusterPreview.getCrpProgram().getCrpProgramLeaders().stream()
-      .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
-      if (ccEmail.isEmpty()) {
-        ccEmail += crpProgramLeader.getUser().getEmail();
-      } else {
-        ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+    if (crpClusterPreview.getCrpProgram() != null) {
+      for (CrpProgramLeader crpProgramLeader : crpClusterPreview.getCrpProgram().getCrpProgramLeaders().stream()
+        .filter(l -> l.isActive() && l.getUser().isActive()).collect(Collectors.toList())) {
+        if (ccEmail.isEmpty()) {
+          ccEmail += crpProgramLeader.getUser().getEmail();
+        } else {
+          ccEmail += ", " + crpProgramLeader.getUser().getEmail();
+        }
       }
     }
+
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
@@ -758,6 +761,7 @@ public class ClusterActivitiesAction extends BaseAction {
       for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
         CrpClusterOfActivity db = null;
         if (crpClusterOfActivity.getId() == null) {
+          db = new CrpClusterOfActivity();
           db.setActive(true);
 
           db.setCreatedBy(this.getCurrentUser());

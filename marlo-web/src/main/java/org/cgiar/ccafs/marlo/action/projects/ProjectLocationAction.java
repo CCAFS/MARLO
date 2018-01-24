@@ -188,7 +188,9 @@ public class ProjectLocationAction extends BaseAction {
 
   public List<ProjectLocation> getDBLocations() {
     List<ProjectLocation> locations = projectLocationManager.findAll().stream()
-      .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID).collect(Collectors.toList());
+      .filter(p -> p.isActive() && p.getProject().getId().longValue() == projectID && p.getPhase() != null
+        && p.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList());
     return locations;
   }
 
@@ -219,6 +221,7 @@ public class ProjectLocationAction extends BaseAction {
 
     project.setLocations((this.getDBLocations().stream()
       .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
+        && p.getLocElement().getLocElementType() != null && p.getLocElement().getLocElementType().getId() != null
         && p.getLocElement().getLocElementType().getId().longValue() != 1 && p.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())));
     Map<String, Object> locationParent;
@@ -741,15 +744,16 @@ public class ProjectLocationAction extends BaseAction {
 
     // Fix Ull Collection when autosave gets the suggeste country - 10/13/2017
     for (CountryLocationLevel countryLocationLevel : project.getLocationsData()) {
+      if (countryLocationLevel.getLocElements() != null) {
+        Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
+        Collection<LocElement> different = new HashSet<LocElement>();
+        different.addAll(countryLocationLevel.getLocElements());
+        different.addAll(fsLocs);
+        similar.retainAll(fsLocs);
+        different.removeAll(similar);
 
-      Collection<LocElement> similar = new HashSet<LocElement>(countryLocationLevel.getLocElements());
-      Collection<LocElement> different = new HashSet<LocElement>();
-      different.addAll(countryLocationLevel.getLocElements());
-      different.addAll(fsLocs);
-      similar.retainAll(fsLocs);
-      different.removeAll(similar);
-
-      countryLocationLevel.getLocElements().removeAll(similar);
+        countryLocationLevel.getLocElements().removeAll(similar);
+      }
 
 
     }
@@ -821,6 +825,13 @@ public class ProjectLocationAction extends BaseAction {
       if (project.getRegionFS() != null) {
         project.getRegionFS().clear();
       }
+      if (project.getRegions() != null) {
+        project.getRegions().clear();
+      }
+      if (project.getProjectRegions() != null) {
+        project.getProjectRegions().clear();
+      }
+
     }
 
   }
@@ -1298,7 +1309,7 @@ public class ProjectLocationAction extends BaseAction {
       projectLocation.setCreatedBy(this.getCurrentUser());
       projectLocation.setModificationJustification("");
       projectLocation.setModifiedBy(this.getCurrentUser());
-
+      projectLocation.setPhase(this.getActualPhase());
       projectLocationManager.saveProjectLocation(projectLocation);
     }
 

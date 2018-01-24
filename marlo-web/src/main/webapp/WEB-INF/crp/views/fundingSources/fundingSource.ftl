@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
@@ -299,9 +299,9 @@
             <label for="">[@s.text name="projectCofunded.donor" /]:</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
              [#if editable]
-            [@customForm.select name="fundingSource.fundingSourceInfo.institution.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+            [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
              [#else]
-             <input  type="hidden" name="fundingSource.fundingSourceInfo.institution.id" value="${(fundingSource.fundingSourceInfo.institution.id)!-1}" />
+             <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
              
              [/#if]
             <span class="text-warning metadataSuggested"></span> 
@@ -476,7 +476,7 @@
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">
-                <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
+                <p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</span></p>
                  <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
               </div>
                 

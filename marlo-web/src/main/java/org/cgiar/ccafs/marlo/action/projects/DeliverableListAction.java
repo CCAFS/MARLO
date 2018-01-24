@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -118,27 +119,26 @@ public class DeliverableListAction extends BaseAction {
     deliverableID = deliverableManager.saveDeliverable(deliverable).getId();
 
 
-    List<Integer> years = project.getProjecInfoPhase(this.getActualPhase()).getAllYearsPhase();
-    for (Integer year : years) {
+    Phase phase = this.getActualPhase();
+    boolean hasNext = true;
+    while (hasNext) {
+
+      phase = phaseManager.getPhaseById(phase.getId());
       DeliverableInfo deliverableInfo = new DeliverableInfo();
       deliverableInfo.setDeliverable(deliverable);
-      deliverableInfo.setPhase(phaseManager.findCycle(APConstants.PLANNING, year, this.getCrpID()));
+      deliverableInfo.setPhase(phase);
       deliverableInfo.setYear(this.getCurrentCycleYear());
-
+      deliverableInfo.setStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
       deliverableInfo.setModifiedBy(this.getCurrentUser());
       deliverableInfo.setModificationJustification("New expected deliverable created");
       deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
 
-      DeliverableInfo deliverableInfoReporting = new DeliverableInfo();
-      deliverableInfoReporting.setDeliverable(deliverable);
-      deliverableInfoReporting.setPhase(phaseManager.findCycle(APConstants.REPORTING, year, this.getCrpID()));
-      deliverableInfoReporting.setYear(this.getCurrentCycleYear());
 
-      deliverableInfoReporting.setModifiedBy(this.getCurrentUser());
-      deliverableInfoReporting.setModificationJustification("New expected deliverable created");
-      deliverableInfoManager.saveDeliverableInfo(deliverableInfo);
-
-
+      if (phase.getNext() != null) {
+        phase = phase.getNext();
+      } else {
+        hasNext = false;
+      }
     }
 
 

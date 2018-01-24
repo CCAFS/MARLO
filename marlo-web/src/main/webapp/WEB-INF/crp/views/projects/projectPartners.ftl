@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Partners" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js", 
@@ -23,6 +23,7 @@
 
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 
 <div class="container helpText viewMore-block">
@@ -274,7 +275,7 @@
     <div class="blockTitle closed">
       [#-- Title --]
       <span class="${customForm.changedField('${name}.id')}"> <span class="index_number">${index+1}</span>. <span class="partnerTitle">${(element.institution.composedName)!'Project Partner'}</span> </span>
-
+      
       [#-- Tags --]
       <div class="partnerTags pull-right">
         <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
@@ -400,6 +401,13 @@
       </div>
       
     </div>
+    
+    [#-- Deliverables --]
+    [#if !isTemplate] 
+    <div class="pull-right">
+      [@popUps.relationsMacro element=element /]
+    </div>
+    [/#if]
   
   </div>
 [/#macro]

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Outcome" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${outcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
