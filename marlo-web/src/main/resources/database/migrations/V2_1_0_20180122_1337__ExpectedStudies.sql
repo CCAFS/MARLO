@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `project_expected_studies`;
+
 CREATE TABLE `project_expected_studies` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `project_id`  bigint(20) NOT NULL ,
