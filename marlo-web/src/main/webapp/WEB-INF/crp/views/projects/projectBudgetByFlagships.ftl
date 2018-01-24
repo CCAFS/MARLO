@@ -69,9 +69,6 @@
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                 
-                [#-- Budgest cannot be editable message --]
-                [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
-
                 [#if project.flagships?has_content]
                   [#list project.flagships as budgetFlagship]
                     [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
@@ -90,7 +87,7 @@
               [/@s.text]
             </div>  
           [/#if]
-         
+          
         [/@s.form] 
       </div>
     </div>  
@@ -113,9 +110,6 @@
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro BudgetByFlagshipsMacro element name index=-1 selectedYear=0 isTemplate=false]
-  [#-- local isLeader = (element.leader)!false/]
-  [#local isCoordinator = (element.coordinator)!false/]
-  [#local isPPA = (action.isPPA(element.institution))!false /--]
   
   <div id="projectFlagship-${isTemplate?string('template',(element.id)!)}" class="projectFlagship expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
