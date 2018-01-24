@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsFlagshipValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -86,11 +87,13 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   private List<BudgetType> budgetTypesList;
 
+  private ProjectBudgetsFlagshipValidator validator;
+
   @Inject
   public ProjectBudgetByFlagshipAction(APConfig config, CrpProgramManager crpProgramManager,
     BudgetTypeManager budgetTypeManager, ProjectManager projectManager,
-    ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager,
-    CrpManager crpManager) {
+    ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager, CrpManager crpManager,
+    ProjectBudgetsFlagshipValidator validator) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.budgetTypeManager = budgetTypeManager;
@@ -98,6 +101,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     this.projectBudgetsFlagshipManager = projectBudgetsFlagshipManager;
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
+    this.validator = validator;
   }
 
   @Override
@@ -522,6 +526,13 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, project, true);
+    }
   }
 
 }

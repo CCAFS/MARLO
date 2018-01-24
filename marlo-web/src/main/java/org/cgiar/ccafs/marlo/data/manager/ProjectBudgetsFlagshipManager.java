@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 
 import java.util.List;
@@ -24,6 +25,16 @@ import java.util.List;
  */
 
 public interface ProjectBudgetsFlagshipManager {
+
+
+  /**
+   * Make a ProjectBudgetsFlagship object copy data to another phase.
+   * 
+   * @param projectBudgetsFlagship - The Project Budget to copy
+   * @param phase - the phase that copied
+   * @return a ProjectBudgetsFlagship copy object
+   */
+  public ProjectBudgetsFlagship copyProjectBudgetsFlagship(ProjectBudgetsFlagship projectBudgetsFlagship, Phase phase);
 
 
   /**
@@ -51,7 +62,6 @@ public interface ProjectBudgetsFlagshipManager {
    */
   public List<ProjectBudgetsFlagship> findAll();
 
-
   /**
    * This method gets a projectBudgetsFlagship object by a given projectBudgetsFlagship identifier.
    * 
@@ -64,7 +74,8 @@ public interface ProjectBudgetsFlagshipManager {
    * This method saves the information of the given projectBudgetsFlagship
    * 
    * @param projectBudgetsFlagship - is the projectBudgetsFlagship object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectBudgetsFlagship was
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectBudgetsFlagship
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
