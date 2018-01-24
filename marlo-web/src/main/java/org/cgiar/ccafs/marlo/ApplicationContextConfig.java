@@ -30,7 +30,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration
 @PropertySource("classpath:marlo.properties")
-@ComponentScan("org.cgiar.ccafs.marlo")
+@ComponentScan({"org.cgiar.ccafs.marlo.utils", "org.cgiar.ccafs.marlo.config", "org.cgiar.ccafs.marlo.ocs",
+  "org.cgiar.ccafs.marlo.security", "org.cgiar.ccafs.marlo.web", "org.cgiar.ccafs.marlo.data.dao",
+  "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.validation"})
 public class ApplicationContextConfig {
 
 
