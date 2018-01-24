@@ -1,6 +1,7 @@
 [#ftl]
 [#assign title = "Project Budget By Flagships" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
+[#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByFlagships.js", 
   "${baseUrl}/global/js/autoSave.js",
@@ -10,6 +11,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByFlagships.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByFlagships" /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -19,13 +21,35 @@
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="projectBudgetByFlagships.help" /] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
+[#if (!availabePhase)!false]
+  [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
+[#else]
+[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
+[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+[#assign budgetCounter = 0 /]
+[#assign type = { 
+  'w1w2': 'w1w2',
+  'w3': '2',
+  'bilateral': '3',
+  'centerFunds': 'centerFunds'
+} /]
+
 <section class="container">
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
         [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
       </div>
-      [#-- Project Section Content --]
+      [#-- Project Budget By Flagships Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
@@ -35,19 +59,7 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByFlagships.title" /]</h3>
           
-          [#if project.projectInfo.startDate?? && project.projectInfo.endDate??]
-          
-            [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
-            [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
-            
-            [#if currentCycleYear gt endYear]
-              [#assign selectedYear = endYear /]
-            [#elseif currentCycleYear lt startYear]
-              [#assign selectedYear = startYear /]
-            [#else]
-              [#assign selectedYear = currentCycleYear /]
-            [/#if]
-
+          [#if project.flagships?has_content && project.flagships?size gt 1]
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. selectedYear as year]
@@ -59,20 +71,23 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                    [#if projectPPAPartners?has_content]
-                      [#list projectPPAPartners as projectPartner]
-                        [@projectBudgetByFlagshipsMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
-                      [/#list]
-                    [#else]
-                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
-                    [/#if]
-                    
+                
+                [#-- Budgest cannot be editable message --]
+                [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
+
+                [#if project.budgetsFlagship?has_content]
+                  [#list project.budgetsFlagship as budgetFlagship]
+                    [@BudgetByFlagshipsMacro element=budgetFlagship name="project.budgetsFlagship" index=budgetFlagship_index selectedYear=year/]
+                  [/#list]
+                [#else]
+                  [@BudgetByFlagshipsMacro element={} name="project.budgetsFlagship" index=0 selectedYear=year/]
+                [/#if]
                 </div>
               [/#list]  
             </div>
           [#else]
             <div class="simpleBox emptyMessage text-center">
-              [@s.text name="projectBudgetByPartners.beforeFillingSections"]
+              [@s.text name="projectBudgetByFlagships.beforeFillingSections"]
                 [@s.param]<a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section </a>[/@s.param]
                 [@s.param]<span class="label label-success">save</span>[/@s.param]
               [/@s.text]
@@ -103,7 +118,7 @@
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
-[#macro projectBudgetByFlagshipsMacro element name index=-1 selectedYear=0 isTemplate=false]
+[#macro BudgetByFlagshipsMacro element name index=-1 selectedYear=0 isTemplate=false]
   [#-- local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /--]
