@@ -876,7 +876,7 @@
       </result>
     </action>
     
-    <action name="budgetByFlagship"
+    <action name="{crp}/budgetByFlagship"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByFlagshipAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/crp/views/projects/projectBudgetByFlagships.ftl
