@@ -359,23 +359,23 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
         // Setup the Project Budgets Flaship list
         project.setBudgetsFlagship(project.getProjectBudgetsFlagships().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-
-        project.getBudgetsFlagship().removeIf(Objects::isNull);
-
-        Project projectBD = projectManager.getProjectById(projectID);
-        project.setProjectInfo(projectBD.getProjecInfoPhase(this.getActualPhase()));
-
-        // List the Project flagships that contribute it
-        List<CrpProgram> flagships = new ArrayList<>();
-        List<ProjectFocus> projectFocuses = new ArrayList<>(projectBD.getProjectFocuses().stream()
-          .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
-            && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList()));
-        for (ProjectFocus projectFocus : projectFocuses) {
-          flagships.add(projectFocus.getCrpProgram());
-        }
-        project.setFlagships(flagships);
       }
+
+      project.getBudgetsFlagship().removeIf(Objects::isNull);
+
+      Project projectBD = projectManager.getProjectById(projectID);
+      project.setProjectInfo(projectBD.getProjecInfoPhase(this.getActualPhase()));
+
+      // List the Project flagships that contribute it
+      List<CrpProgram> flagships = new ArrayList<>();
+      List<ProjectFocus> projectFocuses = new ArrayList<>(projectBD.getProjectFocuses().stream()
+        .filter(pf -> pf.isActive() && pf.getPhase().equals(this.getActualPhase())
+          && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList()));
+      for (ProjectFocus projectFocus : projectFocuses) {
+        flagships.add(projectFocus.getCrpProgram());
+      }
+      project.setFlagships(flagships);
 
       // Check Null Crp program Values inside Project Budget
       if (project.getBudgetsFlagship() != null) {
