@@ -39,12 +39,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.collections.CollectionUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ProjectBudgetsFlagshipValidator extends BaseValidator {
 
   private final BudgetTypeManager budgetTypeManager;
@@ -115,7 +117,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
           projectDB.getProjectFocuses().stream()
             .filter(pf -> pf.isActive()
               && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
       if (!projectFocuses.isEmpty()) {
         if (CollectionUtils.isNotEmpty(project.getBudgetsFlagship())) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
