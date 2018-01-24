@@ -7,7 +7,7 @@ CREATE TABLE `project_budgets_flagships` (
 `year`  int(4) NOT NULL ,
 `crp_program`  bigint(20) NOT NULL ,
 `is_active`  tinyint(1) NOT NULL ,
-`active_since`  timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP ,
+`active_since`  timestamp NOT NULL  ,
 `created_by`  bigint(20) NULL ,
 `modified_by`  bigint(20) NULL ,
 `modification_justification`  text NULL ,
