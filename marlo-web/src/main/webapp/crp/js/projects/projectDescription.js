@@ -53,7 +53,8 @@ $(document).ready(function() {
         url: baseURL + '/liasonUsersByInstitutionsAction.do',
         method: 'POST',
         data: {
-          liasonInstitutionID: liasonInstitutionID
+          liasonInstitutionID: liasonInstitutionID,
+          phaseID: phaseID
         },
         beforeSend: function() {
           $('.loading.liaisonUsersBlock').fadeIn();
@@ -116,7 +117,8 @@ $(document).ready(function() {
     $.ajax({
         url: baseURL + '/clusterByFPsAction.do',
         data: {
-          flagshipID: flagshipsIds()
+          flagshipID: flagshipsIds(),
+          phaseID: phaseID
         },
         beforeSend: function() {
           $('.loading.clustersBlock').fadeIn();
@@ -269,7 +271,8 @@ $(document).ready(function() {
     $.ajax({
         url: baseURL + '/ClusterActivitiesLeaders.do',
         data: {
-          clusterActivityID: $item.val()
+          clusterActivityID: $item.val(),
+          phaseID: phaseID
         },
         success: function(data) {
           $.each(data.leaders, function(i,e) {

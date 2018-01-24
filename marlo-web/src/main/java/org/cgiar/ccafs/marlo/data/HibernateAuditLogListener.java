@@ -17,7 +17,12 @@
 package org.cgiar.ccafs.marlo.data;
 
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
@@ -492,8 +497,22 @@ public class HibernateAuditLogListener
       /*
        * if have phase and the phase is the current we are checking , we load the info
        */
-      if (hasPhase) {
-        if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
+      if (hasPhase || entity instanceof Project || entity instanceof FundingSource || entity instanceof Deliverable
+        || entity instanceof ProjectOutcome || entity instanceof CrpProgram) {
+        if (hasPhase && (entity instanceof Deliverable == false)) {
+          if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
+            updateRecord.put(IAuditLog.ENTITY, entity);
+            updateRecord.put(IAuditLog.PRINCIPAL, new Long(1));
+            auditLogContext.getUpdates().add(updateRecord);
+
+
+            auditLogContext.getUpdates().addAll(this.relations(postUpdateEvent.getState(), types,
+              ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
+            postUpdateEvent.getSession().getActionQueue()
+              .registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
+
+          }
+        } else {
           updateRecord.put(IAuditLog.ENTITY, entity);
           updateRecord.put(IAuditLog.PRINCIPAL, new Long(1));
           auditLogContext.getUpdates().add(updateRecord);
@@ -503,8 +522,8 @@ public class HibernateAuditLogListener
             ((IAuditLog) entity).getId(), true, postUpdateEvent.getSession().getSessionFactory()));
           postUpdateEvent.getSession().getActionQueue()
             .registerProcess(new MARLOAuditBeforeTransactionCompletionProcess());
-
         }
+
       }
 
       // LOG.debug("COMPARE LOGS WITH STAGING BRANCH: " + auditLogContext.getUpdates().toString());

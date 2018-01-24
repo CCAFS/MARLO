@@ -10,7 +10,8 @@ $(function() { // on dom ready
     var section = sec.split('/');
     data = {
         crpProgramID: crpProgram,
-        sectionName: section[1]
+        sectionName: section[1],
+        phaseID: phaseID
     };
 
     ajaxService(url, data, graphicContent, panningEnable, false, 'breadthfirst', false);
@@ -189,7 +190,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
             'data': {
                 id: $this._private.data.id,
                 type: $this._private.data.type,
-                flagshipID: $("input[name='crpProgramID']").val()
+                flagshipID: $("input[name='crpProgramID']").val(),
+                phaseID: phaseID
             },
             beforeSend: function() {
               $("#loader").show();
@@ -384,7 +386,8 @@ $("#changeGraph .btn").on("click", function() {
   if($(this).hasClass("currentGraph")) {
     var url = baseURL + "/impactPathway/impactPathwayFullGraph.do";
     var dataFull = {
-      crpID: currentCrpID
+        crpID: currentCrpID,
+        phaseID: phaseID
     }
     ajaxService(url, dataFull, "impactGraphic", true, true, 'concentric', false);
     $(this).html("Show section graph");

@@ -1,4 +1,6 @@
 [#ftl]
+<input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
+
 <div class="buttons">
   <div class="buttons-content">
   [#if editable]

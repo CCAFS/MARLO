@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Outcome" /]
-[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}" /]
+[#assign currentSectionString = "program-${actionName?replace('/','-')}-${programID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 

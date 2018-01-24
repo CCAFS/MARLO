@@ -34,26 +34,14 @@ $(document).ready(function() {
       nextPage: $example.find('.nextPage')
   }).init();
 
-  $('.phaseBox.open').on('click', function(e,i) {
+  $('.phaseBox.phaseNoSelected').on('click', function(e,i) {
     var phaseID = $(this).attr('id').split('-')[1];
-    var isClosed = $(this).find('.label-danger').exists();
-    if(isClosed) {
-      console.log('is closed');
-      e.preventDefault();
-    } else {
-      console.log('is open');
-      setPhaseID(phaseID);
-    }
+    setPhaseID(phaseID);
   });
 
-  sly.on('active', function(eventName) {
-    console.log('active');
-    var phaseID = $frame.find('li.active').attr('id').split('-')[1];
-    var isClosed = $frame.find('li.active').find('.label-danger').exists();
-    if(!isClosed) {
-      // setPhaseID(phaseID);
-    }
-
+  sly.on('active', function(eventName,itemIndex) {
+    console.log("eventName", eventName);
+    console.log("itemIndex", itemIndex);
   });
 
 });

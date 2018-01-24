@@ -83,6 +83,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   void setPermissionParameters(ActionInvocation invocation) throws Exception {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
+    baseAction.setSession(session);
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
@@ -162,14 +163,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
       }
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
-      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-        && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
-        canEdit = false;
-        canSwitchProject = false;
-        baseAction.setEditStatus(true);
+      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+          canEdit = false;
+          canSwitchProject = false;
+          baseAction.setEditStatus(true);
+
+        }
 
       }
 
@@ -210,7 +214,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       // baseAction
       // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
 
-
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+      }
       // TODO Validate is the project is new
       if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
