@@ -2,12 +2,14 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jan 23, 2018 9:31:16 AM by Hibernate Tools 3.4.0.CR1
 
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
 
 
-public class ProjectBudgetsFlagship implements java.io.Serializable {
+public class ProjectBudgetsFlagship implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -7900520122724765838L;
 
@@ -110,14 +112,24 @@ public class ProjectBudgetsFlagship implements java.io.Serializable {
     return crpProgram;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
@@ -142,6 +154,7 @@ public class ProjectBudgetsFlagship implements java.io.Serializable {
     return result;
   }
 
+  @Override
   public boolean isActive() {
     return active;
   }
