@@ -60,7 +60,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -70,7 +69,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Named
 public class ValidateProjectSectionAction extends BaseAction {
 
 
@@ -287,7 +285,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
