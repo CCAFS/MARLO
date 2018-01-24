@@ -1,4 +1,3 @@
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -27,7 +26,13 @@ IF EXISTS user_permission ; CREATE TEMPORARY TABLE user_permission (
   REPLACE (
     `p`.`permission`,
     '{0}',
-    `cp`.`acronym`
+    CONCAT(
+      `cp`.`acronym`,
+      ':',
+      ph.description,
+      ':',
+      ph.`year`
+    )
   ) AS `permission`,
   NULL AS `project_id`,
   `cp`.`acronym` AS `crp_acronym`,
@@ -132,7 +137,13 @@ UNION
         REPLACE (
           `p`.`permission`,
           '{0}',
-          `cp`.`acronym`
+          CONCAT(
+            `cp`.`acronym`,
+            ':',
+            ph.description,
+            ':',
+            ph.`year`
+          )
         ),
         '{1}',
         `pro`.`id`
@@ -220,7 +231,13 @@ UNION
           REPLACE (
             `p`.`permission`,
             '{0}',
-            `cp`.`acronym`
+            CONCAT(
+              `cp`.`acronym`,
+              ':',
+              ph.description,
+              ':',
+              ph.`year`
+            )
           ),
           '{1}',
           `pro`.`id`
@@ -330,7 +347,13 @@ UNION
             REPLACE (
               `p`.`permission`,
               '{0}',
-              `cp`.`acronym`
+              CONCAT(
+                `cp`.`acronym`,
+                ':',
+                ph.description,
+                ':',
+                ph.`year`
+              )
             ),
             '{1}',
             `pro`.`id`
@@ -440,7 +463,13 @@ UNION
               REPLACE (
                 `p`.`permission`,
                 '{0}',
-                `cp`.`acronym`
+                CONCAT(
+                  `cp`.`acronym`,
+                  ':',
+                  ph.description,
+                  ':',
+                  ph.`year`
+                )
               ),
               '{1}',
               `pro`.`id`
@@ -540,7 +569,13 @@ UNION
                 REPLACE (
                   `p`.`permission`,
                   '{0}',
-                  `cp`.`acronym`
+                  CONCAT(
+                    `cp`.`acronym`,
+                    ':',
+                    ph.description,
+                    ':',
+                    ph.`year`
+                  )
                 ),
                 '{1}',
                 `pro`.`id`
@@ -643,7 +678,13 @@ UNION
                   REPLACE (
                     `p`.`permission`,
                     '{0}',
-                    `cp`.`acronym`
+                    CONCAT(
+                      `cp`.`acronym`,
+                      ':',
+                      ph.description,
+                      ':',
+                      ph.`year`
+                    )
                   ),
                   '{1}',
                   `pro`.`id`
@@ -726,7 +767,13 @@ UNION
                     REPLACE (
                       `p`.`permission`,
                       '{0}',
-                      `cp`.`acronym`
+                      CONCAT(
+                        `cp`.`acronym`,
+                        ':',
+                        ph.description,
+                        ':',
+                        ph.`year`
+                      )
                     ),
                     '{1}',
                     `pro`.`id`
@@ -829,7 +876,13 @@ UNION
                       REPLACE (
                         `p`.`permission`,
                         '{0}',
-                        `cp`.`acronym`
+                        CONCAT(
+                          `cp`.`acronym`,
+                          ':',
+                          ph.description,
+                          ':',
+                          ph.`year`
+                        )
                       ),
                       '{1}',
                       `pro`.`id`
@@ -932,7 +985,13 @@ UNION
                         REPLACE (
                           `p`.`permission`,
                           '{0}',
-                          `cp`.`acronym`
+                          CONCAT(
+                            `cp`.`acronym`,
+                            ':',
+                            ph.description,
+                            ':',
+                            ph.`year`
+                          )
                         ),
                         '{1}',
                         `pro`.`id`
@@ -1025,7 +1084,10 @@ UNION
                           REPLACE (
                             `per`.`permission`,
                             '{0}',
-                            `cp`.`acronym`
+                            CONCAT(
+                              `cp`.`acronym`
+                            
+                            )
                           ),
                           '{1}',
                           pro.id
@@ -1059,7 +1121,13 @@ UNION
                             REPLACE (
                               `per`.`permission`,
                               '{0}',
-                              `cp`.`acronym`
+                              CONCAT(
+                                `cp`.`acronym`,
+                                ':',
+                                ph.description,
+                                ':',
+                                ph.`year`
+                              )
                             ),
                             '{1}',
                             pro.id
@@ -1099,7 +1167,10 @@ UNION
                               REPLACE (
                                 `per`.`permission`,
                                 '{0}',
-                                `cp`.`acronym`
+                                CONCAT(
+                                  `cp`.`acronym`
+                                
+                                )
                               ),
                               '{1}',
                               pro.id
@@ -1134,7 +1205,13 @@ UNION
                                   REPLACE (
                                     `p`.`permission`,
                                     '{0}',
-                                    `cp`.`acronym`
+                                    CONCAT(
+                                      `cp`.`acronym`,
+                                      ':',
+                                      ph.description,
+                                      ':',
+                                      ph.`year`
+                                    )
                                   ),
                                   '{1}',
                                   `pro`.`id`
@@ -1238,7 +1315,13 @@ UNION
                                   REPLACE (
                                     `p`.`permission`,
                                     '{0}',
-                                    `cp`.`acronym`
+                                    CONCAT(
+                                      `cp`.`acronym`,
+                                      ':',
+                                      ph.description,
+                                      ':',
+                                      ph.`year`
+                                    )
                                   ),
                                   '{1}',
                                   `pro`.`id`
@@ -1319,7 +1402,9 @@ UNION
                                     REPLACE (
                                       `p`.`permission`,
                                       '{0}',
-                                      `cp`.`acronym`
+                                      CONCAT(
+                                        `cp`.`acronym`
+                                      )
                                     ),
                                     '{1}',
                                     `pro`.`id`
@@ -1393,7 +1478,10 @@ UNION
                                       REPLACE (
                                         `p`.`permission`,
                                         '{0}',
-                                        `cp`.`acronym`
+                                        CONCAT(
+                                          `cp`.`acronym`
+                                          
+                                        )
                                       ),
                                       '{1}',
                                       `li`.`ip_program`
@@ -1456,7 +1544,10 @@ UNION
                                         REPLACE (
                                           `p`.`permission`,
                                           '{0}',
-                                          `cp`.`acronym`
+                                          CONCAT(
+                                            `cp`.`acronym`
+                                          
+                                          )
                                         ),
                                         '{1}',
                                         `li`.`id`
@@ -1526,7 +1617,9 @@ UNION
                                           REPLACE (
                                             `p`.`permission`,
                                             '{0}',
-                                            `cp`.`acronym`
+                                            CONCAT(
+                                              `cp`.`acronym`
+                                            )
                                           ),
                                           '{1}',
                                           `pro`.`id`
