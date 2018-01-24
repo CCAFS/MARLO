@@ -733,6 +733,7 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.getFundingSourceInfo().setFile(null);
+      fundingSource.getFundingSourceInfo().setFileResearch(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -850,6 +851,16 @@ public class FundingSourceAction extends BaseAction {
           fundingSource.getFundingSourceInfo().setFile(null);
         } else {
           fundingSource.getFundingSourceInfo().setFile(fundingSource.getFundingSourceInfo().getFile());
+        }
+      }
+
+      // fileResearch validation
+      // 20180124 - @jurodca
+      if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+        if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
+        } else {
+          fundingSource.getFundingSourceInfo().setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
         }
       }
 
@@ -1221,6 +1232,12 @@ public class FundingSourceAction extends BaseAction {
         || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
+
+      if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+        || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+        fundingSource.getFundingSourceInfo().setFileResearch(null);
+      }
+
       validator.validate(this, fundingSource, true);
     }
   }
