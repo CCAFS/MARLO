@@ -175,9 +175,9 @@
   [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
   [#-- Hidden inputs --]
   <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
-  <input class="projectId" type="hidden" name="${customName}.project.id" value="${(element.project.id)!}" />
+  <input class="projectId" type="hidden" name="${customName}.myProject.id" value="${(element.myProject.id)!}" />
   [#-- title --]
-  <p><span title="${(element.project.title)!}" class="name">${(element.project.composedName)!'Undefined'}</span></p>
+  <p><span title="${(element.myProject.title)!}" class="name">${(element.myProject.composedName)!'Undefined'}</span></p>
   <div class="clearfix"></div>
 </li>
 [/#macro]

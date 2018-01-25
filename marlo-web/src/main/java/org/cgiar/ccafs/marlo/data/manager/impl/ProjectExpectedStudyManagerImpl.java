@@ -63,7 +63,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     expectedStudyProjectAdd.setActiveSince(projectExpectedStudy.getActiveSince());
     expectedStudyProjectAdd.setProjectExpectedStudy(projectExpectedStudyAdd);
     expectedStudyProjectAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
-    expectedStudyProjectAdd.setProject(expectedStudyProject.getProject());
+    expectedStudyProjectAdd.setMyProject(expectedStudyProject.getMyProject());
     expectedStudyProjectAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
     expectedStudyProjectAdd.setModifiedBy(projectExpectedStudy.getModifiedBy());
 
@@ -171,7 +171,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
       for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getProjects()) {
         if (projectExpectedStudyAdd.getExpectedStudyProjects().stream()
-          .filter(c -> c.isActive() && c.getProject().getId().equals(expectedStudyProject.getProject().getId()))
+          .filter(c -> c.isActive() && c.getMyProject().getId().equals(expectedStudyProject.getMyProject().getId()))
           .collect(Collectors.toList()).isEmpty()) {
           ExpectedStudyProject expectedStudyProjectAdd = new ExpectedStudyProject();
           this.cloneExpectedStudyProject(expectedStudyProjectAdd, expectedStudyProject, projectExpectedStudy,
@@ -182,7 +182,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
       for (ExpectedStudyProject expectedStudyProject : projectExpectedStudyAdd.getExpectedStudyProjects().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (projectExpectedStudy.getProjects().stream()
-          .filter(c -> c.getProject().getId().equals(expectedStudyProject.getProject().getId()))
+          .filter(c -> c.getMyProject().getId().equals(expectedStudyProject.getMyProject().getId()))
           .collect(Collectors.toList()).isEmpty()) {
           expectedStudyProject.setActive(false);
           expectedStudyProjectDAO.save(expectedStudyProject);
