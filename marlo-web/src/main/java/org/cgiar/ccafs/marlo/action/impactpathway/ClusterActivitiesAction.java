@@ -933,7 +933,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
                 }
 
-                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutput);
+                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
                 crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
                 crpClusterKeyOutputOutcome.setModificationJustification("");
                 crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
