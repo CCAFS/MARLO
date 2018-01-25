@@ -148,7 +148,7 @@
         [/#if]  
         </ul>
         [#if editable ]
-          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="targets" required=true className="addSharedProject" editable=editable/]
+          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="myProjects"  keyFieldName="id"  displayFieldName="composedName" required=true className="addSharedProject" editable=editable/]
         [/#if] 
       </div>
     </div>

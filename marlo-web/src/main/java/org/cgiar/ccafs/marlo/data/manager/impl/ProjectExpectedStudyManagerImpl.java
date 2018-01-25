@@ -60,12 +60,12 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
     ExpectedStudyProject expectedStudyProject, ProjectExpectedStudy projectExpectedStudy,
     ProjectExpectedStudy projectExpectedStudyAdd, Phase phase) {
     expectedStudyProjectAdd.setActive(true);
-    expectedStudyProjectAdd.setActiveSince(expectedStudyProject.getActiveSince());
+    expectedStudyProjectAdd.setActiveSince(projectExpectedStudy.getActiveSince());
     expectedStudyProjectAdd.setProjectExpectedStudy(projectExpectedStudyAdd);
-    expectedStudyProjectAdd.setCreatedBy(expectedStudyProject.getCreatedBy());
+    expectedStudyProjectAdd.setCreatedBy(projectExpectedStudy.getCreatedBy());
     expectedStudyProjectAdd.setProject(expectedStudyProject.getProject());
-    expectedStudyProjectAdd.setModificationJustification(expectedStudyProject.getModificationJustification());
-    expectedStudyProjectAdd.setModifiedBy(expectedStudyProject.getModifiedBy());
+    expectedStudyProjectAdd.setModificationJustification(projectExpectedStudy.getModificationJustification());
+    expectedStudyProjectAdd.setModifiedBy(projectExpectedStudy.getModifiedBy());
 
   }
 
