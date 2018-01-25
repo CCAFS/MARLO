@@ -356,6 +356,17 @@ public class Project implements java.io.Serializable, IAuditLog {
     return clusterActivities;
   }
 
+  public String getComposedName() {
+
+
+    if (projectInfo != null) {
+      return "P" + this.id + " - " + projectInfo.getTitle();
+    } else {
+      return "P" + this.id;
+    }
+
+  }
+
   /**
    * get the composed name of one phase
    * 
