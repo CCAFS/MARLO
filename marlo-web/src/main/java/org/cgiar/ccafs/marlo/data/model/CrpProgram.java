@@ -101,8 +101,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private String color;
 
+  @Expose
+  private Boolean baseLine;
+
+
   public CrpProgram() {
   }
+
 
 
   public CrpProgram(GlobalUnit crps, String name, String acronym, int programType) {
@@ -154,10 +159,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return action;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
+  public Boolean getBaseLine() {
+    return baseLine;
+  }
+
 
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
@@ -175,6 +184,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public GlobalUnit getCrp() {
     return crp;
@@ -202,15 +212,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -221,6 +230,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
+
 
   public List<CrpProgramLeader> getManagers() {
     return managers;
@@ -285,6 +295,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
+  public void setBaseLine(Boolean baseLine) {
+    this.baseLine = baseLine;
+  }
+
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;

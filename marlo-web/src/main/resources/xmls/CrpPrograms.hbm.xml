@@ -25,6 +25,9 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
+		 <property name="baseLine"  type="java.lang.Boolean">
+            <column name="base_line"  default="0"/>
+        </property>
 		<set lazy="true" name="crpClusterOfActivities" order-by="id"
 			table="crp_cluster_of_activities" inverse="true" fetch="select">
 			<key>

@@ -117,6 +117,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private List<CrpProgram> regionsPrograms;
   private List<CustomParameter> parameters;
 
+  private List<User> usersToActive;
 
   private CrpProgramLeaderManager crpProgramLeaderManager;
 
@@ -264,8 +265,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       // Saving the new user configuration.
       user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
-
+      user = userManager.saveUser(user, this.getCurrentUser());
+      usersToActive.add(user);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -434,7 +435,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase() != null && cl.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (ccEmail.isEmpty()) {
@@ -519,7 +521,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // CC will be also other Cluster Leaders
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-      .filter(cl -> cl.isActive()).collect(Collectors.toList())) {
+      .filter(cl -> cl.isActive() && cl.getPhase() != null && cl.getPhase().equals(this.getActualPhase()))
+      .collect(Collectors.toList())) {
       for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getCrpClusterActivityLeaders()
         .stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
         if (ccEmail.isEmpty()) {
@@ -1110,6 +1113,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      usersToActive = new ArrayList<>();
 
       this.pmuRoleData();
       this.programsData();
@@ -1153,6 +1157,11 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
       }
 
+
+      for (User user : usersToActive) {
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+      }
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
 
