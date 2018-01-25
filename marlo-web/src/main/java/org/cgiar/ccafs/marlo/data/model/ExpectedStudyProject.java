@@ -26,7 +26,7 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
 
   private ProjectExpectedStudy projectExpectedStudy;
   @Expose
-  private Project project;
+  private Project myProject;
   @Expose
   private User modifiedBy;
   @Expose
@@ -97,8 +97,8 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Project getProject() {
-    return project;
+  public Project getMyProject() {
+    return myProject;
   }
 
 
@@ -152,8 +152,8 @@ public class ExpectedStudyProject implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProject(Project project) {
-    this.project = project;
+  public void setMyProject(Project project) {
+    this.myProject = project;
   }
 
 
