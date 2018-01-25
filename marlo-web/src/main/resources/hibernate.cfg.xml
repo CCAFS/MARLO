@@ -193,6 +193,8 @@
       <mapping resource="xmls/GlobalUnits.hbm.xml" />      
       <mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
       <mapping resource="xmls/RepositoryChannel.hbm.xml" />
+      <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
+	  <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
       <mapping resource="xmls/EmailLogs.hbm.xml"/>
    </session-factory>
 </hibernate-configuration>
