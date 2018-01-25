@@ -76,7 +76,8 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     String typeOther, Integer newExpectedYear, int year, Integer status, String statusDescription,
     String modificationJustification, Boolean crossCuttingGender, Boolean crossCuttingYouth,
     Boolean crossCuttingCapacity, Boolean crossCuttingNa, Boolean adoptedLicense, String license, String otherLicense,
-    Boolean allowModifications) {
+    Boolean allowModifications, Long crossCuttingScoreGender, Long crossCuttingScoreYouth,
+    Long crossCuttingScoreCapacity) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
     this.crpProgramOutcome = crpProgramOutcome;
     this.deliverableType = deliverableType;
@@ -99,6 +100,9 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     this.license = license;
     this.otherLicense = otherLicense;
     this.allowModifications = allowModifications;
+    this.crossCuttingScoreGender = crossCuttingScoreGender;
+    this.crossCuttingScoreYouth = crossCuttingScoreYouth;
+    this.crossCuttingScoreCapacity = crossCuttingScoreCapacity;
   }
 
   public DeliverableInfo(User modifiedBy, int year, String modificationJustification) {
