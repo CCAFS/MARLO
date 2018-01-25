@@ -94,6 +94,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private FileDB fileResearch;
 
+  @Expose
+  private boolean hasFileResearch;
+
 
   public FundingSourceInfo() {
   }
@@ -304,10 +307,14 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public boolean isHasFileResearch() {
+    return hasFileResearch;
+  }
+
+
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
-
 
   public void setContactPersonEmail(String contactPersonEmail) {
     this.contactPersonEmail = contactPersonEmail;
@@ -324,6 +331,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setDirectDonor(Institution institution) {
     this.directDonor = institution;
   }
+
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
@@ -349,7 +357,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.financeCode = financeCode;
   }
 
-
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
@@ -360,6 +367,10 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   public void setGrantAmount(Double grantAmount) {
     this.grantAmount = grantAmount;
+  }
+
+  public void setHasFileResearch(boolean hasFileResearch) {
+    this.hasFileResearch = hasFileResearch;
   }
 
   public void setId(Long id) {
@@ -374,27 +385,29 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setOriginalDonor(Institution originalDonor) {
     this.originalDonor = originalDonor;
   }
+
 
   public void setPartnerDivision(PartnerDivision partnerDivision) {
     this.partnerDivision = partnerDivision;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
-
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
 
+
   public void setStatus(Integer status) {
     this.status = status;
   }
+
 
   public void setSynced(Boolean synced) {
     this.synced = synced;
@@ -434,6 +447,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
     this.setFileResearch(fundingSourceInfoUpdate.getFileResearch());
+    this.setHasFileResearch(fundingSourceInfoUpdate.isHasFileResearch());
   }
 
 }
