@@ -150,7 +150,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectOtherContributionsValidator = projectOtherContributionsValidator;
     this.projectOutputsValidator = projectOutputsValidator;
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
-    this.projectBudgetsFlagshipValidator = this.projectBudgetsFlagshipValidator;
+    this.projectBudgetsFlagshipValidator = projectBudgetsFlagshipValidator;
   }
 
 
@@ -166,7 +166,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         new ArrayList<ProjectLocation>(project
           .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
             && p.getLocElement() != null && p.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList())));
+        .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
 
@@ -317,7 +317,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     List<ProjectBudget> projectBudgets =
       new ArrayList<>(projectDB.getProjectBudgets().stream().filter(pb -> pb.isActive()
         && pb.getYear() == action.getActualPhase().getYear() && pb.getPhase().equals(action.getActualPhase()))
-        .collect(Collectors.toList()));
+      .collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
     for (ProjectBudget projectBudget : projectBudgets) {
@@ -581,10 +581,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       .filter(a -> a.isActive() && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
         || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
-        || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
+        && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
+      || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())
+        || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
       .collect(Collectors.toList());
 
     if (action.isReportingActive()) {
