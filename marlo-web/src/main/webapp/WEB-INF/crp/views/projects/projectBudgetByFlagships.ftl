@@ -80,7 +80,7 @@
                   [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
                   <div class="clearfix"></div>
                 [#else]
-                  <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add Flagship(s) in <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
+                  <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
                 [/#if]
                 </div>
               [/#list]  

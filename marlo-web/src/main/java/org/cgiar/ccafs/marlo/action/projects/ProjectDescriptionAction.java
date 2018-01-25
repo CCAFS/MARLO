@@ -67,10 +67,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -442,6 +443,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
       } else {
         // not a valid transatacion
         this.transaction = null;
@@ -564,6 +566,20 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo().getLiaisonUser() != null
+          && project.getProjectInfo().getLiaisonUser().getId() != null) {
+          project.getProjectInfo()
+            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
+        } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
+        }
+        // load LiaisonUser info
+        if (project.getProjectInfo().getLiaisonInstitution() != null) {
+          project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
+        } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+        }
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
