@@ -11,7 +11,7 @@
         <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
             <column name="expected_id" />
         </many-to-one>
-        <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+        <many-to-one name="myProject" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
             <column name="project_id" />
         </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
