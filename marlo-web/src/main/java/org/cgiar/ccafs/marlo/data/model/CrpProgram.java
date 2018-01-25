@@ -103,8 +103,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private String color;
 
 
+  @Expose
+  private Boolean baseLine;
+
+
   public CrpProgram() {
   }
+
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -112,7 +117,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
     this.programType = programType;
   }
-
 
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
@@ -146,6 +150,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
@@ -154,10 +159,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return action;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
+  public Boolean getBaseLine() {
+    return baseLine;
+  }
+
 
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
@@ -167,7 +176,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return color;
   }
 
-
   public String getComposedName() {
     return this.acronym + ": " + this.name;
   }
@@ -176,6 +184,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Crp getCrp() {
     return this.crp;
@@ -202,15 +211,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
   }
 
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -221,6 +229,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
+
 
   public List<CrpProgramLeader> getManagers() {
     return managers;
@@ -281,9 +290,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setBaseLine(Boolean baseLine) {
+    this.baseLine = baseLine;
   }
 
 
