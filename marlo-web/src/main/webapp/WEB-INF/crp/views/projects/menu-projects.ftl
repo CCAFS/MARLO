@@ -6,7 +6,7 @@
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'budgetByPartners',  'name': 'Budget',  'action': 'budgetByPartners',  'active': true  },
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true  }
+      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true , 'show': action.getCountProjectFlagships(project.id) && !reportingActive}
       ]
     }
     
