@@ -192,7 +192,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           for (ExpectedStudyProject expectedStudy : expectedStudyProjectsPrew) {
             if (!projectExpectedStudy.getProjects().contains(expectedStudy)) {
 
-              expectedStudyProjectManager.deleteExpectedStudyProject(projectExpectedStudy.getId());
+              expectedStudyProjectManager.deleteExpectedStudyProject(expectedStudy.getId());
             }
           }
 
