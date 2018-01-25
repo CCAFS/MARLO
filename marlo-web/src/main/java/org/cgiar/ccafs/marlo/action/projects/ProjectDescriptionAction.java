@@ -447,6 +447,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (history != null) {
         project = history;
+
       } else {
         // not a valid transatacion
         this.transaction = null;
@@ -569,6 +570,20 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // Load the DB information and adjust it to the structures with which the front end
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo().getLiaisonUser() != null
+          && project.getProjectInfo().getLiaisonUser().getId() != null) {
+          project.getProjectInfo()
+            .setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getProjectInfo().getLiaisonUser().getId()));
+        } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonUser(null);
+        }
+        // load LiaisonUser info
+        if (project.getProjectInfo().getLiaisonInstitution() != null) {
+          project.getProjectInfo().setLiaisonInstitution(liaisonInstitutionManager
+            .getLiaisonInstitutionById(project.getProjectInfo().getLiaisonInstitution().getId()));
+        } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+        }
         project.setFlagshipValue("");
         project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
