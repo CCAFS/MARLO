@@ -38,6 +38,18 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="uploadBaseLine"
+      class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref>
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"

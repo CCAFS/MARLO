@@ -46,12 +46,11 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   @Expose
   private FileDB file;
 
-  /* Donor */
   @Expose
   private Institution directDonor;
 
   @Expose
-  private Institution institution;
+  private Institution originalDonor;
 
 
   @Expose
@@ -209,17 +208,13 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-  public Institution getInstitution() {
-    return institution;
-  }
-
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -231,6 +226,10 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+  public Institution getOriginalDonor() {
+    return originalDonor;
   }
 
   public PartnerDivision getPartnerDivision() {
@@ -356,16 +355,16 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-  public void setInstitution(Institution institution) {
-    this.institution = institution;
-  }
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setOriginalDonor(Institution originalDonor) {
+    this.originalDonor = originalDonor;
   }
 
   public void setPartnerDivision(PartnerDivision partnerDivision) {

@@ -80,14 +80,12 @@ $(document).ready(function() {
     if(justification.exists() && justification.val().trim().length == 0) {
       e.preventDefault();
       return
-
-    }
+    } 
     // Turn save button in saving button
-    $(this).addClass('disabled animated flipInY');
-    $(this).find('.glyphicon').hide();
-    $(this).find('.saveText').html('Saving ... <img src="' + baseURL + '/global/images/loading_3.gif" />');
+    turnSavingStateOn(this);
+     
   });
-
+  
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
     yesnoEvent($(this));
@@ -324,6 +322,18 @@ $(document).ready(function() {
   });
 
 });
+
+function turnSavingStateOn(button){
+  $(button).addClass('disabled animated flipInY');
+  $(button).find('.glyphicon').hide();
+  $(button).find('.saveText').html('Saving ... <img src="' + baseURL + '/global/images/loading_3.gif" />');
+}
+
+function turnSavingStateOff(button){
+  $(button).removeClass('disabled animated flipInY');
+  $(button).find('.glyphicon').show();
+  $(button).find('.saveText').html('Save');
+}
 
 function isReportingCycle() {
   return false;

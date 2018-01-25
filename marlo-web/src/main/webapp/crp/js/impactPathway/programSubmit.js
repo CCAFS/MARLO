@@ -116,9 +116,11 @@ function unSubmitButtonEvent(e) {
                   type: 'GET',
                   dataType: "json",
                   data: data
-              }).done(function(m) {
-                window.location.href = baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true";
-              });
+              }).done(
+                  function(m) {
+                    window.location.href =
+                        baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true?phaseID=" + phaseID;
+                  });
             } else {
               $justification.addClass('fieldError');
             }
@@ -152,6 +154,7 @@ function processTasks(tasks,id,button) {
               data: {
                   crpProgramID: id,
                   sectionName: sectionName,
+                  phaseID: phaseID
               },
               beforeSend: function() {
                 $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');
