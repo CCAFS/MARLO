@@ -16,19 +16,10 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
-		<property name="indicator" type="string">
-      <column name="indicator" length="65535"  />
-    </property>
-		<property name="composeID" type="string">
-      <column name="composed_id" length="20" />
-    </property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" not-null="false" />
 		</many-to-one>
-		 <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
-            <column name="id_phase" />
-        </many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" not-null="true" />
@@ -44,6 +35,15 @@
 		<property name="description" type="string">
 			<column name="description" length="65535" not-null="false" />
 		</property>
+		<property name="indicator" type="string">
+      <column name="indicator" length="65535"  />
+    </property>
+    <property name="composeID" type="string">
+      <column name="composed_id" length="20" />
+    </property>
+     <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
 		<property name="year" type="java.lang.Integer">
 			<column name="year" not-null="false" />
 		</property>
@@ -92,5 +92,15 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" />
 		</set>
+		<many-to-one name="file"
+      class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+      <column name="file_id" not-null="false" />
+    </many-to-one>
+     <set name="crpProgramOutcomeIndicators" table="crp_program_outcome_indicator" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_program_outcome_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator" />
+        </set>
 	</class>
 </hibernate-mapping>

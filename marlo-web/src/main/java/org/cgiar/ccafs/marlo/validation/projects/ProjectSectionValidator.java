@@ -804,7 +804,8 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectOutcome.setNextUsers(
         projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+      projectOutcome.setIndicators(
+        projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectOutcomeValidator.validate(action, projectOutcome, false);
 
     }
