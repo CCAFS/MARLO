@@ -16,13 +16,16 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.ExpectedStudyProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectExpectedStudyDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
+  private ExpectedStudyProjectDAO expectedStudyProjectDAO;
 
   private ProjectExpectedStudyDAO projectExpectedStudyDAO;
   // Managers
@@ -45,10 +49,24 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
   @Inject
   public ProjectExpectedStudyManagerImpl(ProjectExpectedStudyDAO projectExpectedStudyDAO, PhaseDAO phaseDAO,
-    ProjectDAO projectDAO) {
+    ExpectedStudyProjectDAO expectedStudyProjectDAO, ProjectDAO projectDAO) {
     this.projectExpectedStudyDAO = projectExpectedStudyDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
+    this.expectedStudyProjectDAO = expectedStudyProjectDAO;
+  }
+
+  public void cloneExpectedStudyProject(ExpectedStudyProject expectedStudyProjectAdd,
+    ExpectedStudyProject expectedStudyProject, ProjectExpectedStudy projectExpectedStudy,
+    ProjectExpectedStudy projectExpectedStudyAdd, Phase phase) {
+    expectedStudyProjectAdd.setActive(true);
+    expectedStudyProjectAdd.setActiveSince(expectedStudyProject.getActiveSince());
+    expectedStudyProjectAdd.setProjectExpectedStudy(projectExpectedStudyAdd);
+    expectedStudyProjectAdd.setCreatedBy(expectedStudyProject.getCreatedBy());
+    expectedStudyProjectAdd.setProject(expectedStudyProject.getProject());
+    expectedStudyProjectAdd.setModificationJustification(expectedStudyProject.getModificationJustification());
+    expectedStudyProjectAdd.setModifiedBy(expectedStudyProject.getModifiedBy());
+
   }
 
   /**
@@ -96,12 +114,12 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
 
   }
 
+
   @Override
   public ProjectExpectedStudy getProjectExpectedStudyById(long projectExpectedStudyID) {
 
     return projectExpectedStudyDAO.find(projectExpectedStudyID);
   }
-
 
   @Override
   public ProjectExpectedStudy saveProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
@@ -133,11 +151,45 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
         projectExpectedStudyAdd.setComposedId(projectExpectedStudy.getComposedId());
         projectExpectedStudyDAO.save(projectExpectedStudyAdd);
       }
+      if (projectExpectedStudy.getProjects() != null) {
+        for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getProjects()) {
+          ExpectedStudyProject expectedStudyProjectAdd = new ExpectedStudyProject();
 
+          this.cloneExpectedStudyProject(expectedStudyProjectAdd, expectedStudyProject, projectExpectedStudy,
+            projectExpectedStudyAdd, phase);
+
+          expectedStudyProjectDAO.save(expectedStudyProjectAdd);
+        }
+      }
     } else {
       ProjectExpectedStudy projectExpectedStudyAdd = expectedStudies.get(0);
       this.cloneProjectExpectedStudy(projectExpectedStudyAdd, projectExpectedStudy, phase);
       projectExpectedStudyAdd = projectExpectedStudyDAO.save(projectExpectedStudyAdd);
+      if (projectExpectedStudy.getProjects() == null) {
+        projectExpectedStudy.setProjects(new ArrayList<>());
+      }
+
+      for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getProjects()) {
+        if (projectExpectedStudyAdd.getExpectedStudyProjects().stream()
+          .filter(c -> c.isActive() && c.getProject().getId().equals(expectedStudyProject.getProject().getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+          ExpectedStudyProject expectedStudyProjectAdd = new ExpectedStudyProject();
+          this.cloneExpectedStudyProject(expectedStudyProjectAdd, expectedStudyProject, projectExpectedStudy,
+            projectExpectedStudyAdd, phase);
+          expectedStudyProjectDAO.save(expectedStudyProjectAdd);
+        }
+      }
+      for (ExpectedStudyProject expectedStudyProject : projectExpectedStudyAdd.getExpectedStudyProjects().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (projectExpectedStudy.getProjects().stream()
+          .filter(c -> c.getProject().getId().equals(expectedStudyProject.getProject().getId()))
+          .collect(Collectors.toList()).isEmpty()) {
+          expectedStudyProject.setActive(false);
+          expectedStudyProjectDAO.save(expectedStudyProject);
+        }
+
+      }
+
     }
 
     if (phase.getNext() != null)

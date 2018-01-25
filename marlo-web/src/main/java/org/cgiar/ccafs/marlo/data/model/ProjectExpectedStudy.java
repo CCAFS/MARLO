@@ -5,6 +5,9 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -49,6 +52,9 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  private Set<ExpectedStudyProject> expectedStudyProjects = new HashSet<ExpectedStudyProject>(0);
+  private List<ExpectedStudyProject> projects;
+
 
   public ProjectExpectedStudy() {
   }
@@ -95,6 +101,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<ExpectedStudyProject> getExpectedStudyProjects() {
+    return expectedStudyProjects;
+  }
+
+
   @Override
   public Long getId() {
     return id;
@@ -133,6 +144,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
+  }
+
+
+  public List<ExpectedStudyProject> getProjects() {
+    return projects;
   }
 
 
@@ -192,6 +208,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setExpectedStudyProjects(Set<ExpectedStudyProject> expectedStudyProjects) {
+    this.expectedStudyProjects = expectedStudyProjects;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -219,6 +240,11 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+
+  public void setProjects(List<ExpectedStudyProject> projects) {
+    this.projects = projects;
   }
 
 

@@ -54,5 +54,11 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
+         <set name="expectedStudyProjects" table="expected_study_projects" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="expected_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject" />
+        </set>
     </class>
 </hibernate-mapping>
