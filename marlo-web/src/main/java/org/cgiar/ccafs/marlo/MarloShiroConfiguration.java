@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo;
 
-import org.cgiar.ccafs.marlo.security.APCustomRealm;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +23,6 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * Configuration for MARLO Security using Apache Shiro.
@@ -33,18 +30,12 @@ import org.springframework.context.annotation.DependsOn;
 @Configuration
 public class MarloShiroConfiguration {
 
-  @Bean(name = "lifecycleBeanPostProcessor")
-  public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
-    return new LifecycleBeanPostProcessor();
-  }
 
-  @Bean(name = "realm")
-  @DependsOn("lifecycleBeanPostProcessor")
-  public APCustomRealm realm() {
-    APCustomRealm realm = new APCustomRealm();
-    return realm;
-  }
-
+  /**
+   * The realm @APCustomRealm is discovered and initialized by Spring classpath scanning and is injected with other
+   * dependencies which is why it is not configured here. The @ShiroSpringStartupListener will then set the realm on the
+   * securityManager when notified by an @ApplicationEvent.
+   */
   @Bean(name = "securityManager")
   public DefaultWebSecurityManager securityManager() {
     DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -65,14 +56,11 @@ public class MarloShiroConfiguration {
     filterChainDefinitionMap.put("/api/**", "authcBasic");
     shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
-    /**
-     * This part is only necessary if we need to extend the BasicHttpAuthenticationFilter. Can remove this once
-     * Authorization logic is complete.
-     */
-    // Map<String, Filter> filterMap = new HashMap<>();
-    // filterMap.put("authcBasic", new ExtendedBasicHttpAuthenticationFilter());
-    // shiroFilterFactoryBean.setFilters(filterMap);
-
     return shiroFilterFactoryBean;
+  }
+
+  @Bean(name = "lifecycleBeanPostProcessor")
+  public LifecycleBeanPostProcessor vetLifecycleBeanPostProcessor() {
+    return new LifecycleBeanPostProcessor();
   }
 }

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.dto.CrpDTO;
 import org.cgiar.ccafs.marlo.rest.dto.mapper.CrpMapper;
+import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +62,8 @@ public class CrpController {
     this.userManager = userManager;
     this.crpMapper = crpMapper;
   }
-
-  // @RequiresPermissions("hc:patientView")
+  
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/crps", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpDTO> createCrp(@Valid @RequestBody CrpDTO crpDTO) {
     LOG.debug("Create a new crp with : {}", crpDTO);
@@ -78,13 +80,15 @@ public class CrpController {
     return new ResponseEntity<CrpDTO>(crpMapper.crpToCrpDTO(newCrp), HttpStatus.CREATED);
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/crps/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteCrp(@PathVariable Long id) {
     LOG.debug("Delete crp with id: {}", id);
     crpManager.deleteCrp(id);
     return ResponseEntity.ok().build();
   }
-
+  
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/crps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<CrpDTO> getAllCrps() {
     LOG.debug("REST request to get Crps");
@@ -93,6 +97,7 @@ public class CrpController {
     return crpDTOs;
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/crps/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpDTO> getCrp(@PathVariable Long id) {
     LOG.debug("REST request to get Crp : {}", id);

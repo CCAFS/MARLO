@@ -63,30 +63,32 @@ import org.slf4j.LoggerFactory;
  * @author Chirstian David Garcia
  * @author Hermes Jimenez
  */
+@Named("realm")
 public class APCustomRealm extends AuthorizingRealm {
 
   // Logger
   public static Logger LOG = LoggerFactory.getLogger(APCustomRealm.class);
 
   // Variables
-  final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
-  private APConfig config;
+  private final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
+  private final APConfig config;
 
+  private final UserManager userManager;
 
-  // Managers -- use setter injection here is ok.
-  @Inject
-  private UserManager userManager;
+  private final Authenticator dbAuthenticator;
 
-  @Inject
-  @Named("DB")
-  private Authenticator dbAuthenticator;
+  private final Authenticator ldapAuthenticator;
 
   @Inject
-  @Named("LDAP")
-  private Authenticator ldapAuthenticator;
-
-  public APCustomRealm() {
+  public APCustomRealm(@Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator,
+    UserManager userManager, APConfig apConfig) {
     super(new MemoryConstrainedCacheManager());
+
+    this.dbAuthenticator = dbAuthenticator;
+    this.ldapAuthenticator = ldapAuthenticator;
+    this.userManager = userManager;
+    this.config = apConfig;
+
     this.setName("APCustomRealm");
   }
 
