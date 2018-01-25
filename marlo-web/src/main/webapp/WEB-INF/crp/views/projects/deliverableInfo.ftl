@@ -239,13 +239,13 @@
   
   [#-- Cross-cutting dimensions blocks --]
   <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingScoresMap" required=true  className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingScoresMap"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingDimensions" keyFieldName="id" displayFieldName="description"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true  className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   
   [#-- Gender Types List --]
