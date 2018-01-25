@@ -65,9 +65,21 @@
           <hr />
           
           [#if project.sharedExpectedStudies?has_content]
+            <table>
+              <tr>
+                <td>Project ID</td>
+                <td>Planned topic of study</td>
+                <td>Type</td>
+              </tr>
             [#list project.sharedExpectedStudies as expectedStudy]
-              [@expectedStudyMacro element=expectedStudy name="project.sharedExpectedStudies"  index=expectedStudy_index isEditable=false  /]
+              [#assign expectedStudyURL][@s.url namespace="/projects" action="expectedStudies"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+              <tr>
+                <td><a href="${expectedStudyURL}">${expectedStudy.project.id}</a></td>
+                <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
+                <td>${expectedStudy.type}</td>
+              </tr>
             [/#list]
+            </table>
           [/#if]
           
           [#-- Section Buttons & hidden inputs--]
@@ -148,7 +160,7 @@
         [/#if]  
         </ul>
         [#if editable ]
-          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="targets" required=true className="addSharedProject" editable=editable/]
+          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="myProjects"  keyFieldName="id"  displayFieldName="composedName" required=true className="addSharedProject" editable=editable/]
         [/#if] 
       </div>
     </div>
@@ -163,9 +175,9 @@
   [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
   [#-- Hidden inputs --]
   <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
-  <input class="projectId" type="hidden" name="${customName}.project.id" value="${(element.project.id)!}" />
+  <input class="projectId" type="hidden" name="${customName}.myProject.id" value="${(element.myProject.id)!}" />
   [#-- title --]
-  <p><span title="${(element.project.title)!}" class="name">${(element.project.composedName)!'Undefined'}</span></p>
+  <p><span title="${(element.myProject.title)!}" class="name">${(element.myProject.composedName)!'Undefined'}</span></p>
   <div class="clearfix"></div>
 </li>
 [/#macro]

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `project_budgets_flagships`;
 CREATE TABLE `project_budgets_flagships` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `id_phase`  bigint(20) NOT NULL ,

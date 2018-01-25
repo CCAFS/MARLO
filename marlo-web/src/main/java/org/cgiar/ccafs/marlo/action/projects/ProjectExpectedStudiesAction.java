@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalScopeEnum;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -96,6 +98,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private long projectID;
 
   private ProjectManager projectManager;
+  private PhaseManager phaseManager;
 
   private SrfSloIndicatorManager srfSloIndicatorManager;
   private SrfSubIdoManager srfSubIdoManager;
@@ -115,11 +118,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
     SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
     ExpectedStudyProjectManager expectedStudyProjectManager,
-    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, HistoryComparator historyComparator) {
+    ProjectExpectedStudiesValidator projectExpectedStudiesValidator, HistoryComparator historyComparator,
+    PhaseManager phaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.phaseManager = phaseManager;
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.srfSloIndicatorManager = srfSloIndicatorManager;
@@ -175,6 +180,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         projectExpectedStudyNew.setSrfSubIdo(projectExpectedStudy.getSrfSubIdo());
         projectExpectedStudyNew.setTopicStudy(projectExpectedStudy.getTopicStudy());
         projectExpectedStudyNew.setType(projectExpectedStudy.getType());
+        projectExpectedStudyNew.setProjects(projectExpectedStudy.getProjects());
         projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
 
 
@@ -186,7 +192,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           for (ExpectedStudyProject expectedStudy : expectedStudyProjectsPrew) {
             if (!projectExpectedStudy.getProjects().contains(expectedStudy)) {
 
-              expectedStudyProjectManager.deleteExpectedStudyProject(projectExpectedStudy.getId());
+              expectedStudyProjectManager.deleteExpectedStudyProject(expectedStudy.getId());
             }
           }
 
@@ -201,7 +207,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               expectedStudyNew.setModifiedBy(this.getCurrentUser());
               expectedStudyNew.setModificationJustification("");
               expectedStudyNew.setActiveSince(new Date());
-              expectedStudyNew.setProject(expectedStudy.getProject());
+              expectedStudyNew.setMyProject(expectedStudy.getMyProject());
 
 
               expectedStudyProjectManager.saveExpectedStudyProject(expectedStudyNew);
@@ -353,8 +359,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getExpectedStudies() != null) {
 
 
+          for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
+            if (expectedStudy.getProjects() != null) {
+
+              for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
+                expectedStudyProject
+                  .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
+                expectedStudyProject.getMyProject()
+                  .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+              }
+            }
+          }
+        }
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -364,18 +383,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+          for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
+            expectedStudyProject.setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
+            expectedStudyProject.getMyProject()
+              .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+          }
         }
         project.setSharedExpectedStudies(new ArrayList<>());
         for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          .filter(c -> c.isActive() && c.getProjectExpectedStudy().getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
           project.getSharedExpectedStudies().add(expectedStudyProject.getProjectExpectedStudy());
 
         }
         for (ProjectExpectedStudy expectedStudy : project.getSharedExpectedStudies()) {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+          for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
+            expectedStudyProject.setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
+            expectedStudyProject.getMyProject()
+              .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
+          }
         }
 
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
@@ -401,8 +429,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
         targets.put(srfSloIndicator.getId(), srfSloIndicator.getTitle());
       }
+      Phase phase = this.getActualPhase();
+      phase = phaseManager.getPhaseById(phase.getId());
       myProjects = new ArrayList<>();
-      for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases().stream().filter(c -> c.isActive())
+      for (ProjectPhase projectPhase : phase.getProjectPhases().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
         if (projectPhase.getProject().isActive()) {
           projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
@@ -412,6 +442,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+      myProjects.remove(project);
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
