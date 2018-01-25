@@ -92,7 +92,11 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
                 session.remove(parameter.getParameter().getKey());
               }
             }
+            session.remove(APConstants.CURRENT_PHASE);
+            session.remove(APConstants.PHASES);
+            session.remove(APConstants.PHASES_IMPACT);
             session.replace(APConstants.SESSION_CRP, crp);
+            session.remove(APConstants.ALL_PHASES);
             // put the global unit parameters in the session
             for (CustomParameter parameter : crp.getCustomParameters()) {
               if (parameter.isActive()) {
