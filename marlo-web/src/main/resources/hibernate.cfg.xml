@@ -201,6 +201,8 @@
 		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
 		<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml"/>
 		<mapping resource="xmls/CrossCuttingScoring.hbm.xml"/>		
+	  <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
+	  <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
 		<mapping resource="xmls/EmailLogs.hbm.xml"/>
 		<mapping resource="xmls/ExpectedStudyProjects.hbm.xml"/> 
 	</session-factory>
