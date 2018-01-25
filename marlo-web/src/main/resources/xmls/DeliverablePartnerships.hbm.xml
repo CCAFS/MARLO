@@ -15,7 +15,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <many-to-one name="projectPartnerPerson" class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" fetch="select">
-            <column name="partner_person_id" not-null="true" />
+            <column name="partner_person_id" not-null="false" />
         </many-to-one>
         <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
             <column name="deliverable_id" not-null="true" />
@@ -37,6 +37,9 @@
         </property>
         <many-to-one name="partnerDivision" class="org.cgiar.ccafs.marlo.data.model.PartnerDivision" fetch="select">
             <column name="division_id" />
+        </many-to-one>
+        <many-to-one name="projectPartner" class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" fetch="select">
+            <column name="project_partner_id" not-null="false" />
         </many-to-one>
     </class>
 </hibernate-mapping>

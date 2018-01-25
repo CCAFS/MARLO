@@ -18,15 +18,18 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectNextuserDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,19 +50,25 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   private PhaseDAO phaseMySQLDAO;
   private ProjectNextuserDAO projectNextuserDAO;
   private ProjectMilestoneDAO projectMilestoneDAO;
+  private ProjectOutcomeIndicatorDAO projectOutcomeIndicatorDAO;
 
   private CrpProgramOutcomeDAO crpProgramOutcomeDAO;
+  private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
+
   private CrpMilestoneDAO crpMilestoneDAO;
 
   @Inject
   public ProjectOutcomeManagerImpl(ProjectOutcomeDAO projectOutcomeDAO, PhaseDAO phaseMySQLDAO,
     ProjectMilestoneDAO projectMilestoneDAO, ProjectNextuserDAO projectNextuserDAO, CrpMilestoneDAO crpMilestoneDAO,
-    CrpProgramOutcomeDAO crpProgramOutcomeDAO) {
+    CrpProgramOutcomeDAO crpProgramOutcomeDAO, ProjectOutcomeIndicatorDAO projectOutcomeIndicatorDAO,
+    CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
     this.projectOutcomeDAO = projectOutcomeDAO;
     this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
     this.projectMilestoneDAO = projectMilestoneDAO;
     this.projectNextuserDAO = projectNextuserDAO;
+    this.projectOutcomeIndicatorDAO = projectOutcomeIndicatorDAO;
+    this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
     this.crpMilestoneDAO = crpMilestoneDAO;
   }
 
@@ -111,6 +120,37 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     }
   }
 
+
+  /**
+   * clone the outcome indicators
+   * 
+   * @param projectOutcome projectOutcome original
+   * @param projectOutcomeAdd projectOutcome new
+   */
+
+
+  private void addProjectIndicators(ProjectOutcome projectOutcome, ProjectOutcome projectOutcomeAdd) {
+
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectIndicator : projectOutcome.getIndicators()) {
+        projectIndicator.setCrpProgramOutcomeIndicator(
+          crpProgramOutcomeIndicatorDAO.find((projectIndicator.getCrpProgramOutcomeIndicator().getId())));
+        ProjectOutcomeIndicator projectIndicatorAdd = new ProjectOutcomeIndicator();
+        projectIndicatorAdd.setActive(true);
+        projectIndicatorAdd.setActiveSince(projectOutcome.getActiveSince());
+        projectIndicatorAdd.setCreatedBy(projectOutcome.getCreatedBy());
+        projectIndicatorAdd.setModificationJustification("");
+        projectIndicatorAdd.setModifiedBy(projectOutcome.getCreatedBy());
+        projectIndicatorAdd.setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO.getCrpProgramOutcomeIndicator(
+          projectIndicator.getCrpProgramOutcomeIndicator().getComposeID(), projectOutcomeAdd.getCrpProgramOutcome()));
+        projectIndicatorAdd.setValue(projectIndicator.getValue());
+        projectIndicatorAdd.setProjectOutcome(projectOutcomeAdd);
+        projectIndicatorAdd.setNarrative(projectIndicator.getNarrative());
+        projectOutcomeIndicatorDAO.save(projectIndicatorAdd);
+
+      }
+    }
+  }
 
   /**
    * clone the next users
@@ -181,6 +221,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       if (projectOutcomeAdd.getCrpProgramOutcome() != null) {
         projectOutcomeDAO.save(projectOutcomeAdd);
         this.addMilestones(projectOutcome, projectOutcomeAdd);
+        this.addProjectIndicators(projectOutcome, projectOutcomeAdd);
         this.addProjectNextUsers(projectOutcome, projectOutcomeAdd);
       }
 
@@ -195,8 +236,11 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
         projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
+        projectOutcomeAdd.setCrpProgramOutcome(
+          crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
         this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
+        this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
         this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
       }
 
@@ -333,6 +377,79 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   }
 
   /**
+   * check the indicators and updated
+   * 
+   * @param projectOutcomePrev project outcome to update
+   * @param projectOutcome project outcome modified
+   */
+  private void updateProjectIndicators(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+    if (projectOutcome.getIndicators() == null) {
+      projectOutcome.setIndicators(new ArrayList<ProjectOutcomeIndicator>());
+    }
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
+        crpProgramOutcomeIndicatorDAO.find(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId()));
+    }
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (projectOutcome.getIndicators() == null || projectOutcome.getIndicators().stream()
+        .filter(c -> c != null && c.getCrpProgramOutcomeIndicator() != null
+          && c.getCrpProgramOutcomeIndicator().getComposeID()
+            .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
+        .collect(Collectors.toList()).isEmpty()) {
+        projectOutcomeIndicator.setActive(false);
+        projectOutcomeIndicatorDAO.save(projectOutcomeIndicator);
+      }
+    }
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator != null) {
+          projectOutcomeIndicator.setCrpProgramOutcomeIndicator(
+            crpProgramOutcomeIndicatorDAO.find((projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId())));
+          if (projectOutcomePrev.getProjectOutcomeIndicators().stream()
+            .filter(c -> c != null && c.isActive() && c.getCrpProgramOutcomeIndicator() != null
+              && projectOutcomeIndicator.getCrpProgramOutcomeIndicator() != null
+              && c.getCrpProgramOutcomeIndicator().getComposeID()
+                .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
+            .collect(Collectors.toList()).isEmpty()) {
+
+            ProjectOutcomeIndicator projectOutcomeIndicatorAdd = new ProjectOutcomeIndicator();
+            projectOutcomeIndicatorAdd.setActive(true);
+            projectOutcomeIndicatorAdd.setActiveSince(projectOutcome.getActiveSince());
+            projectOutcomeIndicatorAdd.setCreatedBy(projectOutcome.getCreatedBy());
+            projectOutcomeIndicatorAdd.setModificationJustification("");
+            projectOutcomeIndicatorAdd.setModifiedBy(projectOutcome.getCreatedBy());
+            projectOutcomeIndicatorAdd.setCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDAO
+              .getCrpProgramOutcomeIndicator(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID(),
+                this.getProjectOutcomeById(projectOutcomePrev.getId()).getCrpProgramOutcome()));
+
+            projectOutcomeIndicatorAdd.setValue(projectOutcomeIndicator.getValue());
+            projectOutcomeIndicatorAdd.setNarrative(projectOutcomeIndicator.getNarrative());
+            projectOutcomeIndicatorAdd.setProjectOutcome(projectOutcomePrev);
+
+            projectOutcomeIndicatorAdd = projectOutcomeIndicatorDAO.save(projectOutcomeIndicatorAdd);
+
+          } else {
+            ProjectOutcomeIndicator indicator = projectOutcomePrev.getProjectOutcomeIndicators().stream()
+              .filter(c -> c.isActive() && c.getCrpProgramOutcomeIndicator().getComposeID()
+                .equals(projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getComposeID()))
+              .collect(Collectors.toList()).get(0);
+
+
+            indicator.setValue(projectOutcomeIndicator.getValue());
+            indicator.setNarrative(projectOutcomeIndicator.getNarrative());
+
+
+            indicator = projectOutcomeIndicatorDAO.save(indicator);
+
+          }
+        }
+
+      }
+    }
+  }
+
+  /**
    * check the milestones and updated
    * 
    * @param projectOutcomePrev project outcome to update
@@ -348,7 +465,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
-        .filter(c -> c != null && c.getCrpMilestone() != null
+        .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
           && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
         projectMilestone.setActive(false);

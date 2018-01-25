@@ -162,7 +162,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         projectPartnerPersonAdd.setProjectPartner(projectPartnerDAO.find(newPartern));
         projectPartnerPersonAdd.setContactType(projectPartnerPerson.getContactType());
         projectPartnerPersonAdd.setUser(projectPartnerPerson.getUser());
-        projectPartnerPersonAdd = projectPartnerPersonDAO.save(projectPartnerPersonAdd);
+        if (projectPartnerPersonAdd.getUser() != null && projectPartnerPersonAdd.getUser().getId() != null) {
+          projectPartnerPersonAdd = projectPartnerPersonDAO.save(projectPartnerPersonAdd);
+        }
         int a = 0;
       }
     }
@@ -182,7 +184,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
       .collect(Collectors.toList());
 
-    if ( partners.isEmpty()) {
+    if (partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
       projectPartnerAdd.setActive(true);
       projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());
@@ -230,7 +232,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
         && projectPartner.getInstitution().getId().longValue() == c.getInstitution().getId().longValue())
       .collect(Collectors.toList());
 
-    if ( partners.isEmpty()) {
+    if (partners.isEmpty()) {
       ProjectPartner projectPartnerAdd = new ProjectPartner();
       projectPartnerAdd.setActive(true);
       projectPartnerAdd.setActiveSince(projectPartner.getActiveSince());
@@ -503,10 +505,13 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
           partnerPersonAdd.setActiveSince(projectPartnerPrev.getActiveSince());
           partnerPersonAdd.setContactType(partnerPerson.getContactType());
           partnerPersonAdd.setModificationJustification(projectPartnerPrev.getModificationJustification());
+
+
           partnerPersonAdd.setUser(partnerPerson.getUser());
           partnerPersonAdd.setCreatedBy(projectPartnerPrev.getCreatedBy());
-          projectPartnerPersonDAO.save(partnerPersonAdd);
-
+          if (partnerPersonAdd.getUser() != null && partnerPersonAdd.getUser().getId() != null) {
+            projectPartnerPersonDAO.save(partnerPersonAdd);
+          }
         }
       }
     }

@@ -37,6 +37,7 @@ public final class APConstants {
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
   public static final String CRP_BUDGET_GENDER = "crp_budget_gender";
+  public static final String CRP_MANAGING_PARTNERS_CONTACT_PERSONS = "crp_managing_partners_contact_persons";
   public static final String CRP_CL_ROLE = "crp_cl_rol";
 
   public static final String CRP_CLOSED = "crp_closed";
@@ -98,6 +99,8 @@ public final class APConstants {
   public static final String CRP_CLUSTER_LEADER = "crp_cluster_leader";
   public static final String CRP_NEXT_USERS = "crp_next_users";
   public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
+  public static final String CRP_BASELINE_INDICATORS = "crp_baseline_indicators";
+
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
@@ -313,6 +316,8 @@ public final class APConstants {
 
   public static final String PROJECT_OUTCOMES_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectMilestones)";
+  public static final String PROJECT_OUTCOMES_INDICATORS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectOutcomeIndicators)";
   public static final String PROJECT_OUTCOMES_PANDR_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectOutcomesPandr)";
 

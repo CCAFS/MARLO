@@ -58,16 +58,12 @@ public class OutputsValidator extends BaseValidator {
   }
 
   public void validate(BaseAction baseAction, CenterOutput output, CenterProgram selectedProgram, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
-    this.missingFields.setLength(0);
     if (!saving) {
       Path path = this.getAutoSaveFilePath(output, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField(baseAction.getText("output.action.draft"));
+        baseAction.addMissingField(baseAction.getText("output.action.draft"));
       }
     }
 
@@ -77,7 +73,7 @@ public class OutputsValidator extends BaseValidator {
 
     this.validateOutput(baseAction, output);
 
-    this.saveMissingFields(selectedProgram, output, "outputsList");
+    this.saveMissingFields(selectedProgram, output, "outputsList", baseAction);
   }
 
   public void validateNextUser(BaseAction baseAction, CenterOutputsNextUser nextUser, int i) {
@@ -88,17 +84,17 @@ public class OutputsValidator extends BaseValidator {
     if (nextUser.getNextuserType() != null) {
       if (nextUser.getNextuserType().getNextuserType().getId() != null) {
         if (nextUser.getNextuserType().getNextuserType().getId() == -1) {
-          this.addMessage(baseAction.getText("output.action.nextusers.type", params));
+          baseAction.addMessage(baseAction.getText("output.action.nextusers.type", params));
           baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.nextuserType.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
-        this.addMessage(baseAction.getText("output.action.nextusers.type", params));
+        baseAction.addMessage(baseAction.getText("output.action.nextusers.type", params));
         baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.nextuserType.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("output.action.nextusers.type", params));
+      baseAction.addMessage(baseAction.getText("output.action.nextusers.type", params));
       baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.nextuserType.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -106,17 +102,17 @@ public class OutputsValidator extends BaseValidator {
     if (nextUser.getNextuserType() != null) {
       if (nextUser.getNextuserType().getId() != null) {
         if (nextUser.getNextuserType().getId() == -1) {
-          this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
+          baseAction.addMessage(baseAction.getText("output.action.nextusers.subType", params));
           baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       } else {
-        this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
+        baseAction.addMessage(baseAction.getText("output.action.nextusers.subType", params));
         baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("output.action.nextusers.subType", params));
+      baseAction.addMessage(baseAction.getText("output.action.nextusers.subType", params));
       baseAction.getInvalidFields().put("input-output.nextUsers[" + i + "].nextuserType.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -127,11 +123,11 @@ public class OutputsValidator extends BaseValidator {
 
     if (output.getTitle() != null) {
       if (!this.isValidString(output.getTitle()) && this.wordCount(output.getTitle()) <= 50) {
-        this.addMessage(baseAction.getText("output.action.title.required"));
+        baseAction.addMessage(baseAction.getText("output.action.title.required"));
         baseAction.getInvalidFields().put("input-output.title", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("output.action.title.required"));
+      baseAction.addMessage(baseAction.getText("output.action.title.required"));
       baseAction.getInvalidFields().put("input-output.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -139,7 +135,7 @@ public class OutputsValidator extends BaseValidator {
     if (output.getNextUsers() != null) {
       if (output.getNextUsers().size() == 0) {
 
-        this.addMessage(baseAction.getText("output.action.nextusers"));
+        baseAction.addMessage(baseAction.getText("output.action.nextusers"));
         baseAction.getInvalidFields().put("list-output.nextUsers",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"nextUsers"}));
       } else {
@@ -150,7 +146,7 @@ public class OutputsValidator extends BaseValidator {
       }
     } else {
 
-      this.addMessage(baseAction.getText("programImpact.action.beneficiary"));
+      baseAction.addMessage(baseAction.getText("programImpact.action.beneficiary"));
       baseAction.getInvalidFields().put("list-output.nextUsers",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"nextUsers"}));
     }

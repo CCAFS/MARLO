@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -52,20 +51,15 @@ public class ProjectPartnersValidator extends BaseValidator {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
   private final CrpManager crpManager;
-  private final ProjectManager projectManager;
   private final InstitutionManager institutionManager;
   private final ProjectValidator projectValidator;
 
-  // This is not thread safe
-  private boolean hasErros;
-
   @Inject
   public ProjectPartnersValidator(ProjectValidator projectValidator, CrpManager crpManager,
-    ProjectManager projectManager, InstitutionManager institutionManager) {
+    InstitutionManager institutionManager) {
     super();
     this.projectValidator = projectValidator;
     this.crpManager = crpManager;
-    this.projectManager = projectManager;
     this.institutionManager = institutionManager;
   }
 
@@ -79,11 +73,6 @@ public class ProjectPartnersValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public boolean isHasErros() {
-    return hasErros;
-  }
-
-
   public void replaceAll(StringBuilder builder, String from, String to) {
     int index = builder.indexOf(from);
     while (index != -1) {
@@ -94,22 +83,24 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
 
-  public void setHasErros(boolean hasErros) {
-    this.hasErros = hasErros;
-  }
-
-  public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
+  /**
+   * Returns false if no errors and false if there are errors
+   * 
+   * @param action
+   * @param project
+   * @param saving
+   * @return
+   */
+  public boolean validate(BaseAction action, Project project, boolean saving) {
+    boolean hasErros = false;
     action.setInvalidFields(new HashMap<>());
-    hasErros = false;
+
     if (project != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
         if (path.toFile().exists()) {
-          this.addMissingField("draft");
+          action.addMissingField("draft");
         }
       }
 
@@ -117,9 +108,9 @@ public class ProjectPartnersValidator extends BaseValidator {
 
         if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
           if (!this.isValidString(project.getOverall())) {
-            this.addMessage(
+            action.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
-            this.addMissingField("project.partners.overall");
+            action.addMissingField("project.partners.overall");
             action.getInvalidFields().put("input-project.overall", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
@@ -128,15 +119,15 @@ public class ProjectPartnersValidator extends BaseValidator {
 
 
       if (project.getPartners() == null || project.getPartners().isEmpty()) {
-        this.addMissingField("project.partners.empty");
+        action.addMissingField("project.partners.empty");
         action.getInvalidFields().put("list-project.partners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
       if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!action.isProjectNew(project.getId())) {
           this.validateLessonsLearn(action, project);
-          if (this.validationMessage.toString().contains("Lessons")) {
-            this.replaceAll(validationMessage, "Lessons",
+          if (action.getValidationMessage().toString().contains("Lessons")) {
+            this.replaceAll(action.getValidationMessage(), "Lessons",
               "Lessons regarding partnerships and possible implications for the coming planning cycle");
             action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
               InvalidFieldsMessages.EMPTYFIELD);
@@ -152,23 +143,25 @@ public class ProjectPartnersValidator extends BaseValidator {
         System.out.println(action.getFieldErrors());
 
 
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
 
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.PARTNERS.getStatus());
-
-
+        ProjectSectionStatusEnum.PARTNERS.getStatus(), action);
     }
+
+    return hasErros;
   }
 
   private void validateCCAFSProject(BaseAction action, Project project) {
     this.validateInstitutionsEmpty(action, project);
     this.validateProjectLeader(action, project);
-    this.validateContactPersons(action, project);
+    if (action.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS)) {
+      this.validateContactPersons(action, project);
+    }
     if (action.hasSpecificities(APConstants.CRP_PARTNERS_OFFICE)) {
       this.validateOffices(action, project);
     }
@@ -201,7 +194,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
 
               if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
-                this.addMissingField("project.partners[" + c + "].partnerContributors");
+                action.addMissingField("project.partners[" + c + "].partnerContributors");
                 action.getInvalidFields().put("list-project.partners[" + c + "].partnerContributors",
                   action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
 
@@ -219,7 +212,7 @@ public class ProjectPartnersValidator extends BaseValidator {
               .collect(Collectors.toList()).isEmpty()) {
               action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
                 new String[] {partner.getInstitution().getName()}));
-              this.addMissingField("project.partner[" + c + "].contactPersons.empty");
+              action.addMissingField("project.partner[" + c + "].contactPersons.empty");
             }
 
           } else {
@@ -273,13 +266,13 @@ public class ProjectPartnersValidator extends BaseValidator {
     for (ProjectPartner partner : project.getPartners()) {
       if (partner.getSelectedLocations() == null) {
 
-        this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
+        action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
         action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
       } else {
 
         if (partner.getSelectedLocations().isEmpty()) {
-          this.addMissingField("project.projectPartners[" + c + "].selectedLocations");
+          action.addMissingField("project.projectPartners[" + c + "].selectedLocations");
           action.getInvalidFields().put("list-project.partners[" + c + "].selectedLocations",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Offices"}));
         }
@@ -293,7 +286,7 @@ public class ProjectPartnersValidator extends BaseValidator {
   private void validatePersonResponsibilities(BaseAction action, int partnerCounter, ProjectPartner partner) {
     if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
 
-      this.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
+      action.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
       action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
         InvalidFieldsMessages.EMPTYFIELD);
     }
@@ -313,9 +306,9 @@ public class ProjectPartnersValidator extends BaseValidator {
   private void validateProjectLeader(BaseAction action, Project project) {
     // All projects must specify the project leader
     if (!projectValidator.isValidLeader(project.getLeader())) {
-      this.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
+      action.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
       action.getInvalidFields().put("list-project.partners", action.getText("projectPartners.types.PL"));
-      this.addMissingField("project.leader");
+      action.addMissingField("project.leader");
     }
   }
 
@@ -326,13 +319,13 @@ public class ProjectPartnersValidator extends BaseValidator {
         // action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
         // action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
         // No need to add missing fields because field error doesn't allow to save into the database.
-        this.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
+        action.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
         action.getInvalidFields().put("input-partner-" + partnerCounter + "-person-" + personCounter,
           InvalidFieldsMessages.EMPTYFIELD);
 
       } else {
         if (person.getUser().getId() == null || person.getUser().getId() == -1) {
-          this.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
+          action.addMessage(action.getText("input-partner-" + partnerCounter + "-person-" + personCounter));
           action.getInvalidFields().put("input-partner-" + partnerCounter + "-person-" + personCounter,
             InvalidFieldsMessages.EMPTYFIELD);
           person.setUser(null);
