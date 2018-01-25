@@ -209,27 +209,21 @@
   [#-- If gender dimension, select with ones --]
   <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
-     <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+    [#if deliverable.genderLevels?has_content]
+      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
         <ul class="list">
-        [#if deliverable.genderLevels?has_content]
           [#list deliverable.genderLevels as element]
             <li class="genderLevel clearfix">
-              [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
               <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
               <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
               <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
               <div class="clearfix"></div>
             </li>
           [/#list]
-        [#else]
-          <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
-        [/#if]  
         </ul>
-        [#if editable ]
-          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect add" editable=editable/]
-        [/#if] 
       </div>
+    [/#if]  
   [#else]
     [#if editable]
       <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />

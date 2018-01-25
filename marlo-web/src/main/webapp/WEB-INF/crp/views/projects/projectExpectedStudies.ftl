@@ -120,5 +120,39 @@
     <div class="form-group "> 
       [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
+    
+    <hr />
+    [#-- Projects shared --]
+    <div id="expectedStudyProjectsList" class="panel tertiary">
+      <div class="panel-head"><label for=""> This study is done jointly with the following project(s), please select below: </label></div>
+      <div class="expectedStudyProjectsList" class="panel-body"> 
+        <ul class="list">
+        [#if element.projects?has_content ]
+          [#list element.projects as projectLink]
+            [@sharedProject element=projectLink name="${customName}.projects" index=projectLink_index template=false /]
+          [/#list]
+        [#else]
+          <p class="emptyText">[@s.text name="expectedStudy.projectsEmpty" /]</p> 
+        [/#if]  
+        </ul>
+        [#if editable ]
+          [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="projects" editable=editable/]
+        [/#if] 
+      </div>
+    </div>
   </div>
+[/#macro]
+
+[#macro sharedProject element name index=-1 template=false]
+[#local own = (!template) && (element.project.id == projectID) /]
+<li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
+  [#-- Remove button --]
+  [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
+  [#-- Hidden inputs --]
+  <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
+  <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
+  [#-- title --]
+  <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
+  <div class="clearfix"></div>
+</li>
 [/#macro]
