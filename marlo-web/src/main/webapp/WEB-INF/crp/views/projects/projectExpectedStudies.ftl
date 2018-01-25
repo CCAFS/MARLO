@@ -62,6 +62,14 @@
             [/#if]
           </div>
           
+          <hr />
+          
+          [#if project.sharedExpectedStudies?has_content]
+            [#list project.sharedExpectedStudies as expectedStudy]
+              [@expectedStudyMacro element=expectedStudy name="project.sharedExpectedStudies"  index=expectedStudy_index isEditable=false  /]
+            [/#list]
+          [/#if]
+          
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
           
@@ -75,6 +83,9 @@
 [#-- Expected Study Template --]
 [@expectedStudyMacro element={} name="project.expectedStudies"  index=-1 template=true/]
 
+[#-- Expected Study shared project Template --]
+[@sharedProject element={} name="project.expectedStudies[-1].projects" index=-1 template=true /]
+
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro expectedStudyMacro element name index template=false isEditable=true]
@@ -84,7 +95,7 @@
     [#-- Index --]
     <div class="leftHead"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removeExpectedStudy removeIcon" title="Remove Expected Study"></div>[/#if]
+    [#if isEditable]<div class="removeExpectedStudy removeElement" title="Remove Expected Study"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
@@ -117,15 +128,16 @@
     </div>
     
     [#-- Comments --] 
-    <div class="form-group "> 
+    <div class="form-group"> 
       [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
     
+    <div class="clearfix"></div>
     <hr />
     [#-- Projects shared --]
     <div id="expectedStudyProjectsList" class="panel tertiary">
       <div class="panel-head"><label for=""> This study is done jointly with the following project(s), please select below: </label></div>
-      <div class="expectedStudyProjectsList" class="panel-body"> 
+      <div class="expectedStudyProjectsList panel-body" > 
         <ul class="list">
         [#if element.projects?has_content ]
           [#list element.projects as projectLink]
@@ -136,23 +148,24 @@
         [/#if]  
         </ul>
         [#if editable ]
-          [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="projects" editable=editable/]
+          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="targets" required=true className="addSharedProject" editable=editable/]
         [/#if] 
       </div>
     </div>
+    
   </div>
 [/#macro]
 
 [#macro sharedProject element name index=-1 template=false]
-[#local own = (!template) && (element.project.id == projectID) /]
-<li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
+[#local customName = "${name}[${index}]" /]
+<li id="sharedProject-${template?string('template', index)}" class="sharedProject" style="display:${template?string('none','block')}">
   [#-- Remove button --]
   [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
   [#-- Hidden inputs --]
-  <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
-  <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
+  <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
+  <input class="projectId" type="hidden" name="${customName}.project.id" value="${(element.project.id)!}" />
   [#-- title --]
-  <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
+  <p><span title="${(element.project.title)!}" class="name">${(element.project.composedName)!'Undefined'}</span></p>
   <div class="clearfix"></div>
 </li>
 [/#macro]
