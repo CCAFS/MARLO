@@ -236,6 +236,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
         projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
+        projectOutcomeAdd.setCrpProgramOutcome(
+          crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
         this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
         this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
@@ -463,7 +465,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
-        .filter(c -> c != null && c.getCrpMilestone() != null
+        .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
           && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
         .collect(Collectors.toList()).isEmpty()) {
         projectMilestone.setActive(false);
