@@ -19,14 +19,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalScopeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
@@ -44,6 +47,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +77,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private ExpectedStudyProjectManager expectedStudyProjectManager;
 
 
   private AuditLogManager auditLogManager;
@@ -99,6 +104,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private Map<Long, String> targets;
   private Map<Integer, String> types;
   private Map<Integer, String> scopes;
+  private List<Project> myProjects;
 
 
   private String transaction;
@@ -108,6 +114,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, SrfSloIndicatorManager srfSloIndicatorManager,
     SrfSubIdoManager srfSubIdoManager, AuditLogManager auditLogManager,
+    ExpectedStudyProjectManager expectedStudyProjectManager,
     ProjectExpectedStudiesValidator projectExpectedStudiesValidator, HistoryComparator historyComparator) {
     super(config);
     this.projectManager = projectManager;
@@ -116,7 +123,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.srfSloIndicatorManager = srfSloIndicatorManager;
-
+    this.expectedStudyProjectManager = expectedStudyProjectManager;
     this.historyComparator = historyComparator;
     this.projectExpectedStudiesValidator = projectExpectedStudiesValidator;
 
@@ -129,6 +136,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       ProjectExpectedStudy projectExpectedStudyNew = null;
       if (projectExpectedStudy != null) {
 
+        if (projectExpectedStudy.getProjects() == null) {
+          projectExpectedStudy.setProjects(new ArrayList<>());
+        }
         if (projectExpectedStudy.getSrfSloIndicator() != null
           && projectExpectedStudy.getSrfSloIndicator().getId() > 0) {
           projectExpectedStudy.setSrfSloIndicator(
@@ -167,6 +177,37 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         projectExpectedStudyNew.setType(projectExpectedStudy.getType());
         projectExpectedStudyNew = projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudyNew);
 
+
+        if (projectExpectedStudy.getProjects() != null) {
+
+          List<ExpectedStudyProject> expectedStudyProjectsPrew = projectExpectedStudyNew.getExpectedStudyProjects()
+            .stream().filter(da -> da.isActive()).collect(Collectors.toList());
+
+          for (ExpectedStudyProject expectedStudy : expectedStudyProjectsPrew) {
+            if (!projectExpectedStudy.getProjects().contains(expectedStudy)) {
+
+              expectedStudyProjectManager.deleteExpectedStudyProject(projectExpectedStudy.getId());
+            }
+          }
+
+          for (ExpectedStudyProject expectedStudy : projectExpectedStudy.getProjects()) {
+            if (expectedStudy.getId() == null || expectedStudy.getId() == -1) {
+
+              ExpectedStudyProject expectedStudyNew = new ExpectedStudyProject();
+
+              expectedStudyNew.setProjectExpectedStudy(projectExpectedStudyNew);
+              expectedStudyNew.setActive(true);
+              expectedStudyNew.setCreatedBy(this.getCurrentUser());
+              expectedStudyNew.setModifiedBy(this.getCurrentUser());
+              expectedStudyNew.setModificationJustification("");
+              expectedStudyNew.setActiveSince(new Date());
+              expectedStudyNew.setProject(expectedStudy.getProject());
+
+
+              expectedStudyProjectManager.saveExpectedStudyProject(expectedStudyNew);
+            }
+          }
+        }
       }
 
     }
@@ -186,6 +227,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     for (ProjectExpectedStudy projectExpectedStudy : expectedStudiesPrev) {
       if (!expectedStudies.contains(projectExpectedStudy)) {
+        for (ExpectedStudyProject expectedStudyProject : projectExpectedStudy.getExpectedStudyProjects().stream()
+          .filter(da -> da.isActive()).collect(Collectors.toList())) {
+          expectedStudyProjectManager.deleteExpectedStudyProject(expectedStudyProject.getId());
+        }
         projectExpectedStudyManager.deleteProjectExpectedStudy(projectExpectedStudy.getId());
       }
     }
@@ -210,6 +255,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  public List<Project> getMyProjects() {
+    return myProjects;
+  }
+
+
   public Project getProject() {
     return project;
   }
@@ -219,19 +269,19 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return projectID;
   }
 
-
   public Map<Integer, String> getScopes() {
     return scopes;
   }
+
 
   public Map<Long, String> getSubIdos() {
     return subIdos;
   }
 
-
   public Map<Long, String> getTargets() {
     return targets;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -303,7 +353,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
-        project.setProjectLocations(projectDb.getProjectLocations());
 
 
         this.setDraft(true);
@@ -311,6 +360,24 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         this.setDraft(false);
         project.setExpectedStudies(project.getProjectExpectedStudies().stream()
           .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+
+        for (ProjectExpectedStudy expectedStudy : project.getExpectedStudies()) {
+          expectedStudy.setProjects(
+            expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        }
+        project.setSharedExpectedStudies(new ArrayList<>());
+        for (ExpectedStudyProject expectedStudyProject : project.getExpectedStudyProjects().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          project.getSharedExpectedStudies().add(expectedStudyProject.getProjectExpectedStudy());
+
+        }
+        for (ProjectExpectedStudy expectedStudy : project.getSharedExpectedStudies()) {
+          expectedStudy.setProjects(
+            expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        }
+
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
 
@@ -334,6 +401,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
         targets.put(srfSloIndicator.getId(), srfSloIndicator.getTitle());
       }
+      myProjects = new ArrayList<>();
+      for (ProjectPhase projectPhase : this.getActualPhase().getProjectPhases().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        if (projectPhase.getProject().isActive()) {
+          projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
+          myProjects.add(projectPhase.getProject());
+        }
+
+      }
+
+      Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_EXPECTED_STUDIES_BASE_PERMISSION, params));
     }
@@ -348,6 +426,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -405,6 +484,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setMyProjects(List<Project> myProjects) {
+    this.myProjects = myProjects;
   }
 
 
