@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -176,6 +177,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   }
 
+
   public void validateProjectOutcome(BaseAction action, ProjectOutcome projectOutcome) {
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
     int startYear = 0;
@@ -263,6 +265,16 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
 
+    if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
+      if (projectOutcome.getIndicators() != null) {
+        for (int i = 0; i < projectOutcome.getIndicators().size(); i++) {
+          this.validateProjectOutcomeIndicator(action, projectOutcome.getIndicators().get(i), i);
+        }
+      }
+
+    }
+
+
     if (action.hasSpecificities(APConstants.CRP_NEXT_USERS)) {
       if (projectOutcome.getNextUsers() != null && projectOutcome.getNextUsers().size() > 0) {
         for (int i = 0; i < projectOutcome.getNextUsers().size(); i++) {
@@ -273,6 +285,27 @@ public class ProjectOutcomeValidator extends BaseValidator {
         action.getInvalidFields().put("input-projectOutcome.nextUsers",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
       }
+    }
+
+
+  }
+
+  public void validateProjectOutcomeIndicator(BaseAction action, ProjectOutcomeIndicator projectOutcomeIndicator,
+    int i) {
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+
+
+    if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+      && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+      action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+      action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
+      action.addMessage(action.getText("projectOutcomeIndicator.value"));
+      action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
