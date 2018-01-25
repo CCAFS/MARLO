@@ -164,7 +164,7 @@
                       [#assign budgetTypePermission='center' /]
                       [#break]
                   [/#switch]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.name}" required=true editable=action.hasPermission(budgetTypePermission)/]
+                  [@customForm.input name="${customName}.amount" value="0%" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.name}" required=true editable=action.hasPermission(budgetTypePermission) /]
                 [#else]
                   <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
