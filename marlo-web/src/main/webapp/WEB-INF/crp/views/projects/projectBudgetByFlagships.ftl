@@ -150,7 +150,21 @@
                 <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
                 <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
                 [#if editable && isYearEditable(selectedYear)]
-                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true editable=action.hasPermission("${budgetType.name}")/]
+                  [#switch budgetType.name]
+                    [#case "W1/W2"]
+                      [#assign budgetTypePermission='w1w2' /]
+                      [#break]
+                    [#case "W3"]
+                      [#assign budgetTypePermission='w3' /]
+                      [#break]
+                    [#case "Bilateral"]
+                      [#assign budgetTypePermission='bilateral' /]
+                      [#break]
+                    [#case "Center Funds"]
+                      [#assign budgetTypePermission='center' /]
+                      [#break]
+                  [/#switch]
+                  [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.name}" required=true editable=action.hasPermission(budgetTypePermission)/]
                 [#else]
                   <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
                   <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
