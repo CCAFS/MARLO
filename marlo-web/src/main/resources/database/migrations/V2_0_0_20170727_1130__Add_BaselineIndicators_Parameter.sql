@@ -4,4 +4,4 @@ VALUES ('crp_baseline_indicators', 'Allow to add Baseline indicators to the flag
 
 -- Assign as TRUE the Baseline indicator parameter in CCAFS
 INSERT INTO `custom_parameters` (`parameter_id`, `crp_id`, `value`, `created_by`, `is_active`, `modified_by`, `modification_justification`) 
-VALUES ((select id from parameters where `key` = 'crp_baseline_indicators'), '1', 'true', '3', '1', '1082', 'Added Baseline indicators to CCAFS');
+VALUES ((select id from parameters where `key` = 'crp_baseline_indicators' limit 1), '1', 'true', '3', '1', '1082', 'Added Baseline indicators to CCAFS');
