@@ -232,6 +232,16 @@ function init() {
     }
   });
 
+  // Does this study involve research with human subjects?
+  $('.humanSubjectsRadio').on('change', function() {
+    var isChecked = (this.value == "true");
+    if(isChecked) {
+      $('.humanSubjectsBlock').show();
+    } else {
+      $('.humanSubjectsBlock').hide();
+    }
+  });
+
   // Check total grant amount
   $('.currencyInput').on('keyup', keyupBudgetYear).trigger('keyup');
 }

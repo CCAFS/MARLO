@@ -221,27 +221,24 @@
       [#--  Does this study involve research with human subjects? --]
       [#if true]
       <div class="form-group">
-        [#assign hasHumanSubjects = true /]
-        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]:</label>
-        [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.humanSubjects" label="Yes" value="true" checked=hasHumanSubjects cssClass="humanSubjects-yes" cssClassLabel="radio-label-yes"/]
-        [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.humanSubjects" label="No" value="false" checked=!hasHumanSubjects cssClass="humanSubjects-no" cssClassLabel="radio-label-no"/]
-        
+        [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.humanSubjects)!false /]
+        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]</label>
+        [#if editable]
+          [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.humanSubjects" label="Yes" value="true" checked=hasHumanSubjects cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
+          [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.humanSubjects" label="No" value="false" checked=!hasHumanSubjects cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
+        [#else]
+          ${hasHumanSubjects?string('Yes', 'No')}
+        [/#if]
         [#-- Upload File (Human subjects research) fileResearch --]
-        <div class="form-group fileUploadContainer" style="display:${hasHumanSubjects?string('block', 'none')}">
-          <label>[@customForm.text name="fundingSource.uploadHumanSubjects" readText=!editable /]:</label>
-          [#assign fileResearch = (fundingSource.fundingSourceInfo.fileResearch)!{} /]
-          [#assign hasFileResearch = (fileResearch.id??)!false /]
-          <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.fileResearch.id" value="${(fileResearch.id)!}" />
-          [#-- Input File --]
-          [#if editable]
-          <div class="fileUpload" style="display:${hasFileResearch?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSourceResearch.do"></div>
-          [/#if]
-          [#-- Uploaded File --]
-          <p class="fileUploaded textMessage checked" style="display:${hasFileResearch?string('block','none')}">
-            <span class="contentResult">${(fileResearch.fileName)!('No file name')}</span> [#if editable]<span class="removeIcon"> </span> [/#if]
-          </p>
+        <div class="form-group humanSubjectsBlock" style="display:${hasHumanSubjects?string('block', 'none')}">
+          [@customForm.fileUploadAjax 
+            fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
+            name="fundingSource.fundingSourceInfo.fileResearch.id" 
+            label="fundingSource.uploadHumanSubjects" 
+            dataUrl="${baseUrl}/uploadFundingSourceResearch.do" 
+            isEditable=editable
+          /]
         </div>
-        
       </div>
       <hr />
       [/#if]
@@ -278,19 +275,14 @@
       </div>
       
       [#-- Upload bilateral contract --]
-      <div class="form-group fileUploadContainer">
-        <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign file = (fundingSource.fundingSourceInfo.file)!{} /]
-        [#assign hasFile = (file.id??)!false /]
-        <input class="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(file.id)!}" />
-        [#-- Input File --]
-        [#if editable]
-        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
-        [/#if]
-        [#-- Uploaded File --]
-        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">${(file.fileName)!('No file name')}</span> [#if editable]<span class="removeIcon"> </span>[/#if]
-        </p>
+      <div class="form-group">
+        [@customForm.fileUploadAjax 
+          fileDB=(fundingSource.fundingSourceInfo.file)!{}
+          name="fundingSource.fundingSourceInfo.file.id" 
+          label="fundingSource.uploadContract" 
+          dataUrl="${baseUrl}/uploadFundingSource.do" 
+          isEditable=editable
+        /]
       </div>
       <hr />
       

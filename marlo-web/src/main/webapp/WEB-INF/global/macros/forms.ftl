@@ -395,6 +395,22 @@
   </div>
 [/#macro]
 
+[#macro fileUploadAjax fileDB name label="" dataUrl="" isEditable=true cssClass=""]
+  [#assign hasFile = (fileDB.id??)!false /]
+  <div class="fileUploadContainer ${cssClass}" >
+    <label>[@customForm.text name=label readText=!isEditable /]:</label>
+    <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
+    [#-- Input File --]
+    [#if isEditable]
+      <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>
+    [/#if]
+    [#-- Uploaded File --]
+    <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+      <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> [#if isEditable]<span class="removeIcon"> </span> [/#if]
+    </p>
+  </div>
+[/#macro]
+
 [#function changedField name]
   [#if action.changedField(name)??]
     [#assign fieldObj = action.changedField(name)]
