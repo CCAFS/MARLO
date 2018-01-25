@@ -65,9 +65,21 @@
           <hr />
           
           [#if project.sharedExpectedStudies?has_content]
+            <table>
+              <tr>
+                <td>Project ID</td>
+                <td>Planned topic of study</td>
+                <td>Type</td>
+              </tr>
             [#list project.sharedExpectedStudies as expectedStudy]
-              [@expectedStudyMacro element=expectedStudy name="project.sharedExpectedStudies"  index=expectedStudy_index isEditable=false  /]
+              [#assign expectedStudyURL][@s.url namespace="/projects" action="expectedStudies"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+              <tr>
+                <td><a href="${expectedStudyURL}">${expectedStudy.project.id}</a></td>
+                <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
+                <td>${expectedStudy.type}</td>
+              </tr>
             [/#list]
+            </table>
           [/#if]
           
           [#-- Section Buttons & hidden inputs--]
