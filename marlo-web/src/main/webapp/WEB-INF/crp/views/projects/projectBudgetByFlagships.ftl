@@ -29,9 +29,6 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
-[#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
-[#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
-[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
 [#assign budgetCounter = 0 /]
 [#assign type = { 
   'w1w2': 'w1w2',
@@ -56,7 +53,12 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByFlagships.title" /]</h3>
           
-          [#if project.flagships?has_content && project.flagships?size gt 1]
+          [#if project.projectInfo.startDate?? && project.projectInfo.endDate??]
+          
+            [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
+            [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]
+            [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+          
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. selectedYear as year]
@@ -68,13 +70,17 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                
+                [#-- if project.flagships?has_content && project.flagships?size gt 1 --]
                 [#if project.flagships?has_content]
                   [#list project.flagships as budgetFlagship]
                     [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
                   [/#list]
+                  
+                  [#-- Section Buttons & hidden inputs--]
+                  [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
+                  <div class="clearfix"></div>
                 [#else]
-                  [@BudgetByFlagshipsMacro element={} name="project.flagships" index=0 selectedYear=year/]
+                  <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add Flagship(s) in <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
                 [/#if]
                 </div>
               [/#list]  
@@ -87,11 +93,7 @@
               [/@s.text]
             </div>  
           [/#if]
-          
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
-          <div class="clearfix"></div>
-         
+
         [/@s.form] 
       </div>
     </div>  
@@ -114,7 +116,6 @@
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro BudgetByFlagshipsMacro element name index=-1 selectedYear=0 isTemplate=false]
-  
   <div id="projectFlagship-${isTemplate?string('template',(element.id)!)}" class="projectFlagship expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
     <div class="blockTitle opened">
