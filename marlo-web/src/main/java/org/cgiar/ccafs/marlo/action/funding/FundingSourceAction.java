@@ -508,10 +508,12 @@ public class FundingSourceAction extends BaseAction {
 
         // fileResearch validation
         // 20180124 - @jurodca
-        if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
-          if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
-            fundingSource.getFundingSourceInfo()
-              .setFile(fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo()
+                .setFile(fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
           }
         }
 
@@ -820,6 +822,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
       fundingSource.getFundingSourceInfo().setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
+      fundingSource.getFundingSourceInfo().setHasFileResearch(fundingSource.getFundingSourceInfo().isHasFileResearch());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()
@@ -856,11 +859,18 @@ public class FundingSourceAction extends BaseAction {
 
       // fileResearch validation
       // 20180124 - @jurodca
-      if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
-        if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
-          fundingSource.getFundingSourceInfo().setFileResearch(null);
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        if (fundingSource.getFundingSourceInfo().isHasFileResearch()) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(null);
+            } else {
+              fundingSource.getFundingSourceInfo()
+                .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+            }
+          }
         } else {
-          fundingSource.getFundingSourceInfo().setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
         }
       }
 
