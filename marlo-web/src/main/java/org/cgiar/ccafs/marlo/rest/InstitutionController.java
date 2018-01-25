@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.rest.dto.mapper.InstitutionMapper;
+import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -59,6 +61,7 @@ public class InstitutionController {
     this.institutionLocationManager = institutionLocationManager;
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> createInstitution(@Valid @RequestBody InstitutionDTO institutionDTO) {
     LOG.debug("Create a new institution with : {}", institutionDTO);
@@ -86,6 +89,7 @@ public class InstitutionController {
   }
 
   // TODO check if the institutionLocation(s) are deleted.
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteInstitution(@PathVariable Long id) {
@@ -94,6 +98,7 @@ public class InstitutionController {
     return ResponseEntity.ok().build();
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionDTO> getAllInstitutions() {
     LOG.debug("REST request to get Institutions");
@@ -103,6 +108,7 @@ public class InstitutionController {
     return institutionDTOs;
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
     LOG.debug("REST request to get Institution : {}", id);
@@ -111,6 +117,7 @@ public class InstitutionController {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
+  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
   @RequestMapping(value = "/institutions/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable Long id,
     @Valid @RequestBody InstitutionDTO institutionDTO) {

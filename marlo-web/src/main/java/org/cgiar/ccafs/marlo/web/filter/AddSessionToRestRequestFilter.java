@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
-import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.IOException;
 
@@ -34,7 +33,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -86,16 +84,7 @@ public class AddSessionToRestRequestFilter implements Filter {
       session.setAttribute(APConstants.SESSION_CRP, bigData);
     }
 
-    if (securityContext.hasPermission(Permission.FULL_REST_API_PERMISSION)) {
-      chain.doFilter(request, response);
-    } else {
-
-      String message = "User with id: " + subject.getPrincipal() + ", does not have permission to access rest api";
-
-      LOG.error(message);
-
-      throw new AuthorizationException(message);
-    }
+    chain.doFilter(request, response);
 
   }
 

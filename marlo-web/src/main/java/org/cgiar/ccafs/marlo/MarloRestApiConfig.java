@@ -15,13 +15,42 @@
 
 package org.cgiar.ccafs.marlo;
 
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.web.mgt.WebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"org.cgiar.ccafs.marlo.rest"})
 public class MarloRestApiConfig {
+
+
+  /**
+   * The following aspect bean below checks to see if Shiro annotations are present.
+   */
+  @Bean
+  public AuthorizationAttributeSourceAdvisor
+    getAuthorizationAttributeSourceAdvisor(WebSecurityManager securityManager) {
+    AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+    advisor.setSecurityManager(securityManager);
+    return advisor;
+  }
+
+  /**
+   * The following bean is to allow Shiro annotations using Spring AOP.
+   * This bean does not proxy our Controllers if configured in the parent context.
+   */
+  @Bean
+  @DependsOn("lifecycleBeanPostProcessor")
+  public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
+    DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
+    proxyCreator.setProxyTargetClass(true);
+    return proxyCreator;
+  }
 
 }
