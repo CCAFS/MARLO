@@ -774,6 +774,7 @@ public class OutcomesAction extends BaseAction {
           crpMilestoneDB.setActive(true);
           crpMilestoneDB.setCreatedBy(this.getCurrentUser());
           crpMilestoneDB.setActiveSince(new Date());
+          crpMilestoneDB.setComposeID(crpMilestoneDetached.getComposeID());
 
         } else {
           crpMilestoneDB = crpMilestoneManager.getCrpMilestoneById(crpMilestoneDetached.getId());
