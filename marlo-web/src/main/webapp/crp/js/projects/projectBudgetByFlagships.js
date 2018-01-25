@@ -177,7 +177,7 @@ function updateYearsTotalCurrency() {
 
 /**
  * Get budget Currency filtered by budget type ID
- * 
+ *
  * @param {int} Budget Type ID
  * @returns {number} Total
  */
@@ -191,7 +191,7 @@ function getCurrencyByType(type) {
 
 /**
  * Get total budget per year (All budget types included)
- * 
+ *
  * @param {int} Year
  * @returns {number} Total
  */
@@ -205,7 +205,7 @@ function getTotalByYear(year) {
 
 /**
  * Get budget Currency filtered by budget type ID and Partner
- * 
+ *
  * @param {int} Budget Type ID
  * @param {DOM} Partner
  */
@@ -219,7 +219,7 @@ function getCurrencyByTypeAndPartner(type,partner) {
 
 /**
  * Calculate gender budget currency and percentage filtered by budget type ID and Partner
- * 
+ *
  * @param {int} Budget Type ID
  * @param {DOM} Partner
  */
