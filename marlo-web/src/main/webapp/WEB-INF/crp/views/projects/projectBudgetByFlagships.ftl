@@ -70,12 +70,19 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                [#-- if project.flagships?has_content && project.flagships?size gt 1 --]
-                [#if project.flagships?has_content]
-                  [#list project.flagships as budgetFlagship]
-                    [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
-                  [/#list]
+               
                   
+                [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
+                  [#if project.flagships?has_content]
+                    [#list project.flagships as budgetFlagship]
+                      [#if action.existOnYear(budgetFlagship.id,year)]
+                      	[@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
+                 	 [/#if]
+                    [/#list]
+                    
+                  [#else]
+                    <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
+                  [/#if]
                 [#else]
                   <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
                 [/#if]
