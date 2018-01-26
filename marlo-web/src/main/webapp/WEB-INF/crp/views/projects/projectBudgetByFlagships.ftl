@@ -73,7 +73,10 @@
                 [#-- if project.flagships?has_content && project.flagships?size gt 1 --]
                 [#if project.flagships?has_content]
                   [#list project.flagships as budgetFlagship]
+                  [#if action.existOnYear(budgetFlagship.id,year)]
                     [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
+                 [/#if]
+                  
                   [/#list]
                   
                 [#else]
