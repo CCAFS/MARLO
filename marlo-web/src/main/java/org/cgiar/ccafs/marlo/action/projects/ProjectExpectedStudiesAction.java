@@ -384,7 +384,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject.setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
+            expectedStudyProject
+              .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
             expectedStudyProject.getMyProject()
               .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
           }
@@ -400,7 +401,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           expectedStudy.setProjects(
             expectedStudy.getExpectedStudyProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           for (ExpectedStudyProject expectedStudyProject : expectedStudy.getProjects()) {
-            expectedStudyProject.setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
+            expectedStudyProject
+              .setMyProject(projectManager.getProjectById(expectedStudyProject.getMyProject().getId()));
             expectedStudyProject.getMyProject()
               .setProjectInfo(expectedStudyProject.getMyProject().getProjecInfoPhase(this.getActualPhase()));
           }
@@ -463,10 +465,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectDB = projectManager.getProjectById(project.getId());
-      project.setActive(true);
-      project.setCreatedBy(projectDB.getCreatedBy());
-      project.setActiveSince(projectDB.getActiveSince());
+
       if (project.getExpectedStudies() == null) {
         project.setExpectedStudies(new ArrayList<>());
       }
@@ -475,10 +474,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_EXPECTED_STUDIES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
-      project = projectManager.getProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
-      projectManager.saveProject(project, this.getActionName(), relationsName, this.getActualPhase());
+
+
+      Project projectDB = projectManager.getProjectById(projectID);
+      projectDB.setActiveSince(new Date());
+      projectDB.setModifiedBy(this.getCurrentUser());
+      projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
