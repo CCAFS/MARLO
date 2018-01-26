@@ -391,6 +391,10 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+
+  /** cross cutting scores ****/
+  public static final long CROSS_CUTTING_NOT_TARGETED = 0;
+
   /**
    * -------------------------------------------------------------------------------
    * *******************************************************************************
