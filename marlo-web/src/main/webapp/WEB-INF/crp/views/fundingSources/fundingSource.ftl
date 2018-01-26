@@ -221,7 +221,7 @@
       [#--  Does this study involve research with human subjects? --]
       [#if true]
       <div class="form-group">
-        [#assign hasHumanSubjects = (fundingSource.hasFileResearch.humanSubjects)!false /]
+        [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)!false /]
         <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]</label>
         [#if editable]
           [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=hasHumanSubjects cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
