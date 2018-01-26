@@ -188,13 +188,17 @@
       <mapping resource="xmls/CrpAgreement.hbm.xml" />
       <mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
       <mapping resource="xmls/PlaAgreement.hbm.xml" />
+      <mapping resource="xmls/RepositoryChannel.hbm.xml" />
       <mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
       <mapping resource="xmls/GlobalUnitTypes.hbm.xml" />
       <mapping resource="xmls/GlobalUnits.hbm.xml" />      
       <mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
-      <mapping resource="xmls/RepositoryChannel.hbm.xml" />
+      <mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
+      <mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml"/>
+      <mapping resource="xmls/CrossCuttingScoring.hbm.xml"/>
       <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
 	  <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
       <mapping resource="xmls/EmailLogs.hbm.xml"/>
+      <mapping resource="xmls/ExpectedStudyProjects.hbm.xml"/> 
    </session-factory>
 </hibernate-configuration>

@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
@@ -145,6 +146,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final UserRoleManager userRoleManager;
   private final RoleManager roleManager;
   private final ProjectManager projectManager;
+  private final ProjectInfoManager projectInfoManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ProjectPartnerLocationManager projectPartnerLocationManager;
   private final InstitutionLocationManager institutionLocationManager;
@@ -187,8 +189,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnersValidator projectPartnersValidator, HistoryComparator historyComparator,
     ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
     ProjectPartnerLocationManager projectPartnerLocationManager,
-    DeliverablePartnershipManager deliverablePartnershipManager,
-    InstitutionLocationManager institutionLocationManager) {
+    DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
+    ProjectInfoManager projectInfoManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -211,6 +213,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpUserManager = crpUserManager;
+    this.projectInfoManager = projectInfoManager;
 
   }
 
@@ -856,7 +859,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          };
+          } ;
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -881,7 +884,9 @@ public class ProjectPartnerAction extends BaseAction {
           differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
             specialList, "project.projectComponentLesson", "project", 1));
         }
-
+        if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        }
 
         this.setDifferences(differences);
 
@@ -893,6 +898,9 @@ public class ProjectPartnerAction extends BaseAction {
 
     } else {
       project = projectManager.getProjectById(projectID);
+      if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      }
     }
 
 
@@ -1302,6 +1310,10 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
+      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+        projectDB.setProjectInfo(project.getProjectInfo());
+        projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
+      }
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {

@@ -180,6 +180,18 @@ function init() {
     });
   });
 
+  /** Cross-Cutting dimensions * */
+
+  $('input.crosscutingDimension').on('change', function() {
+    var $crosscutingDimensionBlock = $('#ccDimension-' + this.id);
+
+    if($(this).is(':checked')) {
+      $crosscutingDimensionBlock.slideDown();
+    } else {
+      $crosscutingDimensionBlock.slideUp();
+    }
+  });
+
   /** Gender questions * */
 
   $('input#gender').on('change', function() {
@@ -200,6 +212,7 @@ function init() {
   $('input#na').on('change', function() {
     $('input#gender, input#youth, input#capacity').prop("checked", false);
     $('#gender-levels').slideUp();
+    $('.ccDimension').slideUp();
   });
 
   $(".subTypeSelect").on("change", function() {
