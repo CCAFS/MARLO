@@ -270,20 +270,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         break;
 
-      case EXPECTEDSTUDIES:
-        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
-          this.getActualPhase().getYear(), sectionName);
-        section = new HashMap<String, Object>();
-        if (sectionStatus != null) {
-          section.put("sectionName", sectionStatus.getSectionName());
-          section.put("missingFields", sectionStatus.getMissingFields());
-        } else {
-          section.put("sectionName", sectionName);
-          section.put("missingFields", "empty");
-        }
 
-
-        break;
       case CASESTUDIES:
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
@@ -375,13 +362,18 @@ public class ValidateProjectSectionAction extends BaseAction {
         break;
 
       default:
+
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
           this.getActualPhase().getYear(), sectionName);
+        section = new HashMap<String, Object>();
         if (sectionStatus != null) {
-          section = new HashMap<String, Object>();
           section.put("sectionName", sectionStatus.getSectionName());
           section.put("missingFields", sectionStatus.getMissingFields());
+        } else {
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "empty");
         }
+
 
         break;
     }
