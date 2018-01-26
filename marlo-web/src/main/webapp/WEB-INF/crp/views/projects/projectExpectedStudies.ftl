@@ -83,8 +83,8 @@
                   <tr>
                     <td><a href="${expectedStudyURL}">P${expectedStudy.project.id}</a></td>
                     <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
-                    <td>${expectedStudy.type}</td>
-                    <td>${expectedStudy.scope}</td>
+                    <td>${expectedStudy.typeName}</td>
+                    <td>${expectedStudy.scopeName}</td>
                   </tr>
                   [/#list]
                 </tbody>
