@@ -23,12 +23,12 @@ import com.google.gson.annotations.Expose;
  */
 public class PartnerRequest implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 6550441704130583208L;
 
 
   @Expose
   private Long id;
-
 
   @Expose
   private LocElement locElement;
@@ -36,6 +36,7 @@ public class PartnerRequest implements java.io.Serializable {
 
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private User createdBy;
@@ -51,12 +52,13 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private String partnerName;
 
-
   @Expose
   private String acronym;
 
+
   @Expose
   private String webPage;
+
 
   @Expose
   private Boolean acepted;
@@ -73,18 +75,18 @@ public class PartnerRequest implements java.io.Serializable {
   @Expose
   private Date activeSince;
 
-
   @Expose
   private boolean office;
 
   @Expose
   private Institution institution;
 
+
   @Expose
   private String requestSource;
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
   @Expose
   private PartnerRequest partnerRequest;
@@ -136,7 +138,6 @@ public class PartnerRequest implements java.io.Serializable {
     return acronym;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -150,13 +151,12 @@ public class PartnerRequest implements java.io.Serializable {
     return this.locElement.getIsoAlpha2();
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
 
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -175,10 +175,10 @@ public class PartnerRequest implements java.io.Serializable {
     return institutionType;
   }
 
+
   public LocElement getLocElement() {
     return locElement;
   }
-
 
   public String getModificationJustification() {
     return modificationJustification;
@@ -212,6 +212,7 @@ public class PartnerRequest implements java.io.Serializable {
     return partnerRequest;
   }
 
+
   public User getRejectedBy() {
     return rejectedBy;
   }
@@ -224,10 +225,10 @@ public class PartnerRequest implements java.io.Serializable {
     return rejectJustification;
   }
 
-
   public String getRequestSource() {
     return requestSource;
   }
+
 
   public String getWebPage() {
     return webPage;
@@ -249,15 +250,14 @@ public class PartnerRequest implements java.io.Serializable {
     this.aceptedDate = aceptedDate;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -268,7 +268,8 @@ public class PartnerRequest implements java.io.Serializable {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 

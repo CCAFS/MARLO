@@ -13,9 +13,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="institution_id" not-null="true" />
 		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp_id" not-null="true" />
+			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

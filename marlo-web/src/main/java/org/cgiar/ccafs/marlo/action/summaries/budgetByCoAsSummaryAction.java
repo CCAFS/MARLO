@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -78,8 +78,6 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
   private long startTime;
 
   // Managers
-  private final CrpManager crpManager;
-  private final PhaseManager phaseManager;
   private final CrpProgramManager programManager;
   private final ProjectBudgetManager projectBudgetManager;
   private final InstitutionManager institutionManager;
@@ -92,14 +90,13 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
 
   @Inject
-  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public budgetByCoAsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
-    this.phaseManager = phaseManager;
-    this.crpManager = crpManager;
+
   }
 
 
