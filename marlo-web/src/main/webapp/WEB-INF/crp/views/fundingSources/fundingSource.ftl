@@ -219,7 +219,7 @@
       <hr />
       
       [#--  Does this study involve research with human subjects? --]
-      [#if true]
+      [#if action.hasSpecificities('crp_has_research_human')]
       <div class="form-group">
         [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)!false /]
         <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]</label>
