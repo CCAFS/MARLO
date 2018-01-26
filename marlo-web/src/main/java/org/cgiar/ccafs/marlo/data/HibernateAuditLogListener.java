@@ -647,7 +647,9 @@ public class HibernateAuditLogListener
                         if (hasPhase) {
                           if (AuditLogContextProvider.getAuditLogContext().getPhase().equals(phaseObject)) {
                             listRelation.add((IAuditLog) obj);
-                            Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, session);
+                            IAuditLog auditlog = (IAuditLog) obj;
+                            session.refresh(auditlog);
+                            Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
                             for (HashMap<String, Object> hashMap : loadList) {
                               HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(IAuditLog.ENTITY);
                               for (IAuditLog iAuditLog2 : relationAudit) {
@@ -667,7 +669,9 @@ public class HibernateAuditLogListener
                            * If doesn't have phase we alway load the info
                            */
                           listRelation.add((IAuditLog) obj);
-                          Set<HashMap<String, Object>> loadList = this.loadListOfRelations((IAuditLog) obj, session);
+                          IAuditLog auditlog = (IAuditLog) obj;
+                          session.refresh(auditlog);
+                          Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
                           for (HashMap<String, Object> hashMap : loadList) {
                             HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(IAuditLog.ENTITY);
                             for (IAuditLog iAuditLog2 : relationAudit) {
