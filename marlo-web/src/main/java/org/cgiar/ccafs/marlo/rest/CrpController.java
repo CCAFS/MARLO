@@ -62,10 +62,10 @@ public class CrpController {
     this.userManager = userManager;
     this.crpMapper = crpMapper;
   }
-  
+
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/crps", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CrpDTO> createCrp(@Valid @RequestBody CrpDTO crpDTO) {
+  @RequestMapping(value = "/{crp}/crps", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CrpDTO> createCrp(@PathVariable String crp, @Valid @RequestBody CrpDTO crpDTO) {
     LOG.debug("Create a new crp with : {}", crpDTO);
     Crp newCrp = crpMapper.crpDTOToCrp(crpDTO);
 
@@ -81,28 +81,30 @@ public class CrpController {
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/crps/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> deleteCrp(@PathVariable Long id) {
+  @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.DELETE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> deleteCrp(@PathVariable String crp, @PathVariable Long id) {
     LOG.debug("Delete crp with id: {}", id);
     crpManager.deleteCrp(id);
     return ResponseEntity.ok().build();
   }
-  
+
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/crps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<CrpDTO> getAllCrps() {
+  @RequestMapping(value = "/{crp}/crps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<CrpDTO> getAllCrps(@PathVariable String crp) {
     LOG.debug("REST request to get Crps");
     List<Crp> crps = crpManager.findAll();
-    List<CrpDTO> crpDTOs = crps.stream().map(crp -> crpMapper.crpToCrpDTO(crp)).collect(Collectors.toList());
+    List<CrpDTO> crpDTOs =
+      crps.stream().map(crpEntity -> crpMapper.crpToCrpDTO(crpEntity)).collect(Collectors.toList());
     return crpDTOs;
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/crps/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CrpDTO> getCrp(@PathVariable Long id) {
+  @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CrpDTO> getCrp(@PathVariable String crp, @PathVariable Long id) {
     LOG.debug("REST request to get Crp : {}", id);
-    Crp crp = crpManager.getCrpById(id);
-    return Optional.ofNullable(crp).map(crpMapper::crpToCrpDTO)
+    Crp crpEntity = crpManager.getCrpById(id);
+    return Optional.ofNullable(crpEntity).map(crpMapper::crpToCrpDTO)
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
@@ -115,8 +117,9 @@ public class CrpController {
   }
 
 
-  @RequestMapping(value = "/crps/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<CrpDTO> updateCrp(@PathVariable Long id, @Valid @RequestBody CrpDTO crpDTO) {
+  @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<CrpDTO> updateCrp(@PathVariable String crp, @PathVariable Long id,
+    @Valid @RequestBody CrpDTO crpDTO) {
     LOG.debug("REST request to update Crp : {}", crpDTO);
 
     Crp existingCrp = crpManager.getCrpById(crpDTO.getId());

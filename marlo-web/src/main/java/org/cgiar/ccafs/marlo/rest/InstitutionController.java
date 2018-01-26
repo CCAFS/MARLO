@@ -62,8 +62,10 @@ public class InstitutionController {
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> createInstitution(@Valid @RequestBody InstitutionDTO institutionDTO) {
+  @RequestMapping(value = "/{crp}/institutions", method = RequestMethod.POST,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String crp,
+    @Valid @RequestBody InstitutionDTO institutionDTO) {
     LOG.debug("Create a new institution with : {}", institutionDTO);
     Institution newInstitution = institutionMapper.institutionDTOToInstitution(institutionDTO);
 
@@ -90,17 +92,18 @@ public class InstitutionController {
 
   // TODO check if the institutionLocation(s) are deleted.
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions/{id}", method = RequestMethod.DELETE,
+  @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Void> deleteInstitution(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteInstitution(@PathVariable String crp, @PathVariable Long id) {
     LOG.debug("Delete institution with id: {}", id);
     institutionManager.deleteInstitution(id);
     return ResponseEntity.ok().build();
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<InstitutionDTO> getAllInstitutions() {
+  @RequestMapping(value = "/{crp}/institutions", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<InstitutionDTO> getAllInstitutions(@PathVariable String crp) {
     LOG.debug("REST request to get Institutions");
     List<Institution> institutions = institutionManager.findAll();
     List<InstitutionDTO> institutionDTOs = institutions.stream()
@@ -109,8 +112,9 @@ public class InstitutionController {
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable Long id) {
+  @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable String crp, @PathVariable Long id) {
     LOG.debug("REST request to get Institution : {}", id);
     Institution institution = institutionManager.getInstitutionById(id);
     return Optional.ofNullable(institution).map(institutionMapper::institutionToInstitutionDTO)
@@ -118,8 +122,9 @@ public class InstitutionController {
   }
 
   @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
-  @RequestMapping(value = "/institutions/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable Long id,
+  @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.PUT,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable String crp, @PathVariable Long id,
     @Valid @RequestBody InstitutionDTO institutionDTO) {
     LOG.debug("REST request to update Institution : {}", institutionDTO);
 

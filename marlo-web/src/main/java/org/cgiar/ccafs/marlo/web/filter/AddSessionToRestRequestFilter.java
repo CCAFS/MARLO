@@ -22,21 +22,22 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Our REST Requests need to have a CRP or Center in the session in order to pass
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author GrantL
  */
 @Named("AddSessionToRestRequestFilter")
-public class AddSessionToRestRequestFilter implements Filter {
+public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
   @Inject
   private BaseSecurityContext securityContext;
@@ -59,13 +60,10 @@ public class AddSessionToRestRequestFilter implements Filter {
   public void destroy() {
   }
 
-  /**
-   * Filters requests to remove URL-based session identifiers.
-   */
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-    throws IOException, ServletException {
 
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    throws ServletException, IOException {
     Subject subject = securityContext.getSubject();
 
     LOG.debug("check user : " + subject.getPrincipal() + " , has permissions to invoke rest api");
@@ -73,23 +71,28 @@ public class AddSessionToRestRequestFilter implements Filter {
     Session session = SecurityUtils.getSubject().getSession();
 
     if (session.getAttribute(APConstants.SESSION_CRP) == null) {
-      /**
-       * The struts2 rest-plugin isn't able to handle URLS such as /api/{crp}/institutions or even a hard-coded
-       * values such as /api/test/institutions. Therefore for our Realm to return an AuthorizationInfo object we need
-       * to either have a CRP or a Center in the HTTP session. The BigData platform seemed the best hard-coded choice
-       * for this.
-       */
-      Crp bigData = crpManager.findCrpByAcronym("BigData");
 
-      session.setAttribute(APConstants.SESSION_CRP, bigData);
+      URL url = new URL(request.getRequestURL().toString());
+
+      String path = url.getPath();
+
+      String restApiString = StringUtils.substringAfter(path, "/api/");
+
+      String[] split = restApiString.split("/");
+
+      String crpAcronym = split[0];
+
+      Crp crp = crpManager.findCrpByAcronym(crpAcronym);
+
+      if (crp == null) {
+        throw new IllegalArgumentException("crp with acronymn: " + crpAcronym + ", could not be found");
+      }
+
+      session.setAttribute(APConstants.SESSION_CRP, crp);
     }
 
-    chain.doFilter(request, response);
+    filterChain.doFilter(request, response);
 
-  }
 
-  @Override
-  public void init(FilterConfig config) throws ServletException {
-    LOG.debug("initializing AddSessionToRestRequestFilter");
   }
 }
