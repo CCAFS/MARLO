@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.CountryFundingSources;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
@@ -37,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -161,7 +161,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         new ArrayList<ProjectLocation>(project
           .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
             && p.getLocElement() != null && p.getPhase().equals(action.getActualPhase()))
-        .collect(Collectors.toList())));
+          .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
 
@@ -312,7 +312,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     List<ProjectBudget> projectBudgets =
       new ArrayList<>(projectDB.getProjectBudgets().stream().filter(pb -> pb.isActive()
         && pb.getYear() == action.getActualPhase().getYear() && pb.getPhase().equals(action.getActualPhase()))
-      .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
 
     List<FundingSource> fundingSources = new ArrayList<>();
     for (ProjectBudget projectBudget : projectBudgets) {
@@ -565,10 +565,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       .filter(a -> a.isActive() && ((a.getDeliverableInfo(action.getActualPhase()).getStatus() == null
         || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
-      || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())
-        || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
+          && a.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear())
+        || (a.getDeliverableInfo(action.getActualPhase()).getStatus() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || a.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == 0))))
       .collect(Collectors.toList());
 
     if (action.isReportingActive()) {
@@ -786,7 +786,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   }
 
-  public void validateProjectParnters(BaseAction action, Long projectID, Crp crp) {
+  public void validateProjectParnters(BaseAction action, Long projectID, GlobalUnit crp) {
     Project project = projectManager.getProjectById(projectID);
     project.setPartners(project.getProjectPartners().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));

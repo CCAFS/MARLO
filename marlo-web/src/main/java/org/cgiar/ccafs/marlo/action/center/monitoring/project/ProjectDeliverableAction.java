@@ -18,15 +18,14 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
@@ -37,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -70,11 +70,11 @@ public class ProjectDeliverableAction extends BaseAction {
 
   private ICenterDeliverableManager deliverableService;
 
-
   private ICenterDeliverableTypeManager deliverableTypeService;
 
 
   private ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService;
+
 
   private ICenterDeliverableOutputManager deliverableOutputService;
 
@@ -84,12 +84,16 @@ public class ProjectDeliverableAction extends BaseAction {
   private ICenterDeliverableDocumentManager deliverableDocumentService;
 
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProjectManager projectService;
 
+
   private AuditLogManager auditLogService;
+
   private CenterDeliverableValidator validator;
+
   private long deliverableID;
   private long projectID;
   private long programID;
@@ -97,10 +101,10 @@ public class ProjectDeliverableAction extends BaseAction {
   private CenterProject project;
   private CenterArea selectedResearchArea;
   private CenterProgram selectedProgram;
-  private Center loggedCenter;
-
+  private GlobalUnit loggedCenter;
   private CenterDeliverable deliverable;
   private List<CenterArea> researchAreas;
+
   private List<CenterProgram> researchPrograms;
   private List<CenterDeliverableType> deliverableSubTypes;
   private List<CenterDeliverableType> deliverableTypeParent;
@@ -108,7 +112,7 @@ public class ProjectDeliverableAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectDeliverableAction(APConfig config, ICenterManager centerService,
+  public ProjectDeliverableAction(APConfig config, GlobalUnitManager centerService,
     ICenterDeliverableTypeManager deliverableTypeService, ICenterDeliverableManager deliverableService,
     ICenterProjectManager projectService, ICenterDeliverableDocumentManager deliverableDocumentService,
     CenterDeliverableValidator validator, ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService,
@@ -179,13 +183,14 @@ public class ProjectDeliverableAction extends BaseAction {
     return deliverableTypeParent;
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
   public List<CenterOutput> getOutputs() {
     return outputs;
   }
+
 
   public long getProgramID() {
     return programID;
@@ -215,15 +220,14 @@ public class ProjectDeliverableAction extends BaseAction {
     return researchAreas;
   }
 
-
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
 
+
   public CenterProgram getSelectedProgram() {
     return selectedProgram;
   }
-
 
   public CenterArea getSelectedResearchArea() {
     return selectedResearchArea;
@@ -237,11 +241,11 @@ public class ProjectDeliverableAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
       deliverableID =
@@ -399,6 +403,7 @@ public class ProjectDeliverableAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -605,10 +610,10 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
-
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
   public void setOutputs(List<CenterOutput> outputs) {
     this.outputs = outputs;

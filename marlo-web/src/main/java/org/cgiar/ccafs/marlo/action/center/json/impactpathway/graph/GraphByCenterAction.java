@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterObjectiveManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
@@ -28,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -81,10 +81,10 @@ public class GraphByCenterAction extends BaseAction {
 
     CenterProgram researchProgram = programService.getProgramById(programID);
     CenterArea researchArea = researchProgram.getResearchArea();
-    Center center = researchArea.getResearchCenter();
+    GlobalUnit center = researchArea.getResearchCenter();
 
     List<CenterArea> areas =
-      new ArrayList<>(center.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+      new ArrayList<>(center.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
 
     List<CenterObjective> objectives = new ArrayList<>();

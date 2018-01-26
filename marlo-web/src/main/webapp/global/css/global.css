@@ -5517,6 +5517,7 @@ h4.testEnvironment {
 
 #superadminBlock ul li ul.subMenu {
   display:none; 
+  min-width: 170px;
 }
 #superadminBlock ul li ul.subMenu:hover {
   display:block; 

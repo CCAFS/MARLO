@@ -17,12 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterUserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -43,15 +41,16 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = -3706764472200123669L;
 
-  private ICenterManager centerService;
-  private ICenterUserManager userService;
-  private Center looggedCenter;
+
+  private CrpUserManager userService;
+  private GlobalUnitManager crpManager;
+  private GlobalUnit looggedCenter;
 
 
   @Inject
-  public ValidSessionInterceptor(ICenterManager centerService, ICenterUserManager userService) {
-    this.centerService = centerService;
+  public ValidSessionInterceptor(CrpUserManager userService, GlobalUnitManager crpManager) {
     this.userService = userService;
+    this.crpManager = crpManager;
   }
 
   private void changeSessionSection(Map<String, Object> session) {
@@ -73,60 +72,31 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
     action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
-    looggedCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    looggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Center center = centerService.findCrpByAcronym(enteredCrp);
+      GlobalUnit center = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (center != null) {
-        // Change crp to center session; check if the user don't have center session
-        if (looggedCenter != null) {
-          looggedCenter = centerService.getCrpById(looggedCenter.getId());
-        } else {
-          looggedCenter = center;
-          session.put(APConstants.SESSION_CENTER, looggedCenter);
-
-          if (session.containsKey(APConstants.SESSION_CRP)) {
-
-            Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
-
-            // remove the crp parameters
-            for (CustomParameter parameter : crp.getCustomParameters()) {
-              if (parameter.isActive()) {
-                session.remove(parameter.getParameter().getKey());
-              }
-            }
-            // Remove the crp session
-            session.remove(APConstants.SESSION_CRP);
-          }
-          // add the center parameters
-          for (CenterCustomParameter parameter : looggedCenter.getCenterCustomParameters()) {
-            if (parameter.isActive()) {
-              session.put(parameter.getCenterParameter().getKey(), parameter.getValue());
-            }
-          }
-
-          action.setSwitchSession(true);
-        }
         if (center.equals(looggedCenter)) {
           this.changeSessionSection(session);
           return invocation.invoke();
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
           if (userService.existCrpUser(user.getId(), center.getId())) {
-            // for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
-            // if (parameter.isActive()) {
-            // session.remove(parameter.getKey());
-            // }
-            // }
-            session.replace(APConstants.SESSION_CENTER, center);
-            // put the crp parameters in the session
-            // for (CrpParameter parameter : crp.getCrpParameters()) {
-            // if (parameter.isActive()) {
-            // session.put(parameter.getKey(), parameter.getValue());
-            // }
-            // }
+            for (CustomParameter parameter : looggedCenter.getCustomParameters()) {
+              if (parameter.isActive()) {
+                session.remove(parameter.getParameter().getKey());
+              }
+            }
+            session.replace(APConstants.SESSION_CRP, center);
+            // put the global unit parameters in the session
+            for (CustomParameter parameter : center.getCustomParameters()) {
+              if (parameter.isActive()) {
+                session.put(parameter.getParameter().getKey(), parameter.getValue());
+              }
+            }
             this.changeSessionSection(session);
             return invocation.invoke();
           }

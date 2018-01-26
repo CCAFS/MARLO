@@ -17,14 +17,13 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
@@ -32,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -53,8 +53,9 @@ public class OutcomesListAction extends BaseAction {
 
   private static final long serialVersionUID = 2639447995874299013L;
 
-  private ICenterManager centerService;
-  private Center loggedCenter;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+  private GlobalUnit loggedCenter;
   private List<CenterOutcome> outcomes;
 
   private ICenterProgramManager programService;
@@ -78,7 +79,7 @@ public class OutcomesListAction extends BaseAction {
   private String justification;
 
   @Inject
-  public OutcomesListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public OutcomesListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterAreaManager researchAreaService, UserManager userService, ICenterTopicManager researchTopicService,
     ICenterOutcomeManager outcomeService, ICenterSectionStatusManager sectionStatusService) {
     super(config);
@@ -177,9 +178,6 @@ public class OutcomesListAction extends BaseAction {
     return justification;
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public long getOutcomeID() {
     return outcomeID;
@@ -231,11 +229,11 @@ public class OutcomesListAction extends BaseAction {
     programID = -1;
     topicID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -249,10 +247,11 @@ public class OutcomesListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -358,9 +357,6 @@ public class OutcomesListAction extends BaseAction {
     this.justification = justification;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;

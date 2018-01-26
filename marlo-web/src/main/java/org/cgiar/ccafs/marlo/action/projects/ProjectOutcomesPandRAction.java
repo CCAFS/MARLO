@@ -17,11 +17,11 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomePandrManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -71,17 +71,15 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   private final ProjectOutcomePandrManager projectOutcomePandrManager;
   private final FileDBManager fileDBManager;
   private final ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private List<Integer> allYears;
 
 
   private long projectID;
-
-
   private Project project;
-
-  private CrpManager crpManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
 
   private File file;
@@ -97,7 +95,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   @Inject
   public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager, AuditLogManager auditLogManager,
-    CrpManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
+    GlobalUnitManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
     HistoryComparator historyComparator, ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
     super(config);
     this.projectManager = projectManager;
@@ -176,11 +174,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     return -1;
 
 
-  }
-
-
-  public Crp getLoggedCrp() {
-    return loggedCrp;
   }
 
 
@@ -298,8 +291,8 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   public void prepare() throws Exception {
     super.prepare();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -487,11 +480,6 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
-  }
-
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
   }
 
 

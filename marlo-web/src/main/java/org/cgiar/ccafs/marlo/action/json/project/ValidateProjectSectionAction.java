@@ -18,16 +18,16 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -82,7 +82,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Model
   private boolean existProject;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private boolean validSection;
 
   private String sectionName;
@@ -128,7 +128,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   private final ProjectOutputsValidator projectOutputsValidator;
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
   private final ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator;
 
 
@@ -144,7 +144,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     ProjectCaseStudyValidation projectCaseStudyValidation, ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator,
     ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
     ProjectOtherContributionsValidator projectOtherContributionsValidator,
-    ProjectOutputsValidator projectOutputsValidator, CrpManager crpManager,
+    ProjectOutputsValidator projectOutputsValidator, GlobalUnitManager crpManager,
     ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
@@ -287,7 +287,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -482,8 +482,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 

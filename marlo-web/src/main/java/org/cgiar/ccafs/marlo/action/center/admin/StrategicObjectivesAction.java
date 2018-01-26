@@ -17,10 +17,10 @@ package org.cgiar.ccafs.marlo.action.center.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterObjectiveManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterObjective;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -43,22 +43,25 @@ public class StrategicObjectivesAction extends BaseAction {
   private ICenterObjectiveManager objectiveService;
 
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
 
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
+
 
   private List<CenterObjective> objectives;
 
+
   @Inject
   public StrategicObjectivesAction(APConfig config, ICenterObjectiveManager objectiveService,
-    ICenterManager centerService) {
+    GlobalUnitManager centerService) {
     super(config);
     this.objectiveService = objectiveService;
     this.centerService = centerService;
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
@@ -66,10 +69,11 @@ public class StrategicObjectivesAction extends BaseAction {
     return objectives;
   }
 
+
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     objectives = new ArrayList<>(objectiveService.findAll().stream()
       .filter(o -> o.isActive() && o.getResearchCenter().equals(loggedCenter)).collect(Collectors.toList()));
@@ -118,9 +122,10 @@ public class StrategicObjectivesAction extends BaseAction {
     }
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
   public void setObjectives(List<CenterObjective> objectives) {
     this.objectives = objectives;

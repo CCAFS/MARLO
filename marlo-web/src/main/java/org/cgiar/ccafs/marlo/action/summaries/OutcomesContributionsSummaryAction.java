@@ -16,13 +16,14 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -45,9 +46,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
-import org.pentaho.reporting.engine.classic.core.Band;
+
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -85,7 +84,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   InputStream inputStream;
 
   @Inject
-  public OutcomesContributionsSummaryAction(APConfig config, CrpManager crpManager,
+  public OutcomesContributionsSummaryAction(APConfig config, GlobalUnitManager crpManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -296,17 +295,26 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
 
   private TypedTableModel getProjectsOutcomesTableModel() {
+
+    // Get all Global Unit Projects
+    List<GlobalUnitProject> globalUnitProjects = new ArrayList<>(this.getLoggedCrp().getGlobalUnitProjects());
+    List<Project> guProjects = new ArrayList<>();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      guProjects.add(globalUnitProject.getProject());
+    }
+
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
         "expected_narrative", "project_url", "outcomeIndicator"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
         String.class, String.class},
       0);
-    for (Project project : this.getLoggedCrp().getProjects().stream()
-      .sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
+
+    for (Project project : guProjects.stream().sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
       .filter(p -> p.isActive() && p.getProjecInfoPhase(this.getSelectedPhase()) != null
         && p.getProjecInfoPhase(this.getSelectedPhase()).getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
+
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
         .sorted((po1, po2) -> Long.compare(po1.getId(), po2.getId()))
         .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase()))
