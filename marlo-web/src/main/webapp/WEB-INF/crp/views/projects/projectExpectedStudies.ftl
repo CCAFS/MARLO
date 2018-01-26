@@ -64,22 +64,34 @@
           
           <hr />
           
+          
           [#if project.sharedExpectedStudies?has_content]
-            <table>
-              <tr>
-                <td>Project ID</td>
-                <td>Planned topic of study</td>
-                <td>Type</td>
-              </tr>
-            [#list project.sharedExpectedStudies as expectedStudy]
-              [#assign expectedStudyURL][@s.url namespace="/projects" action="expectedStudies"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
-              <tr>
-                <td><a href="${expectedStudyURL}">${expectedStudy.project.id}</a></td>
-                <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
-                <td>${expectedStudy.type}</td>
-              </tr>
-            [/#list]
-            </table>
+            <h3 class="headTitle">Shared Expected Studies with this project </h3>
+            <div class="simpleBox">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="col-md-1" scope="col" title="Project ID">ID</th>
+                    <th scope="col">Planned topic of study</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Geographic scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list project.sharedExpectedStudies as expectedStudy]
+                  [#assign expectedStudyURL][@s.url namespace="/projects" action="${crpSession}/expectedStudies.do"][@s.param name='projectID']${expectedStudy.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
+                  <tr>
+                    <td><a href="${expectedStudyURL}">P${expectedStudy.project.id}</a></td>
+                    <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
+                    <td>${expectedStudy.type}</td>
+                    <td>${expectedStudy.scope}</td>
+                  </tr>
+                  [/#list]
+                </tbody>
+              </table>
+              
+              
+            </div>
           [/#if]
           
           [#-- Section Buttons & hidden inputs--]
