@@ -78,11 +78,16 @@ public class WebAppInitializer implements WebApplicationInitializer {
     struts2Filter.setInitParameter("targetFilterLifecycle", "true");
     struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json", "/");
 
+    /** Catch any REST errors in case the Spring MVC dispatcher servlet has not been executed **/
+    FilterRegistration.Dynamic exceptionHandlerFilter =
+      servletContext.addFilter("ExceptionHandlerFilter", new DelegatingFilterProxy("ExceptionHandlerFilter"));
+    exceptionHandlerFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/api/*");
+
     /** Ensure our REST requests have a valid session values for authorization **/
     FilterRegistration.Dynamic addSessionToRestRequestFilter = servletContext.addFilter("AddSessionToRestRequestFilter",
       new DelegatingFilterProxy("AddSessionToRestRequestFilter"));
     addSessionToRestRequestFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/api/*");
-    
+
     /** Now add the Spring MVC dispatacher servlet config for our REST api **/
     AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
     dispatcherContext.register(MarloRestApiConfig.class);

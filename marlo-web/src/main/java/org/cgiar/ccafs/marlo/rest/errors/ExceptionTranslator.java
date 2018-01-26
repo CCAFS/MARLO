@@ -22,6 +22,8 @@ import javax.validation.ConstraintViolationException;
 
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -41,11 +43,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ExceptionTranslator {
 
+  // This is just for exceptions that don't get processed by the LoggingAspect (e.g. UnauthorizedException)
+  private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
   @ExceptionHandler(AuthorizationException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public ErrorDTO processAuthorizationException(final RuntimeException ex) {
+    // This one doesn't get logged by our aspectj logger due to Shiro's aspects being applied first.
+    LOG.error("AuthorizationException - user does does not have correct permissions");
     return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED,
       "Please contact the crp administrator to request permissions");
   }
