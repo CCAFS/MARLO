@@ -157,6 +157,15 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getScopeName() {
+    if (scope == null || scope.intValue() == -1) {
+      return "";
+    }
+    return GlobalScopeEnum.getValue(scope.intValue()).getType();
+
+  }
+
+
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
   }
@@ -171,9 +180,16 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     return topicStudy;
   }
 
-
   public Integer getType() {
     return type;
+  }
+
+  public String getTypeName() {
+    if (type == null || type.intValue() == -1) {
+      return "";
+    }
+    return TypeExpectedStudiesEnum.getValue(type.intValue()).getType();
+
   }
 
 
