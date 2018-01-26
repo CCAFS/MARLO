@@ -100,7 +100,9 @@
                     
                     [#if projectPPAPartners?has_content]
                       [#list projectPPAPartners as projectPartner]
+                       [#if action.existOnYear(projectPartner.id,year)]
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                         [/#if]
                       [/#list]
                     [#else]
                       <div class="simpleBox emptyMessage text-center">[@s.text name="projectBudgetByPartners.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
