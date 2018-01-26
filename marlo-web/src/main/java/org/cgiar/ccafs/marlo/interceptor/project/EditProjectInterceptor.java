@@ -243,14 +243,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
         if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
           // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-
           editParameter = false;
-          // If the user is not asking for edition privileges we don't need to validate them.
-      if (!baseAction.getActualPhase().getEditable()) {
-        canEdit = false;
-        baseAction.setCanEditPhase(false);
-      }
         }
+        // If the user is not asking for edition privileges we don't need to validate them.
+        if (!baseAction.getActualPhase().getEditable()) {
+          canEdit = false;
+          baseAction.setCanEditPhase(false);
+        }
+
         if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
           if (baseAction.isReportingActive()) {
             canEdit = false;
