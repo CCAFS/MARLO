@@ -82,9 +82,9 @@
                   [#assign expectedStudyURL][@s.url namespace="/projects" action="${crpSession}/expectedStudies.do"][@s.param name='projectID']${expectedStudy.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
                   <tr>
                     <td><a href="${expectedStudyURL}">P${expectedStudy.project.id}</a></td>
-                    <td><a href="${expectedStudyURL}">${expectedStudy.topicStudy}</a></td>
-                    <td>${expectedStudy.typeName}</td>
-                    <td>${expectedStudy.scopeName}</td>
+                    <td><a href="${expectedStudyURL}">${(expectedStudy.topicStudy)!'Untitled'}</a></td>
+                    <td>${(expectedStudy.typeName)!'None'}</td>
+                    <td>${(expectedStudy.scopeName)!'None'}</td>
                   </tr>
                   [/#list]
                 </tbody>
