@@ -7,6 +7,9 @@ function init() {
   $statuses = $('select.status');
   $statusDescription = $('#statusDescription');
 
+  // Take out the 0 - Not Targeted Dimension
+  $('.crossCuttingDimensionsSelect option[value=0]').remove();
+
   /* Init Select2 plugin */
   $('form select').select2({
     width: '100%'
