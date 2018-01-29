@@ -19,10 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
@@ -46,7 +46,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
-  private Center researchCenter;
+  private GlobalUnit researchCenter;
 
   private long outputID = -1;
   private long areaID = -1;
@@ -63,7 +63,7 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
       // outputID = Long.parseLong(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]);
@@ -106,8 +106,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
             canEdit = true;
           } else {
 
-            if (baseAction
-              .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
+            if (baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params))) {
               canEdit = true;
             }
           }
@@ -124,8 +124,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
 
           // Check the permission if user want to edit or save the form
           if (editParameter || parameters.get("save") != null) {
-            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-              .hasPermission(baseAction.generatePermission(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
+            hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermissionCenter(
+              baseAction.generatePermissionCenter(Permission.RESEARCH_PROGRAM_FULL_PRIVILEGES, params));
           }
 
           if (baseAction.isSubmitIP(programID)) {

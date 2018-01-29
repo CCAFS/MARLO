@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/utils.js", 
@@ -146,29 +146,37 @@
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
 <section class="container">
-  <article id="" class="" > 
-    [#--  Reports Tabs --]
-    <div class="summariesButtons col-md-3">
-      [#list reportsTypes as reportType]
-        <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
-          <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
-        </div>
-      [/#list]
-    </div>
-    [#--  Reports Content --]
-    <div class="summariesContent col-md-9" style="min-height:550px;">
-      <h3 class="headTitle text-center">Summaries</h3>
-      <div class="loading" style="display:none"></div>
-      <div class="summariesOptions">
+  <article id="" class="">
+    
+    
+      [#--  Reports Tabs --]
+      <div class="summariesButtons col-md-3">
         [#list reportsTypes as reportType]
-        <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-          [#list reportType.reportsList as report]
-            [#if report.active][@reportMacro report /][/#if]
-          [/#list]
-        </div>
-        [/#list] 
+          <div id="${reportType.slug}" class="summariesSection [#if reportType_index == 0]current[/#if]">
+            <span>[#-- Icon --]</span><a href="">[@s.text name=reportType.title /]</a>
+          </div>
+        [/#list]
       </div>
-    </div> 
+      [#--  Reports Content --]
+      <div class="summariesContent col-md-9" style="min-height:550px;">
+        <h3 class="headTitle text-center">Summaries</h3>
+        <div class="loading" style="display:none"></div>
+        <div class="summariesOptions">
+          [#list reportsTypes as reportType]
+            <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
+              [#-- Temporal Validation --]
+              [#if action.canAcessSumaries()]
+                [#list reportType.reportsList as report]
+                  [#if report.active][@reportMacro report /][/#if]
+                [/#list]
+              [#else]
+                <div class="borderBox text-center"><p>This section is under maintenance and will be available soon.</p></div>
+              [/#if]
+            </div>
+          [/#list] 
+        </div>
+      </div>
+      
   </article>
 </section>
 

@@ -48,14 +48,18 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
+
   @Expose
   private Date startDate;
+
 
   @Expose
   private Date endDate;
 
+
   @Expose
   private boolean sync;
+
 
   @Expose
   private Date syncDate;
@@ -97,7 +101,13 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   @Expose
   private String suggestedName;
 
+  @Expose
+  private String ocsCode;
+
+  private Project project;
+
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
+
 
   private Set<CenterProjectOutput> projectOutputs = new HashSet<CenterProjectOutput>(0);
 
@@ -109,21 +119,19 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   private List<CenterProjectOutput> outputs;
 
-
   private List<CenterProjectFundingSource> fundingSources;
 
   private Set<CenterProjectPartner> projectPartners = new HashSet<CenterProjectPartner>(0);
 
-
   private List<CenterProjectPartner> partners;
-
 
   private Set<CenterProjectLocation> projectLocations = new HashSet<CenterProjectLocation>(0);
 
+
   private List<CenterProjectLocation> projectRegions;
 
-
   private List<CenterProjectLocation> projectCountries;
+
 
   public CenterProject() {
   }
@@ -132,7 +140,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   public CenterProject(boolean active) {
     this.active = active;
   }
-
 
   public CenterProject(User modifiedBy, User contactPerson, User projectLeader, User createdBy,
     CenterProjectStatus projectStatus, String name, Date startDate, Date endDate, boolean active, Date activeSince,
@@ -150,6 +157,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.projectOutputs = projectOutputs;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -177,6 +185,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getComposedName() {
     return "P" + this.id + "- " + (this.name != null ? this.name : "title not defined");
   }
@@ -186,11 +195,9 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return contactPerson;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public Date getDateCreated() {
     return dateCreated;
@@ -200,13 +207,16 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return deliverables;
   }
 
+
   public String getDescription() {
     return description;
   }
 
+
   public Date getEndDate() {
     return endDate;
   }
+
 
   public String getEndDateFormat() {
     String pattern = "yyyy-MM-dd";
@@ -248,9 +258,12 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getName() {
     return name;
+  }
+
+  public String getOcsCode() {
+    return ocsCode;
   }
 
   public List<CenterProjectOutput> getOutputs() {
@@ -259,6 +272,11 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
 
   public List<CenterProjectPartner> getPartners() {
     return partners;
+  }
+
+
+  public Project getProject() {
+    return project;
   }
 
   public List<CenterProjectLocation> getProjectCountries() {
@@ -273,11 +291,9 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return projectFundingSources;
   }
 
-
   public User getProjectLeader() {
     return projectLeader;
   }
-
 
   public Set<CenterProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -298,9 +314,11 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return projectRegions;
   }
 
+
   public CenterProjectStatus getProjectStatus() {
     return projectStatus;
   }
+
 
   public Boolean getRegion() {
     return region;
@@ -348,7 +366,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return syncDate;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -357,15 +374,16 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public boolean isAutoFill() {
     return autoFill;
   }
+
 
   public boolean isSync() {
     return sync;
@@ -375,7 +393,6 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -383,6 +400,7 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
   public void setAutoFill(boolean autoFill) {
     this.autoFill = autoFill;
   }
+
 
   public void setContactPerson(User contactPerson) {
     this.contactPerson = contactPerson;
@@ -412,15 +430,14 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.fundingSources = fundingSources;
   }
 
-
   public void setGlobal(Boolean global) {
     this.global = global;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -431,9 +448,13 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setName(String name) {
     this.name = name;
+  }
+
+
+  public void setOcsCode(String ocsCode) {
+    this.ocsCode = ocsCode;
   }
 
 
@@ -441,8 +462,13 @@ public class CenterProject implements java.io.Serializable, IAuditLog {
     this.outputs = outputs;
   }
 
+
   public void setPartners(List<CenterProjectPartner> partners) {
     this.partners = partners;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
 

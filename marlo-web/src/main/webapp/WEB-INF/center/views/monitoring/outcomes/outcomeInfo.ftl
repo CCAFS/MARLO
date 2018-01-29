@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO - ${(centerSession)!} outcome information" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","jsUri"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/monitoring/outcomes/outcomeInfo.js",

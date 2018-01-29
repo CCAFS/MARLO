@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -52,7 +52,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long projectOutcomeId = 0;
   private Phase phase;
   private PhaseManager phaseManager;
@@ -73,7 +73,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -87,7 +87,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   void setPermissionParameters(ActionInvocation invocation) throws NoPhaseException {
     BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -219,6 +219,10 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         editParameter = false;
         // If the user is not asking for edition privileges we don't need to validate them.
 
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(editParameter && canEdit);

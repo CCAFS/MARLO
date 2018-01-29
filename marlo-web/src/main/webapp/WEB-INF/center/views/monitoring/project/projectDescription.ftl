@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Description" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/fieldsValidation.js",
@@ -61,15 +61,15 @@
             
             [#-- Project Title --]
             <div class="form-group metadataElement-description">
-              [@customForm.input name="project.name" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.project.projectInfo.title" i18nkey="projectDescription.name" required=true className="project-title metadataValue" readOnly=projectSync editable=editable /]
             </div>
             [#-- Project Suggested Title --]
             <div class="form-group">
-              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable && action.hasPermission("title") /]
+              [@customForm.input name="project.suggestedName" i18nkey="projectDescription.suggestedName" required=false className="project-title" required=true editable=editable /]
             </div>
             [#-- Project Description --]
             <div class="form-group metadataElement-objectives">
-              [@customForm.textArea name="project.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable && action.hasPermission("title") /]
+              [@customForm.textArea name="project.project.projectInfo.description" i18nkey="projectDescription.description" required=true className="metadataValue" readOnly=projectSync editable=editable /]
             </div> 
           
            
@@ -84,11 +84,11 @@
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-4 metadataElement-startDate">
-                [@customForm.input name="project.startDate" i18nkey="projectDescription.startDate" className="metadataValue" type="text" disabled=!editable  required=true editable=editable /]
+                [@customForm.input name="project.project.projectInfo.startDate" i18nkey="projectDescription.startDate" className="metadataValue" type="text" disabled=!editable readOnly=projectSync required=true editable=editable /]
               </div> 
               [#-- End Date --]
               <div class="col-md-4 metadataElement-endDate">
-                [@customForm.input name="project.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable required=false editable=editable /]
+                [@customForm.input name="project.project.projectInfo.endDate" i18nkey="projectDescription.endDate" className="metadataValue" type="text" disabled=!editable readOnly=projectSync required=false editable=editable /]
               </div>
             </div>
             

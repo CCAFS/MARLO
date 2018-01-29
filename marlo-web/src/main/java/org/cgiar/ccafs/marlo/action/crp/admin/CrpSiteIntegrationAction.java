@@ -17,19 +17,19 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -60,6 +60,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   private static final long serialVersionUID = 1323996683605051647L;
 
+
   /**
    * Helper method to read a stream into memory.
    * 
@@ -78,25 +79,27 @@ public class CrpSiteIntegrationAction extends BaseAction {
     return baos.toByteArray();
   }
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private LocElementManager locElementManager;
+
   private CrpsSiteIntegrationManager crpsSiteIntegrationManager;
+
   private CrpSitesLeaderManager crpSitesLeaderManager;
   private RoleManager roleManager;
   private UserRoleManager userRoleManager;
   private UserManager userManager;
   private CrpUserManager crpUserManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<LocElement> countriesList;
   private Long slRoleid;
-
   private Role slRole;
-
   // Util
   private SendMailS sendMail;
 
   @Inject
-  public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
+  public CrpSiteIntegrationAction(APConfig config, GlobalUnitManager crpManager, LocElementManager locElementManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
     RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager, SendMailS sendMail,
     CrpUserManager crpUserManager) {
@@ -131,7 +134,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
-
   public void checkCrpUserByRole(User user) {
     user = userManager.getUser(user.getId());
     List<UserRole> crpUserRoles =
@@ -149,13 +151,15 @@ public class CrpSiteIntegrationAction extends BaseAction {
     return countriesList;
   }
 
-  public Crp getLoggedCrp() {
+
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public Role getSlRole() {
     return slRole;
   }
+
 
   public Long getSlRoleid() {
     return slRoleid;
@@ -315,11 +319,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
       message.toString(), null, null, null, true);
   }
 
-
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     if (this.getSession().containsKey(APConstants.CRP_SL_ROLE)) {
       slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
       slRole = roleManager.getRoleById(slRoleid);
@@ -340,6 +343,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -369,10 +373,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.countriesList = countriesList;
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setSlRole(Role slRole) {
     this.slRole = slRole;

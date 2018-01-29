@@ -71,14 +71,14 @@
           </td>
           [#-- Deliverable Type --]
           <td >
-            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'None'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
           [#if deliverable.deliverableInfo.year== -1]
-            none
+            None
           [#else]
-            ${(deliverable.deliverableInfo.year)!'none'}
+            ${(deliverable.deliverableInfo.year)!'None'}
             [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
               Extended to ${deliverable.newExpectedYear}
             [/#if]
@@ -102,11 +102,11 @@
           <td class="text-center">
             [#attempt]
               <div class="status-container">
-                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
-                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</span>
               </div>
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable required fields --]
@@ -130,7 +130,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction=""]
+[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false FAIRColumn=true namespace="/" defaultAction=""]
   <table class="deliverableList" id="deliverables" width="100%">
     <thead>
       <tr class="subHeader">
@@ -138,7 +138,9 @@
         <th id="deliverableTitles" width="30%">[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType" width="0%">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY" width="0%">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [#if isReportingActive || FAIRColumn]
+          <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        [/#if]
         <th id="deliverableStatus" width="0%">[@s.text name="project.deliverableList.status" /]</th>
         <th id="deliverableRF" width="0%"></th>
         <th id="deliverableRP" width="0%">Responsible partner</th>
@@ -200,14 +202,14 @@
           </td>
           [#-- Deliverable Type --]
           <td>
-            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'none'}
+            ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'None'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
           [#if deliverable.deliverableInfo.year== -1]
-          none
+          None
           [#else]
-          ${(deliverable.deliverableInfo.year)!'none'}
+          ${(deliverable.deliverableInfo.year)!'None'}
             [#if deliverable.deliverableInfo.status?? && deliverable.deliverableInfo.status==4 && deliverable.deliverableInfo.newExpectedYear??]
               Extended to ${deliverable.deliverableInfo.newExpectedYear}
             [/#if]
@@ -215,26 +217,28 @@
             
           </td>
           [#-- Deliverable FAIR compliance --]
-          <td class="fair text-center"> 
-          [#if deliverable.deliverableInfo.requeriedFair()]
-            <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
-            <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
-            <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
-            <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
-          [#else]
-            <p class="message">Not applicable</p>
+          [#if isReportingActive || FAIRColumn]
+            <td class="fair text-center"> 
+            [#if deliverable.deliverableInfo.requeriedFair()]
+              <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
+              <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
+              <span class="[#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">I</span>
+              <span class="[#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">R</span>
+            [#else]
+              <p class="message">Not applicable</p>
+            [/#if]
+            </td>
           [/#if]
-          </td>
           [#-- Deliverable Status --]
           <td class="text-center">
             [#attempt]
               <div class="status-container">
-                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}"></div>
-                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'none'}</span>
+                <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}"></div>
+                <span class="hidden">${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}</span>
               </div>
               [#-- ${deliverable.deliverableInfo.getStatusName(action.getActualPhase())!'none'} --]
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable required fields --]
@@ -248,27 +252,27 @@
           [#-- Deliverable Responsible Partner --]
           <td class="text-center">
             [#attempt]
-              ${(deliverable.responsiblePartner.projectPartnerPerson.projectPartner.institution.acronym)!'none'}
+              ${(deliverable.responsiblePartner.projectPartnerPerson.projectPartner.institution.acronym)!'None'}
             [#recover]
-              none
+              None
             [/#attempt]
           </td>
           [#-- Deliverable Funding source(s) --]
           <td>
             [#if deliverable.fundingSources?? && deliverable.fundingSources?size > 0]
               [#list deliverable.fundingSources as deliverableFundingSource]
-                <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}">
-                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'none'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'none'}</div>
+                <div class="fundingSource-container" title="${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}">
+                 <div class="fundingSource-id-window label label-default">FS${(deliverableFundingSource.fundingSource.id)!'None'}-${(deliverableFundingSource.fundingSource.fundingSourceInfo.budgetType.name)!'None'}</div>
                  [#-- Could be necessary add a ->deliverable.title?? that check if exists --]
                    [#if deliverableFundingSource.fundingSource.fundingSourceInfo.title?length < 13] 
-                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'none'}</span>
+                      <span>${(deliverableFundingSource.fundingSource.fundingSourceInfo.title)!'None'}</span>
                    [#else] 
                      <span>[@utilities.letterCutter string=deliverableFundingSource.fundingSource.fundingSourceInfo.title maxPos=13 /]<span>
                    [/#if]
                 </div>
               [/#list]
             [#else]
-              <span>none<span>
+              <span>None<span>
             [/#if]
           </td>
         </tr>  
@@ -278,7 +282,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
+[#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=true template=false editable=true]
   <div id="deliverablePartner-${template?string('template', dp_index)}" class="responsiblePartner projectPartnerPerson row" style="display:${template?string('none','')}">
     [#-- Remove --]
     [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
@@ -286,8 +290,8 @@
     <input class="element" type="hidden" name="${dp_name}.id" value="${(dp.id)!}">
     [#if template]
       [#-- Partner Name --]
-      <div class="fullPartBlock partnerName chosen"> 
-        [@customForm.select name="" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
+      <div class="form-group partnerName chosen"> 
+        [@customForm.select name="${dp_name}.projectPartner.id" value="-1"  i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName"   className="responsible id" editable=editable required=isResponsable /]
         <div class="partnerPersons">
         </div>
       </div>
@@ -295,11 +299,12 @@
       [#-- Partner Name --]
       <div class="form-group partnerName chosen"> 
       [#if editable]
-        [@customForm.select name="" value="${(dp.projectPartnerPerson.projectPartner.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
-        <div class="partnerPersons">
-          [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
-            [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
-              [@deliverablePerson element=person name="${dp_name}" index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
+        [#local projectPartnerObj = ((dp.projectPartnerPerson.projectPartner)!dp.projectPartner)!{} /]
+        [@customForm.select name="${dp_name}.projectPartner.id" value="${(projectPartnerObj.id)!-1}"  label="" i18nkey="" showTitle=false listName="partners" keyFieldName="id"  displayFieldName="composedName" className="responsible id " editable=editable required=isResponsable/]
+        <div class="partnerPersons" listname="deliverable.responsiblePartner.projectPartnerPerson.id">
+          [#if (projectPartnerObj.id??)!false]
+            [#list action.getPersons(projectPartnerObj.id) as person]
+              [@deliverablePerson element=person name="${dp_name}" projectPartner=(projectPartnerObj) index=person_index checked=(dp.projectPartnerPerson.id == person.id)!false isResponsable=true /]
             [/#list]
           [/#if]
         </div>
@@ -307,7 +312,7 @@
         [#-- Division --]
         [#if action.hasSpecificities('crp_division_fs')]
           [#local ifpriDivision = false /]
-          [#if (dp.projectPartnerPerson.projectPartner.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
+          [#if (projectPartnerObj.institution.acronym == "IFPRI")!false ][#local ifpriDivision = true /][/#if]
           <div class="form-group row divisionBlock division-IFPRI"  style="display:${ifpriDivision?string('block','none')}">
             <div class="col-md-7">
               [@customForm.select name="${dp_name}.partnerDivision.id" i18nkey="projectCofunded.division" className="divisionField" listName="divisions" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
@@ -345,7 +350,7 @@
       [#-- Remove --]
       [#if editable && !isResponsable]<div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> [/#if]
       [#-- Index --]
-      <div class="leftHead"><span class="index">${dp_index+1}</span></div>
+      <div class="leftHead"><span class="index">${projectPartner_index+1}</span></div>
   
       [#if template]
         [#-- Partner Name --]
@@ -362,11 +367,18 @@
           <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
-              [#list action.getPersons(projectPartner.id) as person]
-           
-                [@deliverablePerson element=person name="${dp_name}" index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
-                [#assign personsIndex =  personsIndex + 1 /]
-              [/#list]
+              [#local deliverablePartnerships = (action.getPersons(projectPartner.id))![] /]
+              [#if deliverablePartnerships?has_content]
+                [#list action.getPersons(projectPartner.id) as person]
+                  [@deliverablePerson element=person name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=(action.isSelectedPerson(person.id,projectPartner.id)) isResponsable=false /]
+                  [#assign personsIndex =  personsIndex + 1 /]
+                [/#list]
+              [#else]
+               <div style="display:none">
+                [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=true isResponsable=false /]
+               </div>
+              [/#if]
+              
             [/#if]
             <div class="clearfix"></div>
           </div>
@@ -397,13 +409,16 @@
 [/#macro]
 
 
-[#macro deliverablePerson element name index checked isResponsable=false isTemplate=false]
+[#macro deliverablePerson element projectPartner name index checked isResponsable=false isTemplate=false]
   [#local customName]${name}[#if !isResponsable][${index}][/#if][/#local] 
   [#local type][#if isResponsable]radio[#else]checkbox[/#if][/#local]
   [#local deliverablePartnerShip =(action.getDeliverablePartnership((element.id)!-1))!{} /]
   
   <div id="deliverablePerson-${isTemplate?string('template', index)}" class="${type} deliverablePerson ${isResponsable?string('resp','other')} inputsFlat" style="display:${isTemplate?string('none','')}">
-    [#if !isResponsable]<input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">[/#if]
+    [#if !isResponsable]
+      <input type="hidden" class="projectPartnerID" name="${customName}.projectPartner.id" value="${(projectPartner.id)!}" />
+      <input class="element" type="hidden" name="${customName}.id" value="${(deliverablePartnerShip.id)!}">
+    [/#if]
     <input id="${type}-${index}-${(element.id)!}" type="${type}" name="${customName}.projectPartnerPerson.id" value="${(element.id)!}" [#if checked]checked[/#if]/>
     <label for="${type}-${index}-${(element.id)!}" class="${type}-label [#if isResponsable]radio-label-yes[/#if]" >${(element.composedCompleteName)!}</label>
 

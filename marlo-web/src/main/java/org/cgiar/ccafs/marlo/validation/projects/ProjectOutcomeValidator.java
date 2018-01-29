@@ -18,14 +18,15 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -46,19 +47,22 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
-  private final CrpManager crpManager;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpManager crpManager) {
-    super();
-    this.crpManager = crpManager;
+    GlobalUnitManager crpManager) {
+
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTCOME.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -77,15 +81,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
@@ -95,17 +96,17 @@ public class ProjectOutcomeValidator extends BaseValidator {
       this.validateProjectOutcome(action, projectOutcome);
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     } else {
-      this.addMissingField("");
+      action.addMissingField("");
       this.saveMissingFields(projectOutcome, action.getActualPhase().getDescription(),
-        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus());
+        action.getActualPhase().getYear(), ProjectSectionStatusEnum.OUTCOMES.getStatus(), action);
     }
 
 
@@ -121,12 +122,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
-          // this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
+          // action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
           projectMilestone.setExpectedUnit(null);
         } else {
           if (projectMilestone.getExpectedValue() == null
             || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
-            this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
+            action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -139,7 +140,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (!(this.isValidString(projectMilestone.getNarrativeTarget())
           && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
-          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
+          action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
           action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
             InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -160,24 +161,25 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
 
     if (!(this.isValidString(projectNextuser.getNextUser()) && this.wordCount(projectNextuser.getNextUser()) <= 20)) {
-      this.addMessage(action.getText("projectOutcomeNextUser.requeried.title", params));
+      action.addMessage(action.getText("projectOutcomeNextUser.requeried.title", params));
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].nextUser",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!(this.isValidString(projectNextuser.getKnowledge())
       && this.wordCount(projectNextuser.getKnowledge()) <= 100)) {
-      this.addMessage(action.getText("projectOutcomeNextUser.requeried.knowledge", params));
+      action.addMessage(action.getText("projectOutcomeNextUser.requeried.knowledge", params));
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].knowledge",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!(this.isValidString(projectNextuser.getStrategies())
       && this.wordCount(projectNextuser.getStrategies()) <= 100)) {
-      this.addMessage(action.getText("projectOutcomeNextUser.requeried.strategies", params));
+      action.addMessage(action.getText("projectOutcomeNextUser.requeried.strategies", params));
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategies",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
+
 
   public void validateProjectOutcome(BaseAction action, ProjectOutcome projectOutcome) {
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -193,8 +195,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (!action.isProjectNew(project.getId())) {
       this.validateLessonsLearnOutcome(action, projectOutcome);
-      if (this.validationMessage.toString().contains("Lessons")) {
-        this.replaceAll(validationMessage, "Lessons",
+      if (action.getValidationMessage().toString().contains("Lessons")) {
+        this.replaceAll(action.getValidationMessage(), "Lessons",
           "Lessons regarding partnerships and possible implications for the coming planning cycle");
         action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -207,7 +209,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
         || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
 
         if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
-          this.addMessage(action.getText("projectOutcome.expectedValue"));
+          action.addMessage(action.getText("projectOutcome.expectedValue"));
           action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
@@ -215,7 +217,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       if (!(this.isValidString(projectOutcome.getNarrativeTarget())
         && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
-        this.addMessage(action.getText("projectOutcome.narrativeTarget"));
+        action.addMessage(action.getText("projectOutcome.narrativeTarget"));
         action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
       }
 
@@ -226,7 +228,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (!(this.isValidString(projectOutcome.getGenderDimenssion())
           && this.wordCount(projectOutcome.getGenderDimenssion()) <= 100)) {
-          this.addMessage(action.getText("projectOutcome.genderDimenssion"));
+          action.addMessage(action.getText("projectOutcome.genderDimenssion"));
           action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
@@ -237,7 +239,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (!(this.isValidString(projectOutcome.getYouthComponent())
           && this.wordCount(projectOutcome.getYouthComponent()) <= 100)) {
-          this.addMessage(action.getText("projectOutcome.youthComponent"));
+          action.addMessage(action.getText("projectOutcome.youthComponent"));
           action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
@@ -260,9 +262,19 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
 
     } else {
-      this.addMessage(action.getText("projectOutcome.milestones"));
+      action.addMessage(action.getText("projectOutcome.milestones"));
       action.getInvalidFields().put("list-projectOutcome.milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
+    }
+
+
+    if (action.hasSpecificities(APConstants.CRP_BASELINE_INDICATORS)) {
+      if (projectOutcome.getIndicators() != null) {
+        for (int i = 0; i < projectOutcome.getIndicators().size(); i++) {
+          this.validateProjectOutcomeIndicator(action, projectOutcome.getIndicators().get(i), i);
+        }
+      }
+
     }
 
 
@@ -272,10 +284,31 @@ public class ProjectOutcomeValidator extends BaseValidator {
           this.validateProjectNextUser(action, projectOutcome.getNextUsers().get(i), i);
         }
       } else {
-        this.addMessage(action.getText("projectOutcomeNextUsers"));
+        action.addMessage(action.getText("projectOutcomeNextUsers"));
         action.getInvalidFields().put("input-projectOutcome.nextUsers",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
       }
+    }
+
+
+  }
+
+  public void validateProjectOutcomeIndicator(BaseAction action, ProjectOutcomeIndicator projectOutcomeIndicator,
+    int i) {
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+
+
+    if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
+      && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 100)) {
+      action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
+      action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].narrative",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (projectOutcomeIndicator.getValue() == null || projectOutcomeIndicator.getValue().longValue() < 0) {
+      action.addMessage(action.getText("projectOutcomeIndicator.value"));
+      action.getInvalidFields().put("input-projectOutcome.indicators[" + i + "].value",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 

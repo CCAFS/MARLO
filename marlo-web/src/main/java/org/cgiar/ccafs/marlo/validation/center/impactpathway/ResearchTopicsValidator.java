@@ -16,10 +16,10 @@
 package org.cgiar.ccafs.marlo.validation.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwaySectionsEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -39,15 +39,17 @@ import javax.inject.Named;
 @Named
 public class ResearchTopicsValidator extends BaseValidator {
 
-  private final ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
 
   @Inject
-  public ResearchTopicsValidator(ICenterManager centerService) {
+  public ResearchTopicsValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }
 
   private Path getAutoSaveFilePath(CenterProgram program, long centerID) {
-    Center center = centerService.getCrpById(centerID);
+    GlobalUnit center = centerService.getGlobalUnitById(centerID);
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = ImpactPathwaySectionsEnum.TOPIC.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -58,16 +60,13 @@ public class ResearchTopicsValidator extends BaseValidator {
 
   public void validate(BaseAction baseAction, List<CenterTopic> researchTopics, CenterProgram selectedProgram,
     boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     baseAction.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(selectedProgram, baseAction.getCenterID());
 
       if (path.toFile().exists()) {
-        this.addMissingField(baseAction.getText("researchTopic.action.draft"));
+        baseAction.addMissingField(baseAction.getText("researchTopic.action.draft"));
       }
     }
 
@@ -76,7 +75,7 @@ public class ResearchTopicsValidator extends BaseValidator {
     }
 
     if (researchTopics.size() == 0) {
-      this.addMessage(baseAction.getText("researchTopic.action.required"));
+      baseAction.addMessage(baseAction.getText("researchTopic.action.required"));
       baseAction.getInvalidFields().put("list-researchTopics",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Topics"}));
     }
@@ -86,7 +85,7 @@ public class ResearchTopicsValidator extends BaseValidator {
       this.validateResearchTopic(baseAction, researchTopic, i);
     }
 
-    this.saveMissingFields(selectedProgram, "researchTopics");
+    this.saveMissingFields(selectedProgram, "researchTopics", baseAction);
 
   }
 
@@ -98,11 +97,11 @@ public class ResearchTopicsValidator extends BaseValidator {
     if (researchTopic.getResearchTopic() != null) {
       if (!this.isValidString(researchTopic.getResearchTopic())
         && this.wordCount(researchTopic.getResearchTopic()) <= 15) {
-        this.addMessage(baseAction.getText("researchTopic.action.description.required", params));
+        baseAction.addMessage(baseAction.getText("researchTopic.action.description.required", params));
         baseAction.getInvalidFields().put("input-topics[" + i + "].researchTopic", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("researchTopic.action.description.required", params));
+      baseAction.addMessage(baseAction.getText("researchTopic.action.description.required", params));
       baseAction.getInvalidFields().put("input-topics[" + i + "].researchTopic", InvalidFieldsMessages.EMPTYFIELD);
     }
 

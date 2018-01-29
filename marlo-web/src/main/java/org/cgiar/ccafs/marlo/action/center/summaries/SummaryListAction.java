@@ -19,12 +19,12 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -46,14 +46,15 @@ public class SummaryListAction extends BaseAction {
 
   private List<CenterProgram> programs;
 
-  private Center loggedCenter;
-  private ICenterManager centerService;
+  private GlobalUnit loggedCenter;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
   private ICenterProjectManager projectService;
 
   @Inject
-  public SummaryListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public SummaryListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterProjectManager projectService) {
     super(config);
     this.centerService = centerService;
@@ -72,8 +73,8 @@ public class SummaryListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     if (projectService.findAll() != null) {
       allProjects = new ArrayList<CenterProject>(

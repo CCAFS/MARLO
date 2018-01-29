@@ -17,8 +17,8 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
@@ -36,15 +36,15 @@ import javax.inject.Named;
 @Named
 public class ProjectOtherContributionsValidator extends BaseValidator {
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
 
   @Inject
-  public ProjectOtherContributionsValidator(CrpManager crpManager) {
+  public ProjectOtherContributionsValidator(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OTHERCONTRIBUTIONS.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -63,15 +63,12 @@ public class ProjectOtherContributionsValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
     if (project != null) {
@@ -85,7 +82,7 @@ public class ProjectOtherContributionsValidator extends BaseValidator {
             if (otherContribution.getIpProgram() == null || otherContribution.getIpProgram().getId() == null
               || otherContribution.getIpProgram().getId().intValue() == -1) {
               otherContribution.setIpProgram(null);
-              this.addMessage("Other contriburion ##" + otherContribution.getId() + ": Brief");
+              action.addMessage("Other contriburion ##" + otherContribution.getId() + ": Brief");
               action.getInvalidFields().put("input-project.otherContributionsList[" + i + "].ipProgram.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
@@ -94,14 +91,14 @@ public class ProjectOtherContributionsValidator extends BaseValidator {
             if (otherContribution.getIpIndicator() == null || otherContribution.getIpIndicator().getId() == null
               || otherContribution.getIpIndicator().getId().intValue() == -1) {
               otherContribution.setIpIndicator(null);
-              this.addMessage("Other contriburion ##" + otherContribution.getId() + ": Brief");
+              action.addMessage("Other contriburion ##" + otherContribution.getId() + ": Brief");
               action.getInvalidFields().put("input-project.otherContributionsList[" + i + "].ipIndicator.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (!(this.isValidString(otherContribution.getDescription())
               && this.wordCount(otherContribution.getDescription()) <= 100)) {
-              this.addMessage("otherContribution ##" + otherContribution.getId() + ": description");
+              action.addMessage("otherContribution ##" + otherContribution.getId() + ": description");
               action.getInvalidFields().put("input-project.otherContributionsList[" + i + "].description",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
@@ -119,7 +116,7 @@ public class ProjectOtherContributionsValidator extends BaseValidator {
 
             if (!(this.isValidString(projectCrpContribution.getCollaborationNature())
               && this.wordCount(projectCrpContribution.getCollaborationNature()) <= 50)) {
-              this.addMessage("project crp contribution ##" + projectCrpContribution.getId() + ": description");
+              action.addMessage("project crp contribution ##" + projectCrpContribution.getId() + ": description");
               action.getInvalidFields().put("input-project.crpContributions[" + i + "].collaborationNature",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
@@ -130,13 +127,13 @@ public class ProjectOtherContributionsValidator extends BaseValidator {
       }
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
-      } else if (validationMessage.length() > 0) {
-        action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        ProjectSectionStatusEnum.OTHERCONTRIBUTIONS.getStatus());
+        ProjectSectionStatusEnum.OTHERCONTRIBUTIONS.getStatus(), action);
     }
   }
 }

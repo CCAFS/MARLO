@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Site Integration" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 

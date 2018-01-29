@@ -23,20 +23,21 @@ function attachEvents() {
 
   // Remove a partner
   $('.removePartner').on('click', removePartner);
-  
-//Add a next User
+
+// Add a next User
   $('.addNextUser').on('click', addNextUser);
-  
+
 // Remove a next User
   $('.removeNextUser').on('click', removeNextUser);
-  
-//When change of beneficiary type
+
+// When change of beneficiary type
   $(".typeSelect").on("change", function() {
     var option = $(this).find("option:selected");
     var $select = $(this).parents(".nextUser").find(".subTypeSelect");
     var url = baseURL + "/nextUserByType.do";
     var data = {
-      "nextUserID": option.val()
+        "nextUserID": option.val(),
+        phaseID: phaseID
     }
     // remove options
     $select.find("option").each(function(i,e) {
@@ -155,8 +156,8 @@ function updateIndexes() {
       $(e).setNameIndexes(2, i);
     });
   });
-  
-//Update beneficiaries
+
+// Update beneficiaries
   $(".nextUsers-list").find(".nextUser").each(function(i,e) {
     console.log($(e));
     $(e).setNameIndexes(1, i);

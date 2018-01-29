@@ -1,6 +1,6 @@
 [#ftl] 
 [#assign title = "Project Highlight" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectHighlight.js", 

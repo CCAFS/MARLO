@@ -106,7 +106,8 @@ function unSubmitButtonEvent(e) {
               var programId = $(".impactUnSubmitButton").attr("id").split("-")[1];
               var data = {
                   crpProgramID: programId,
-                  justification: $justification.val()
+                  justification: $justification.val(),
+                  phaseID: phaseID
               }
               console.log(data);
               $justification.removeClass('fieldError');
@@ -115,9 +116,11 @@ function unSubmitButtonEvent(e) {
                   type: 'GET',
                   dataType: "json",
                   data: data
-              }).done(function(m) {
-                window.location.href = baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true";
-              });
+              }).done(
+                  function(m) {
+                    window.location.href =
+                        baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true?phaseID=" + phaseID;
+                  });
             } else {
               $justification.addClass('fieldError');
             }
@@ -151,6 +154,7 @@ function processTasks(tasks,id,button) {
               data: {
                   crpProgramID: id,
                   sectionName: sectionName,
+                  phaseID: phaseID
               },
               beforeSend: function() {
                 $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');

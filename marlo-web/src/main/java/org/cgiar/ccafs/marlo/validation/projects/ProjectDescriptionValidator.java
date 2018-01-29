@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -39,15 +39,17 @@ import javax.inject.Named;
 @Named
 public class ProjectDescriptionValidator extends BaseValidator {
 
-  private final CrpManager crpManager;
+  @Inject
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public ProjectDescriptionValidator(CrpManager crpManager) {
-    this.crpManager = crpManager;
+  public ProjectDescriptionValidator() {
+
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.DESCRIPTION.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -57,15 +59,12 @@ public class ProjectDescriptionValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-    // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
@@ -73,63 +72,63 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      ProjectSectionStatusEnum.DESCRIPTION.getStatus());
+      ProjectSectionStatusEnum.DESCRIPTION.getStatus(), action);
   }
 
   public void validateDescription(BaseAction action, Project project) {
     if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getTitle())
       && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getTitle()) <= 30)) {
-      this.addMessage(action.getText("project.title"));
+      action.addMessage(action.getText("project.title"));
       action.getInvalidFields().put("input-project.projectInfo.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getSummary())
       && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getSummary()) <= 250)) {
-      this.addMessage(action.getText("project.summary"));
+      action.addMessage(action.getText("project.summary"));
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonUser().getId() == -1) {
-        this.addMessage(action.getText("project.liaisonUser"));
+        action.addMessage(action.getText("project.liaisonUser"));
         action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(action.getText("project.liaisonUser"));
+      action.addMessage(action.getText("project.liaisonUser"));
       action.getInvalidFields().put("input-project.projectInfo.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
-        this.addMessage(action.getText("project.liaisonInstitution"));
+        action.addMessage(action.getText("project.liaisonInstitution"));
         action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(action.getText("project.liaisonInstitution"));
+      action.addMessage(action.getText("project.liaisonInstitution"));
       action.getInvalidFields().put("input-project.projectInfo.liaisonInstitution.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getStartDate() == null) {
-      this.addMessage(action.getText("project.startDate"));
+      action.addMessage(action.getText("project.startDate"));
       action.getInvalidFields().put("input-project.projectInfo.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (project.getProjecInfoPhase(action.getActualPhase()).getEndDate() == null) {
-      this.addMessage(action.getText("project.endDate"));
+      action.addMessage(action.getText("project.endDate"));
       action.getInvalidFields().put("input-project.projectInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
     } else {
       Calendar cal = Calendar.getInstance();
       cal.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
       if (cal.get(Calendar.YEAR) < action.getActualPhase().getYear()) {
-        this.addMessage(action.getText("project.endDate"));
+        action.addMessage(action.getText("project.endDate"));
         action.getInvalidFields().put("input-project.projectInfo.endDate", "Invalid Date");
       }
     }
@@ -140,14 +139,14 @@ public class ProjectDescriptionValidator extends BaseValidator {
       if (project.getFlagships() != null) {
         if (project.getFlagships().size() == 0) {
           if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
-            this.addMessage(action.getText("projectDescription.flagships"));
+            action.addMessage(action.getText("projectDescription.flagships"));
             action.getInvalidFields().put("input-project.projectInfo.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
           }
 
         }
       } else {
         if (project.getFlagshipValue().length() == 0) {
-          this.addMessage(action.getText("projectDescription.flagships"));
+          action.addMessage(action.getText("projectDescription.flagships"));
           action.getInvalidFields().put("input-project.projectInfo.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }
 
@@ -162,7 +161,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
         if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {
-          this.addMessage(action.getText("projectDescription.regions"));
+          action.addMessage(action.getText("projectDescription.regions"));
           action.getInvalidFields().put("input-project.projectInfo.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
 
 
@@ -175,12 +174,12 @@ public class ProjectDescriptionValidator extends BaseValidator {
         && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
         if (project.getClusterActivities() != null) {
           if (project.getClusterActivities().size() == 0) {
-            this.addMessage(action.getText("projectDescription.clusterActivities"));
+            action.addMessage(action.getText("projectDescription.clusterActivities"));
             action.getInvalidFields().put("list-project.clusterActivities",
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
           }
         } else {
-          this.addMessage(action.getText("projectDescription.clusterActivities"));
+          action.addMessage(action.getText("projectDescription.clusterActivities"));
           action.getInvalidFields().put("list-project.clusterActivities",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
         }
@@ -189,7 +188,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
       if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis())
           && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getGenderAnalysis()) <= 100)) {
-          this.addMessage(action.getText("project.genderAnalysis"));
+          action.addMessage(action.getText("project.genderAnalysis"));
           action.getInvalidFields().put("input-project.projectInfo.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
         }
 
@@ -197,7 +196,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
           || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
           if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
             && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
-            this.addMessage(action.getText("project.dimension"));
+            action.addMessage(action.getText("project.dimension"));
             action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
@@ -208,10 +207,10 @@ public class ProjectDescriptionValidator extends BaseValidator {
     /*
      * if (project.getScopes() != null) {
      * if (project.getScopes().size() == 0) {
-     * this.addMessage(action.getText("projectDescription.scope"));
+     * action.addMessage(action.getText("projectDescription.scope"));
      * }
      * } else {
-     * this.addMessage(action.getText("projectDescription.scope"));
+     * action.addMessage(action.getText("projectDescription.scope"));
      * }
      */
 

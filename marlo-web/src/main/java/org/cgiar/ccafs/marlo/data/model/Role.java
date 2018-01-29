@@ -30,13 +30,16 @@ public class Role implements java.io.Serializable {
 
   private static final long serialVersionUID = 8679238437361759448L;
 
+
   @Expose
   private Long id;
 
-  private Crp crp;
+  private GlobalUnit crp;
+
 
   @Expose
   private String description;
+
 
   @Expose
   private String acronym;
@@ -44,28 +47,27 @@ public class Role implements java.io.Serializable {
   @Expose
   private Integer order;
 
-
   @Expose
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
-
 
   public Role() {
   }
 
-  public Role(Crp crps, String description, String acronym) {
+  public Role(GlobalUnit crps, String description, String acronym) {
     this.crp = crps;
     this.description = description;
     this.acronym = acronym;
 
   }
 
-  public Role(Crp crps, String description, String acronym, Set<UserRole> userRoles) {
+  public Role(GlobalUnit crps, String description, String acronym, Set<UserRole> userRoles) {
     this.crp = crps;
     this.description = description;
     this.acronym = acronym;
 
     this.userRoles = userRoles;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -75,36 +77,36 @@ public class Role implements java.io.Serializable {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     Role other = (Role) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
 
-
-  public Crp getCrp() {
-    return this.crp;
+  public GlobalUnit getCrp() {
+    return crp;
   }
 
   public String getDescription() {
     return this.description;
   }
 
+
   public Long getId() {
     return this.id;
   }
+
 
   public Integer getOrder() {
     return order;
@@ -126,14 +128,15 @@ public class Role implements java.io.Serializable {
     this.acronym = acronym;
   }
 
-
-  public void setCrp(Crp crps) {
-    this.crp = crps;
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
   }
+
 
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setId(Long id) {
     this.id = id;

@@ -27,11 +27,17 @@ import com.google.gson.annotations.Expose;
  */
 public class DeliverableType implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 2591192504126616140L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private DeliverableType deliverableType;
+
+
   @Expose
   private String name;
 
@@ -46,7 +52,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
 
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
@@ -72,7 +78,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     return adminType;
   }
 
-  public Crp getCrp() {
+
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -80,6 +87,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public Set<Deliverable> getDeliverables() {
     return this.deliverables;
   }
+
 
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
@@ -101,6 +109,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -142,9 +151,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.adminType = adminType;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setDeliverables(Set<Deliverable> deliverables) {
     this.deliverables = deliverables;
@@ -165,6 +175,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   public void setFair(Boolean fair) {
     this.fair = fair;
   }
+
 
   public void setId(Long id) {
     this.id = id;

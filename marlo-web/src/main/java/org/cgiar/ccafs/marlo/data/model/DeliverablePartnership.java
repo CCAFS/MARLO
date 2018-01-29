@@ -64,13 +64,17 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
   @Expose
   private PartnerDivision partnerDivision;
 
+  @Expose
+  private ProjectPartner projectPartner;
+
 
   public DeliverablePartnership() {
   }
 
 
   public DeliverablePartnership(User modifiedBy, User createdBy, ProjectPartnerPerson projectPartnerPerson,
-    Deliverable deliverable, String partnerType, boolean active, Date activeSince, String modificationJustification) {
+    Deliverable deliverable, String partnerType, boolean active, Date activeSince, String modificationJustification,
+    ProjectPartner projectPartner) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.projectPartnerPerson = projectPartnerPerson;
@@ -79,6 +83,7 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+    this.projectPartner = projectPartner;
   }
 
 
@@ -109,20 +114,20 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -131,21 +136,21 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public PartnerDivision getPartnerDivision() {
     return partnerDivision;
   }
-
 
   public String getPartnerType() {
     return partnerType;
@@ -154,6 +159,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public Phase getPhase() {
     return phase;
+  }
+
+
+  public ProjectPartner getProjectPartner() {
+    return projectPartner;
   }
 
 
@@ -176,10 +186,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -210,10 +220,10 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setPartnerDivision(PartnerDivision partnerDivision) {
     this.partnerDivision = partnerDivision;
   }
-
 
   public void setPartnerType(String partnerType) {
     this.partnerType = partnerType;
@@ -222,6 +232,11 @@ public class DeliverablePartnership implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  public void setProjectPartner(ProjectPartner projectPartner) {
+    this.projectPartner = projectPartner;
   }
 
 

@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -90,7 +91,7 @@ public class InstitutionsByBudgetTypeAction extends BaseAction {
           .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3).collect(Collectors.toList());
       } else {
         institutionsType = institutionManager.findAll().stream().filter(i -> i.isActive()).collect(Collectors.toList());
-        institutionsType.removeAll(institutionsPpa);
+        // institutionsType.removeAll(institutionsPpa);
       }
 
 

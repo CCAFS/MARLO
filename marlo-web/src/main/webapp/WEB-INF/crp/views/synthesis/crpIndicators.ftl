@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "CRP Indicators" /]
-[#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/synthesis/crpIndicators.js",

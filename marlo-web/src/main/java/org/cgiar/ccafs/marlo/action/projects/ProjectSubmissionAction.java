@@ -18,18 +18,19 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -69,9 +70,9 @@ public class ProjectSubmissionAction extends BaseAction {
   private UserManager userManager;
 
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private SendMailS sendMail;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private String cycleName;
   private final RoleManager roleManager;
   private PhaseManager phaseManager;
@@ -88,7 +89,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
+    GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
     PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction) {
     super(config);
     this.submissionManager = submissionManager;
@@ -107,7 +108,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
         List<Submission> submissions = project.getSubmissions().stream()
-          .filter(c -> c.getCycle().equals(APConstants.PLANNING)
+          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
             && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
@@ -145,11 +146,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
-
   public Project getProject() {
     return project;
   }
@@ -166,8 +162,8 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -182,7 +178,7 @@ public class ProjectSubmissionAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     if (project != null) {
-      String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), project.getId() + ""};
+      String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_MANAGE_BASE_PERMISSION, params));
       // Initializing Section Statuses:
       // this.initializeProjectSectionStatuses(project, String.valueOf(this.getActualPhase().getYear()));
@@ -192,6 +188,10 @@ public class ProjectSubmissionAction extends BaseAction {
   }
 
   private void sendNotficationEmail() {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
+      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
     // Send email to the user that is submitting the project.
     // TO
     String toEmail = this.getCurrentUser().getEmail();
@@ -210,10 +210,9 @@ public class ProjectSubmissionAction extends BaseAction {
       ccEmails.append(", ");
     } else if (project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
-      List<CrpProgram> crpPrograms =
-        project
-          .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
-            .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
+      List<CrpProgram> crpPrograms = globalUnitProject
+        .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+          .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
         .collect(Collectors.toList());
       if (crpPrograms != null) {
         if (crpPrograms.size() > 1) {
@@ -359,10 +358,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
   public void setCycleName(String cycleName) {
     this.cycleName = cycleName;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
   }
 
   public void setProject(Project project) {

@@ -16,10 +16,10 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -96,7 +95,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private long startTime;
 
   // Managers
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private GenderTypeManager genderTypeManager;
   private CrpProgramManager crpProgramManager;
   private DeliverableManager deliverableManager;
@@ -111,7 +110,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   Set<Long> deliverablesList = new HashSet<Long>();
 
   @Inject
-  public ExpectedDeliverablesSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager,
+  public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager, DeliverableManager deliverableManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
@@ -258,7 +257,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
     for (Deliverable deliverable : deliverableManager.findAll().stream()
       .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getCrp() != null && d.getProject().getCrp().getId().equals(this.getLoggedCrp().getId())
+        && d.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          .collect(Collectors.toList()).size() > 0
         && d.getDeliverableInfo(this.getSelectedPhase()) != null
         && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
         && d.getProject().getProjectInfo().getStatus().toString().equals(ProjectStatusEnum.Ongoing.getStatusId())
@@ -266,9 +267,6 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
           || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
-      if (deliverable.getId() == 1016) {
-        System.out.println("Delete this comment");
-      }
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
 
       Long deliverableId = deliverable.getId();
