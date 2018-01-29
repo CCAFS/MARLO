@@ -18,16 +18,13 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
-import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -36,21 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectCCAFSOutcomeValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectCaseStudyValidation;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectOtherContributionsValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
@@ -82,7 +64,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Model
   private boolean existProject;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private boolean validSection;
 
   private String sectionName;
@@ -92,89 +74,25 @@ public class ValidateProjectSectionAction extends BaseAction {
   // Managers
   private final SectionStatusManager sectionStatusManager;
   private final ProjectManager projectManager;
-  private final ProjectLocationValidator locationValidator;
 
-  private final ProjectBudgetsValidator projectBudgetsValidator;
-
-  private final DeliverableValidator deliverableValidator;
-
-  private final ProjectOutcomeValidator projectOutcomeValidator;
-
-  private final ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
-
-  private final LocElementTypeManager locElementTypeManager;
-
-  private final ProjectLocationElementTypeManager projectLocationElementTypeManager;
-
-  private final DeliverableQualityCheckManager deliverableQualityCheckManager;
-
-  private final ProjectDescriptionValidator descriptionValidator;
-
-  private final ProjectPartnersValidator projectPartnerValidator;
-
-  private final ProjectActivitiesValidator projectActivitiesValidator;
-
-  private final ProjectLeverageValidator projectLeverageValidator;
-
-  private final ProjectHighLightValidator projectHighLightValidator;
-
-  private final ProjectCaseStudyValidation projectCaseStudyValidation;
-
-  private final ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
-
-  private final ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
-
-  private final ProjectOtherContributionsValidator projectOtherContributionsValidator;
-
-  private final ProjectOutputsValidator projectOutputsValidator;
-
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
   private final ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator;
 
 
   @Inject
-  public ValidateProjectSectionAction(APConfig config, SectionStatusManager sectionStatusManager,
-    ProjectManager projectManager, ProjectLocationValidator locationValidator,
-    ProjectBudgetsValidator projectBudgetsValidator, DeliverableValidator deliverableValidator,
-    ProjectOutcomeValidator projectOutcomeValidator, ProjectBudgetsCoAValidator projectBudgetsCoAValidator,
-    LocElementTypeManager locElementTypeManager, ProjectLocationElementTypeManager projectLocationElementTypeManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager, ProjectDescriptionValidator descriptionValidator,
-    ProjectPartnersValidator projectPartnerValidator, ProjectActivitiesValidator projectActivitiesValidator,
-    ProjectLeverageValidator projectLeverageValidator, ProjectHighLightValidator projectHighLightValidator,
-    ProjectCaseStudyValidation projectCaseStudyValidation, ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator,
-    ProjectOutcomesPandRValidator projectOutcomesPandRValidator,
-    ProjectOtherContributionsValidator projectOtherContributionsValidator,
-    ProjectOutputsValidator projectOutputsValidator, CrpManager crpManager,
+  public ValidateProjectSectionAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
+    SectionStatusManager sectionStatusManager,
     ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
-    this.locationValidator = locationValidator;
-    this.projectBudgetsValidator = projectBudgetsValidator;
-    this.deliverableValidator = deliverableValidator;
-    this.projectOutcomeValidator = projectOutcomeValidator;
-    this.projectBudgetsCoAValidator = projectBudgetsCoAValidator;
-    this.locElementTypeManager = locElementTypeManager;
-    this.projectLocationElementTypeManager = projectLocationElementTypeManager;
     this.projectSectionValidator = projectSectionValidator;
-    this.projectPartnerValidator = projectPartnerValidator;
-    this.projectActivitiesValidator = projectActivitiesValidator;
-    this.deliverableQualityCheckManager = deliverableQualityCheckManager;
-    this.descriptionValidator = descriptionValidator;
-    this.projectLeverageValidator = projectLeverageValidator;
-    this.projectCaseStudyValidation = projectCaseStudyValidation;
-    this.projectHighLightValidator = projectHighLightValidator;
-    this.projectCCAFSOutcomeValidator = projectCCAFSOutcomeValidator;
-    this.projectOutcomesPandRValidator = projectOutcomesPandRValidator;
-    this.projectOtherContributionsValidator = projectOtherContributionsValidator;
-    this.projectOutputsValidator = projectOutputsValidator;
     this.crpManager = crpManager;
   }
 
 
   @Override
   public String execute() throws Exception {
-    Thread.sleep(200);
     if (existProject && validSection) {
       // getting the current section status.
       switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
@@ -187,6 +105,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case ACTIVITIES:
           this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
           break;
+        case EXPECTEDSTUDIES:
+          this.projectSectionValidator.validateProjectExpectedStudies(this, this.getProjectID());
+          break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
         case BUDGET:
@@ -197,6 +118,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case BUDGETBYCOA:
           this.projectSectionValidator.validateProjectBudgetsCoAs(this, this.getProjectID());
+          break;
+
+        case BUDGETBYFLAGSHIP:
+          this.projectSectionValidator.validateProjectBudgetsFlagship(this, this.getProjectID());
           break;
         case DELIVERABLES:
           this.projectSectionValidator.validateProjectDeliverables(this, this.getProjectID());
@@ -322,6 +247,12 @@ public class ValidateProjectSectionAction extends BaseAction {
           sectionStatus = new SectionStatus();
           sectionStatus.setMissingFields("");
           section.put("missingFields", "");
+        } else {
+          if (openA.isEmpty()) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("");
+            section.put("missingFields", "Empty Deliverables");
+          }
         }
 
 
@@ -338,6 +269,20 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         break;
 
+
+      case EXPECTEDSTUDIES:
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
+          this.getActualPhase().getYear(), sectionName);
+        section = new HashMap<String, Object>();
+        if (sectionStatus != null) {
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        } else {
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "");
+        }
+
+        break;
       case CASESTUDIES:
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
@@ -429,13 +374,18 @@ public class ValidateProjectSectionAction extends BaseAction {
         break;
 
       default:
+
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
           this.getActualPhase().getYear(), sectionName);
+        section = new HashMap<String, Object>();
         if (sectionStatus != null) {
-          section = new HashMap<String, Object>();
           section.put("sectionName", sectionStatus.getSectionName());
           section.put("missingFields", sectionStatus.getMissingFields());
+        } else {
+          section.put("sectionName", sectionName);
+          section.put("missingFields", "empty");
         }
+
 
         break;
     }
@@ -476,8 +426,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     // sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 

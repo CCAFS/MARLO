@@ -19,24 +19,27 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -83,17 +86,20 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private ProjectCommunicationManager projectCommunicationManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private AuditLogManager auditLogManager;
   private ProjectOutcomeManager projectOutcomeManager;
   private ProjectNextuserManager projectNextuserManager;
+  private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
+
   // Front-end
   private long projectID;
   private long projectOutcomeID;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private Project project;
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
@@ -109,12 +115,12 @@ public class ProjectOutcomeAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
     CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
-    ProjectOutcomeValidator projectOutcomeValidator) {
+    ProjectOutcomeValidator projectOutcomeValidator, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -127,6 +133,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.crpMilestoneManager = crpMilestoneManager;
     this.projectNextuserManager = projectNextuserManager;
     this.projectOutcomeValidator = projectOutcomeValidator;
+    this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
   }
 
   @Override
@@ -161,6 +168,17 @@ public class ProjectOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
+
+
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
+      + File.separator;
+  }
+
+
   public int getIndexCommunication(int year) {
 
     int i = 0;
@@ -177,6 +195,20 @@ public class ProjectOutcomeAction extends BaseAction {
     projectOutcome.getCommunications().add(com);
     return this.getIndexCommunication(year);
 
+  }
+
+  public int getIndexIndicator(Long indicatorID) {
+
+    ProjectOutcomeIndicator projectOutcomeIndicator = this.getIndicator(indicatorID);
+    int i = 0;
+    for (ProjectOutcomeIndicator projectOutcomeIndicatorList : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicatorList.getCrpProgramOutcomeIndicator().getId().longValue() == projectOutcomeIndicator
+        .getCrpProgramOutcomeIndicator().getId().longValue()) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
 
 
@@ -200,6 +232,19 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public ProjectOutcomeIndicator getIndicator(Long indicatorID) {
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+      if (projectOutcomeIndicator.getCrpProgramOutcomeIndicator().getId().longValue() == indicatorID) {
+        return projectOutcomeIndicator;
+      }
+    }
+    ProjectOutcomeIndicator projectOutcomeIndicator = new ProjectOutcomeIndicator();
+    projectOutcomeIndicator.setCrpProgramOutcomeIndicator(new CrpProgramOutcomeIndicator(indicatorID));
+    projectOutcome.getIndicators().add(projectOutcomeIndicator);
+    return projectOutcomeIndicator;
+
+  }
+
   public ProjectMilestone getMilestone(long milestoneId, int year) {
     ProjectMilestone projectMilestone = new ProjectMilestone();
     if (projectOutcome.getMilestones() != null) {
@@ -220,10 +265,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
-
 
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
@@ -235,6 +280,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
   }
+
 
   public Project getProject() {
     return project;
@@ -248,7 +294,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
-
 
   public long getProjectOutcomeID() {
     return projectOutcomeID;
@@ -265,12 +310,12 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
 
-
   private String getSummaryPath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + "outcome" + File.separator;
   }
+
 
   public String getSummaryURL() {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
@@ -300,7 +345,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
     List<ProjectMilestone> projectMilestones =
@@ -311,12 +355,13 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   @Override
   public void prepare() throws Exception {
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       projectOutcomeID =
@@ -413,6 +458,8 @@ public class ProjectOutcomeAction extends BaseAction {
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        projectOutcome.setIndicators(
+          projectOutcome.getProjectOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         if (this.isLessonsActive()) {
           this.loadLessonsOutcome(loggedCrp, projectOutcome);
         }
@@ -453,7 +500,10 @@ public class ProjectOutcomeAction extends BaseAction {
      * Loading basic List
      */
     targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-
+    projectOutcome.setCrpProgramOutcome(
+      crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+    projectOutcome.getCrpProgramOutcome().setIndicators(projectOutcome.getCrpProgramOutcome()
+      .getCrpProgramOutcomeIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));;
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
     if (this.isHttpPost())
@@ -474,7 +524,9 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getNextUsers() != null) {
         projectOutcome.getNextUsers().clear();
       }
-
+      if (projectOutcome.getIndicators() != null) {
+        projectOutcome.getIndicators().clear();
+      }
       /**
        * Hack to fix ManyToOne issue as a result of issue #1124
        */
@@ -497,21 +549,23 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveMilestones(projectOutcomeDB);
       this.saveCommunications(projectOutcomeDB);
       this.saveNextUsers(projectOutcomeDB);
-
+      this.saveIndicators(projectOutcomeDB);
       if (this.isLessonsActive()) {
         this.saveLessonsOutcome(loggedCrp, projectOutcome);
       }
-      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setActiveSince(new Date());
-      projectOutcome.setPhase(this.getActualPhase());
-      projectOutcome.setModificationJustification(this.getJustification());
+      // projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcomeDB.setModifiedBy(this.getCurrentUser());
+      projectOutcomeDB.setActiveSince(new Date());
+      projectOutcomeDB.setPhase(this.getActualPhase());
+      projectOutcomeDB.setModificationJustification(this.getJustification());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
+      relationsName.add(APConstants.PROJECT_OUTCOMES_INDICATORS_RELATION);
+
       // relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
-      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName,
+      projectOutcomeManager.saveProjectOutcome(projectOutcomeDB, this.getActionName(), relationsName,
         this.getActualPhase());
 
       Path path = this.getAutoSaveFilePath();
@@ -545,7 +599,6 @@ public class ProjectOutcomeAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void saveCommunications(ProjectOutcome projectOutcomeDB) {
 
@@ -621,6 +674,62 @@ public class ProjectOutcomeAction extends BaseAction {
 
         }
 
+
+      }
+    }
+  }
+
+  public void saveIndicators(ProjectOutcome projectOutcomeDB) {
+
+    for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomeDB.getProjectOutcomeIndicators().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (projectOutcome.getIndicators() == null) {
+        projectOutcome.setIndicators(new ArrayList<>());
+      }
+      if (!projectOutcome.getIndicators().contains(projectOutcomeIndicator)) {
+        projectOutcomeIndicatorManager.deleteProjectOutcomeIndicator(projectOutcomeIndicator.getId());
+
+      }
+    }
+
+    if (projectOutcome.getIndicators() != null) {
+      for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcome.getIndicators()) {
+        if (projectOutcomeIndicator != null) {
+          if (projectOutcomeIndicator.getId() == null) {
+            // Create new entity
+            projectOutcomeIndicator.setCreatedBy(this.getCurrentUser());
+
+            projectOutcomeIndicator.setActiveSince(new Date());
+            projectOutcomeIndicator.setActive(true);
+            projectOutcomeIndicator.setProjectOutcome(projectOutcomeDB);
+            projectOutcomeIndicator.setModifiedBy(this.getCurrentUser());
+            projectOutcomeIndicator.setModificationJustification("");
+
+            projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicator);
+
+          } else {
+            // Update existing entity
+            ProjectOutcomeIndicator projectOutcomeIndicatorDB =
+              projectOutcomeIndicatorManager.getProjectOutcomeIndicatorById(projectOutcomeIndicator.getId());
+
+            projectOutcomeIndicatorDB.setActive(true);
+            projectOutcomeIndicatorDB.setProjectOutcome(projectOutcomeDB);
+
+            projectOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
+            projectOutcomeIndicatorDB.setModificationJustification("");
+
+            // update existing fields
+            projectOutcomeIndicatorDB.setNarrative(projectOutcomeIndicator.getNarrative());
+            projectOutcomeIndicatorDB.setValue(projectOutcomeIndicator.getValue());
+
+
+            projectOutcomeIndicatorDB =
+              projectOutcomeIndicatorManager.saveProjectOutcomeIndicator(projectOutcomeIndicatorDB);
+          }
+
+
+        }
 
       }
     }

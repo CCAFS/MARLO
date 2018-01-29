@@ -19,23 +19,26 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -49,6 +52,7 @@ import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,19 +90,25 @@ public class OutcomesAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
-
   private CrpAssumptionManager crpAssumptionManager;
+
+
   private HistoryComparator historyComparator;
 
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+  private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
+
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private long crpProgramID;
+  private FileDBManager fileDBManager;
+
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<Integer> milestoneYears;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
@@ -116,14 +126,16 @@ public class OutcomesAction extends BaseAction {
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
-    HistoryComparator historyComparator, AuditLogManager auditLogManager, SrfSubIdoManager srfSubIdoManager) {
+    CrpAssumptionManager crpAssumptionManager, GlobalUnitManager crpManager, UserManager userManager,
+    HistoryComparator historyComparator, AuditLogManager auditLogManager, FileDBManager fileDBManager,
+    CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.crpProgramManager = crpProgramManager;
+    this.fileDBManager = fileDBManager;
     this.historyComparator = historyComparator;
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
@@ -132,8 +144,8 @@ public class OutcomesAction extends BaseAction {
     this.crpAssumptionManager = crpAssumptionManager;
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
+    this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicator;
   }
-
 
   @Override
   public String cancel() {
@@ -167,24 +179,32 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+public String getBaseLineFileURL(String outcomeID) {
+    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+  }
+
+  public String getBaseLineFileUrlPath(String outcomeID) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
+      + File.separator;
+  }
+
+
   public long getCrpProgramID() {
     return crpProgramID;
   }
+
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<Integer> getMilestoneYears() {
     return milestoneYears;
   }
-
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -195,20 +215,18 @@ public class OutcomesAction extends BaseAction {
     return programs;
   }
 
+
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
-
 
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
   }
 
-
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
-
 
   public List<Integer> getTargetYears() {
     List<Integer> targetYears = new ArrayList<>();
@@ -230,6 +248,7 @@ public class OutcomesAction extends BaseAction {
     return targetYears;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
@@ -240,10 +259,17 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcome.setMilestones(
         crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
+      crpProgramOutcome.setIndicators(crpProgramOutcome.getCrpProgramOutcomeIndicators().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList()));
       crpProgramOutcome.setSubIdos(
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+      if (crpProgramOutcome.getFile() != null) {
+        if (crpProgramOutcome.getFile().getId() != null) {
+          crpProgramOutcome.setFile(fileDBManager.getFileDBById(crpProgramOutcome.getFile().getId()));
+        } else {
+          crpProgramOutcome.setFile(null);
+        }
+      }
 
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         List<CrpAssumption> assumptions =
@@ -276,9 +302,9 @@ public class OutcomesAction extends BaseAction {
 
 
     // IAuditLog ia = auditLogManager.getHistory(4);
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
 
@@ -430,6 +456,8 @@ public class OutcomesAction extends BaseAction {
           outcomes = selectedProgram.getOutcomes();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
+          selectedProgram.setBaseLine(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getBaseLine());
+
           selectedProgram.setCrp(loggedCrp);
           if (outcomes == null) {
             outcomes = new ArrayList<>();
@@ -441,6 +469,13 @@ public class OutcomesAction extends BaseAction {
                 if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != null) {
                   subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
                 }
+              }
+            }
+            if (outcome.getFile() != null) {
+              if (outcome.getFile().getId() != null) {
+                outcome.setFile(fileDBManager.getFileDBById(outcome.getFile().getId()));
+              } else {
+                outcome.setFile(null);
               }
             }
           }
@@ -593,6 +628,7 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
+
   public void saveCrpProgramOutcome() {
 
     /**
@@ -642,16 +678,71 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcomeDB.setSrfTargetUnit(crpProgramOutcomeDetached.getSrfTargetUnit());
       crpProgramOutcomeDB.setValue(crpProgramOutcomeDetached.getValue());
       crpProgramOutcomeDB.setYear(crpProgramOutcomeDetached.getYear());
-      crpProgramOutcomeDB.setCrpProgram(selectedProgram);
       crpProgramOutcomeDB.setPhase(this.getActualPhase());
+      crpProgramOutcomeDB.setCrpProgram(selectedProgram);
+      if (crpProgramOutcomeDetached.getFile() != null && crpProgramOutcomeDetached.getFile().getId() == null) {
+        crpProgramOutcomeDetached.setFile(null);
+      }
+      crpProgramOutcomeDB.setFile(crpProgramOutcomeDetached.getFile());
       crpProgramOutcomeDB.setModifiedBy(this.getCurrentUser());
       crpProgramOutcomeDB.setModificationJustification("");
+      crpProgramOutcomeDB.setIndicators(crpProgramOutcomeDetached.getIndicators());
+      crpProgramOutcomeDB.setMilestones(crpProgramOutcomeDetached.getMilestones());
+      crpProgramOutcomeDB.setSubIdos(crpProgramOutcomeDetached.getSubIdos());
 
       crpProgramOutcomeDB = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcomeDB);
 
+      this.saveIndicators(crpProgramOutcomeDB, crpProgramOutcomeDetached);
       this.saveMilestones(crpProgramOutcomeDB, crpProgramOutcomeDetached);
       this.saveSubIdo(crpProgramOutcomeDB, crpProgramOutcomeDetached);
 
+    }
+
+  }
+
+
+  public void saveIndicators(CrpProgramOutcome crpProgramOutcomeDB, CrpProgramOutcome crpProgramOutcomeDetached) {
+
+    /*
+     * Delete Indicators
+     */
+    for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcomeDB.getCrpProgramOutcomeIndicators()
+      .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (crpProgramOutcomeDetached.getIndicators() != null) {
+        if (!crpProgramOutcomeDetached.getIndicators().contains(crpProgramOutcomeIndicator)) {
+          crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+        }
+      } else {
+        crpProgramOutcomeIndicatorManager.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicator.getId());
+      }
+    }
+
+    /*
+     * Save Milestones
+     */
+    if (crpProgramOutcomeDetached.getIndicators() != null) {
+      for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDetached : crpProgramOutcomeDetached.getIndicators()) {
+        CrpProgramOutcomeIndicator crpProgramOutcomeIndicatorDB = null;
+        if (crpProgramOutcomeIndicatorDetached.getId() == null) {
+          crpProgramOutcomeIndicatorDB = new CrpProgramOutcomeIndicator();
+          crpProgramOutcomeIndicatorDB.setActive(true);
+          crpProgramOutcomeIndicatorDB.setCreatedBy(this.getCurrentUser());
+          crpProgramOutcomeIndicatorDB.setActiveSince(new Date());
+          crpProgramOutcomeIndicatorDB.setComposeID(crpProgramOutcomeIndicatorDetached.getComposeID());
+        } else {
+          crpProgramOutcomeIndicatorDB = crpProgramOutcomeIndicatorManager
+            .getCrpProgramOutcomeIndicatorById(crpProgramOutcomeIndicatorDetached.getId());
+        }
+
+        crpProgramOutcomeIndicatorDB.setCrpProgramOutcome(crpProgramOutcomeDB);
+        crpProgramOutcomeIndicatorDB.setIndicator(crpProgramOutcomeIndicatorDetached.getIndicator());
+
+        crpProgramOutcomeIndicatorDB.setModifiedBy(this.getCurrentUser());
+        crpProgramOutcomeIndicatorDB.setModificationJustification("");
+
+        crpProgramOutcomeIndicatorDB =
+          crpProgramOutcomeIndicatorManager.saveCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorDB);
+      }
     }
 
   }
@@ -683,6 +774,7 @@ public class OutcomesAction extends BaseAction {
           crpMilestoneDB.setActive(true);
           crpMilestoneDB.setCreatedBy(this.getCurrentUser());
           crpMilestoneDB.setActiveSince(new Date());
+          crpMilestoneDB.setComposeID(crpMilestoneDetached.getComposeID());
 
         } else {
           crpMilestoneDB = crpMilestoneManager.getCrpMilestoneById(crpMilestoneDetached.getId());
@@ -792,8 +884,7 @@ public class OutcomesAction extends BaseAction {
     this.idoList = idoList;
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

@@ -27,9 +27,9 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp_id" not-null="true" />
+			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
 		<many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">

@@ -18,16 +18,16 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.center.summaries.ImpactSubmissionSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterCycleManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterCycle;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactPathwayCyclesEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -61,14 +61,15 @@ public class IPSubmissionAction extends BaseAction {
   private ICenterSubmissionManager submissionService;
   private ICenterProgramManager programService;
   private ICenterCycleManager cycleService;
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
 
   private SendMail sendMail;
   private CenterProgram program;
   private CenterCycle cycle;
 
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private long programID;
   private boolean isSubmited = false;
 
@@ -76,7 +77,7 @@ public class IPSubmissionAction extends BaseAction {
 
   @Inject
   public IPSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
-    ICenterProgramManager programService, ICenterCycleManager cycleService, ICenterManager centerService,
+    ICenterProgramManager programService, ICenterCycleManager cycleService, GlobalUnitManager centerService,
     SendMail sendMail, ImpactSubmissionSummaryAction impactSubmissionSummaryAction) {
     super(config);
     this.programService = programService;
@@ -170,8 +171,8 @@ public class IPSubmissionAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));

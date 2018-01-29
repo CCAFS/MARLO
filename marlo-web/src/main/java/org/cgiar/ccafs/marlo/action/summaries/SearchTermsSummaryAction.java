@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -98,7 +97,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   InputStream inputStream;
 
   @Inject
-  public SearchTermsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;

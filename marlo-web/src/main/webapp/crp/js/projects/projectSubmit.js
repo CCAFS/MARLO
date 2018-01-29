@@ -48,7 +48,8 @@ $(document).ready(function() {
                   url: baseURL + "/projectLeaderEdit.do",
                   data: {
                       projectID: $('input[name="projectID"]').val(),
-                      projectStatus: value
+                      projectStatus: value,
+                      phaseID: phaseID
                   },
                   success: function(data) {
                     location.reload();
@@ -168,6 +169,7 @@ function processTasks(tasks,id,button) {
               data: {
                   projectID: id,
                   sectionName: sectionName,
+                  phaseID: phaseID
               },
               beforeSend: function() {
                 $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');
@@ -255,7 +257,8 @@ function unSubmitButtonEvent(e) {
               var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
               var data = {
                   projectID: projectId,
-                  justification: $justification.val()
+                  justification: $justification.val(),
+                  phaseID: phaseID
               }
               console.log(data);
               $justification.removeClass('fieldError');

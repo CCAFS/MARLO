@@ -756,7 +756,8 @@ function formWindowEvents() {
             var select = $("#countriesCmvs");
             var url = baseURL + "/searchCountryListPL.do";
             var data = {
-              parentId: option.val().split("-")[0]
+                parentId: option.val().split("-")[0],
+                phaseID: phaseID
             };
             $.ajax({
                 url: url,
@@ -945,7 +946,8 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       /* GET COORDINATES */
       var url = baseURL + "/geopositionByElement.do";
       var data = {
-        "locElementID": locId
+          "locElementID": locId,
+          phaseID: phaseID
       };
       countID++;
       $.ajax({

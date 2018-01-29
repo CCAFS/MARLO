@@ -21,6 +21,7 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterBeneficiaryManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterBeneficiaryTypeManager;
@@ -29,13 +30,11 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterImpactManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactObjectiveManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterImpactStatementManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterLeaderManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterObjectiveManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiary;
 import org.cgiar.ccafs.marlo.data.model.CenterBeneficiaryType;
@@ -48,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterRegion;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -83,7 +83,8 @@ public class ProgramImpactsAction extends BaseAction {
   private static final long serialVersionUID = -2261790056574973080L;
 
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
 
@@ -96,14 +97,17 @@ public class ProgramImpactsAction extends BaseAction {
   private ICenterBeneficiaryTypeManager beneficiaryTypeService;
 
   private ICenterImpactBeneficiaryManager impactBeneficiaryService;
+
+
   private ICenterAreaManager researchAreaService;
+
   private UserManager userService;
   private ICenterObjectiveManager objectiveService;
   private ICenterImpactManager impactService;
   private ICenterImpactObjectiveManager impactObjectiveService;
   private AuditLogManager auditLogService;
   private ICenterBeneficiaryManager beneficiaryService;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
   private List<CenterImpactStatement> idos;
   private List<CenterRegion> regions;
@@ -114,15 +118,15 @@ public class ProgramImpactsAction extends BaseAction {
   private List<SrfSubIdo> subIdos;
   private List<CenterObjective> researchObjectives;
   private CenterProgram selectedProgram;
-
   private List<CenterImpact> impacts;
   private long programID;
+
   private long areaID;
   private String transaction;
   private ProgramImpactsValidator validator;
 
   @Inject
-  public ProgramImpactsAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public ProgramImpactsAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterAreaManager researchAreaService, ICenterLeaderManager researchLeaderService, UserManager userService,
     ICenterObjectiveManager objectiveService, ICenterImpactManager impactService,
     ICenterImpactObjectiveManager impactObjectiveService, ProgramImpactsValidator validator,
@@ -199,10 +203,7 @@ public class ProgramImpactsAction extends BaseAction {
     return impacts;
   }
 
-  /**
-   * @return the loggedCenter
-   */
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
@@ -212,6 +213,7 @@ public class ProgramImpactsAction extends BaseAction {
   public Long getProgramID() {
     return programID;
   }
+
 
   public List<CenterRegion> getRegions() {
     return regions;
@@ -254,17 +256,16 @@ public class ProgramImpactsAction extends BaseAction {
     return transaction;
   }
 
-
   @Override
   public void prepare() throws Exception {
     areaID = -1;
     programID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -541,6 +542,7 @@ public class ProgramImpactsAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("*")) {
@@ -768,7 +770,6 @@ public class ProgramImpactsAction extends BaseAction {
 
   }
 
-
   public void saveBeneficiary(CenterImpact researchImpact, CenterImpact researchImpactSave) {
 
     if (researchImpactSave.getResearchImpactBeneficiaries() != null
@@ -912,10 +913,7 @@ public class ProgramImpactsAction extends BaseAction {
   }
 
 
-  /**
-   * @param loggedCenter the loggedCenter to set
-   */
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
 

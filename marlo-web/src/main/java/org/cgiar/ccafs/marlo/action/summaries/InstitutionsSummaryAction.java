@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -61,7 +61,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
   }
 

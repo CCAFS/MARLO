@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Budget By Partners" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectBudgetByPartners.js", 
@@ -100,12 +100,13 @@
                     
                     [#if projectPPAPartners?has_content]
                       [#list projectPPAPartners as projectPartner]
+                       [#if action.existOnYear(projectPartner.id,year)]
                         [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                         [/#if]
                       [/#list]
                     [#else]
-                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
+                      <div class="simpleBox emptyMessage text-center">[@s.text name="projectBudgetByPartners.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">partners section</a></div>
                     [/#if]
-
                 
                 </div>
               [/#list]  

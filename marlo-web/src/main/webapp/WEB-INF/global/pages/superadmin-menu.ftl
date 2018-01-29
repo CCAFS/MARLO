@@ -1,11 +1,10 @@
 [#ftl]
-[#if action.canAccessSuperAdmin() || action.canAcessCrpAdmin()]
   [#assign superAdminMenu =[
      { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
      
   ]/]
   
-  [#if centerSession??]
+  [#if ((globalUnitType == 2)!false)]
     [#assign superAdminMenu = superAdminMenu + [
       { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/centerAdmin',     'action': '${(centerSession)!}/coordination', 'icon': 'cog',   'visible': action.canAccessSuperAdmin(),  'active': true }
     ]/]
@@ -26,39 +25,49 @@
           </li>
           [/#if]
         [/#list]
-        [#-- CRPs List --]
-        [#if action.canAccessSuperAdmin()]
+        [#-- Global units --]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
-          <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/crpDashboard" ][/@s.url]">
-            <span class="glyphicon glyphicon-chevron-down"></span> CRP/Center ([#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if])
+          <a href="[@s.url namespace="/" action="${(crpSession)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
+            <span class="glyphicon glyphicon-chevron-down"></span> [#if centerSession??]${centerSession}[#else]${(currentCrp.acronym)!}[/#if]
           </a>
           <ul class="subMenu">
+          [#-- CRPs --]
           [#if crpList?has_content]
-            <li text-align:center> -- CRPs -- </li>
-            [#list crpList as crp]
-              [#if crp.login]
-              <li class="[#if crpSession?? && crpSession == crp.acronym ]currentSection[/#if]" >
-                <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/crpDashboard" ][/@s.url]" title="">${crp.acronym}</a>
+            <li text-align:center>  CRPs  </li>
+            [#list crpList as globalUnit]
+              [#if globalUnit.login]
+              <li class="[#if crpSession?? && crpSession == globalUnit.acronym ]currentSection[/#if]" >
+                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]" title="">${globalUnit.acronym}</a>
               </li>
               [/#if]
             [/#list]              
           [/#if]
+          [#-- Centers --]
           [#if centersList?has_content]
-            <li text-align:center> -- Centers -- </li>
-            [#list centersList as center]
-              [#if center.login]
-              <li class="[#if centerSession?? && centerSession == center.acronym ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${center.acronym?lower_case}/centerDashboard" ][/@s.url]">${center.name}</a>
+            <li text-align:center>   Centers  </li>
+            [#list centersList as globalUnit]
+              [#if globalUnit.login]
+              <li class="[#if centerSession?? && centerSession == globalUnit.acronym ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/centerDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${globalUnit.acronym}</a>
+              </li>
+              [/#if]
+            [/#list]
+          [/#if]
+          [#-- Platforms --]
+          [#if platformsList?has_content]
+            <li text-align:center>   Platforms   </li>
+            [#list platformsList as globalUnit]
+              [#if globalUnit.login]
+              <li class="[#if centerSession?? && centerSession == globalUnit.acronym ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${globalUnit.acronym}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">${globalUnit.acronym}</a>
               </li>
               [/#if]
             [/#list]
           [/#if]
           </ul>
         </li>
-         [/#if]
          <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
         <div class="clearfix"></div>
       </ul>
     </div>
   </div>
-[/#if]

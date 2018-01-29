@@ -19,26 +19,26 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -76,7 +76,9 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class CrpProgamRegionsAction extends BaseAction {
 
+
   private static final long serialVersionUID = 3355662668874414548L;
+
 
   /**
    * Helper method to read a stream into memory.
@@ -96,14 +98,18 @@ public class CrpProgamRegionsAction extends BaseAction {
     return baos.toByteArray();
   }
 
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   // Managers
   private RoleManager roleManager;
+
   private UserRoleManager userRoleManager;
+
   private CrpProgramManager crpProgramManager;
-  private CrpManager crpManager;
   private CrpUserManager crpUserManager;
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private Role rolePmu;
   private long pmuRol;
   private List<LocElement> countriesList;
@@ -116,22 +122,20 @@ public class CrpProgamRegionsAction extends BaseAction {
   private UserManager userManager;
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
   private Role rplRole;
   private Role rpmRole;
 
-
   private Long slRoleid;
-
-
   private Role slRole;
+
 
   // Util
   private SendMailS sendMail;
 
+
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager, CrpProgramLeaderManager crpProgramLeaderManager,
+    CrpProgramManager crpProgramManager, GlobalUnitManager crpManager, CrpProgramLeaderManager crpProgramLeaderManager,
     UserManager userManager, LocElementManager locElementManger, CrpProgramCountryManager crpProgramCountryManager,
     CrpSitesLeaderManager crpSitesLeaderManager, CrpsSiteIntegrationManager crpsSiteIntegrationManager,
     SendMailS sendMail, LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
@@ -152,7 +156,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpUserManager = crpUserManager;
   }
-
 
   public void addCrpUser(User user) {
     user = userManager.getUser(user.getId());
@@ -186,9 +189,10 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
+
   private void deleteSiteIntegration(CrpProgramCountry crpProgramCountry) {
     boolean hasCountry = false;
-    Crp crp = crpManager.getCrpById(loggedCrp.getId());
+    GlobalUnit crp = crpManager.getGlobalUnitById(loggedCrp.getId());
     List<CrpProgram> crpPrograms = crp.getCrpPrograms().stream()
       .filter(cp -> cp.isActive() && cp.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
@@ -252,7 +256,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       if (locElementSL == locElementCP) {
 
         boolean hasCountry = false;
-        Crp crp = crpManager.getCrpById(loggedCrp.getId());
+        GlobalUnit crp = crpManager.getGlobalUnitById(loggedCrp.getId());
         List<CrpProgram> crpPrograms = crp.getCrpPrograms().stream()
           .filter(cp -> cp.isActive() && cp.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList());
@@ -297,15 +301,13 @@ public class CrpProgamRegionsAction extends BaseAction {
     return countriesList;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public long getPmuRol() {
     return pmuRol;
   }
-
 
   public List<CrpProgram> getRegionsPrograms() {
     return regionsPrograms;
@@ -320,6 +322,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   public Role getRplRole() {
     return rplRole;
   }
+
 
   public Role getRpmRole() {
     return rpmRole;
@@ -516,13 +519,12 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
-
   @Override
   public void prepare() throws Exception {
 
     // Get the Users list that have the pmu role in this crp.
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     rolePmu = roleManager.getRoleById(pmuRol);
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
@@ -568,6 +570,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       regionsPrograms.clear();
     }
   }
+
 
   private void programManagerData() {
     for (CrpProgram crpProgram : regionsPrograms) {
@@ -657,7 +660,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -894,8 +896,9 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   }
 
+
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
-    Crp crp = crpManager.getCrpById(loggedCrp.getId());
+    GlobalUnit crp = crpManager.getGlobalUnitById(loggedCrp.getId());
     List<CrpsSiteIntegration> siteIntegrations = crp.getCrpsSitesIntegrations().stream()
       .filter(si -> si.isActive() && si.getLocElement().equals(locElement)).collect(Collectors.toList());
     if (siteIntegrations == null || siteIntegrations.isEmpty()) {
@@ -1002,8 +1005,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.countriesList = countriesList;
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

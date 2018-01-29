@@ -32,17 +32,19 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 230325008971164952L;
 
+
   @Expose
   private Long id;
+
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
+
 
   @Expose
   private SrfSubIdo srfSubIdo;
 
   @Expose
   private boolean active;
-
   @Expose
   private User createdBy;
 
@@ -58,7 +60,7 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
   public CrpSubIdosContribution() {
   }
 
-  public CrpSubIdosContribution(Crp crps, SrfSubIdo srfSubIdos) {
+  public CrpSubIdosContribution(GlobalUnit crps, SrfSubIdo srfSubIdos) {
     this.crp = crps;
     this.srfSubIdo = srfSubIdos;
   }
@@ -71,8 +73,8 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public Crp getCrp() {
-    return this.crp;
+  public GlobalUnit getCrp() {
+    return crp;
   }
 
   @Override
@@ -118,9 +120,10 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crps) {
-    this.crp = crps;
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -140,7 +143,7 @@ public class CrpSubIdosContribution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CrpSubIdosContribution [id=" + id + ", crp=" + crp + ", srfSubIdo=" + srfSubIdo + "]";
+     return "CrpSubIdosContribution [id=" + id + ", crp=" + crp + ", srfSubIdo=" + srfSubIdo + "]";
   }
 }
 

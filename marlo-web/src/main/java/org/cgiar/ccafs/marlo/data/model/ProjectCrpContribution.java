@@ -14,9 +14,6 @@ import com.google.gson.annotations.Expose;
 public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 3312177201036421940L;
   @Expose
   private Long id;

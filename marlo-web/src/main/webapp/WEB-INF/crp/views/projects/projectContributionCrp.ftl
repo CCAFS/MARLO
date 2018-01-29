@@ -1,9 +1,17 @@
 [#ftl]
 [#assign title = "Project Outcome Contribution to CRP" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectContributionCrp.js", "${baseUrlMedia}/js/global/autoSave.js","${baseUrlMedia}/js/global/fieldsValidation.js"] /] [#--  --]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionCrp.css"] /]
+[#assign customJS = [ 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js", 
+  "${baseUrl}/global/js/autoSave.js", 
+  "${baseUrl}/global/js/fieldsValidation.js"
+  ] 
+/] 
+[#assign customCSS = [ 
+  "${baseUrlMedia}/css/projects/projectContributionCrp.css"
+  ] 
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
 
@@ -75,7 +83,7 @@
           [#assign showExpectedTarget = true /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
-           
+          
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
@@ -153,6 +161,27 @@
               [/#if]
             </div>
             [/#if]
+            
+            [#-- Baseline Indicators --]
+            [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
+              <h5 class="sectionSubTitle">Baseline Indicators</h5>
+              <div class="form-group">
+                <div class="" id="baseline">
+                  <div class="form-group text-right">
+                    [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
+                      <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id.toString())!)}${ (projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrl}/global/images/pdf.png" width="20px" alt="" /> ${ (projectOutcome.crpProgramOutcome.file.fileName)!}</a> 
+                    [#else]
+                      <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
+                    [/#if]
+                  </div>
+                  [#-- Indicators --]
+                  [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
+                    [@baselineIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  /]
+                  [/#list]
+                </div>
+              </div>
+            [/#if]
+            
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
@@ -275,6 +304,9 @@
 
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
+
+
+
   
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -414,6 +446,41 @@
             <div class="clearfix"></div>
           </div>
         [/#list]
+      </div>
+    [/#if]
+  </div>
+[/#macro]
+
+[#macro baselineIndicatorMacro element name index isTemplate=false]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local indexIndicator = action.getIndexIndicator(element.id) /]
+    [#local projectOutcomeIndicator  = action.getIndicator(element.id) /]
+    [#local customName = "${name}[${indexIndicator}]" /]
+    <div class="leftHead gray sm">
+      <span class="index">${index+1}</span>
+    </div>
+    <div class="form-group grayBox">
+      <strong>${element.indicator}</strong>
+    </div>
+    <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
+    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
+    <div class="form-group row">
+      <div class="col-md-3">
+        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
+      </div>
+      <div class="col-md-3">
+        [#if reportingActive]
+          [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=true editable=editable /]
+        [/#if]
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+    </div>
+    [#if reportingActive]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
       </div>
     [/#if]
   </div>

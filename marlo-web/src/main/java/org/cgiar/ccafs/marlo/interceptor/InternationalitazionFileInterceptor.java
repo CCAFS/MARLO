@@ -18,10 +18,10 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.Locale;
 import java.util.Map;
@@ -43,14 +43,14 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
    * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
 
   private final LocalizedTextProvider localizedTextProvider;
 
   private CustomParameterManager crpParameterManager;
 
   @Inject
-  public InternationalitazionFileInterceptor(CrpManager crpManager, CustomParameterManager crpParameterManager,
+  public InternationalitazionFileInterceptor(GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
     LocalizedTextProvider localizedTextProvider) {
     this.crpManager = crpManager;
     this.crpParameterManager = crpParameterManager;
@@ -88,18 +88,9 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
       if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
-
         this.localizedTextProvider.addDefaultResourceBundle(pathFile);
-      } else {
-
-        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
-      }
-    }
-
-    if (session.containsKey(APConstants.SESSION_CENTER)) {
-      if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
         pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
-
         this.localizedTextProvider.addDefaultResourceBundle(pathFile);
       } else {
 
@@ -107,10 +98,9 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
       }
     }
 
-
-    Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
+    GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     if (crp != null) {
-      Crp loggedCrp = crpManager.getCrpById(crp.getId());
+      GlobalUnit loggedCrp = crpManager.getGlobalUnitById(crp.getId());
 
       if (this.isCrpRefresh(loggedCrp)) {
         for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
@@ -137,10 +127,10 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     return invocation.invoke();
   }
 
-  public boolean isCrpRefresh(Crp crp) {
+  public boolean isCrpRefresh(GlobalUnit crp) {
     try {
       // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Boolean.parseBoolean(crpManager.getCrpById(crp.getId()).getCustomParameters().stream()
+      return Boolean.parseBoolean(crpManager.getGlobalUnitById(crp.getId()).getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
         .getValue());
     } catch (Exception e) {

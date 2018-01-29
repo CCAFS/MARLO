@@ -16,9 +16,8 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
@@ -36,10 +35,11 @@ public class TestAction extends BaseAction {
   private static final long serialVersionUID = 4663544283175165587L;
 
   private ProjectSectionValidator<TestAction> validateProject;
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public TestAction(APConfig config, ProjectSectionValidator<TestAction> validateProject, CrpManager crpManager) {
+  public TestAction(APConfig config, ProjectSectionValidator<TestAction> validateProject,
+    GlobalUnitManager crpManager) {
     super(config);
 
     this.validateProject = validateProject;
@@ -48,13 +48,13 @@ public class TestAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    List<Crp> crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
-    for (Crp crp : crps) {
-      List<Project> projects = crp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (Project project : projects) {
-        validateProject.validateProjectOutcomes(this, project.getId());
-      }
-    }
+    List<GlobalUnit> crps = crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
+    // for (GlobalUnit crp : crps) {
+    // List<Project> projects = crp.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    // for (Project project : projects) {
+    // validateProject.validateProjectOutcomes(this, project.getId());
+    // }
+    // }
 
     return SUCCESS;
 

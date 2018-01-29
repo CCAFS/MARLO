@@ -17,12 +17,12 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -52,17 +52,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long deliverableId = 0;
   private Phase phase;
   private PhaseManager phaseManager;
   private final DeliverableManager deliverableManager;
   private final ProjectManager projectManager;
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
 
   @Inject
   public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
-    PhaseManager phaseManager, CrpManager crpManager) {
+    PhaseManager phaseManager, GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
     this.projectManager = projectManager;
@@ -98,8 +98,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -113,6 +113,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     User user = (User) session.get(APConstants.SESSION_USER);
     BaseAction baseAction = (BaseAction) invocation.getAction();
+    baseAction.setSession(session);
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -120,7 +121,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     baseAction.setSession(session);
     // String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
     String projectParameter = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0];
-    phase = baseAction.getActualPhase(session, crp.getId());
+    phase = baseAction.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());
     deliverableId = Long.parseLong(projectParameter);
 
@@ -260,6 +261,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         editParameter = false;
         // If the user is not asking for edition privileges we don't need to validate them.
 
+      }
+      if (!baseAction.getActualPhase().getEditable()) {
+        canEdit = false;
+        baseAction.setCanEditPhase(false);
+        baseAction.setEditStatus(false);
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(editParameter && canEdit);
