@@ -51,8 +51,6 @@
               [#list project.expectedStudies as expectedStudy]
                 [@expectedStudyMacro element=expectedStudy name="project.expectedStudies"  index=expectedStudy_index isEditable=editable  /]
               [/#list]
-            [#else]
-              [@expectedStudyMacro element={} name="project.expectedStudies"  index=0 isEditable=editable  /]
             [/#if]
             </div>
             [#if canEdit && editable]
