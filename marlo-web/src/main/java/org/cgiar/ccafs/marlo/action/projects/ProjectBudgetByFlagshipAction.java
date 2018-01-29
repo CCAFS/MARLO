@@ -21,12 +21,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsFlagshipManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -98,7 +100,8 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   public ProjectBudgetByFlagshipAction(APConfig config, CrpProgramManager crpProgramManager,
     BudgetTypeManager budgetTypeManager, ProjectManager projectManager,
     ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager,
-    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, ProjectFocusManager projectFocusManager, PhaseManager phaseManager) {
+    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, ProjectFocusManager projectFocusManager,
+    PhaseManager phaseManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.budgetTypeManager = budgetTypeManager;
