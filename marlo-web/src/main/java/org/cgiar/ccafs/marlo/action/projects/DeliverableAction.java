@@ -1512,6 +1512,18 @@ public class DeliverableAction extends BaseAction {
         this.crossCuttingScoresMap.put(score.getId(), score.getDescription());
       }
 
+      // only show cross cutting number 1 and 2
+
+      List<CrossCuttingScoring> crossCuttingDimensionsTemp = this.crossCuttingDimensions;
+      this.crossCuttingDimensions = new ArrayList<>();
+
+      for (CrossCuttingScoring score : crossCuttingDimensionsTemp) {
+        if (score.getId() != 0) {
+          this.crossCuttingDimensions.add(score);
+        }
+      }
+
+
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
           deliverableTypeParent.clear();
@@ -2409,7 +2421,7 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == null) {
       deliverableInfoDb.setCrossCuttingCapacity(false);
-      deliverableInfoDb.setCrossCuttingScoreCapacity(null);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingCapacity(true);
       deliverableInfoDb.setCrossCuttingScoreCapacity(
@@ -2422,7 +2434,7 @@ public class DeliverableAction extends BaseAction {
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == null) {
       deliverableInfoDb.setCrossCuttingGender(false);
-      deliverableInfoDb.setCrossCuttingScoreGender(null);
+      deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingGender(true);
       deliverableInfoDb
@@ -2430,7 +2442,7 @@ public class DeliverableAction extends BaseAction {
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == null) {
       deliverableInfoDb.setCrossCuttingYouth(false);
-      deliverableInfoDb.setCrossCuttingScoreYouth(null);
+      deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingYouth(true);
       deliverableInfoDb

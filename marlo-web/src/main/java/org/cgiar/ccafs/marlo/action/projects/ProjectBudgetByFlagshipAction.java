@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsFlagshipManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -90,12 +91,14 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   private List<BudgetType> budgetTypesList;
 
   private ProjectBudgetsFlagshipValidator validator;
+  private ProjectFocusManager projectFocusManager;
+  private PhaseManager phaseManager;
 
   @Inject
   public ProjectBudgetByFlagshipAction(APConfig config, CrpProgramManager crpProgramManager,
     BudgetTypeManager budgetTypeManager, ProjectManager projectManager,
     ProjectBudgetsFlagshipManager projectBudgetsFlagshipManager, AuditLogManager auditLogManager,
-    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator) {
+    GlobalUnitManager crpManager, ProjectBudgetsFlagshipValidator validator, ProjectFocusManager projectFocusManager, PhaseManager phaseManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.budgetTypeManager = budgetTypeManager;
@@ -104,6 +107,9 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
     this.validator = validator;
+    this.phaseManager = phaseManager;
+    this.projectFocusManager = projectFocusManager;
+
   }
 
   @Override
@@ -137,6 +143,25 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  public boolean existOnYear(Long focusID, int year) {
+
+    Phase phase = phaseManager.findCycle(this.getActualPhase().getDescription(), year, this.getCrpID());
+    if (phase == null) {
+      phase = phaseManager.findCycle(APConstants.PLANNING, APConstants.FIRST_YEAR, this.getCrpID());
+    }
+    if (phase != null) {
+      List<ProjectFocus> focus =
+        phase.getProjectFocuses().stream().filter(c -> c.getProject().getId().longValue() == projectID
+          && focusID.equals(c.getCrpProgram().getId()) && c.isActive()).collect(Collectors.toList());
+      if (!focus.isEmpty()) {
+        return true;
+      }
+
+
+    }
+    return false;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     // get the action name and replace / for _
@@ -160,6 +185,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
     }
     return project.getBudgetsFlagship().get(this.getIndexBudget(programID, year, type));
   }
+
 
   public List<BudgetType> getBudgetTypesList() {
     return budgetTypesList;
@@ -207,7 +233,6 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
