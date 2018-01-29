@@ -18,9 +18,9 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -49,11 +49,11 @@ public class CrpByUserEmailAction extends BaseAction {
   private List<Map<String, Object>> crps;
   private Map<String, Object> user;
   private String userEmail;
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private UserManager userManager;
 
   @Inject
-  public CrpByUserEmailAction(APConfig config, CrpManager crpManager, UserManager userManager) {
+  public CrpByUserEmailAction(APConfig config, GlobalUnitManager crpManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.userManager = userManager;
@@ -64,8 +64,8 @@ public class CrpByUserEmailAction extends BaseAction {
   public String execute() throws Exception {
     crps = new ArrayList<Map<String, Object>>();
     Map<String, Object> crpMap;
-    List<Crp> crps = crpManager.crpUsers(userEmail);
-    for (Crp crp : crps) {
+    List<GlobalUnit> crps = crpManager.crpUsers(userEmail);
+    for (GlobalUnit crp : crps) {
       try {
         crpMap = new HashMap<String, Object>();
         crpMap.put("id", crp.getId());
