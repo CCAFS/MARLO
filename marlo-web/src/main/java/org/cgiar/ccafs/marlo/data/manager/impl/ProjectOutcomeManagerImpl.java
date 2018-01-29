@@ -212,6 +212,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
 
       projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
+
+      if (projectOutcome.getExpectedUnit() != null) {
+        if (projectOutcome.getExpectedUnit().getId() == null
+          || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+          projectOutcome.setExpectedUnit(null);
+        }
+      }
+      projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
       projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
       projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
       projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
@@ -229,6 +237,14 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
 
       for (ProjectOutcome projectOutcomeAdd : projectOutcomes) {
         projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
+
+
+        if (projectOutcome.getExpectedUnit() != null) {
+          if (projectOutcome.getExpectedUnit().getId() == null
+            || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
+            projectOutcome.setExpectedUnit(null);
+          }
+        }
         projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
         projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
         projectOutcomeAdd.setGenderDimenssion(projectOutcome.getGenderDimenssion());
@@ -236,6 +252,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
         projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
+
+
         projectOutcomeAdd.setCrpProgramOutcome(
           crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
@@ -460,7 +478,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcome.setMilestones(new ArrayList<ProjectMilestone>());
     }
     for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-      projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
+      if (projectMilestone.getCrpMilestone() != null && projectMilestone.getCrpMilestone().getId() != null) {
+        projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
+      }
+
     }
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {

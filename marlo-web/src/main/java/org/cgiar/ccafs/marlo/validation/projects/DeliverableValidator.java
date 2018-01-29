@@ -325,6 +325,48 @@ public class DeliverableValidator extends BaseValidator {
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
 
+
+    // cross cutting missing fields validation
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() == -1) {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreGender",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
+
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() == -1)
+
+          {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreYouth",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() == -1) {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreCapacity",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
+
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       ProjectSectionStatusEnum.DELIVERABLES.getStatus(), action);
 
