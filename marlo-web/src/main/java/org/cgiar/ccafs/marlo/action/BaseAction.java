@@ -1577,8 +1577,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<GlobalUnit> getCentersList() {
-    return crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 2)
-      .collect(Collectors.toList());
+    List<GlobalUnit> centers = new ArrayList<>();
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        long guType = crpUser.getCrp().getGlobalUnitType().getId();
+        if (crpUser.getCrp().isActive() && guType == 2) {
+          centers.add(crpUser.getCrp());
+        }
+      }
+      return centers;
+    } else {
+      return crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 2)
+        .collect(Collectors.toList());
+    }
   }
 
   public CenterSubmission getCenterSubmission() {
@@ -1724,7 +1740,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
 
       for (CrpUser crpUser : users) {
-        if (crpUser.getCrp().isActive()) {
+        long guType = crpUser.getCrp().getGlobalUnitType().getId();
+        if (crpUser.getCrp().isActive() && guType == 1) {
           crps.add(crpUser.getCrp());
         }
       }
@@ -2396,8 +2413,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<GlobalUnit> getPlatformsList() {
-    return crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 3)
-      .collect(Collectors.toList());
+    List<GlobalUnit> centers = new ArrayList<>();
+    if (!this.canAccessSuperAdmin()) {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> users =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+
+      for (CrpUser crpUser : users) {
+        long guType = crpUser.getCrp().getGlobalUnitType().getId();
+        if (crpUser.getCrp().isActive() && guType == 3) {
+          centers.add(crpUser.getCrp());
+        }
+      }
+      return centers;
+    } else {
+      return crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 3)
+        .collect(Collectors.toList());
+    }
   }
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
@@ -2757,6 +2790,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         break;
 
+      case EXPECTEDSTUDIES:
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+        returnValue = false;
+        break;
       case LEVERAGES:
 
 
@@ -3342,6 +3387,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       int deliverableSection = 0;
       int budgetCoASection = 0;
       int budgetFlagshipSection = 0;
+      int expecetedSection = 0;
       int outcomeSection = 0;
       int caseStudySection = 0;
       int highlightSection = 0;
@@ -3431,7 +3477,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               case PARTNERS:
               case LOCATIONS:
               case BUDGET:
-              case EXPECTEDSTUDIES:
+
 
                 totalSections++;
                 break;
@@ -3442,6 +3488,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 }
                 break;
 
+              case EXPECTEDSTUDIES:
+                if (expecetedSection == 0) {
+                  expecetedSection = 1;
+                  totalSections++;
+                }
+                break;
               case OUTCOMES:
                 if (outcomeSection == 0) {
                   outcomeSection = 1;
@@ -3465,6 +3517,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
 
+        if (expecetedSection == 0) {
+          totalSections++;
+        }
         if (budgetCoASection == 1 && budgetFlagshipSection == 0) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 9;
@@ -3487,17 +3542,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
               .size() <= 1) {
               if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-                return totalSections == 7;
+                return totalSections == 8;
               } else {
-                return totalSections == 6;
+                return totalSections == 7;
               }
 
             } else {
 
               if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-                return totalSections == 8;
+                return totalSections == 9;
               } else {
-                return totalSections == 7;
+                return totalSections == 8;
               }
 
 
@@ -3506,9 +3561,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           } else {
             if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-              return totalSections == 7;
-            } else {
               return totalSections == 6;
+            } else {
+              return totalSections == 5;
             }
 
           }

@@ -70,21 +70,20 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-               
+                  [#-- Budgest cannot be editable message --]
+                  [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
                 [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
                   [#if project.flagships?has_content]
                     [#list project.flagships as budgetFlagship]
-                      [#if action.existOnYear(budgetFlagship.id,year)]
-                      	[@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
-                 	 [/#if]
+                      [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
                     [/#list]
                     
                   [#else]
                     <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
                   [/#if]
                 [#else]
-                  <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
+                  <p class="emptyMessage text-center">[@s.text name="projectBudgetByFlagships.notBudgetSaved" /]</p>
                 [/#if]
                 </div>
               [/#list]  
@@ -139,7 +138,9 @@
             <th class="amountType"> </th>
             [#list budgetTypesList as budgetType]
               [#-- Budget Type--]
+              [#if action.hasBudgets(budgetType.id, selectedYear)]
               <th class="text-center">${budgetType.name}[@customForm.req /]</th>
+              [/#if]
             [/#list]
           </tr>
         </thead>
@@ -148,22 +149,25 @@
           <tr>
             <td class="amountType"> % of total:</td>
             [#list budgetTypesList as budgetType]
-              <td class="budgetColumn">
-                [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
-                [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
-                [#assign customName = "project.budgetsFlagship[${budgetIndex}]" /]
-                <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
-                <input type="hidden" name="${customName}.crpProgram.id" value="${(element.id)!}"/>
-                <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
-                <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
-                [#assign budgetTypePermission= BudgetTypePermission(budgetType.name) /]
-                [#if editable && isYearEditable(selectedYear) && action.hasPermission(budgetTypePermission)]
-                  [@customForm.input name="${customName}.amount" value="${((budgetObject.amount)!0)}" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.name}" required=true /]
-                [#else]
-                  <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
-                  <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
-                [/#if]
-              </td>
+              [#-- Budget Type--]
+              [#if action.hasBudgets(budgetType.id, selectedYear)]
+                <td class="budgetColumn">
+                  [#assign budgetIndex= action.getIndexBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign budgetObject= action.getBudget(element.id,selectedYear, budgetType.id) /]
+                  [#assign customName = "project.budgetsFlagship[${budgetIndex}]" /]
+                  <input type="hidden" name="${customName}.id" value="${(budgetObject.id)!}"/>
+                  <input type="hidden" name="${customName}.crpProgram.id" value="${(element.id)!}"/>
+                  <input type="hidden" name="${customName}.budgetType.id" value="${budgetType.id}"/>
+                  <input type="hidden" name="${customName}.year" value="${(selectedYear)!}"/>
+                  [#assign budgetTypePermission= BudgetTypePermission(budgetType.name) /]
+                  [#if editable && isYearEditable(selectedYear) && action.hasPermission(budgetTypePermission)]
+                    [@customForm.input name="${customName}.amount" value="${((budgetObject.amount)!0)}" i18nkey="budget.amount" showTitle=false className="percentageInput context-total  type-${budgetType.id}" required=true /]
+                  [#else]
+                    <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
+                    <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
+                  [/#if]
+                </td>
+              [/#if]
             [/#list]
           </tr>
         </tbody>
