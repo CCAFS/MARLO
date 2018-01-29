@@ -148,7 +148,7 @@
             [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-       <span class="name">
+            <span class="name">
               <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.fundingSourceInfo.budgetType.name)!} [#if (element.fundingSource.fundingSourceInfo.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
               <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
             </span>
@@ -225,27 +225,23 @@
       </div>
     [/#if]  
   [#else]
-    [#if editable]
-      <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
-      [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
-    [#else]
-      <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
-      <div class="input"> 
-        <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
-      </div>
-    [/#if]
+    <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
+    <div class="input"> 
+      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
+    </div>
   [/#if]
   </div>
   
   [#-- Cross-cutting dimensions blocks --]
   <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingScoresMap" required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingScoresMap"  required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingScoresMap"  required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
-    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true  className="crossCuttingDimensionsSelect" editable=editable/]
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   
   [#-- Gender Types List --]
