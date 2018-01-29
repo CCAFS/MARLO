@@ -212,6 +212,7 @@ public final class APConstants {
   public static final String PAGE_ID = "pageID";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String PLANNING = "Planning";
+  public static final int FIRST_YEAR = 2017;
 
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
@@ -225,11 +226,15 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
+  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
-
+  public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsFlagships)";
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
@@ -386,6 +391,10 @@ public final class APConstants {
   public static final String WITH_PPA_PARAMETER = "withPPA";
 
   public static final String YEAR_REQUEST = "year";
+
+
+  /** cross cutting scores ****/
+  public static final long CROSS_CUTTING_NOT_TARGETED = 0;
 
   /**
    * -------------------------------------------------------------------------------

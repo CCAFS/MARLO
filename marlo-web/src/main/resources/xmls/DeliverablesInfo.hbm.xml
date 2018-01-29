@@ -76,5 +76,14 @@
         <property name="allowModifications" type="java.lang.Boolean">
             <column name="allow_modifications" />
         </property>
+         <property name="crossCuttingScoreGender" type="java.lang.Long">
+            <column name="cross_cutting_score_gender" />
+        </property>
+         <property name="crossCuttingScoreYouth" type="java.lang.Long">
+            <column name="cross_cutting_score_youth" />
+        </property>
+         <property name="crossCuttingScoreCapacity" type="java.lang.Long">
+            <column name="cross_cutting_score_capacity" />
+        </property>
     </class>
 </hibernate-mapping>

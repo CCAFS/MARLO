@@ -50,6 +50,7 @@ public class Permission {
   public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
   public static final String SYNTHESIS_BY_MOG_BASE_PERMISSION = "crp:{0}:synthesisProgram:{1}";
   public static final String SYNTHESIS_BY_MOG_PERMISSION = "crp:{0}:synthesisProgram:{1}:*";
+  public static final String PROJECT_BUDGET_FLAGSHIP_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByFlagship";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
@@ -84,6 +85,8 @@ public class Permission {
   public static final String PROJECT_HIGH_LIGHTS_EDIT_PERMISSION = "crp:{0}:project:{1}:highlights:canEdit";
   public static final String PROJECT_CASE_STUDY_EDIT_PERMISSION = "crp:{0}:project:{1}:caseStudies:canEdit";
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
+  public static final String PROJECT_EXPECTED_STUDIES_BASE_PERMISSION = "crp:{0}:project:{1}:expectedStudies";
+
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
   public static final String PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION = "crp:{0}:fundingSource:{1}:budget";
   public static final String PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION = "crp:{0}:fundingSource:budget";
