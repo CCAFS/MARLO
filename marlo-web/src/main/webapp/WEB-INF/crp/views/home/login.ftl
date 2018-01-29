@@ -57,8 +57,13 @@
         <label>Centers:</label>
         <div class="login-logos-container">
           <ul>
-          [#if centersList?has_content]
-            [#list centersList as center]
+          [#attempt] 
+            [#assign centerList = action.getCrpCategoryList("2") /]
+          [#recover]
+            [#assign centerList = [] /]
+          [/#attempt]
+          [#if centerList?has_content]
+            [#list centerList as center]
               [@crpItem element=center /]
             [/#list]
           [#else]

@@ -8,7 +8,7 @@
   [#-- Form --]
   [@s.form method="POST" namespace="/" action="login"]
      <div class="crps-select hidden">
-      <div class="name-type-container">
+      <div class="name-type-container type-CRP hidden">
         <span class="selection-bar-title">CRPs:</span>
       </div>
       <div class="selection-bar-options">
@@ -27,14 +27,18 @@
           [/#if]
         </ul>
       </div>
-      [#-- 
-      <div class="name-type-container">
+      <div class="name-type-container type-Center hidden">
         <span class="selection-bar-title">Centers:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
-          [#if centersList?has_content]
-            [#list centersList as center]
+          [#attempt] 
+            [#assign centerList = action.getCrpCategoryList("2") /]
+          [#recover]
+            [#assign centerList = [] /]
+          [/#attempt]
+          [#if centerList?has_content]
+            [#list centerList as center]
               [@availableItems element=center /]
             [/#list]
           [#else]
@@ -42,7 +46,7 @@
           [/#if]
         </ul>
       </div>
-      <div class="name-type-container">
+      <div class="name-type-container type-Platform hidden">
         <span class="selection-bar-title">Platforms:</span>
       </div>
       <div class="selection-bar-options">
@@ -61,7 +65,6 @@
           [/#if]
         </ul>
       </div>
-       --]
      </div>
      
      [#-- End crps select --]
@@ -135,8 +138,8 @@
 </div><!-- End loginFormContainer -->
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} " title="">
-    <img class="animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
-    <div class="selection-bar-acronym">${element.acronym}</div>
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} hidden" title="">
+    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+    [#-- <div class="selection-bar-acronym">${element.acronym}</div> --]
   </li>
 [/#macro]
