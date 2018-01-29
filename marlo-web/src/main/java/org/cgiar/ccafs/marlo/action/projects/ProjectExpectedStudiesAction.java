@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
@@ -433,7 +434,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         .collect(Collectors.toList())) {
         if (projectPhase.getProject().isActive()) {
           projectPhase.getProject().setProjectInfo(projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()));
-          myProjects.add(projectPhase.getProject());
+          if (projectPhase.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || projectPhase.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(projectPhase.getProject());
+          }
+
         }
 
       }
