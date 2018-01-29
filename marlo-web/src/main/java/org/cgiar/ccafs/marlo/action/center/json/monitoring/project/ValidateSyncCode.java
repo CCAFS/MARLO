@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.center.json.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterProjectFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
+import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.MarloOcsClient;
@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -52,18 +53,18 @@ public class ValidateSyncCode extends BaseAction {
   private MarloOcsClient ocsClient;
   private AgreementOCS agreement;
 
-  private ICenterProjectFundingSourceManager centerProjectFundingSourceManager;
+  private ICenterProjectManager centerProjectManager;
   private ProjectManager projectManager;
   // return value Map
   private Map<String, Object> message;
 
   @Inject
   public ValidateSyncCode(APConfig config, ProjectManager projectManager, MarloOcsClient ocsClient,
-    ICenterProjectFundingSourceManager centerProjectFundingSourceManager) {
+    ICenterProjectManager centerProjectManager) {
     super(config);
     this.projectManager = projectManager;
     this.ocsClient = ocsClient;
-    this.centerProjectFundingSourceManager = centerProjectFundingSourceManager;
+    this.centerProjectManager = centerProjectManager;
   }
 
   @Override
@@ -78,9 +79,8 @@ public class ValidateSyncCode extends BaseAction {
         agreement = ocsClient.getagreement(syncCode);
         if (agreement != null) {
 
-          CenterProjectFundingSource centerProjectFundingSource =
-            centerProjectFundingSourceManager.getProjectFundingSourceByCode(syncCode);
-          if (centerProjectFundingSource != null) {
+          CenterProject centerProject = centerProjectManager.getCenterProjectsByOcsCode(syncCode);
+          if (centerProject != null) {
             message.put("status", false);
           } else {
             message.put("status", true);
@@ -95,9 +95,8 @@ public class ValidateSyncCode extends BaseAction {
         Project project = projectManager.getProjectById(projectID);
         if (project != null) {
 
-          CenterProjectFundingSource centerProjectFundingSource =
-            centerProjectFundingSourceManager.getProjectFundingSourceByCode("P" + syncCode);
-          if (centerProjectFundingSource != null) {
+          CenterProject centerProject = project.getCenterProject();
+          if (centerProject != null) {
             message.put("status", false);
           } else {
             message.put("status", true);

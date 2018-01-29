@@ -54,7 +54,7 @@ public interface ParameterDAO {
    */
   public List<Parameter> findAll();
 
-  public Parameter getParameterByKey(String key);
+  public Parameter getParameterByKey(String key, long globalUnitTypeId);
 
   /**
    * This method saves the information of the given parameter

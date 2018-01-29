@@ -17,10 +17,12 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -49,20 +51,23 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long projectId = 0;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private Phase phase;
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
   private final ProjectManager projectManager;
   private final PhaseManager phaseManager;
+  private final GlobalUnitProjectManager globalUnitProjectManager;
 
   @Inject
-  public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager, PhaseManager phaseManager) {
+  public EditProjectInterceptor(ProjectManager projectManager, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   @Override
@@ -70,7 +75,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -84,8 +89,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
     baseAction.setSession(session);
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
@@ -107,149 +112,158 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     Project project = projectManager.getProjectById(projectId);
 
-    if (project != null && project.isActive() && project.getCrp().equals(loggedCrp)) {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
+    if (globalUnitProject != null) {
 
-      String params[] =
-        {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
+      if (project != null && project.isActive() && globalUnitProject.isOrigin()) {
 
-      if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
-        if (!baseAction.isSubmit(projectId)) {
+        String params[] =
+          {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
-          canSwitchProject = true;
-        }
-        canEdit = true;
+        if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
+          if (!baseAction.isSubmit(projectId)) {
 
-
-      } else {
-        List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(project)
-          && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
+            canSwitchProject = true;
+          }
           canEdit = true;
 
-        }
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()) != null) {
-          if (baseAction.isPlanningActive()) {
-            if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus() != null
-              && project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().intValue() != Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-              canEdit = false;
+
+        } else {
+          List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+          if (projects.contains(project)
+            && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
+            canEdit = true;
+
+          }
+          if (project.getProjecInfoPhase(baseAction.getActualPhase()) != null) {
+            if (baseAction.isPlanningActive()) {
+              if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus() != null
+                && project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().intValue() != Integer
+                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+                canEdit = false;
+              }
+
             }
 
+
+            if (!project.getProjecInfoPhase(baseAction.getActualPhase()).isProjectEditLeader()
+              && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+              canEdit = false;
+            }
           }
 
 
-          if (!project.getProjecInfoPhase(baseAction.getActualPhase()).isProjectEditLeader()
-            && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+            canSwitchProject = true;
+          }
+
+          if (baseAction.isSubmit(projectId)) {
             canEdit = false;
+
           }
+
+
+          if (baseAction.isCrpClosed()) {
+            if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
+              canEdit = false;
+            }
+          }
+
+
+        }
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
+          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+            canEdit = false;
+            canSwitchProject = false;
+            baseAction.setEditStatus(true);
+
+          }
+
         }
 
-
-        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
-          canSwitchProject = true;
-        }
-
-        if (baseAction.isSubmit(projectId)) {
+        String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+        if (baseAction.isReportingActive()
+          && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
           canEdit = false;
-
         }
-
-
-        if (baseAction.isCrpClosed()) {
-          if (!(baseAction.hasSpecificities(APConstants.CRP_PMU) && baseAction.isPMU())) {
-            canEdit = false;
-          }
-        }
-
-
-      }
-      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
         if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+          .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+
+          || project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
-          canSwitchProject = false;
           baseAction.setEditStatus(true);
-
         }
-
-      }
-
-      String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
-      if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
-        canEdit = false;
-      }
-      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
-
-        || project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
-        baseAction.setEditStatus(true);
-      }
-      if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
-        .equals(APConstants.REPORTING)
-        && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
-        canEdit = false;
-        baseAction.setEditStatus(false);
-      }
-      /*
-       * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
-       * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
-       * if (projectPhases.isEmpty()) {
-       * List<ProjectInfo> infos =
-       * project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-       * infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-       * // baseAction.setActualPhase(infos.get(0).getPhase());
-       * baseAction.setAvailabePhase(false);
-       * }
-       * if (!baseAction.getActualPhase().getEditable()) {
-       * canEdit = false;
-       * }
-       */
-
-      // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
-      // baseAction
-      // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
-
-      if (!baseAction.getActualPhase().getEditable()) {
-        canEdit = false;
-        baseAction.setCanEditPhase(false);
-      }
-      // TODO Validate is the project is new
-      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
-        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-        String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
-        editParameter = stringEditable.equals("true");
-        if (!editParameter) {
-          baseAction.setEditableParameter(hasPermissionToEdit);
-        }
-      }
-
-      // Check the permission if user want to edit or save the form
-      if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-          : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
-      }
-      if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
-        // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-
-        editParameter = false;
-        // If the user is not asking for edition privileges we don't need to validate them.
-
-      }
-      if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
-        if (baseAction.isReportingActive()) {
+        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
+          .equals(APConstants.REPORTING)
+          && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
           canEdit = false;
+          baseAction.setEditStatus(false);
         }
-      }
-      // Set the variable that indicates if the user can edit the section
-      baseAction.setEditableParameter(editParameter && canEdit);
-      baseAction.setCanEdit(canEdit);
-      baseAction.setCanSwitchProject(canSwitchProject);
+        /*
+         * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
+         * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectId).collect(Collectors.toList());
+         * if (projectPhases.isEmpty()) {
+         * List<ProjectInfo> infos =
+         * project.getProjectInfos().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+         * infos.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+         * // baseAction.setActualPhase(infos.get(0).getPhase());
+         * baseAction.setAvailabePhase(false);
+         * }
+         * if (!baseAction.getActualPhase().getEditable()) {
+         * canEdit = false;
+         * }
+         */
 
+        // String paramsPermissions[] = {loggedCrp.getAcronym(), project.getId() + ""};
+        // baseAction
+        // .setBasePermission(baseAction.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, paramsPermissions));
+
+
+        // TODO Validate is the project is new
+        if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
+          // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
+          editParameter = stringEditable.equals("true");
+          if (!editParameter) {
+            baseAction.setEditableParameter(hasPermissionToEdit);
+          }
+        }
+
+        // Check the permission if user want to edit or save the form
+        if (editParameter || parameters.get("save") != null) {
+          hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
+            : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
+        }
+        if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+          // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          editParameter = false;
+        }
+        // If the user is not asking for edition privileges we don't need to validate them.
+        if (!baseAction.getActualPhase().getEditable()) {
+          canEdit = false;
+          baseAction.setCanEditPhase(false);
+        }
+
+        if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
+          if (baseAction.isReportingActive()) {
+            canEdit = false;
+          }
+        }
+        // Set the variable that indicates if the user can edit the section
+        baseAction.setEditableParameter(editParameter && canEdit);
+        baseAction.setCanEdit(canEdit);
+        baseAction.setCanSwitchProject(canSwitchProject);
+
+      } else {
+        throw new NullPointerException();
+      }
     } else {
       throw new NullPointerException();
     }

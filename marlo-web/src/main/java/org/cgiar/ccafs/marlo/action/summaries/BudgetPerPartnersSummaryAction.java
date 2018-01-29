@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -101,7 +101,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
   InputStream inputStream;
 
   @Inject
-  public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager,
+  public BudgetPerPartnersSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectBudgetManager projectBudgetManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);

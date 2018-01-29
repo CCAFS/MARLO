@@ -19,9 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
@@ -33,9 +34,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -82,7 +83,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectDescriptionAction extends BaseAction {
 
+
   private static final long serialVersionUID = -793652591843623397L;
+
+
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
 
   // Managers
@@ -90,22 +94,27 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectInfoManager projectInfoManagerManager;
 
   private SectionStatusManager sectionStatusManager;
-
   private ProjectFocusManager projectFocusManager;
+
   private FileDBManager fileDBManager;
-  private CrpManager crpManager;
+
+  private GlobalUnitManager crpManager;
   private CrpProgramManager programManager;
   private ProjectClusterActivityManager projectClusterActivityManager;
   private ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager;
-
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
   private AuditLogManager auditLogManager;
+
   private ProjectScopeManager projectScopeManager;
   private LocElementTypeManager locationTypeManager;
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private LiaisonUserManager liaisonUserManager;
   private HistoryComparator historyComparator;
+  // Front-end
+  private long projectID;
+  private GlobalUnit loggedCrp;
 
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -113,41 +122,37 @@ public class ProjectDescriptionAction extends BaseAction {
    * private UserManager userManager;
    */
 
-  // Front-end
-  private long projectID;
-  private Crp loggedCrp;
   private Project project;
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
-
   private List<LiaisonInstitution> liaisonInstitutions;
-
   private List<CrpClusterOfActivity> clusterofActivites;
-
 
   private Map<String, String> projectStatuses;
 
-
   private List<LiaisonUser> allOwners;
 
+
   private Map<String, String> projectTypes;
+
+
   private Map<String, String> projectScales;
 
-
   private File file;
-
-
   private File fileReporting;
 
+
   private String fileContentType;
+
 
   private String fileFileName;
 
   private String fileReportingFileName;
+
   private ProjectDescriptionValidator validator;
 
   @Inject
-  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     SectionStatusManager sectionStatusManager, ProjectFocusManager projectFocusManager, FileDBManager fileDBManager,
@@ -155,8 +160,8 @@ public class ProjectDescriptionAction extends BaseAction {
     ProjectClusterActivityManager projectClusterActivityManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
     ProjectScopeManager projectLocationManager, HistoryComparator historyComparator,
-    ProjectInfoManager projectInfoManagerManager,
-    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
+    ProjectInfoManager projectInfoManagerManager, ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager,
+    GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectInfoManagerManager = projectInfoManagerManager;
@@ -178,6 +183,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
   /**
@@ -284,7 +290,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return fileContentType;
   }
 
-
   public String getFileFileName() {
     return fileFileName;
   }
@@ -297,7 +302,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public String getFileReportingFileName() {
     return fileReportingFileName;
   }
-
 
   /**
    * This method returns an array of flagship ids depending on the project.flagships attribute.
@@ -324,7 +328,7 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -333,15 +337,14 @@ public class ProjectDescriptionAction extends BaseAction {
     return programFlagships;
   }
 
-
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public Map<String, String> getProjectScales() {
     return projectScales;
@@ -389,10 +392,10 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
+
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
-
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -404,12 +407,13 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
@@ -738,7 +742,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
 
@@ -973,7 +976,6 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       // load basic info to project
-      project.setCrp(loggedCrp);
       project.getProjectInfo().setCofinancing(projectDB.getProjectInfo().isCofinancing());
       // project.setGlobal(projectDB.isGlobal());
 
@@ -1043,19 +1045,19 @@ public class ProjectDescriptionAction extends BaseAction {
     this.allOwners = allOwners;
   }
 
+
   public void setClusterofActivites(List<CrpClusterOfActivity> clusterofActivites) {
     this.clusterofActivites = clusterofActivites;
   }
-
 
   public void setFile(File file) {
     this.file = file;
   }
 
+
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
-
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
@@ -1077,7 +1079,7 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

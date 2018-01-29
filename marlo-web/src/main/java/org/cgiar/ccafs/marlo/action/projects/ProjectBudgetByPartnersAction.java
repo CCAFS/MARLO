@@ -20,15 +20,15 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -83,12 +83,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private ProjectBudgetsValidator projectBudgetsValidator;
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
 
   private long projectID;
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private Project project;
   private String transaction;
@@ -106,7 +107,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
-    ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
+    ProjectManager projectManager, GlobalUnitManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
     HistoryComparator historyComparator, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectBudgetsValidator projectBudgetsValidator) {
@@ -344,11 +345,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
-    return loggedCrp;
-  }
-
-
   public Project getProject() {
     return project;
   }
@@ -490,8 +486,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     w3bilateralBudgetTypes = new HashMap<>();
 
@@ -790,10 +786,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
-  }
-
-  public void setLoggedCrp(Crp loggedCrp) {
-    this.loggedCrp = loggedCrp;
   }
 
 

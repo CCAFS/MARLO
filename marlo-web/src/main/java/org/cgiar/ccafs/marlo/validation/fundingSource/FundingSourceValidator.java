@@ -18,12 +18,12 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -40,18 +40,18 @@ import javax.inject.Named;
 @Named
 public class FundingSourceValidator extends BaseValidator {
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
 
   private final InstitutionManager institutionManager;
 
   @Inject
-  public FundingSourceValidator(CrpManager crpManager, InstitutionManager institutionManager) {
+  public FundingSourceValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
     this.crpManager = crpManager;
     this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
     String autoSaveFile =
