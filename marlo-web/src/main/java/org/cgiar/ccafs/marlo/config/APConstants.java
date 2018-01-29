@@ -212,6 +212,7 @@ public final class APConstants {
   public static final String PAGE_ID = "pageID";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String PLANNING = "Planning";
+  public static final int FIRST_YEAR = 2017;
 
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
@@ -390,6 +391,10 @@ public final class APConstants {
   public static final String WITH_PPA_PARAMETER = "withPPA";
 
   public static final String YEAR_REQUEST = "year";
+
+
+  /** cross cutting scores ****/
+  public static final long CROSS_CUTTING_NOT_TARGETED = 0;
 
   /**
    * -------------------------------------------------------------------------------
