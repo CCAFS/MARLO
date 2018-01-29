@@ -24,10 +24,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-<<<<<<< HEAD:marlo-web/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/CrpMySQLDAO.java
-import org.hibernate.Query;
-=======
->>>>>>> 8d83fe72825d9143412f16061de8e7fe3106b3b9:marlo-web/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/GlobalUnitTypeMySQLDAO.java
 import org.hibernate.SessionFactory;
 
 @Named
@@ -36,18 +32,6 @@ public class GlobalUnitTypeMySQLDAO extends AbstractMarloDAO<GlobalUnitType, Lon
   @Inject
   public GlobalUnitTypeMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
-  }
-
-
-  @Override
-  public List<Crp> crpUsers(String emai) {
-
-    String query = "select distinct cp from Crp cp inner join fetch cp.crpUsers cpUser   "
-      + "where cpUser.user.email = :emai and cpUser.active=1 ";
-    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("emai", emai);
-    List<Crp> crps = super.findAll(createQuery);
-    return crps;
   }
 
   @Override

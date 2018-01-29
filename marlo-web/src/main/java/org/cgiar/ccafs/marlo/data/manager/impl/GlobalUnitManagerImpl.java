@@ -43,6 +43,11 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
   }
 
   @Override
+  public List<GlobalUnit> crpUsers(String emai) {
+    return globalUnitDAO.crpUsers(emai);
+  }
+
+  @Override
   public void deleteGlobalUnit(long globalUnitId) {
 
     globalUnitDAO.deleteGlobalUnit(globalUnitId);

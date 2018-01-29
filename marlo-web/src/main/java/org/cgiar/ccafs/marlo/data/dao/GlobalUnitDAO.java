@@ -23,6 +23,14 @@ import java.util.List;
 public interface GlobalUnitDAO {
 
   /**
+   * Gets a Global Units that the user have access
+   * 
+   * @param emai - The user Email
+   * @return A List of Global Units
+   */
+  public List<GlobalUnit> crpUsers(String emai);
+
+  /**
    * This method removes a specific globalUnit value from the database.
    * 
    * @param globalUnitId is the globalUnit identifier.
@@ -52,6 +60,7 @@ public interface GlobalUnitDAO {
    */
   public List<GlobalUnit> findAll();
 
+
   /**
    * This method find a global unit from it acronym
    * 
@@ -59,7 +68,6 @@ public interface GlobalUnitDAO {
    * @return a GlobalUnit object or null if the GlobalUnit does not exist
    */
   public GlobalUnit findGlobalUnitByAcronym(String acronym);
-
 
   /**
    * This method saves the information of the given globalUnit

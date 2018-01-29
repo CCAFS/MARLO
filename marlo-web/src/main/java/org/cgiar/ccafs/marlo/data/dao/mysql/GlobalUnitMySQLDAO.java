@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -33,6 +34,17 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
   @Inject
   public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
+  }
+
+  @Override
+  public List<GlobalUnit> crpUsers(String emai) {
+
+    String query = "select distinct cp from global_unit cp inner join fetch cp.crpUsers cpUser   "
+      + "where cpUser.user.email = :emai and cpUser.active=1 ";
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("emai", emai);
+    List<GlobalUnit> crps = super.findAll(createQuery);
+    return crps;
   }
 
   @Override
@@ -58,6 +70,7 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
 
   }
 
+
   @Override
   public List<GlobalUnit> findAll() {
     String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
@@ -68,7 +81,6 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
     return null;
 
   }
-
 
   @Override
   public GlobalUnit findGlobalUnitByAcronym(String acronym) {
