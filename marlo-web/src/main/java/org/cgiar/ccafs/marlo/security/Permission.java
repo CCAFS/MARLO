@@ -138,6 +138,27 @@ public class Permission {
   public static final String CENTER_PROJECT_SUBMISSION_PERMISSION =
     "center:{0}:area:{1}:program:{2}:project:{3}:submitProject";
 
+  /**
+   * REST API Permissions
+   */
   public static final String FULL_REST_API_PERMISSION = "api:*";
 
+  public static final String FULL_READ_REST_API_PERMISSION = "api:*:read";
+  public static final String FULL_CREATE_REST_API_PERMISSION = "api:*:create";
+  public static final String FULL_UPDATE_REST_API_PERMISSION = "api:*:update";
+  public static final String FULL_DELETE_REST_API_PERMISSION = "api:*:delete";
+
+  // Institutions
+  public static final String INSTITUTIONS_READ_REST_API_PERMISSION = "api:institutions:read";
+  public static final String INSTITUTIONS_CREATE_REST_API_PERMISSION = "api:institutions:create";
+  public static final String INSTITUTIONS_UPDATE_REST_API_PERMISSION = "api:institutions:update";
+  public static final String INSTITUTIONS_DELETE_REST_API_PERMISSION = "api:institutions:delete";
+  public static final String INSTITUTIONS_FULL_REST_API_PERMISSION = "api:institutions:*";
+
+  // Crps
+  public static final String CRPS_READ_REST_API_PERMISSION = "api:crps:read";
+  public static final String CRPS_CREATE_REST_API_PERMISSION = "api:crps:create";
+  public static final String CRPS_UPDATE_REST_API_PERMISSION = "api:crps:update";
+  public static final String CRPS_DELETE_REST_API_PERMISSION = "api:crps:delete";
+  public static final String CRPS_FULL_REST_API_PERMISSION = "api:crps:*";
 }

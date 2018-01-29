@@ -56,6 +56,7 @@ public class LoggingAspect {
         joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }
     try {
+      // TODO ensure the result is summarized for collections
       Object result = joinPoint.proceed();
       if (log.isDebugEnabled()) {
         log.debug("Exit: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),

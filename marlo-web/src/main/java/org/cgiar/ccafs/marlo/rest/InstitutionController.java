@@ -61,7 +61,7 @@ public class InstitutionController {
     this.institutionLocationManager = institutionLocationManager;
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/institutions", method = RequestMethod.POST,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String crp,
@@ -91,7 +91,7 @@ public class InstitutionController {
   }
 
   // TODO check if the institutionLocation(s) are deleted.
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteInstitution(@PathVariable String crp, @PathVariable Long id) {
@@ -100,7 +100,7 @@ public class InstitutionController {
     return ResponseEntity.ok().build();
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/institutions", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public List<InstitutionDTO> getAllInstitutions(@PathVariable String crp) {
@@ -111,7 +111,7 @@ public class InstitutionController {
     return institutionDTOs;
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> getInstitution(@PathVariable String crp, @PathVariable Long id) {
@@ -121,7 +121,7 @@ public class InstitutionController {
       .map(result -> new ResponseEntity<>(result, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.INSTITUTIONS_UPDATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/institutions/{id}", method = RequestMethod.PUT,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<InstitutionDTO> updateInstitution(@PathVariable String crp, @PathVariable Long id,

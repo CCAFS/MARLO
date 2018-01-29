@@ -63,7 +63,7 @@ public class CrpController {
     this.crpMapper = crpMapper;
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.CRPS_CREATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/crps", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpDTO> createCrp(@PathVariable String crp, @Valid @RequestBody CrpDTO crpDTO) {
     LOG.debug("Create a new crp with : {}", crpDTO);
@@ -80,7 +80,7 @@ public class CrpController {
     return new ResponseEntity<CrpDTO>(crpMapper.crpToCrpDTO(newCrp), HttpStatus.CREATED);
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.CRPS_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteCrp(@PathVariable String crp, @PathVariable Long id) {
@@ -89,7 +89,7 @@ public class CrpController {
     return ResponseEntity.ok().build();
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/crps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public List<CrpDTO> getAllCrps(@PathVariable String crp) {
     LOG.debug("REST request to get Crps");
@@ -99,7 +99,7 @@ public class CrpController {
     return crpDTOs;
   }
 
-  @RequiresPermissions(Permission.FULL_REST_API_PERMISSION)
+  @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpDTO> getCrp(@PathVariable String crp, @PathVariable Long id) {
     LOG.debug("REST request to get Crp : {}", id);
@@ -117,6 +117,7 @@ public class CrpController {
   }
 
 
+  @RequiresPermissions(Permission.CRPS_UPDATE_REST_API_PERMISSION)
   @RequestMapping(value = "/{crp}/crps/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CrpDTO> updateCrp(@PathVariable String crp, @PathVariable Long id,
     @Valid @RequestBody CrpDTO crpDTO) {

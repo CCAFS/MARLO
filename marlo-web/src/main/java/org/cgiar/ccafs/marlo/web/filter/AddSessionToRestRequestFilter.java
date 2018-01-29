@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.web.filter;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 
 import java.io.IOException;
@@ -54,6 +55,9 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   @Inject
   private CrpManager crpManager;
 
+  @Inject
+  private APCustomRealm realm;
+
   private final Logger LOG = LoggerFactory.getLogger(AddSessionToRestRequestFilter.class);
 
   @Override
@@ -65,6 +69,11 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
     throws ServletException, IOException {
     Subject subject = securityContext.getSubject();
+
+    /**
+     * Clear the users cached security info so that we handle an external system that is registered to many CRPs.
+     */
+    realm.clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
 
     LOG.debug("check user : " + subject.getPrincipal() + " , has permissions to invoke rest api");
 
