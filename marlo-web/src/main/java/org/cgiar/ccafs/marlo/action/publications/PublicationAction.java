@@ -19,7 +19,6 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
@@ -34,12 +33,12 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
@@ -53,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -93,6 +93,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PublicationAction extends BaseAction {
 
+
   /**
    * 
    */
@@ -100,27 +101,28 @@ public class PublicationAction extends BaseAction {
 
   private final Logger LOG = LoggerFactory.getLogger(PublicationAction.class);
 
-  private Crp loggedCrp;
-  private CrpManager crpManager;
+
+  private GlobalUnit loggedCrp;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private long deliverableID;
+
   private DeliverableCrpManager deliverableCrpManager;
   private Map<String, String> crps;
   private List<GenderType> genderLevels;
-
   private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
   private Map<String, String> programs;
+
   private Map<String, String> regions;
   private Map<String, String> institutions;
+  private Map<String, String> channels;
   private DeliverableManager deliverableManager;
-
   private PublicationValidator publicationValidator;
-
   private Deliverable deliverable;
-
-
   private DeliverableDisseminationManager deliverableDisseminationManager;
-
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
@@ -129,27 +131,30 @@ public class PublicationAction extends BaseAction {
 
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
 
+
   private DeliverableUserManager deliverableUserManager;
+
   private DeliverableLeaderManager deliverableLeaderManager;
+
+
   private DeliverableProgramManager deliverableProgramManager;
+
   private String transaction;
   private AuditLogManager auditLogManager;
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private MetadataElementManager metadataElementManager;
   private HistoryComparator historyComparator;
-
   private UserManager userManager;
   private InstitutionManager institutionManager;
   private List<DeliverableType> deliverableSubTypes;
-  private GenderTypeManager genderTypeManager;
 
+  private GenderTypeManager genderTypeManager;
   private DeliverableTypeManager deliverableTypeManager;
   private RepositoryChannelManager repositoryChannelManager;
   private List<RepositoryChannel> repositoryChannels;
 
-
   @Inject
-  public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
+  public PublicationAction(APConfig config, GlobalUnitManager crpManager, DeliverableManager deliverableManager,
     GenderTypeManager genderTypeManager, DeliverableQualityCheckManager deliverableQualityCheckManager,
     AuditLogManager auditLogManager, DeliverableTypeManager deliverableTypeManager,
     MetadataElementManager metadataElementManager, UserManager userManager,
@@ -212,12 +217,17 @@ public class PublicationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public Map<String, String> getChannels() {
+    return channels;
   }
 
   public Map<String, String> getCrps() {
@@ -228,6 +238,7 @@ public class PublicationAction extends BaseAction {
     return deliverable;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -235,7 +246,6 @@ public class PublicationAction extends BaseAction {
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
-
 
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
@@ -267,9 +277,10 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Map<String, String> getPrograms() {
     return programs;
@@ -278,6 +289,7 @@ public class PublicationAction extends BaseAction {
   public Map<String, String> getRegions() {
     return regions;
   }
+
 
   public String[] getRegionsIds() {
 
@@ -305,8 +317,8 @@ public class PublicationAction extends BaseAction {
   public void prepare() throws Exception {
 
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     try {
       deliverableID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID)));
@@ -621,7 +633,6 @@ public class PublicationAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
@@ -822,6 +833,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -940,7 +952,6 @@ public class PublicationAction extends BaseAction {
 
   }
 
-
   public void saveLeaders() {
     if (deliverable.getLeaders() == null) {
 
@@ -963,6 +974,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
 
@@ -978,7 +990,6 @@ public class PublicationAction extends BaseAction {
     }
 
   }
-
 
   public void savePrograms() {
 
@@ -1083,6 +1094,11 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  public void setChannels(Map<String, String> channels) {
+    this.channels = channels;
+  }
+
+
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
@@ -1114,9 +1130,10 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPrograms(Map<String, String> programs) {
     this.programs = programs;

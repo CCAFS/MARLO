@@ -18,10 +18,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
@@ -47,19 +47,22 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
-  private final CrpManager crpManager;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpManager crpManager) {
-    super();
-    this.crpManager = crpManager;
+    GlobalUnitManager crpManager) {
+
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTCOME.getStatus().replace("/", "_");
     String autoSaveFile =

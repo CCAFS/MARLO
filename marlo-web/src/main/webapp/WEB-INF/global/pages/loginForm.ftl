@@ -38,8 +38,13 @@
         [#-- Centers --]
         <div id="centers" class="tab-pane type-center [#if (typeSession == "center")!false]class="active"[/#if] col-sm-12">
           <ul>
-          [#if centersList?has_content]
-            [#list centersList as center]
+          [#attempt] 
+            [#assign centerList = action.getCrpCategoryList("2") /]
+          [#recover]
+            [#assign centerList = [] /]
+          [/#attempt]
+          [#if centerList?has_content]
+            [#list centerList as center]
               [@crpItem element=center /]
             [/#list]
           [#else]

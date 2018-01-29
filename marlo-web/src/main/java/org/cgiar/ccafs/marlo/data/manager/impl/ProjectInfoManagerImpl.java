@@ -143,13 +143,18 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     return projectInfoDAO.find(projectInfoID);
   }
 
+  @Override
+  public ProjectInfo getProjectInfoByProjectPhase(long projectId, long phase) {
+    return projectInfoDAO.getProjectInfoByProjectPhase(projectId, phase);
+  }
+
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable, Phase phase) {
     try {
       List<DeliverablePartnership> list =
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;

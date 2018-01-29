@@ -23,13 +23,15 @@ import com.google.gson.annotations.Expose;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 9208364810110651075L;
+
+
   @Expose
   private Long id;
 
   @Expose
   private Institution institution;
-
   @Expose
   private boolean active;
 
@@ -48,8 +50,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private Phase phase;
 
-
-  private Crp crp;
+  private GlobalUnit crp;
 
   private List<LiaisonUser> contactPoints;
 
@@ -57,7 +58,7 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   public CrpPpaPartner() {
   }
 
-  public CrpPpaPartner(Institution institution, Crp crp) {
+  public CrpPpaPartner(Institution institution, GlobalUnit crp) {
     this.institution = institution;
     this.crp = crp;
   }
@@ -85,21 +86,21 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public List<LiaisonUser> getContactPoints() {
     return contactPoints;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
-
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -119,11 +120,11 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -134,16 +135,15 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -159,9 +159,11 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setId(Long id) {
     this.id = id;
