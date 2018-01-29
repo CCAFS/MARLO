@@ -3509,17 +3509,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
               .size() <= 1) {
               if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-                return totalSections == 7;
+                return totalSections == 8;
               } else {
-                return totalSections == 6;
+                return totalSections == 7;
               }
 
             } else {
 
               if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-                return totalSections == 8;
+                return totalSections == 9;
               } else {
-                return totalSections == 7;
+                return totalSections == 8;
               }
 
 
@@ -3528,9 +3528,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           } else {
             if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-              return totalSections == 7;
-            } else {
               return totalSections == 6;
+            } else {
+              return totalSections == 5;
             }
 
           }
