@@ -78,8 +78,6 @@
             <p class="invalidEmail hidden">Please enter a valid email</p>
             [#-- CRP Session --]
             <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
-            [#-- Type Session --]
-            <input type="hidden" id="type-input" name="type" />
             
             [#-- Image --]
             <div class="form-group text-center hidden" >
