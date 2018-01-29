@@ -2663,6 +2663,10 @@ input.userName {
   flex-flow: row wrap;
 }
 
+.crps-select .name-type-container:not(:first-child){
+  margin-top: 13px;
+}
+
 .login-logos-container ul, .selection-bar-options ul{
   list-style-type: none;
   margin: 0;
@@ -2695,10 +2699,6 @@ input.userName {
 
 .selection-bar-options ul li img:hover, .selection-bar-options ul li .selection-bar-acronym:hover{
   background-color: rgba(255, 255, 255, 0.767);
-}
-
-.selection-bar-options ul li:last-child img{
-  margin-bottom: 13px;
 }
 
 .selection-bar-options ul li.active img{

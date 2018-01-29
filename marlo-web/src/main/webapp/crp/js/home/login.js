@@ -114,6 +114,9 @@ function init() {
     loginSwitch=false;
     $(".loginForm #login-password .user-password").val("");
 
+    $(".crps-select .name-type-container").addClass("hidden");
+    $('.selection-bar-options ul li').addClass("hidden");
+
     //hide the side bar, the crp image, the welcome message and the input password
     $(".crps-select, .loginForm .form-group," +
     		" .loginForm .welcome-message-container, " +
@@ -280,11 +283,13 @@ function changeFormStyle(data,preselected){
   $(".welcome-message-container .username span").text(data.user.name);
 
   $.each(data.crps, function(i){
-    if(data.crps.length<7){
+    console.log(data);
+    $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
+    //if(data.crps.length<7){
       $('.selection-bar-options ul #crp-'+data.crps[i].acronym).removeClass("hidden");
-    }else{
+    //}else{
 
-    }
+    //}
   });
 
   //change height value to form
