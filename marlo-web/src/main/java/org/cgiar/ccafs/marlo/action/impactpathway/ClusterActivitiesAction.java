@@ -640,6 +640,10 @@ public class ClusterActivitiesAction extends BaseAction {
           for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
             crpClusterKeyOutput.setKeyOutputOutcomes(crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream()
               .filter(c -> c.isActive()).collect(Collectors.toList()));
+            for (CrpClusterKeyOutputOutcome keyOuputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+              keyOuputOutcome.setCrpProgramOutcome(
+                crpProgramOutcomeManager.getCrpProgramOutcomeById(keyOuputOutcome.getCrpProgramOutcome().getId()));
+            }
           }
         }
       }
