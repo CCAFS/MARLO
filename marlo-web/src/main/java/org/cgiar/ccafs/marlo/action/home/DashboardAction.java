@@ -47,13 +47,15 @@ public class DashboardAction extends BaseAction {
 
   private List<Project> myProjects;
 
+
   private ProjectManager projectManager;
+
 
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
 
-
   private GlobalUnit loggedCrp;
+
 
   @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -80,6 +82,9 @@ public class DashboardAction extends BaseAction {
     Phase phase =
       phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), loggedCrp.getId().longValue());
 
+    if (this.isSwitchSession()) {
+      this.clearPermissionsCache();
+    }
 
     if (projectManager.findAll() != null) {
 
@@ -129,13 +134,14 @@ public class DashboardAction extends BaseAction {
 
   }
 
+
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
   }
+
 
 }

@@ -74,30 +74,36 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
     looggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
+
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      GlobalUnit center = crpManager.findGlobalUnitByAcronym(enteredCrp);
-      if (center != null) {
-        if (center.equals(looggedCenter)) {
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
+      if (crp != null) {
+        if (crp.equals(looggedCenter)) {
           this.changeSessionSection(session);
           return invocation.invoke();
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
-          if (userService.existCrpUser(user.getId(), center.getId())) {
+          if (userService.existCrpUser(user.getId(), crp.getId())) {
             for (CustomParameter parameter : looggedCenter.getCustomParameters()) {
               if (parameter.isActive()) {
                 session.remove(parameter.getParameter().getKey());
               }
             }
-            session.replace(APConstants.SESSION_CRP, center);
+            session.remove(APConstants.CURRENT_PHASE);
+            session.remove(APConstants.PHASES);
+            session.remove(APConstants.PHASES_IMPACT);
+            session.replace(APConstants.SESSION_CRP, crp);
+            session.remove(APConstants.ALL_PHASES);
             // put the global unit parameters in the session
-            for (CustomParameter parameter : center.getCustomParameters()) {
+            for (CustomParameter parameter : crp.getCustomParameters()) {
               if (parameter.isActive()) {
                 session.put(parameter.getParameter().getKey(), parameter.getValue());
               }
             }
             this.changeSessionSection(session);
+            action.setSwitchSession(true);
             return invocation.invoke();
           }
         }
