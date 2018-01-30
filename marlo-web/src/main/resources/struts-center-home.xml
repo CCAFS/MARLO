@@ -8,7 +8,7 @@
 
 		<action name="{*}/centerDashboard"
 			class="org.cgiar.ccafs.marlo.action.center.home.DashboardAction">
-			<interceptor-ref name="centerHomeStack" />
+			<interceptor-ref name="homeStack" />
 			<result name="input">/WEB-INF/center/views/home/dashboard.ftl</result>
 		</action>
 	</package>

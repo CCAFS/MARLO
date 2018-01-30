@@ -811,7 +811,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
 
       return list;
@@ -972,7 +972,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1058,7 +1058,7 @@ public class DeliverableAction extends BaseAction {
       project.getProjecInfoPhase(this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !this.isHttpPost()) {
 
         BufferedReader reader = null;
 
@@ -1251,20 +1251,23 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(false);
       }
-      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
-        try {
-          deliverableGenderLevel.setNameGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
-          deliverableGenderLevel.setDescriptionGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
-        } catch (Exception e) {
-          logger.error("unable to update DeliverableGenderLevel", e);
-          /**
-           * Original code swallows the exception and didn't even log it. Now we at least log it,
-           * but we need to revisit to see if we should continue processing or re-throw the exception.
-           */
+      if (deliverable.getGenderLevels() != null) {
+        for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+          try {
+            deliverableGenderLevel.setNameGenderLevel(
+              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+            deliverableGenderLevel.setDescriptionGenderLevel(
+              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
+          } catch (Exception e) {
+            logger.error("unable to update DeliverableGenderLevel", e);
+            /**
+             * Original code swallows the exception and didn't even log it. Now we at least log it,
+             * but we need to revisit to see if we should continue processing or re-throw the exception.
+             */
+          }
         }
       }
+
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
@@ -1358,10 +1361,10 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1497,7 +1500,7 @@ public class DeliverableAction extends BaseAction {
         if (o1.getFundingSourceInfo(this.getActualPhase()) != null
           && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
 
-          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
@@ -1623,7 +1626,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());

@@ -58,6 +58,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   @Inject
   public EditDeliverableInterceptor(ICenterDeliverableManager deliverableService, ICenterProjectManager projectService,
     ICenterProgramManager programService) {
+
     this.deliverableService = deliverableService;
     this.programService = programService;
     this.projectService = projectService;
@@ -65,8 +66,10 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
