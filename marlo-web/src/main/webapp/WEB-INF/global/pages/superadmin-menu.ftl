@@ -1,5 +1,5 @@
 [#ftl]
-[#if logged]
+[#if logged && action.isVisibleTop()]
   [#assign superAdminMenu =[
      { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
      
@@ -26,6 +26,7 @@
           </li>
           [/#if]
         [/#list]
+        [#if action.isVisibleTopGUList()]
         [#-- Global units --]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession)!}/crpDashboard" ][@s.param name="edit" value="true"/][/@s.url]">
@@ -67,7 +68,7 @@
           [/#if]
           </ul>
         </li>
-         <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
+        [/#if]
         <div class="clearfix"></div>
       </ul>
     </div>
