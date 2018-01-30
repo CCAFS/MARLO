@@ -66,8 +66,10 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
