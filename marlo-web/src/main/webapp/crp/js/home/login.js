@@ -322,8 +322,9 @@ function changeFormStyle(data){
         $('input.login-input').removeClass("wrongData");
         $('.loginForm p.invalidEmail').addClass("hidden");
       });
+    }else{
+      $('.selection-bar-options ul #crp-'+crpSession).click();
     }
-    $('.selection-bar-options ul #crp-'+crpSession).click();
   }else{
     //when user has access to multiple crps, show the side bar
     if(data.crps.length>1){
