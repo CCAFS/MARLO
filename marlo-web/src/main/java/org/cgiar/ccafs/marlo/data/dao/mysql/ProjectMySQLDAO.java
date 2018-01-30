@@ -166,7 +166,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   public List<Project> getCompletedProjects(long crpId) {
     StringBuilder query = new StringBuilder();
     query.append(
-      "select distinct p.id as projectId,pi.id as info  from projects p inner join projects_info pi on pi.project_id=p.id inner join global_unit_projects gup on gup.global_unit_id = p.id ");
+      "select distinct p.id as projectId,pi.id as info  from projects p inner join projects_info pi on pi.project_id=p.id inner join global_unit_projects gup on gup.project_id = p.id ");
     query.append("where p.is_active=1 and gup.`origin`=1 and gup.global_unit_id=");
     query.append(crpId);
     query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
@@ -190,7 +190,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     builder.append("select distinct  p.* from projects p inner JOIN project_phases ph ");
     builder.append("on ph.project_id=p.id ");
     builder.append("inner join phases fa on fa.id=ph.id_phase ");
-    builder.append("inner join global_unit_projects gup on gup.global_unit_id = p.id ");
+    builder.append("inner join global_unit_projects gup on gup.project_id = p.id ");
     builder.append("where p.is_active=1 and gup.global_unit_id=" + crpId + " ");
     builder.append("and (select COUNT('x') from project_phases ph2 where ph2.id_phase in (" + phase.getId()
       + ") and ph2.project_id=p.id) =0 ");
