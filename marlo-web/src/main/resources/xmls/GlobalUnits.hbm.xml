@@ -157,7 +157,7 @@
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpLocElementType" />
 		</set>
 		<set name="customParameters" table="custom_parameters" inverse="true"
-			lazy="true" fetch="select">
+			lazy="false" fetch="select">
 			<key>
 				<column name="global_unit_id" />
 			</key>

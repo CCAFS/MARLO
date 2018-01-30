@@ -126,8 +126,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   public String intercept(ActionInvocation invocation) throws Exception {
 
 
+    BaseAction baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     this.getprogramId();
 
@@ -135,6 +138,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }
