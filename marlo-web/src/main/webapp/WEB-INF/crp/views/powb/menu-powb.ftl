@@ -26,27 +26,27 @@
     ]
   },
    ---------------------------- --]
-  { 'title': 'Executive Summary', 'show': true,
+  { 'title': '1.  Expected Key Results', 'show': true,
     'items': [
-    { 'slug': 'summaryHighlight',  'name': 'powb.menu.summaryHighlight',  'action': 'summaryHighlight',  'active': true  }
+    { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': flagship || PMU  },
+    { 'slug': 'expectedProgress',         'name': 'powb.menu.expectedProgress',       'action': 'expectedProgress',       'active': flagship || PMU  },
+    { 'slug': 'evidenceRelevant',         'name': 'powb.menu.evidenceRelevant',       'action': 'evidenceRelevant',       'active': flagship || PMU  },
+    { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': flagship  },
+    { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': PMU  }
     ]
   },
-  { 'title': 'Planned Results', 'show': flagship,
+  { 'title': '2.  Planning for CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'plannedOutcomesOutputs',  'name': 'powb.menu.plannedOutcomesOutputs',  'action': 'plannedOutcomesOutputs',  'active': true  },
-    { 'slug': 'keyOutputsAchieved',  'name': 'powb.menu.keyOutputsAchieved',  'action': 'keyOutputsAchieved',  'active': true  }
+    { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': false  },
+    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': false  },
+    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false  },
+    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'monitoringLearning',         'active': false  }
     ]
   },
-  { 'title': 'CRP Management', 'show': true,
+  { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'platformCollaboration',  'name': 'powb.menu.platformCollaboration',  'action': 'platformCollaboration',  'active': true  },
-    { 'slug': 'interactions',  'name': 'powb.menu.interactions',  'action': 'interactions',  'active': true  },
-    { 'slug': 'adaptativeManagement',  'name': 'powb.menu.adaptativeManagement',  'action': 'adaptativeManagement',  'active': PMU, 'show': PMU  }
-    ]
-  },
-  { 'title': 'Financial Plan', 'show': PMU,
-    'items': [
-    { 'slug': 'plannedBudget',  'name': 'powb.menu.plannedBudget',  'action': 'plannedBudget',  'active': true  }
+    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': false  },
+    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': false  }
     ]
   }
 ]/]

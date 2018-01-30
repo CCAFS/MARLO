@@ -1,10 +1,12 @@
 [#ftl]
 
+[#--  
 <p class="bg-primary" style="padding: 18px;">
   <span class="glyphicon glyphicon-flash"></span>
   This section is currently being developed by the technical team.</br>
   The idea here is that Flagship Leaders and Program Management Unit can be able to report the POWB.
 </p>
+--]
 
 [#-- History Message --]
 [#if transaction??]
@@ -36,13 +38,7 @@
   [#-- Privileges Message --]
   [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
     [#if crpClosed]
-      <p class="readPrivileges">MARLO is closed.</p>
-    [#else]
-      [#if project.projectEditLeader]
-        <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-      [#else]
-        <p class="readPrivileges">This project is being preset by [@s.text name="global.managementLiaison" /], it will be able for editing by the project leader soon...</p>
-      [/#if]    
+      <p class="readPrivileges">MARLO is closed.</p>  
     [/#if]
   [/#if]
   

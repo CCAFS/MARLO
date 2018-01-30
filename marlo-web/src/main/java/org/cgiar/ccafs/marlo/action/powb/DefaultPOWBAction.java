@@ -18,12 +18,12 @@ package org.cgiar.ccafs.marlo.action.powb;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -51,13 +51,13 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Sebastian Amariles Garcia - CIAT/CCAFS
  */
-public class DeliveryAction extends BaseAction {
+public class DefaultPOWBAction extends BaseAction {
 
 
   private static final long serialVersionUID = -1417643537265271428L;
 
   // Managers
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   // Model for the front-end
@@ -68,13 +68,13 @@ public class DeliveryAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
   private CrpProgramManager crpProgramManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private CrpIndicatorsValidator validator;
 
   @Inject
-  public DeliveryAction(APConfig config, CrpManager crpManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, CrpProgramManager crpProgramManager,
-    UserManager userManager) {
+  public DefaultPOWBAction(APConfig config, GlobalUnitManager crpManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorsValidator validator,
+    AuditLogManager auditLogManager, CrpProgramManager crpProgramManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -110,7 +110,7 @@ public class DeliveryAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -155,8 +155,8 @@ public class DeliveryAction extends BaseAction {
   public void prepare() throws Exception {
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     // Get Liaison institution ID Parameter
     try {
@@ -255,7 +255,7 @@ public class DeliveryAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
