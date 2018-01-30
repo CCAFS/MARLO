@@ -478,13 +478,17 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       projectOutcome.setMilestones(new ArrayList<ProjectMilestone>());
     }
     for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-      if (projectMilestone.getCrpMilestone() != null && projectMilestone.getCrpMilestone().getId() != null) {
-        projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
+      if (projectMilestone != null) {
+        if (projectMilestone.getCrpMilestone() != null && projectMilestone.getCrpMilestone().getId() != null) {
+          projectMilestone.setCrpMilestone(crpMilestoneDAO.find(projectMilestone.getCrpMilestone().getId()));
+        }
       }
+
 
     }
     for (ProjectMilestone projectMilestone : projectOutcomePrev.getProjectMilestones().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
       if (projectOutcome.getMilestones() == null || projectOutcome.getMilestones().stream()
         .filter(c -> c != null && c.getCrpMilestone() != null && c.getCrpMilestone().getComposeID() != null
           && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
