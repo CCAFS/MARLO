@@ -138,8 +138,8 @@
 </div><!-- End loginFormContainer -->
 
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')} hidden" title="">
-    <img class="animated bounceIn" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
-    [#-- <div class="selection-bar-acronym">${element.acronym}</div> --]
+  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="">
+    <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/global/images/crps/${element.acronym}.png" alt="${element.name}" tabindex=0/>
+    <div class="selection-bar-acronym hidden">${element.acronym}</div>
   </li>
 [/#macro]
