@@ -743,7 +743,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
                 && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
                   .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         List<Deliverable> onDeliverables = new ArrayList<>();
         for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
@@ -2741,7 +2741,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+                    && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())
                     || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -2753,9 +2753,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+                  || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
               .collect(Collectors.toList());
 
             openA.addAll(deliverables.stream()
@@ -3342,7 +3342,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       cpCrpProgram
         .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
           && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
@@ -3483,10 +3483,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
           || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
-        || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())
-          || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
+            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getCurrentCycleYear())
+          || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
         .collect(Collectors.toList());
 
       if (this.isReportingActive()) {
@@ -4160,7 +4160,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
@@ -4224,6 +4224,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return switchSession;
   }
 
+  /**
+   * Show the superAdmin Menu.
+   * 
+   * @return
+   */
+  public boolean isVisibleTop() {
+
+    if (this.canAccessSuperAdmin()) {
+      return true;
+    }
+
+    if (this.canAcessCrpAdmin()) {
+      return true;
+    }
+
+    if (this.isVisibleTopGUList()) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  /**
+   * Boolean to validate if show the crp top list.
+   * 
+   * @return
+   */
+  public boolean isVisibleTopGUList() {
+    User user = this.getCurrentUser();
+    user = userManager.getUser(user.getId());
+    List<CrpUser> crpUsers =
+      new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+    if (crpUsers.size() > 1) {
+      return true;
+    }
+    return false;
+  }
+
   public void loadDissemination(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableDisseminations() != null) {
@@ -4236,7 +4275,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
-
 
   public void loadLessons(GlobalUnit crp, Project project) {
 
@@ -4409,6 +4447,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -4467,6 +4506,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void saveLessonsSynthesis(GlobalUnit crp, IpProgram ipProgram) {
 
     String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
@@ -4500,15 +4540,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
 
-
   public void setAdd(boolean add) {
     this.add = true;
   }
 
-
   public void setAvailabePhase(boolean avilabePhase) {
     this.availabePhase = avilabePhase;
   }
+
 
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
@@ -4518,7 +4557,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
-
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
@@ -4527,14 +4565,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEditPhase = canEditPhase;
   }
 
+
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
 
+
   public void setCenterID(Long centerID) {
     this.centerID = centerID;
   }
-
 
   public void setCenterSession(String centerSession) {
     this.centerSession = centerSession;
@@ -4563,10 +4602,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.dataSaved = dataSaved;
   }
 
+
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
-
 
   public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
@@ -4581,24 +4620,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
+
 
   public void setEditStatus(boolean editStatus) {
     this.editStatus = editStatus;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
-
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
-
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -4612,19 +4650,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.next = true;
   }
 
+
   public void setPhaseID(Long phaseID) {
     this.phaseID = phaseID;
   }
+
 
   public void setPlanningActive(boolean planningActive) {
     this.planningActive = planningActive;
   }
 
-
   public void setPlanningYear(int planningYear) {
     this.planningYear = planningYear;
   }
-
 
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;
