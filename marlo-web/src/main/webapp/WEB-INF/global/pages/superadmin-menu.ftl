@@ -1,4 +1,5 @@
 [#ftl]
+[#if logged]
   [#assign superAdminMenu =[
      { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
      
@@ -71,3 +72,4 @@
       </ul>
     </div>
   </div>
+[/#if]
