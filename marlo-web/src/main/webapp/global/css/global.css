@@ -2418,14 +2418,16 @@ input.userName {
   margin-top: 20px;
 }
 .wrongData{
-  border-bottom-color: red !important;
+  border-bottom: 1px solid red !important;
 }
 .loginForm input:not(#terms) {
   display: block;
   position: absolute;
   box-sizing: border-box;
   width: 100%;
-  border: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
   top: 1.2em;
   z-index: 1;
   padding: 1px;
@@ -2436,7 +2438,7 @@ input.userName {
 
 .loginForm input:not(.login-form-button){
   background: none;
-  border-bottom: 1px solid rgb(224, 224, 224) !important;
+  border-bottom: 1px solid rgb(224, 224, 224);
 }
 
 .loginForm label {
@@ -2681,6 +2683,7 @@ input.userName {
   width: 130px;
   height: 50px;
 }
+
 .selection-bar-options ul li .selection-bar-acronym{
   text-align: center;
   vertical-align: middle;
@@ -2693,7 +2696,7 @@ input.userName {
   background-color: rgba(255, 255, 255, 0.1);
   width: 130px;
   height: 100%;
-  margin: 3px;
+  margin: 3px 8px;
   cursor: pointer;
 }
 
@@ -2701,7 +2704,7 @@ input.userName {
   background-color: rgba(255, 255, 255, 0.767);
 }
 
-.selection-bar-options ul li.active img{
+.selection-bar-options ul li.active img, .selection-bar-options ul li.active div{
   border: 1px solid #d3d3d3;
   background-color: #fff;
 }

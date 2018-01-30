@@ -85,6 +85,7 @@ public class CrpByUserEmailAction extends BaseAction {
       User usrDB = userManager.getUserByEmail(userEmail);
       if (usrDB != null) {
         user.put("name", usrDB.getComposedCompleteName());
+        user.put("password", usrDB.getPassword());
       }
 
     }
