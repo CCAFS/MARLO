@@ -1,6 +1,7 @@
 $(document).ready(init);
-var cookieTime,loginSwitch=false;
+var cookieTime,loginSwitch=false, hasAccess=false;
 var username = $("input[name='user.email']");
+var crpSession = $(".loginForm #crp-input").val();
 function init() {
   initJreject();
 
@@ -117,6 +118,7 @@ function init() {
 
 function firstForm(){
   loginSwitch=false;
+  hasAccess=false;
   $(".loginForm #login-password .user-password").val("");
 
   $(".crps-select .name-type-container").addClass("hidden");
@@ -138,6 +140,8 @@ function firstForm(){
   $(".crps-select .name-type-container").addClass("hidden");
   $('.selection-bar-options ul .selection-bar-image').addClass("hidden");
   $('.selection-bar-options ul .selection-bar-acronym').addClass("hidden");
+
+  $(".loginForm #crp-input").val(crpSession);
 }
 
 function setCRP(crpSelected) {
@@ -219,7 +223,17 @@ function loadAvailableItems(email){
     beforeSend: function() {
     },
     success: function(data) {
-      var hasAccess=false;
+      $.each(data.crps, function(i){
+        if(crpSession == data.crps[i].acronym){
+          hasAccess=true;
+        }
+        $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
+        if(data.crps.length<7){
+          $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
+        }else{
+          $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
+        }
+      });
 
       if(data.user == null){
         $('input[name="user.email"]').focus();
@@ -232,7 +246,18 @@ function loadAvailableItems(email){
         });
       }else{
         //Change form style
-        changeFormStyle(data);
+        if(crpSession == '' || hasAccess){
+          changeFormStyle(data);
+        }else{
+          $('input[name="user.email"]').focus();
+          $('input.login-input').addClass("wrongData");
+          $('.loginForm p.invalidEmail').removeClass("hidden");
+          $('.loginForm p.invalidEmail').text("You don't have access to this session");
+          $('input[name="user.email"]').on('change',function(){
+            $('input.login-input').removeClass("wrongData");
+            $('.loginForm p.invalidEmail').addClass("hidden");
+          });
+        }
       }
 
     },
@@ -274,16 +299,6 @@ function changeFormStyle(data){
 
   $(".welcome-message-container .username span").text(data.user.name);
 
-  $.each(data.crps, function(i){
-    //console.log(data);
-    $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
-    if(data.crps.length<7){
-      $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
-    }else{
-      $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
-    }
-  });
-
   //change height value to form
   $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
   //Hide email input
@@ -298,11 +313,19 @@ function changeFormStyle(data){
   $(".loginForm #login-password input").focus();
 
   if($(".loginForm #crp-input").val() != ''){
-    var crpSession = $(".loginForm #crp-input").val();
+    if(!hasAccess){
+      $('input[name="user.email"]').focus();
+      $('input.login-input').addClass("wrongData");
+      $('.loginForm p.invalidEmail').removeClass("hidden");
+      $('.loginForm p.invalidEmail').text("You don't have access to this session");
+      $('input[name="user.email"]').on('change',function(){
+        $('input.login-input').removeClass("wrongData");
+        $('.loginForm p.invalidEmail').addClass("hidden");
+      });
+    }
     $('.selection-bar-options ul #crp-'+crpSession).click();
   }else{
     //when user has access to multiple crps, show the side bar
-    console.log(data.crps.length);
     if(data.crps.length>1){
       $(".crps-select").removeClass("hidden");
       //move crps select side bar
