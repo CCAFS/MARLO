@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
@@ -267,6 +268,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+  @Inject
+  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   // Variables
   private String crpSession;
 
@@ -830,6 +833,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
           return canDelete;
+        }
+      }
+
+
+      if (clazz == CrpClusterKeyOutputOutcome.class) {
+
+        CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome =
+          crpClusterKeyOutputOutcomeManager.getCrpClusterKeyOutputOutcomeById(id);
+
+
+        List<Project> projects = this.getProjectRelationsImpact(id, className);
+        if (!projects.isEmpty()) {
+
+
+          return false;
         }
       }
       return true;
@@ -2491,6 +2509,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
       }
+
+      if (clazz == CrpClusterKeyOutputOutcome.class) {
+        CrpClusterKeyOutputOutcome clusterKeyOutputOutcome =
+          crpClusterKeyOutputOutcomeManager.getCrpClusterKeyOutputOutcomeById(id);
+        CrpProgramOutcome crpProgramOutcome =
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(clusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+        List<ProjectOutcome> outcomes = crpProgramOutcome.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        Set<Project> projectsSet = new HashSet<>();
+        for (ProjectOutcome projectOutcome : outcomes) {
+          projectOutcome.getProject().getProjecInfoPhase(this.getActualPhase());
+          if (projectOutcome.getProject().getProjectInfo() != null) {
+            projectsSet.add(projectOutcome.getProject());
+          }
+
+        }
+        List<Deliverable> deliverables =
+          this.getDeliverableRelationsImpact(clusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(),
+            clusterKeyOutputOutcome.getCrpClusterKeyOutput().getClass().getName());
+        List<Project> deProjects = new ArrayList<>();
+        for (Deliverable deliverable : deliverables) {
+          deProjects.add(deliverable.getProject());
+        }
+
+        List<Project> projectsList = new ArrayList<>();
+        projectsList.addAll(projectsSet);
+        projects = this.intersection(projectsList, deProjects);
+
+
+      }
       if (clazz == CrpClusterOfActivity.class) {
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityManager.getCrpClusterOfActivityById(id);
         List<ProjectClusterActivity> activities = crpClusterOfActivity.getProjectClusterActivities().stream()
@@ -2858,7 +2907,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     List<Submission> submissions = project.getSubmissions()
@@ -2870,6 +2918,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return submissions;
   }
+
 
   /**
    ************************ CENTER METHOD *********************
@@ -2907,10 +2956,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public String getRoles() {
     String roles = "";
@@ -2939,21 +2988,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
-
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
   }
 
+
   public String getUrl() {
     return url;
   }
 
-
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
+
 
   public StringBuilder getValidationMessage() {
     return validationMessage;
@@ -2977,7 +3026,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
-
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -3035,6 +3083,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return total;
   }
 
+
   public boolean hasPermission(String fieldName) {
 
     if (basePermission == null) {
@@ -3088,13 +3137,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
   }
 
-
   public boolean hasPersmissionSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasPersmissionSubmitImpact() {
 
@@ -3163,6 +3212,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+  }
+
+  public <T> List<T> intersection(List<T> list1, List<T> list2) {
+    List<T> list = new ArrayList<T>();
+
+    for (T t : list1) {
+      if (list2.contains(t)) {
+        list.add(t);
+      }
+    }
+
+    return list;
   }
 
 
