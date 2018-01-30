@@ -9,7 +9,7 @@
   [@s.form method="POST" namespace="/" action="login"]
      <div class="crps-select hidden">
       <div class="name-type-container type-CRP hidden">
-        <span class="selection-bar-title">CRPs:</span>
+        <span class="selection-bar-title">[@s.text name="login.crps"/]:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
@@ -23,12 +23,12 @@
               [@availableItems element=crp /]
             [/#list]
           [#else]
-            <p>Not CRPs loaded</p>
+            <p>[@s.text name="login.error.crps"/]</p>
           [/#if]
         </ul>
       </div>
       <div class="name-type-container type-Center hidden">
-        <span class="selection-bar-title">Centers:</span>
+        <span class="selection-bar-title">[@s.text name="login.centers"/]:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
@@ -42,12 +42,12 @@
               [@availableItems element=center /]
             [/#list]
           [#else]
-            <p>Not Centers loaded</p>
+            <p>[@s.text name="login.error.centers"/]</p>
           [/#if]
         </ul>
       </div>
       <div class="name-type-container type-Platform hidden">
-        <span class="selection-bar-title">Platforms:</span>
+        <span class="selection-bar-title">[@s.text name="login.platforms"/]:</span>
       </div>
       <div class="selection-bar-options">
         <ul>
@@ -61,13 +61,13 @@
               [@availableItems element=platform /]
             [/#list]
           [#else]
-            <p>Not Platforms loaded</p>
+            <p>[@s.text name="login.error.platforms"/]</p>
           [/#if]
         </ul>
       </div>
      </div>
-     
      [#-- End crps select --]
+     [#-- Check if the inputs can be replaced with the macro from forms.ftl --]
      [#-- Trick for IE z-index --]
      <div style="position:relative;">
      <div class="loginForm" style="z-index: 1000">
@@ -76,21 +76,20 @@
           <div class="col-sm-12">
             <div class="login-input-container" id="login-email">
               <input id="user.email" class="login-input user-email" type="text" name="user.email" value="" required/>
-              <label for="user.email">Email</label>
+              <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
-            <p class="invalidEmail hidden">Please enter a valid email</p>
+            <p class="invalidEmail hidden">[@s.text name="login.error.invalidEmail"/]</p>
             [#-- CRP Session --]
             <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
             
             [#-- Image --]
             <div class="form-group text-center hidden" >
-            [#-- src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" --]
-              <img id="crpSelectedImage"  width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
+              <img id="crpSelectedImage" width="300px" src="${baseUrl}/global/images/crps/${(element.acronym)!'default'}.png" alt="${(element.name)!}" />
             </div>
             [#-- Welcome info --]
             <div class="row">
               <div class="col-sm-10 welcome-message-container hidden" >
-                <span class="login-input-container welcome-message">Welcome:</span>
+                <span class="login-input-container welcome-message">[@s.text name="login.welcome"/]:</span>
                 <br>
                 <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span></span></span>
               </div>
@@ -102,7 +101,7 @@
           <div class="col-sm-10">
             <div class="login-input-container hidden" id="login-password" >
               <input id="user.password" class="login-input user-password" type="password" name="user.password" tabindex=1 required/>
-              <label for="user.password">Password</label>
+              <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
           </div>
         </div>
@@ -122,8 +121,9 @@
             </div>
           </div>
         </div>
+        [#-- Login with different user --]
         <div class="login-back-container hidden">
-          <p class="loginBack">Login with different user</p>
+          <p class="loginBack">[@s.text name="login.differentUser"/]</p>
         </div>
      </div>
      </div>
