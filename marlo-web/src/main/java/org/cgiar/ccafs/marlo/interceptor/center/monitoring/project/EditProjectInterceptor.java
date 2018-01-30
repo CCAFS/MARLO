@@ -53,14 +53,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   @Inject
   public EditProjectInterceptor(ICenterProjectManager projectService, ICenterProgramManager programService) {
+
     this.projectService = projectService;
     this.programService = programService;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
+    baseAction.setSession(session);
     researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {

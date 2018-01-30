@@ -24,9 +24,14 @@ public class EmailLog implements java.io.Serializable {
   private Date date;
   private String error;
   private Boolean succes;
+  private String fileName;
+
+  private byte[] fileContent;
+
 
   public EmailLog() {
   }
+
 
   public EmailLog(String to, String cc, String bbc, String subject, String message, Integer tried, Date date,
     String error, Boolean succes) {
@@ -41,6 +46,7 @@ public class EmailLog implements java.io.Serializable {
     this.succes = succes;
   }
 
+
   public String getBbc() {
     return this.bbc;
   }
@@ -49,12 +55,21 @@ public class EmailLog implements java.io.Serializable {
     return this.cc;
   }
 
+
   public Date getDate() {
     return this.date;
   }
 
   public String getError() {
     return this.error;
+  }
+
+  public byte[] getFileContent() {
+    return fileContent;
+  }
+
+  public String getFileName() {
+    return fileName;
   }
 
   public Long getId() {
@@ -95,6 +110,14 @@ public class EmailLog implements java.io.Serializable {
 
   public void setError(String error) {
     this.error = error;
+  }
+
+  public void setFileContent(byte[] fileContent) {
+    this.fileContent = fileContent;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   public void setId(Long id) {
