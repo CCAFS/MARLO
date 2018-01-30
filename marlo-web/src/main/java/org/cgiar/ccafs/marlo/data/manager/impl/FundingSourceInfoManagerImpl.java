@@ -99,29 +99,22 @@ public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
       .filter(c -> c.getFundingSource().getId().longValue() == fundingSourceID).collect(Collectors.toList());
     if (!fundingSourcesInfos.isEmpty()) {
       for (FundingSourceInfo fundingSourceInfoPhase : fundingSourcesInfos) {
-        fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo);
-        if (fundingSourceInfo.getEndDate() != null) {
-          if (cal.get(Calendar.YEAR) < phase.getYear()) {
-
-            // fundingSourceInfoDAO.deleteFundingSourceInfo(fundingSourceInfoPhase.getId());
-          } else {
-            fundingSourceInfoDAO.save(fundingSourceInfoPhase);
-          }
-        }
+        fundingSourceInfoPhase.updateFundingSourceInfo(fundingSourceInfo, phase);
+        fundingSourceInfoDAO.save(fundingSourceInfoPhase);
 
 
       }
     } else {
       if (fundingSourceInfo.getEndDate() != null) {
 
-        if (cal.get(Calendar.YEAR) >= phase.getYear()) {
-          FundingSourceInfo fundingSourceInfoAdd = new FundingSourceInfo();
-          fundingSourceInfoAdd.setFundingSource(fundingSourceInfo.getFundingSource());
-          fundingSourceInfoAdd.updateFundingSourceInfo(fundingSourceInfo);
-          fundingSourceInfoAdd.setPhase(phase);
-          fundingSourceInfoDAO.save(fundingSourceInfoAdd);
+        // if (cal.get(Calendar.YEAR) >= phase.getYear()) {
+        FundingSourceInfo fundingSourceInfoAdd = new FundingSourceInfo();
+        fundingSourceInfoAdd.setFundingSource(fundingSourceInfo.getFundingSource());
+        fundingSourceInfoAdd.updateFundingSourceInfo(fundingSourceInfo, phase);
+        fundingSourceInfoAdd.setPhase(phase);
+        fundingSourceInfoDAO.save(fundingSourceInfoAdd);
 
-        }
+        // }
 
 
       }
