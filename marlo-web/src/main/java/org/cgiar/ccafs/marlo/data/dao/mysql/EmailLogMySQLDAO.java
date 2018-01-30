@@ -60,7 +60,7 @@ public class EmailLogMySQLDAO extends AbstractMarloDAO<EmailLog, Long> implement
 
   @Override
   public List<EmailLog> findAll() {
-    String query = "from " + EmailLog.class.getName() + " where is_active=1";
+    String query = "from " + EmailLog.class.getName();
     List<EmailLog> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
