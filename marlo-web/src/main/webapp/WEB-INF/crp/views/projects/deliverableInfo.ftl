@@ -225,11 +225,13 @@
       </div>
     [/#if]  
   [#else]
+    [#if ((deliverable.genderLevels[0])?? && deliverable.genderLevels[0].descriptionGenderLevel??)]
     <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
     <div class="input"> 
       <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
       <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
     </div>
+    [/#if]
   [/#if]
   </div>
   
@@ -256,16 +258,6 @@
     [/#if]
   </div>
   
-  [#-- Gender level list template --]
-  <ul style="display:none">
-    <li id="genderLevel-template" class="genderLevel clearfix" style="display:none;">
-      <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
-      <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
-      <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
-      <span class="name"></span>
-      <div class="clearfix"></div>
-    </li>
-  </ul>
 </div>
 
 
