@@ -3520,6 +3520,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (expecetedSection == 0) {
           totalSections++;
         }
+        if (this.getCountProjectFlagships(project.getId())) {
+          budgetFlagshipSection = 1;
+        }
         if (budgetCoASection == 1 && budgetFlagshipSection == 0) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 9;
@@ -3527,7 +3530,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return totalSections == 8;
           }
         } else if (budgetCoASection == 0 && budgetFlagshipSection == 1) {
-          return totalSections == 8;
+          return totalSections == 9;
         } else if (budgetCoASection == 1 && budgetFlagshipSection == 1) {
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
             return totalSections == 10;
