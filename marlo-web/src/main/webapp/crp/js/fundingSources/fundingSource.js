@@ -766,6 +766,7 @@ function budgetsConflicts(lowEnd,highEnd) {
 function refreshYears() {
   var startYear, endYear, years;
 
+  console.log(from.val());
   startYear = (from.val().split('-')[0]) || currentCycleYear;
 
   if($('.agreementStatus').val() == EXTENDED_STATUS) {
