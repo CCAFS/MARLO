@@ -35,5 +35,11 @@
         <property name="succes" type="java.lang.Boolean">
             <column name="succes_email" />
         </property>
+        <property name="fileName" type="string">
+            <column name="file_name" length="500" />
+        </property>
+        <property name="fileContent" type="binary">
+            <column name="fileContent" />
+        </property>
     </class>
 </hibernate-mapping>

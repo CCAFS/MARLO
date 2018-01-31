@@ -135,7 +135,7 @@
 [@outcomeMacro outcome={} name="outcomes" index=-1 isTemplate=true /]
 
 [#-- Milestone Template --]
-[@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true /]
+[@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true  /]
 
 [#-- Sub-Ido Template --]
 [@subIDOMacro subIdo={} name="outcomes[0].subIdos" index=-1 isTemplate=true /]
@@ -292,7 +292,7 @@
         <div class="milestones-list" listname="${outcomeCustomName}.milestones">
         [#if outcome.milestones?has_content]
           [#list outcome.milestones as milestone]
-            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
+            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable && action.canEditMileStone(milestone) /]
           [/#list]
         [#else]
           <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
@@ -314,7 +314,7 @@
 [/#macro]
 
 
-[#macro milestoneMacro milestone name index isTemplate=false]
+[#macro milestoneMacro milestone name index isTemplate=false editable=true]
   [#assign milestoneCustomName = "${name}[${index}]" /]
   <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead green sm">

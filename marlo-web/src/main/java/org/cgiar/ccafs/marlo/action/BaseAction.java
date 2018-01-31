@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
@@ -267,6 +268,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+  @Inject
+  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   // Variables
   private String crpSession;
 
@@ -800,9 +803,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == ProjectOutcome.class) {
 
         ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(id);
+        List<CrpProgramOutcome> crpProgramOutcomes = new ArrayList<>();
+        List<ProjectOutcome> projectOutcomes = projectOutcome.getProject().getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getPhase() != null)
+          .collect(Collectors.toList());
+        for (ProjectOutcome mProjectOutcome : projectOutcomes) {
+          crpProgramOutcomes.add(mProjectOutcome.getCrpProgramOutcome());
+        }
+        boolean canDelete = true;
         List<Deliverable> projects =
           this.getDeliverableRelationsProject(id, className, projectOutcome.getProject().getId());
         if (!projects.isEmpty()) {
+          for (Deliverable deliverable : projects) {
+            CrpClusterKeyOutput clusterKeyOutput =
+              deliverable.getDeliverableInfo(this.getActualPhase()).getCrpClusterKeyOutput();
+            List<CrpClusterKeyOutputOutcome> clusterKeyOutputOutcomes = clusterKeyOutput
+              .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : clusterKeyOutputOutcomes) {
+              if (!crpClusterKeyOutputOutcome.getCrpProgramOutcome().equals(projectOutcome.getCrpProgramOutcome())) {
+                if (!crpProgramOutcomes.contains(crpClusterKeyOutputOutcome.getCrpProgramOutcome())) {
+                  canDelete = false;
+                }
+
+              }
+            }
+
+          }
+
+          return canDelete;
+        }
+      }
+
+
+      if (clazz == CrpClusterKeyOutputOutcome.class) {
+
+        CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome =
+          crpClusterKeyOutputOutcomeManager.getCrpClusterKeyOutputOutcomeById(id);
+
+
+        List<Project> projects = this.getProjectRelationsImpact(id, className);
+        if (!projects.isEmpty()) {
+
+
           return false;
         }
       }
@@ -2467,6 +2509,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         projects = new ArrayList<>();
         projects.addAll(projectsSet);
       }
+
+      if (clazz == CrpClusterKeyOutputOutcome.class) {
+        CrpClusterKeyOutputOutcome clusterKeyOutputOutcome =
+          crpClusterKeyOutputOutcomeManager.getCrpClusterKeyOutputOutcomeById(id);
+        CrpProgramOutcome crpProgramOutcome =
+          crpProgramOutcomeManager.getCrpProgramOutcomeById(clusterKeyOutputOutcome.getCrpProgramOutcome().getId());
+        List<ProjectOutcome> outcomes = crpProgramOutcome.getProjectOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
+        Set<Project> projectsSet = new HashSet<>();
+        for (ProjectOutcome projectOutcome : outcomes) {
+          projectOutcome.getProject().getProjecInfoPhase(this.getActualPhase());
+          if (projectOutcome.getProject().getProjectInfo() != null) {
+            projectsSet.add(projectOutcome.getProject());
+          }
+
+        }
+        List<Deliverable> deliverables =
+          this.getDeliverableRelationsImpact(clusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(),
+            clusterKeyOutputOutcome.getCrpClusterKeyOutput().getClass().getName());
+        List<Project> deProjects = new ArrayList<>();
+        for (Deliverable deliverable : deliverables) {
+          deProjects.add(deliverable.getProject());
+        }
+
+        List<Project> projectsList = new ArrayList<>();
+        projectsList.addAll(projectsSet);
+        projects = this.intersection(projectsList, deProjects);
+
+
+      }
       if (clazz == CrpClusterOfActivity.class) {
         CrpClusterOfActivity crpClusterOfActivity = crpClusterOfActivityManager.getCrpClusterOfActivityById(id);
         List<ProjectClusterActivity> activities = crpClusterOfActivity.getProjectClusterActivities().stream()
@@ -2833,7 +2906,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<Submission> getProjectSubmissions(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     List<Submission> submissions = project
@@ -2845,6 +2917,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return submissions;
   }
+
 
   /**
    ************************ CENTER METHOD *********************
@@ -2882,10 +2955,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public String getRoles() {
     String roles = "";
@@ -2914,21 +2987,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
-
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
   }
 
+
   public String getUrl() {
     return url;
   }
 
-
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
+
 
   public StringBuilder getValidationMessage() {
     return validationMessage;
@@ -2952,7 +3025,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
-
 
   public int goldDataValue(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -3010,6 +3082,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return total;
   }
 
+
   public boolean hasPermission(String fieldName) {
 
     if (basePermission == null) {
@@ -3063,13 +3136,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
   }
 
-
   public boolean hasPersmissionSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasPersmissionSubmitImpact() {
 
@@ -3138,6 +3211,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+  }
+
+  public <T> List<T> intersection(List<T> list1, List<T> list2) {
+    List<T> list = new ArrayList<T>();
+
+    for (T t : list1) {
+      if (list2.contains(t)) {
+        list.add(t);
+      }
+    }
+
+    return list;
   }
 
 
@@ -4136,6 +4221,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return switchSession;
   }
 
+  /**
+   * Show the superAdmin Menu.
+   * 
+   * @return
+   */
+  public boolean isVisibleTop() {
+
+    if (this.canAccessSuperAdmin()) {
+      return true;
+    }
+
+    if (this.canAcessCrpAdmin()) {
+      return true;
+    }
+
+    if (this.isVisibleTopGUList()) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  /**
+   * Boolean to validate if show the crp top list.
+   * 
+   * @return
+   */
+  public boolean isVisibleTopGUList() {
+    User user = this.getCurrentUser();
+    user = userManager.getUser(user.getId());
+    List<CrpUser> crpUsers =
+      new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+    if (crpUsers.size() > 1) {
+      return true;
+    }
+    return false;
+  }
+
   public void loadDissemination(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableDisseminations() != null) {
@@ -4148,7 +4272,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
-
 
   public void loadLessons(GlobalUnit crp, Project project) {
 
@@ -4321,6 +4444,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -4379,6 +4503,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public void saveLessonsSynthesis(GlobalUnit crp, IpProgram ipProgram) {
 
     String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
@@ -4412,15 +4537,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
 
-
   public void setAdd(boolean add) {
     this.add = true;
   }
 
-
   public void setAvailabePhase(boolean avilabePhase) {
     this.availabePhase = avilabePhase;
   }
+
 
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
@@ -4430,7 +4554,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
-
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
@@ -4439,14 +4562,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEditPhase = canEditPhase;
   }
 
+
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
 
+
   public void setCenterID(Long centerID) {
     this.centerID = centerID;
   }
-
 
   public void setCenterSession(String centerSession) {
     this.centerSession = centerSession;
@@ -4475,10 +4599,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.dataSaved = dataSaved;
   }
 
+
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
-
 
   public void setDifferences(List<HistoryDifference> differences) {
     this.differences = differences;
@@ -4493,24 +4617,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
+
 
   public void setEditStatus(boolean editStatus) {
     this.editStatus = editStatus;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
-
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
-
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -4524,19 +4647,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.next = true;
   }
 
+
   public void setPhaseID(Long phaseID) {
     this.phaseID = phaseID;
   }
+
 
   public void setPlanningActive(boolean planningActive) {
     this.planningActive = planningActive;
   }
 
-
   public void setPlanningYear(int planningYear) {
     this.planningYear = planningYear;
   }
-
 
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;

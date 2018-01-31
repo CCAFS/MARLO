@@ -104,6 +104,7 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
               }
             }
             this.changeSessionSection(session);
+            action.setSwitchSession(true);
             return invocation.invoke();
           }
         }
