@@ -187,7 +187,7 @@ function getOCSMetadata() {
           console.log(agreement);
           // Extension date validation
           if(!allowExtensionDate){
-            agreement.endDate = agreement.extensionDate;
+            // agreement.endDate = agreement.extensionDate;
           }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
@@ -211,13 +211,17 @@ function getOCSMetadata() {
             agreement.fundingTypeId = 2;
           }
           // Set Agreement Status
-          if(agreement.contractStatus == "C") {
-            agreement.contractStatusId = 3;
-          } else if(agreement.contractStatus == "O") {
-            agreement.contractStatusId = 2;
-          } else if(agreement.contractStatus == "S") {
-            agreement.contractStatusId = 2;
+          /*
+           * if(agreement.contractStatus == "C") { agreement.contractStatusId = 3; } else if(agreement.contractStatus ==
+           * "O") { // On-Going agreement.contractStatusId = 2; } else if(agreement.contractStatus == "S") {
+           * agreement.contractStatusId = 2; }
+           */
+          
+          // Set Funding Source Agreement Status
+          if(agreement.extensionDate){
+            $('.agreementStatus').val(4);
           }
+          
           // Set Countries
           $('#countryList ul').empty();
           $.each(agreement.countries, function(i,e) {

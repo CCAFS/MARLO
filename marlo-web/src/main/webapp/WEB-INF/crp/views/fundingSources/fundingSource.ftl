@@ -201,16 +201,18 @@
           [/#if]
         </div>
         [#-- Extension Date --]
-        <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${hasCIAT?string('block', 'none')}">
+        [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
+        <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${showEXtDate?string('block', 'none')}">
           <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
-          [#if hasCIAT]
+          [#if showEXtDate]
             [#assign extensionValue = (fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!'' /]
           [#else]
             [#assign extensionValue = '' /]
           [/#if]
           [#if editable]
-          <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
-            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
+            <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
+            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    
+            <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
           [#else]
             <div class="input"><p>${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
@@ -238,8 +240,6 @@
         <div class="row">
           [#-- Funding Window --]
           <div class="col-md-6 metadataElement-fundingTypeId">
-
-          
             [@customForm.select name="fundingSource.fundingSourceInfo.budgetType.id" i18nkey="projectCofunded.type" className="type fundingType metadataValue" listName="budgetTypes" header=false required=true disabled=isSynced editable=editable && action.canEditType() /]
             [#if isSynced && editable && action.canEditType()]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.budgetType.id" value="${(fundingSource.fundingSourceInfo.budgetType.id)!}" />[/#if]
             [#-- W1W2 Tag --]
@@ -260,9 +260,9 @@
             [/#if]
           </div>
           [#-- Agreement status --]
-          <div class="col-md-6 metadataElement-contractStatusId">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=(editable|| editStatus) /] 
-            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+          <div class="col-md-6">
+            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false editable=(editable|| editStatus) /] 
+            [#if (editable|| editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
           </div>
         </div>
       </div>
@@ -584,7 +584,7 @@
   [/#list]
 </ul>
 
-<span class="hidden allowExtensionDate">${hasCIAT?string}</span>
+<span class="hidden allowExtensionDate">${showEXtDate?string}</span>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 
