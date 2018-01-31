@@ -17,15 +17,15 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -52,12 +52,14 @@ public class DeliverableValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeliverableValidator.class);
 
-  private final CrpManager crpManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   @Inject
-  public DeliverableValidator(CrpManager crpManager, ProjectManager projectManager,
+  public DeliverableValidator(GlobalUnitManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -65,7 +67,7 @@ public class DeliverableValidator extends BaseValidator {
   }
 
   private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.DELIVERABLE.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -224,15 +226,18 @@ public class DeliverableValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
           }
         }
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
-          if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
-            action.getInvalidFields().put("list-deliverable.genderLevels",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Gender Levels"}));
-          }
-        }
+
+        /*
+         * if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
+         * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
+         * if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
+         * action.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
+         * action.getInvalidFields().put("list-deliverable.genderLevels",
+         * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Gender Levels"}));
+         * }
+         * }
+         */
       }
 
 
@@ -321,6 +326,48 @@ public class DeliverableValidator extends BaseValidator {
     } else if (action.getValidationMessage().length() > 0) {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+
+
+    // cross cutting missing fields validation
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreGender() == -1) {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreGender",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
+
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingYouth()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreYouth() == -1)
+
+          {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreYouth",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+    }
+
+    if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity() != null) {
+      if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingCapacity()) {
+        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingScoreCapacity() == -1) {
+            action.addMessage(action.getText("saving.fields.required"));
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.crossCuttingScoreCapacity",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
     }
 
     this.saveMissingFields(deliverable, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),

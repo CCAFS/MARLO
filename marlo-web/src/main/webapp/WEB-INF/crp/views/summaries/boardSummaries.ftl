@@ -140,8 +140,6 @@
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
-[#assign years = [ "2016","2017", "2018" ]/]
-
 <span class="hidden planningYear">${(action.getPlanningYear())!}</span>
 <span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     

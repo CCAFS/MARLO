@@ -18,15 +18,16 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.OutcomeSynthesyManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
@@ -66,8 +67,9 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
   private static final long serialVersionUID = -38851756215381752L;
-  private Crp loggedCrp;
-  private CrpManager crpManager;
+  private GlobalUnit loggedCrp;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private final IpProgramManager ipProgramManager;
   private final IpElementManager ipElementManager;
@@ -91,11 +93,11 @@ public class OutcomeSynthesisAction extends BaseAction {
   private final UserManager userManager;
 
   @Inject
-  public OutcomeSynthesisAction(APConfig config, IpProgramManager ipProgramManager, IpElementManager ipElementManager,
-    CrpManager crpManager, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
-    OutcomeSynthesyManager outcomeSynthesisManager, SynthesisByOutcomeValidator validator, UserManager userManager,
-    AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager,
-    IpProjectIndicatorManager ipProjectIndicatorManager) {
+  public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
+    IpProgramManager ipProgramManager, IpElementManager ipElementManager, GlobalUnitManager crpManager,
+    IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
+    SynthesisByOutcomeValidator validator, UserManager userManager, AuditLogManager auditLogManager,
+    IpIndicatorManager ipIndicatorManager, IpProjectIndicatorManager ipProjectIndicatorManager) {
     super(config);
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
@@ -214,8 +216,8 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       liaisonInstitutionID =

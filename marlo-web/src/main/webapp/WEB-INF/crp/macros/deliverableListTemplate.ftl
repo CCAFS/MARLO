@@ -322,12 +322,15 @@
       [#else]
         <div class="form-group partnerName chosen">
           <strong class="text-muted">${(dp.projectPartnerPerson.projectPartner.composedName)!}</strong>
+          <input class="element" type="hidden" name="${dp_name}.projectPartner.id" value="${(dp.projectPartnerPerson.projectPartner.id)!}">
           <div class="partnerPersons">
           [#if (dp.projectPartnerPerson.projectPartner.id??)!false]
             [#list action.getPersons(dp.projectPartnerPerson.projectPartner.id) as person]
               [#if dp.projectPartnerPerson.id == person.id]
+                <input class="element" type="hidden" name="${dp_name}.projectPartnerPerson.id" value="${(person.id)!}">
                 <p class="checked">${person.composedCompleteName}</p>
                 [#if (dp.partnerDivision??) && (dp.partnerDivision.id??) &&(dp.partnerDivision.id != -1)]
+                 <input class="element" type="hidden" name="${dp_name}.partnerDivision.id" value="${(dp.partnerDivision.id)!}">
                  <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(dp.partnerDivision.name)!}</p>
                 [/#if]
               [/#if]
@@ -384,15 +387,18 @@
           </div>
         [#else]
           <div class="form-group partnerName chosen">
+            <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].projectPartner.id" value="${(projectPartner.id)!}">
             <strong class="text-muted">${(projectPartner.composedName)!}</strong>
             <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
               [#assign selectedPersons =  action.getSelectedPersons(projectPartner.id) /]
               [#list action.getPersons(projectPartner.id) as person]
-                [#if selectedPersons?seq_contains("${person.id}")]
+                [#if selectedPersons?seq_contains(person.id)]
                   [#local deliverablePartnerShip =(action.getDeliverablePartnership((person.id)!-1))!{} /]
+                   <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].projectPartnerPerson.id" value="${(person.id)!}">
                   <p class="checked">${person.composedCompleteName}</p>
                   [#if (deliverablePartnerShip.partnerDivision??) && (deliverablePartnerShip.partnerDivision.id??) &&(deliverablePartnerShip.partnerDivision.id != -1)]
+                    <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].partnerDivision.id" value="${(deliverablePartnerShip.partnerDivision.id)!}">
                    <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(deliverablePartnerShip.partnerDivision.name)!}</p>
                   [/#if]
                 [/#if]

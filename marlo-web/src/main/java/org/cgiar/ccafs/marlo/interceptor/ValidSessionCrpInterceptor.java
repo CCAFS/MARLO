@@ -17,12 +17,10 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
-import org.cgiar.ccafs.marlo.data.model.CenterCustomParameter;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -43,13 +41,14 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = -3706764472200123669L;
 
-  private final CrpManager crpManager;
-  private final CrpUserManager crpUserManager;
-  private Crp loggedCrp;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+  private CrpUserManager crpUserManager;
+  private GlobalUnit loggedCrp;
 
 
   @Inject
-  public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager) {
+  public ValidSessionCrpInterceptor(GlobalUnitManager crpManager, CrpUserManager crpUserManager) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
 
@@ -66,7 +65,6 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     } else {
       session.put(APConstants.USER_TOKEN, userToken);
     }
-
   }
 
   @Override
@@ -75,43 +73,14 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
     action.setSwitchSession(false);
     Map<String, Object> session = invocation.getInvocationContext().getSession();
 
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
 
     String[] actionMap = ActionContext.getContext().getName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Crp crp = crpManager.findCrpByAcronym(enteredCrp);
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
-        // Change center to crp session; check if the user don't have crp session
-        if (loggedCrp != null) {
-          loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-        } else {
-          loggedCrp = crp;
-
-          session.put(APConstants.SESSION_CRP, loggedCrp);
-
-          if (session.containsKey(APConstants.SESSION_CENTER)) {
-            Center center = (Center) session.get(APConstants.SESSION_CENTER);
-
-            // remove the center parameters
-            for (CenterCustomParameter parameter : center.getCenterCustomParameters()) {
-              if (parameter.isActive()) {
-                session.remove(parameter.getCenterParameter().getKey());
-              }
-            }
-            // Remove the center session
-            session.remove(APConstants.SESSION_CENTER);
-          }
-          // add the crp parameters
-          for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
-            if (parameter.isActive()) {
-              session.put(parameter.getParameter().getKey(), parameter.getValue());
-            }
-          }
-
-          action.setSwitchSession(true);
-        }
         if (crp.equals(loggedCrp)) {
           this.changeSessionSection(session);
           return invocation.invoke();
@@ -128,14 +97,14 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
             session.remove(APConstants.PHASES_IMPACT);
             session.replace(APConstants.SESSION_CRP, crp);
             session.remove(APConstants.ALL_PHASES);
-
-            // put the crp parameters in the session
+            // put the global unit parameters in the session
             for (CustomParameter parameter : crp.getCustomParameters()) {
               if (parameter.isActive()) {
                 session.put(parameter.getParameter().getKey(), parameter.getValue());
               }
             }
             this.changeSessionSection(session);
+            action.setSwitchSession(true);
             return invocation.invoke();
           }
         }

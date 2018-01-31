@@ -68,8 +68,8 @@ public class ParameterManagerImpl implements ParameterManager {
   }
 
   @Override
-  public Parameter getParameterByKey(String key) {
-    return parameterDAO.getParameterByKey(key);
+  public Parameter getParameterByKey(String key, long globalUnitId) {
+    return parameterDAO.getParameterByKey(key, globalUnitId);
   }
 
   @Override

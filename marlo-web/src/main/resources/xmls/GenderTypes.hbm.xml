@@ -8,8 +8,8 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
-            <column name="crp_id" />
+        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id" />
         </many-to-one>
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />

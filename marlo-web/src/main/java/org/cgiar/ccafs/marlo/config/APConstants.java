@@ -213,6 +213,7 @@ public final class APConstants {
   public static final String PAGE_ID = "pageID";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String PLANNING = "Planning";
+  public static final int FIRST_YEAR = 2017;
 
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
@@ -226,11 +227,15 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
+  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
-
+  public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsFlagships)";
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
@@ -388,6 +393,10 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+
+  /** cross cutting scores ****/
+  public static final long CROSS_CUTTING_NOT_TARGETED = 0;
+
   /**
    * -------------------------------------------------------------------------------
    * *******************************************************************************
@@ -400,7 +409,6 @@ public final class APConstants {
   public static Integer CENTER_END_YEAR = 2022;
 
 
-  public static final String SESSION_CENTER = "current_center";
   public static final String SESSION_RESEARCH_AREA = "current_research_area";
   public static final String SESSION_RESEARCH_PROGRAM = "current_research_program";
 
@@ -415,6 +423,11 @@ public final class APConstants {
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
   public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
   public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
+  public static final String CENTER_YEAR = "center_year";
+  public static final String CENTER_CURRENT_PHASE = "center_current_phase";
+  public static final String CENTER_CRP_PHASE_YEAR = "center_crp_phase_year";
+  public static final String CENTER_CRP_PHASE_CYCLE = "center_crp_phase_cycle";
+  public static final String CENTER_CRP_PHASE = "center_crp_phase";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";

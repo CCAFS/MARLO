@@ -107,7 +107,7 @@
                   <div class="row recommendedList">
                     [#-- RECOMMENDED REGIONS LIST --]
                     [#if project.regionFS?has_content]
-                    <div class="regionsContent" style="display:${(project.locationRegional?string("block","none"))!"none"};">
+                    <div class="regionsContent" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
                       <div class="col-md-12" >
                         <h5 class="sectionSubTitle">Suggested Regions:</h5>
                       </div>
