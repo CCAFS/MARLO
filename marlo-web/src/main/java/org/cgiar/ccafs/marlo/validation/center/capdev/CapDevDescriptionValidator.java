@@ -41,41 +41,41 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
 
     this.validateCapdevDescription(baseAction, capdev);
-    this.saveMissingFields(capdev, "descriptionCapdev");
+    this.saveMissingFields(capdev, "descriptionCapdev", baseAction);
   }
 
   public void validateCapdevDescription(BaseAction baseAction, CapacityDevelopment capdev) {
 
     if (capdev.getCapdevDisciplineList() == null) {
-      this.addMessage(baseAction.getText("capdev.action.disciplines"));
+      baseAction.addMessage(baseAction.getText("capdev.action.disciplines"));
       baseAction.getInvalidFields().put("list-capdev.disciplines",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
     }
 
     if (capdev.getCapdevDisciplineList() != null) {
       if (capdev.getCapdevDisciplineList().isEmpty()) {
-        this.addMessage(baseAction.getText("capdev.action.disciplines"));
+        baseAction.addMessage(baseAction.getText("capdev.action.disciplines"));
         baseAction.getInvalidFields().put("list-capdev.disciplines",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Disciplines"}));
       }
     }
 
     if (capdev.getCapdevTargetGroupList() == null) {
-      this.addMessage(baseAction.getText("capdev.action.targetgroup"));
+      baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
       baseAction.getInvalidFields().put("list-capdev.targetgroup",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
     }
 
     if (capdev.getCapdevTargetGroupList() != null) {
       if (capdev.getCapdevTargetGroupList().isEmpty()) {
-        this.addMessage(baseAction.getText("capdev.action.targetgroup"));
+        baseAction.addMessage(baseAction.getText("capdev.action.targetgroup"));
         baseAction.getInvalidFields().put("list-capdev.targetgroup",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Target Groups"}));
       }
     }
 
     if (capdev.getCapdevPartnersList() == null) {
-      this.addMessage(baseAction.getText("capdev.action.partners"));
+      baseAction.addMessage(baseAction.getText("capdev.action.partners"));
       baseAction.getInvalidFields().put("list-capdev.partners",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
 
@@ -84,7 +84,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
     if (capdev.getCapdevPartnersList() != null) {
       if (capdev.getCapdevPartnersList().isEmpty()) {
-        this.addMessage(baseAction.getText("capdev.action.partners"));
+        baseAction.addMessage(baseAction.getText("capdev.action.partners"));
         baseAction.getInvalidFields().put("list-capdev.partners",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
 
@@ -94,7 +94,7 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
 
     if (capdev.getResearchArea() == null) {
-      this.addMessage(baseAction.getText("capdev.action.researchArea"));
+      baseAction.addMessage(baseAction.getText("capdev.action.researchArea"));
       baseAction.getInvalidFields().put("input-capdev.researchArea.id", InvalidFieldsMessages.EMPTYFIELD);
       // baseAction.getInvalidFields().put("list-capdev.researcharea",
       // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Research Area"}));
@@ -103,14 +103,14 @@ public class CapDevDescriptionValidator extends BaseValidator {
 
 
     if (capdev.getCapdevOutputsList() == null) {
-      this.addMessage(baseAction.getText("capdev.action.outputs"));
+      baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
       baseAction.getInvalidFields().put("list-capdev.outputs",
         baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
     }
 
     if (capdev.getCapdevOutputsList() != null) {
       if (capdev.getCapdevOutputsList().isEmpty()) {
-        this.addMessage(baseAction.getText("capdev.action.outputs"));
+        baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
         baseAction.getInvalidFields().put("list-capdev.outputs",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
       }

@@ -104,7 +104,7 @@ public class BaseValidator {
    * @param program is a CenterProgram.
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
-  protected void saveMissingFields(CapacityDevelopment capacityDevelopment, String sectionName) {
+  protected void saveMissingFields(CapacityDevelopment capacityDevelopment, String sectionName, BaseAction action) {
 
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -117,8 +117,8 @@ public class BaseValidator {
       status.setCapacityDevelopment(capacityDevelopment);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
@@ -137,7 +137,7 @@ public class BaseValidator {
    * @param sectionName is the name of the section (researchImpact, researchTopics, etc.).
    */
   protected void saveMissingFields(CenterDeliverable deliverable, CapacityDevelopment capacityDevelopment,
-    String sectionName) {
+    String sectionName, BaseAction action) {
     int year = Calendar.getInstance().get(Calendar.YEAR);
 
     CenterSectionStatus status = centerSectionStatusManager.getSectionStatusBySupDocs(deliverable.getId(),
@@ -150,11 +150,12 @@ public class BaseValidator {
       status.setCapacityDevelopment(capacityDevelopment);
       status.setYear(year);
     }
-    if (this.missingFields.length() > 0) {
-      status.setMissingFields(this.missingFields.toString());
+    if (action.getMissingFields().length() > 0) {
+      status.setMissingFields(action.getMissingFields().toString());
     } else {
       status.setMissingFields("");
     }
+
 
     centerSectionStatusManager.saveSectionStatus(status);
   }

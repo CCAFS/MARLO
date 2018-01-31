@@ -378,14 +378,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private ICenterSectionStatusManager sectionStatusService;
 
+  @Inject
+  private ICapacityDevelopmentService capacityDevelopmentService;
+
   private String centerSession;
   private Long centerID;
   private GlobalUnit currentCenter;
 
   private CenterSubmission centerSubmission;
 
-  @Inject
-  private ICapacityDevelopmentService capacityDevelopmentService;
   /*********************************************************/
 
   // button actions
@@ -510,13 +511,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canAcessImpactPathway() {
-    final String permission =
-      this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
+    String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
 
   public boolean canAcessPublications() {
-    final String params[] = {this.getCrpSession()};
+    String params[] = {this.getCrpSession()};
     return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
   }
 
@@ -545,17 +545,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canAcessSynthesisMog() {
-    final String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
+    String permission = this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
 
   public boolean canAddBilateralProject() {
-    final String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
+    String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
 
   public boolean canAddCoreProject() {
-    final String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
+    String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
 
@@ -569,8 +569,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
         /** Optimize this to a SQL query that takes the userId and the LiasionInstitutionId as parameters **/
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
-          .filter(c -> (c.getUser().getId().longValue() == userRole.getUser().getId().longValue())
-            && (c.getLiaisonInstitution().getId().longValue() == cuId))
+          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+            && c.getLiaisonInstitution().getId().longValue() == cuId)
           .collect(Collectors.toList());
 
         for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -608,8 +608,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CrpProgramLeader.class) {
         CrpProgramLeader crpProgramLeader = crpProgramLeaderManager.getCrpProgramLeaderById(id);
         for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers().stream()
-          .filter(c -> (c.getLiaisonInstitution().getCrpProgram() != null) && (c.getLiaisonInstitution().getCrpProgram()
-            .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue()))
+          .filter(c -> c.getLiaisonInstitution().getCrpProgram() != null && c.getLiaisonInstitution().getCrpProgram()
+            .getId().longValue() == crpProgramLeader.getCrpProgram().getId().longValue())
           .collect(Collectors.toList())) {
 
 
@@ -645,16 +645,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
-      if (clazz == CrpClusterKeyOutput.class) {
-        final CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
-        if (crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList()).size() > 0) {
-          return false;
-        }
-      }
 
       if (clazz == FundingSource.class) {
-        final FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
+        FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
         if (fundingSource.getProjectBudgets().stream()
           .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()).size() > 0) {
@@ -671,7 +664,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == SrfTargetUnit.class) {
-        final SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
+        SrfTargetUnit targetUnit = targetUnitManager.getSrfTargetUnitById(id);
 
         if (targetUnit == null) {
           return true;
@@ -692,7 +685,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (clazz == LocElementType.class) {
-        final LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
         if (locElementType.getCrpLocElementTypes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
           .size() > 0) {
           return false;
@@ -758,10 +751,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         ProjectBudget projectBudget = projectBudgetManager.getProjectBudgetById(id);
         FundingSource fundingSource =
           fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-           List<DeliverableFundingSource> deliverableFundingSources = fundingSource.getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
-            && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
+        List<DeliverableFundingSource> deliverableFundingSources =
+          fundingSource.getDeliverableFundingSources().stream()
+            .filter(
+              c -> c.isActive() && c.getDeliverable().isActive() && c.getPhase() != null
+                && c.getPhase().getYear() == projectBudget.getYear() && c.getDeliverable().getProject() != null && c
+                  .getDeliverable().getProject().getId().longValue() == projectBudget.getProject().getId().longValue())
             .collect(Collectors.toList());
         List<Deliverable> onDeliverables = new ArrayList<>();
         for (DeliverableFundingSource deliverableFundingSource : deliverableFundingSources) {
@@ -783,9 +778,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
       if (clazz == CustomLevelSelect.class) {
-        final LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
+        LocElementType locElementType = locElementTypeManager.getLocElementTypeById(id);
 
-        for (final LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
+        for (LocElement locElements : locElementType.getLocElements().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           if (!locElements.getProjectLocations().stream()
             .filter(c -> c.isActive() && c.getProject().getGlobalUnitProjects().stream()
@@ -868,7 +863,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
       return true;
-    } catch (final Exception e) {
+    } catch (Exception e) {
 
       return true;
     }
@@ -887,7 +882,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the project have CoA or false otherwise.
    */
   public Boolean canEditBudgetByCoAs(long projectID) {
-    final Project project = projectManager.getProjectById(projectID);
+    Project project = projectManager.getProjectById(projectID);
     if (project.getProjectClusterActivities().stream()
       .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList()) == null) {
@@ -909,12 +904,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean canEditCrpAdmin() {
-    final String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
+    String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
 
   public boolean canProjectSubmited(long projectID) {
-    final String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
+    String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
   }
 
@@ -937,9 +932,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       // Verify CenterTopic Model
       if (clazz == CenterTopic.class) {
-        final CenterTopic topic = topicService.getResearchTopicById(id);
+        CenterTopic topic = topicService.getResearchTopicById(id);
 
-        final List<CenterOutcome> outcomes = new ArrayList<>(
+        List<CenterOutcome> outcomes = new ArrayList<>(
           topic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
 
         if (outcomes != null) {
@@ -951,9 +946,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       // Verify CenterImpact Model
       if (clazz == CenterImpact.class) {
-        final CenterImpact impact = impactService.getResearchImpactById(id);
+        CenterImpact impact = impactService.getResearchImpactById(id);
 
-        final List<CenterOutcome> outcomes = new ArrayList<>(
+        List<CenterOutcome> outcomes = new ArrayList<>(
           impact.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
 
         if (outcomes != null) {
@@ -965,9 +960,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       // Verify CenterOutcome Model
       if (clazz == CenterOutcome.class) {
-        final CenterOutcome outcome = outcomeService.getResearchOutcomeById(id);
+        CenterOutcome outcome = outcomeService.getResearchOutcomeById(id);
 
-        final List<CenterOutput> outputs = new ArrayList<>(
+        List<CenterOutput> outputs = new ArrayList<>(
           outcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
 
         if (outputs != null) {
@@ -979,9 +974,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       // Verify CenterProject Model
       if (clazz == CenterProject.class) {
-        final CenterProject project = projectService.getCenterProjectById(id);
+        CenterProject project = projectService.getCenterProjectById(id);
 
-        final List<CenterDeliverable> deliverables =
+        List<CenterDeliverable> deliverables =
           new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
         if (deliverables != null) {
@@ -994,9 +989,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       // Verify CenterOutput Model
       if (clazz == CenterOutput.class) {
 
-        final CenterOutput output = outputService.getResearchOutputById(id);
+        CenterOutput output = outputService.getResearchOutputById(id);
 
-        final List<CenterProjectOutput> projectOutputs =
+        List<CenterProjectOutput> projectOutputs =
           new ArrayList<>(output.getProjectOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
 
         if (projectOutputs != null) {
@@ -1009,9 +1004,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       // Verify CenterDeliverable Model
       if (clazz == CenterDeliverable.class) {
 
-        final CenterDeliverable deliverable = deliverableService.getDeliverableById(id);
+        CenterDeliverable deliverable = deliverableService.getDeliverableById(id);
 
-        final List<CenterDeliverableOutput> deliverableOutputs = new ArrayList<>(
+        List<CenterDeliverableOutput> deliverableOutputs = new ArrayList<>(
           deliverable.getDeliverableOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
 
         if (deliverableOutputs != null) {
@@ -1034,13 +1029,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       return true;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
 
   }
-
 
   /**
    * ***********************CENTER METHOD********************
@@ -1060,7 +1054,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   /**
    * ***********************CENTER METHOD********************
    * Check if the Impact Pathway section is Active
@@ -1070,10 +1063,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean centerImpactPathwayActive() {
     try {
-      final boolean sectionActive =
+      boolean sectionActive =
         Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE).toString());
       return sectionActive;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
@@ -1088,14 +1081,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean centerMonitoringActive() {
     try {
-      final boolean sectionActive =
+      boolean sectionActive =
         Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_ACTIVE).toString());
       return sectionActive;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
   }
+
 
   /**
    * ***********************CENTER METHOD********************
@@ -1106,10 +1100,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean centerSummariesActive() {
     try {
-      final boolean sectionActive =
+      boolean sectionActive =
         Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_SUMMARIES_ACTIVE).toString());
       return sectionActive;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
@@ -1121,8 +1115,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (differences != null) {
       if (differences.contains(new HistoryDifference(field))) {
-        final int index = differences.indexOf(new HistoryDifference(field));
-        final HistoryDifference historyDifference = differences.get(index);
+        int index = differences.indexOf(new HistoryDifference(field));
+        HistoryDifference historyDifference = differences.get(index);
         historyDifference.setIndex(index);
         return historyDifference;
       }
@@ -1140,16 +1134,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   public String crpActivitesModule() {
     return APConstants.CRP_ACTIVITES_MODULE;
   }
+
 
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -1169,6 +1162,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   /**
    * ***********************CENTER METHOD********************
    * This method calculates all the years between the start date and the end date.
@@ -1177,11 +1171,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return a List of numbers representing all the years, or an empty list if nothing found.
    */
   public List<Integer> geCentertOutcomeYears(int outcomeYear) {
-    final List<Integer> allYears = new ArrayList<>();
+    List<Integer> allYears = new ArrayList<>();
 
-    final Calendar calendarStart = Calendar.getInstance();
+    Calendar calendarStart = Calendar.getInstance();
     calendarStart.set(Calendar.YEAR, 2017);
-    final Calendar calendarEnd = Calendar.getInstance();
+    Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, outcomeYear);
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
@@ -1193,7 +1187,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return allYears;
   }
-
 
   /*
    * public String generatePermission(String permission, Map<String, Object> session, long crpID, String... params) {
@@ -1235,6 +1228,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
+
 
   /**
    * get the actual
@@ -1355,7 +1349,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
   }
 
-
   /**
    * ************************ CENTER METHOD ******************************
    * This method calculates all the years between the start date and the end date.
@@ -1364,11 +1357,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return a List of numbers representing all the years, or an empty list if nothing found.
    */
   public List<Integer> getAllYears() {
-    final List<Integer> allYears = new ArrayList<>();
+    List<Integer> allYears = new ArrayList<>();
 
-    final Calendar calendarStart = Calendar.getInstance();
+    Calendar calendarStart = Calendar.getInstance();
     calendarStart.set(Calendar.YEAR, 2014);
-    final Calendar calendarEnd = Calendar.getInstance();
+    Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, 2050);
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
@@ -1379,14 +1372,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return allYears;
-  }
-
-  public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
-    final String composedClassName = simpleName;
-    final String actionFile = this.getCrpSession() + "_" + actionName;
-    final String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
-    final boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
-    return exist;
   }
 
 
@@ -1416,6 +1401,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
 
 
+  public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
+    String composedClassName = simpleName;
+    String actionFile = this.getCrpSession() + "_" + actionName;
+    String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
+    boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
+    return exist;
+  }
+
   public String getBasePermission() {
     return basePermission;
   }
@@ -1423,6 +1416,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   /**
    * Get the front end libraries acording to Center o CRP access
@@ -1446,7 +1440,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   public List<CrpCategoryEnum> getCategories() {
 
@@ -1492,7 +1485,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public CenterSectionStatus getCenterDeliverableStatus(long deliverableID) {
 
-    final CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
+    CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
     List<CenterSectionStatus> sectionStatuses;
 
     if (deliverable.getSectionStatuses() != null) {
@@ -1508,6 +1501,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1516,12 +1510,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the center session
    */
   public Long getCenterID() {
-    if ((session != null) && !session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         GlobalUnit center = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
           ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         this.centerID = center.getId();
-      } catch (final Exception e) {
+      } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user center in the session.");
       }
     } else {
@@ -1531,7 +1525,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.centerID;
   }
-
 
   /**
    * ***********************CENTER METHOD********************
@@ -1544,7 +1537,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public CenterSectionStatus getCenterOutcomeStatus(long outcomeID) {
 
-    final CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
+    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
     List<CenterSectionStatus> sectionStatuses;
     if (outcome.getSectionStatuses() != null) {
       sectionStatuses = new ArrayList<>(outcome.getSectionStatuses().stream()
@@ -1559,6 +1552,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   /**
    * ***********************CENTER METHOD********************
    * This method gets the specific section status from the sectionStatuses array for a Output.
@@ -1570,7 +1564,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public CenterSectionStatus getCenterOutputStatus(long outputID) {
 
-    final CenterOutput output = outputService.getResearchOutputById(outputID);
+    CenterOutput output = outputService.getResearchOutputById(outputID);
     List<CenterSectionStatus> sectionStatuses;
 
     if (output.getSectionStatuses() != null) {
@@ -1585,7 +1579,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -1614,6 +1607,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Validate the sections of the Impact Pathway *
@@ -1622,7 +1616,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the IP is complete
    */
   public boolean getCenterSectionStatusIP(String section, long programID) {
-    final CenterProgram program = programService.getProgramById(programID);
+    CenterProgram program = programService.getProgramById(programID);
 
     if (ImpactPathwaySectionsEnum.getValue(section) == null) {
       return false;
@@ -1642,6 +1636,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * validate the sections of the project
@@ -1651,7 +1646,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean getCenterSectionStatusProject(String section, long projectID) {
 
-    final CenterProject project = projectService.getCenterProjectById(projectID);
+    CenterProject project = projectService.getCenterProjectById(projectID);
 
     if (ProjectSectionsEnum.getValue(section) == null) {
       return false;
@@ -1669,7 +1664,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Get the center that is currently save in the session, if the user access to
@@ -1679,24 +1673,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the center that the user has log in
    */
   public String getCenterSession() {
-    if ((session != null) && !session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         GlobalUnit center = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
           ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         // Assumed there is only one center in the system, the default one.
         this.centerSession = center.getAcronym();
-      } catch (final Exception e) {
+      } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user's center in the session.");
       }
     } else {
-      final String actionName = this.getActionName();
+      String actionName = this.getActionName();
       if (actionName.split("/").length > 1) {
         this.centerSession = actionName.split("/")[0];
       }
     }
     return this.centerSession;
   }
-
 
   public List<GlobalUnit> getCentersList() {
     List<GlobalUnit> centers = new ArrayList<>();
@@ -1719,6 +1712,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public CenterSubmission getCenterSubmission() {
     return centerSubmission;
   }
@@ -1739,10 +1733,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // return Calendar.getInstance().get(Calendar.YEAR);
   }
 
-
   public long getCGIARInstitution() {
     return APConstants.INSTITUTION_CGIAR;
   }
+
 
   public List<CrpClusterOfActivity> getClusterOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
@@ -1763,7 +1757,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public APConfig getConfig() {
     return config;
   }
-
 
   public List<CrpProgramOutcome> getContributionsOutcome(long projectID, long crpProgramID) {
     Project project = projectManager.getProjectById(projectID);
@@ -1810,7 +1803,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * (TODO change the method Name after test the functionality)
    */
   public List<GlobalUnit> getCrpCategoryList(String category) {
-public List<GlobalUnit> getCrpCategoryList(String category) {
     return crpManager.findAll().stream()
       .filter(c -> c.isMarlo() && c.getGlobalUnitType().getId().intValue() == Integer.parseInt(category))
       .collect(Collectors.toList());
@@ -1883,16 +1875,16 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    * @return the crp that the user has log in
    */
   public String getCrpSession() {
-    if ((session != null) && !session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
           ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         this.crpSession = crp.getAcronym();
-      } catch (final Exception e) {
+      } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
     } else {
-      final String actionName = this.getActionName();
+      String actionName = this.getActionName();
       if (actionName.split("/").length > 1) {
         this.crpSession = actionName.split("/")[0];
       }
@@ -1940,24 +1932,16 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
 
 
-  }   * ************************ CENTER METHOD ******************************
-   * Gets the current center phase
-   * ********************************************************************
-   * @return a Current Phase Object
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new Phase(null, "", -1);
-
-
+  }
 
 
   public GlobalUnit getCurrentCrp() {
-    if ((session != null) && !session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
-        final Crp crp =
-          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        GlobalUnit crp = (GlobalUnit) session.get(APConstants.SESSION_CRP) != null
+          ? (GlobalUnit) session.get(APConstants.SESSION_CRP) : null;
         this.currentCrp = crp;
-      } catch (final Exception e) {
+      } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
     } else {
@@ -1975,7 +1959,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       } else {
         return APConstants.PLANNING;
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return null;
     }
   }
@@ -1997,7 +1981,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return this.getActualPhase().getYear();
   }
 
-
   public int getCurrentCycleYearParam() {
     try {
       if (this.isReportingActiveParam()) {
@@ -2005,7 +1988,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       } else {
         return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return 0;
     }
   }
@@ -2017,10 +2000,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public User getCurrentUser() {
     User u = null;
-    if ((session != null) && !session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         u = session.get(APConstants.SESSION_USER) != null ? (User) session.get(APConstants.SESSION_USER) : null;
-      } catch (final Exception e) {
+      } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user in the session.");
       }
     }
@@ -2035,6 +2018,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public String getDateFormat() {
     return APConstants.DATE_FORMAT;
   }
+
 
   public List<Deliverable> getDeliverableRelationsImpact(Long id, String className) {
     Class<?> clazz;
@@ -2075,6 +2059,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return deliverables;
 
   }
+
 
   public List<Deliverable> getDeliverableRelationsProject(Long id, String className, Long projectID) {
     Class<?> clazz;
@@ -2176,7 +2161,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
-
   /**
    * This method gets the specific section status from the sectionStatuses array for a Deliverable.
    * 
@@ -2185,7 +2169,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    * @return a SectionStatus object with the information requested.
    */
   public SectionStatus getDeliverableStatus(long deliverableID) {
-    final Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (deliverable.getDeliverableInfo(this.getActualPhase()) != null) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getActualPhase());
       if (deliverableInfo.getStatus() != null
@@ -2195,8 +2179,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
         }
       }
     }
-    final List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
-      .filter(c -> (c.getYear() == this.getCurrentCycleYear()) && c.getCycle().equals(this.getCurrentCycle()))
+    List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
+      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
       .collect(Collectors.toList());
 
     if (!sectionStatuses.isEmpty()) {
@@ -2204,7 +2188,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
     return null;
   }
-
 
   public List<HistoryDifference> getDifferences() {
     return differences;
@@ -2214,8 +2197,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
     try {
 
-      final FileInputStream fis = new FileInputStream(file);
-      final String md5 = DigestUtils.md5Hex(fis);
+      FileInputStream fis = new FileInputStream(file);
+      String md5 = DigestUtils.md5Hex(fis);
       FileDB dbFile = null;
 
 
@@ -2223,8 +2206,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
         if (preview.getFileName().equals(fileFileName) && !md5.equals(preview.getTokenId())) {
           dbFile = new FileDB(fileFileName, md5);
-          final FileDB dbFilePrev = preview;
-          final Path prevFile = Paths.get(path + dbFilePrev.getFileName());
+          FileDB dbFilePrev = preview;
+          Path prevFile = Paths.get(path + dbFilePrev.getFileName());
           String newName = FilenameUtils.removeExtension(fileFileName) + "_" + UUID.randomUUID().toString() + "."
             + FilenameUtils.getExtension(fileFileName);
           newName = newName.replaceAll(":", "-");
@@ -2245,7 +2228,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       }
       fileDBManager.saveFileDB(dbFile);
       return dbFile;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       return null;
     }
@@ -2278,12 +2261,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
-
   public boolean getFundingSourceStatus(long fundingSourceID) {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     return this.getFundingSourceStatus(fundingSource);
   }
-
 
   /**
    * Get the Global Unit Type
@@ -2337,15 +2318,16 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return invalidFields;
   }
 
+
   public String getJustification() {
     return justification;
   }
 
   public String getLiasons() {
     String liasonsUsers = "";
-    final User u = userManager.getUser(this.getCurrentUser().getId());
-    for (final LiaisonUser liaisonUser : u.getLiasonsUsers().stream()
-      .filter(c -> c.isActive() && (c.getCrp().getId().intValue() == this.getCrpID().intValue()))
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (LiaisonUser liaisonUser : u.getLiasonsUsers().stream()
+      .filter(c -> c.isActive() && c.getCrp().getId().intValue() == this.getCrpID().intValue())
       .collect(Collectors.toList())) {
       if (liasonsUsers.isEmpty()) {
         liasonsUsers = liaisonUser.getLiaisonInstitution().getAcronym();
@@ -2356,12 +2338,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return liasonsUsers;
   }
 
-
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());
-    } catch (final Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       return new ArrayList<Auditlog>();
     }
@@ -2379,6 +2360,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return missingFields;
   }
 
+
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
@@ -2395,12 +2377,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return 0;
   }
 
-
   public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
 
-    final List<Deliverable> openDeliverables = new ArrayList<>();
+    List<Deliverable> openDeliverables = new ArrayList<>();
 
-    for (final Deliverable a : deliverables) {
+    for (Deliverable a : deliverables) {
 
       if (a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
         || a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2433,13 +2414,14 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
+
   public Map<String, Parameter> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
 
   public String getParameterValue(String param) {
-    final Object paramObj = this.getParameters().get(param);
+    Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
       return null;
     }
@@ -2450,6 +2432,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public Long getPhaseID() {
     return phaseID;
   }
+
 
   /**
    * validate if the list of phases are on session if not, will be find on bd
@@ -2469,7 +2452,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
   }
 
-
   public List<Phase> getPhasesImpact() {
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
       return (List<Phase>) this.getSession().get(APConstants.PHASES_IMPACT);
@@ -2483,7 +2465,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return phases;
     }
   }
-
 
   public String getPhasesImpactJson() {
     List<Phase> phases;
@@ -2502,6 +2483,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     Gson gson = builder.create();
     return gson.toJson(phases);
   }
+
 
   /**
    * validate if the list of phases are on session if not, will be find on bd on json format
@@ -2529,7 +2511,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
-
   public List<GlobalUnit> getPlatformsList() {
     List<GlobalUnit> centers = new ArrayList<>();
     if (!this.canAccessSuperAdmin()) {
@@ -2552,10 +2533,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
-    final ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
-    final List<SectionStatus> sectionStatuses = projectOutcome.getSectionStatuses().stream()
-      .filter(c -> (c.getYear() == this.getCurrentCycleYear()) && c.getCycle().equals(this.getCurrentCycle()))
+    List<SectionStatus> sectionStatuses = projectOutcome.getSectionStatuses().stream()
+      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
       .collect(Collectors.toList());
 
     if (!sectionStatuses.isEmpty()) {
@@ -2654,11 +2635,12 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
         List<ProjectPartner> partners =
           crpPpaPartner.getInstitution().getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null
-              && c.getPhase().getId().equals(this.getActualPhase().getId())
-              && c.getProject().getGlobalUnitProjects().stream()
-                .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
-                .collect(Collectors.toList()).size() > 0)
+            .filter(
+              c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(this.getActualPhase().getId())
+                && c.getProject().getGlobalUnitProjects().stream()
+                  .filter(
+                    gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getCrpID()))
+                  .collect(Collectors.toList()).size() > 0)
             .collect(Collectors.toList());
         Set<Project> projectsSet = new HashSet<>();
         for (ProjectPartner projectPartner : partners) {
@@ -2810,8 +2792,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
 
           if (this.isPlanningActive()) {
-            openA = deliverables
-              .stream().filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
+            openA =
+              deliverables.stream().filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
 
                 && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
@@ -2820,7 +2802,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
                   || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())
                     || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
-              .collect(Collectors.toList());
+                .collect(Collectors.toList());
           } else {
             openA = deliverables.stream()
               .filter(a -> a.isActive() && a.getDeliverableInfo(this.getActualPhase()) != null
@@ -2983,16 +2965,17 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public List<Submission> getProjectSubmissions(long projectID) {
-    final Project project = projectManager.getProjectById(projectID);
-    final List<Submission> submissions = project.getSubmissions()
+    Project project = projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions()
       .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
-        && (c.getYear().intValue() == this.getCurrentCycleYear()) && ((c.isUnSubmit() == null) || !c.isUnSubmit()))
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return new ArrayList<>();
     }
     return submissions;
   }
+
 
   /**
    ************************ CENTER METHOD *********************
@@ -3030,15 +3013,15 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
 
+
   public String getRoles() {
     String roles = "";
-    final User u = userManager.getUser(this.getCurrentUser().getId());
-    for (final UserRole userRole : u.getUserRoles().stream()
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (UserRole userRole : u.getUserRoles().stream()
       .filter(c -> c.getRole().getCrp().getId().intValue() == this.getCrpID().intValue())
       .collect(Collectors.toList())) {
       if (roles.isEmpty()) {
@@ -3054,7 +3037,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return securityContext;
   }
 
-
   public Map<String, Object> getSession() {
     return session;
   }
@@ -3064,10 +3046,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public String getTimeZone() {
-    final TimeZone timeZone = TimeZone.getDefault();
-    final String display = timeZone.getDisplayName();
+    TimeZone timeZone = TimeZone.getDefault();
+    String display = timeZone.getDisplayName();
     return display;
   }
+
 
   public String getUrl() {
     return url;
@@ -3076,7 +3059,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
-
 
   public StringBuilder getValidationMessage() {
     return validationMessage;
@@ -3090,11 +3072,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public String getVersion() {
     String version = this.getClass().getPackage().getImplementationVersion();
     if (version == null) {
-      final Properties prop = new Properties();
+      Properties prop = new Properties();
       try {
         prop.load(ServletActionContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
         version = prop.getProperty("Implementation-Version");
-      } catch (final IOException e) {
+      } catch (IOException e) {
         LOG.warn("MAINFEST file Does not exist");
       }
     }
@@ -3124,8 +3106,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return years;
   }
 
+
   public int goldDataValue(long deliverableID) {
-    final Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     int total = 0;
 
     this.loadQualityCheck(deliverableBD);
@@ -3198,7 +3181,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * validation base method to check the permission in MARLO centers.
@@ -3215,8 +3197,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public boolean hasPermissionCrpIndicators(long liaisonID) {
-    final String params[] = {this.getCrpSession(), liaisonID + "",};
-    final boolean permission =
+    String params[] = {this.getCrpSession(), liaisonID + "",};
+    boolean permission =
       this.hasPermissionNoBase(this.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params));
     return permission;
   }
@@ -3228,16 +3210,17 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public boolean hasPermissionSynthesis(long program) {
-    final String params[] = {this.getCrpSession(), program + "",};
-    final boolean permission =
+    String params[] = {this.getCrpSession(), program + "",};
+    boolean permission =
       this.hasPermissionNoBase(this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params));
     return permission;
   }
 
+
   public boolean hasPersmissionSubmit(long projectId) {
-    final String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
+    String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
-    final boolean permissions = this.securityContext.hasPermission(permission);
+    boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
 
@@ -3258,7 +3241,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
     return this.hasPermission("submit");
   }
-
 
   /**
    * ************************ CENTER METHOD *********************
@@ -3283,42 +3265,43 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    * @return true if the user have the permission
    */
   public boolean hasPersmissionSubmitProject(long projectID) {
-    final CenterProject project = projectService.getCenterProjectById(projectID);
-    final CenterProgram program = project.getResearchProgram();;
-    final String permission =
+    CenterProject project = projectService.getCenterProjectById(projectID);
+    CenterProgram program = project.getResearchProgram();;
+    String permission =
       this.generatePermissionCenter(Permission.PROJECT_SUBMISSION_PERMISSION, this.getCurrentCrp().getAcronym(),
         String.valueOf(program.getResearchArea().getId()), String.valueOf(program.getId()), String.valueOf(projectID));
-    final boolean permissions = this.securityContext.hasPermission(permission);
+    boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
 
   public boolean hasPersmissionUnSubmit(long projectId) {
-    final String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
+    String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
-    final boolean permissions = this.securityContext.hasPermission(permission);
+    boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
-    final String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
+    String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
       this.getCurrentCrp().getAcronym(), String.valueOf(programID));
-    final boolean permissions = this.securityContext.hasPermission(permission);
+    boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
 
   public boolean hasSpecificities(String specificity) {
     try {
-      final boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
+      boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
       return param;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
@@ -3336,12 +3319,13 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return list;
   }
 
+
   public Boolean isA(long deliverableID) {
     try {
-      final Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
 
-      if ((deliverableBD.getDissemination().getIsOpenAccess() != null)
+      if (deliverableBD.getDissemination().getIsOpenAccess() != null
         && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
         return true;
       }
@@ -3350,11 +3334,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
         return null;
       }
       return false;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return null;
     }
   }
-
 
   /**
    * @param role
@@ -3371,7 +3354,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public boolean isCanEdit() {
     return canEdit;
   }
-
 
   public boolean isCanEditPhase() {
     return canEditPhase;
@@ -3436,19 +3418,19 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return false;
     }
 
-    final CenterProject project = projectService.getCenterProjectById(projectID);
+    CenterProject project = projectService.getCenterProjectById(projectID);
 
-    final List<String> statuses = secctionStatusService.distinctSectionStatusProject(projectID);
+    List<String> statuses = secctionStatusService.distinctSectionStatusProject(projectID);
 
     if (statuses.size() != 3) {
       return false;
     }
 
-    final List<CenterSectionStatus> sectionStatuses = new ArrayList<>(project.getSectionStatuses().stream()
+    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(project.getSectionStatuses().stream()
       .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
 
-    if ((sectionStatuses != null) && (sectionStatuses.size() > 0)) {
-      for (final CenterSectionStatus sectionStatus : sectionStatuses) {
+    if (sectionStatuses != null && sectionStatuses.size() > 0) {
+      for (CenterSectionStatus sectionStatus : sectionStatuses) {
         if (sectionStatus.getMissingFields().length() > 0) {
           return false;
         }
@@ -3460,17 +3442,18 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return true;
   }
 
+
   public boolean isCompleteCrpIndicator(long liaisonIntitution) {
     List<SectionStatus> sectionStatus = null;
-    final IpLiaisonInstitution ipLiaisonInstitution =
+    IpLiaisonInstitution ipLiaisonInstitution =
       ipLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonIntitution);
 
     sectionStatus = ipLiaisonInstitution.getSectionStatus().stream()
       .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.CRP_INDICATORS.getStatus())
-        && (c.getYear().intValue() == this.getCurrentCycleYear()) && c.getCycle().equals(this.getCurrentCycle()))
+        && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
       .collect(Collectors.toList());
 
-    for (final SectionStatus sectionStatus2 : sectionStatus) {
+    for (SectionStatus sectionStatus2 : sectionStatus) {
       if (sectionStatus2.getMissingFields().length() > 0) {
         return false;
       }
@@ -3484,7 +3467,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public boolean isCompleteImpact(long crpProgramID) {
 
-    final List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
+    List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
     if (sectionsBD == null) {
       return false;
     }
@@ -3496,7 +3479,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
           && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
         .collect(Collectors.toList());
 
-    for (final SectionStatus sectionStatus : sections) {
+    for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
         return false;
       }
@@ -3509,6 +3492,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -3523,9 +3507,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return false;
     }
 
-    final CenterProgram researchProgram = programService.getProgramById(programID);
+    CenterProgram researchProgram = programService.getProgramById(programID);
 
-    final List<String> statuses = secctionStatusService.distinctSectionStatus(programID);
+    List<String> statuses = secctionStatusService.distinctSectionStatus(programID);
 
     if (statuses.size() != 4) {
       return false;
@@ -3540,11 +3524,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return false;
     }
 
-    final List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
+    List<CenterSectionStatus> sectionStatuses = new ArrayList<>(researchProgram.getSectionStatuses().stream()
       .filter(ss -> ss.getYear() == (short) this.getCenterYear()).collect(Collectors.toList()));
 
-    if ((sectionStatuses != null) && (sectionStatuses.size() > 0)) {
-      for (final CenterSectionStatus sectionStatus : sectionStatuses) {
+    if (sectionStatuses != null && sectionStatuses.size() > 0) {
+      for (CenterSectionStatus sectionStatus : sectionStatuses) {
         if (sectionStatus.getMissingFields().length() > 0) {
           return false;
         }
@@ -3557,13 +3541,13 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public boolean isCompletePreProject(long projectID) {
 
-    final Project project = projectManager.getProjectById(projectID);
-    final List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    Project project = projectManager.getProjectById(projectID);
+    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
     int i = 0;
     int budgetFlagshipSection = 0;
-    for (final SectionStatus sectionStatus : sections) {
+    for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-        && (sectionStatus.getYear().intValue() == this.getCurrentCycleYear())) {
+        && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
         switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
           case DESCRIPTION:
             i++;
@@ -3613,12 +3597,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return true;
   }
 
-
   public boolean isCompleteProject(long projectID) {
 
     try {
       Project project = projectManager.getProjectById(projectID);
-      final List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+      List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
       int totalSections = 0;
       int deliverableSection = 0;
       int budgetCoASection = 0;
@@ -3628,7 +3611,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       int caseStudySection = 0;
       int highlightSection = 0;
 
-      final List<Deliverable> deliverables =
+      List<Deliverable> deliverables =
         project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
       List<Deliverable> openA = deliverables.stream()
         .filter(a -> a.isActive() && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
@@ -3648,13 +3631,15 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
               && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Complete.getStatusId()))
           .collect(Collectors.toList()));
-        openA.addAll(deliverables.stream()
-          .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this.getCurrentCycleYear()
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId()))
-          .collect(Collectors.toList()));
+        openA
+          .addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear().intValue() == this
+                .getCurrentCycleYear()
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
+              && d.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
       }
 
       for (Deliverable deliverable : openA) {
@@ -3666,12 +3651,12 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
         deliverableSection = 1;
         totalSections++;
       }
-      for (final SectionStatus sectionStatus : sections) {
+      for (SectionStatus sectionStatus : sections) {
         if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-          && (sectionStatus.getYear().intValue() == this.getCurrentCycleYear())) {
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
 
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
-            final Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
+            Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
             if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
               && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
@@ -3696,9 +3681,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       }
 
       if (this.isPlanningActive()) {
-        for (final SectionStatus sectionStatus : sections) {
+        for (SectionStatus sectionStatus : sections) {
           if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-            && (sectionStatus.getYear().intValue() == this.getCurrentCycleYear())) {
+            && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
             switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
 
               case ACTIVITIES:
@@ -3808,9 +3793,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
         }
       } else {
 
-        for (final SectionStatus sectionStatus : sections) {
+        for (SectionStatus sectionStatus : sections) {
           if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-            && (sectionStatus.getYear().intValue() == this.getCurrentCycleYear())) {
+            && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
             switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
 
               case DESCRIPTION:
@@ -3856,19 +3841,18 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
           return false;
         }
 
-        final List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-          .filter(d -> d.isActive() && (d.getYear().intValue() == this.getCurrentCycleYear()))
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
         if (highlights.isEmpty()) {
           totalSections++;
         }
 
-        final List<CaseStudyProject> caseStudyProjects =
+        List<CaseStudyProject> caseStudyProjects =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        final List<CaseStudy> caseStudies = new ArrayList<>();
-        for (final CaseStudyProject caseStudyProject : caseStudyProjects) {
-          if (caseStudyProject.isCreated()
-            && (caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear())) {
+        List<CaseStudy> caseStudies = new ArrayList<>();
+        for (CaseStudyProject caseStudyProject : caseStudyProjects) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
             caseStudies.add(caseStudyProject.getCaseStudy());
           }
 
@@ -3885,6 +3869,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
           } else {
             return totalSections == 8;
           }
+
         } else {
 
           if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
@@ -3896,25 +3881,24 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
         }
 
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
 
 
   }
 
-
   public boolean isCompleteSynthesys(long program, int type) {
 
     List<SectionStatus> sectionStatus = null;
-    final IpProgram ipProgram = ipProgramManager.getIpProgramById(program);
+    IpProgram ipProgram = ipProgramManager.getIpProgramById(program);
 
     switch (type) {
       case 1:
 
         sectionStatus = ipProgram.getSectionStatuses().stream()
           .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus())
-            && (c.getYear().intValue() == this.getCurrentCycleYear()) && c.getCycle().equals(this.getCurrentCycle()))
+            && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
           .collect(Collectors.toList());
 
         break;
@@ -3922,7 +3906,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
         sectionStatus = ipProgram.getSectionStatuses().stream()
           .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.SYNTHESISMOG.getStatus())
-            && (c.getYear().intValue() == this.getCurrentCycleYear()) && c.getCycle().equals(this.getCurrentCycle()))
+            && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
           .collect(Collectors.toList());
 
         break;
@@ -3930,7 +3914,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
 
 
-    for (final SectionStatus sectionStatus2 : sectionStatus) {
+    for (SectionStatus sectionStatus2 : sectionStatus) {
       if (sectionStatus2.getMissingFields().length() > 0) {
         return false;
       }
@@ -3948,7 +3932,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return Boolean.parseBoolean(crpManager.getGlobalUnitById(this.getCrpID()).getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_CLOSED)).collect(Collectors.toList()).get(0)
         .getValue());
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -3960,7 +3944,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       return Boolean.parseBoolean(crpManager.getGlobalUnitById(this.getCrpID()).getCustomParameters().stream()
         .filter(c -> c.getParameter().getKey().equals(APConstants.CRP_REFRESH)).collect(Collectors.toList()).get(0)
         .getValue());
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -4018,7 +4002,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return isEditable;
   }
 
-
   public boolean isEditStatus() {
     return editStatus;
   }
@@ -4027,9 +4010,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
 
     try {
-      final Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
-      if ((deliverableBD.getDissemination().getAlreadyDisseminated() != null)
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
         && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
         return true;
       }
@@ -4038,11 +4021,12 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       }
 
       return false;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return null;
     }
 
   }
+
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -4057,18 +4041,18 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public Boolean isI(long deliverableID) {
     try {
-      final Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
-      if ((deliverableBD.getDissemination().getAlreadyDisseminated() != null)
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
         && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
 
-        final String channel = deliverableBD.getDissemination().getDisseminationChannel();
-        final String link = deliverableBD.getDissemination().getDisseminationUrl().replaceAll(" ", "%20");;
-        if ((channel == null) || channel.equals("-1")) {
+        String channel = deliverableBD.getDissemination().getDisseminationChannel();
+        String link = deliverableBD.getDissemination().getDisseminationUrl().replaceAll(" ", "%20");;
+        if (channel == null || channel.equals("-1")) {
           return null;
         }
-        if ((link == null) || link.equals("-1") || link.isEmpty()) {
+        if (link == null || link.equals("-1") || link.isEmpty()) {
           return null;
         }
 
@@ -4109,7 +4093,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
         return null;
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return null;
     }
     return null;
@@ -4117,9 +4101,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
+
   public boolean isLessonsActive() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
   }
+
 
   /**
    * Validate if the user is already logged in or not.
@@ -4133,7 +4119,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return true;
   }
 
-
   public boolean isPhaseOne() {
     try {
       if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && (this.getCurrentCycleYear() == 2016)) {
@@ -4141,7 +4126,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       } else {
         return false;
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -4154,15 +4139,13 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
   }
 
-
   public boolean isPMU() {
-    final String roles = this.getRoles();
+    String roles = this.getRoles();
     if (roles.contains("PMU")) {
       return true;
     }
     return false;
   }
-
 
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -4193,7 +4176,8 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public Boolean isProjectNew(long projectID) {
 
-    final Project project = projectManager.getProjectById(projectID);
+    Project project = projectManager.getProjectById(projectID);
+
 
     if (this.isReportingActive()) {
 
@@ -4228,10 +4212,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public boolean isProjectSubmitted(long projectID) {
-    final Project project = projectManager.getProjectById(projectID);
-    final List<Submission> submissions = project.getSubmissions()
+    Project project = projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions()
       .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
-        && (c.getYear().intValue() == this.getCurrentCycleYear()) && ((c.isUnSubmit() == null) || !c.isUnSubmit()))
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
@@ -4303,7 +4287,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   }
 
   public boolean isSubmit(long projectID) {
-
     Project project = projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
     List<Submission> submissions =
@@ -4316,6 +4299,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD *********************
@@ -4340,7 +4324,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return false;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Check if the project is submitted
@@ -4350,16 +4333,16 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public boolean isSubmitCenterProject(long projectID) {
 
-    final CenterProject project = projectService.getCenterProjectById(projectID);
+    CenterProject project = projectService.getCenterProjectById(projectID);
     if (project != null) {
 
-      final CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.MONITORING.getId());
+      CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.MONITORING.getId());
 
-      final List<CenterSubmission> submissions = new ArrayList<>(project.getSubmissions().stream()
-        .filter(s -> s.getResearchCycle().equals(cycle) && (s.getYear().intValue() == this.getCenterYear()))
+      List<CenterSubmission> submissions = new ArrayList<>(project.getSubmissions().stream()
+        .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
         .collect(Collectors.toList()));
 
-      if ((submissions != null) && (submissions.size() > 0)) {
+      if (submissions != null && submissions.size() > 0) {
         this.setCenterSubmission(submissions.get(0));
         return true;
       }
@@ -4383,10 +4366,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
       CenterCycle cycle = cycleService.getResearchCycleById(ImpactPathwayCyclesEnum.IMPACT_PATHWAY.getId());
 
       List<CenterSubmission> submissions = new ArrayList<>(program.getSubmissions().stream()
-        .filter(s -> s.getResearchCycle().equals(cycle) && (s.getYear().intValue() == this.getCenterYear()))
+        .filter(s -> s.getResearchCycle().equals(cycle) && s.getYear().intValue() == this.getCenterYear())
         .collect(Collectors.toList()));
 
-      if ((submissions != null) && (submissions.size() > 0)) {
+      if (submissions != null && submissions.size() > 0) {
         this.setCenterSubmission(submissions.get(0));
         return true;
       }
@@ -4435,7 +4418,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
     return false;
   }
-
 
   public void loadDissemination(Deliverable deliverableBD) {
 
@@ -4505,7 +4487,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
-    final ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
     if (this.isReportingActive()) {
 
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
@@ -4570,6 +4552,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
   }
 
+
   public void loadQualityCheck(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableQualityChecks() != null) {
@@ -4583,9 +4566,11 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     }
   }
 
+
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -4602,7 +4587,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
       && !this.isProjectNew(project.getId())) {
 
-      final String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
       project.getProjectComponentLesson().setActive(true);
       project.getProjectComponentLesson().setActiveSince(new Date());
@@ -4621,13 +4606,14 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
+
   public void saveLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
-    final Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
+    Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
     if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()
       && !this.isProjectNew(project.getId())) {
 
-      final String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
       if (projectOutcome.getProjectComponentLesson() == null) {
         LOG.debug("No lesson attached with projectOutcome");
@@ -4679,10 +4665,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
-
   public void saveLessonsSynthesis(GlobalUnit crp, IpProgram ipProgram) {
 
-    final String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
 
     ipProgram.getProjectComponentLesson().setActive(true);
@@ -4708,28 +4693,28 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   }
 
-
   public void setActualPhase(Phase phase) {
     this.getSession().put(APConstants.CURRENT_PHASE, phase);
   }
-
 
   public void setAdd(boolean add) {
     this.add = true;
   }
 
+
   public void setAvailabePhase(boolean avilabePhase) {
     this.availabePhase = avilabePhase;
   }
+
 
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
   }
 
-
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
+
 
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
@@ -4739,10 +4724,10 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     this.canEditPhase = canEditPhase;
   }
 
+
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
-
 
   public void setCenterID(Long centerID) {
     this.centerID = centerID;
@@ -4753,19 +4738,19 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     this.centerSession = centerSession;
   }
 
+
   public void setCenterSubmission(CenterSubmission centerSubmission) {
     this.centerSubmission = centerSubmission;
   }
-
 
   public void setCrpID(Long crpID) {
     this.crpID = crpID;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
-
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
@@ -4788,7 +4773,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public void setDraft(boolean draft) {
     this.draft = draft;
   }
-
 
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
@@ -4828,11 +4812,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     this.phaseID = phaseID;
   }
 
-
   public void setPlanningActive(boolean planningActive) {
     this.planningActive = planningActive;
   }
-
 
   public void setPlanningYear(int planningYear) {
     this.planningYear = planningYear;
@@ -4890,9 +4872,9 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public String specificityValue(String specificity) {
     try {
-      final String value = (this.getSession().get(specificity).toString());
+      String value = (this.getSession().get(specificity).toString());
       return value;
-    } catch (final Exception e) {
+    } catch (Exception e) {
       return null;
     }
 
@@ -4964,12 +4946,12 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public boolean validateCenterDeliverable(CenterProject project) {
     if (project != null) {
-      final List<CenterDeliverable> deliverables =
+      List<CenterDeliverable> deliverables =
         new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
-      if ((deliverables != null) && !deliverables.isEmpty()) {
-        for (final CenterDeliverable deliverable : deliverables) {
-          final CenterSectionStatus sectionStatus = this.getCenterDeliverableStatus(deliverable.getId());
+      if (deliverables != null && !deliverables.isEmpty()) {
+        for (CenterDeliverable deliverable : deliverables) {
+          CenterSectionStatus sectionStatus = this.getCenterDeliverableStatus(deliverable.getId());
           if (sectionStatus == null) {
             return false;
           } else {
@@ -4986,6 +4968,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return true;
   }
 
+
   /**
    * ************************ CENTER METHOD *********************
    * Validate the missing fields in the program impacts section
@@ -4995,7 +4978,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public boolean validateCenterImpact(CenterProgram program, String sectionName) {
 
-    final CenterSectionStatus sectionStatus =
+    CenterSectionStatus sectionStatus =
       secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
 
     if (sectionStatus == null) {
@@ -5008,7 +4991,6 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
     return true;
   }
 
-
   /**
    * ************************ CENTER METHOD *********************
    * Validate the missing fields in the outcome section
@@ -5018,15 +5000,15 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public boolean validateCenterOutcome(CenterProgram program) {
     if (program != null) {
-      final List<CenterTopic> topics =
+      List<CenterTopic> topics =
         new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if ((topics != null) && !topics.isEmpty()) {
-        for (final CenterTopic researchTopic : topics) {
-          final List<CenterOutcome> outcomes = new ArrayList<>(
+      if (topics != null && !topics.isEmpty()) {
+        for (CenterTopic researchTopic : topics) {
+          List<CenterOutcome> outcomes = new ArrayList<>(
             researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-          if ((outcomes != null) && !outcomes.isEmpty()) {
-            for (final CenterOutcome researchOutcome : outcomes) {
-              final CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId());
+          if (outcomes != null && !outcomes.isEmpty()) {
+            for (CenterOutcome researchOutcome : outcomes) {
+              CenterSectionStatus sectionStatus = this.getCenterOutcomeStatus(researchOutcome.getId());
               if (sectionStatus == null) {
                 return false;
               } else {
@@ -5059,22 +5041,22 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
   public boolean validateCenterOutput(CenterProgram program) {
 
     if (program != null) {
-      final List<CenterTopic> topics =
+      List<CenterTopic> topics =
         new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if ((topics != null) && !topics.isEmpty()) {
-        for (final CenterTopic researchTopic : topics) {
-          final List<CenterOutcome> outcomes = new ArrayList<>(
+      if (topics != null && !topics.isEmpty()) {
+        for (CenterTopic researchTopic : topics) {
+          List<CenterOutcome> outcomes = new ArrayList<>(
             researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-          if ((outcomes != null) && !outcomes.isEmpty()) {
-            for (final CenterOutcome researchOutcome : outcomes) {
+          if (outcomes != null && !outcomes.isEmpty()) {
+            for (CenterOutcome researchOutcome : outcomes) {
               researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
                 .filter(rm -> rm.isActive()).collect(Collectors.toList())));
 
-              final List<CenterOutput> outputs = new ArrayList<>(
+              List<CenterOutput> outputs = new ArrayList<>(
                 researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-              if ((outputs != null) && !outputs.isEmpty()) {
-                for (final CenterOutput researchOutput : outputs) {
-                  final CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
+              if (outputs != null && !outputs.isEmpty()) {
+                for (CenterOutput researchOutput : outputs) {
+                  CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
                   if (sectionStatus == null) {
                     return false;
                   } else {
@@ -5110,7 +5092,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    * @return false if has missing fields.
    */
   public boolean validateCenterProject(CenterProject project, String sectionName) {
-    final CenterSectionStatus sectionStatus = secctionStatusService.getSectionStatusByProject(
+    CenterSectionStatus sectionStatus = secctionStatusService.getSectionStatusByProject(
       project.getResearchProgram().getId(), project.getId(), sectionName, this.getCenterYear());
 
     if (sectionStatus == null) {
@@ -5132,7 +5114,7 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
    */
   public boolean validateCenterTopic(CenterProgram program, String sectionName) {
 
-    final CenterSectionStatus sectionStatus =
+    CenterSectionStatus sectionStatus =
       secctionStatusService.getSectionStatusByProgram(program.getId(), sectionName, this.getCenterYear());
 
     if (sectionStatus == null) {
@@ -5147,13 +5129,13 @@ public List<GlobalUnit> getCrpCategoryList(String category) {
 
   public boolean validURL(String URL) {
     try {
-      final java.net.URL url = new java.net.URL(URL);
+      java.net.URL url = new java.net.URL(URL);
       url.toURI();
       return true;
-    } catch (final MalformedURLException e) {
+    } catch (MalformedURLException e) {
 
       return false;
-    } catch (final URISyntaxException e) {
+    } catch (URISyntaxException e) {
 
       return false;
     }

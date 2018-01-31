@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.ICenterProgramDAO;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevDisciplineService;
 import org.cgiar.ccafs.marlo.data.manager.ICapdevOutputsService;
@@ -41,8 +41,8 @@ import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Discipline;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.TargetGroup;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -73,13 +73,17 @@ import org.apache.shiro.session.Session;
 
 public class CapdevDescriptionAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
+
   private CapacityDevelopment capdev;
+
   private final CapDevDescriptionValidator validator;
+
   private long capdevID;
   private long projectID;
   private List<Discipline> disciplines;
@@ -89,7 +93,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private List<CenterProject> projects;
   private List<Map<String, Object>> jsonProjects;
   private List<Map<String, Object>> json;
-  private List<Crp> crps;
+  private List<GlobalUnit> crps;
   private List<Institution> partners;
   private List<CenterOutput> outputs;
   private List<Long> capdevdisciplines;
@@ -103,7 +107,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private final ICenterAreaManager researchAreaService;
   private final ICenterProgramDAO researchProgramSercive;
   private final ICenterProjectManager projectService;
-  private final CrpManager crpService;
+  private final GlobalUnitManager crpService;
   private final InstitutionManager institutionService;
   private final ICenterOutputManager researchOutputService;
   private final IDisciplineService disciplineService;
@@ -112,13 +116,12 @@ public class CapdevDescriptionAction extends BaseAction {
   private final ICapdevTargetgroupService capdevTargetgroupService;
   private final ICapdevPartnersService capdevPartnerService;
   private final ICapdevOutputsService capdevOutputService;
-
   private String transaction;
   private final AuditLogManager auditLogService;
 
   @Inject
   public CapdevDescriptionAction(APConfig config, ICenterAreaManager researchAreaService,
-    ICenterProgramDAO researchProgramSercive, ICenterProjectManager projectService, CrpManager crpService,
+    ICenterProgramDAO researchProgramSercive, ICenterProjectManager projectService, GlobalUnitManager crpService,
     IDisciplineService disciplineService, ITargetGroupService targetGroupService,
     ICapacityDevelopmentService capdevService, ICapdevDisciplineService capdevDisciplineService,
     ICapdevTargetgroupService capdevTargetgroupService, InstitutionManager institutionService,
@@ -141,7 +144,6 @@ public class CapdevDescriptionAction extends BaseAction {
     this.validator = validator;
     this.auditLogService = auditLogService;
   }
-
 
   @Override
   public String cancel() {
@@ -177,6 +179,7 @@ public class CapdevDescriptionAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public String deleteOutput() {
     // final long capdevoutputID =
     // Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]));
@@ -208,7 +211,6 @@ public class CapdevDescriptionAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = capdev.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -216,7 +218,6 @@ public class CapdevDescriptionAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public CapacityDevelopment getCapdev() {
     return capdev;
@@ -248,9 +249,10 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public List<Crp> getCrps() {
+  public List<GlobalUnit> getCrps() {
     return crps;
   }
+
 
   public List<Discipline> getDisciplines() {
     return disciplines;
@@ -266,10 +268,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return jsonProjects;
   }
 
+
   public String getOtherDiscipline() {
     return otherDiscipline;
   }
-
 
   public String getOtherPartner() {
     return otherPartner;
@@ -285,6 +287,7 @@ public class CapdevDescriptionAction extends BaseAction {
     return outputs;
   }
 
+
   public List<Institution> getPartners() {
     return partners;
   }
@@ -293,10 +296,10 @@ public class CapdevDescriptionAction extends BaseAction {
     return projectID;
   }
 
-
   public List<CenterProject> getProjects() {
     return projects;
   }
+
 
   public List<CenterArea> getResearchAreas() {
     return researchAreas;
@@ -305,7 +308,6 @@ public class CapdevDescriptionAction extends BaseAction {
   public List<CenterProgram> getResearchPrograms() {
     return researchPrograms;
   }
-
 
   public List<TargetGroup> getTargetGroups() {
     return targetGroups;
@@ -686,7 +688,7 @@ public class CapdevDescriptionAction extends BaseAction {
   }
 
 
-  public void setCrps(List<Crp> crps) {
+  public void setCrps(List<GlobalUnit> crps) {
     this.crps = crps;
   }
 

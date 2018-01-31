@@ -47,33 +47,33 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
     }
 
     this.validateSupportingDocs(baseAction, deliverable);
-    this.saveMissingFields(deliverable, deliverable.getCapdev(), "supportingDocs");
+    this.saveMissingFields(deliverable, deliverable.getCapdev(), "supportingDocs", baseAction);
   }
 
 
   public void validateSupportingDocs(BaseAction baseAction, CenterDeliverable deliverable) {
 
     if (deliverable.getName() == null) {
-      this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
+      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
       baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getName() != null) {
       if (deliverable.getName().equals("")) {
-        this.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
+        baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.title"));
         baseAction.getInvalidFields().put("input-deliverable.name", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
     if (deliverable.getDeliverableType() == null) {
-      this.addMessage(baseAction.getText("capdev.action.supportingDocs.subtype"));
+      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.subtype"));
       baseAction.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == -1) {
-        this.addMessage(baseAction.getText("capdev.action.supportingDocs.type"));
+        baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.type"));
         baseAction.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
       }
 
@@ -81,12 +81,12 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
 
     if (deliverable.getStartDate() == null) {
-      this.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
+      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.publicationdate"));
       baseAction.getInvalidFields().put("input-deliverable.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getDocuments() == null) {
-      this.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
+      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.supportingDocs"));
       baseAction.getInvalidFields().put("list-capdev.supportingDocs", InvalidFieldsMessages.EMPTYLIST);
     } else {
       for (int j = 0; j < deliverable.getDocuments().size(); j++) {
@@ -97,7 +97,7 @@ public class CapdevSupportingDocsValidator extends BaseValidator {
 
   public void valideDocument(BaseAction baseAction, String link, int i) {
     if ((link == null) || link.equals("")) {
-      this.addMessage(baseAction.getText("capdev.action.supportingDocs.link"));
+      baseAction.addMessage(baseAction.getText("capdev.action.supportingDocs.link"));
       baseAction.getInvalidFields().put("input-deliverable.documents[" + i + "].link",
         InvalidFieldsMessages.EMPTYFIELD);
     }
