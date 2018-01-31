@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
@@ -39,8 +38,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -68,13 +67,13 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
   // PDF bytes
   private byte[] bytesExcel;
   // Services
-  private ICenterProgramManager programService;
+  private final ICenterProgramManager programService;
   // Params
   private CenterProgram researchProgram;
   private long startTime;
-  private HashSet<Long> centerDeliverablesSet = new HashSet<Long>();
-  private HashSet<Long> centerProjectsSet = new HashSet<Long>();
-  private HashMap<String, Integer> deliverablesCategory = new HashMap<String, Integer>();
+  private final HashSet<Long> centerDeliverablesSet = new HashSet<Long>();
+  private final HashSet<Long> centerProjectsSet = new HashSet<Long>();
+  private final HashMap<String, Integer> deliverablesCategory = new HashMap<String, Integer>();
   private int deliverablesCategoryTotal = 0;
 
   @Inject
@@ -111,10 +110,11 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
 
   @Override
   public String execute() throws Exception {
+    ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
+    ResourceManager manager = new ResourceManager();
+    // (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
+    manager.registerDefaults();
     try {
 
       Resource reportResource =
@@ -152,7 +152,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
       ExcelReportUtil.createXLSX(masterReport, os);
       bytesExcel = os.toByteArray();
       os.close();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("Error generating Excel " + e.getMessage());
       throw e;
     }
@@ -329,17 +329,17 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         .collect(Collectors.toList())) {
         String deliverableId = centerDeliverable.getId().toString();
         String title = null;
-        if (centerDeliverable.getName() != null && !centerDeliverable.getName().trim().isEmpty()) {
+        if ((centerDeliverable.getName() != null) && !centerDeliverable.getName().trim().isEmpty()) {
           title = centerDeliverable.getName();
         }
         String type = null;
         String subType = null;
-        if (centerDeliverable.getDeliverableType() != null
-          && centerDeliverable.getDeliverableType().getName() != null) {
+        if ((centerDeliverable.getDeliverableType() != null)
+          && (centerDeliverable.getDeliverableType().getName() != null)) {
           type = centerDeliverable.getDeliverableType().getName();
 
-          if (centerDeliverable.getDeliverableType().getDeliverableType() != null
-            && centerDeliverable.getDeliverableType().getDeliverableType().getName() != null) {
+          if ((centerDeliverable.getDeliverableType().getDeliverableType() != null)
+            && (centerDeliverable.getDeliverableType().getDeliverableType().getName() != null)) {
             subType = centerDeliverable.getDeliverableType().getDeliverableType().getName();
           }
         }
@@ -381,18 +381,18 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
         }
 
         String projectId = null;
-        if (centerDeliverable.getProject() != null && centerDeliverable.getProject().getId() != null) {
+        if ((centerDeliverable.getProject() != null) && (centerDeliverable.getProject().getId() != null)) {
           projectId = centerDeliverable.getProject().getId().toString();
         }
 
         String projectTitle = null;
-        if (centerDeliverable.getProject() != null && centerDeliverable.getProject().getName() != null
+        if ((centerDeliverable.getProject() != null) && (centerDeliverable.getProject().getName() != null)
           && !centerDeliverable.getProject().getName().trim().isEmpty()) {
           projectTitle = centerDeliverable.getProject().getName();
         }
         centerDeliverablesSet.add(centerDeliverable.getId());
         centerProjectsSet.add(centerProject.getId());
-        if (type != null && !type.isEmpty()) {
+        if ((type != null) && !type.isEmpty()) {
           Integer deliverablesCategoryCount =
             deliverablesCategory.containsKey(type) ? deliverablesCategory.get(type) : 0;
           deliverablesCategory.put(type, deliverablesCategoryCount + 1);
@@ -455,15 +455,15 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
    */
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "center", "researchProgram"},
+    final TypedTableModel model = new TypedTableModel(new String[] {"currentDate", "center", "researchProgram"},
       new Class[] {String.class, String.class, String.class});
     String currentDate = "";
 
     // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    final ZonedDateTime timezone = ZonedDateTime.now();
+    final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     currentDate = timezone.format(format) + this.getTimeZone();
-    String center = this.getCenterSession();
+    final String center = this.getCenterSession();
 
     model.addRow(new Object[] {currentDate, center, researchProgram.getName()});
     return model;
@@ -479,7 +479,7 @@ public class DeliverablesSummaryAction extends BaseAction implements Summary {
     try {
       programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_PROGRAM_ID)));
       researchProgram = programService.getProgramById(programID);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("Failed to get " + APConstants.CENTER_PROGRAM_ID + " parameter. Exception: " + e.getMessage());
     }
     // Calculate time to generate report

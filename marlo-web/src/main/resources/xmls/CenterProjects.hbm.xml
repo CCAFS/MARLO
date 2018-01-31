@@ -110,7 +110,7 @@
 		<set name="deliverables" table="center_deliverables" inverse="true"
 			lazy="true" fetch="select">
 			<key>
-				<column name="project_id" not-null="true" />
+				<column name="project_id"  />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterDeliverable" />
 		</set>

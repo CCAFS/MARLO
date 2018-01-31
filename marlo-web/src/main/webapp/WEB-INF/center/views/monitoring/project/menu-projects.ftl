@@ -5,6 +5,7 @@
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'projectDescription',  'active': true  },
       { 'slug': 'projectPartners',  'name': 'projects.menu.partners',  'action': 'projectPartners',  'active': true  },
+      { 'slug': 'projectCapdev',  'name': 'projects.menu.capdev',  'action': 'projectCapdev',  'active': action.centerCapDevActive() },
       { 'slug': 'deliverables',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': false }
       ]
     }
