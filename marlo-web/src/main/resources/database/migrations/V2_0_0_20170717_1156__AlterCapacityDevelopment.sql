@@ -9,11 +9,6 @@ ADD CONSTRAINT `capdev_researchProgram_fk`
   REFERENCES `center_programs` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
-ADD CONSTRAINT `capdev_researchCenter`
-  FOREIGN KEY (`crp`)
-  REFERENCES `centers` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION,
 ADD CONSTRAINT `capdev_project_fk`
   FOREIGN KEY (`project`)
   REFERENCES `center_projects` (`id`)

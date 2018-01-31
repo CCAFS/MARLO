@@ -153,7 +153,6 @@
 		<mapping resource="xmls/CenterOutput.hbm.xml" />
 		<mapping resource="xmls/CenterPrograms.hbm.xml" />
 		<mapping resource="xmls/CenterTopic.hbm.xml" />
-		<mapping resource="xmls/CenterRoles.hbm.xml" />
 		<mapping resource="xmls/CenterImpactObjectives.hbm.xml" />
 		<mapping resource="xmls/CenterSectionStatuses.hbm.xml" />
 		<mapping resource="xmls/CenterTargetUnits.hbm.xml" />
@@ -183,8 +182,6 @@
 		<mapping resource="xmls/CenterDeliverableCrosscutingThemes.hbm.xml" />
 		<mapping resource="xmls/CenterDeliverableOutputs.hbm.xml" />
 		<mapping resource="xmls/CenterProjectTypes.hbm.xml" />
-		<mapping resource="xmls/CenterParameters.hbm.xml" />
-		<mapping resource="xmls/CenterCustomParameters.hbm.xml" />
 		<mapping resource="xmls/CenterImpactStatement.hbm.xml" />
 		<mapping resource="xmls/DeliverablesInfo.hbm.xml" />
 		<mapping resource="xmls/CapacityDevelopment.hbm.xml" />
@@ -206,22 +203,20 @@
 		<mapping resource="xmls/CountryAgreement.hbm.xml" />
 		<mapping resource="xmls/CrpAgreement.hbm.xml" />
 		<mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
-		<mapping resource="xmls/PlaAgreement.hbm.xml" />		
+		<mapping resource="xmls/PlaAgreement.hbm.xml" />
 		<mapping resource="xmls/AdUser.hbm.xml" />
 		<mapping resource="xmls/CapdevRangeAge.hbm.xml" />
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
 		<mapping resource="xmls/GlobalUnitTypes.hbm.xml" />
-      	<mapping resource="xmls/GlobalUnits.hbm.xml" />      
-      	<mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
-      	<mapping resource="xmls/ProjectExpectedStudies.hbm.xml"/>
-      	<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml"/>
-      	<mapping resource="xmls/CrossCuttingScoring.hbm.xml"/>
-      	<mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
-	  	<mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
-      	<mapping resource="xmls/EmailLogs.hbm.xml"/>
-      	<mapping resource="xmls/ExpectedStudyProjects.hbm.xml"/> 
+		<mapping resource="xmls/GlobalUnits.hbm.xml" />
+		<mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
+		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml" />
+		<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml" />
+		<mapping resource="xmls/CrossCuttingScoring.hbm.xml" />
+		<mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml" />
+		<mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml" />
+		<mapping resource="xmls/EmailLogs.hbm.xml" />
+		<mapping resource="xmls/ExpectedStudyProjects.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
-
-   
