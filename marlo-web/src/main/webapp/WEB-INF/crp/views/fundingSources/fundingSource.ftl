@@ -18,10 +18,17 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
 [#assign hasInstitutions = fundingSource.institutions?has_content /]
+
+[#if showEXtDate]
+  [#assign fundingSourceYears = startYear .. extensionYear/]
+[#else]
+  [#assign fundingSourceYears = startYear .. endYear/]
+[/#if]
 
 [#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
 [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
@@ -190,7 +197,7 @@
             <div class="input"><p>${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
-        [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
+        
         [#-- End Date --]
         <div class="col-md-4 endDateBlock metadataElement-endDate" >
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
@@ -261,8 +268,8 @@
           </div>
           [#-- Agreement status --]
           <div class="col-md-6">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false editable=(editable|| editStatus) /] 
-            [#if (editable|| editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=(editable || editStatus) /] 
+            [#--  --if (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if --]
           </div>
         </div>
       </div>
@@ -450,13 +457,13 @@
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. endYear as year]
+        [#list fundingSourceYears as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
       <div class="tab-content contributionContent">
-        [#list startYear .. endYear as year]
+        [#list fundingSourceYears as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
           [#attempt]
