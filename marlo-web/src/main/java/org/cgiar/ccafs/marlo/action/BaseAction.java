@@ -648,12 +648,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == FundingSource.class) {
         FundingSource fundingSource = fundingSourceManager.getFundingSourceById(id);
-        if (fundingSource.getProjectBudgets().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList()).size() > 0) {
+        if (this.isFundingSourceNew(fundingSource.getId())) {
+          if (fundingSource.getProjectBudgets().stream()
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+            .collect(Collectors.toList()).size() > 0) {
+            return false;
+          }
+          return true;
+        } else {
           return false;
         }
+
       }
+
 
       if (clazz == CrpPpaPartner.class) {
         CrpPpaPartner crpPpaPartner = crpPpaPartnerManager.getCrpPpaPartnerById(id);
@@ -863,7 +870,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
       return true;
-    } catch (Exception e) {
+    } catch (
+
+    Exception e)
+
+    {
 
       return true;
     }
@@ -4032,6 +4043,43 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return fullEditable;
   }
 
+  public Boolean isFundingSourceNew(long fundingSourceID) {
+
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
+
+    if (this.isReportingActive()) {
+
+      try {
+        Date reportingDate = this.getActualPhase().getStartDate();
+        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    } else {
+      try {
+        Date reportingDate = this.getActualPhase().getStartDate();
+        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    }
+  }
+
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
       return true;
@@ -4134,6 +4182,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActive() {
     return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
   }
+
 
   public boolean isPlanningActiveParam() {
     return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
