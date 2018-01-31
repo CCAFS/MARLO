@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
+
 /**
  * @author Christian Garcia - CIAT/CCAFS
  * @author Julián Rodríguez - CIAT/CCAFS
@@ -44,6 +47,9 @@ public class SendFailEmailAction extends BaseAction {
   private EmailLogManager emailLogManager;
   private final SendMailS sendMail;
   private ArrayList<Map<String, String>> results;
+  private ArrayList<EmailLog> emails;
+
+  private int type;
   String contentType = "application/pdf";
 
   @Inject
@@ -60,21 +66,42 @@ public class SendFailEmailAction extends BaseAction {
     results = new ArrayList<>();
     List<EmailLog> emailLogs = emailLogManager.findAll().stream().filter(c -> c.getSucces().booleanValue() == false)
       .collect(Collectors.toList());
-    for (EmailLog emailLog : emailLogs) {
-      boolean send = sendMail.sendRetry(emailLog.getTo(), emailLog.getCc(), emailLog.getBbc(), emailLog.getSubject(),
-        emailLog.getMessage(), emailLog.getFileContent(), contentType, emailLog.getFileName(), true);
-      if (send) {
-        emailLog.setFileContent(null);
-      }
-      emailLog.setSucces(send);
-      emailLogManager.saveEmailLog(emailLog);
-      HashMap<String, String> map = new HashMap<>();
-      map.put("id", emailLog.getId().toString());
-      map.put("subject", emailLog.getSubject());
-      map.put("result", send + "");
-      results.add(map);
+
+    switch (type) {
+      case 0:
+        emails = new ArrayList<>();
+        emails.addAll(emailLogs);
+        break;
+      case 1:
+        for (EmailLog emailLog : emailLogs) {
+          boolean send =
+            sendMail.sendRetry(emailLog.getTo(), emailLog.getCc(), emailLog.getBbc(), emailLog.getSubject(),
+              emailLog.getMessage(), emailLog.getFileContent(), contentType, emailLog.getFileName(), true);
+          if (send) {
+            emailLog.setFileContent(null);
+          }
+          emailLog.setSucces(send);
+          emailLogManager.saveEmailLog(emailLog);
+          HashMap<String, String> map = new HashMap<>();
+          map.put("id", emailLog.getId().toString());
+          map.put("subject", emailLog.getSubject());
+          map.put("to", emailLog.getTo());
+
+          map.put("result", send + "");
+          results.add(map);
+        }
+        break;
+
+      default:
+        break;
     }
+
     return SUCCESS;
+  }
+
+
+  public ArrayList<EmailLog> getEmails() {
+    return emails;
   }
 
 
@@ -85,7 +112,15 @@ public class SendFailEmailAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    Map<String, Parameter> parameters = this.getParameters();
+    type = Integer.parseInt(StringUtils.trim(parameters.get("type").getMultipleValues()[0]));
 
+
+  }
+
+
+  public void setEmails(ArrayList<EmailLog> emails) {
+    this.emails = emails;
   }
 
 
