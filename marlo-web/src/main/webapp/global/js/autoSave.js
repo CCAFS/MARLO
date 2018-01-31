@@ -49,7 +49,6 @@ function autoSave() {
         },
         success: function(data) {
           if(data.status.status) {
-
             successNotification('Draft saved...');
             // $draftTag.text('Confirm changes').addClass('animated flipInX');
             // $cancelButton.css('display', 'inline-block');
@@ -157,6 +156,13 @@ function validateThisSection() {
   if(isMonitoringSection()) {
     sectionData.projectID = $('input[name="projectID"]').val();
     validateService = "/validateProject.do";
+  }
+
+  //validate CapDev
+  if(isCapDevSection()) {
+    sectionData.capdevID = $('input[name="capdevID"]').val();
+    sectionData.deliverableID = $('input[name="deliverableID"]').val();
+    validateService = "/validateCenterCapdev.do";
   }
 
   $.ajax({

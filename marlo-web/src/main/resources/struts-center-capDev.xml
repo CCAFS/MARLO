@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+
+	<package name="capDev" namespace="/capdev" extends="marlo-default">
+
+		<action name="{center}/capdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="list">
+			<interceptor-ref name="centerHomeStack" />
+			<result type="freemarker" name="success">/WEB-INF/center/views/capDev/capdevList.ftl
+			</result>
+		</action>
+
+		<action name="{center}/addCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="add">
+			<result name="input">/WEB-INF/center/views/capDev/capdevList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/submitCapDev"
+      class="org.cgiar.ccafs.marlo.action.center.impactpathway.CapDevSubmissionAction">
+      <result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${centerSession}/detailCapdev</param>
+        <param name="capdevID">${capdevID}</param>
+        <param name="category">${category}</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+
+		<action name="{center}/deleteCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentAction"
+			method="delete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/capdev</param>
+			</result>
+			<result name="redirect" type="redirectAction">
+        <param name="actionName">${centerSession}/projectCapdev</param>
+        <param name="namespace">/monitoring</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+		</action>
+
+		<action name="{center}/detailCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/detailCapdev.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="category">${category}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+
+		<action name="{center}/downloadFile"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.ParticipantsAction"
+			method="dowmloadTemplate">
+			<result name="success" type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">inputStream</param>
+<!-- 				<param name="contentDisposition">attachment;filename="participants.xlsx"</param> --> 
+				<param name="contentDisposition">attachment;filename="participants.xlsm"</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+
+		<action name="{center}/delete_list_of_participants"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteListOfParticipants">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="category">${category}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteRegion"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteRegion">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteCountry"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapacityDevelopmentDetailAction"
+			method="deleteCountry">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+
+		<action name="{center}/descriptionCapdev"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/capdevDescription.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteDiscipline"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteDiscipline">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteTargetGroup"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteTargetGroup">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deletePartner"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deletePartnert">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteOutput"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevDescriptionAction"
+			method="deleteOutput">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/descriptionCapdev</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+
+		<action name="{center}/supportingDocs"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/supportingDocsList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/supportingDocs</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/addSupportingDoc"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction"
+			method="add">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/supportingDocsList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailSupportingDoc</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="deliverableID">${deliverableID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteSupportingDoc"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsAction"
+			method="delete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/supportingDocs</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/detailSupportingDoc"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsDetailAction">
+			<interceptor-ref name="centerCapdevStack" />
+			<result name="input">/WEB-INF/center/views/capDev/detailSupportingDoc.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailSupportingDoc</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="deliverableID">${deliverableID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		<action name="{center}/deleteLink"
+			class="org.cgiar.ccafs.marlo.action.center.capdev.CapdevSupportingDocsDetailAction"
+			method="deleteDocumentLink">
+			<result name="success" type="redirectAction">
+				<param name="actionName">${centerSession}/detailSupportingDoc</param>
+				<param name="capdevID">${capdevID}</param>
+				<param name="projectID">${projectID}</param>
+				<param name="deliverableID">${deliverableID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
+		
+		
+    
+    	
+
+
+	</package>
+
+</struts>
