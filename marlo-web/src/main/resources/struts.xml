@@ -286,26 +286,26 @@
 			<!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
 			<interceptor-stack name="centerHomeStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
 			<interceptor-stack name="centerSectionStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
 			<interceptor-stack name="centerImpactPathwayStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="editCenterImpactPathway" />
 				<interceptor-ref name="centerAccessibleStage" />				
 				<interceptor-ref name="keepRedirectMessages" />
@@ -314,9 +314,9 @@
 
 			<interceptor-stack name="centerProjectStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="editCenterProject" />
 				<interceptor-ref name="centerAccessibleStage" />  
 				<interceptor-ref name="keepRedirectMessages" />
@@ -325,9 +325,9 @@
 
 			<interceptor-stack name="centerDeliverableStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="editCenterDeliverable" />
 				<interceptor-ref name="centerAccessibleStage" />  
 				<interceptor-ref name="keepRedirectMessages" />
@@ -336,9 +336,9 @@
 
 			<interceptor-stack name="centerOutcomeStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="editCenterOutcome" />
 				<interceptor-ref name="centerAccessibleStage" />  
 				<interceptor-ref name="keepRedirectMessages" />
@@ -347,9 +347,9 @@
 
       <interceptor-stack name="centerOutputStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCenter" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validCenterSession" />
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="centerAccessibleStage" />  
 				<interceptor-ref name="editCenterOutput" />
 				<interceptor-ref name="keepRedirectMessages" />

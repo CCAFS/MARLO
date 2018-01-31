@@ -14,7 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.action;
 
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -70,7 +70,7 @@ public class UnhandledExceptionAction extends BaseAction {
     exception.printStackTrace(new PrintWriter(writer));
 
 
-    Crp crp = this.getCurrentCrp();
+    GlobalUnit crp = this.getCurrentCrp();
 
     subject = "Exception occurred in MARLO";
 

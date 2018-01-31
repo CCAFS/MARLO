@@ -143,13 +143,18 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
     return projectInfoDAO.find(projectInfoID);
   }
 
+  @Override
+  public ProjectInfo getProjectInfoByProjectPhase(long projectId, long phase) {
+    return projectInfoDAO.getProjectInfoByProjectPhase(projectId, phase);
+  }
+
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable, Phase phase) {
     try {
       List<DeliverablePartnership> list =
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(phase)
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;
@@ -188,99 +193,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
       if (!projectInfos.isEmpty()) {
         for (ProjectInfo projectInfoPhase : projectInfos) {
           projectInfoPhase.updateProjectInfo(projectInfo);
-          /*
-           * if (cal.get(Calendar.YEAR) < phase.getYear()) {
-           * projectInfoDAO.deleteProjectInfo(projectInfoPhase.getId());
-           * List<ProjectPhase> projectPhases = phase.getProjectPhases().stream()
-           * .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID).collect(Collectors.toList());
-           * if (!projectPhases.isEmpty()) {
-           * projectPhaseDAO.deleteProjectPhase(projectPhases.get(0).getId());
-           * }
-           * List<ProjectFocus> projectFocus = projectInfoPhase.getProject().getProjectFocuses().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectFocus projectFocusDB : projectFocus) {
-           * projectFocusManager.deleteProjectFocus(projectFocusDB.getId());
-           * }
-           * List<ProjectClusterActivity> projectClusterActivities =
-           * projectInfoPhase.getProject().getProjectClusterActivities().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectClusterActivity clusterActivity : projectClusterActivities) {
-           * projectClusterActivityManager.deleteProjectClusterActivity(clusterActivity.getId());
-           * }
-           * List<ProjectPartner> projectPartners = projectInfoPhase.getProject().getProjectPartners().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectPartner projectPartner : projectPartners) {
-           * projectPartnerManager.deleteProjectPartner(projectPartner.getId());
-           * }
-           * List<ProjectLocation> locations = projectInfoPhase.getProject().getProjectLocations().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectLocation projectLocation : locations) {
-           * projectLocationManager.deleteProjectLocation(projectLocation.getId());
-           * }
-           * List<ProjectOutcome> outcomes = projectInfoPhase.getProject().getProjectOutcomes().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectOutcome outcome : outcomes) {
-           * projectOutcomeManager.deleteProjectOutcome(outcome.getId());
-           * }
-           * List<ProjectBudget> budgets = projectInfoPhase.getProject().getProjectBudgets().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectBudget projectBudget : budgets) {
-           * projectBudgetManager.deleteProjectBudget(projectBudget.getId());
-           * }
-           * List<ProjectBudgetsCluserActvity> budgetsCluster =
-           * projectInfoPhase.getProject().getProjectBudgetsCluserActvities().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (ProjectBudgetsCluserActvity projectBudget : budgetsCluster) {
-           * projectBudgetsCluserActvityManager.deleteProjectBudgetsCluserActvity(projectBudget.getId());
-           * }
-           * List<Activity> activities = projectInfoPhase.getProject().getActivities().stream()
-           * .filter(c -> c.isActive() && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * for (Activity activity : activities) {
-           * for (DeliverableActivity deActivity : activity.getDeliverableActivities().stream()
-           * .filter(c -> c.isActive()).collect(Collectors.toList())) {
-           * deliverableActivityDAO.deleteDeliverableActivity(deActivity.getId());
-           * }
-           * activityManager.deleteActivity(activity.getId());
-           * }
-           * List<DeliverableInfo> deliverableInfos = projectInfoPhase.getPhase().getDeliverableInfos().stream()
-           * .filter(c -> c.getDeliverable().getProject() != null
-           * && c.getDeliverable().getProject().equals(projectInfoPhase.getProject()) && c.isActive()
-           * && c.getPhase().equals(projectInfoPhase.getPhase()))
-           * .collect(Collectors.toList());
-           * Phase myPhase = phaseMySQLDAO.find(projectInfoPhase.getPhase().getId());
-           * for (DeliverableInfo deliverableInfo : deliverableInfos) {
-           * deliverableInfoManager.deleteDeliverableInfo(deliverableInfo.getId());
-           * Deliverable deliverable = deliverableInfo.getDeliverable();
-           * deliverable.getDeliverableInfo(projectInfo.getPhase());
-           * deliverable.setResponsiblePartner(this.responsiblePartner(deliverable, myPhase));
-           * deliverable.setOtherPartners(this.otherPartners(deliverable, myPhase));
-           * if (deliverable.getResponsiblePartner() != null) {
-           * deliverablePartnershipManager.deleteDeliverablePartnership(deliverable.getResponsiblePartner().getId());
-           * }
-           * for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-           * deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
-           * }
-           * deliverable.setFundingSources(deliverable.getDeliverableFundingSources().stream()
-           * .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(projectInfo.getPhase())
-           * && c.getFundingSource().getFundingSourceInfo(myPhase) != null)
-           * .collect(Collectors.toList()));
-           * for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
-           * deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
-           * }
-           * }
-           * } else {
-           */
           projectInfoDAO.save(projectInfoPhase);
-          // }
-
         }
       } else {
         if (projectInfo.getEndDate() != null) {

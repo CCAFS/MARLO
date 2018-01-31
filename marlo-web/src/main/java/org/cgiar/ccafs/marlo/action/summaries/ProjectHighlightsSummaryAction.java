@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -85,7 +85,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   InputStream inputStream;
 
   @Inject
-  public ProjectHighlightsSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
@@ -303,7 +303,9 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
-        && ph.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()
+        && ph.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          .collect(Collectors.toList()).size() > 0
         && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
         && ph.getProject().getProjectInfo().getReporting())
       .collect(Collectors.toList())) {

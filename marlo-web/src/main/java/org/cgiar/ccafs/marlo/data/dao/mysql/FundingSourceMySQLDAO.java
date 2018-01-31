@@ -27,8 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -120,7 +121,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("FROM  funding_sources_info fsi ");
     q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
     q.append("AND fs.is_active ");
-    q.append("AND fs.crp_id = " + crpID);
+    q.append("AND fs.global_unit_id = " + crpID);
     q.append(" WHERE ");
     q.append("(fsi.title LIKE '%" + query + "%' ");
     q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
@@ -166,7 +167,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("FROM  funding_sources_info fsi ");
     q.append("INNER JOIN funding_sources fs ON fs.id = fsi.funding_source_id ");
     q.append("AND fs.is_active ");
-    q.append("AND fs.crp_id = " + crpID);
+    q.append("AND fs.global_unit_id = " + crpID);
     q.append(" WHERE ");
     q.append("(fsi.title LIKE '%" + query + "%' ");
     q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
@@ -219,8 +220,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
     query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
     query.append("WHERE ");
-    query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.crp_id=" + crpID
-      + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
+    query.append("funding_source_locations.loc_element_id =" + locElementId + "   AND funding_sources.global_unit_id="
+      + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
     query.append("project_budgets.is_active = 1   ");
     // query.append("project_budgets.`year` =" + year);
 
@@ -253,8 +254,9 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     query.append("INNER JOIN funding_sources ON funding_source_locations.funding_source_id = funding_sources.id ");
     query.append("INNER JOIN project_budgets ON project_budgets.funding_source_id = funding_sources.id ");
     query.append("WHERE ");
-    query.append("funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.crp_id="
-      + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
+    query.append(
+      "funding_source_locations.loc_element_type_id =" + locElementTypeId + " AND funding_sources.global_unit_id="
+        + crpID + " AND project_budgets.project_id=" + projectId + "  AND  funding_source_locations.is_active=1 and ");
     query.append("project_budgets.is_active = 1   ");
     // query.append(" AND project_budgets.`year` =" + year);
 

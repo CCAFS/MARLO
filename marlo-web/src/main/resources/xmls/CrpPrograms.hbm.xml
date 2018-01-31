@@ -9,9 +9,9 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp_id" not-null="true" />
+			<column name="global_unit_id" not-null="true" />
 		</many-to-one>
 		<property name="name" type="string">
 			<column name="name" length="65535" not-null="true" />
@@ -25,6 +25,9 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
+		 <property name="baseLine"  type="java.lang.Boolean">
+            <column name="base_line"  default="0"/>
+        </property>
 		<set lazy="true" name="crpClusterOfActivities" order-by="id"
 			table="crp_cluster_of_activities" inverse="true" fetch="select">
 			<key>

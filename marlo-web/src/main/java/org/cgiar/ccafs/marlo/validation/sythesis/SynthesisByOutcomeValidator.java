@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.validation.sythesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
@@ -40,19 +40,18 @@ import javax.inject.Named;
 @Named
 public class SynthesisByOutcomeValidator extends BaseValidator {
 
-  // This is not thread safe
-  BaseAction action;
-
-  private final CrpManager crpManager;
+  @Inject
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public SynthesisByOutcomeValidator(CrpManager crpManager) {
+  public SynthesisByOutcomeValidator(GlobalUnitManager crpManager) {
     super();
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = ipProgram.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -72,16 +71,13 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
 
   public void validate(BaseAction action, List<OutcomeSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
     // BaseValidator does not Clean this variables.. so before validate the section, it be clear these variables
-    this.missingFields.setLength(0);
-    this.validationMessage.setLength(0);
     action.setInvalidFields(new HashMap<>());
-    this.action = action;
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(ipProgram, action.getCrpID());
 
       if (path.toFile().exists()) {
-        this.addMissingField("draft");
+        action.addMissingField("draft");
       }
     }
 
@@ -93,13 +89,13 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
       this.validateSynthesisGender(action, outcomeSynthesy.getSynthesisGender(), ipElement.getComposedId(), 200, index);
 
       if (outcomeSynthesy.getAchieved() == null || outcomeSynthesy.getAchieved().doubleValue() < 0) {
-        this.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
+        action.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
         action.getInvalidFields().put("input-program.synthesisOutcome[" + index + "].achieved",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       this.validateLessonsLearn(action, ipProgram);
-      if (this.validationMessage.toString().contains("Lessons")) {
-        this.replaceAll(validationMessage, "Lessons",
+      if (action.getValidationMessage().toString().contains("Lessons")) {
+        this.replaceAll(action.getValidationMessage(), "Lessons",
           "Lessons regarding partnerships and possible implications for the coming planning cycle");
         action.getInvalidFields().put("input-program.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -110,16 +106,16 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     } else {
       this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     }
 
   }
@@ -127,7 +123,7 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
   private void validateSynthesisAnual(BaseAction action, String synthesisAnual, String midOutcome, int numberWords,
     int i) {
     if (!(this.isValidString(synthesisAnual) && this.wordCount(synthesisAnual) <= numberWords)) {
-      this.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
+      action.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
       action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisAnual",
         InvalidFieldsMessages.EMPTYFIELD);
 
@@ -137,7 +133,7 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
   private void validateSynthesisGender(BaseAction action, String synthesisGender, String midOutcome, int numberWords,
     int i) {
     if (!(this.isValidString(synthesisGender) && this.wordCount(synthesisGender) <= numberWords)) {
-      this.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
+      action.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
       action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisGender",
         InvalidFieldsMessages.EMPTYFIELD);
 

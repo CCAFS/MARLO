@@ -17,15 +17,14 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
@@ -34,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -53,19 +53,24 @@ import org.apache.struts2.dispatcher.Parameter;
  */
 public class OutputsListAction extends BaseAction {
 
+
   private static final long serialVersionUID = 6922866669964604405L;
 
-  private ICenterManager centerService;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+
   private ICenterProgramManager programService;
+
   private ICenterAreaManager researchAreaService;
   private ICenterTopicManager researchTopicService;
   private ICenterOutcomeManager outcomeService;
   private UserManager userService;
   private ICenterOutputManager outputService;
   private ICenterSectionStatusManager sectionStatusService;
-
   private List<CenterArea> researchAreas;
   private List<CenterProgram> researchPrograms;
+
   private List<CenterOutcome> outcomes;
   private List<CenterTopic> researchTopics;
   private List<CenterOutput> outputs;
@@ -73,17 +78,17 @@ public class OutputsListAction extends BaseAction {
   private CenterArea selectedResearchArea;
   private CenterTopic selectedResearchTopic;
   private CenterOutcome selectedResearchOutcome;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private long topicID;
   private long programID;
-
   private long outcomeID;
   private long areaID;
+
   private long outputID;
   private String justification;
 
   @Inject
-  public OutputsListAction(APConfig config, ICenterManager centerService, ICenterProgramManager programService,
+  public OutputsListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService,
     ICenterOutcomeManager outcomeService, UserManager userService, ICenterOutputManager outputService,
     ICenterSectionStatusManager sectionStatusService) {
@@ -188,13 +193,14 @@ public class OutputsListAction extends BaseAction {
     return justification;
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
   public long getOutcomeID() {
     return outcomeID;
   }
+
 
   public List<CenterOutcome> getOutcomes() {
     return outcomes;
@@ -207,7 +213,6 @@ public class OutputsListAction extends BaseAction {
   public List<CenterOutput> getOutputs() {
     return outputs;
   }
-
 
   public long getProgramID() {
     return programID;
@@ -238,6 +243,7 @@ public class OutputsListAction extends BaseAction {
     return selectedResearchArea;
   }
 
+
   public CenterOutcome getSelectedResearchOutcome() {
     return selectedResearchOutcome;
   }
@@ -257,11 +263,11 @@ public class OutputsListAction extends BaseAction {
     topicID = -1;
     outcomeID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -275,10 +281,11 @@ public class OutputsListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
-            .filter(
-              rl -> rl.isActive() && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
-            .collect(Collectors.toList()));
+          List<CenterLeader> userAreaLeads =
+            new ArrayList<>(user.getResearchLeaders().stream()
+              .filter(rl -> rl.isActive()
+                && rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue())
+              .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
           } else {
@@ -425,7 +432,7 @@ public class OutputsListAction extends BaseAction {
     this.justification = justification;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
 
