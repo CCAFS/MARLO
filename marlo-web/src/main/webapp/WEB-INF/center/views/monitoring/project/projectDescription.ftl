@@ -181,7 +181,7 @@
                   </div>
                 </div>
                 
-              [#-- SELECT COUNTRIES --]
+                [#-- SELECT COUNTRIES --]
               <div class="countriesBox form-group" style="display:block">
                 <div class="panel tertiary">
                   <div class="panel-head"><label for=""> [@customForm.text name="projectDescription.listCountries" readText=!editable /]:[@customForm.req required=editable/]</label></div>
@@ -206,8 +206,10 @@
                     [#if editable ]
                       [@customForm.select name="" label=""  showTitle=false  i18nkey="" listName="countryLists" keyFieldName="isoAlpha2"  displayFieldName="name"  multiple=false required=true  className="countriesSelect" editable=editable /]
                     [/#if] 
+                    </div>
                   </div>
                 </div>
+                
               </div>
             </div>
             
@@ -276,6 +278,9 @@
               [/#if]
             </div>
           </div>
+          
+          
+          
           
         </div>
       </div>

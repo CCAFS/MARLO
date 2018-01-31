@@ -27,7 +27,8 @@ import javax.inject.Inject;
 import org.hibernate.SessionFactory;
 
 @Named
-public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus, Long> implements ICenterSectionStatusDAO {
+public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus, Long>
+  implements ICenterSectionStatusDAO {
 
 
   @Inject
@@ -44,6 +45,12 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   @Override
   public List<Map<String, Object>> distinctSectionStatus(long programID) {
     String query = "select DISTINCT section_name from center_section_statuses where research_program_id=" + programID;
+    return super.findCustomQuery(query);
+  }
+
+  @Override
+  public List<Map<String, Object>> distinctSectionStatusCapDev(long capDevID) {
+    String query = "select DISTINCT section_name from center_section_statuses where capdev_id=" + capDevID;
     return super.findCustomQuery(query);
   }
 
@@ -87,6 +94,17 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list;
+    }
+    return null;
+  }
+
+  @Override
+  public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year) {
+    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and capdev_id=" + capdevId + " and year=" + year;
+    List<CenterSectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
     }
     return null;
   }
@@ -140,6 +158,18 @@ public class CenterSectionStatusDAO extends AbstractMarloDAO<CenterSectionStatus
   public CenterSectionStatus getSectionStatusByProject(long programId, long projectId, String sectionName, int year) {
     String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
       + "' and project_id=" + projectId + " and year=" + year;
+    List<CenterSectionStatus> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public CenterSectionStatus getSectionStatusBySupDocs(long deliverableId, long capDevId, String sectionName,
+    int year) {
+    String query = "from " + CenterSectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and capdev_id=" + capDevId + " and deliverable_id=" + deliverableId + " and year=" + year;
     List<CenterSectionStatus> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
