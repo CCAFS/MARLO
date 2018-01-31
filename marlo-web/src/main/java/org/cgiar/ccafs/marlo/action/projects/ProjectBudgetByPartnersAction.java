@@ -552,6 +552,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         int i = 0;
         project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         for (ProjectBudget budget : project.getBudgets()) {
+          budget.setFundingSource(fundingSourceManager.getFundingSourceById(budget.getFundingSource().getId()));
           int[] index = new int[1];
           index[0] = i;
           differences.addAll(historyComparator.getDifferencesList(budget, transaction, specialList,

@@ -811,7 +811,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;
@@ -972,7 +972,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1254,10 +1254,23 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getGenderLevels() != null) {
         for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
           try {
-            deliverableGenderLevel.setNameGenderLevel(
-              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
-            deliverableGenderLevel.setDescriptionGenderLevel(
-              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
+
+            GenderType type = genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel());
+
+            if (type != null) {
+              deliverableGenderLevel.setNameGenderLevel(type.getDescription());
+              deliverableGenderLevel.setDescriptionGenderLevel(type.getCompleteDescription());
+            }
+
+            /**
+             * Comment the code to validate nulls in GenderType object
+             * jurodca
+             * 20180131
+             * deliverableGenderLevel.setNameGenderLevel(
+             * genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+             * deliverableGenderLevel.setDescriptionGenderLevel(
+             * genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
+             */
           } catch (Exception e) {
             logger.error("unable to update DeliverableGenderLevel", e);
             /**
@@ -1361,10 +1374,10 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll()
-            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager
+            .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1500,7 +1513,7 @@ public class DeliverableAction extends BaseAction {
         if (o1.getFundingSourceInfo(this.getActualPhase()) != null
           && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
 
-        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
           && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
 
@@ -1626,7 +1639,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());

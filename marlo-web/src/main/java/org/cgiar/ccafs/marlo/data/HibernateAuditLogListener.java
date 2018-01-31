@@ -592,7 +592,7 @@ public class HibernateAuditLogListener
             if (set != null && !set.isEmpty()) {
               Object reObject =
                 session.get(AuditLogContextProvider.getAuditLogContext().getEntityCanonicalName(), (Serializable) id);
-              session.refresh(reObject);
+              // session.refresh(reObject);
               ClassMetadata metadata = session.getSessionFactory().getClassMetadata(reObject.getClass());
               Object[] values = metadata.getPropertyValues(reObject);
               set = (Set<Object>) values[i];
