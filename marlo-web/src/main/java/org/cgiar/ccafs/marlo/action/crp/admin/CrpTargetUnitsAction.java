@@ -97,7 +97,7 @@ public class CrpTargetUnitsAction extends BaseAction {
 
               SrfTargetUnit targetUnitOutcome = crpProgramOutcome.getSrfTargetUnit();
 
-              if (targetUnitOutcome.equals(targetUnit)) {
+              if (targetUnit.equals(targetUnitOutcome)) {
                 return false;
               }
 
@@ -107,7 +107,7 @@ public class CrpTargetUnitsAction extends BaseAction {
               for (CrpMilestone crpMilestone : milestones) {
                 SrfTargetUnit targetUnitMilestone = crpMilestone.getSrfTargetUnit();
 
-                if (targetUnitMilestone.equals(targetUnit)) {
+                if (targetUnit.equals(targetUnitMilestone)) {
                   return false;
                 }
               }
@@ -132,6 +132,7 @@ public class CrpTargetUnitsAction extends BaseAction {
 
       return true;
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
   }
