@@ -230,7 +230,7 @@
           ${hasHumanSubjects?string('Yes', 'No')}
         [/#if]
         [#-- Upload File (Human subjects research) fileResearch --]
-        <div class="form-group humanSubjectsBlock" style="display:${hasHumanSubjects?string('block', 'none')}">
+        <div class="form-group humanSubjectsBlock" style="display:${hasHumanSubjects?string('block', 'none')}; position:relative" listname="fundingSource.fundingSourceInfo.fileResearch">
           [@customForm.fileUploadAjax 
             fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
             name="fundingSource.fundingSourceInfo.fileResearch.id" 
