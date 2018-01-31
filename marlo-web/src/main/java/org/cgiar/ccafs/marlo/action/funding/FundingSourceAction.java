@@ -628,7 +628,8 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
         && fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+        // SA: I've commented the line below
+        // status.remove(ProjectStatusEnum.Ongoing.getStatusId());
       }
 
 
