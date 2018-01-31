@@ -190,20 +190,20 @@
             <div class="input"><p>${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
+        [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
         [#-- End Date --]
-        <div class="col-md-4 metadataElement-endDate">
+        <div class="col-md-4 endDateBlock metadataElement-endDate" >
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
             <input id="fundingSource.fundingSourceInfo.endDate" type="hidden" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
-            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>
+            <p class="dateLabel btn btn-default ${(isSynced || showEXtDate)?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>
           [#else]
             <div class="input"><p>${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
         [#-- Extension Date --]
-        [#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
         <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${showEXtDate?string('block', 'none')}">
-          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
+          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:[@customForm.req required=true  /]</label> 
           [#if showEXtDate]
             [#assign extensionValue = (fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!'' /]
           [#else]
@@ -583,8 +583,6 @@
     <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
   [/#list]
 </ul>
-
-<span class="hidden allowExtensionDate">${showEXtDate?string}</span>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 

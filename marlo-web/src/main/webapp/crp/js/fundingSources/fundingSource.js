@@ -1,4 +1,4 @@
-var allowExtensionDate, dateFormat, from, to, extension;
+var dateFormat, from, to, extension;
 var W1W2, ON_GOING, EXTENDED_STATUS;
 var $fundingType;
 $(document).ready(init);
@@ -11,9 +11,6 @@ function init() {
   EXTENDED_STATUS = 4;
 
   $fundingType = $(".fundingType");
-
-  // Check if (crp_funding_source_extension_date) parameter is true
-  allowExtensionDate = $('.allowExtensionDate').text() === "true";
 
   // Set Dateformat
   dateFormat = "yy-mm-dd";
@@ -262,12 +259,12 @@ function onChangeFundingType(typeID) {
  * Event on change Agreement status
  */
 function onChangeStatus() {
-  var statusID = this.value;
-
   if(this.value == EXTENDED_STATUS) {
     $('.extensionDateBlock').show();
+    $('.endDateBlock .dateLabel').addClass('disabled');
   } else {
     $('.extensionDateBlock').hide();
+    $('.endDateBlock .dateLabel').removeClass('disabled');
   }
 }
 
@@ -407,10 +404,8 @@ function checkLeadPartnerItems(block) {
   var CIAT_ID = 46;
   if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
-    allowExtensionDate = true;
   } else {
     $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
-    allowExtensionDate = false;
     if(isSynced) {
       unSyncFundingSource();
     }
@@ -642,9 +637,6 @@ function settingDate(start,end,extensionDate) {
         $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
-          if(allowExtensionDate) {
-            // $(extensionDate).datepicker("option", "minDate", selectedDate);
-          }
         }
         refreshYears();
       }
@@ -774,7 +766,8 @@ function refreshYears() {
   var startYear, endYear, years;
 
   startYear = (from.val().split('-')[0]) || currentCycleYear;
-  if(allowExtensionDate) {
+
+  if($('.agreementStatus').val() == EXTENDED_STATUS) {
     endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
   } else {
     endYear = (to.val().split('-')[0]) || startYear;
