@@ -42,7 +42,7 @@ function setMetadata(data) {
     var $hide = $parent.find('.hide');
 
     $input.val(value);
-    $spanSuggested.text("Suggested: " + value).animateCss("flipInY");
+    $spanSuggested.text("Recorded from CIAT OCS as: " + value).animateCss("flipInY");
     $parent.find('textarea').autoGrow();
     $input.attr('readOnly', true);
     $hide.val("true");
