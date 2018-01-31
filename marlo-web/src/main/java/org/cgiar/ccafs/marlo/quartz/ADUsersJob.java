@@ -15,17 +15,7 @@
 
 package org.cgiar.ccafs.marlo.quartz;
 
-import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AdUserManager;
-import org.cgiar.ccafs.marlo.data.model.AdUser;
-import org.cgiar.ccafs.marlo.utils.AuditLogContext;
-import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
-
-import org.cgiar.ciat.auth.ADConexion;
-import org.cgiar.ciat.auth.LDAPUser;
-
-import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,45 +61,49 @@ public class ADUsersJob implements Job {
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
 
-    sessionFactory.getCurrentSession().beginTransaction();
+    /*
+     * Desactive Action To apply Solution
+     */
 
-    String genericUser = APConstants.GENERICUSER_AD;
-    String genericPassword = APConstants.GENERICPASSWORD_AD;
-    String hostName = APConstants.HOSTNAME_AD;
-    String port = APConstants.PORT_AD;
-
-    ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
-    List<LDAPUser> users = adConection.searchUsers("(sAMAccountName=*)", "DC=CGIARAD,DC=ORG");
-
-    for (LDAPUser user : users) {
-      if (user != null) {
-        AuditLogContextProvider.push(new AuditLogContext());
-        if (user.getEmail() != null) {
-          if (!user.getEmail().equals("")) {
-            try {
-              AdUser adUser = adUsermanager.findByUserEmail(this.deleteSpecialCaracter(user.getEmail()));
-              if (adUser == null) {
-                adUser = new AdUser();
-                adUser.setLogin(user.getLogin());
-                adUser.setFirstName(user.getFirstName());
-                adUser.setMiddleName(user.getMiddleName());
-                adUser.setLastName(user.getLastName());
-                adUser.setEmail(user.getEmail());
-                adUser.setActive(true);
-                adUser.setActiveSince(new Date());
-                adUser.setCreatedBy(null);
-                adUser.setModifiedBy(null);
-                adUsermanager.saveAdUser(adUser);
-              }
-            } catch (Exception e) {
-              LOG.error("Could not save entity for user login : " + user.getLogin(), e);
-            }
-          }
-        }
-
-      }
-    }
-    sessionFactory.getCurrentSession().getTransaction().commit();
+    // sessionFactory.getCurrentSession().beginTransaction();
+    //
+    // String genericUser = APConstants.GENERICUSER_AD;
+    // String genericPassword = APConstants.GENERICPASSWORD_AD;
+    // String hostName = APConstants.HOSTNAME_AD;
+    // String port = APConstants.PORT_AD;
+    //
+    // ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
+    // List<LDAPUser> users = adConection.searchUsers("(sAMAccountName=*)", "DC=CGIARAD,DC=ORG");
+    //
+    // for (LDAPUser user : users) {
+    // if (user != null) {
+    // AuditLogContextProvider.push(new AuditLogContext());
+    // if (user.getEmail() != null) {
+    // if (!user.getEmail().equals("")) {
+    // try {
+    // AdUser adUser = adUsermanager.findByUserEmail(this.deleteSpecialCaracter(user.getEmail()));
+    // if (adUser == null) {
+    // adUser = new AdUser();
+    // adUser.setLogin(user.getLogin());
+    // adUser.setFirstName(user.getFirstName());
+    // adUser.setMiddleName(user.getMiddleName());
+    // adUser.setLastName(user.getLastName());
+    // adUser.setEmail(user.getEmail());
+    // adUser.setActive(true);
+    // adUser.setActiveSince(new Date());
+    // adUser.setCreatedBy(null);
+    // adUser.setModifiedBy(null);
+    // adUsermanager.saveAdUser(adUser);
+    // }
+    // } catch (Exception e) {
+    // LOG.error("Could not save entity for user login : " + user.getLogin(), e);
+    // }
+    // }
+    // }
+    //
+    // }
+    // }
+    // sessionFactory.getCurrentSession().getTransaction().commit();
 
 
   }
