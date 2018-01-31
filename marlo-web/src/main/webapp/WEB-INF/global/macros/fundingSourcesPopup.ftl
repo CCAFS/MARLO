@@ -34,10 +34,12 @@
         </div> 
       </div>
       
-      [#-- Create Funding Sources Form --]
+      [#-- Create Funding Sources Form
       <div id="create-user" class="accordion  text-center">
         <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create Funding Source </span> 
       </div>
+       --]
+       
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">
           [#-- Loading --]
