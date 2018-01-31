@@ -226,15 +226,18 @@ public class DeliverableValidator extends BaseValidator {
               action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
           }
         }
-        if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
-          && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
 
-          if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
-            action.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
-            action.getInvalidFields().put("list-deliverable.genderLevels",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Gender Levels"}));
-          }
-        }
+
+        /*
+         * if (deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender() != null
+         * && deliverable.getDeliverableInfo(action.getActualPhase()).getCrossCuttingGender().booleanValue() == true) {
+         * if (deliverable.getGenderLevels() == null || deliverable.getGenderLevels().isEmpty()) {
+         * action.addMessage(action.getText("project.deliverable.generalInformation.genderLevels"));
+         * action.getInvalidFields().put("list-deliverable.genderLevels",
+         * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Gender Levels"}));
+         * }
+         * }
+         */
       }
 
 

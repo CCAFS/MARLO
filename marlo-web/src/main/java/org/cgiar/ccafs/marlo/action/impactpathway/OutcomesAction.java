@@ -24,8 +24,8 @@ import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
-import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
@@ -170,6 +170,19 @@ public class OutcomesAction extends BaseAction {
     return SUCCESS;
   }
 
+  public boolean canEditMileStone(CrpMilestone crpMilestone) {
+    if (crpMilestone.getYear() == null) {
+      return true;
+    }
+    if (crpMilestone.getYear().intValue() == -1) {
+      return true;
+    }
+    if (crpMilestone.getYear().intValue() >= this.getActualPhase().getYear()) {
+      return true;
+    }
+    return false;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -179,9 +192,10 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-public String getBaseLineFileURL(String outcomeID) {
+  public String getBaseLineFileURL(String outcomeID) {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
+
 
   public String getBaseLineFileUrlPath(String outcomeID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
@@ -192,7 +206,6 @@ public String getBaseLineFileURL(String outcomeID) {
   public long getCrpProgramID() {
     return crpProgramID;
   }
-
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
@@ -206,6 +219,7 @@ public String getBaseLineFileURL(String outcomeID) {
     return milestoneYears;
   }
 
+
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -215,7 +229,6 @@ public String getBaseLineFileURL(String outcomeID) {
     return programs;
   }
 
-
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
@@ -223,6 +236,7 @@ public String getBaseLineFileURL(String outcomeID) {
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
   }
+
 
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
@@ -239,8 +253,12 @@ public String getBaseLineFileURL(String outcomeID) {
     calendarEnd.set(Calendar.YEAR, APConstants.END_YEAR);
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+
       // Adding the year to the list.
-      targetYears.add(calendarStart.get(Calendar.YEAR));
+      if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+        targetYears.add(calendarStart.get(Calendar.YEAR));
+      }
+
       // Adding a year (365 days) to the start date.
       calendarStart.add(Calendar.YEAR, 1);
     }

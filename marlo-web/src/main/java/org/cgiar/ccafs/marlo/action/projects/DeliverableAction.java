@@ -811,7 +811,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
 
       return list;
@@ -972,7 +972,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1058,7 +1058,7 @@ public class DeliverableAction extends BaseAction {
       project.getProjecInfoPhase(this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !this.isHttpPost()) {
 
         BufferedReader reader = null;
 
@@ -1251,20 +1251,23 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(false);
       }
-      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
-        try {
-          deliverableGenderLevel.setNameGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
-          deliverableGenderLevel.setDescriptionGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
-        } catch (Exception e) {
-          logger.error("unable to update DeliverableGenderLevel", e);
-          /**
-           * Original code swallows the exception and didn't even log it. Now we at least log it,
-           * but we need to revisit to see if we should continue processing or re-throw the exception.
-           */
+      if (deliverable.getGenderLevels() != null) {
+        for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+          try {
+            deliverableGenderLevel.setNameGenderLevel(
+              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+            deliverableGenderLevel.setDescriptionGenderLevel(
+              genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
+          } catch (Exception e) {
+            logger.error("unable to update DeliverableGenderLevel", e);
+            /**
+             * Original code swallows the exception and didn't even log it. Now we at least log it,
+             * but we need to revisit to see if we should continue processing or re-throw the exception.
+             */
+          }
         }
       }
+
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
@@ -1358,10 +1361,10 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager
-            .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager.findAll()
+            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1400,10 +1403,27 @@ public class DeliverableAction extends BaseAction {
 
       // Getting partners list
       partners = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+
+
+      /**
+       * The way to use the list of partners is changed to avoid double call to the database and use the objects in
+       * memory.
+       * jurodca
+       * 20180129
+       */
+
+      List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+
+
+      // for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      // .filter(
+      // pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // .collect(Collectors.toList())) {
+
+      for (ProjectPartner partner : partnersTmp) {
         List<ProjectPartnerPerson> persons =
           partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         if (!isManagingPartnerPersonRequerid) {
@@ -1421,73 +1441,82 @@ public class DeliverableAction extends BaseAction {
       // .collect(Collectors.toList());
 
       partnerPersons = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(
-          pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      // .filter(
+      // pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // .collect(Collectors.toList())) {
+
+      /**
+       * This for is not being used properly. The internal logic is repeated for each partner that has been consulted.
+       * The partner object of the cycle is not being used within it.
+       * jurodca
+       * 20180129
+       */
+      // for (ProjectPartner partner : partnersTmp) {
+
+      // partnerPersons = new ArrayList<>();
+      partnerPersons =
+        partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+
+      // List<ProjectPartner> projectPartners = projectPartnerManager.findAll().stream()
+      // .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList());
+      //
+      // for (ProjectPartner partner : projectPartners) {
+      //
+      // for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+      // .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+      //
+      // partnerPersons.add(partnerPerson);
+      // }
+      // }
+
+      this.fundingSources = new ArrayList<>();
+      // List<FundingSource> fundingSources =
+      // fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
+      // for (FundingSource fundingSource : fundingSources) {
+
+      for (ProjectBudget budget : project.getProjectBudgets().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
 
-        // partnerPersons = new ArrayList<>();
-        partnerPersons =
-          partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+        FundingSource fundingSource = budget.getFundingSource();
+        fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
 
-        // List<ProjectPartner> projectPartners = projectPartnerManager.findAll().stream()
-        // .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList());
-        //
-        // for (ProjectPartner partner : projectPartners) {
-        //
-        // for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
-        // .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
-        //
-        // partnerPersons.add(partnerPerson);
-        // }
-        // }
 
-        this.fundingSources = new ArrayList<>();
-        List<FundingSource> fundingSources =
-          fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
-        for (FundingSource fundingSource : fundingSources) {
+        if (fundingSource.getFundingSourceInfo() == null) {
+          fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfoLast(this.getActualPhase()));
 
-          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
-            if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
-              fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-              if (fundingSource.getFundingSourceInfo() == null) {
-                fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfoLast(this.getActualPhase()));
-
-              }
-              if (fundingSource.getFundingSourceInfo() != null) {
-                this.fundingSources.add(fundingSource);
-              }
-
-            }
-
-          }
         }
-        Set<FundingSource> hs = new HashSet();
-        hs.addAll(this.fundingSources);
-        this.fundingSources.clear();
-        this.fundingSources.addAll(hs);
-        this.fundingSources.sort((o1, o2) -> {
-          if (o1.getFundingSourceInfo(this.getActualPhase()) != null
-            && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+        if (fundingSource.getFundingSourceInfo() != null) {
+          this.fundingSources.add(fundingSource);
+        }
 
-            o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-            && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-            && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
-
-            int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
-              .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId());
-            if (cmp == 0) {
-              cmp = o1.getFundingSourceInfo(this.getActualPhase()).getTitle()
-                .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getTitle());
-            }
-
-            return cmp;
-          }
-          return 0;
-        });
 
       }
+      Set<FundingSource> hs = new HashSet();
+      hs.addAll(this.fundingSources);
+      this.fundingSources.clear();
+      this.fundingSources.addAll(hs);
+      this.fundingSources.sort((o1, o2) -> {
+        if (o1.getFundingSourceInfo(this.getActualPhase()) != null
+          && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+
+        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
+
+          int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
+            .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId());
+          if (cmp == 0) {
+            cmp = o1.getFundingSourceInfo(this.getActualPhase()).getTitle()
+              .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getTitle());
+          }
+
+          return cmp;
+        }
+        return 0;
+      });
+
+      // }
       if (deliverable.getFiles() != null) {
         deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       }
@@ -1586,6 +1615,7 @@ public class DeliverableAction extends BaseAction {
         indexTab = 0;
       }
     }
+
   }
 
 
@@ -1596,7 +1626,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());

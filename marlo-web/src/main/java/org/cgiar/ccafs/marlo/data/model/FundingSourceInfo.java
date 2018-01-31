@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -402,13 +403,27 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.w1w2 = w1w2;
   }
 
-  public void updateFundingSourceInfo(FundingSourceInfo fundingSourceInfoUpdate) {
+  public void updateFundingSourceInfo(FundingSourceInfo fundingSourceInfoUpdate, Phase phase) {
     this.setBudgetType(fundingSourceInfoUpdate.getBudgetType());
     this.setEndDate(fundingSourceInfoUpdate.getEndDate());
     this.setModificationJustification(fundingSourceInfoUpdate.getModificationJustification());
     this.setModifiedBy(fundingSourceInfoUpdate.getModifiedBy());
     this.setStartDate(fundingSourceInfoUpdate.getStartDate());
     this.setStatus(fundingSourceInfoUpdate.getStatus());
+
+    Calendar cal = Calendar.getInstance();
+    if (fundingSourceInfoUpdate.getEndDate() != null) {
+      cal.setTime(fundingSourceInfoUpdate.getEndDate());
+      if (cal.get(Calendar.YEAR) < phase.getYear()) {
+        if (fundingSourceInfoUpdate.getStatus() != null && fundingSourceInfoUpdate.getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          this.setStatus(Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()));
+        }
+
+      }
+    }
+
+
     this.setTitle(fundingSourceInfoUpdate.getTitle());
     this.setDescription(fundingSourceInfoUpdate.getDescription());
     this.setContactPersonEmail(fundingSourceInfoUpdate.getContactPersonEmail());
