@@ -690,7 +690,8 @@ function settingDate(start,end,extensionDate) {
   $('.dateLabel').on('click', function() {
     var $dateInput = $(this).parent().find('input');
     var $dateLabel = $(this);
-    if(!isSynced) {
+    var isEnable = !($dateLabel.hasClass('disabled'));
+    if(isEnable && !isSynced) {
       $dateInput.datepicker("show");
 
       // Set a Date if the input is empty
