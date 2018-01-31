@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated May 30, 2017 3:06:49 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment"
@@ -30,9 +30,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.CenterArea" fetch="select">
 			<column name="research_area" />
 		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp" />
+			<column name="global_unit_id" />
 		</many-to-one>
 		<many-to-one name="researchProgram"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
