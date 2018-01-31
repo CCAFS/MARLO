@@ -60,14 +60,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
   private final Logger LOG = LoggerFactory.getLogger(AddSessionToRestRequestFilter.class);
 
-  @Override
-  public void destroy() {
-  }
-
-
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-    throws ServletException, IOException {
+  private void addCrpToSession(String crpAcronym) {
     Subject subject = securityContext.getSubject();
 
     /**
@@ -81,16 +74,6 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     if (session.getAttribute(APConstants.SESSION_CRP) == null) {
 
-      URL url = new URL(request.getRequestURL().toString());
-
-      String path = url.getPath();
-
-      String restApiString = StringUtils.substringAfter(path, "/api/");
-
-      String[] split = restApiString.split("/");
-
-      String crpAcronym = split[0];
-
       Crp crp = crpManager.findCrpByAcronym(crpAcronym);
 
       if (crp == null) {
@@ -99,9 +82,37 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
       session.setAttribute(APConstants.SESSION_CRP, crp);
     }
+  }
+
+
+  @Override
+  public void destroy() {
+  }
+
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    throws ServletException, IOException {
+
+    URL url = new URL(request.getRequestURL().toString());
+
+    String path = url.getPath();
+
+    String restApiString = StringUtils.substringAfter(path, "/api/");
+
+    String[] split = restApiString.split("/");
+
+    String crpAcronym = split[0];
+
+    // Check to see if a swagger request and if so, skip trying to extract the crp from the url.
+    if (StringUtils.isNotEmpty(crpAcronym) && !crpAcronym.equals("v2") && !crpAcronym.equals("swagger-ui.html")
+      && !crpAcronym.equals("webjars") && !crpAcronym.equals("swagger-resources")
+      && !crpAcronym.equals("configuration")) {
+      this.addCrpToSession(crpAcronym);
+    }
 
     filterChain.doFilter(request, response);
-
-
   }
+
+
 }
