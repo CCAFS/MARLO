@@ -29,6 +29,7 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElement implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -5589133827714008187L;
 
 
@@ -36,7 +37,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   private Long id;
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
 
   @Expose
@@ -45,12 +46,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private Long isoNumeric;
 
-
   @Expose
   private LocElementType locElementType;
 
   @Expose
   private LocGeoposition locGeoposition;
+
 
   @Expose
   private String name;
@@ -65,10 +66,8 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-
   @Expose
   private User createdBy;
-
 
   @Expose
   private Date activeSince;
@@ -76,7 +75,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private String modificationJustification;
@@ -90,7 +88,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
+
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+
+
   private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
 
@@ -137,21 +138,24 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
+
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
@@ -161,6 +165,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public Set<InstitutionLocation> getInstitutionLocations() {
     return institutionLocations;
@@ -220,7 +225,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return projectLocations;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -235,9 +239,11 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -247,9 +253,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
@@ -258,6 +265,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
+
 
   public void setId(Long id) {
     this.id = id;

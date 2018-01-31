@@ -19,18 +19,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -39,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -90,14 +90,17 @@ public class OutcomesAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
-
   private CrpAssumptionManager crpAssumptionManager;
+
+
   private HistoryComparator historyComparator;
 
 
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   private CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicatorManager;
   private CrpMilestoneManager crpMilestoneManager;
+
   private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private long crpProgramID;
   private FileDBManager fileDBManager;
@@ -105,7 +108,7 @@ public class OutcomesAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<Integer> milestoneYears;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
@@ -123,7 +126,7 @@ public class OutcomesAction extends BaseAction {
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
+    CrpAssumptionManager crpAssumptionManager, GlobalUnitManager crpManager, UserManager userManager,
     HistoryComparator historyComparator, AuditLogManager auditLogManager, FileDBManager fileDBManager,
     CrpProgramOutcomeIndicatorManager crpProgramOutcomeIndicator, SrfSubIdoManager srfSubIdoManager) {
     super(config);
@@ -143,7 +146,6 @@ public class OutcomesAction extends BaseAction {
     this.srfSubIdoManager = srfSubIdoManager;
     this.crpProgramOutcomeIndicatorManager = crpProgramOutcomeIndicator;
   }
-
 
   @Override
   public String cancel() {
@@ -168,6 +170,19 @@ public class OutcomesAction extends BaseAction {
     return SUCCESS;
   }
 
+  public boolean canEditMileStone(CrpMilestone crpMilestone) {
+    if (crpMilestone.getYear() == null) {
+      return true;
+    }
+    if (crpMilestone.getYear().intValue() == -1) {
+      return true;
+    }
+    if (crpMilestone.getYear().intValue() >= this.getActualPhase().getYear()) {
+      return true;
+    }
+    return false;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -181,6 +196,7 @@ public class OutcomesAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
   }
 
+
   public String getBaseLineFileUrlPath(String outcomeID) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + outcomeID + File.separator + "baseLine"
       + File.separator;
@@ -191,20 +207,18 @@ public class OutcomesAction extends BaseAction {
     return crpProgramID;
   }
 
-
   public HashMap<Long, String> getIdoList() {
     return idoList;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<Integer> getMilestoneYears() {
     return milestoneYears;
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -215,15 +229,14 @@ public class OutcomesAction extends BaseAction {
     return programs;
   }
 
-
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
 
-
   public List<SrfIdo> getSrfIdos() {
     return srfIdos;
   }
+
 
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
@@ -240,14 +253,19 @@ public class OutcomesAction extends BaseAction {
     calendarEnd.set(Calendar.YEAR, APConstants.END_YEAR);
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+
       // Adding the year to the list.
-      targetYears.add(calendarStart.get(Calendar.YEAR));
+      if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+        targetYears.add(calendarStart.get(Calendar.YEAR));
+      }
+
       // Adding a year (365 days) to the start date.
       calendarStart.add(Calendar.YEAR, 1);
     }
 
     return targetYears;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -302,9 +320,9 @@ public class OutcomesAction extends BaseAction {
 
 
     // IAuditLog ia = auditLogManager.getHistory(4);
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
 
@@ -774,6 +792,7 @@ public class OutcomesAction extends BaseAction {
           crpMilestoneDB.setActive(true);
           crpMilestoneDB.setCreatedBy(this.getCurrentUser());
           crpMilestoneDB.setActiveSince(new Date());
+          crpMilestoneDB.setComposeID(crpMilestoneDetached.getComposeID());
 
         } else {
           crpMilestoneDB = crpMilestoneManager.getCrpMilestoneById(crpMilestoneDetached.getId());
@@ -883,8 +902,7 @@ public class OutcomesAction extends BaseAction {
     this.idoList = idoList;
   }
 
-
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

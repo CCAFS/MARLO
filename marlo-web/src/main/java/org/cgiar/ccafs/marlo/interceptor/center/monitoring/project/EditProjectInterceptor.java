@@ -19,9 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
@@ -46,22 +46,25 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private final ICenterProgramManager programService;
   private Map<String, Object> session;
 
-  private Center researchCenter;
+  private GlobalUnit researchCenter;
   private long areaID = -1;
   private long programID = -1;
   private long projectID = -1;
 
   @Inject
   public EditProjectInterceptor(ICenterProjectManager projectService, ICenterProgramManager programService) {
+
     this.projectService = projectService;
     this.programService = programService;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    baseAction.setSession(session);
+    researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
       // projectID = Long.parseLong(((String[]) parameters.get(APConstants.PROJECT_ID))[0]);

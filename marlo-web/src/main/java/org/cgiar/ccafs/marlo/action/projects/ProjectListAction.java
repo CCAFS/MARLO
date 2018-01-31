@@ -17,7 +17,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -26,8 +27,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -63,7 +65,7 @@ public class ProjectListAction extends BaseAction {
   private final Logger logger = LoggerFactory.getLogger(ProjectListAction.class);
 
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private SectionStatusManager sectionStatusManager;
   private long projectID;
@@ -73,7 +75,8 @@ public class ProjectListAction extends BaseAction {
   private ProjectBudgetManager projectBudgetManager;
 
   private ProjectInfoManager projectInfoManager;
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
 
   private PhaseManager phaseManager;
   private ProjectPhaseManager projectPhaseManager;
@@ -90,10 +93,10 @@ public class ProjectListAction extends BaseAction {
 
 
   @Inject
-  public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
-    ProjectBudgetManager projectBudgetManager, SectionStatusManager sectionStatusManager) {
+    ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager, SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -104,6 +107,7 @@ public class ProjectListAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.sectionStatusManager = sectionStatusManager;
     this.projectBudgetManager = projectBudgetManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
   }
 
 
@@ -272,11 +276,21 @@ public class ProjectListAction extends BaseAction {
       project.setCreatedBy(this.getCurrentUser());
       project.setActive(true);
       project.setActiveSince(new Date());
-      project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
       project.setModifiedBy(this.getCurrentUser());
       project = projectManager.saveProject(project);
       projectID = project.getId();
+
+      // Setting the Global Unit Project
+      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+      globalUnitProject.setProject(project);
+      globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProject.setActive(true);
+      globalUnitProject.setActiveSince(new Date());
+      globalUnitProject.setModifiedBy(this.getCurrentUser());
+      globalUnitProject.setCreatedBy(this.getCurrentUser());
+      globalUnitProject.setOrigin(true);
+      globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
 
       Phase phase = this.phaseManager.findCycle(this.getCurrentCycle(), this.getCurrentCycleYear(), this.getCrpID());
@@ -303,10 +317,20 @@ public class ProjectListAction extends BaseAction {
       project.setActive(true);
       project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
-      project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
       project = projectManager.saveProject(project);
       projectID = project.getId();
+
+      // Setting the Global Unit Project
+      GlobalUnitProject globalUnitProject = new GlobalUnitProject();
+      globalUnitProject.setProject(project);
+      globalUnitProject.setGlobalUnit(loggedCrp);
+      globalUnitProject.setActive(true);
+      globalUnitProject.setActiveSince(new Date());
+      globalUnitProject.setModifiedBy(this.getCurrentUser());
+      globalUnitProject.setCreatedBy(this.getCurrentUser());
+      globalUnitProject.setOrigin(true);
+      globalUnitProjectManager.saveGlobalUnitProject(globalUnitProject);
 
       ProjectInfo projectInfo = new ProjectInfo();
       projectInfo.setModifiedBy(this.getCurrentUser());
@@ -458,8 +482,8 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     Phase phase = this.getActualPhase();
     phase = phaseManager.getPhaseById(phase.getId());

@@ -69,6 +69,11 @@ public class CenterProjectManager implements ICenterProjectManager {
   }
 
   @Override
+  public CenterProject getCenterProjectsByOcsCode(String ocsCode) {
+    return projectDAO.getCenterProjectsByOcsCode(ocsCode);
+  }
+
+  @Override
   public List<CenterProject> getCenterProjectsByUserId(Long userId) {
     return projectDAO.getCenterProjectsByUserId(userId);
   }

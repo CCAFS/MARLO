@@ -95,8 +95,7 @@ public class User implements java.io.Serializable, IAuditLog {
   private List<CrpUser> crpUser;
   // MARLO CIAT relations
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
-  private Set<CenterUserRole> centerUserRoles = new HashSet<CenterUserRole>(0);
-  private Set<CenterUser> centerUsers = new HashSet<CenterUser>(0);
+
 
   public User() {
   }
@@ -150,13 +149,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-  public Set<CenterUserRole> getCenterUserRoles() {
-    return centerUserRoles;
-  }
-
-  public Set<CenterUser> getCenterUsers() {
-    return centerUsers;
-  }
 
   /**
    * This method returns the user's full name.
@@ -323,15 +315,6 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public void setAutoSave(boolean autoSave) {
     this.autoSave = autoSave;
-  }
-
-  public void setCenterUserRoles(Set<CenterUserRole> centerUserRoles) {
-    this.centerUserRoles = centerUserRoles;
-  }
-
-
-  public void setCenterUsers(Set<CenterUser> centerUsers) {
-    this.centerUsers = centerUsers;
   }
 
 

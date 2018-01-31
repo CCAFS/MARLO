@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
@@ -46,7 +47,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
@@ -68,6 +69,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.GenderType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -122,10 +124,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DeliverableAction extends BaseAction {
 
+
   private static final long serialVersionUID = -4474372683580321612L;
 
-  private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
+  private final Logger logger = LoggerFactory.getLogger(DeliverableAction.class);
 
   private List<DeliverableQualityAnswer> answers;
 
@@ -134,17 +137,16 @@ public class DeliverableAction extends BaseAction {
 
   private List<RepositoryChannel> repositoryChannels;
 
-
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
 
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
+
 
   private Map<String, String> crps;
 
 
   private Map<String, String> programs;
-
 
   private Deliverable deliverable;
 
@@ -160,39 +162,40 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableUserManager deliverableUserManager;
 
+
   private DeliverableCrpManager deliverableCrpManager;
+
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
-
   private CrpPandrManager crpPandrManager;
 
-
   private long deliverableID;
-  private DeliverableManager deliverableManager;
-  private DeliverableInfoManager deliverableInfoManager;
 
+
+  private DeliverableManager deliverableManager;
+
+
+  private DeliverableInfoManager deliverableInfoManager;
   private HistoryComparator historyComparator;
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
-
   private InstitutionManager institutionManager;
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
+
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
   private DeliverableDisseminationManager deliverableDisseminationManager;
-
-
   private List<DeliverableType> deliverableSubTypes;
+
   private Boolean has_specific_management_deliverables;
   private Boolean isManagingPartnerPersonRequerid;
 
 
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
-
   private List<DeliverableType> deliverableTypeParent;
 
 
@@ -205,7 +208,11 @@ public class DeliverableAction extends BaseAction {
 
   private IpProgramManager ipProgramManager;
 
+
   private FundingSourceManager fundingSourceManager;
+
+  private CrossCuttingScoringManager crossCuttingManager;
+
 
   private List<FundingSource> fundingSources;
 
@@ -213,24 +220,24 @@ public class DeliverableAction extends BaseAction {
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
-
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private MetadataElementManager metadataElementManager;
 
+
   private List<ProjectPartnerPerson> partnerPersons;
+
   private List<ProjectPartner> partners;
 
-
   private Project project;
-
-
   private long projectID;
 
 
   private ProjectManager projectManager;
 
+
   private List<ProjectOutcome> projectOutcome;
+
 
   private ProjectPartnerManager projectPartnerManager;
 
@@ -240,28 +247,32 @@ public class DeliverableAction extends BaseAction {
 
   private Map<String, String> status;
 
-
   private String transaction;
 
-
   private int indexTab;
+
 
   private PartnerDivisionManager partnerDivisionManager;
 
 
   private RepositoryChannelManager repositoryChannelManager;
 
-
   private List<PartnerDivision> divisions;
+
+
+  private List<CrossCuttingScoring> crossCuttingDimensions;
+
+  private Map<Long, String> crossCuttingScoresMap;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableManager deliverableManager,
-    CrpManager crpManager, ProjectManager projectManager, ProjectPartnerPersonManager projectPartnerPersonManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
-    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager,
+    GlobalUnitManager crpManager, ProjectManager projectManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    DeliverablePartnershipManager deliverablePartnershipManager, AuditLogManager auditLogManager,
+    DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
+    FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager,
@@ -271,7 +282,8 @@ public class DeliverableAction extends BaseAction {
     InstitutionManager institutionManager, MetadataElementManager metadataElementManager,
     DeliverableDisseminationManager deliverableDisseminationManager, CrpPandrManager crpPandrManager,
     IpProgramManager ipProgramManager, PartnerDivisionManager partnerDivisionManager,
-    RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager) {
+    RepositoryChannelManager repositoryChannelManager, DeliverableInfoManager deliverableInfoManager,
+    CrossCuttingScoringManager crossCuttingManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -304,6 +316,7 @@ public class DeliverableAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
     this.partnerDivisionManager = partnerDivisionManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.crossCuttingManager = crossCuttingManager;
   }
 
 
@@ -347,6 +360,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public Boolean candEditYear(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
@@ -387,7 +401,6 @@ public class DeliverableAction extends BaseAction {
     DeliverablePartnership partnershipManaged) {
     Boolean hasChanges = false;
     DeliverablePartnership partnershipDB = this.copyDeliverablePartnership(partnershipDBUpdated);
-
 
     if (partnershipDBUpdated.getProjectPartnerPerson() != null) {
       if (partnershipManaged.getProjectPartnerPerson() != null) {
@@ -519,14 +532,23 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<CrossCuttingScoring> getCrossCuttingDimensions() {
+    return crossCuttingDimensions;
+  }
+
+
+  public Map<Long, String> getCrossCuttingScoresMap() {
+    return crossCuttingScoresMap;
+  }
+
   public Map<String, String> getCrps() {
     return crps;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -550,9 +572,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   private DeliverablePartnership getDeliverablePartnershipDB(Deliverable deliverableDB) {
-
     DeliverablePartnership partnershipResponsible = null;
 
     if (deliverableDB.getDeliverablePartnerships() != null && deliverableDB.getDeliverablePartnerships().size() > 0) {
@@ -594,15 +614,14 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
 
-
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
-
 
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
@@ -613,19 +632,19 @@ public class DeliverableAction extends BaseAction {
       + "deliverable" + File.separator + fileType + File.separator;
   }
 
-
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
+
 
   public List<FundingSource> getFundingSources() {
     return fundingSources;
   }
 
+
   public List<GenderType> getGenderLevels() {
     return genderLevels;
   }
-
 
   public int getIndexTab() {
     return indexTab;
@@ -636,10 +655,9 @@ public class DeliverableAction extends BaseAction {
     return keyOutputs;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   /**
    * Get the ProjectPartnerPerson from the submitted form.
@@ -659,6 +677,7 @@ public class DeliverableAction extends BaseAction {
     return partnerPerson;
   }
 
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -675,10 +694,10 @@ public class DeliverableAction extends BaseAction {
     return projectPartner;
   }
 
-
   public List<ProjectPartner> getPartners() {
     return partners;
   }
+
 
   public List<ProjectPartnerPerson> getPersons(long projectPartnerId) {
     List<ProjectPartnerPerson> projectPartnerPersons =
@@ -690,9 +709,11 @@ public class DeliverableAction extends BaseAction {
     return programs;
   }
 
+
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -710,7 +731,6 @@ public class DeliverableAction extends BaseAction {
   public List<RepositoryChannel> getRepositoryChannels() {
     return repositoryChannels;
   }
-
 
   public List<ProjectPartner> getSelectedPartners() {
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
@@ -757,6 +777,7 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
+
   @Override
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -778,9 +799,11 @@ public class DeliverableAction extends BaseAction {
     return false;
   }
 
+
   public boolean isSelectedPerson(long projectPartnerPersonId, long projectPartner) {
     return this.getSelectedPersons(projectPartner).contains(new Long(projectPartnerPersonId));
   }
+
 
   public List<DeliverablePartnership> otherPartners() {
     try {
@@ -788,7 +811,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
 
       return list;
@@ -799,7 +822,6 @@ public class DeliverableAction extends BaseAction {
 
 
   }
-
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -829,7 +851,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   public void parnershipNewData() {
     if (deliverable.getOtherPartners() != null) {
@@ -943,6 +964,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void partnershipPreviousData(Deliverable deliverablePrew) {
     if (deliverablePrew.getDeliverablePartnerships() != null
       && deliverablePrew.getDeliverablePartnerships().size() > 0) {
@@ -950,7 +972,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -972,13 +994,14 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
 
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       deliverableID =
@@ -1035,7 +1058,7 @@ public class DeliverableAction extends BaseAction {
       project.getProjecInfoPhase(this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && !this.isHttpPost()) {
 
         BufferedReader reader = null;
 
@@ -1228,20 +1251,36 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(false);
       }
-      for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
-        try {
-          deliverableGenderLevel.setNameGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
-          deliverableGenderLevel.setDescriptionGenderLevel(
-            genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
-        } catch (Exception e) {
-          logger.error("unable to update DeliverableGenderLevel", e);
-          /**
-           * Original code swallows the exception and didn't even log it. Now we at least log it,
-           * but we need to revisit to see if we should continue processing or re-throw the exception.
-           */
+      if (deliverable.getGenderLevels() != null) {
+        for (DeliverableGenderLevel deliverableGenderLevel : deliverable.getGenderLevels()) {
+          try {
+
+            GenderType type = genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel());
+
+            if (type != null) {
+              deliverableGenderLevel.setNameGenderLevel(type.getDescription());
+              deliverableGenderLevel.setDescriptionGenderLevel(type.getCompleteDescription());
+            }
+
+            /**
+             * Comment the code to validate nulls in GenderType object
+             * jurodca
+             * 20180131
+             * deliverableGenderLevel.setNameGenderLevel(
+             * genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getDescription());
+             * deliverableGenderLevel.setDescriptionGenderLevel(
+             * genderTypeManager.getGenderTypeById(deliverableGenderLevel.getGenderLevel()).getCompleteDescription());
+             */
+          } catch (Exception e) {
+            logger.error("unable to update DeliverableGenderLevel", e);
+            /**
+             * Original code swallows the exception and didn't even log it. Now we at least log it,
+             * but we need to revisit to see if we should continue processing or re-throw the exception.
+             */
+          }
         }
       }
+
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
@@ -1338,7 +1377,7 @@ public class DeliverableAction extends BaseAction {
           .addAll(deliverableTypeManager
             .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1377,10 +1416,27 @@ public class DeliverableAction extends BaseAction {
 
       // Getting partners list
       partners = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+
+
+      /**
+       * The way to use the list of partners is changed to avoid double call to the database and use the objects in
+       * memory.
+       * jurodca
+       * 20180129
+       */
+
+      List<ProjectPartner> partnersTmp = projectPartnerManager.findAll().stream()
         .filter(
           pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+
+
+      // for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      // .filter(
+      // pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // .collect(Collectors.toList())) {
+
+      for (ProjectPartner partner : partnersTmp) {
         List<ProjectPartnerPerson> persons =
           partner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         if (!isManagingPartnerPersonRequerid) {
@@ -1398,73 +1454,82 @@ public class DeliverableAction extends BaseAction {
       // .collect(Collectors.toList());
 
       partnerPersons = new ArrayList<>();
-      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
-        .filter(
-          pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+      // .filter(
+      // pp -> pp.isActive() && pp.getProject().getId() == projectID && pp.getPhase().equals(this.getActualPhase()))
+      // .collect(Collectors.toList())) {
+
+      /**
+       * This for is not being used properly. The internal logic is repeated for each partner that has been consulted.
+       * The partner object of the cycle is not being used within it.
+       * jurodca
+       * 20180129
+       */
+      // for (ProjectPartner partner : partnersTmp) {
+
+      // partnerPersons = new ArrayList<>();
+      partnerPersons =
+        partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+
+      // List<ProjectPartner> projectPartners = projectPartnerManager.findAll().stream()
+      // .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList());
+      //
+      // for (ProjectPartner partner : projectPartners) {
+      //
+      // for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+      // .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+      //
+      // partnerPersons.add(partnerPerson);
+      // }
+      // }
+
+      this.fundingSources = new ArrayList<>();
+      // List<FundingSource> fundingSources =
+      // fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
+      // for (FundingSource fundingSource : fundingSources) {
+
+      for (ProjectBudget budget : project.getProjectBudgets().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
 
-        // partnerPersons = new ArrayList<>();
-        partnerPersons =
-          partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+        FundingSource fundingSource = budget.getFundingSource();
+        fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
 
-        // List<ProjectPartner> projectPartners = projectPartnerManager.findAll().stream()
-        // .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList());
-        //
-        // for (ProjectPartner partner : projectPartners) {
-        //
-        // for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
-        // .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
-        //
-        // partnerPersons.add(partnerPerson);
-        // }
-        // }
 
-        this.fundingSources = new ArrayList<>();
-        List<FundingSource> fundingSources =
-          fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
-        for (FundingSource fundingSource : fundingSources) {
+        if (fundingSource.getFundingSourceInfo() == null) {
+          fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfoLast(this.getActualPhase()));
 
-          for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
-            .collect(Collectors.toList())) {
-            if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
-              fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-              if (fundingSource.getFundingSourceInfo() == null) {
-                fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfoLast(this.getActualPhase()));
-
-              }
-              if (fundingSource.getFundingSourceInfo() != null) {
-                this.fundingSources.add(fundingSource);
-              }
-
-            }
-
-          }
         }
-        Set<FundingSource> hs = new HashSet();
-        hs.addAll(this.fundingSources);
-        this.fundingSources.clear();
-        this.fundingSources.addAll(hs);
-        this.fundingSources.sort((o1, o2) -> {
-          if (o1.getFundingSourceInfo(this.getActualPhase()) != null
-            && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+        if (fundingSource.getFundingSourceInfo() != null) {
+          this.fundingSources.add(fundingSource);
+        }
 
-          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-            && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-            && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
-
-            int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
-              .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId());
-            if (cmp == 0) {
-              cmp = o1.getFundingSourceInfo(this.getActualPhase()).getTitle()
-                .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getTitle());
-            }
-
-            return cmp;
-          }
-          return 0;
-        });
 
       }
+      Set<FundingSource> hs = new HashSet();
+      hs.addAll(this.fundingSources);
+      this.fundingSources.clear();
+      this.fundingSources.addAll(hs);
+      this.fundingSources.sort((o1, o2) -> {
+        if (o1.getFundingSourceInfo(this.getActualPhase()) != null
+          && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+
+          o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
+          && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
+
+          int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
+            .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId());
+          if (cmp == 0) {
+            cmp = o1.getFundingSourceInfo(this.getActualPhase()).getTitle()
+              .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getTitle());
+          }
+
+          return cmp;
+        }
+        return 0;
+      });
+
+      // }
       if (deliverable.getFiles() != null) {
         deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       }
@@ -1479,6 +1544,27 @@ public class DeliverableAction extends BaseAction {
 
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+
+      // Read all the cross cutting scoring from database
+      this.crossCuttingDimensions = this.crossCuttingManager.findAll();
+
+      // load the map of cross cutting scores
+      this.crossCuttingScoresMap = new HashMap<>();
+      for (CrossCuttingScoring score : this.crossCuttingDimensions) {
+        this.crossCuttingScoresMap.put(score.getId(), score.getDescription());
+      }
+
+      // only show cross cutting number 1 and 2
+
+      List<CrossCuttingScoring> crossCuttingDimensionsTemp = this.crossCuttingDimensions;
+      this.crossCuttingDimensions = new ArrayList<>();
+
+      for (CrossCuttingScoring score : crossCuttingDimensionsTemp) {
+        if (score.getId() != 0) {
+          this.crossCuttingDimensions.add(score);
+        }
+      }
+
 
       if (this.isHttpPost()) {
         if (deliverableTypeParent != null) {
@@ -1542,6 +1628,7 @@ public class DeliverableAction extends BaseAction {
         indexTab = 0;
       }
     }
+
   }
 
 
@@ -1552,7 +1639,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1576,7 +1663,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -1588,7 +1674,6 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
-
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -1633,6 +1718,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -1751,6 +1837,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveCrps() {
     if (deliverable.getCrps() == null) {
 
@@ -1844,7 +1931,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private void saveDeliverableGenderLevels(Deliverable deliverablePrew) {
     if (deliverable.getGenderLevels() != null) {
       if (deliverablePrew.getDeliverableGenderLevels() != null
@@ -1886,7 +1972,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -2021,6 +2106,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
@@ -2032,6 +2118,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * All we are doing here is setting the modification justification.
@@ -2057,7 +2144,6 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
-
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
@@ -2196,6 +2282,7 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
+
   /**
    * Save, update or delete partnership's responsible
    * 
@@ -2233,7 +2320,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
 
@@ -2263,10 +2349,19 @@ public class DeliverableAction extends BaseAction {
     this.answers = answers;
   }
 
+  public void setcrossCuttingDimensions(List<CrossCuttingScoring> crossCuttingScores) {
+    this.crossCuttingDimensions = crossCuttingScores;
+  }
+
+
+  public void setCrossCuttingScoresMap(Map<Long, String> crossCuttingScoresMap) {
+    this.crossCuttingScoresMap = crossCuttingScoresMap;
+  }
+
+
   public void setCrps(Map<String, String> crps) {
     this.crps = crps;
   }
-
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -2276,11 +2371,9 @@ public class DeliverableAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
-
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
@@ -2306,7 +2399,7 @@ public class DeliverableAction extends BaseAction {
     this.keyOutputs = keyOutputs;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
@@ -2334,21 +2427,26 @@ public class DeliverableAction extends BaseAction {
     this.projectOutcome = projectOutcome;
   }
 
+
   public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
     this.projectPrograms = projectPrograms;
   }
+
 
   public void setRepositoryChannels(List<RepositoryChannel> repositoryChannels) {
     this.repositoryChannels = repositoryChannels;
   }
 
+
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   private Deliverable updateDeliverable() {
     // deliverableDb is in a managed state, deliverable is in a detached state.
@@ -2366,8 +2464,11 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingCapacity() == null) {
       deliverableInfoDb.setCrossCuttingCapacity(false);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingCapacity(true);
+      deliverableInfoDb.setCrossCuttingScoreCapacity(
+        deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreCapacity());
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingNa() == null) {
       deliverableInfoDb.setCrossCuttingNa(false);
@@ -2376,13 +2477,19 @@ public class DeliverableAction extends BaseAction {
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingGender() == null) {
       deliverableInfoDb.setCrossCuttingGender(false);
+      deliverableInfoDb.setCrossCuttingScoreGender(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingGender(true);
+      deliverableInfoDb
+        .setCrossCuttingScoreGender(deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreGender());
     }
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingYouth() == null) {
       deliverableInfoDb.setCrossCuttingYouth(false);
+      deliverableInfoDb.setCrossCuttingScoreYouth(APConstants.CROSS_CUTTING_NOT_TARGETED);
     } else {
       deliverableInfoDb.setCrossCuttingYouth(true);
+      deliverableInfoDb
+        .setCrossCuttingScoreYouth(deliverable.getDeliverableInfo(this.getActualPhase()).getCrossCuttingScoreYouth());
     }
 
     if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null) {
@@ -2407,7 +2514,11 @@ public class DeliverableAction extends BaseAction {
 
     deliverableInfoDb.setModifiedBy(this.getCurrentUser());
     deliverableInfoDb.setModificationJustification(this.getJustification());
+
+
     deliverableBase.setDeliverableInfo(deliverableInfoDb);
+
+
     return deliverableBase;
   }
 
@@ -2542,4 +2653,6 @@ public class DeliverableAction extends BaseAction {
       deliverableValidator.validate(this, deliverable, true);
     }
   }
+
+
 }

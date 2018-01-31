@@ -55,6 +55,13 @@ public interface ProjectInfoDAO {
 
 
   /**
+   * This method gets a projectInfo object by a project and Phase
+   * 
+   * @return a ProjectInfo object.
+   */
+  public ProjectInfo getProjectInfoByProjectPhase(long projectId, long phase);
+
+  /**
    * This method saves the information of the given projectInfo
    * 
    * @param projectInfo - is the projectInfo object with the new information to be added/updated.

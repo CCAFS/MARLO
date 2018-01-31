@@ -16,10 +16,10 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
@@ -61,7 +61,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
 
 
   private static final long serialVersionUID = 1L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightsExcelSummaryAction.class);
+
   // Managers
   private final ProjectHighligthManager projectHighLightManager;
   // XLSX bytes
@@ -71,10 +74,10 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
   // Parameters
   private int year;
   private long startTime;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   @Inject
-  public ProjectHighlightsExcelSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager,
+  public ProjectHighlightsExcelSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectHighligthManager projectHighLightManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
@@ -178,7 +181,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     subReport.setDataFactory(cdf);
   }
 
-
   /**
    * Get all subreports in the band.
    * If it encounters a band, search subreports in the band
@@ -206,6 +208,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
   public byte[] getBytesXLSX() {
     return bytesXLSX;
   }
+
 
   @Override
   public int getContentLength() {
@@ -235,7 +238,6 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     return fileName.toString();
   }
 
-
   public String getHighlightsImagesUrl(String projectId) {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath(projectId).replace('\\', '/');
   }
@@ -244,6 +246,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectId + File.separator
       + "hightlightsImage" + File.separator;
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -254,7 +257,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
   }
 
   @Override
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -265,6 +268,7 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     model.addRow(new Object[] {center, date, year});
     return model;
   }
+
 
   private TypedTableModel getProjectHighligthsTableModel() {
 
@@ -281,9 +285,12 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == year
-        && ph.getProject().getCrp().getId().longValue() == loggedCrp.getId().longValue() && ph.getProject().isActive()
+        && ph.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.loggedCrp.getId()))
+          .collect(Collectors.toList()).size() > 0
         && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()).getReporting() && ph.getProject().getId() == 2)
       .collect(Collectors.toList())) {
+
       String title = null, author = null, subject = null, publisher = null, highlightsTypes = "",
         highlightsIsGlobal = null, startDate = null, endDate = null, keywords = null, countries = "",
         highlightDesc = null, introduction = null, results = null, partners = null, links = null, projectId = null,
@@ -408,8 +415,9 @@ public class ProjectHighlightsExcelSummaryAction extends BaseSummariesAction imp
   }
 
   @Override
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
 }

@@ -407,7 +407,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setYear(crpMilestone.getYear());
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
           crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
-          if (crpMilestone.getComposeID() == null) {
+          if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().length() == 0) {
             crpMilestone.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
             crpMilestoneAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
             crpMilestoneDAO.save(crpMilestoneAdd);

@@ -22,10 +22,6 @@ import java.io.Serializable;
  */
 public class CustomLevelSelect implements Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -3426216373887145149L;
   private LocElementType locElementType;
   private Boolean check;
