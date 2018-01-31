@@ -124,6 +124,17 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
 
+    if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getExtensionDate() != null
+      && fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo(action.getActualPhase()).getExtensionDate());
+      if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Extended.getStatusId())
+        && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.extensionDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.extensionDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
     // Validate the donor with id -1, beacause front end send this when there is not one selected
     if (fundingSource.getFundingSourceInfo().getDirectDonor() == null
       || fundingSource.getFundingSourceInfo().getDirectDonor().getId() == null
