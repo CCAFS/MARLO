@@ -17,12 +17,12 @@ package org.cgiar.ccafs.marlo.action.center.capdev;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterSubmission;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -48,20 +48,23 @@ public class CapDevSubmissionAction extends BaseAction {
   /// LOG
   private static Logger LOG = LoggerFactory.getLogger(CapDevSubmissionAction.class);
 
-
   private ICenterSubmissionManager submissionService;
+
+
   private ICapacityDevelopmentService capdevService;
 
-  private ICenterManager centerService;
 
-  private Center loggedCenter;
+  private GlobalUnitManager centerService;
+  private GlobalUnit loggedCenter;
+
   private CapacityDevelopment capacityDevelopment;
+
   private long capDevID;
   private boolean isSubmited = false;
 
   @Inject
   public CapDevSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
-    ICenterManager centerService, ICapacityDevelopmentService capdevService) {
+    GlobalUnitManager centerService, ICapacityDevelopmentService capdevService) {
     super(config);
     this.submissionService = submissionService;
     this.centerService = centerService;
@@ -107,19 +110,19 @@ public class CapDevSubmissionAction extends BaseAction {
     }
   }
 
-
   public long getCapDevID() {
     return capDevID;
   }
 
-  public Center getLoggedCenter() {
+  public GlobalUnit getLoggedCenter() {
     return loggedCenter;
   }
 
+
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       capDevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
@@ -133,12 +136,14 @@ public class CapDevSubmissionAction extends BaseAction {
     // TODO create base permission
   }
 
+
   public void setCapDevID(long capDevID) {
     this.capDevID = capDevID;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
+  public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
+
 
 }

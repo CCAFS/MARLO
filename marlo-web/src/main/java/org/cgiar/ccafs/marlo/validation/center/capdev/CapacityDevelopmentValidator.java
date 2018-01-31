@@ -56,7 +56,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     this.validateCapDevDetail(baseAction, capdev, participant, uploadFile, uploadFileContentType);
 
-    this.saveMissingFields(capdev, "detailCapdev");
+    this.saveMissingFields(capdev, "detailCapdev", baseAction);
 
   }
 
@@ -66,54 +66,54 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     if (capdev.getTitle() != null) {
       if (!this.isValidString(capdev.getTitle()) && (this.wordCount(capdev.getTitle()) <= 50)) {
-        this.addMessage(baseAction.getText("capdev.action.title"));
+        baseAction.addMessage(baseAction.getText("capdev.action.title"));
         baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
-      this.addMessage(baseAction.getText("capdev.action.title"));
+      baseAction.addMessage(baseAction.getText("capdev.action.title"));
       baseAction.getInvalidFields().put("input-capdev.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (capdev.getCapdevType() == null) {
-      this.addMessage(baseAction.getText("capdev.action.type"));
+      baseAction.addMessage(baseAction.getText("capdev.action.type"));
       baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (capdev.getCapdevType() != null) {
       if (capdev.getCapdevType().getId() == -1) {
-        this.addMessage(baseAction.getText("capdev.action.type"));
+        baseAction.addMessage(baseAction.getText("capdev.action.type"));
         baseAction.getInvalidFields().put("input-capdev.capdevType.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
 
 
     if (capdev.getStartDate() == null) {
-      this.addMessage(baseAction.getText("capdev.action.startDate"));
+      baseAction.addMessage(baseAction.getText("capdev.action.startDate"));
       baseAction.getInvalidFields().put("input-capdev.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (capdev.getEndDate() == null) {
-      this.addMessage(baseAction.getText("capdev.action.startDate"));
+      baseAction.addMessage(baseAction.getText("capdev.action.startDate"));
       baseAction.getInvalidFields().put("input-capdev.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (capdev.getDuration() == null) {
-      this.addMessage(baseAction.getText("capdev.action.duration"));
+      baseAction.addMessage(baseAction.getText("capdev.action.duration"));
       baseAction.getInvalidFields().put("input-capdev.duration", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if ((capdev.getDuration() != null) && (capdev.getDurationUnit() == null)) {
-      this.addMessage(baseAction.getText("capdev.action.durationUnit"));
+      baseAction.addMessage(baseAction.getText("capdev.action.durationUnit"));
       baseAction.getInvalidFields().put("input-capdev.durationUnit", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (this.bolValue(capdev.getsGlobal()) == null) {
-      this.addMessage(baseAction.getText("capdev.action.global"));
+      baseAction.addMessage(baseAction.getText("capdev.action.global"));
       baseAction.getInvalidFields().put("list-capdev.globalReach",
         baseAction.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {""}));
     }
     if (this.bolValue(capdev.getsRegional()) == null) {
-      this.addMessage(baseAction.getText("capdev.action.region"));
+      baseAction.addMessage(baseAction.getText("capdev.action.region"));
       baseAction.getInvalidFields().put("list-capdev.regionReach",
         baseAction.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {""}));
     }
@@ -121,7 +121,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
 
     if ((this.bolValue(capdev.getsRegional()) == null) && (this.bolValue(capdev.getsGlobal()) == null)) {
       if (capdev.getCapDevCountries() == null) {
-        this.addMessage(baseAction.getText("capdev.action.countries"));
+        baseAction.addMessage(baseAction.getText("capdev.action.countries"));
         baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
           new String[] {"Capacity Development Intervention Countries"}));
       }
@@ -129,7 +129,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       if ((this.bolValue(capdev.getsRegional()) != null)) {
         if (this.bolValue(capdev.getsRegional()) == false) {
           if (capdev.getCapDevCountries() == null) {
-            this.addMessage(baseAction.getText("capdev.action.countries"));
+            baseAction.addMessage(baseAction.getText("capdev.action.countries"));
             baseAction.getInvalidFields().put("list-capdev.countries", baseAction
               .getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
           }
@@ -140,7 +140,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         if (this.bolValue(capdev.getsGlobal()) == true) {
           if (capdev.getCapDevCountries() != null) {
             if (capdev.getCapDevCountries().isEmpty()) {
-              this.addMessage(baseAction.getText("capdev.action.countries"));
+              baseAction.addMessage(baseAction.getText("capdev.action.countries"));
               baseAction.getInvalidFields().put("list-capdev.countries", baseAction.getText(
                 InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
             }
@@ -151,7 +151,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       if (this.bolValue(capdev.getsGlobal()) == null) {
         if (capdev.getCapDevCountries() != null) {
           if (capdev.getCapDevCountries().isEmpty()) {
-            this.addMessage(baseAction.getText("capdev.action.countries"));
+            baseAction.addMessage(baseAction.getText("capdev.action.countries"));
             baseAction.getInvalidFields().put("list-capdev.countries", baseAction
               .getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Capacity Development Intervention Countries"}));
           }
@@ -163,12 +163,12 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     if ((this.bolValue(capdev.getsRegional()) != null)) {
       if (this.bolValue(capdev.getsRegional()) == true) {
         if (capdev.getCapDevRegions() == null) {
-          this.addMessage(baseAction.getText("capdev.action.regions"));
+          baseAction.addMessage(baseAction.getText("capdev.action.regions"));
           baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
             new String[] {"Capacity Development Intervention Regions"}));
         } else {
           if (capdev.getCapDevRegions().isEmpty()) {
-            this.addMessage(baseAction.getText("capdev.action.regions"));
+            baseAction.addMessage(baseAction.getText("capdev.action.regions"));
             baseAction.getInvalidFields().put("list-capdev.regions", baseAction.getText(InvalidFieldsMessages.EMPTYLIST,
               new String[] {"Capacity Development Intervention Regions"}));
           }
@@ -185,11 +185,11 @@ public class CapacityDevelopmentValidator extends BaseValidator {
     if (capdev.getCategory() == 2) {
 
       if ((capdev.getCtFirstName() == null) || (capdev.getCtLastName() == null) || (capdev.getCtEmail() == null)) {
-        this.addMessage(baseAction.getText("capdev.action.contactPerson"));
+        baseAction.addMessage(baseAction.getText("capdev.action.contactPerson"));
         baseAction.getInvalidFields().put("input-contact", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((uploadFile == null) && (capdev.getNumParticipants() == null)) {
-        this.addMessage(baseAction.getText("capdev.action.numParticipants"));
+        baseAction.addMessage(baseAction.getText("capdev.action.numParticipants"));
         baseAction.getInvalidFields().put("list-capdev.uploadFile",
           baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Number of participants or a file "}));
       }
@@ -197,23 +197,23 @@ public class CapacityDevelopmentValidator extends BaseValidator {
         if (!uploadFileContentType.equals("application/vnd.ms-excel")
           && !uploadFileContentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
           && !uploadFileContentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-          this.addMessage(baseAction.getText("capdev.action.file"));
+          baseAction.addMessage(baseAction.getText("capdev.action.file"));
           baseAction.getInvalidFields().put("list-capdev.uploadFile",
             baseAction.getText(InvalidFieldsMessages.INVALID_FORMAT, new String[] {""}));
         } else {
           if (!reader.validarExcelFile(uploadFile)) {
-            this.addMessage(baseAction.getText("capdev.action.file"));
+            baseAction.addMessage(baseAction.getText("capdev.action.file"));
             baseAction.getInvalidFields().put("list-capdev.uploadFile",
               baseAction.getText(InvalidFieldsMessages.WRONG_FILE, new String[] {""}));
           }
           if (!reader.validarExcelFileData(uploadFile)) {
-            this.addMessage(baseAction.getText("capdev.action.file"));
+            baseAction.addMessage(baseAction.getText("capdev.action.file"));
             baseAction.getInvalidFields().put("list-capdev.uploadFile",
               baseAction.getText(InvalidFieldsMessages.EMPTY_FILE, new String[] {""}));
           }
         }
         if (uploadFile.length() > 31457280) {
-          this.addMessage(baseAction.getText("capdev.action.file"));
+          baseAction.addMessage(baseAction.getText("capdev.action.file"));
           baseAction.getInvalidFields().put("list-capdev.uploadFile",
             baseAction.getText(InvalidFieldsMessages.FILE_SIZE, new String[] {""}));
         }
@@ -253,35 +253,35 @@ public class CapacityDevelopmentValidator extends BaseValidator {
   public void validateParticipant(Participant participant, BaseAction baseAction) {
     if (participant != null) {
       if (participant.getCode() == null) {
-        this.addMessage(baseAction.getText("capdev.action.participant.code"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.code"));
         baseAction.getInvalidFields().put("input-capdev.participant.code", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((participant.getName() == null) || participant.getName().equalsIgnoreCase("")) {
-        this.addMessage(baseAction.getText("capdev.action.participant.firstName"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.firstName"));
         baseAction.getInvalidFields().put("input-capdev.participant.name", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((participant.getLastName() == null) || participant.getLastName().equalsIgnoreCase("")) {
-        this.addMessage(baseAction.getText("capdev.action.participant.lastName"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.lastName"));
         baseAction.getInvalidFields().put("input-capdev.participant.lastName", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((participant.getGender() == null) || participant.getGender().equalsIgnoreCase("-1")) {
-        this.addMessage(baseAction.getText("capdev.action.participant.gender"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.gender"));
         baseAction.getInvalidFields().put("input-capdev.participant.gender", InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((participant.getLocElementsByCitizenship() == null)
         || (participant.getLocElementsByCitizenship().getId() == -1)) {
-        this.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.citizenship"));
         baseAction.getInvalidFields().put("input-capdev.participant.locElementsByCitizenship.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if ((participant.getPersonalEmail() == null) || participant.getPersonalEmail().equalsIgnoreCase("")) {
-        this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
         baseAction.getInvalidFields().put("input-capdev.participant.personalEmail", InvalidFieldsMessages.EMPTYFIELD);
       }
       if (!participant.getPersonalEmail().equalsIgnoreCase("")) {
         final boolean validEmail = this.isValidEmail(participant.getPersonalEmail());
         if (!validEmail) {
-          this.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
+          baseAction.addMessage(baseAction.getText("capdev.action.participant.personalEmail"));
           baseAction.getInvalidFields().put("input-capdev.participant.personalEmail",
             InvalidFieldsMessages.WRONG_EMAIL);
         }
@@ -295,7 +295,7 @@ public class CapacityDevelopmentValidator extends BaseValidator {
       }
 
       if ((participant.getSupervisor() == null) || participant.getSupervisor().equalsIgnoreCase("")) {
-        this.addMessage(baseAction.getText("capdev.action.participant.Supervisor"));
+        baseAction.addMessage(baseAction.getText("capdev.action.participant.Supervisor"));
         baseAction.getInvalidFields().put("input-capdev.participant.supervisor", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
