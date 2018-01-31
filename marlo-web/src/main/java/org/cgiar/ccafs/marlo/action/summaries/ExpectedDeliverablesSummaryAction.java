@@ -168,7 +168,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     manager.registerDefaults();
     try {
       Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/deliverables-Annualization.prpt"), MasterReport.class);
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ExpectedDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 

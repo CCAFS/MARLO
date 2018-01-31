@@ -102,10 +102,10 @@ public class ImpactSubmissionSummaryAction extends BaseAction implements Summary
       (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
     // manager.registerDefaults();
     try {
-      String res = this.getClass().getResource("/pentaho/impactPathway.prpt").toString();
+      String res = this.getClass().getResource("/pentaho/center/ImpactPathway.prpt").toString();
 
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/impactPathway.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/center/ImpactPathway.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
