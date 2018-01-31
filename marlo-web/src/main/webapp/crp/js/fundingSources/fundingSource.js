@@ -1,5 +1,5 @@
 var allowExtensionDate, dateFormat, from, to, extension;
-var W1W2, ON_GOING;
+var W1W2, ON_GOING, EXTENDED_STATUS;
 var $fundingType;
 $(document).ready(init);
 
@@ -8,6 +8,7 @@ function init() {
   // Setting constants
   W1W2 = 1;
   ON_GOING = 2;
+  EXTENDED_STATUS = 4;
 
   $fundingType = $(".fundingType");
 
@@ -83,6 +84,9 @@ function init() {
     option.remove();
     $(this).trigger("change.select2");
   });
+
+  // On Change agreementStatus
+  $('.agreementStatus').on('change', onChangeStatus);
 
   // Remove partner
   $(".removeLeadPartner").on("click", removeLeadPartner);
@@ -241,8 +245,8 @@ function keyupBudgetYear() {
 }
 
 /**
- * Check Agreement status
- *
+ * Event on Change the funding type (W1/W2, W3, Bilateral, CenterFunds)
+ * 
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
@@ -255,8 +259,21 @@ function onChangeFundingType(typeID) {
 }
 
 /**
+ * Event on change Agreement status
+ */
+function onChangeStatus() {
+  var statusID = this.value;
+
+  if(this.value == EXTENDED_STATUS) {
+    $('.extensionDateBlock').show();
+  } else {
+    $('.extensionDateBlock').hide();
+  }
+}
+
+/**
  * This function initialize the contact person auto complete
- *
+ * 
  * @returns
  */
 function addContactAutoComplete() {
@@ -295,7 +312,7 @@ function addContactAutoComplete() {
 
 /**
  * Add a new lead partner element function
- *
+ * 
  * @param option means an option tag from the select
  * @returns
  */
@@ -339,7 +356,7 @@ function addLeadPartner(option) {
 
 /**
  * Remove lead partner function
- *
+ * 
  * @returns
  */
 function removeLeadPartner() {
@@ -361,7 +378,7 @@ function removeLeadPartner() {
 
 /**
  * Update indexes for "Managing partners" of funding source
- *
+ * 
  * @param $list List of lead partners
  * @returns
  */
@@ -380,7 +397,7 @@ function updateLeadPartner($list) {
 
 /**
  * Check if there is any lead partners and show a text message
- *
+ * 
  * @param block Container with lead partners elements
  * @returns
  */
@@ -411,7 +428,7 @@ function checkLeadPartnerItems(block) {
 
 /**
  * Add a new country to the Funding source locations
- *
+ * 
  * @param countryISO e.g CO
  * @param countryName e.g Colombia
  * @returns
@@ -567,7 +584,7 @@ function checkRegionList(block) {
 
 /**
  * Set the JQuery UI Datepicker plugin for start, end and extension dates
- *
+ * 
  * @param start
  * @param end
  * @param extensionDate
@@ -714,7 +731,7 @@ function settingDate(start,end,extensionDate) {
 
 /**
  * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
- *
+ * 
  * @param lowEnd
  * @param highEnd
  * @returns
@@ -833,7 +850,7 @@ function refreshYears() {
 
 /**
  * Get date in format
- *
+ * 
  * @param element
  * @returns
  */
@@ -849,7 +866,7 @@ function getDate(element) {
 
 /**
  * Get date in MM yy format
- *
+ * 
  * @param element - An input with a Date value
  * @returns String e.g. May 2017
  */
@@ -890,7 +907,7 @@ function addDataTable() {
 
 /**
  * Get from the back-end a list of institutions
- *
+ * 
  * @param budgetTypeID
  * @returns
  */
