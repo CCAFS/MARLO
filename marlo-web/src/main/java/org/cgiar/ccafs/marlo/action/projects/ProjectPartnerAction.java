@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -152,6 +153,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final InstitutionLocationManager institutionLocationManager;
   private final GlobalUnitManager crpManager;
   private final CrpUserManager crpUserManager;
+  private final GlobalUnitProjectManager globalUnitProjectManager;
 
   private final ProjectPartnersValidator projectPartnersValidator;
 
@@ -190,7 +192,7 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
     ProjectPartnerLocationManager projectPartnerLocationManager,
     DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
-    ProjectInfoManager projectInfoManager) {
+    ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -214,6 +216,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpUserManager = crpUserManager;
     this.projectInfoManager = projectInfoManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
@@ -540,10 +543,11 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
 
-    // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
 
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     userAssigned = userManager.getUser(userAssigned.getId());
     Project project = projectManager.getProjectById(this.projectID);
 
@@ -859,7 +863,7 @@ public class ProjectPartnerAction extends BaseAction {
               .addAll(historyComparator.getDifferencesList(projectPartnerContribution, transaction, specialList,
                 "project.partners[" + i + "].partnerContributors[" + k + "]", "project.partnerContributors", 2));
             k++;
-          } ;
+          };
 
           List<ProjectPartnerOverall> overalls =
             projectPartner.getProjectPartnerOveralls().stream().filter(c -> c.isActive()).collect(Collectors.toList());
