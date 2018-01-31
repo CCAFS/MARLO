@@ -1774,7 +1774,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<GlobalUnit> getCrpList() {
-    List<GlobalUnit> crps = new ArrayList<>();
+
+    List<GlobalUnit> centers = new ArrayList<>();
     if (!this.canAccessSuperAdmin()) {
       User user = this.getCurrentUser();
       user = userManager.getUser(user.getId());
@@ -1783,15 +1784,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       for (CrpUser crpUser : users) {
         long guType = crpUser.getCrp().getGlobalUnitType().getId();
-        if (crpUser.getCrp().isActive() && guType == 1) {
-          crps.add(crpUser.getCrp());
+        if (crpUser.getCrp().isActive() && guType == 2) {
+          centers.add(crpUser.getCrp());
         }
       }
+      return centers;
     } else {
-      crps = this.getCrpCategoryList("1");
+      return crpManager.findAll().stream().filter(c -> c.isActive() && c.getGlobalUnitType().getId() == 1)
+        .collect(Collectors.toList());
     }
-
-    return crps;
   }
 
   /**
