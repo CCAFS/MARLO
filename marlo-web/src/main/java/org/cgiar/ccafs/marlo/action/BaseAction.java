@@ -1868,7 +1868,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       for (CrpUser crpUser : users) {
         long guType = crpUser.getCrp().getGlobalUnitType().getId();
-        if (crpUser.getCrp().isActive() && guType == 2) {
+        if (crpUser.getCrp().isActive() && guType == 1) {
           centers.add(crpUser.getCrp());
         }
       }
