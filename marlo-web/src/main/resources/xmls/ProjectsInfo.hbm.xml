@@ -97,5 +97,8 @@
         <property name="reporting" type="java.lang.Boolean">
             <column name="reporting" />
         </property>
+        <property name="newPartnershipsPlanned" type="string">
+            <column name="new_partnerships_planned" length="65535" />
+        </property>
     </class>
 </hibernate-mapping>

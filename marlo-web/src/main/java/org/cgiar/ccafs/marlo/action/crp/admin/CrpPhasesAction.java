@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -39,7 +39,7 @@ public class CrpPhasesAction extends BaseAction {
   private List<Phase> phasesAction;
 
   private PhaseManager phaseManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
 
   @Inject
@@ -61,7 +61,7 @@ public class CrpPhasesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
 
     phasesAction = phaseManager.findAll().stream()
       .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());

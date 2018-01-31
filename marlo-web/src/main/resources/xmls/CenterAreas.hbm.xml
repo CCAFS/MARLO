@@ -22,9 +22,9 @@
       fetch="select">
       <column name="modified_by" not-null="false" />
     </many-to-one>
-    <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.Center"
+    <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
       fetch="select">
-      <column name="research_center_id" not-null="false" />
+      <column name="global_unit_id" not-null="false" />
     </many-to-one>
     <property name="modificationJustification" type="string">
       <column name="modification_justification" length="65535"

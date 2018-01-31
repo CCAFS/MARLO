@@ -73,7 +73,7 @@ function init() {
   // Add Data Table
   addDataTable();
 
-  // Lead partner
+  // Partner(s) managing the funding source
   $(".institution").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -242,28 +242,10 @@ function keyupBudgetYear() {
 
 /**
  * Check Agreement status
- * 
+ *
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
-  // Change Agreement Status when is (W1W2 Type => 1)
-  var $agreementStatus = $('select.agreementStatus');
-  var onlyOngoingStatus = $agreementStatus.hasClass('onlyOngoing');
-  // 3 => Concept Note/Pipeline
-  // 4 => Informally Confirmed
-  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if((typeID == W1W2) || onlyOngoingStatus) {
-    $agreementStatus.val(ON_GOING); // On-going
-    $options.remove();
-  } else {
-    if($options.length == 0) {
-      $agreementStatus.addOption("3", "Concept Note/Pipeline");
-      $agreementStatus.addOption("4", "Informally Confirmed");
-    }
-  }
-  $agreementStatus.select2("destroy");
-  $agreementStatus.select2();
-
   // Check W1/W2 - Tag
   if(typeID == W1W2) {
     $('.w1w2-tag').show();
@@ -274,7 +256,7 @@ function onChangeFundingType(typeID) {
 
 /**
  * This function initialize the contact person auto complete
- * 
+ *
  * @returns
  */
 function addContactAutoComplete() {
@@ -313,7 +295,7 @@ function addContactAutoComplete() {
 
 /**
  * Add a new lead partner element function
- * 
+ *
  * @param option means an option tag from the select
  * @returns
  */
@@ -357,7 +339,7 @@ function addLeadPartner(option) {
 
 /**
  * Remove lead partner function
- * 
+ *
  * @returns
  */
 function removeLeadPartner() {
@@ -379,7 +361,7 @@ function removeLeadPartner() {
 
 /**
  * Update indexes for "Managing partners" of funding source
- * 
+ *
  * @param $list List of lead partners
  * @returns
  */
@@ -398,7 +380,7 @@ function updateLeadPartner($list) {
 
 /**
  * Check if there is any lead partners and show a text message
- * 
+ *
  * @param block Container with lead partners elements
  * @returns
  */
@@ -406,7 +388,6 @@ function checkLeadPartnerItems(block) {
 
   // Check if CIAT is in the partners list
   var CIAT_ID = 46;
-  console.log(">> " + $('input.fId').val());
   if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
     allowExtensionDate = true;
@@ -430,7 +411,7 @@ function checkLeadPartnerItems(block) {
 
 /**
  * Add a new country to the Funding source locations
- * 
+ *
  * @param countryISO e.g CO
  * @param countryName e.g Colombia
  * @returns
@@ -586,7 +567,7 @@ function checkRegionList(block) {
 
 /**
  * Set the JQuery UI Datepicker plugin for start, end and extension dates
- * 
+ *
  * @param start
  * @param end
  * @param extensionDate
@@ -645,7 +626,7 @@ function settingDate(start,end,extensionDate) {
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
           if(allowExtensionDate) {
-            $(extensionDate).datepicker("option", "minDate", selectedDate);
+            // $(extensionDate).datepicker("option", "minDate", selectedDate);
           }
         }
         refreshYears();
@@ -698,8 +679,17 @@ function settingDate(start,end,extensionDate) {
 
   // Event when a datelabel is clicked
   $('.dateLabel').on('click', function() {
+    var $dateInput = $(this).parent().find('input');
+    var $dateLabel = $(this);
     if(!isSynced) {
-      $(this).parent().find('input').datepicker("show");
+      $dateInput.datepicker("show");
+
+      // Set a Date if the input is empty
+      if(!$dateInput.val()) {
+        $dateInput.datepicker("setDate", new Date());
+        $dateLabel.html(getDateLabel($dateInput));
+        refreshYears();
+      }
     }
   });
 
@@ -708,6 +698,9 @@ function settingDate(start,end,extensionDate) {
     if(!isSynced) {
       $(this).parent().find('input').val('');
       $(this).parent().find('.dateLabel').text('');
+
+      // Clear endDate maxlimit
+      $(to).datepicker("option", "maxDate", "");
       refreshYears();
     }
   });
@@ -721,7 +714,7 @@ function settingDate(start,end,extensionDate) {
 
 /**
  * Check for budget conflicts, date cannot be changed as this funding source has at least one budget allocation
- * 
+ *
  * @param lowEnd
  * @param highEnd
  * @returns
@@ -840,7 +833,7 @@ function refreshYears() {
 
 /**
  * Get date in format
- * 
+ *
  * @param element
  * @returns
  */
@@ -856,7 +849,7 @@ function getDate(element) {
 
 /**
  * Get date in MM yy format
- * 
+ *
  * @param element - An input with a Date value
  * @returns String e.g. May 2017
  */
@@ -897,7 +890,7 @@ function addDataTable() {
 
 /**
  * Get from the back-end a list of institutions
- * 
+ *
  * @param budgetTypeID
  * @returns
  */

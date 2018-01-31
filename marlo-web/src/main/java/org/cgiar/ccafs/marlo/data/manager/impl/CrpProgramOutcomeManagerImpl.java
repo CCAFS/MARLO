@@ -19,12 +19,14 @@ import org.cgiar.ccafs.marlo.data.dao.CrpAssumptionDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpOutcomeSubIdoDAO;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
@@ -44,6 +46,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   private CrpOutcomeSubIdoDAO crpOutcomeSubIdoDAO;
   private CrpAssumptionDAO crpAssumptionDAO;
   private CrpMilestoneDAO crpMilestoneDAO;
+  private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
+
   private PhaseDAO phaseMySQLDAO;
 
   // Managers
@@ -52,15 +56,48 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   @Inject
   public CrpProgramOutcomeManagerImpl(CrpProgramOutcomeDAO crpProgramOutcomeDAO,
     CrpOutcomeSubIdoDAO crpOutcomeSubIdoDAO, CrpAssumptionDAO crpAssumptionDAO, PhaseDAO phaseMySQLDAO,
-    CrpMilestoneDAO crpMilestoneDAO) {
+    CrpMilestoneDAO crpMilestoneDAO, CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
     this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.crpOutcomeSubIdoDAO = crpOutcomeSubIdoDAO;
     this.crpAssumptionDAO = crpAssumptionDAO;
+    this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
     this.crpMilestoneDAO = crpMilestoneDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
 
 
   }
+
+  /**
+   * clone the milestones
+   * 
+   * @param crpProgramOutcome outcome original
+   * @param crpProgramOutcomeAdd outcome new
+   */
+
+
+  private void addCrpIndicators(CrpProgramOutcome crpProgramOutcome, CrpProgramOutcome crpProgramOutcomeAdd) {
+
+    if (crpProgramOutcome.getIndicators() != null) {
+      for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : crpProgramOutcome.getIndicators()) {
+        CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
+        crpIndicatorAdd.setActive(true);
+        crpIndicatorAdd.setActiveSince(crpProgramOutcome.getActiveSince());
+        crpIndicatorAdd.setCreatedBy(crpProgramOutcome.getCreatedBy());
+        crpIndicatorAdd.setModificationJustification("");
+        crpIndicatorAdd.setModifiedBy(crpProgramOutcome.getCreatedBy());
+        crpIndicatorAdd.setCrpProgramOutcome(crpProgramOutcomeAdd);
+        crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
+        crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
+        crpIndicatorAdd = crpProgramOutcomeIndicatorDAO.save(crpIndicatorAdd);
+        if (crpProgramOutcomeIndicator.getComposeID() == null) {
+          crpProgramOutcomeIndicator.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpIndicatorAdd.getId());
+          crpIndicatorAdd.setComposeID(crpProgramOutcomeAdd.getComposeID() + "-" + crpIndicatorAdd.getId());
+          crpProgramOutcomeIndicatorDAO.save(crpIndicatorAdd);
+        }
+      }
+    }
+  }
+
 
   /**
    * clone the milestones
@@ -109,7 +146,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
     List<CrpProgramOutcome> outcomes =
       phase.getOutcomes().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
         && c.getComposeID().equals(outcome.getComposeID())).collect(Collectors.toList());
-    if ( outcomes.isEmpty()) {
+    if (outcomes.isEmpty()) {
       CrpProgramOutcome outcomeAdd = new CrpProgramOutcome();
       outcomeAdd.setActive(true);
       outcomeAdd.setActiveSince(outcome.getActiveSince());
@@ -124,9 +161,16 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
       outcomeAdd.setDescription(outcome.getDescription());
       outcomeAdd.setComposeID(outcome.getComposeID());
       outcomeAdd.setIndicator(outcome.getIndicator());
+      if (outcome.getFile() != null) {
+        if (outcome.getFile().getId() == null || outcome.getFile().getId().longValue() == -1) {
+          outcome.setFile(null);
+        }
+      }
+      outcomeAdd.setFile(outcome.getFile());
       crpProgramOutcomeDAO.save(outcomeAdd);
       this.addCrpSubIdos(outcome, outcomeAdd);
       this.addCrpMilestones(outcome, outcomeAdd);
+      this.addCrpIndicators(outcome, outcomeAdd);
 
     } else {
 
@@ -136,9 +180,16 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
         outcomePrev.setYear(outcome.getYear());
         outcomePrev.setDescription(outcome.getDescription());
         outcomePrev.setIndicator(outcome.getIndicator());
-        crpProgramOutcomeDAO.save(outcomePrev);
+        if (outcome.getFile() != null) {
+          if (outcome.getFile().getId() == null || outcome.getFile().getId().longValue() == -1) {
+            outcome.setFile(null);
+          }
+        }
+        outcomePrev.setFile(outcome.getFile());
+        outcomePrev = crpProgramOutcomeDAO.save(outcomePrev);
         this.updateCrpSubIdos(outcomePrev, outcome);
         this.updateMilestones(outcomePrev, outcome);
+        this.updateIndicators(outcomePrev, outcome);
       }
 
     }
@@ -265,6 +316,61 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   }
 
   /**
+   * check the indicators and updated
+   * 
+   * @param programOutcomePrev outcome to update
+   * @param programOutcome outcome modified
+   */
+  private void updateIndicators(CrpProgramOutcome programOutcomePrev, CrpProgramOutcome programOutcome) {
+    for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : programOutcomePrev.getCrpProgramOutcomeIndicators()
+      .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (programOutcome.getIndicators() == null || programOutcome.getIndicators().stream()
+        .filter(c -> c.getComposeID() != null && c.getComposeID().equals(crpProgramOutcomeIndicator.getComposeID()))
+        .collect(Collectors.toList()).isEmpty()) {
+        crpProgramOutcomeIndicator.setActive(false);
+        crpProgramOutcomeIndicatorDAO.save(crpProgramOutcomeIndicator);
+      }
+    }
+    if (programOutcome.getIndicators() != null) {
+      for (CrpProgramOutcomeIndicator crpProgramOutcomeIndicator : programOutcome.getIndicators()) {
+
+        if (programOutcomePrev.getCrpProgramOutcomeIndicators().stream()
+          .filter(c -> c.isActive() && c.getComposeID().equals(crpProgramOutcomeIndicator.getComposeID()))
+          .collect(Collectors.toList()).isEmpty()) {
+
+
+          CrpProgramOutcomeIndicator crpIndicatorAdd = new CrpProgramOutcomeIndicator();
+          crpIndicatorAdd.setActive(true);
+          crpIndicatorAdd.setActiveSince(programOutcomePrev.getActiveSince());
+          crpIndicatorAdd.setCreatedBy(programOutcomePrev.getCreatedBy());
+          crpIndicatorAdd.setModificationJustification("");
+          crpIndicatorAdd.setModifiedBy(programOutcomePrev.getCreatedBy());
+          crpIndicatorAdd.setCrpProgramOutcome(programOutcomePrev);
+          crpIndicatorAdd.setIndicator(crpProgramOutcomeIndicator.getIndicator());
+          crpIndicatorAdd.setComposeID(crpProgramOutcomeIndicator.getComposeID());
+          crpIndicatorAdd = crpProgramOutcomeIndicatorDAO.save(crpIndicatorAdd);
+          if (crpProgramOutcomeIndicator.getComposeID() == null
+            || crpProgramOutcomeIndicator.getComposeID().length() == 0) {
+            crpProgramOutcomeIndicator.setComposeID(programOutcomePrev.getComposeID() + "-" + crpIndicatorAdd.getId());
+            crpIndicatorAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpIndicatorAdd.getId());
+            crpProgramOutcomeIndicatorDAO.save(crpIndicatorAdd);
+
+          }
+
+
+        } else {
+          CrpProgramOutcomeIndicator crpIndicatortoUpdate = programOutcomePrev.getCrpProgramOutcomeIndicators().stream()
+            .filter(c -> c.isActive() && c.getComposeID().equals(crpProgramOutcomeIndicator.getComposeID()))
+            .collect(Collectors.toList()).get(0);
+          crpIndicatortoUpdate.setIndicator(crpProgramOutcomeIndicator.getIndicator());
+
+          crpProgramOutcomeIndicatorDAO.save(crpIndicatortoUpdate);
+        }
+      }
+    }
+  }
+
+  /**
    * check the milesotnes and updated
    * 
    * @param programOutcomePrev outcome to update
@@ -300,8 +406,8 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
           crpMilestoneAdd.setValue(crpMilestone.getValue());
           crpMilestoneAdd.setYear(crpMilestone.getYear());
           crpMilestoneAdd.setComposeID(crpMilestone.getComposeID());
-          crpMilestoneDAO.save(crpMilestoneAdd);
-          if (crpMilestone.getComposeID() == null) {
+          crpMilestoneAdd = crpMilestoneDAO.save(crpMilestoneAdd);
+          if (crpMilestone.getComposeID() == null || crpMilestone.getComposeID().length() == 0) {
             crpMilestone.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
             crpMilestoneAdd.setComposeID(programOutcomePrev.getComposeID() + "-" + crpMilestoneAdd.getId());
             crpMilestoneDAO.save(crpMilestoneAdd);

@@ -38,11 +38,11 @@ public class Clone {
   // In case the dst file does not exist, it is created
   public static void copy(File source, File target) throws IOException {
 
-    final InputStream in = new FileInputStream(source);
-    final OutputStream out = new FileOutputStream(target);
+    InputStream in = new FileInputStream(source);
+    OutputStream out = new FileOutputStream(target);
 
     // Copy the bits from instream to outstream
-    final byte[] buf = new byte[1024];
+    byte[] buf = new byte[1024];
     int len;
 
     while ((len = in.read(buf)) > 0) {
@@ -55,7 +55,7 @@ public class Clone {
 
 
   public static void generateDao(String nome) {
-    final File target = new File(pathdao + "\\" + nome + "DAO.java");
+    File target = new File(pathdao + "\\" + nome + "DAO.java");
     try {
       copy(new File(pathdao + "\\CrpAssumptionDAO.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
@@ -63,7 +63,7 @@ public class Clone {
       content = content.replaceAll("crpAssumption", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -71,7 +71,7 @@ public class Clone {
   }
 
   public static void generateManager(String nome) {
-    final File target = new File(pathmanager + "\\" + nome + "Manager.java");
+    File target = new File(pathmanager + "\\" + nome + "Manager.java");
     try {
       copy(new File(pathmanager + "\\CrpAssumptionManager.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
@@ -79,7 +79,7 @@ public class Clone {
       content = content.replaceAll("crpAssumption", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -88,7 +88,7 @@ public class Clone {
 
 
   public static void generateManagerImpl(String nome) {
-    final File target = new File(pathmanagerimpl + "\\" + nome + "ManagerImpl.java");
+    File target = new File(pathmanagerimpl + "\\" + nome + "ManagerImpl.java");
     try {
       copy(new File(pathmanagerimpl + "\\CrpAssumptionManagerImpl.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
@@ -96,7 +96,7 @@ public class Clone {
       content = content.replaceAll("crpAssumption", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -104,7 +104,7 @@ public class Clone {
   }
 
   public static void generateMysqlDao(String nome) {
-    final File target = new File(pathmysqldao + "\\" + nome + "MySQLDAO.java");
+    File target = new File(pathmysqldao + "\\" + nome + "MySQLDAO.java");
     try {
       copy(new File(pathmysqldao + "\\CrpAssumptionMySQLDAO.java"), target);
       String content = IOUtils.toString(new FileInputStream(target));
@@ -112,7 +112,7 @@ public class Clone {
       content = content.replaceAll("crpAssumption", miniscula(nome));
       IOUtils.write(content, new FileOutputStream(target));
       System.out.println();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -133,20 +133,20 @@ public class Clone {
      */
 
 
-    String[] model = {"CapdevRangeAge"};
-    for (String element : model) {
-      generateDao(element);
-      generateMysqlDao(element);
-      generateManager(element);
-      generateManagerImpl(element);
-      System.out.println("generado para " + element);
+    String[] model = {"GlobalUnit", "GlobalUnitProject", "GlobalUnitType"};
+    for (int i = 0; i < model.length; i++) {
+      generateDao(model[i]);
+      generateMysqlDao(model[i]);
+      generateManager(model[i]);
+      generateManagerImpl(model[i]);
+      System.out.println("generado para " + model[i]);
     }
 
   }
 
 
   public static String miniscula(String nome) {
-    final char c[] = nome.toCharArray();
+    char c[] = nome.toCharArray();
     c[0] = Character.toLowerCase(c[0]);
     nome = new String(c);
     return nome;

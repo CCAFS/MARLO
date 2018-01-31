@@ -16,12 +16,17 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
+import org.cgiar.ccafs.marlo.data.model.EmailLog;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class ThreadSendMail extends Thread {
 
@@ -29,21 +34,38 @@ public class ThreadSendMail extends Thread {
   private Message sendeMail;
   private String subject;
 
-  public ThreadSendMail(Message sendeMail, String subject) {
+  private EmailLogManager emailLogManager;
+  private EmailLog emailLog;
+  private SessionFactory sessionFactory;
+
+  public ThreadSendMail(Message sendeMail, String subject, EmailLogManager emailLogManager, EmailLog emailLog,
+    SessionFactory sessionFactory) {
     this.sendeMail = sendeMail;
     this.subject = subject;
+    this.emailLogManager = emailLogManager;
+    this.emailLog = emailLog;
+    this.sessionFactory = sessionFactory;
 
   }
 
   @Override
   public void run() {
     boolean sent = false;
+
+    AuditLogContextProvider.push(new AuditLogContext());
     int i = 0;
     while (!sent) {
       try {
+
         Transport.send(sendeMail);
         LOG.info("Message sent TRIED#: " + i + " \n" + subject);
         sent = true;
+        emailLog.setTried(i++);
+        emailLog.setSucces(true);
+        emailLog.setFileContent(null);
+        sessionFactory.getCurrentSession().beginTransaction();
+        emailLogManager.saveEmailLog(emailLog);
+        sessionFactory.getCurrentSession().getTransaction().commit();
 
       } catch (MessagingException e) {
         LOG.info("Message  DID NOT sent: \n" + subject);
@@ -51,6 +73,12 @@ public class ThreadSendMail extends Thread {
         i++;
         if (i == 10) {
           e.printStackTrace();
+          emailLog.setTried(i);
+          emailLog.setSucces(false);
+          emailLog.setError(e.getMessage());
+          sessionFactory.getCurrentSession().beginTransaction();
+          emailLogManager.saveEmailLog(emailLog);
+          sessionFactory.getCurrentSession().getTransaction().commit();
           break;
 
         }

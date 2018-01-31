@@ -16,9 +16,9 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -86,6 +87,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private Boolean showIfpriDivision;
   private Boolean showSheet3;
   private Set<Project> fundingSourceProjects = new HashSet<>();
+  private Set<FundingSource> currentCycleFundingSources = new HashSet<>();
   private Set<Project> allProjects = new HashSet<>();
   private long startTime;
   private Boolean hasW1W2Co;
@@ -100,13 +102,30 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   InputStream inputStream;
 
   @Inject
-  public FundingSourcesSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectManager = projectManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
+  }
+
+  private void addCurrentCycleFundingSources() {
+    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream().filter(fs -> fs.isActive()
+      && fs.getFundingSourceInfo(this.getSelectedPhase()) != null && fs.getFundingSourceInfo().getBudgetType() != null)
+      .collect(Collectors.toList())) {
+      if (fundingSource.getFundingSourceInfo().getEndDate() != null) {
+        Date endDate = fundingSource.getFundingSourceInfo().getEndDate();
+        Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
+        int endYear = this.getCalendarFromDate(endDate);
+        int extentionYear = this.getCalendarFromDate(extentionDate);
+        if (endYear >= this.getSelectedYear() || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
+          currentCycleFundingSources.add((fundingSource));
+        }
+      }
+    }
   }
 
   /**
@@ -124,6 +143,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     masterReport.getParameterValues().put("i8nAgreementStatus", this.getText("projectCofunded.agreementStatus"));
     masterReport.getParameterValues().put("i8nStartDate", this.getText("projectCofunded.startDate"));
     masterReport.getParameterValues().put("i8nEndDate", this.getText("projectCofunded.endDate"));
+    masterReport.getParameterValues().put("i8nExtentionDate", this.getText("projectCofunded.extensionDate"));
     masterReport.getParameterValues().put("i8nFinanceCode", this.getText("projectCofunded.financeCode"));
     masterReport.getParameterValues().put("i8nContactName", this.getText("projectCofunded.contactName"));
     masterReport.getParameterValues().put("i8nContactEmail", this.getText("projectCofunded.contactEmail"));
@@ -151,7 +171,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
     // Funding Sources no Projects
     masterReport.getParameterValues().put("i8nSheet3Title", this.getText("summaries.fundingSource.sheet3Title"));
-    String prueba = this.getText("summaries.fundingSource.sheet3Title");
     masterReport.getParameterValues().put("i8nSheet3Description",
       this.getText("summaries.fundingSource.sheet3Description", new String[] {String.valueOf(this.getSelectedYear())}));
 
@@ -199,8 +218,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
-      // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
+
+      // get funding sources to the current cycle
+      this.addCurrentCycleFundingSources();
+
 
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
@@ -259,7 +280,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     subReport.setDataFactory(cdf);
   }
 
-
   /**
    * Get all subreports and store then in a hash map.
    * If it encounters a band, search subreports in the band
@@ -290,6 +310,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     }
   }
 
+
   /**
    * Get all subreports in the band.
    * If it encounters a band, search subreports in the band
@@ -311,6 +332,16 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       if (e instanceof Band) {
         this.getBandSubreports(hm, (Band) e);
       }
+    }
+  }
+
+  private int getCalendarFromDate(Date date) {
+    try {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      return cal.get(Calendar.YEAR);
+    } catch (NullPointerException e) {
+      return 0;
     }
   }
 
@@ -436,10 +467,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
-    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()) != null
-        && fs.getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null)
-      .collect(Collectors.toList())) {
+    for (FundingSource fundingSource : currentCycleFundingSources) {
 
       String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
@@ -580,17 +608,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
         "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor",
-        "global_dimension", "regional_dimension", "specific_countries"},
+        "global_dimension", "regional_dimension", "specific_countries", "extention_date"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
-    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream().filter(fs -> fs.isActive()
-      && fs.getFundingSourceInfo(this.getSelectedPhase()) != null && fs.getFundingSourceInfo().getBudgetType() != null)
-      .collect(Collectors.toList())) {
+    for (FundingSource fundingSource : currentCycleFundingSources) {
 
       String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
@@ -606,6 +632,19 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       if (fundingSource.getFundingSourceInfo().getEndDate() != null) {
         endDate = formatter.format(fundingSource.getFundingSourceInfo().getEndDate());
       }
+      String extentionDate = "";
+
+      if (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        if (fundingSource.getFundingSourceInfo().getExtensionDate() != null) {
+          extentionDate = formatter.format(fundingSource.getFundingSourceInfo().getExtensionDate());
+        } else {
+          extentionDate = "<Not Defined>";
+        }
+      } else {
+        extentionDate = "<Not Applicable>";
+      }
+
 
       String contract = "";
       String contractName = "";
@@ -616,7 +655,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       }
 
       String status = "";
-      status = fundingSource.getStatusName();
+      status = fundingSource.getFundingSourceInfo().getStatusName();
 
       String piName = "";
       piName = fundingSource.getFundingSourceInfo().getContactPersonName();
@@ -823,9 +862,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         specificCountries = null;
       }
 
-      model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary,
-        starDate, endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName,
-        flagships, coas, deliverables, directDonor, globalDimension, regionalDimension, specificCountries});
+      model.addRow(
+        new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary, starDate,
+          endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName, flagships, coas,
+          deliverables, directDonor, globalDimension, regionalDimension, specificCountries, extentionDate});
     }
     return model;
   }

@@ -8,8 +8,8 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
-            <column name="crp_id" not-null="true" />
+        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id" not-null="true" />
         </many-to-one>
        
         <property name="description" type="string">
@@ -154,6 +154,18 @@
                 <column name="id_phase" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceBudget" />
+        </set>
+        <set name="projectExpectedStudies" table="project_expected_studies" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" />
+        </set>
+        <set name="projectBudgetsFlagships" table="project_budgets_flagships" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship" />
         </set>
         
     </class>

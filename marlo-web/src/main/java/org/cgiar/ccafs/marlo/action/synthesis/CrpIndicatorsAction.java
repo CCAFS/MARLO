@@ -20,13 +20,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorReportManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpIndicatorTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorType;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
@@ -63,10 +63,10 @@ public class CrpIndicatorsAction extends BaseAction {
   private static final long serialVersionUID = -1417643537265271428L;
 
 
-  private final CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private final IpLiaisonInstitutionManager liaisonInstitutionManager;
-
 
   private final CrpIndicatorReportManager indicatorsReportManager;
 
@@ -77,30 +77,31 @@ public class CrpIndicatorsAction extends BaseAction {
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
   private List<CrpIndicatorReport> indicatorReports;
-  private String transaction;
-  private final AuditLogManager auditLogManager;
 
+
+  private String transaction;
+
+  private final AuditLogManager auditLogManager;
   private List<CrpIndicatorType> indicatorsType;
   private final UserManager userManager;
 
   private IpLiaisonInstitution currentLiaisonInstitution;
-
-
   private Long liaisonInstitutionID;
-  private final IpProgramManager ipProgramManager;
+
+  private IpProgramManager ipProgramManager;
+
 
   private Long indicatorTypeID;
+  private GlobalUnit loggedCrp;
 
+  private CrpIndicatorsValidator validator;
 
-  private Crp loggedCrp;
-
-  private final CrpIndicatorsValidator validator;
 
   @Inject
-  public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
-    IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
-    CrpIndicatorsValidator validator, AuditLogManager auditLogManager, IpProgramManager ipProgramManager,
-    UserManager userManager) {
+  public CrpIndicatorsAction(APConfig config, GlobalUnitManager crpManager,
+    CrpIndicatorReportManager indicatorsReportManager, IpLiaisonInstitutionManager liaisonInstitutionManager,
+    CrpIndicatorTypeManager crpIndicatorTypeManager, CrpIndicatorsValidator validator, AuditLogManager auditLogManager,
+    IpProgramManager ipProgramManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -193,13 +194,14 @@ public class CrpIndicatorsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -212,7 +214,6 @@ public class CrpIndicatorsAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -223,11 +224,12 @@ public class CrpIndicatorsAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       liaisonInstitutionID =
@@ -389,7 +391,6 @@ public class CrpIndicatorsAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     IpLiaisonInstitution ipLiaisonInstitution =
@@ -431,6 +432,7 @@ public class CrpIndicatorsAction extends BaseAction {
 
   }
 
+
   public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
     this.currentLiaisonInstitution = currentLiaisonInstitution;
   }
@@ -455,9 +457,10 @@ public class CrpIndicatorsAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;

@@ -22,6 +22,14 @@ table tr:first-child th:last-child{
   margin-bottom: 30px;
 }
 
+#deliverables_wrapper.dataTables_wrapper {
+  margin-bottom: 20px;
+}
+
+.deliverables-table-header{
+  margin-top: 30px;
+}
+
 /* Search Bar */
 .dataTables_filter {
   float: right;

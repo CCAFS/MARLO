@@ -148,7 +148,7 @@
             [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
             <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
             <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-       <span class="name">
+            <span class="name">
               <strong>FS${(element.fundingSource.id)!} - ${(element.fundingSource.fundingSourceInfo.budgetType.name)!} [#if (element.fundingSource.fundingSourceInfo.w1w2)!false] (Co-Financing)[/#if]</strong> <br />
               <span class="description">${(element.fundingSource.fundingSourceInfo.title)!}</span><br />
             </span>
@@ -181,7 +181,7 @@
   [/#if]
 </div>
 
-<h3 class="headTitle">Gender, social inclusion and/ or Youth Dimensions of the deliverable </h3>
+<h3 class="headTitle">[@s.text name="deliverable.crossCuttingDimensionsTitle" /] </h3>
 <div class="simpleBox">
   [#-- Does this deliverable have a cross-cutting dimension --]
   <div class="form-group">
@@ -189,10 +189,10 @@
     <div class="row">
       <div class="col-md-12">
         [#if editable]
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingGender"   class="crosscutingDimension"  id="gender"   value="true" [#if (deliverable.deliverableInfo.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingYouth"    class="crosscutingDimension"  id="youth"    value="true" [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingCapacity" class="crosscutingDimension"  id="capacity" value="true" [#if (deliverable.deliverableInfo.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+          <label class="checkbox-inline"><input type="checkbox" name="deliverable.deliverableInfo.crossCuttingNa"       class=""                      id="na"       value="true" [#if (deliverable.deliverableInfo.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
         [#else]
           [#if (deliverable.deliverableInfo.crossCuttingGender)!false ] <p class="checked"> Gender</p> <input type="hidden" name="deliverable.deliverableInfo.crossCuttingGender" value="true">[/#if]
           [#if (deliverable.deliverableInfo.crossCuttingYouth)!false ] <p class="checked"> Youth</p><input type="hidden" name="deliverable.deliverableInfo.crossCuttingYouth" value="true">[/#if]
@@ -209,38 +209,41 @@
   [#-- If gender dimension, select with ones --]
   <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
-     <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+    [#if deliverable.genderLevels?has_content]
+      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
         <ul class="list">
-        [#if deliverable.genderLevels?has_content]
           [#list deliverable.genderLevels as element]
             <li class="genderLevel clearfix">
-              [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
               <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
               <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
               <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
               <div class="clearfix"></div>
             </li>
           [/#list]
-        [#else]
-          <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
-        [/#if]  
         </ul>
-        [#if editable ]
-          [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect add" editable=editable/]
-        [/#if] 
       </div>
+    [/#if]  
   [#else]
-    [#if editable]
-      <input class="id" type="hidden" name="deliverable.genderLevels[0].id" value="${(deliverable.genderLevels[0].id)!}" />
-      [@customForm.select name="deliverable.genderLevels[0].genderLevel" label="" i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id" displayFieldName="description"  required=true  className="genderLevelsSelect" editable=editable/]
-    [#else]
-      <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
-      <div class="input"> 
-        <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
-      </div>
+    [#if ((deliverable.genderLevels[0])?? && deliverable.genderLevels[0].descriptionGenderLevel??)]
+    <label for="">[@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label>
+    <div class="input"> 
+      <span>${(deliverable.genderLevels[0].nameGenderLevel)!'Prefilled if available'}</span> - <i><span>${(deliverable.genderLevels[0].descriptionGenderLevel)!}</span></i>
+      <input type="hidden" name="deliverable.genderLevels[0].genderLevel" value="${(deliverable.genderLevels[0].genderLevel)!}" />
+    </div>
     [/#if]
   [/#if]
+  </div>
+  
+  [#-- Cross-cutting dimensions blocks --]
+  <div id="ccDimension-gender"    class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreGender" label="" i18nkey="deliverable.ccDimension.gender" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-youth"     class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingYouth)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreYouth" label="" i18nkey="deliverable.ccDimension.youth" listName="crossCuttingScoresMap"  required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
+  </div>
+  <div id="ccDimension-capacity"  class="form-group ccDimension" style="display:${((deliverable.deliverableInfo.crossCuttingCapacity)!false)?string('block','none')}">
+    [@customForm.select name="deliverable.deliverableInfo.crossCuttingScoreCapacity" label="" i18nkey="deliverable.ccDimension.capacity" listName="crossCuttingScoresMap" required=true header=false className="crossCuttingDimensionsSelect" editable=editable/]
   </div>
   
   [#-- Gender Types List --]
@@ -255,16 +258,6 @@
     [/#if]
   </div>
   
-  [#-- Gender level list template --]
-  <ul style="display:none">
-    <li id="genderLevel-template" class="genderLevel clearfix" style="display:none;">
-      <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
-      <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
-      <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
-      <span class="name"></span>
-      <div class="clearfix"></div>
-    </li>
-  </ul>
 </div>
 
 
