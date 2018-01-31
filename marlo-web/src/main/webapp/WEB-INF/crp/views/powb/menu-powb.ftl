@@ -1,31 +1,6 @@
 [#ftl]
 
 [#assign menus= [
-  [#--
-  { 'title': 'A. CRP Level', 'show': true,
-    'items': [
-    { 'slug': 'delivery',  'name': 'powb.menu.delivery',  'action': 'delivery',  'active': true  },
-    { 'slug': 'budget',  'name': 'powb.menu.budget',  'action': 'budget',  'active': PMU, 'show': PMU  },
-    { 'slug': 'collIntegration',  'name': 'powb.menu.collIntegration',  'action': 'collIntegration',  'active': true  },
-    { 'slug': 'manGovMonEvaLea',  'name': 'powb.menu.manGovMonEvaLea',  'action': 'manGovMonEvaLea',  'active': PMU, 'show': PMU }
-    ]
-  },
-  { 'title': 'B. Flagship Level', 'show': flagship,
-    'items': [
-    { 'slug': 'expectedMilestones',  'name': 'powb.menu.expectedMilestones',  'action': 'expectedMilestones',  'active': true  },
-    { 'slug': 'outputs',  'name': 'powb.menu.outputs',  'action': 'outputs',  'active': true  },
-    { 'slug': 'contFunds',  'name': 'powb.menu.contFunds',  'action': 'contFunds',  'active': true  }
-    ]
-  },
-  { 'title': 'Tables', 'show': false,
-    'items': [
-    { 'slug': 'plannedBudget',  'name': 'powb.menu.plannedBudget',  'action': 'plannedBudget',  'active': true  },
-    { 'slug': 'contSubIDOs',  'name': 'powb.menu.contSubIDOs',  'action': 'contSubIDOs',  'active': true  },
-    { 'slug': 'expectedMilestonestable',  'name': 'powb.menu.expectedMilestonestable',  'action': 'expectedMilestonestable',  'active': true  },
-    { 'slug': 'expectedKeyOutputstable',  'name': 'powb.menu.expectedKeyOutputstable',  'action': 'expectedKeyOutputstable',  'active': true  }
-    ]
-  },
-   ---------------------------- --]
   { 'title': '1.  Expected Key Results', 'show': true,
     'items': [
     { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': flagship || PMU  },
