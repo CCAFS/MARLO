@@ -31,7 +31,6 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 @Configuration
 public class MarloQuartzConfiguration {
 
-
   @Bean
   public JobDetailFactoryBean jobDetail() {
     JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
@@ -42,7 +41,6 @@ public class MarloQuartzConfiguration {
     jobDetailFactory.setDurability(true);
     return jobDetailFactory;
   }
-
 
   @Bean
   public SchedulerFactoryBean scheduler(Trigger trigger, JobDetail job) {
