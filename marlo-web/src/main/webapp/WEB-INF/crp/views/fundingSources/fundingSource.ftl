@@ -118,35 +118,36 @@
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
             <div class="input-group">
               [#if editable]
-              [#-- Finance Channel --]
-              <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
-                <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
-                </button>
-                [#-- 
-                <ul class="dropdown-menu">
-                  [#if hasInstitutions]
-                    [#list fundingSource.institutions as institutionLead]
-                      [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
-                        <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
-                      [/#if]
-                    [/#list]
-                  [/#if]
-                </ul>
-                 --]
-              </div><!-- /btn-group -->
-              [#-- Finance Input --]
-              <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
+                [#-- Finance Channel --]
+                <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
+                  <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
+                  </button>
+                  [#-- 
+                  <ul class="dropdown-menu">
+                    [#if hasInstitutions]
+                      [#list fundingSource.institutions as institutionLead]
+                        [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
+                          <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
+                        [/#if]
+                      [/#list]
+                    [/#if]
+                  </ul>
+                   --]
+                </div><!-- /btn-group -->
+                [#-- Finance Input --]
+                <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
+                <input type="hidden" class="financeCode" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
                 <small style="display:${hasCIAT?string('block', 'none')}">CIAT-OCS:</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
               [/#if]
             </div><!-- /input-group -->
             <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
+            <input type="hidden" id="isSynced" name="fundingSource.fundingSourceInfo.synced" value="${isSynced?string}" />
             [#if editable]
               <div id="fillMetadata">
-                <input type="hidden" id="isSynced" name="fundingSource.fundingSourceInfo.synced" value="${isSynced?string}" />
                 [#-- Sync Button --]
                 <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
                 <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
@@ -194,6 +195,7 @@
             <input id="fundingSource.fundingSourceInfo.startDate" type="hidden" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.fundingSourceInfo.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p>
           [#else]
+            <input type="hidden" class="startDateInput" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.fundingSourceInfo.startDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
@@ -205,6 +207,7 @@
             <input id="fundingSource.fundingSourceInfo.endDate" type="hidden" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
             <p class="dateLabel btn btn-default ${(isSynced || showEXtDate)?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>
           [#else]
+            <input type="hidden" class="endDateInput" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
@@ -216,11 +219,12 @@
           [#else]
             [#assign extensionValue = '' /]
           [/#if]
-          [#if editable]
+          [#if (editable || editStatus)]
             <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    
-            <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
+            [#-- <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small> --]
           [#else]
+            <input type="hidden" class="extensionDateInput" name="fundingSource.fundingSourceInfo.extensionDate" value="${(fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
