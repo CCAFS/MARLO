@@ -17,10 +17,22 @@
 package org.cgiar.ccafs.marlo.ocs.ws;
 
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
+import org.cgiar.ccafs.marlo.ocs.ws.client.MarloService;
+import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloResStudies;
+import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloResourceInfo;
+import org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -67,6 +79,56 @@ public class MarloOcsClient {
       System.out.println(agreementOCS.getDescription());
       return agreementOCS;
     }
+  }
+
+
+  public ResourceInfoOCS getHRInformation(String resourceID) {
+    ResourceInfoOCS resourceInfoOCS = new ResourceInfoOCS();
+    try {
+      List<TWsMarloResourceInfo> resource = this.getWSClient().getMarloResourceInformation(resourceID);
+      List<TWsMarloResStudies> rEstudies = this.getWSClient().getMarloResStudies(resourceID);
+
+      if ((resource != null) && (resource.size() > 0)) {
+        TWsMarloResourceInfo myResource = resource.get(0);
+        resourceInfoOCS.setId(myResource.getResourceId());
+        resourceInfoOCS.setFirstName(myResource.getFirstName());
+        resourceInfoOCS.setLastName(myResource.getSurname());
+        resourceInfoOCS.setGender(myResource.getGenderFx());
+        resourceInfoOCS.setCityOfBirth(myResource.getCityOfBirth());
+        resourceInfoOCS.setCityOfBirthISO(myResource.getCouOfBirthId());
+        resourceInfoOCS.setEmail(myResource.getEMail());
+        resourceInfoOCS.setProfession(myResource.getProfession());
+        resourceInfoOCS.setSupervisor1(myResource.getSupervisor1());
+        resourceInfoOCS.setSupervisor2(myResource.getSupervisor2());
+        resourceInfoOCS.setSupervisor3(myResource.getSupervisor3());
+      }
+
+      if ((rEstudies != null) && (rEstudies.size() > 0)) {
+        resourceInfoOCS.setInstitucion(rEstudies.get(0).getId().getInstitution());
+        resourceInfoOCS.setCountryofIntitution(rEstudies.get(0).getId().getCountry());
+        resourceInfoOCS.setCountryofIntitutionISO(rEstudies.get(0).getId().getCountryId());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      LOG.error(e.getMessage());
+    }
+
+    return resourceInfoOCS;
+
+  }
+
+  public WSMarlo getWSClient() {
+    MarloService service = new MarloService();
+    WSMarlo client = service.getMarloPort();
+    Map<String, Object> reqCtx = ((BindingProvider) client).getRequestContext();
+    reqCtx.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, apConfig.getOcsLink());
+    Map<String, List<String>> headers = new HashMap<String, List<String>>();
+    headers.put("username", Collections.singletonList(apConfig.getOcsUser()));
+    headers.put("password", Collections.singletonList(apConfig.getOcsPassword()));
+    reqCtx.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
+
+    return client;
+
   }
 
 
