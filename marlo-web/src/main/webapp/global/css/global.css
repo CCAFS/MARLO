@@ -6427,6 +6427,11 @@ img#crpSelectedImage {
   background: url(../../global/images/calendar.png) no-repeat scroll 99% 2px;
 }
 
+p.dateLabel.fieldError {
+  border-color: #F52626 !important;
+  color: #F52626 !important;
+}
+
 .dateLabel.disabled {
   background-color: #eee;
   opacity: 1;

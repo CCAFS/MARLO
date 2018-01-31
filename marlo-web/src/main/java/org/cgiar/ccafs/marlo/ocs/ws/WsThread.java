@@ -101,11 +101,12 @@ public class WsThread implements Runnable {
    * @param agreementID agreementID to search
    * @param agreementOCS object AgreementOCS where we are to load the info
    */
+
   public void loadBasicInfo(String agreementID, AgreementOCS agreementOCS) {
     try {
 
       List<TWsMarloAgree> agrees = this.getWSClient().getMarloAgreements(agreementID);
-      if (agrees != null && agrees.size() > 0) {
+      if ((agrees != null) && (agrees.size() > 0)) {
         TWsMarloAgree myAgree = agrees.get(0);
         agreementOCS.setId(myAgree.getAgreementId());
         agreementOCS.setObjectives(myAgree.getObjectives());
@@ -146,7 +147,7 @@ public class WsThread implements Runnable {
   public void loadCountries(String agreementID, AgreementOCS agreementOCS) {
     List<TWsMarloAgreeCountry> agreesCountries = this.getWSClient().getMarloAgreeCountry(agreementID);
     agreementOCS.setCountries(new ArrayList<CountryOCS>());
-    if (agreesCountries != null && agreesCountries.size() > 0) {
+    if ((agreesCountries != null) && (agreesCountries.size() > 0)) {
       for (TWsMarloAgreeCountry tWsMarloAgreeCountry : agreesCountries) {
         CountryOCS countryOCS = new CountryOCS();
         countryOCS.setCode(tWsMarloAgreeCountry.getId().getCountry());
@@ -166,7 +167,7 @@ public class WsThread implements Runnable {
   public void loadCrps(String agreementID, AgreementOCS agreementOCS) {
     List<TWsMarloAgreeCrp> agreesCrps = this.getWSClient().getMarloAgreeCrp(agreementID);
     agreementOCS.setCrps(new ArrayList<CrpOCS>());
-    if (agreesCrps != null && agreesCrps.size() > 0) {
+    if ((agreesCrps != null) && (agreesCrps.size() > 0)) {
       for (TWsMarloAgreeCrp tWsMarloAgreeCrp : agreesCrps) {
         CrpOCS crpOCS = new CrpOCS();
         crpOCS.setId(tWsMarloAgreeCrp.getId().getCrp());
@@ -186,7 +187,7 @@ public class WsThread implements Runnable {
   public void loadPlas(String agreementID, AgreementOCS agreementOCS) {
     List<TWsMarloPla> agreesPlas = this.getWSClient().getMarloPla(agreementID);
     agreementOCS.setPlas(new ArrayList<PlaOCS>());
-    if (agreesPlas != null && agreesPlas.size() > 0) {
+    if ((agreesPlas != null) && (agreesPlas.size() > 0)) {
       for (TWsMarloPla tWsMarloPla : agreesPlas) {
         PlaOCS plaOCS = new PlaOCS();
         plaOCS.setDescription(tWsMarloPla.getDescription());
