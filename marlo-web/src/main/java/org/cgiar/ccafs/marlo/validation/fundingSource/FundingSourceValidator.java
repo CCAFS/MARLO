@@ -111,12 +111,19 @@ public class FundingSourceValidator extends BaseValidator {
 
     Calendar cal = Calendar.getInstance();
 
-    if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getEndDate() != null
-      && fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus() != null) {
-      cal.setTime(fundingSource.getFundingSourceInfo(action.getActualPhase()).getEndDate());
-      if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus().longValue() == Long
+    if (fundingSource.getFundingSourceInfo().getEndDate() != null
+      && fundingSource.getFundingSourceInfo().getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo().getEndDate());
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
         .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
         && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.endDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())) {
         action.addMessage(action.getText("fundingSource.endDate"));
         action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -124,12 +131,19 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
 
-    if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getExtensionDate() != null
-      && fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus() != null) {
-      cal.setTime(fundingSource.getFundingSourceInfo(action.getActualPhase()).getExtensionDate());
-      if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus().longValue() == Long
+    if (fundingSource.getFundingSourceInfo().getExtensionDate() != null
+      && fundingSource.getFundingSourceInfo().getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo().getExtensionDate());
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
         .parseLong(ProjectStatusEnum.Extended.getStatusId())
         && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.extensionDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.extensionDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
         action.addMessage(action.getText("fundingSource.extensionDate"));
         action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.extensionDate",
           InvalidFieldsMessages.EMPTYFIELD);
