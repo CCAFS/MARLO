@@ -25,11 +25,13 @@ import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,6 +108,21 @@ public class FundingSourceValidator extends BaseValidator {
       action.addMessage(action.getText("fundingSource.endDate"));
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    Calendar cal = Calendar.getInstance();
+
+    if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getEndDate() != null
+      && fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo(action.getActualPhase()).getEndDate());
+      if (fundingSource.getFundingSourceInfo(action.getActualPhase()).getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+        && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.endDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
 
     // Validate the donor with id -1, beacause front end send this when there is not one selected
     if (fundingSource.getFundingSourceInfo().getDirectDonor() == null

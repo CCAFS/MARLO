@@ -120,20 +120,18 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
 
       Calendar cal = Calendar.getInstance();
-      if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate() != null
-        && fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus() != null) {
-
-
-        cal.setTime(fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate());
-        if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
-          canEdit = false;
-
-          baseAction.setEditStatus(true);
-
-        }
-      }
+      /*
+       * if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate() != null
+       * && fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus() != null) {
+       * cal.setTime(fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate());
+       * if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+       * .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+       * && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+       * canEdit = false;
+       * baseAction.setEditStatus(true);
+       * }
+       * }
+       */
       if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
         .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
 
