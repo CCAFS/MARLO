@@ -78,7 +78,9 @@
               <input id="user.email" class="login-input user-email" type="text" name="user.email" value="" required/>
               <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
-            <p class="invalidEmail hidden">[@s.text name="login.error.invalidEmail"/]</p>
+            <p class="invalidEmail invalid hidden">[@s.text name="login.error.invalidEmail"/]</p>
+            <p class="invalidEmail notFound hidden">[@s.text name="login.error.invalidEmail.notFound"/]</p>
+            <p class="invalidEmail deniedAccess hidden">[@s.text name="login.error.invalidEmail.deniedAccess"/]</p>
             [#-- CRP Session --]
             <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
             
