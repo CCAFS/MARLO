@@ -27,6 +27,8 @@ import java.util.List;
 
 public interface UserManager {
 
+  public User activeUser(User user, User modifiedBy);
+
   /**
    * This method gets the data of a Permissions identified with a given id.
    * 
@@ -75,6 +77,7 @@ public interface UserManager {
    */
   public User getUserByUsername(String username);
 
+
   /**
    * Authenticate a user.
    * 
@@ -83,7 +86,6 @@ public interface UserManager {
    * @return a User object representing the user identified by the email provided or Null if login failed.
    */
   public User login(String email, String password);
-
 
   /**
    * Save in the database the date and time that the user made its last login.
