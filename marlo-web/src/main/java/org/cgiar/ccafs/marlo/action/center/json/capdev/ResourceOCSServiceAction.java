@@ -47,7 +47,8 @@ public class ResourceOCSServiceAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    json = ocsClient.getHRInformation(resourceID);
+    // TODO delete comment when the OCS platform is update
+    // json = ocsClient.getHRInformation(resourceID);
     return SUCCESS;
   }
 
