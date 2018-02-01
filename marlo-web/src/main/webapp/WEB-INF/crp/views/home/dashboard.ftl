@@ -47,9 +47,10 @@
     <div id="decisionTree">
       [#-- Add new Project --]
       <div class="flex-container">
-      [#if !crpClosed && canEditPhase && !reportingActive]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
+      [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
+      [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
         <div id="newProject" class="hvr-float option ${(crpClosed && !canEditPhase)?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
-      [#if !crpClosed && canEditPhase && !reportingActive]</a>[/#if]</div>
+      [#if canAddCoreProject]</a>[/#if]</div>
       
       [#-- Update an ongoing Project --]
       <div class="flex-container">
