@@ -590,7 +590,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .collect(Collectors.toList());
 
         for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (!liaisonUser.getProjects().isEmpty()) {
+          if (!liaisonUser.getProjects().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .collect(Collectors.toList()).isEmpty()) {
             return false;
           }
         }
