@@ -61,13 +61,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * This action is part of the CRP admin backend.
@@ -131,7 +132,6 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   // Util
   private SendMailS sendMail;
-  private List<User> usersToActive;
 
 
   @Inject
@@ -348,8 +348,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
       // Building the Email message:
@@ -378,7 +376,10 @@ public class CrpProgamRegionsAction extends BaseAction {
       // user.setActive(true);
 
       // userManager.saveUser(user, this.getCurrentUser());
-      usersToActive.add(user);
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -666,7 +667,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      usersToActive = new ArrayList<>();
+      this.setUsersToActive(new ArrayList<>());
       List<CrpProgram> rgProgramsRewiev =
         crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
       // Removing crp flagship program type
@@ -873,10 +874,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       }
       this.programManagerData();
-      for (User user : usersToActive) {
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-      }
+      this.addUsers();
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
 

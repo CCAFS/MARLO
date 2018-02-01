@@ -117,6 +117,8 @@ public class DashboardAction extends BaseAction {
         }
         List<Project> mProjects = new ArrayList<>();
         mProjects.addAll(myProjects);
+
+
         for (Project project : mProjects) {
           project.getProjecInfoPhase(this.getActualPhase());
 
@@ -126,6 +128,11 @@ public class DashboardAction extends BaseAction {
         }
 
 
+      }
+      List<Project> closedProjects = projectManager.getCompletedProjects(this.getCrpID());
+      if (closedProjects != null) {
+        // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
+        myProjects.removeAll(closedProjects);
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 

@@ -74,7 +74,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -136,7 +136,6 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpProgram selectedProgram;
   private String transaction;
 
-  private List<User> usersToActive;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -289,8 +288,6 @@ public class ClusterActivitiesAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
       // Building the Email message:
@@ -319,7 +316,10 @@ public class ClusterActivitiesAction extends BaseAction {
       // user.setActive(true);
       // userManager.saveUser(user, this.getCurrentUser());
 
-      usersToActive.add(user);
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -747,7 +747,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("canEdit")) {
-      usersToActive = new ArrayList<>();
+      this.setUsersToActive(new ArrayList<>());
       /*
        * Removing outcomes
        */
@@ -960,10 +960,7 @@ public class ClusterActivitiesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
-      for (User user : usersToActive) {
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-      }
+      this.addUsers();
 
       Path path = this.getAutoSaveFilePath();
 
