@@ -400,6 +400,18 @@ public class FundingSourceAction extends BaseAction {
   }
 
 
+  // methos to download link file
+  public String getStudyFileURL(String fsId) {
+    return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
+  }
+
+
+  public String getStudyFileUrlPath(String fsId) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + fsId + File.separator
+      + "fundingSourceFilesResearch" + File.separator;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -781,7 +793,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -998,7 +1009,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   /**
    * Funding Source Locations
    * 
@@ -1148,6 +1158,7 @@ public class FundingSourceAction extends BaseAction {
     }
 
   }
+
 
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
