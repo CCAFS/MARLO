@@ -388,13 +388,15 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   private TypedTableModel getFundingSourcesNoProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "title", "summary", "start_date", "end_date", "coas", "flagships"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+      new String[] {"project_id", "title", "summary", "start_date", "end_date", "coas", "flagships", "phaseID"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Long.class},
       0);
     SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
     for (Project project : allProjects.stream().sorted((p1, p2) -> p1.getId().compareTo(p2.getId()))
       .collect(Collectors.toList())) {
       ProjectInfo projectInfo = project.getProjecInfoPhase(this.getSelectedPhase());
+      Long phaseID = this.getSelectedPhase().getId();
       String projectId = project.getId().toString();
       String projectTitle = null;
       String projectSummary = null;
@@ -454,7 +456,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       }
 
 
-      model.addRow(new Object[] {projectId, projectTitle, projectSummary, startDate, endDate, coas, flagships});
+      model
+        .addRow(new Object[] {projectId, projectTitle, projectSummary, startDate, endDate, coas, flagships, phaseID});
     }
     return model;
   }
@@ -462,15 +465,17 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
-        "flagships", "coas", "donor", "directDonor", "global_dimension", "regional_dimension", "specific_countries"},
+        "flagships", "coas", "donor", "directDonor", "global_dimension", "regional_dimension", "specific_countries",
+        "phaseID"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Long.class},
       0);
 
     for (FundingSource fundingSource : currentCycleFundingSources) {
 
       String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
+      Long phaseID = fundingSource.getFundingSourceInfo().getPhase().getId();
       String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
       String originalDonor = null;
       if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null) {
@@ -595,7 +600,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         }
 
         model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, originalDonor, directDonor, globalDimension, regionalDimension, specificCountries});
+          coas, originalDonor, directDonor, globalDimension, regionalDimension, specificCountries, phaseID});
       }
 
     }
@@ -608,11 +613,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
         "total_budget_projects", "contract_name", "flagships", "coas", "deliverables", "directDonor",
-        "global_dimension", "regional_dimension", "specific_countries", "extention_date"},
+        "global_dimension", "regional_dimension", "specific_countries", "extention_date", "phaseID"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Double.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, Long.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -621,6 +626,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String fsTitle = fundingSource.getFundingSourceInfo().getTitle();
       Long fsId = fundingSource.getId();
       String financeCode = fundingSource.getFundingSourceInfo().getFinanceCode();
+      Long phaseID = fundingSource.getFundingSourceInfo().getPhase().getId();
       String leadPartner = "";
       String summary = fundingSource.getFundingSourceInfo().getDescription();
       String starDate = "";
@@ -865,7 +871,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       model.addRow(
         new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, summary, starDate,
           endDate, contract, status, piName, piEmail, originalDonor, totalBudgetProjects, contractName, flagships, coas,
-          deliverables, directDonor, globalDimension, regionalDimension, specificCountries, extentionDate});
+          deliverables, directDonor, globalDimension, regionalDimension, specificCountries, extentionDate, phaseID});
     }
     return model;
   }
