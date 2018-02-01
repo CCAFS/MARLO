@@ -94,14 +94,14 @@ public class UploadFundingSourceFileResearchAction extends BaseAction {
   }
 
 
-  public String getFundingSourceFileResearchURL() {
-    return config.getDownloadURL() + "/" + this.getFundingSourceFileResearchPath().replace('\\', '/');
-  }
-
-
   private String getFundingSourceRelativePath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFilesResearch"
       + File.separator;
+  }
+
+
+  public String getPath() {
+    return config.getDownloadURL() + "/" + this.getFundingSourceFileResearchPath().replace('\\', '/');
   }
 
 
