@@ -18,7 +18,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
+[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false) || (((fundingSource.fundingSourceInfo.extensionDate?has_content)!false) && !editable)/]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
@@ -222,7 +222,7 @@
           [#if (editable || editStatus)]
             <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    
-            [#-- <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small> --]
+            <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
           [#else]
             <input type="hidden" class="extensionDateInput" name="fundingSource.fundingSourceInfo.extensionDate" value="${(fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p></div>

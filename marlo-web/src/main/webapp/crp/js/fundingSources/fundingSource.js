@@ -259,7 +259,7 @@ function onChangeFundingType(typeID) {
  * Event on change Agreement status
  */
 function onChangeStatus() {
-  if(this.value == EXTENDED_STATUS) {
+  if((this.value == EXTENDED_STATUS) || $('input.extensionDateInput').val()) {
     $('.extensionDateBlock').show();
     $('.endDateBlock .dateLabel').addClass('disabled');
   } else {
