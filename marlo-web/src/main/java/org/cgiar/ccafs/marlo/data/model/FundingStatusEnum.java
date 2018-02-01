@@ -20,8 +20,8 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum FundingStatusEnum {
 
-  Pipeline("1", "Pipeline/identification"), Ongoing("2", "On-going"), Complete("3", "Complete"),
-  Extended("4", "Extended"), Cancelled("5", "Cancelled"), Informally("6", "Informally Confirmed");
+  Pipeline("1", "Concept Note/Pipeline"), Ongoing("2", "On-going"), Complete("3", "Complete"),
+  Extended("4", "Extended"), Cancelled("5", "Cancelled"), Informally("7", "Informally Confirmed");
 
   /**
    * Look for the ProjectStatusEnum with id
