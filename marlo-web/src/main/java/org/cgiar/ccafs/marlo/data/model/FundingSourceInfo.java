@@ -96,7 +96,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   private FileDB fileResearch;
 
   @Expose
-  private boolean hasFileResearch;
+  private Boolean hasFileResearch;
 
 
   public FundingSourceInfo() {
@@ -214,11 +214,15 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return grantAmount;
   }
 
+  public Boolean getHasFileResearch() {
+    return hasFileResearch;
+  }
+
+
   @Override
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -247,6 +251,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return partnerDivision;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
@@ -255,7 +260,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public Date getStartDate() {
     return startDate;
   }
-
 
   public Integer getStatus() {
     return status;
@@ -272,10 +276,10 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   }
 
+
   public Boolean getSynced() {
     return synced;
   }
-
 
   public Date getSyncedDate() {
     return syncedDate;
@@ -297,6 +301,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
@@ -306,12 +311,6 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public boolean isGlobal() {
     return global;
   }
-
-
-  public boolean isHasFileResearch() {
-    return hasFileResearch;
-  }
-
 
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
@@ -328,6 +327,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
   public void setDescription(String description) {
     this.description = description;
   }
+
 
   public void setDirectDonor(Institution institution) {
     this.directDonor = institution;
@@ -348,11 +348,9 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.file = file;
   }
 
-
   public void setFileResearch(FileDB fileResearch) {
     this.fileResearch = fileResearch;
   }
-
 
   public void setFinanceCode(String financeCode) {
     this.financeCode = financeCode;
@@ -370,7 +368,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.grantAmount = grantAmount;
   }
 
-  public void setHasFileResearch(boolean hasFileResearch) {
+  public void setHasFileResearch(Boolean hasFileResearch) {
     this.hasFileResearch = hasFileResearch;
   }
 
@@ -378,27 +376,29 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setOriginalDonor(Institution originalDonor) {
     this.originalDonor = originalDonor;
   }
-
 
   public void setPartnerDivision(PartnerDivision partnerDivision) {
     this.partnerDivision = partnerDivision;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
@@ -462,7 +462,7 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
     this.setPartnerDivision(fundingSourceInfoUpdate.getPartnerDivision());
     this.setW1w2(fundingSourceInfoUpdate.getW1w2());
     this.setFileResearch(fundingSourceInfoUpdate.getFileResearch());
-    this.setHasFileResearch(fundingSourceInfoUpdate.isHasFileResearch());
+    this.setHasFileResearch(fundingSourceInfoUpdate.getHasFileResearch());
   }
 
 }
