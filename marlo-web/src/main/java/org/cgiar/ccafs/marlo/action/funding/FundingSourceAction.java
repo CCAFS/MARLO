@@ -620,8 +620,20 @@ public class FundingSourceAction extends BaseAction {
       // projectStatuses = new HashMap<>();
       List<FundingStatusEnum> list = Arrays.asList(FundingStatusEnum.values());
       for (FundingStatusEnum projectStatusEnum : list) {
+        switch (FundingStatusEnum.getValue(Integer.parseInt(projectStatusEnum.getStatusId()))) {
+          case Pipeline:
+          case Informally:
+            if (this.hasSpecificities(APConstants.CRP_STATUS_FUNDING_SOURCES)) {
+              status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
 
-        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+            }
+            break;
+          default:
+            status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+            break;
+        }
+
+
       }
 
 
