@@ -39,6 +39,11 @@
         <h3 class="headTitle">[@s.text name="expectedProgress.title" /]</h3>
         <div class="borderBox">
         
+          [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
+          </div>
+        
         
         </div>
         
