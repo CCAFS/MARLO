@@ -107,6 +107,8 @@ public class CrpPpaPartnersAction extends BaseAction {
   private GlobalUnit loggedCrp;
   // Util
   private SendMailS sendMail;
+  private List<User> usersToActive;
+
 
   @Inject
   public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, GlobalUnitManager crpManager,
@@ -346,9 +348,10 @@ public class CrpPpaPartnersAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
+      usersToActive.add(user);
       this.addCrpUserIfNotExist(user);
 
       // Send UserManual.pdf
@@ -561,6 +564,7 @@ public class CrpPpaPartnersAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      usersToActive = new ArrayList<>();
       List<CrpPpaPartner> ppaPartnerReview;
       ppaPartnerReview = crpPpaPartnerManager.findAll();
       if (ppaPartnerReview != null) {
@@ -666,6 +670,10 @@ public class CrpPpaPartnersAction extends BaseAction {
 
         }
 
+      }
+      for (User user : usersToActive) {
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
       }
 
       Collection<String> messages = this.getActionMessages();
