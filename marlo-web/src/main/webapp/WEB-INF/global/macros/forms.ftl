@@ -406,10 +406,10 @@
     [/#if]
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
-      [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}">[/#if]
+      [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}" target="_blank">[/#if]
       <span class="glyphicon glyphicon-file"></span> <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> 
       [#if path?has_content]</a>[/#if]
-      [#if isEditable]<span class="removeIcon"> </span> [/#if]
+      [#if isEditable]<span class="removeIcon"> </span>[/#if]
     </p>
   </div>
 [/#macro]
