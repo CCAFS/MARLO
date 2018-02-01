@@ -248,6 +248,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
             canEdit = false;
           }
         }
+        if (!editParameter) {
+          baseAction.setEditStatus(false);
+        }
         // Set the variable that indicates if the user can edit the section
         baseAction.setEditableParameter(editParameter && canEdit);
         baseAction.setCanEdit(canEdit);

@@ -185,6 +185,9 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         // If the user is not asking for edition privileges we don't need to validate them.
 
       }
+      if (!editParameter) {
+        baseAction.setEditStatus(false);
+      }
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
 
