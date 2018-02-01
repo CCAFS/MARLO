@@ -20,15 +20,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
-  @Expose
-  private String planSummary;
-
-
-  @Expose
-  private FileDB flagshipProgramFile;
-
-
   @Expose
   private Phase phase;
 
@@ -66,11 +57,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-  public PowbSynthesis(Long id, String planSummary, FileDB flagshipProgramFile, Phase phase, boolean active,
-    User createdBy, Date activeSince, User modifiedBy, LiaisonInstitution liaisonInstitution) {
+  public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
+    LiaisonInstitution liaisonInstitution) {
     this.id = id;
-    this.planSummary = planSummary;
-    this.flagshipProgramFile = flagshipProgramFile;
     this.phase = phase;
     this.active = active;
     this.createdBy = createdBy;
@@ -109,9 +98,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public FileDB getFlagshipProgramFile() {
-    return flagshipProgramFile;
-  }
 
   @Override
   public Long getId() {
@@ -145,11 +131,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
-
-  public String getPlanSummary() {
-    return planSummary;
-  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -177,10 +158,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setFlagshipProgramFile(FileDB flagshipProgramFile) {
-    this.flagshipProgramFile = flagshipProgramFile;
-  }
-
   public void setId(Long id) {
     this.id = id;
   }
@@ -197,10 +174,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setPhase(Phase phase) {
     this.phase = phase;
-  }
-
-  public void setPlanSummary(String planSummary) {
-    this.planSummary = planSummary;
   }
 
 
