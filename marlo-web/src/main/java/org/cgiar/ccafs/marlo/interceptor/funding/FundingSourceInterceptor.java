@@ -22,9 +22,9 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -120,25 +120,23 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
 
       Calendar cal = Calendar.getInstance();
-      if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate() != null
-        && fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus() != null) {
-
-
-        cal.setTime(fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate());
-        if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
-          canEdit = false;
-
-          baseAction.setEditStatus(true);
-
-        }
-      }
+      /*
+       * if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate() != null
+       * && fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus() != null) {
+       * cal.setTime(fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getEndDate());
+       * if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
+       * .parseLong(FundingStatusEnum.Ongoing.getStatusId())
+       * && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+       * canEdit = false;
+       * baseAction.setEditStatus(true);
+       * }
+       * }
+       */
       if (fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
-        .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
+        .parseLong(FundingStatusEnum.Cancelled.getStatusId())
 
         || fundingSource.getFundingSourceInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
+          .parseLong(FundingStatusEnum.Complete.getStatusId())) {
         canEdit = false;
         baseAction.setEditStatus(true);
       }

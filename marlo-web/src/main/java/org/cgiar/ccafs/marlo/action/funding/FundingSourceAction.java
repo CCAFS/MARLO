@@ -41,13 +41,13 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -618,17 +618,10 @@ public class FundingSourceAction extends BaseAction {
 
       status = new HashMap<>();
       // projectStatuses = new HashMap<>();
-      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
-      for (ProjectStatusEnum projectStatusEnum : list) {
+      List<FundingStatusEnum> list = Arrays.asList(FundingStatusEnum.values());
+      for (FundingStatusEnum projectStatusEnum : list) {
 
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
-      }
-
-
-      if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-        && fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        status.remove(ProjectStatusEnum.Ongoing.getStatusId());
       }
 
 

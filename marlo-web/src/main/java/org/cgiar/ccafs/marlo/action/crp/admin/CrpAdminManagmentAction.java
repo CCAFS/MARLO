@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -57,6 +58,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * This action is part of the CRP admin backend.
@@ -117,7 +119,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   private List<CrpProgram> regionsPrograms;
   private List<CustomParameter> parameters;
 
-  private List<User> usersToActive;
 
   private CrpProgramLeaderManager crpProgramLeaderManager;
 
@@ -237,8 +238,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
       // Building the Email message:
@@ -266,7 +265,11 @@ public class CrpAdminManagmentAction extends BaseAction {
       // Saving the new user configuration.
       user.setActive(true);
       user = userManager.saveUser(user, this.getCurrentUser());
-      usersToActive.add(user);
+
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -685,7 +688,7 @@ public class CrpAdminManagmentAction extends BaseAction {
    */
   private void notifyRoleProgramManagementUnassigned(User userAssigned, Role role) {
     // Email send to nobody
-    String toEmail = null;
+    String toEmail = userAssigned.getEmail();
     // get CRPAdmin contacts
     String crpAdmins = "";
     String crpAdminsEmail = "";
@@ -728,7 +731,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
 
   private void pmuRoleData() {
-    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     Role rolePreview = roleManager.getRoleById(pmuRol);
     // Removing users roles
     int i = 0;
@@ -746,7 +748,11 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
         boolean deletePmu = true;
         for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (liaisonUser.getProjects().isEmpty()) {
+          if (liaisonUser.getProjects().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .collect(Collectors.toList()).isEmpty()) {
             liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
 
           } else {
@@ -759,8 +765,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
         }
         if (deletePmu) {
-          userRoleManager.deleteUserRole(userRole.getId());
+
           this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+          userRoleManager.deleteUserRole(userRole.getId());
 
         }
         this.checkCrpUserByRole(userRole.getUser());
@@ -841,8 +848,15 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      loggedCrp.getProgramManagmenTeam().clear();
-      flagshipsPrograms.clear();
+      if (loggedCrp.getProgramManagmenTeam() != null) {
+        loggedCrp.getProgramManagmenTeam().clear();
+        loggedCrp.setProgramManagmenTeam(null);
+      }
+      if (flagshipsPrograms != null) {
+        flagshipsPrograms.clear();
+        flagshipsPrograms = (null);
+      }
+
 
     }
   }
@@ -1113,7 +1127,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      usersToActive = new ArrayList<>();
+      this.setUsersToActive(new ArrayList<>());
 
       this.pmuRoleData();
       this.programsData();
@@ -1158,10 +1172,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
 
-      for (User user : usersToActive) {
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-      }
+      this.addUsers();
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
 
