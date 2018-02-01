@@ -625,13 +625,6 @@ public class FundingSourceAction extends BaseAction {
       }
 
 
-      if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-        && fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        status.remove(ProjectStatusEnum.Ongoing.getStatusId());
-      }
-
-
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           if (fundingSourceInstitution != null) {

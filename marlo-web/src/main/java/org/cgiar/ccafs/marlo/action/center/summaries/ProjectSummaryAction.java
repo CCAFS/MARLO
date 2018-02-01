@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
@@ -42,9 +41,10 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -78,9 +78,8 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   // Front-end
   private long projectID;
   // Services
-  // GlobalUnit Manager
-  private GlobalUnitManager centerService;
-  private ICenterProjectManager projectService;
+  private final GlobalUnitManager centerService;
+  private final ICenterProjectManager projectService;
 
   @Inject
   public ProjectSummaryAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService) {
@@ -92,37 +91,37 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   @Override
   public String execute() throws Exception {
 
-
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager =
-      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    // manager.registerDefaults();
+    ClassicEngineBoot.getInstance().start();
+    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+    final ResourceManager manager = new ResourceManager();
+    // (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
+    manager.registerDefaults();
     try {
 
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/projectSummary.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/center/ProjectSummary.prpt"), MasterReport.class);
 
       // Get main report
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
+      final MasterReport masterReport = (MasterReport) reportResource.getResource();
 
       // Get program from DB
       // project = projectManager.getProjectById(projectID);
 
 
       // Get details band
-      ItemBand masteritemBand = masterReport.getItemBand();
+      final ItemBand masteritemBand = masterReport.getItemBand();
       // Create new empty subreport hash map
-      HashMap<String, Element> hm = new HashMap<String, Element>();
+      final HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       System.out.println("Pentaho SubReports: " + hm);
 
       // Set Main_Query
-      String masterQueryName = "main";
-      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel();
+      final String masterQueryName = "main";
+      final CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+      final TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+      final TypedTableModel model = this.getMasterTableModel();
       sdf.addTable(masterQueryName, model);
       masterReport.setDataFactory(cdf);
 
@@ -137,7 +136,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
       os.close();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("Error generating PDF " + e.getMessage());
       throw e;
     }
@@ -152,8 +151,8 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
 
 
   private void fillSubreport(SubReport subReport, String query) {
-    CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
-    TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
+    final CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
+    final TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
     TypedTableModel model = null;
     switch (query) {
       case "description":
@@ -182,9 +181,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
    * @param itemBand details section in pentaho
    */
   private void getAllSubreports(HashMap<String, Element> hm, ItemBand itemBand) {
-    int elementCount = itemBand.getElementCount();
+    final int elementCount = itemBand.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      Element e = itemBand.getElement(i);
+      final Element e = itemBand.getElement(i);
       // verify if the item is a SubReport
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
@@ -211,9 +210,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
    * @param band
    */
   private void getBandSubreports(HashMap<String, Element> hm, Band band) {
-    int elementCount = band.getElementCount();
+    final int elementCount = band.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      Element e = band.getElement(i);
+      final Element e = band.getElement(i);
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
         // If report footer is not null check for subreports
@@ -242,27 +241,28 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getDeliverablesTableModel() {
-    TypedTableModel model = new TypedTableModel(
+    final TypedTableModel model = new TypedTableModel(
       new String[] {"id", "deliverableTitle", "type", "subType", "startDate", "endDate", "crossCutting",
         "deliverableOutputs", "supportingDocuments"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class});
 
-    for (CenterDeliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+    for (final CenterDeliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
       .collect(Collectors.toList())) {
-      Long id = deliverable.getId();
+      final Long id = deliverable.getId();
       String deliverableTitle = null;
-      if (deliverable.getName() != null && !deliverable.getName().trim().isEmpty()) {
+      if ((deliverable.getName() != null) && !deliverable.getName().trim().isEmpty()) {
         deliverableTitle = deliverable.getName();
       }
       String type = null;
       String subType = null;
-      if (deliverable.getDeliverableType() != null && deliverable.getDeliverableType().getDeliverableType() != null) {
+      if ((deliverable.getDeliverableType() != null)
+        && (deliverable.getDeliverableType().getDeliverableType() != null)) {
         subType = deliverable.getDeliverableType().getName();
         type = deliverable.getDeliverableType().getDeliverableType().getName();
       }
 
-      SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      final SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
       String startDate = null;
 
       if (deliverable.getStartDate() != null) {
@@ -275,35 +275,35 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
 
       String crossCutting = "";
       if (deliverable.getDeliverableCrosscutingTheme() != null) {
-        if (deliverable.getDeliverableCrosscutingTheme().getClimateChange() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getClimateChange() != null)
           && deliverable.getDeliverableCrosscutingTheme().getClimateChange()) {
           crossCutting += "&#9679;  Climate Change <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getGender() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getGender() != null)
           && deliverable.getDeliverableCrosscutingTheme().getGender()) {
           crossCutting += "&#9679;  Gender <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getYouth() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getYouth() != null)
           && deliverable.getDeliverableCrosscutingTheme().getYouth()) {
           crossCutting += "&#9679;  Youth <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getNa() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getNa() != null)
           && deliverable.getDeliverableCrosscutingTheme().getNa()) {
           crossCutting += "&#9679;  N/A <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getCapacityDevelopment() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getCapacityDevelopment() != null)
           && deliverable.getDeliverableCrosscutingTheme().getCapacityDevelopment()) {
           crossCutting += "&#9679;  Capacity Development <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getBigData() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getBigData() != null)
           && deliverable.getDeliverableCrosscutingTheme().getBigData()) {
           crossCutting += "&#9679;  Big Data <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getImpactAssessment() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getImpactAssessment() != null)
           && deliverable.getDeliverableCrosscutingTheme().getImpactAssessment()) {
           crossCutting += "&#9679;  Impact Assessment <br>";
         }
-        if (deliverable.getDeliverableCrosscutingTheme().getPoliciesInstitutions() != null
+        if ((deliverable.getDeliverableCrosscutingTheme().getPoliciesInstitutions() != null)
           && deliverable.getDeliverableCrosscutingTheme().getPoliciesInstitutions()) {
           crossCutting += "&#9679;  Policies and Institutions <br>";
         }
@@ -312,7 +312,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
         crossCutting = null;
       }
       String deliverableOutputs = "";
-      for (CenterDeliverableOutput deliverableOutput : deliverable.getDeliverableOutputs().stream()
+      for (final CenterDeliverableOutput deliverableOutput : deliverable.getDeliverableOutputs().stream()
         .filter(deo -> deo.isActive()).collect(Collectors.toList())) {
         deliverableOutputs += "&#9679;  " + deliverableOutput.getResearchOutput().getTitle() + "<br>";
       }
@@ -320,9 +320,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
         deliverableOutputs = null;
       }
       String supportingDocuments = "";
-      for (CenterDeliverableDocument deliverableDocument : deliverable.getDeliverableDocuments().stream()
+      for (final CenterDeliverableDocument deliverableDocument : deliverable.getDeliverableDocuments().stream()
         .filter(dd -> dd.isActive()).collect(Collectors.toList())) {
-        if (deliverableDocument.getLink() != null && !deliverableDocument.getLink().trim().isEmpty()) {
+        if ((deliverableDocument.getLink() != null) && !deliverableDocument.getLink().trim().isEmpty()) {
           supportingDocuments += "&#9679;  " + deliverableDocument.getLink() + "<br>";
         }
       }
@@ -337,7 +337,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getDescriptionTableModel() {
-    TypedTableModel model = new TypedTableModel(
+    final TypedTableModel model = new TypedTableModel(
       new String[] {"title", "startDate", "endDate", "extensionDate", "principalInvestigator", "projectContact",
         "ocsCode", "type", "suggestedTitle", "descriptionObjectives", "originalDonor", "customer", "totalAmount",
         "globalDimension", "crossCutting", "projectOutputs", "regionalDimension"},
@@ -346,11 +346,11 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
         String.class, String.class});
 
     String title = null;
-    if (project.getName() != null && !project.getName().isEmpty()) {
+    if ((project.getName() != null) && !project.getName().isEmpty()) {
       title = project.getName();
     }
 
-    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    final SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     String startDate = null;
 
     if (project.getStartDate() != null) {
@@ -384,12 +384,12 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     String type = null;
 
     String suggestedTitle = null;
-    if (project.getSuggestedName() != null && !project.getSuggestedName().trim().isEmpty()) {
+    if ((project.getSuggestedName() != null) && !project.getSuggestedName().trim().isEmpty()) {
       suggestedTitle = project.getSuggestedName();
     }
 
     String descriptionObjectives = null;
-    if (project.getDescription() != null && !project.getDescription().trim().isEmpty()) {
+    if ((project.getDescription() != null) && !project.getDescription().trim().isEmpty()) {
       descriptionObjectives = project.getDescription();
     }
 
@@ -408,12 +408,12 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     // totalAmount = project.getTotalAmount();
     // }
     String globalDimension = null;
-    if (project.getGlobal() != null && project.getGlobal()) {
+    if ((project.getGlobal() != null) && project.getGlobal()) {
       globalDimension = "&#9679 Yes";
-    } else if (project.getGlobal() != null && !project.getGlobal()) {
+    } else if ((project.getGlobal() != null) && !project.getGlobal()) {
       globalDimension = "";
-      for (CenterProjectLocation projectLocation : project.getProjectLocations().stream()
-        .filter(pl -> pl.isActive() && pl.getLocElement().getLocElementType().getId() == 2)
+      for (final CenterProjectLocation projectLocation : project.getProjectLocations().stream()
+        .filter(pl -> pl.isActive() && (pl.getLocElement().getLocElementType().getId() == 2))
         .collect(Collectors.toList())) {
         if (globalDimension.isEmpty()) {
           globalDimension += "&#9679 " + projectLocation.getLocElement().getName();
@@ -423,10 +423,10 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       }
     }
     String regionalDimension = null;
-    if (project.getRegion() != null && project.getRegion()) {
+    if ((project.getRegion() != null) && project.getRegion()) {
       regionalDimension = "";
-      for (CenterProjectLocation projectLocation : project.getProjectLocations().stream()
-        .filter(pl -> pl.isActive() && pl.getLocElement().getLocElementType().getId() == 1)
+      for (final CenterProjectLocation projectLocation : project.getProjectLocations().stream()
+        .filter(pl -> pl.isActive() && (pl.getLocElement().getLocElementType().getId() == 1))
         .collect(Collectors.toList())) {
         if (regionalDimension.isEmpty()) {
           regionalDimension += "&#9679 " + projectLocation.getLocElement().getName();
@@ -434,17 +434,17 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           regionalDimension += "<br>&#9679 " + projectLocation.getLocElement().getName();
         }
       }
-    } else if (project.getRegion() != null && !project.getRegion()) {
+    } else if ((project.getRegion() != null) && !project.getRegion()) {
       regionalDimension = "&#9679 No";
     }
 
     String crossCutting = "";
     if (project.getProjectCrosscutingTheme() != null) {
-      if (project.getProjectCrosscutingTheme().getClimateChange() != null
+      if ((project.getProjectCrosscutingTheme().getClimateChange() != null)
         && project.getProjectCrosscutingTheme().getClimateChange()) {
         crossCutting += "&#9679 Climate Change";
       }
-      if (project.getProjectCrosscutingTheme().getGender() != null
+      if ((project.getProjectCrosscutingTheme().getGender() != null)
         && project.getProjectCrosscutingTheme().getGender()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Gender";
@@ -452,14 +452,15 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           crossCutting += "<br>&#9679 Gender";
         }
       }
-      if (project.getProjectCrosscutingTheme().getYouth() != null && project.getProjectCrosscutingTheme().getYouth()) {
+      if ((project.getProjectCrosscutingTheme().getYouth() != null)
+        && project.getProjectCrosscutingTheme().getYouth()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Youth";
         } else {
           crossCutting += "<br>&#9679 Youth";
         }
       }
-      if (project.getProjectCrosscutingTheme().getPoliciesInstitutions() != null
+      if ((project.getProjectCrosscutingTheme().getPoliciesInstitutions() != null)
         && project.getProjectCrosscutingTheme().getPoliciesInstitutions()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Policies and Institutions";
@@ -467,7 +468,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           crossCutting += "<br>&#9679 Policies and Institutions";
         }
       }
-      if (project.getProjectCrosscutingTheme().getCapacityDevelopment() != null
+      if ((project.getProjectCrosscutingTheme().getCapacityDevelopment() != null)
         && project.getProjectCrosscutingTheme().getCapacityDevelopment()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Capacity Development";
@@ -475,7 +476,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           crossCutting += "<br>&#9679 Capacity Development";
         }
       }
-      if (project.getProjectCrosscutingTheme().getBigData() != null
+      if ((project.getProjectCrosscutingTheme().getBigData() != null)
         && project.getProjectCrosscutingTheme().getBigData()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Big Data";
@@ -483,7 +484,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           crossCutting += "<br>&#9679 Big Data";
         }
       }
-      if (project.getProjectCrosscutingTheme().getImpactAssessment() != null
+      if ((project.getProjectCrosscutingTheme().getImpactAssessment() != null)
         && project.getProjectCrosscutingTheme().getImpactAssessment()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 Impact Assessment";
@@ -491,7 +492,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
           crossCutting += "<br>&#9679 Impact Assessment";
         }
       }
-      if (project.getProjectCrosscutingTheme().getNa() != null && project.getProjectCrosscutingTheme().getNa()) {
+      if ((project.getProjectCrosscutingTheme().getNa() != null) && project.getProjectCrosscutingTheme().getNa()) {
         if (crossCutting.isEmpty()) {
           crossCutting += "&#9679 N/A";
         } else {
@@ -499,12 +500,12 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
         }
       }
     }
-    if (crossCutting != null && crossCutting.trim().isEmpty()) {
+    if ((crossCutting != null) && crossCutting.trim().isEmpty()) {
       crossCutting = null;
     }
 
     String projectOutputs = "";
-    for (CenterProjectOutput projectOutput : project.getProjectOutputs().stream().filter(po -> po.isActive())
+    for (final CenterProjectOutput projectOutput : project.getProjectOutputs().stream().filter(po -> po.isActive())
       .collect(Collectors.toList())) {
       if (projectOutputs.isEmpty()) {
         projectOutputs = "&#9679 " + projectOutput.getResearchOutput().getShortName();
@@ -525,14 +526,14 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
-    ClassLoader classLoader = this.getClass().getClassLoader();
-    File file = new File(classLoader.getResource(fileName).getFile());
+    final ClassLoader classLoader = this.getClass().getClassLoader();
+    final File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
 
   @Override
   public String getFileName() {
-    StringBuffer fileName = new StringBuffer();
+    final StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-CIAT" + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
@@ -542,9 +543,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
-    int elementCount = reportFooter.getElementCount();
+    final int elementCount = reportFooter.getElementCount();
     for (int i = 0; i < elementCount; i++) {
-      Element e = reportFooter.getElement(i);
+      final Element e = reportFooter.getElement(i);
       if (e instanceof SubReport) {
         hm.put(e.getName(), e);
         if (((SubReport) e).getElementCount() != 0) {
@@ -559,9 +560,9 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getFundingSourcesTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"crp", "fundingSource", "projectTitle"},
+    final TypedTableModel model = new TypedTableModel(new String[] {"crp", "fundingSource", "projectTitle"},
       new Class[] {String.class, String.class, String.class});
-    for (CenterProjectFundingSource projectFundingSource : project.getProjectFundingSources().stream()
+    for (final CenterProjectFundingSource projectFundingSource : project.getProjectFundingSources().stream()
       .filter(fs -> fs.isActive()).collect(Collectors.toList())) {
       String crp = null;
 
@@ -573,7 +574,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       // fundingSource = projectFundingSource.getFundingSourceType().getName();
       // }
       String projectTitle = null;
-      if (projectFundingSource.getTitle() != null && !projectFundingSource.getTitle().trim().isEmpty()) {
+      if ((projectFundingSource.getTitle() != null) && !projectFundingSource.getTitle().trim().isEmpty()) {
         projectTitle = projectFundingSource.getTitle();
       }
 
@@ -597,15 +598,15 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
    */
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
-    TypedTableModel model =
+    final TypedTableModel model =
       new TypedTableModel(new String[] {"shortTitle", "currentDate", "projectSubmission", "imageUrl"},
         new Class[] {String.class, String.class, String.class, String.class});
     // Set short title
     String shortTitle = "";
-    if (project.getName() != null && !project.getName().isEmpty()) {
+    if ((project.getName() != null) && !project.getName().isEmpty()) {
       shortTitle += project.getName() + " - ";
     }
-    if (loggedCenter.getAcronym() != null && !loggedCenter.getAcronym().isEmpty()) {
+    if ((loggedCenter.getAcronym() != null) && !loggedCenter.getAcronym().isEmpty()) {
       shortTitle += loggedCenter.getAcronym() + " - ";
     }
     shortTitle += "P" + Long.toString(projectID);
@@ -613,30 +614,32 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     // Set currentDate
     String currentDate = "";
     // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    final ZonedDateTime timezone = ZonedDateTime.now();
+    final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     currentDate = timezone.format(format) + this.getTimeZone();
 
     // Set projectSubmission
-    String projectSubmission = "";
+    final String projectSubmission = "";
 
     // set CIAT imgage URL from repo
+
     String imageUrl = this.getBaseUrl() + "/global/images/centers/CIAT.png";
+
 
     model.addRow(new Object[] {shortTitle, currentDate, projectSubmission, imageUrl});
     return model;
   }
 
   private TypedTableModel getPartnersTableModel() {
-    TypedTableModel model =
+    final TypedTableModel model =
       new TypedTableModel(new String[] {"partnerName", "partnerType", "institution_id", "project_id"},
         new Class[] {String.class, String.class, Long.class, Long.class});
 
-    for (CenterProjectPartner projectPartner : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+    for (final CenterProjectPartner projectPartner : project.getProjectPartners().stream().filter(pp -> pp.isActive())
       .collect(Collectors.toList())) {
-      String partnerName = projectPartner.getInstitution().getComposedName();
-      Long institution_id = projectPartner.getInstitution().getId();
-      String partnerType = null;
+      final String partnerName = projectPartner.getInstitution().getComposedName();
+      final Long institution_id = projectPartner.getInstitution().getId();
+      final String partnerType = null;
       // if (projectPartner.isInternal()) {
       // partnerType = "Internal";
       // }
@@ -655,14 +658,14 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       projectID = -1;
       LOG.error("Failed to get parameter" + APConstants.PROJECT_ID + ". Exception: " + e.getMessage());
       throw e;
     }
     try {
       project = projectService.getCenterProjectById(projectID);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("Failed to get project from Database. Exception: " + e.getMessage());
       throw e;
     }

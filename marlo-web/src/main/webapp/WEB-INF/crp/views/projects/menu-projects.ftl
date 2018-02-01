@@ -136,17 +136,14 @@
  
   
 
-  [#-- Check button --]
+    [#-- Check button --]
    [#if canEdit && !completed && !submission  && ((project.projectInfo.projectEditLeader)!false)]
     <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
     <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
   [/#if]
-
- 
-
-
- [#-- Submit button --]
+  
+  [#-- Submit button --]
   [#if canEdit]
     [#assign showSubmit=(canSubmit && !submission && completed)]
     <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
