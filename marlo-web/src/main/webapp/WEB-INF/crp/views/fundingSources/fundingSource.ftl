@@ -234,7 +234,9 @@
       [#--  Does this study involve research with human subjects? --]
       [#if action.hasSpecificities('crp_has_research_human')]
       <div class="form-group">
+       
         [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)! /]
+        
         <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /] [@customForm.req required=editable  /]</label>
         [#if editable]
           [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=((hasHumanSubjects)!false) cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]

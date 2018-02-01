@@ -252,20 +252,22 @@ public class FundingSourceValidator extends BaseValidator {
     }
 
     if (action.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
-      if (fundingSource.getFundingSourceInfo().isHasFileResearch()) {
-        if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
-          if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
-            || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+      if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch().booleanValue()) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+              || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
 
+              action.addMessage(action.getText("fundingSource.messageFileResearch"));
+              action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.fileResearch",
+                action.getText("fundingSource.messageFileResearch"));
+
+            }
+          } else {
             action.addMessage(action.getText("fundingSource.messageFileResearch"));
             action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.fileResearch",
               action.getText("fundingSource.messageFileResearch"));
-
           }
-        } else {
-          action.addMessage(action.getText("fundingSource.messageFileResearch"));
-          action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.fileResearch",
-            action.getText("fundingSource.messageFileResearch"));
         }
       }
     }

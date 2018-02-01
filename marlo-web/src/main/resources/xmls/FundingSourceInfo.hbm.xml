@@ -84,7 +84,7 @@
     <property name="extensionDate" type="date">
       <column name="extended_date" length="10" />
     </property>
-    <property name="hasFileResearch" type="boolean">
+    <property name="hasFileResearch" type="java.lang.Boolean">
       <column name="has_file_research" not-null="true" />
     </property>
     <many-to-one name="fileResearch"

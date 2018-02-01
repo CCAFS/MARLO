@@ -836,7 +836,8 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
       fundingSource.getFundingSourceInfo().setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
-      fundingSource.getFundingSourceInfo().setHasFileResearch(fundingSource.getFundingSourceInfo().isHasFileResearch());
+      fundingSource.getFundingSourceInfo()
+        .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()
@@ -874,20 +875,22 @@ public class FundingSourceAction extends BaseAction {
       // fileResearch validation
       // 20180124 - @jurodca
       if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
-        if (fundingSource.getFundingSourceInfo().isHasFileResearch()) {
-          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
-            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
-              fundingSource.getFundingSourceInfo().setFileResearch(null);
-            } else {
-              fundingSource.getFundingSourceInfo()
-                .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+          if (fundingSource.getFundingSourceInfo().getHasFileResearch().booleanValue()) {
+
+            if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+              if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
+                fundingSource.getFundingSourceInfo().setFileResearch(null);
+              } else {
+                fundingSource.getFundingSourceInfo()
+                  .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+              }
             }
+          } else {
+            fundingSource.getFundingSourceInfo().setFileResearch(null);
           }
-        } else {
-          fundingSource.getFundingSourceInfo().setFileResearch(null);
         }
       }
-
 
       /*
        * if (file != null) {
@@ -1013,7 +1016,9 @@ public class FundingSourceAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       return SUCCESS;
-    } else {
+    } else
+
+    {
       return NOT_AUTHORIZED;
     }
   }
@@ -1258,7 +1263,7 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
-        if (fundingSource.getFundingSourceInfo().isHasFileResearch()) {
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch()) {
           if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
             if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
               || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {

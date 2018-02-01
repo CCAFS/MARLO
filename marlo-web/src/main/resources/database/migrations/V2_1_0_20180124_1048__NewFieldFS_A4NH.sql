@@ -1,5 +1,5 @@
 ALTER TABLE funding_sources_info ADD file_research bigint(20) null;
-ALTER TABLE funding_sources_info ADD has_file_research tinyint(1) null default 0;
+ALTER TABLE funding_sources_info ADD has_file_research tinyint(1) null;
 
 
 INSERT INTO `parameters` ( `key`, `description`, `format`, `default_value`, `category`) 
