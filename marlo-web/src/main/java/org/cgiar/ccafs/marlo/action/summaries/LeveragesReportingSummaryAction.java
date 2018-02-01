@@ -103,8 +103,8 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/LeveragesReportingExcel-Annualization.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/LeveragesReportingExcel.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -215,8 +215,10 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
   private TypedTableModel getLeveragesReportingTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget", "project_ID"},
-      new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class}, 0);
+      new String[] {"id", "title", "partner_name", "leverage_year", "flagship", "budget", "project_ID", "phaseID"},
+      new Class[] {Long.class, String.class, String.class, Integer.class, String.class, Double.class, Long.class,
+        Long.class},
+      0);
     for (ProjectLeverage projectLeverage : this.projectLeverageManager.findAll().stream()
       .filter(pl -> pl.isActive() && pl.getYear() != null && pl.getYear() == this.getSelectedYear()
         && pl.getProject() != null && pl.getProject().getGlobalUnitProjects() != null
@@ -228,9 +230,10 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
 
 
       String title = null, partnerName = null, flagship = null;
-      Long projectID = null;
+      Long projectID = null, phaseID = null;
       Integer leverageYear = null;
       Double budget = null;
+
       if (projectLeverage.getTitle() != null && !projectLeverage.getTitle().isEmpty()) {
         title = projectLeverage.getTitle();
       }
@@ -249,8 +252,9 @@ public class LeveragesReportingSummaryAction extends BaseSummariesAction impleme
       if (projectLeverage.getProject() != null) {
         projectID = projectLeverage.getProject().getId();
       }
-      model
-        .addRow(new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID});
+      phaseID = this.getSelectedPhase().getId();
+      model.addRow(
+        new Object[] {projectLeverage.getId(), title, partnerName, leverageYear, flagship, budget, projectID, phaseID});
     }
     return model;
   }

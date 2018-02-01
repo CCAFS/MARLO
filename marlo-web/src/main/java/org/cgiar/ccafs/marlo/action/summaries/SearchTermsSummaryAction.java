@@ -158,8 +158,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/search_terms-Annualization.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/SearchTerms.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -237,9 +237,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "act_id", "act_title", "act_desc", "start_date", "end_date", "lead_ins",
-        "leader", "project_url"},
+        "leader", "project_url", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class},
       0);
     if (!keys.isEmpty()) {
       // Pattern case insensitive
@@ -355,8 +355,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               } else {
                 insLeader += "</font>";
               }
+              Long phaseID = this.getSelectedPhase().getId();
               model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
-                leader, projectU});
+                leader, projectU, phaseID});
             }
           }
         }
@@ -379,9 +380,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "dev_id", "dev_title", "dev_type", "dev_sub_type", "lead_ins", "leader",
-        "project_url", "dev_url"},
+        "project_url", "dev_url", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class},
       0);
     if (!keys.isEmpty()) {
       List<Project> projects = new ArrayList<>();
@@ -471,6 +472,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                   }
                 }
               }
+              Long phaseID = this.getSelectedPhase().getId();
               model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
                 projectUrl, devUrl});
             }
@@ -535,9 +537,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private TypedTableModel getProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "summary", "start_date", "end_date", "flagships", "regions", "lead_ins",
-        "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url", "w1w2_Co_budget"},
+        "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url", "w1w2_Co_budget",
+        "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class, Double.class},
+        String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class, Double.class,
+        Long.class},
       0);
     if (!keys.isEmpty()) {
       // Pattern case insensitive
@@ -730,8 +734,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             String projectId =
               "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
             String projectUrl = project.getId().toString();
+            Long phaseID = projectInfo.getPhase().getId();
             model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co});
+              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID});
           }
         }
       }

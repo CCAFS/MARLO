@@ -168,7 +168,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     manager.registerDefaults();
     try {
       Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/deliverables-Annualization.prpt"), MasterReport.class);
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ExpectedDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -249,10 +249,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
         "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "FS",
-        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible"},
+        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Long.class},
       0);
 
     for (Deliverable deliverable : deliverableManager.findAll().stream()
@@ -268,6 +269,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+      Long phaseID = deliverableInfo.getPhase().getId();
 
       Long deliverableId = deliverable.getId();
       String deliverableTitle = (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().isEmpty())
@@ -664,7 +666,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
         projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows, outcomes,
-        projectLeadPartner, managingResponsible});
+        projectLeadPartner, managingResponsible, phaseID});
 
       if (completionYear != null) {
         if (deliverablePerYearList.containsKey(completionYear)) {

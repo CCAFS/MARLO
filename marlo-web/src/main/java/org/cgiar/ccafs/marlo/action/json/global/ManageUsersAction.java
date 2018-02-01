@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.opensymphony.xwork2.ActionContext;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -146,8 +145,9 @@ public class ManageUsersAction extends BaseAction {
           newUser.setCgiarUser(false);
           // Generating a random password.
           // String newPassword = RandomStringUtils.random(6, "0123456789abcdefghijkmnpqrstuvwxyz");
-          String newPassword = RandomStringUtils.randomNumeric(6);
-          newUser.setPassword(newPassword);
+          // String newPassword = RandomStringUtils.randomNumeric(6);
+          // newUser.setPassword(newPassword);
+
           if (!this.addUser()) {
             // If user could not be added.
             newUser = null;

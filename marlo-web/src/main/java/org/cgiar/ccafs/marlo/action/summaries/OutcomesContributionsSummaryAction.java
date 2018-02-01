@@ -126,8 +126,8 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/OutcomesContributionsSummary-Annualization.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/OutcomesContributions.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime
@@ -244,9 +244,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
-        "narrative_target", "title", "outcomeIndicator"},
+        "narrative_target", "title", "outcomeIndicator", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class},
       0);
     for (CrpProgram crpProgram : this.getLoggedCrp().getCrpPrograms().stream()
       .filter(cp -> cp.isActive() && cp.getCrp().equals(this.getLoggedCrp())).collect(Collectors.toList())) {
@@ -262,11 +262,13 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
               String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
                 expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
               Long expectedValue = -1L;
+              Long phaseID = null;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
               if (projectMilestone.getProjectOutcome().getProject()
                 .getProjecInfoPhase(this.getSelectedPhase()) != null) {
                 title = projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
                   .getTitle();
+                phaseID = projectMilestone.getProjectOutcome().getProject().getProjectInfo().getPhase().getId();
               }
               flagship = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getCrpProgram().getAcronym();
               outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
@@ -282,8 +284,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
                 expectedUnit = projectMilestone.getExpectedUnit().getName();
               }
               narrativeTarget = projectMilestone.getNarrativeTarget();
+
               model.addRow(new Object[] {projectId, flagship, outcome, projectUrl, milestone, expectedValue,
-                expectedUnit, narrativeTarget, title, outcomeIndicator});
+                expectedUnit, narrativeTarget, title, outcomeIndicator, phaseID});
             }
           }
 
@@ -305,9 +308,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
-        "expected_narrative", "project_url", "outcomeIndicator"},
+        "expected_narrative", "project_url", "outcomeIndicator", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, Long.class},
       0);
 
     for (Project project : guProjects.stream().sorted((p1, p2) -> Long.compare(p1.getId(), p2.getId()))
@@ -347,8 +350,9 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           }
           expectedNarrative = projectOutcome.getNarrativeTarget();
         }
+        Long phaseID = this.getSelectedPhase().getId();
         model.addRow(new Object[] {projectId, title, flagship, outcome, expectedValue, expectedUnit, expectedNarrative,
-          projectUrl, outcomeIndicator});
+          projectUrl, outcomeIndicator, phaseID});
       }
     }
     return model;
