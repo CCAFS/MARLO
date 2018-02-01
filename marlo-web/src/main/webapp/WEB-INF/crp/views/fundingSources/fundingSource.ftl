@@ -235,7 +235,7 @@
       [#if action.hasSpecificities('crp_has_research_human')]
       <div class="form-group">
         [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)! /]
-        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]</label>
+        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /] [@customForm.req required=editable  /]</label>
         [#if editable]
           [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=((hasHumanSubjects)!false) cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
           [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.hasFileResearch" label="No" value="false" checked=((!hasHumanSubjects)!false) cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
@@ -250,6 +250,7 @@
             label="fundingSource.uploadHumanSubjects" 
             dataUrl="${baseUrl}/uploadFundingSourceResearch.do" 
             isEditable=editable
+            required=true
           /]
         </div>
       </div>

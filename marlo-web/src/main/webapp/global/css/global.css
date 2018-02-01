@@ -471,6 +471,7 @@ textarea#justification {
 .fileUploaded {
   border: 1px dashed #ccc;
   position: relative;
+  padding-left: 6px;
 }
 
 input[type="radio"] {
@@ -6456,6 +6457,7 @@ p.dateLabel.fieldError {
   height: 1.2em;
   position: relative;
   /* top: -0.2em; */
+  left: 0.1em;
   margin-right: 0.3em;
   vertical-align: top;
   cursor: pointer;
