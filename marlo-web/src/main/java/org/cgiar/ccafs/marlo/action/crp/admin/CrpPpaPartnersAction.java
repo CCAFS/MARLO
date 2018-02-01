@@ -46,14 +46,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * CrpPpaPartnersAction:
@@ -107,7 +109,6 @@ public class CrpPpaPartnersAction extends BaseAction {
   private GlobalUnit loggedCrp;
   // Util
   private SendMailS sendMail;
-  private List<User> usersToActive;
 
 
   @Inject
@@ -320,9 +321,10 @@ public class CrpPpaPartnersAction extends BaseAction {
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
+
         password = RandomStringUtils.randomNumeric(6);
         // Applying the password to the user.
-        user.setPassword(password);
+
       }
 
       // Building the Email message:
@@ -351,7 +353,10 @@ public class CrpPpaPartnersAction extends BaseAction {
       // user.setActive(true);
       // userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
-      usersToActive.add(user);
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       this.addCrpUserIfNotExist(user);
 
       // Send UserManual.pdf
@@ -564,7 +569,7 @@ public class CrpPpaPartnersAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      usersToActive = new ArrayList<>();
+      this.setUsersToActive(new ArrayList<>());
       List<CrpPpaPartner> ppaPartnerReview;
       ppaPartnerReview = crpPpaPartnerManager.findAll();
       if (ppaPartnerReview != null) {
@@ -671,10 +676,7 @@ public class CrpPpaPartnersAction extends BaseAction {
         }
 
       }
-      for (User user : usersToActive) {
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-      }
+      this.addUsers();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {

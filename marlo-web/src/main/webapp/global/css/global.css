@@ -2601,7 +2601,7 @@ input.userName {
 }
 
 #newProject{
-  cursor: pointer;
+  /* cursor: pointer; */
   background-image: url(../../global/images/decision-tree-1.png);
 }
 #updatePlanning{

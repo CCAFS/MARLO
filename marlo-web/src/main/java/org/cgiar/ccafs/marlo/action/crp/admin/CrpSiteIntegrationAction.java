@@ -46,12 +46,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -98,7 +100,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
   private Role slRole;
   // Util
   private SendMailS sendMail;
-  private List<User> usersToActive;
 
   @Inject
   public CrpSiteIntegrationAction(APConfig config, GlobalUnitManager crpManager, LocElementManager locElementManager,
@@ -212,8 +213,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
 
@@ -242,7 +241,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
       // Saving the new user configuration.
       // user.setActive(true);
       // userManager.saveUser(user, this.getCurrentUser());
-      usersToActive.add(user);
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
 
 
       // Send UserManual.pdf
@@ -352,14 +354,11 @@ public class CrpSiteIntegrationAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("*")) {
-      usersToActive = new ArrayList<>();
+      this.setUsersToActive(new ArrayList<>());
       this.siteIntegrationPreviusData();
       this.siteIntegrationNewData();
       this.loadData();
-      for (User user : usersToActive) {
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-      }
+      this.addUsers();
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
