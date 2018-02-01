@@ -387,6 +387,11 @@ public class FundingSourceAction extends BaseAction {
     return loggedCrp;
   }
 
+  // methos to download link file
+  public String getPath(String fsId) {
+    return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
+  }
+
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
@@ -395,14 +400,9 @@ public class FundingSourceAction extends BaseAction {
     return scopeRegionLists;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
-  }
-
-
-  // methos to download link file
-  public String getStudyFileURL(String fsId) {
-    return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
   }
 
 
