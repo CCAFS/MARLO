@@ -181,6 +181,8 @@ function init() {
           $ub.find('.fileUpload').hide();
           // Set file ID
           $ub.find('input.fileID').val(r.fileID);
+          // Set file URL
+          $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
         }
       },
       progressall: function(e,data) {
@@ -201,6 +203,8 @@ function init() {
     $ub.find('.fileUpload').show();
     $ub.find('input.fileID').val('');
     $ub.find('input.outcomeID').val('');
+    // Clear URL
+    $ub.find('.fileUploaded a').attr('href', '');
   });
 
   /** End File upload* */

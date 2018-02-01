@@ -395,7 +395,7 @@
   </div>
 [/#macro]
 
-[#macro fileUploadAjax fileDB name label="" dataUrl="" required=false isEditable=true cssClass=""]
+[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass=""]
   [#assign hasFile = (fileDB.id??)!false /]
   <div class="fileUploadContainer ${cssClass}" >
     <label>[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
@@ -406,7 +406,10 @@
     [/#if]
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
-      <span class="glyphicon glyphicon-file"></span> <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> [#if isEditable]<span class="removeIcon"> </span> [/#if]
+      [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}">[/#if]
+      <span class="glyphicon glyphicon-file"></span> <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> 
+      [#if path?has_content]</a>[/#if]
+      [#if isEditable]<span class="removeIcon"> </span> [/#if]
     </p>
   </div>
 [/#macro]
