@@ -1129,7 +1129,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     String resourceID =
       StringUtils.trim(parameters.get(APConstants.CAPDEV_PARTICIPANT_CODE_SYNC).getMultipleValues()[0]);
-    resourceOCS = ocsClient.getHRInformation(resourceID);
+    // TODO delete comment when the OCS platform is update
+    // resourceOCS = ocsClient.getHRInformation(resourceID);
 
     Map<String, Object> map = new HashMap<>();
     map.put("firstName", resourceOCS.getFirstName());
