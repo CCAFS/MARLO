@@ -234,18 +234,19 @@
       [#--  Does this study involve research with human subjects? --]
       [#if action.hasSpecificities('crp_has_research_human')]
       <div class="form-group">
-       
-        [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)! /]
+        [#if (fundingSource.fundingSourceInfo.hasFileResearch??)!false]
+          [#assign hasHumanSubjects = fundingSource.fundingSourceInfo.hasFileResearch /]
+        [/#if]
         
         <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /] [@customForm.req required=editable  /]</label>
         [#if editable]
           [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=((hasHumanSubjects)!false) cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
           [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.hasFileResearch" label="No" value="false" checked=((!hasHumanSubjects)!false) cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
         [#else]
-          ${hasHumanSubjects?string('Yes', 'No')}
+          ${(hasHumanSubjects?string('Yes', 'No'))!}
         [/#if]
         [#-- Upload File (Human subjects research) fileResearch --]
-        <div class="form-group humanSubjectsBlock" style="display:${hasHumanSubjects?string('block', 'none')}; position:relative" listname="fundingSource.fundingSourceInfo.fileResearch">
+        <div class="form-group humanSubjectsBlock" style="display:${((hasHumanSubjects)!false)?string('block', 'none')}; position:relative" listname="fundingSource.fundingSourceInfo.fileResearch">
           [@customForm.fileUploadAjax 
             fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
             name="fundingSource.fundingSourceInfo.fileResearch.id" 
