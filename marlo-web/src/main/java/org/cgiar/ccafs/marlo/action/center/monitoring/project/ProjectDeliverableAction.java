@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ICapacityDevelopmentService;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableCrosscutingThemeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableDocumentManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
@@ -26,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
@@ -48,6 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,6 +92,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
   private ICenterProjectManager projectService;
 
+  private ICapacityDevelopmentService capdevService;
 
   private AuditLogManager auditLogService;
 
@@ -102,6 +106,8 @@ public class ProjectDeliverableAction extends BaseAction {
   private CenterArea selectedResearchArea;
   private CenterProgram selectedProgram;
   private GlobalUnit loggedCenter;
+  private String is_capdev;
+
   private CenterDeliverable deliverable;
   private List<CenterArea> researchAreas;
 
@@ -109,6 +115,7 @@ public class ProjectDeliverableAction extends BaseAction {
   private List<CenterDeliverableType> deliverableSubTypes;
   private List<CenterDeliverableType> deliverableTypeParent;
   private List<CenterOutput> outputs;
+  private List<CapacityDevelopment> capdevs;
   private String transaction;
 
   @Inject
@@ -117,7 +124,7 @@ public class ProjectDeliverableAction extends BaseAction {
     ICenterProjectManager projectService, ICenterDeliverableDocumentManager deliverableDocumentService,
     CenterDeliverableValidator validator, ICenterDeliverableCrosscutingThemeManager deliverableCrosscutingService,
     ICenterDeliverableOutputManager deliverableOutputService, ICenterOutputManager outputService,
-    AuditLogManager auditLogService) {
+    AuditLogManager auditLogService, ICapacityDevelopmentService capdevService) {
     super(config);
     this.centerService = centerService;
     this.deliverableTypeService = deliverableTypeService;
@@ -129,22 +136,23 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverableCrosscutingService = deliverableCrosscutingService;
     this.deliverableOutputService = deliverableOutputService;
     this.outputService = outputService;
+    this.capdevService = capdevService;
   }
 
   @Override
   public String cancel() {
 
-    Path path = this.getAutoSaveFilePath();
+    final Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
 
-      boolean fileDeleted = path.toFile().delete();
+      final boolean fileDeleted = path.toFile().delete();
     }
 
     this.setDraft(false);
     Collection<String> messages = this.getActionMessages();
     if (!messages.isEmpty()) {
-      String validationMessage = messages.iterator().next();
+      final String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
       this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     } else {
@@ -160,11 +168,15 @@ public class ProjectDeliverableAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = deliverable.getClass().getSimpleName();
-    String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    final String composedClassName = deliverable.getClass().getSimpleName();
+    final String actionFile = this.getActionName().replace("/", "_");
+    final String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public List<CapacityDevelopment> getCapdevs() {
+    return capdevs;
   }
 
   public CenterDeliverable getDeliverable() {
@@ -181,6 +193,10 @@ public class ProjectDeliverableAction extends BaseAction {
 
   public List<CenterDeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
+  }
+
+  public String getIs_capdev() {
+    return is_capdev;
   }
 
   public GlobalUnit getLoggedCenter() {
@@ -200,10 +216,10 @@ public class ProjectDeliverableAction extends BaseAction {
 
     outputs = new ArrayList<>();
 
-    List<CenterProjectOutput> projectOutputs =
+    final List<CenterProjectOutput> projectOutputs =
       new ArrayList<>(project.getProjectOutputs().stream().filter(po -> po.isActive()).collect(Collectors.toList()));
 
-    for (CenterProjectOutput projectOutput : projectOutputs) {
+    for (final CenterProjectOutput projectOutput : projectOutputs) {
       outputs.add(projectOutput.getResearchOutput());
     }
   }
@@ -211,6 +227,7 @@ public class ProjectDeliverableAction extends BaseAction {
   public CenterProject getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -233,11 +250,9 @@ public class ProjectDeliverableAction extends BaseAction {
     return selectedResearchArea;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -250,7 +265,7 @@ public class ProjectDeliverableAction extends BaseAction {
     try {
       deliverableID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CENTER_DELIVERABLE_ID)));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       deliverableID = -1;
       projectID = -1;
     }
@@ -258,7 +273,7 @@ public class ProjectDeliverableAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
+      final CenterDeliverable history = (CenterDeliverable) auditLogService.getHistory(transaction);
 
       if (history != null) {
         deliverable = history;
@@ -275,34 +290,41 @@ public class ProjectDeliverableAction extends BaseAction {
     if (deliverable != null) {
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
 
-
+      is_capdev = String.valueOf(deliverable.isCapdevD());
+      capdevs = capdevService.findAll().stream()
+        .filter(
+          c -> (c.getProject() != null) && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
+        .collect(Collectors.toList());
+      Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave() && this.isEditable()) {
         BufferedReader reader = null;
         reader = new BufferedReader(new FileReader(path.toFile()));
+
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         reader.close();
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
+
         deliverable = (CenterDeliverable) autoSaveReader.readFromJson(jReader);
 
-
         if (deliverable.getOutputs() != null) {
-          List<CenterDeliverableOutput> outputs = new ArrayList<>();
-          for (CenterDeliverableOutput output : deliverable.getOutputs()) {
+          final List<CenterDeliverableOutput> outputs = new ArrayList<>();
+          for (final CenterDeliverableOutput output : deliverable.getOutputs()) {
 
             if (output.getId() != null) {
-              CenterDeliverableOutput deliverableOutput =
+              final CenterDeliverableOutput deliverableOutput =
                 deliverableOutputService.getDeliverableOutputById(output.getId());
               outputs.add(deliverableOutput);
 
 
             } else {
-              CenterOutput researchOutput = outputService.getResearchOutputById(output.getResearchOutput().getId());
-              CenterDeliverableOutput deliverableOutput = new CenterDeliverableOutput();
+              final CenterOutput researchOutput =
+                outputService.getResearchOutputById(output.getResearchOutput().getId());
+              final CenterDeliverableOutput deliverableOutput = new CenterDeliverableOutput();
               deliverableOutput.setResearchOutput(researchOutput);
               deliverableOutput.setDeliverable(deliverableDB);
               outputs.add(deliverableOutput);
@@ -336,6 +358,7 @@ public class ProjectDeliverableAction extends BaseAction {
         deliverable.setOutputs(
           deliverable.getDeliverableOutputs().stream().filter(o -> o.isActive()).collect(Collectors.toList()));
       }
+
       deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
       projectID = deliverableDB.getProject().getId();
       project = projectService.getCenterProjectById(projectID);
@@ -350,21 +373,22 @@ public class ProjectDeliverableAction extends BaseAction {
 
 
       if (deliverable.getDeliverableType() != null) {
-        Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
+        final Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
 
         deliverableSubTypes = new ArrayList<>(deliverableTypeService.findAll().stream()
-          .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId() == deliverableTypeParentId)
+          .filter(
+            dt -> (dt.getDeliverableType() != null) && (dt.getDeliverableType().getId() == deliverableTypeParentId))
           .collect(Collectors.toList()));
       }
     }
 
     deliverableTypeParent = new ArrayList<>(deliverableTypeService.findAll().stream()
-      .filter(dt -> dt.isActive() && dt.getDeliverableType() == null).collect(Collectors.toList()));
+      .filter(dt -> dt.isActive() && (dt.getDeliverableType() == null)).collect(Collectors.toList()));
 
 
     this.getProgramOutputs();
 
-    String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + "",
+    final String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + "",
       projectID + "", deliverableID + ""};
     this.setBasePermission(this.getText(Permission.CENTER_PROJECT_DEIVERABLE_BASE_PERMISSION, params));
 
@@ -411,19 +435,35 @@ public class ProjectDeliverableAction extends BaseAction {
 
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverableID);
 
+
       deliverableDB.setName(deliverable.getName());
       deliverableDB.setStartDate(deliverable.getStartDate());
       deliverableDB.setEndDate(deliverable.getEndDate());
 
-      if (deliverable.getDeliverableType() != null) {
-        if (deliverable.getDeliverableType().getId() != null) {
-          if (deliverable.getDeliverableType().getId() != -1) {
-            CenterDeliverableType deliverableType =
-              deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
-            deliverableDB.setDeliverableType(deliverableType);
-          }
+      deliverableDB.setCapdevD(deliverable.isCapdevD());
+      if (deliverable.isCapdevD() != null) {
+        if (!deliverable.isCapdevD()) {
+          deliverableDB.setCapdev(null);
         }
       }
+
+      if (deliverable.getCapdev() != null) {
+        if (deliverable.getCapdev().getId() != -1) {
+          CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(deliverable.getCapdev().getId());
+          deliverableDB.setCapdev(capdevDB);
+        } else {
+          deliverableDB.setCapdev(null);
+        }
+      }
+
+      if (deliverable.getDeliverableType() != null) {
+        if (deliverable.getDeliverableType().getId() != -1) {
+          CenterDeliverableType deliverableType =
+            deliverableTypeService.getDeliverableTypeById(deliverable.getDeliverableType().getId());
+          deliverableDB.setDeliverableType(deliverableType);
+        }
+      }
+
 
       deliverableDB = deliverableService.saveDeliverable(deliverableDB);
 
@@ -434,7 +474,8 @@ public class ProjectDeliverableAction extends BaseAction {
       this.saveDocuments(deliverableDB);
       this.saveOutputs(deliverableDB);
 
-      List<String> relationsName = new ArrayList<>();
+
+      final List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.DELIVERABLE_DOCUMENT_RELATION);
       relationsName.add(APConstants.DELIVERABLE_OUTPUTS_RELATION);
       deliverable = deliverableService.getDeliverableById(deliverableID);
@@ -442,20 +483,20 @@ public class ProjectDeliverableAction extends BaseAction {
       deliverable.setModifiedBy(this.getCurrentUser());
       deliverableService.saveDeliverable(deliverable, this.getActionName(), relationsName);
 
-      Path path = this.getAutoSaveFilePath();
+      final Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
 
       // check if there is a url to redirect
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      if ((this.getUrl() == null) || this.getUrl().isEmpty()) {
         // check if there are missing field
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
+          final List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (final String key : keys) {
             this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
           }
         } else {
@@ -475,9 +516,9 @@ public class ProjectDeliverableAction extends BaseAction {
   }
 
   public void saveCrossCuting(CenterDeliverable deliverableDB) {
-    CenterDeliverableCrosscutingTheme crosscutingTheme = deliverable.getDeliverableCrosscutingTheme();
+    final CenterDeliverableCrosscutingTheme crosscutingTheme = deliverable.getDeliverableCrosscutingTheme();
 
-    CenterDeliverableCrosscutingTheme crosscutingThemeSave = deliverableCrosscutingService
+    final CenterDeliverableCrosscutingTheme crosscutingThemeSave = deliverableCrosscutingService
       .getDeliverableCrosscutingThemeById(deliverableDB.getDeliverableCrosscutingTheme().getId());
 
     crosscutingThemeSave
@@ -502,11 +543,11 @@ public class ProjectDeliverableAction extends BaseAction {
 
   public void saveDocuments(CenterDeliverable deliverableDB) {
 
-    if (deliverableDB.getDeliverableDocuments() != null && deliverableDB.getDeliverableDocuments().size() > 0) {
-      List<CenterDeliverableDocument> deliverableDocuments = new ArrayList<>(
+    if ((deliverableDB.getDeliverableDocuments() != null) && (deliverableDB.getDeliverableDocuments().size() > 0)) {
+      final List<CenterDeliverableDocument> deliverableDocuments = new ArrayList<>(
         deliverableDB.getDeliverableDocuments().stream().filter(dd -> dd.isActive()).collect(Collectors.toList()));
 
-      for (CenterDeliverableDocument deliverableDocument : deliverableDocuments) {
+      for (final CenterDeliverableDocument deliverableDocument : deliverableDocuments) {
         if (!deliverable.getDocuments().contains(deliverableDocument)) {
           deliverableDocumentService.deleteDeliverableDocument(deliverableDocument.getId());
         }
@@ -514,10 +555,10 @@ public class ProjectDeliverableAction extends BaseAction {
     }
 
     if (deliverable.getDocuments() != null) {
-      for (CenterDeliverableDocument deliverableDocument : deliverable.getDocuments()) {
+      for (final CenterDeliverableDocument deliverableDocument : deliverable.getDocuments()) {
 
-        if (deliverableDocument.getId() == null || deliverableDocument.getId() == -1) {
-          CenterDeliverableDocument documentSave = new CenterDeliverableDocument();
+        if ((deliverableDocument.getId() == null) || (deliverableDocument.getId() == -1)) {
+          final CenterDeliverableDocument documentSave = new CenterDeliverableDocument();
 
           documentSave.setActive(true);
           documentSave.setCreatedBy(this.getCurrentUser());
@@ -526,7 +567,7 @@ public class ProjectDeliverableAction extends BaseAction {
           documentSave.setModificationJustification("");
           documentSave.setLink(deliverableDocument.getLink());
 
-          CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
+          final CenterDeliverable deliverable = deliverableService.getDeliverableById(deliverableID);
           documentSave.setDeliverable(deliverable);
 
           deliverableDocumentService.saveDeliverableDocument(documentSave);
@@ -534,7 +575,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
         } else {
           boolean hasChanges = false;
-          CenterDeliverableDocument documentPrew =
+          final CenterDeliverableDocument documentPrew =
             deliverableDocumentService.getDeliverableDocumentById(deliverableDocument.getId());
 
           if (!documentPrew.getLink().equals(deliverableDocument.getLink())) {
@@ -556,11 +597,11 @@ public class ProjectDeliverableAction extends BaseAction {
   }
 
   public void saveOutputs(CenterDeliverable deliverableDB) {
-    if (deliverableDB.getDeliverableOutputs() != null && deliverableDB.getDeliverableOutputs().size() > 0) {
-      List<CenterDeliverableOutput> deliverableOutputsPrew = new ArrayList<>(
+    if ((deliverableDB.getDeliverableOutputs() != null) && (deliverableDB.getDeliverableOutputs().size() > 0)) {
+      final List<CenterDeliverableOutput> deliverableOutputsPrew = new ArrayList<>(
         deliverableDB.getDeliverableOutputs().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
-      for (CenterDeliverableOutput deliverableOutput : deliverableOutputsPrew) {
+      for (final CenterDeliverableOutput deliverableOutput : deliverableOutputsPrew) {
         if (!deliverable.getOutputs().contains(deliverableOutput)) {
           deliverableOutputService.deleteDeliverableOutput(deliverableOutput.getId());
         }
@@ -569,9 +610,9 @@ public class ProjectDeliverableAction extends BaseAction {
     }
 
     if (deliverable.getOutputs() != null) {
-      for (CenterDeliverableOutput deliverableOutput : deliverable.getOutputs()) {
-        if (deliverableOutput.getId() == null || deliverableOutput.getId() == -1) {
-          CenterDeliverableOutput deliverableOutputSave = new CenterDeliverableOutput();
+      for (final CenterDeliverableOutput deliverableOutput : deliverable.getOutputs()) {
+        if ((deliverableOutput.getId() == null) || (deliverableOutput.getId() == -1)) {
+          final CenterDeliverableOutput deliverableOutputSave = new CenterDeliverableOutput();
 
           deliverableOutputSave.setActive(true);
           deliverableOutputSave.setCreatedBy(this.getCurrentUser());
@@ -579,7 +620,8 @@ public class ProjectDeliverableAction extends BaseAction {
           deliverableOutputSave.setActiveSince(new Date());
           deliverableOutputSave.setModificationJustification("");
 
-          CenterOutput output = outputService.getResearchOutputById(deliverableOutput.getResearchOutput().getId());
+          final CenterOutput output =
+            outputService.getResearchOutputById(deliverableOutput.getResearchOutput().getId());
           deliverableOutputSave.setResearchOutput(output);
           deliverableOutputSave.setDeliverable(deliverableDB);
 
@@ -594,9 +636,14 @@ public class ProjectDeliverableAction extends BaseAction {
     this.areaID = areaID;
   }
 
+  public void setCapdevs(List<CapacityDevelopment> capdevs) {
+    this.capdevs = capdevs;
+  }
+
   public void setDeliverable(CenterDeliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -610,6 +657,9 @@ public class ProjectDeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+  public void setIs_capdev(String is_capdev) {
+    this.is_capdev = is_capdev;
+  }
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
@@ -639,17 +689,21 @@ public class ProjectDeliverableAction extends BaseAction {
     this.researchPrograms = researchPrograms;
   }
 
+
   public void setSelectedProgram(CenterProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
+
 
   public void setSelectedResearchArea(CenterArea selectedResearchArea) {
     this.selectedResearchArea = selectedResearchArea;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   @Override
   public void validate() {

@@ -41,6 +41,15 @@ public interface ICenterSectionStatusDAO {
   public List<Map<String, Object>> distinctSectionStatus(long programID);
 
   /**
+   * This method gets a list of sectionStatus to verify if the capdev have all the sections
+   * 
+   * @param capDevID - the capdev id
+   * @return List of SectionStatuss or null if the user is invalid or not have roles.
+   */
+  public List<Map<String, Object>> distinctSectionStatusCapDev(long capDevID);
+
+
+  /**
    * This method gets a list of sectionStatus to verify if the project have all the sections
    * 
    * @param projectID - the project id
@@ -79,6 +88,15 @@ public interface ICenterSectionStatusDAO {
    * @return a CenterSectionStatus List Object
    */
   public List<CenterSectionStatus> getSectionStatus(long programId, String sectionName);
+
+  /**
+   * gets a CenterSectionStatus of the one section by a specific research program
+   * 
+   * @param capdevId
+   * @param sectionName
+   * @return a CenterSectionStatus Object
+   */
+  public CenterSectionStatus getSectionStatusByCapdev(long capdevId, String sectionName, int year);
 
   /**
    * gets a CenterSectionStatus of the one section by a specific deliverable
@@ -131,6 +149,16 @@ public interface ICenterSectionStatusDAO {
    */
   public CenterSectionStatus getSectionStatusByProject(long programId, long projectId, String sectionName, int year);
 
+
+  /**
+   * gets a CenterSectionStatus of the one section by a specific supporting document
+   * 
+   * @param deliverableId
+   * @param capDevId
+   * @param sectionName
+   * @return a CenterSectionStatus Object
+   */
+  public CenterSectionStatus getSectionStatusBySupDocs(long deliverableId, long capDevId, String sectionName, int year);
 
   /**
    * This method gets a list of sectionStatuss belongs of the user

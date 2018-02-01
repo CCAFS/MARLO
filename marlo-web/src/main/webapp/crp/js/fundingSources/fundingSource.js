@@ -1,5 +1,5 @@
-var allowExtensionDate, dateFormat, from, to, extension;
-var W1W2, ON_GOING;
+var dateFormat, from, to, extension;
+var W1W2, ON_GOING, EXTENDED_STATUS;
 var $fundingType;
 $(document).ready(init);
 
@@ -8,11 +8,9 @@ function init() {
   // Setting constants
   W1W2 = 1;
   ON_GOING = 2;
+  EXTENDED_STATUS = 4;
 
   $fundingType = $(".fundingType");
-
-  // Check if (crp_funding_source_extension_date) parameter is true
-  allowExtensionDate = $('.allowExtensionDate').text() === "true";
 
   // Set Dateformat
   dateFormat = "yy-mm-dd";
@@ -83,6 +81,9 @@ function init() {
     option.remove();
     $(this).trigger("change.select2");
   });
+
+  // On Change agreementStatus
+  $('.agreementStatus').on('change', onChangeStatus);
 
   // Remove partner
   $(".removeLeadPartner").on("click", removeLeadPartner);
@@ -241,34 +242,29 @@ function keyupBudgetYear() {
 }
 
 /**
- * Check Agreement status
+ * Event on Change the funding type (W1/W2, W3, Bilateral, CenterFunds)
  * 
  * @param {number} typeID - Funding budget type
  */
 function onChangeFundingType(typeID) {
-  // Change Agreement Status when is (W1W2 Type => 1)
-  var $agreementStatus = $('select.agreementStatus');
-  var onlyOngoingStatus = $agreementStatus.hasClass('onlyOngoing');
-  // 3 => Concept Note/Pipeline
-  // 4 => Informally Confirmed
-  var $options = $agreementStatus.find("option[value='3'], option[value='4']");
-  if((typeID == W1W2) || onlyOngoingStatus) {
-    $agreementStatus.val(ON_GOING); // On-going
-    $options.remove();
-  } else {
-    if($options.length == 0) {
-      $agreementStatus.addOption("3", "Concept Note/Pipeline");
-      $agreementStatus.addOption("4", "Informally Confirmed");
-    }
-  }
-  $agreementStatus.select2("destroy");
-  $agreementStatus.select2();
-
   // Check W1/W2 - Tag
   if(typeID == W1W2) {
     $('.w1w2-tag').show();
   } else {
     $('.w1w2-tag').hide();
+  }
+}
+
+/**
+ * Event on change Agreement status
+ */
+function onChangeStatus() {
+  if(this.value == EXTENDED_STATUS) {
+    $('.extensionDateBlock').show();
+    $('.endDateBlock .dateLabel').addClass('disabled');
+  } else {
+    $('.extensionDateBlock').hide();
+    $('.endDateBlock .dateLabel').removeClass('disabled');
   }
 }
 
@@ -408,10 +404,8 @@ function checkLeadPartnerItems(block) {
   var CIAT_ID = 46;
   if($('input.fId[value="' + CIAT_ID + '"]').exists()) {
     $('.buttons-field, .financeChannel, .extensionDateBlock').show();
-    allowExtensionDate = true;
   } else {
     $('.buttons-field, .financeChannel, .extensionDateBlock').hide();
-    allowExtensionDate = false;
     if(isSynced) {
       unSyncFundingSource();
     }
@@ -643,9 +637,6 @@ function settingDate(start,end,extensionDate) {
         $(this).datepicker("hide");
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
-          if(allowExtensionDate) {
-            // $(extensionDate).datepicker("option", "minDate", selectedDate);
-          }
         }
         refreshYears();
       }
@@ -699,7 +690,8 @@ function settingDate(start,end,extensionDate) {
   $('.dateLabel').on('click', function() {
     var $dateInput = $(this).parent().find('input');
     var $dateLabel = $(this);
-    if(!isSynced) {
+    var isEnable = !($dateLabel.hasClass('disabled'));
+    if(isEnable && !isSynced) {
       $dateInput.datepicker("show");
 
       // Set a Date if the input is empty
@@ -774,8 +766,10 @@ function budgetsConflicts(lowEnd,highEnd) {
 function refreshYears() {
   var startYear, endYear, years;
 
+  console.log(from.val());
   startYear = (from.val().split('-')[0]) || currentCycleYear;
-  if(allowExtensionDate) {
+
+  if($('.agreementStatus').val() == EXTENDED_STATUS) {
     endYear = (extension.val().split('-')[0]) || (to.val().split('-')[0]) || startYear;
   } else {
     endYear = (to.val().split('-')[0]) || startYear;

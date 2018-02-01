@@ -227,8 +227,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/deliverablesReporting-Annualization.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/ReportingDeliverables.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -329,47 +329,45 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag"},
+        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
+        "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
       // get Reporting deliverables
-      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream()
-        .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-          && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
-          && d.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin()
-              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-            .collect(Collectors.toList()).size() > 0
-          && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
-          && ((d.getDeliverableInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
-              || (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo().getNewExpectedYear() != null
-                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
-            || (d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
-                || (d.getDeliverableInfo().getNewExpectedYear() != null
-                  && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
-          && (d.getDeliverableInfo().getStatus().intValue() == Integer
+      List<Deliverable> deliverables = new ArrayList<>(deliverableManager.findAll().stream().filter(d -> d.isActive()
+        && d.getProject() != null && d.getProject().isActive()
+        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && d.getProject().getProjectInfo().getReporting() != null && d.getProject().getProjectInfo().getReporting()
+        && d.getProject().getGlobalUnitProjects().stream()
+          .filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          .collect(Collectors.toList()).size() > 0
+        && d.getDeliverableInfo(this.getSelectedPhase()) != null && d.getDeliverableInfo().getStatus() != null
+        && ((d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && (d.getDeliverableInfo().getYear() >= this.getSelectedYear()
+            || (d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear().intValue() >= this.getSelectedYear())))
+          || (d.getDeliverableInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            && (d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))
+          || (d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              || (d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear().intValue() == this.getSelectedYear()))))
+        && (d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getDeliverableInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getDeliverableInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables.sort((p1, p2) -> p1.getDeliverableInfo().isRequieriedReporting(this.getSelectedYear())
@@ -386,7 +384,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         // System.out.println("#" + i);
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Integer delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -406,6 +404,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             projectTitle = deliverable.getProject().getProjectInfo().getTitle();
           }
         }
+        Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
 
 
         if (deliverable.getDeliverableInfo().getDeliverableType() != null) {
@@ -1098,7 +1097,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creatorAuthors, dataSharing,
           qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restrictedAccess,
           delivLicenseModifications, volume, issue, pages, journal, journalIndicator, acknowledge, flContrib, projectID,
-          projectTitle, flagships, regions, othersResponsibles, newExceptedFlag});
+          projectTitle, flagships, regions, othersResponsibles, newExceptedFlag, phaseID});
       }
     }
     return model;
@@ -1111,12 +1110,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "flagships", "regions", "added_by"},
+        "fl_contrib", "flagships", "regions", "added_by", "phaseID"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Long.class},
       0);
 
 
@@ -1141,8 +1140,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null;
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
+        Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
 
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Boolean showFAIR = false;
         Boolean showPublication = false;
 
@@ -1516,11 +1516,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             && deliverable.getDeliverablePublicationMetadatas().stream()
               .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
               .collect(Collectors.toList()).get(0) != null) {
-            DeliverablePublicationMetadata deliverablePublicationMetadata =
-              deliverable.getDeliverablePublicationMetadatas().stream()
-                .filter(
-                  dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
-                .collect(Collectors.toList()).get(0);
+            DeliverablePublicationMetadata deliverablePublicationMetadata = deliverable
+              .getDeliverablePublicationMetadatas().stream()
+              .filter(dpm -> dpm.isActive() && dpm.getPhase() != null && dpm.getPhase().equals(this.getSelectedPhase()))
+              .collect(Collectors.toList()).get(0);
             if (deliverablePublicationMetadata.getVolume() != null
               && !deliverablePublicationMetadata.getVolume().trim().isEmpty()) {
               volume = deliverablePublicationMetadata.getVolume();
@@ -1630,7 +1629,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
-          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy});
+          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID});
       }
     }
     return model;

@@ -93,8 +93,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/institutions-Annualization.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/Institutions.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       Number idParam = this.getLoggedCrp().getId();
       // Get datetime

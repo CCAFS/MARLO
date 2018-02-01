@@ -2968,7 +2968,7 @@ p.login-description{
 }
 
 #newProject{
-  cursor: pointer;
+  /* cursor: pointer; */
   background-image: url(../../global/images/decision-tree-1.png);
 }
 #updatePlanning{
@@ -6777,6 +6777,11 @@ img#crpSelectedImage {
   line-height: 0.95em;
   text-align: left;
   background: url(../../global/images/calendar.png) no-repeat scroll 99% 2px;
+}
+
+p.dateLabel.fieldError {
+  border-color: #F52626 !important;
+  color: #F52626 !important;
 }
 
 .dateLabel.disabled {
