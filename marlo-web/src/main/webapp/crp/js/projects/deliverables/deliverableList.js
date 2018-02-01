@@ -20,7 +20,7 @@ $(document).ready(function() {
       },
       "order": [
         [
-            3, 'asc'
+            3, 'desc'
         ]
       ],
       aoColumnDefs: [
