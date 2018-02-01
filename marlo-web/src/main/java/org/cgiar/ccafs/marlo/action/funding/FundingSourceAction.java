@@ -407,7 +407,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   public String getStudyFileUrlPath(String fsId) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + fsId + File.separator
+    return config.getFundingSourceFolder(this.getCrpSession()) + File.separator + fundingSourceID + File.separator
       + "fundingSourceFilesResearch" + File.separator;
   }
 
@@ -524,8 +524,8 @@ public class FundingSourceAction extends BaseAction {
         if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
           if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
             if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
-              fundingSource.getFundingSourceInfo()
-                .setFile(fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
             }
           }
         }
@@ -588,6 +588,15 @@ public class FundingSourceAction extends BaseAction {
             && pb.getPhase().equals(this.getActualPhase())
             && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
+
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
+          }
+        }
 
         /*
          * Funding source Locations
