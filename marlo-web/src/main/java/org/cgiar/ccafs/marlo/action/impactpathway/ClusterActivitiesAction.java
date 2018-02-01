@@ -136,6 +136,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpProgram selectedProgram;
   private String transaction;
 
+  private List<User> usersToActive;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -315,9 +316,10 @@ public class ClusterActivitiesAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
 
+      usersToActive.add(user);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -745,7 +747,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("canEdit")) {
-
+      usersToActive = new ArrayList<>();
       /*
        * Removing outcomes
        */
@@ -958,7 +960,10 @@ public class ClusterActivitiesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
-
+      for (User user : usersToActive) {
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+      }
 
       Path path = this.getAutoSaveFilePath();
 

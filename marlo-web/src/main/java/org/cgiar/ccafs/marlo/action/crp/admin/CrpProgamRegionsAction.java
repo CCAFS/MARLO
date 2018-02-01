@@ -131,6 +131,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   // Util
   private SendMailS sendMail;
+  private List<User> usersToActive;
 
 
   @Inject
@@ -374,9 +375,10 @@ public class CrpProgamRegionsAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
 
+      // userManager.saveUser(user, this.getCurrentUser());
+      usersToActive.add(user);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -664,7 +666,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-
+      usersToActive = new ArrayList<>();
       List<CrpProgram> rgProgramsRewiev =
         crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
       // Removing crp flagship program type
@@ -871,6 +873,10 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       }
       this.programManagerData();
+      for (User user : usersToActive) {
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+      }
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
 

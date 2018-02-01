@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
@@ -97,6 +98,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
   private Role slRole;
   // Util
   private SendMailS sendMail;
+  private List<User> usersToActive;
 
   @Inject
   public CrpSiteIntegrationAction(APConfig config, GlobalUnitManager crpManager, LocElementManager locElementManager,
@@ -238,8 +240,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
+      usersToActive.add(user);
 
 
       // Send UserManual.pdf
@@ -349,11 +352,14 @@ public class CrpSiteIntegrationAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("*")) {
-
+      usersToActive = new ArrayList<>();
       this.siteIntegrationPreviusData();
       this.siteIntegrationNewData();
       this.loadData();
-
+      for (User user : usersToActive) {
+        user.setActive(true);
+        userManager.saveUser(user, this.getCurrentUser());
+      }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
