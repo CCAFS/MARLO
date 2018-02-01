@@ -138,14 +138,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
           }
           if (project.getProjecInfoPhase(baseAction.getActualPhase()) != null) {
-            if (baseAction.isPlanningActive()) {
-              if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus() != null
-                && project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().intValue() != Integer
-                  .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-                canEdit = false;
-              }
-
-            }
 
 
             if (!project.getProjecInfoPhase(baseAction.getActualPhase()).isProjectEditLeader()
