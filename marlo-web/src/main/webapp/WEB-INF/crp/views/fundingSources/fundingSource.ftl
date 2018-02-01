@@ -249,6 +249,7 @@
             name="fundingSource.fundingSourceInfo.fileResearch.id" 
             label="fundingSource.uploadHumanSubjects" 
             dataUrl="${baseUrl}/uploadFundingSourceResearch.do" 
+            path="${action.getPath((fundingSource.fundingSourceInfo.id?string)!-1)}"
             isEditable=editable
             required=true
           /]
