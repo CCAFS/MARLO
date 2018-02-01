@@ -329,14 +329,15 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing", "qualityAssurance",
         "dataDictionary", "tools", "F", "A", "I", "R", "disseminated", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag"},
+        "fl_contrib", "project_ID", "project_title", "flagships", "regions", "others_responsibles", "newExceptedFlag",
+        "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Integer.class, String.class,
         String.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, Long.class},
       0);
     if (!deliverableManager.findAll().isEmpty()) {
 
@@ -383,7 +384,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         // System.out.println("#" + i);
         String delivType = null;
         String delivSubType = null;
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Integer delivYear = null;
         String keyOutput = "";
         String leader = null;
@@ -403,6 +404,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             projectTitle = deliverable.getProject().getProjectInfo().getTitle();
           }
         }
+        Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
 
 
         if (deliverable.getDeliverableInfo().getDeliverableType() != null) {
@@ -1095,7 +1097,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creatorAuthors, dataSharing,
           qualityAssurance, dataDictionary, tools, F, A, I, R, disseminated, restrictedAccess,
           delivLicenseModifications, volume, issue, pages, journal, journalIndicator, acknowledge, flContrib, projectID,
-          projectTitle, flagships, regions, othersResponsibles, newExceptedFlag});
+          projectTitle, flagships, regions, othersResponsibles, newExceptedFlag, phaseID});
       }
     }
     return model;
@@ -1108,12 +1110,12 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata", "keywordsMetadata",
         "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "F", "A", "I", "R", "restricted_access",
         "deliv_license_modifications", "volume", "issue", "pages", "journal", "journal_indicators", "acknowledge",
-        "fl_contrib", "flagships", "regions", "added_by"},
+        "fl_contrib", "flagships", "regions", "added_by", "phaseID"},
       new Class[] {Long.class, String.class, String.class, Integer.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Long.class},
       0);
 
 
@@ -1138,8 +1140,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           journalIndicators = "", acknowledge = null, flContrib = "", flagships = null, regions = null, addedBy = null;
         publicationId = deliverable.getId();
         title = deliverable.getDeliverableInfo().getTitle();
+        Long phaseID = deliverable.getDeliverableInfo().getPhase().getId();
 
-        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getActualPhase());
+        String delivStatus = deliverable.getDeliverableInfo().getStatusName(this.getSelectedPhase());
         Boolean showFAIR = false;
         Boolean showPublication = false;
 
@@ -1626,7 +1629,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           delivDisseminationChannel, delivDisseminationUrl, delivOpenAccess, delivLicense, titleMetadata,
           descriptionMetadata, dateMetadata, languageMetadata, countryMetadata, keywordsMetadata, citationMetadata,
           HandleMetadata, DOIMetadata, creatorAuthors, F, A, I, R, restrictedAccess, delivLicenseModifications, volume,
-          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy});
+          issue, pages, journal, journalIndicators, acknowledge, flContrib, flagships, regions, addedBy, phaseID});
       }
     }
     return model;

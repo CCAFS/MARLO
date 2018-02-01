@@ -414,10 +414,10 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
         "genderPeW1W2", "genderW1W2", "budgetW3", "genderPeW3", "genderW3", "budgetBilateral", "genderPeBilateral",
         "genderBilateral", "budgetCenter", "genderPeCenter", "genderCenter", "budgetW1W2Co", "genderPeW1W2Co",
-        "genderW1W2Co"},
+        "genderW1W2Co", "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, Double.class,
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
-        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Long.class},
       0);
 
     List<Project> projects = new ArrayList<>();
@@ -451,7 +451,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
             && pp.getPhase() != null && pp.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList())) {
           String projectTitle = null, ppaPartner = null, flagships = "", coas = "", regions = "";
-          Long projectId = null;
+          Long projectId = null, phaseID = null;
           Double budgetW1W2 = null, genderPeW1W2 = null, genderW1W2 = null, budgetW3 = null, genderPeW3 = null,
             genderW3 = null, budgetBilateral = null, genderPeBilateral = null, genderBilateral = null,
             budgetCenter = null, genderPeCenter = null, genderCenter = null, budgetW1W2Co = null, genderPeW1W2Co = null,
@@ -459,6 +459,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
           projectId = project.getId();
           projectTitle = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+          phaseID = this.getSelectedPhase().getId();
           ppaPartner = pp.getComposedName();
 
           // get Flagships related to the project sorted by acronym
@@ -646,9 +647,10 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
           allProjectsBudgets.put(project, projectBudgetList);
           // End projects fill
 
-          model.addRow(new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2,
-            genderPeW1W2, genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral,
-            genderBilateral, budgetCenter, genderPeCenter, genderCenter, budgetW1W2Co, genderPeW1W2Co, genderW1W2Co});
+          model.addRow(
+            new Object[] {projectId, projectTitle, ppaPartner, flagships, coas, regions, budgetW1W2, genderPeW1W2,
+              genderW1W2, budgetW3, genderPeW3, genderW3, budgetBilateral, genderPeBilateral, genderBilateral,
+              budgetCenter, genderPeCenter, genderCenter, budgetW1W2Co, genderPeW1W2Co, genderW1W2Co, phaseID});
         }
       }
     }
@@ -672,12 +674,13 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectID", "projectTitle", "budgetw1w2", "budgetW1W2Co", "totalw3bilateralcenter",
-        "genderBudgetW1W2", "genderBudgetW1W2Co", "totalw1w2Gender", "totalw3Gender", "totalAllGender"},
+        "genderBudgetW1W2", "genderBudgetW1W2Co", "totalw1w2Gender", "totalw3Gender", "totalAllGender", "phaseID"},
       new Class[] {String.class, String.class, Double.class, Double.class, Double.class, Double.class, Double.class,
-        Double.class, Double.class, Double.class},
+        Double.class, Double.class, Double.class, Long.class},
       0);
     for (Project project : allProjectsBudgets.keySet()) {
       String projectID = project.getId().toString();
+      Long phaseID = this.getSelectedPhase().getId();
       String projectTitle = null;
       if (project.getProjectInfo().getTitle() != null && !project.getProjectInfo().getTitle().trim().isEmpty()) {
         projectTitle = project.getProjectInfo().getTitle();
@@ -693,7 +696,7 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       Double totalAllGender = totalw1w2Gender + totalw3Gender;
 
       model.addRow(new Object[] {projectID, projectTitle, budgetw1w2, budgetW1W2Co, totalw3bilateralcenter,
-        genderBudgetW1W2, genderBudgetW1W2Co, totalw1w2Gender, totalw3Gender, totalAllGender});
+        genderBudgetW1W2, genderBudgetW1W2Co, totalw1w2Gender, totalw3Gender, totalAllGender, phaseID});
     }
     return model;
   }

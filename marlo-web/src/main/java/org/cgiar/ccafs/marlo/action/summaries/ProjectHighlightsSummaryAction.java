@@ -293,11 +293,12 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl", "imageName"},
+        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl", "imageName",
+        "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class,
-        String.class},
+        String.class, Long.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
@@ -455,9 +456,10 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           imageName = "";
         }
       }
+      Long phaseID = this.getSelectedPhase().getId();
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth, projectId, imageurl, imageName});
+        introduction, results, partners, links, width, heigth, projectId, imageurl, imageName, phaseID});
     }
     return model;
   }
