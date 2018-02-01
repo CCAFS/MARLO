@@ -95,8 +95,12 @@ public class UploadFundingSourceFileResearchAction extends BaseAction {
 
 
   private String getFundingSourceRelativePath() {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFilesResearch"
+    String path = config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFilesResearch"
       + File.separator;
+    // config.getFundingSourceFolder(this.getCrpSession()) + File.separator + "fundingSourceFilesResearch"+
+    // File.separator;
+
+    return path;
   }
 
 
