@@ -22,6 +22,9 @@
         <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
             <column name="project_id" />
         </many-to-one>
+         <many-to-one name="capacityDevelopment" class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
+            <column name="capdev_id" />
+        </many-to-one>
         <property name="dateTime" type="timestamp">
             <column name="date_time" length="19" not-null="true">
                 <comment>The date time when the report was made.</comment>

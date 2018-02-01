@@ -72,8 +72,8 @@ public class MOGSynthesisReportingSummaryAction extends BaseSummariesAction impl
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/MOGSynthesis-Annualization.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/MOGSynthesis.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime

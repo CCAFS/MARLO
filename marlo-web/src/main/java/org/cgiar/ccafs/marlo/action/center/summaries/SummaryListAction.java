@@ -19,9 +19,11 @@ package org.cgiar.ccafs.marlo.action.center.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -46,20 +48,24 @@ public class SummaryListAction extends BaseAction {
 
   private List<CenterProgram> programs;
 
+  private List<CenterArea> researchAreas;
+
   private GlobalUnit loggedCenter;
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
   private ICenterProjectManager projectService;
+  private ICenterAreaManager researchAreaService;
 
   @Inject
   public SummaryListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
-    ICenterProjectManager projectService) {
+    ICenterProjectManager projectService, ICenterAreaManager researchAreaService) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
     this.projectService = projectService;
+    this.researchAreaService = researchAreaService;
   }
 
   public List<CenterProject> getAllProjects() {
@@ -70,6 +76,11 @@ public class SummaryListAction extends BaseAction {
   public List<CenterProgram> getPrograms() {
     return programs;
   }
+
+  public List<CenterArea> getResearchAreas() {
+    return researchAreas;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -86,16 +97,24 @@ public class SummaryListAction extends BaseAction {
         new ArrayList<>(programService.findAll().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
     }
 
+    researchAreas = new ArrayList<CenterArea>(
+      researchAreaService.findAll().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+
 
   }
-
 
   public void setAllProjects(List<CenterProject> allProjects) {
     this.allProjects = allProjects;
   }
 
+
   public void setPrograms(List<CenterProgram> programs) {
     this.programs = programs;
+  }
+
+
+  public void setResearchAreas(List<CenterArea> researchAreas) {
+    this.researchAreas = researchAreas;
   }
 
 }
