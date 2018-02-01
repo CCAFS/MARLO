@@ -59,8 +59,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private User createdBy;
 
 
-
-
   @Expose
   private boolean isActive;
 
@@ -77,7 +75,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date createDate;
-  
+
   private String customID;
 
   @Expose
@@ -129,8 +127,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
-
-
 
 
   private List<Activity> closedProjectActivities;
@@ -237,7 +233,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private List<ProjectOutcomePandr> outcomesPandr;
-  
+
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
 
 
@@ -277,11 +273,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
 
     Project other = (Project) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -1144,7 +1140,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
+  public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
     this.expectedStudies = expectedStudies;
   }
 
