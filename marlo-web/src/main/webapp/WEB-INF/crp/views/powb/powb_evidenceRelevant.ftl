@@ -43,17 +43,29 @@
             [#-- Change display=true for display=PMU to show just for PMU --]
             [@customForm.textArea name="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" editable=editable /]
           </div>
+          
+          [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
           <div class="form-group evidence-panel">
-            [#-- Table Title --]
             <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.table.title" /]</h4>
             <hr />
-            [@tableBMacro/]
+            [@tableBMacro /]
           </div>
+          [#-- Planned Studies for Relevant Outcomes and Impacts --]
           <div class="form-group evidence-panel">
-            [#-- Planned Studies Title --]
-            <div class="deliverables-table-header">
-              <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
-              <span class=".flagship-planned-studies-button" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
+            <div class="evidence-plannedStudies-header row">
+              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
+              <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
+            </div>
+            [#-- Project planned studies (Modal) --]
+            <div class="modal fade flagship-planned-studies-modal" tabindex="-1" role="dialog" aria-labelledby="flagship-planned-studies-modal" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h3 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</h3>
+                  <hr />
+                  [@tableBMacro flagshipPlannedStudies=true/]
+                </div>
+              </div>
             </div>
             [@plannedStudiesMacro /]
             [#if canEdit && editable]
@@ -73,13 +85,76 @@
 </section>
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
+[#macro tableBMacro flagshipPlannedStudies=false]
+  <table class="table-plannedStudies" id="table-plannedStudies">
+    <thead>
+      <tr class="subHeader">
+        [#if !flagshipPlannedStudies]
+          <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
+        [/#if]
+        <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
+        [#if flagshipPlannedStudies]
+          <th id="tb-projectId" width="11%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
+        [/#if]
+        <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
+        <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
+        <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.table.comments" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#-- if deliverables?has_content 1--]
+      [#-- list deliverables as deliverable 2--]
+        <tr>
+          [#-- FP --]
+          [#if !flagshipPlannedStudies]
+          <td class="tb-fp text-center">
+            <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
+              [#-- F${deliverable.id} --]
+              F123
+            </a>
+          </td>
+          [/#if]
+          [#-- Planned topic of study --]
+          <td class="left">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          </td>
+          [#if flagshipPlannedStudies]
+          <td class="tb-projectId text-center">
+            <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
+              [#-- F${deliverable.id} --]
+              P321
+            </a>
+          </td>
+          [/#if]
+          [#-- Geographic scope --]
+          <td >
+            Sub-national: Single district or municipality
+          </td>
+          [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
+          <td class="relevantSubIDO">
+            <ul>
+              <li>[@utilities.wordCutter string="Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" maxPos=50 /]</li>
+              <li>[@utilities.wordCutter string="# of more people, of which 50% are women, without deficiencies of one or more of the following essentials micronutrients: iron, zinc, iodine, vitamin A, folate and vitamin B12" maxPos=50 /]</li>
+            </ul>
+          </td>
+          [#-- Comments --]
+          <td class="comments"> 
+            [@utilities.wordCutter string="Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit." maxPos=50 /]
+          </td>
+        </tr>
+      [#-- [/#list] 2--]
+      [#-- [/#if] 1--]
+    </tbody>
+  </table>
+[/#macro]
+
 [#macro plannedStudiesMacro isEditable=true]
   <div id="plannedStudies" class="plannedStudies borderBox form-group" style="position:relative; display:block">
     
     [#-- Index --]
     <div class="leftHead"><span class="index">1</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removePlannedStudies removeElement" title="Remove Planned Studie"></div>[/#if]
+    [#if isEditable]<div class="removePlannedStudies removeElement" title="Remove Planned Study"></div>[/#if]
     [#-- Hidden inputs --]
     [#-- <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> --]
     <br />
@@ -113,52 +188,4 @@
     <div class="clearfix"></div>
     
   </div>
-[/#macro]
-
-[#macro tableBMacro]
-  <table class="table-plannedStudies" id="table-plannedStudies">
-    <thead>
-      <tr class="subHeader">
-        <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
-        <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
-        <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
-        <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
-        <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.table.comments" /]</th>
-      </tr>
-    </thead>
-    <tbody>
-    [#-- if deliverables?has_content 1--]
-      [#-- list deliverables as deliverable 2--]
-        <tr>
-          [#-- FP --]
-          <td class="tb-fp text-center">
-            <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
-              [#-- F${deliverable.id} --]
-              F123
-            </a>
-          </td>
-          [#-- Planned topic of study --]
-          <td class="left">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </td>
-          [#-- Geographic scope --]
-          <td >
-            Sub-national: Single district or municipality
-          </td>
-          [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
-          <td class="">
-            <ul>
-              <li>[@utilities.wordCutter string="Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" maxPos=50 /]</li>
-              <li>[@utilities.wordCutter string="# of more people, of which 50% are women, without deficiencies of one or more of the following essentials micronutrients: iron, zinc, iodine, vitamin A, folate and vitamin B12" maxPos=50 /]</li>
-            </ul>
-          </td>
-          [#-- Comments --]
-          <td class="fair text-center"> 
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </td>
-        </tr>
-      [#-- [/#list] 2--]
-      [#-- [/#if] 1--]
-    </tbody>
-  </table>
 [/#macro]
