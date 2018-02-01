@@ -76,29 +76,6 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
-		<action name="{crp}/OutcomeSynthesisReportingSummary"
-			class="org.cgiar.ccafs.marlo.action.summaries.OutcomeSynthesisReportingSummaryAction">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">${contentType}</param>
-				       
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
-
-		<action name="{crp}/MOGSynthesisReportingSummary"
-			class="org.cgiar.ccafs.marlo.action.summaries.MOGSynthesisReportingSummaryAction">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">${contentType}</param>
-				       
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
 
 		<action name="{crp}/OutcomesContributionsSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.OutcomesContributionsSummaryAction">

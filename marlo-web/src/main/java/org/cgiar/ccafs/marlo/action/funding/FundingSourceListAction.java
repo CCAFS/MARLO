@@ -110,7 +110,7 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
-
+    fundingSource.setCreateDate(new Date());
     // project.setCrp(loggedCrp);
     fundingSource = fundingSourceManager.saveFundingSource(fundingSource);
 
@@ -219,12 +219,12 @@ public class FundingSourceListAction extends BaseAction {
     return closedProjects;
   }
 
-public Double getFundingSourceBudgetPerPhase(FundingSource fundingSource) {
+  public Double getFundingSourceBudgetPerPhase(FundingSource fundingSource) {
     List<FundingSourceBudget> fundingSourceBudgets =
       fundingSource.getFundingSourceBudgets().stream()
         .filter(fsb -> fsb.isActive() && fsb.getPhase() != null && fsb.getPhase().equals(this.getActualPhase())
           && fsb.getYear() != null && fsb.getYear().equals(this.getActualPhase().getYear()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (fundingSourceBudgets != null && fundingSourceBudgets.size() > 0) {
       FundingSourceBudget fundingSourceBudget = fundingSourceBudgets.get(0);
       if (fundingSourceBudget != null) {
@@ -287,8 +287,8 @@ public Double getFundingSourceBudgetPerPhase(FundingSource fundingSource) {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList()));
       } else {
         /*
@@ -305,8 +305,8 @@ public Double getFundingSourceBudgetPerPhase(FundingSource fundingSource) {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                  .parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList());
 
       }

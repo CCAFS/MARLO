@@ -1,82 +1,113 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated Sep 8, 2017 2:12:52 PM by Hibernate Tools 5.2.5.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping >
-    <class  name="org.cgiar.ccafs.marlo.data.model.Agreement" optimistic-lock="version"  table="agreements">
-        <id name="id" type="string">
-            <column length="20" name="id"/>
-            <generator class="assigned"/>
-        </id>
-        <property generated="never" lazy="false" name="description" optimistic-lock="true" type="string" unique="false">
-            <column name="description" not-null="true"/>
-        </property>
-        <property generated="never" lazy="false" name="shortTitle" optimistic-lock="true" type="string" unique="false">
-            <column name="short_title"/>
-        </property>
-        <property generated="never" lazy="false" name="objectives" optimistic-lock="true" type="string" unique="false">
-            <column name="objectives"/>
-        </property>
-        <property generated="never" lazy="false" name="donorId" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="donor_id"/>
-        </property>
-        <property generated="never" lazy="false" name="donor" optimistic-lock="true" type="string" unique="false">
-            <column name="donor"/>
-        </property>
-        <property generated="never" lazy="false" name="originalDonorId" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="original_donor_id"/>
-        </property>
-        <property generated="never" lazy="false" name="originalDonor" optimistic-lock="true" type="string" unique="false">
-            <column name="original_donor"/>
-        </property>
-        <property generated="never" lazy="false" name="researchId" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="research_id"/>
-        </property>
-        <property generated="never" lazy="false" name="reasearchName" optimistic-lock="true" type="string" unique="false">
-            <column name="reasearch_name"/>
-        </property>
-        <property generated="never" lazy="false" name="grantAmmount" optimistic-lock="true" type="string" unique="false">
-            <column name="grant_ammount"/>
-        </property>
-        <property generated="never" lazy="false" name="startDate" optimistic-lock="true" type="date" unique="false">
-            <column length="10" name="start_date"/>
-        </property>
-        <property generated="never" lazy="false" name="endDate" optimistic-lock="true" type="date" unique="false">
-            <column length="10" name="end_date"/>
-        </property>
-        <property generated="never" lazy="false" name="extensionDate" optimistic-lock="true" type="date" unique="false">
-            <column length="10" name="extension_date"/>
-        </property>
-        <property generated="never" lazy="false" name="contractStatus" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="contract_status"/>
-        </property>
-        <property generated="never" lazy="false" name="fundingType" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="funding_type"/>
-        </property>
-        <property generated="never" lazy="false" name="syncDate" optimistic-lock="true" type="timestamp" unique="false">
-            <column length="19" name="sync_date"/>
-        </property>
-        <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="plasAgreements" optimistic-lock="true" sort="unsorted" table="plas_agreement">
-            <key on-delete="noaction">
-                <column length="20" name="agreement_id" not-null="true"/>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PlaAgreement" embed-xml="true" not-found="exception"/>
-        </set>
-        <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="countriesAgreements" optimistic-lock="true" sort="unsorted" table="countries_agreement">
-            <key on-delete="noaction">
-                <column length="20" name="agreement_id" not-null="true"/>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CountryAgreement" embed-xml="true" not-found="exception"/>
-        </set>
-        <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="fundingSourcesAgreementses" optimistic-lock="true" sort="unsorted" table="funding_sources_agreements">
-            <key on-delete="noaction">
-                <column length="20" name="agreement_id" not-null="true"/>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSourceAgreement" embed-xml="true" not-found="exception"/>
-        </set>
-        <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="crpsAgreements" optimistic-lock="true" sort="unsorted" table="crps_agreement">
-            <key on-delete="noaction">
-                <column length="20" name="agreement_id" not-null="true"/>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpAgreement" embed-xml="true" not-found="exception"/>
-        </set>
-    </class>
+<!-- Generated Sep 8, 2017 2:12:52 PM by Hibernate Tools 5.2.5.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.Agreement"
+		optimistic-lock="version" table="agreements">
+		<id name="id" type="string">
+			<column length="20" name="id" />
+			<generator class="assigned" />
+		</id>
+		<property generated="never" lazy="false" name="description"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="description" not-null="true" />
+		</property>
+		<property generated="never" lazy="false" name="shortTitle"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="short_title" />
+		</property>
+		<property generated="never" lazy="false" name="objectives"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="objectives" />
+		</property>
+		<property generated="never" lazy="false" name="donorId"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="50" name="donor_id" />
+		</property>
+		<property generated="never" lazy="false" name="donor"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="donor" />
+		</property>
+		<property generated="never" lazy="false" name="originalDonorId"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="50" name="original_donor_id" />
+		</property>
+		<property generated="never" lazy="false" name="originalDonor"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="original_donor" />
+		</property>
+		<property generated="never" lazy="false" name="researchId"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="50" name="research_id" />
+		</property>
+		<property generated="never" lazy="false" name="reasearchName"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="reasearch_name" />
+		</property>
+		<property generated="never" lazy="false" name="grantAmmount"
+			optimistic-lock="true" type="string" unique="false">
+			<column name="grant_ammount" />
+		</property>
+		<property generated="never" lazy="false" name="startDate"
+			optimistic-lock="true" type="date" unique="false">
+			<column length="10" name="start_date" />
+		</property>
+		<property generated="never" lazy="false" name="endDate"
+			optimistic-lock="true" type="date" unique="false">
+			<column length="10" name="end_date" />
+		</property>
+		<property generated="never" lazy="false" name="extensionDate"
+			optimistic-lock="true" type="date" unique="false">
+			<column length="10" name="extension_date" />
+		</property>
+		<property generated="never" lazy="false" name="contractStatus"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="50" name="contract_status" />
+		</property>
+		<property generated="never" lazy="false" name="fundingType"
+			optimistic-lock="true" type="string" unique="false">
+			<column length="50" name="funding_type" />
+		</property>
+		<property generated="never" lazy="false" name="syncDate"
+			optimistic-lock="true" type="timestamp" unique="false">
+			<column length="19" name="sync_date" />
+		</property>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="plasAgreements" optimistic-lock="true" sort="unsorted"
+			table="plas_agreement">
+			<key on-delete="noaction">
+				<column length="20" name="agreement_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PlaAgreement"
+				embed-xml="true" not-found="exception" />
+		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="countriesAgreements" optimistic-lock="true"
+			sort="unsorted" table="countries_agreement">
+			<key on-delete="noaction">
+				<column length="20" name="agreement_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CountryAgreement"
+				embed-xml="true" not-found="exception" />
+		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="fundingSourcesAgreementses" optimistic-lock="true"
+			sort="unsorted" table="funding_sources_agreements">
+			<key on-delete="noaction">
+				<column length="20" name="agreement_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.FundingSourceAgreement"
+				embed-xml="true" not-found="exception" />
+		</set>
+		<set embed-xml="true" fetch="select" inverse="true" lazy="true"
+			mutable="true" name="crpsAgreements" optimistic-lock="true" sort="unsorted"
+			table="crps_agreement">
+			<key on-delete="noaction">
+				<column length="20" name="agreement_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpAgreement"
+				embed-xml="true" not-found="exception" />
+		</set>
+	</class>
 </hibernate-mapping>
