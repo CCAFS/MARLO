@@ -75,7 +75,7 @@ public class OutcomeSynthesisReportingSummaryAction extends BaseSummariesAction 
     manager.registerDefaults();
     try {
       Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/outcomeSynthesis-Annualization.prpt"), MasterReport.class);
+        this.getClass().getResource("/pentaho/crp/outcomeSynthesis-Annualization.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
       // Get datetime

@@ -89,7 +89,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     manager.registerDefaults();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/POWBTemplate.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/POWBTemplate.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       // Set Main_Query
       CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());

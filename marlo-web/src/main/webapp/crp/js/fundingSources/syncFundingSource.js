@@ -12,7 +12,7 @@ function initSync() {
     // Set Datepicker
     settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
   }
-  
+
   // Harvest metadata from URL
   $syncButtons.on("click", syncMetadata);
 
@@ -42,7 +42,7 @@ function setMetadata(data) {
     var $hide = $parent.find('.hide');
 
     $input.val(value);
-    $spanSuggested.text("Suggested: " + value).animateCss("flipInY");
+    $spanSuggested.text("Recorded in CIAT OCS as: " + value).animateCss("flipInY");
     $parent.find('textarea').autoGrow();
     $input.attr('readOnly', true);
     $hide.val("true");
@@ -93,10 +93,10 @@ function syncFundingSource() {
   var yyyy = today.getFullYear();
   if(dd<10){
       dd='0'+dd;
-  } 
+  }
   if(mm<10){
       mm='0'+mm;
-  } 
+  }
   $('.fundingSourceSyncedDate').val(yyyy+'-'+mm+'-'+dd);
   $('.lastDaySync').show();
   $('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
@@ -104,7 +104,7 @@ function syncFundingSource() {
   $('.dateLabel').addClass('disabled');
   // Update component
   $(document).trigger('updateComponent');
-  
+
   // Set isSynced parameter
   isSynced = true;
 }
@@ -156,7 +156,7 @@ function unSyncFundingSource() {
 
   // Update component
   $(document).trigger('updateComponent');
-  
+
   // Set isSynced parameter
   isSynced = false;
 }
@@ -166,7 +166,7 @@ function getOCSMetadata() {
   if(!currentCode || syncing){
     return
   }
-  
+
   // Ajax to service
   $.ajax({
       'url': baseURL + '/ocsService.do',
@@ -175,7 +175,7 @@ function getOCSMetadata() {
         phaseID: phaseID
       },
       beforeSend: function() {
-        $('.loading.syncBlock').show(); 
+        $('.loading.syncBlock').show();
         $(".financeCode").addClass('input-loading');
         $('.financeCode-message').text("");
         $syncButtons.addClass('button-disabled');
@@ -187,7 +187,7 @@ function getOCSMetadata() {
           console.log(agreement);
           // Extension date validation
           if(!allowExtensionDate){
-            agreement.endDate = agreement.extensionDate;
+            // agreement.endDate = agreement.extensionDate;
           }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
@@ -211,13 +211,17 @@ function getOCSMetadata() {
             agreement.fundingTypeId = 2;
           }
           // Set Agreement Status
-          if(agreement.contractStatus == "C") {
-            agreement.contractStatusId = 3;
-          } else if(agreement.contractStatus == "O") {
-            agreement.contractStatusId = 2;
-          } else if(agreement.contractStatus == "S") {
-            agreement.contractStatusId = 2;
+          /*
+           * if(agreement.contractStatus == "C") { agreement.contractStatusId = 3; } else if(agreement.contractStatus ==
+           * "O") { // On-Going agreement.contractStatusId = 2; } else if(agreement.contractStatus == "S") {
+           * agreement.contractStatusId = 2; }
+           */
+
+          // Set Funding Source Agreement Status
+          if(agreement.extensionDate){
+            $('.agreementStatus').val(4);
           }
+
           // Set Countries
           $('#countryList ul').empty();
           $.each(agreement.countries, function(i,e) {
@@ -236,7 +240,7 @@ function getOCSMetadata() {
         }
       },
       complete: function() {
-        $('.loading.syncBlock').hide(); 
+        $('.loading.syncBlock').hide();
         $(".financeCode").removeClass('input-loading');
         $syncButtons.removeClass('button-disabled');
         syncing = false;

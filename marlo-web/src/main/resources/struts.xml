@@ -140,6 +140,11 @@
 				section -->
 			<interceptor name="centerAccessibleStage"
 				class="org.cgiar.ccafs.marlo.interceptor.center.AccessibleCenterStageInterceptor" />
+				
+				
+				<!-- validation if the user can edit the capdev intervention -->
+				<interceptor name="editCapdev"
+				class="org.cgiar.ccafs.marlo.interceptor.center.capdev.EditCapacityDevInterceptor" />
 
 			<!-- ******************************************************************************************* -->
 
@@ -340,7 +345,7 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
-			<interceptor-stack name="centerOutputStack">
+      <interceptor-stack name="centerOutputStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -350,7 +355,16 @@
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
-			<!-- ******************************************************************************************* -->
+      
+      <interceptor-stack name="centerCapdevStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="editCapdev" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
+       <!-- 
+       ******************************************************************************************* -->  
 
 		</interceptors>
 
@@ -413,6 +427,6 @@
 	<include file="struts-center-monitoring.xml" />
 	<include file="struts-center-admin.xml" />
 	<include file="struts-center-summaries.xml" />
-
+	<include file="struts-center-capDev.xml" />
 
 </struts>
