@@ -18,10 +18,17 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
 [#assign hasInstitutions = fundingSource.institutions?has_content /]
+
+[#if showEXtDate]
+  [#assign fundingSourceYears = startYear .. extensionYear/]
+[#else]
+  [#assign fundingSourceYears = startYear .. endYear/]
+[/#if]
 
 [#assign isW1W2 = (fundingSource.fundingSourceInfo.budgetType.id == 1)!false /]
 [#assign w1w2TagValue = (fundingSource.fundingSourceInfo.w1w2)!false /]
@@ -111,35 +118,36 @@
             <label for="fundingSource.financeCode" class="editable">[@s.text name="projectCofunded.financeCode"/]:<span class="red requiredTag" style="display:none;">*</span></label>
             <div class="input-group">
               [#if editable]
-              [#-- Finance Channel --]
-              <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
-                <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
-                </button>
-                [#-- 
-                <ul class="dropdown-menu">
-                  [#if hasInstitutions]
-                    [#list fundingSource.institutions as institutionLead]
-                      [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
-                        <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
-                      [/#if]
-                    [/#list]
-                  [/#if]
-                </ul>
-                 --]
-              </div><!-- /btn-group -->
-              [#-- Finance Input --]
-              <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
+                [#-- Finance Channel --]
+                <div class="input-group-btn financeChannel" style="display:${hasCIAT?string('', 'none')}">
+                  <button type="button" class="btn btn-default btn-sm disabled dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <small>CIAT-OCS</small>  [#--<span class="caret"></span>--]
+                  </button>
+                  [#-- 
+                  <ul class="dropdown-menu">
+                    [#if hasInstitutions]
+                      [#list fundingSource.institutions as institutionLead]
+                        [#if institutionLead.institution.id != financeChannelInstitution.institution.id]
+                          <li><a href="#"><small>${(institutionLead.institution.acronym)!}</small></a></li>
+                        [/#if]
+                      [/#list]
+                    [/#if]
+                  </ul>
+                   --]
+                </div><!-- /btn-group -->
+                [#-- Finance Input --]
+                <input type="text" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}" class="form-control input-sm financeCode optional" [#if isSynced]readonly="readonly"[/#if] placeholder="e.g. OCS Code">
               [#else]
+                <input type="hidden" class="financeCode" name="fundingSource.fundingSourceInfo.financeCode" value="${(fundingSource.fundingSourceInfo.financeCode)!}"/>
                 <small style="display:${hasCIAT?string('block', 'none')}">CIAT-OCS:</small> ${(fundingSource.fundingSourceInfo.financeCode)!}
               [/#if]
             </div><!-- /input-group -->
             <span class="financeCode-message"></span>
           </div>
           <div class="buttons-field" style="display:${hasCIAT?string('block', 'none')}">
+            <input type="hidden" id="isSynced" name="fundingSource.fundingSourceInfo.synced" value="${isSynced?string}" />
             [#if editable]
               <div id="fillMetadata">
-                <input type="hidden" id="isSynced" name="fundingSource.fundingSourceInfo.synced" value="${isSynced?string}" />
                 [#-- Sync Button --]
                 <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
                 <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
@@ -187,31 +195,36 @@
             <input id="fundingSource.fundingSourceInfo.startDate" type="hidden" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.fundingSourceInfo.startDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue startDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p>
           [#else]
+            <input type="hidden" class="startDateInput" name="fundingSource.fundingSourceInfo.startDate" value="${(fundingSource.fundingSourceInfo.startDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.startDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
+        
         [#-- End Date --]
-        <div class="col-md-4 metadataElement-endDate">
+        <div class="col-md-4 endDateBlock metadataElement-endDate" >
           <label for="fundingSource.endDate">[@s.text name="fundingSource.endDate" /]:[@customForm.req required=editable && action.canEditFundingSourceBudget()  /]</label>
           [#if editable]
             <input id="fundingSource.fundingSourceInfo.endDate" type="hidden" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" class="form-control input-sm metadataValue endDateInput">
-            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>
+            <p class="dateLabel btn btn-default ${(isSynced || showEXtDate)?string('disabled','')}">${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p>
           [#else]
+            <input type="hidden" class="endDateInput" name="fundingSource.fundingSourceInfo.endDate" value="${(fundingSource.fundingSourceInfo.endDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.endDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
         [#-- Extension Date --]
-        <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${hasCIAT?string('block', 'none')}">
-          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:</label> 
-          [#if hasCIAT]
+        <div class="col-md-4 extensionDateBlock metadataElement-extensionDate" style="display:${showEXtDate?string('block', 'none')}">
+          <label for="fundingSource.extensionDate">[@s.text name="fundingSource.extensionDate" /]:[@customForm.req required=true  /]</label> 
+          [#if showEXtDate]
             [#assign extensionValue = (fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!'' /]
           [#else]
             [#assign extensionValue = '' /]
           [/#if]
-          [#if editable]
-          <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
-            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
+          [#if (editable || editStatus)]
+            <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
+            <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    
+            [#-- <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small> --]
           [#else]
+            <input type="hidden" class="extensionDateInput" name="fundingSource.fundingSourceInfo.extensionDate" value="${(fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
@@ -267,9 +280,9 @@
             [/#if]
           </div>
           [#-- Agreement status --]
-          <div class="col-md-6 metadataElement-contractStatusId">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue ${(action.hasSpecificities('crp_status_funding_sources')?string('','onlyOngoing'))!} "  listName="status" keyFieldName=""  displayFieldName="" header=false disabled=isSynced editable=(editable|| editStatus) /] 
-            [#if isSynced && editable]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
+          <div class="col-md-6">
+            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=(editable || editStatus) /] 
+            [#--  --if (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if --]
           </div>
         </div>
       </div>
@@ -300,11 +313,11 @@
           <div class="col-md-12 metadataElement-directDonorName">
             <label for="">[@s.text name="projectCofunded.directDonor" /]:[@customForm.req required=editable /] </label>
             <span class="description"><i>([@s.text name="projectCofunded.directDonor.helpText" /])</i></span>
-            [#if editable]
-              [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
-            [#else]
-              <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
-            [/#if]
+              [#if editable]
+                [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
+              [#else]
+                <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
+              [/#if]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
@@ -314,11 +327,11 @@
           <div class="col-md-12 metadataElement-originalDonorName">
             <label for="">[@s.text name="projectCofunded.donor" /]:</label>
             <span class="description"><i>([@s.text name="projectCofunded.donor.helpText" /])</i></span>
-            [#if editable]
-              [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
-            [#else]
-              <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
-            [/#if]
+              [#if editable]
+                [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
+              [#else]
+                <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
+              [/#if]
             <span class="text-warning metadataSuggested"></span> 
           </div>
         </div>
@@ -375,7 +388,7 @@
            <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
          </div>
          
-          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
+          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions">
             <ul class="list">
             [#if fundingSource.fundingRegions?has_content]
               [#list fundingSource.fundingRegions as region]
@@ -465,13 +478,13 @@
     <div class="contributionWrapper budgetByYears">
       [#-- Year Tabs --]
       <ul class="nav nav-tabs budget-tabs" role="tablist">
-        [#list startYear .. endYear as year]
+        [#list fundingSourceYears as year]
           <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
         [/#list]
       </ul>
       [#-- Years Content --]
       <div class="tab-content contributionContent">
-        [#list startYear .. endYear as year]
+        [#list fundingSourceYears as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
           
           [#attempt]
@@ -598,8 +611,6 @@
     <li class="budgetTypeDescription-${budgetType.id}">${(budgetType.description)!}</li>
   [/#list]
 </ul>
-
-<span class="hidden allowExtensionDate">${hasCIAT?string}</span>
 
 <span class="hidden cgiarConsortium">${action.getCGIARInstitution()}</span>
 

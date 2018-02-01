@@ -92,8 +92,8 @@ public class InstitutionsLeadersSummaryAction extends BaseSummariesAction implem
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/institutions_leaders-Annualization.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/crp/InstitutionsLeaders.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       Number idParam = this.getLoggedCrp().getId();
       // Get datetime
