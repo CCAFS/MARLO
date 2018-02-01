@@ -234,11 +234,11 @@
       [#--  Does this study involve research with human subjects? --]
       [#if action.hasSpecificities('crp_has_research_human')]
       <div class="form-group">
-        [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)!false /]
+        [#assign hasHumanSubjects = (fundingSource.fundingSourceInfo.hasFileResearch)! /]
         <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /]</label>
         [#if editable]
-          [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=hasHumanSubjects cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
-          [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.hasFileResearch" label="No" value="false" checked=!hasHumanSubjects cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
+          [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=((hasHumanSubjects)!false) cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
+          [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.hasFileResearch" label="No" value="false" checked=((!hasHumanSubjects)!false) cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
         [#else]
           ${hasHumanSubjects?string('Yes', 'No')}
         [/#if]
@@ -347,7 +347,7 @@
         [/#if]
       </div>
     </div>
-    <h4 class="headTitle">Location information</h4> 
+    <h4 class="headTitle">Location information</h4>
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]
     [#if editable]
