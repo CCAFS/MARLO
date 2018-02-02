@@ -46,17 +46,20 @@
           [/#if]
           
           [#-- Table A: Planned Milestones 2018 --]
-          <table>
-          	<tr>
-          		<td></td>
-          	</tr>
-          </table>
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <hr />
+            [@tableAMacro /]
+          </div>
           
           [#if flagship]
-            [#assign outcomesFake = [ {} ]]
+            [#assign outcomesFake = [ 
+              { "title": "Ourcome title fake"} 
+              ]
+            /]
             [#-- Flagship - Outcomes 2022 --]
             [#list outcomesFake as outcome]
-              
+              [@powbOutcomeMacro element=outcome name="" index=outcome_index /]
             [/#list]
           [/#if]
         
@@ -78,11 +81,71 @@
   <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
-    
-    <div class="form-group grayBox"><strong>${element.title}</strong></div>
-    
-    <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
-    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
+    [#-- Title --]
+    <div class="form-group grayBox"><strong>${(element.title)!}</strong></div>
+  </div>
+[/#macro]
 
+[#macro tableAMacro ]
+  [#assign flagships = [ 
+    { "acronym": "FP1", "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"},
+        { "title": "Milestone #4"}
+      ] 
+    },
+    { "acronym": "FP2", "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"}
+      ] 
+    },
+    { "acronym": "FP3", "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"}
+      ] 
+    }
+    ]
+  /]
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.fp" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.subIDO" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
+          <th rowspan="1" colspan="2" class="text-center"> Budget </th> 
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
+        </tr>
+        <tr>
+          <th class="text-center">[@s.text name="expectedProgress.tableA.w1w2" /]</th>
+          <th class="text-center">[@s.text name="expectedProgress.tableA.w3bilateral" /]</th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list flagships as fp]
+          [#assign milestoneSize = fp.milestones?size]
+          [#list fp.milestones as milestone]
+            <tr>
+              [#if milestone_index == 0]<th rowspan="${milestoneSize}" > ${fp.acronym}</th>[/#if]
+              <td> <i>Pre-filled</i> </td>
+              <td> <i>Pre-filled</i> </td>
+              <td> <i>${milestone.title}</i> </td>
+              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
+              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
+              <td> FL to fill this info. </td>
+              <td> FL to fill this info. </td>
+            </tr>
+          [/#list]
+        [/#list]
+      </tbody>
+    </table>
   </div>
 [/#macro]
