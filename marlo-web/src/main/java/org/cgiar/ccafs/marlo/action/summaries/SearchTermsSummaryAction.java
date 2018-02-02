@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -85,6 +84,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private long startTime;
   private Boolean hasW1W2Co;
   private Boolean hasRegions;
+  Integer countMatches;
   // Keys to be searched
   List<String> keys = new ArrayList<String>();
 
@@ -146,6 +146,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     masterReport.getParameterValues().put("i8nSearchTermsSubType",
       this.getText("project.deliverable.generalInformation.subType"));
     masterReport.getParameterValues().put("i8nSearchTermsDeliverableLeader", this.getText("deliverable.individual"));
+    masterReport.getParameterValues().put("i8nSearchTermsGender", this.getText("summaries.gender"));
+    masterReport.getParameterValues().put("i8nSearchTermsYouth", this.getText("summaries.youth"));
+    masterReport.getParameterValues().put("i8nSearchTermsCapacityDevelopment",
+      this.getText("summaries.capacityDevelopment"));
 
 
     return masterReport;
@@ -380,9 +384,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "dev_id", "dev_title", "dev_type", "dev_sub_type", "lead_ins", "leader",
-        "project_url", "dev_url", "phaseID"},
+        "project_url", "dev_url", "phaseID", "gender", "youth", "capacityDevelopment"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, Long.class},
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class},
       0);
     if (!keys.isEmpty()) {
       List<Project> projects = new ArrayList<>();
@@ -398,33 +402,27 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           for (Deliverable deliverable : project.getDeliverables().stream()
             .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
             .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-              && d.getDeliverableInfo(this.getSelectedPhase()).equals(this.getSelectedPhase()))
+              && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             String devTitle = "";
             // Pattern case insensitive
             String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
             Pattern pattern = Pattern.compile(patternString);
-            // Search keys in deliverable title
-            // count and store occurrences
-            Set<String> matchesDelivTitle = new HashSet<>();
-            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
-              devTitle = "<font size=2 face='Segoe UI' color='#000000'>"
-                + deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle() + "</font>";
-              // Find keys in title
-              Matcher matcher = pattern.matcher(devTitle);
-              // while are occurrences
-              while (matcher.find()) {
-                // add elements to matches
-                matchesDelivTitle.add(matcher.group(1));
-              }
-              for (String match : matchesDelivTitle) {
-                devTitle = devTitle.replaceAll("\\b" + match + "\\b",
-                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-              }
-            } else {
-              devTitle = "<font size=2 face='Segoe UI' color='#000000'></font>";
-            }
-            if (matchesDelivTitle.size() > 0) {
+            // count occurrences
+            countMatches = 0;
+
+            devTitle =
+              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern, "");
+            String gender = "", youth = "", capacityDevelopment = "";
+            gender =
+              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(),
+                pattern, this.getText("summaries.gender"));
+            youth = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth(),
+              pattern, this.getText("summaries.youth"));
+            capacityDevelopment =
+              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity(),
+                pattern, this.getText("summaries.capacityDevelopment"));
+            if (countMatches > 0) {
               String projectId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
               String projectUrl = project.getId().toString();
@@ -472,9 +470,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                   }
                 }
               }
-              Long phaseID = this.getSelectedPhase().getId();
+
+              Long phaseID = projectInfo.getPhase().getId();
               model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
-                projectUrl, devUrl});
+                projectUrl, devUrl, phaseID, gender, youth, capacityDevelopment});
             }
           }
         }
@@ -538,10 +537,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "summary", "start_date", "end_date", "flagships", "regions", "lead_ins",
         "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url", "w1w2_Co_budget",
-        "phaseID"},
+        "phaseID", "gender", "youth", "capacityDevelopment"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class, Double.class,
-        Long.class},
+        Long.class, String.class, String.class, String.class},
       0);
     if (!keys.isEmpty()) {
       // Pattern case insensitive
@@ -573,44 +572,19 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           Double w3 = null;
           Double bilateral = null;
           Double center = null;
-          // count and store occurrences
-          Set<String> matchesTitle = new HashSet<>();
-          Set<String> matchesSummary = new HashSet<>();
-          if (projectInfo.getTitle() != null) {
-            title = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getTitle() + "</font>";
-            // Hash set list of matches, avoiding duplicates
-            // Find keys in title
-            Matcher matcher = pattern.matcher(title);
-            // while are occurrences
-            while (matcher.find()) {
-              // add elements to matches
-              matchesTitle.add(matcher.group(1));
-            }
-            for (String match : matchesTitle) {
-              title = title.replaceAll("\\b" + match + "\\b",
-                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-            }
-          } else {
-            title = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          if (projectInfo.getSummary() != null) {
-            summary = "<font size=2 face='Segoe UI' color='#000000'>" + projectInfo.getSummary() + "</font>";
-            // Hash set list of matches, avoiding duplicates
-            // Find keys in title
-            Matcher matcher = pattern.matcher(summary);
-            // while are occurrences
-            while (matcher.find()) {
-              // add elements to matches
-              matchesSummary.add(matcher.group(1));
-            }
-            for (String match : matchesSummary) {
-              summary = summary.replaceAll("\\b" + match + "\\b",
-                "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-            }
-          } else {
-            summary = "<font size=2 face='Segoe UI' color='#000000'></font>";
-          }
-          if ((matchesSummary.size() + matchesTitle.size()) > 0) {
+          // count occurrences
+          countMatches = 0;
+
+          title = this.setFieldMatches(projectInfo.getTitle(), pattern, "");
+          summary = this.setFieldMatches(projectInfo.getSummary(), pattern, "");
+
+          String gender = "", youth = "", capacityDevelopment = "";
+          gender = this.setFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"));
+          youth = this.setFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"));
+          capacityDevelopment = this.setFieldMatches(projectInfo.getCrossCuttingCapacity(), pattern,
+            this.getText("summaries.capacityDevelopment"));
+
+          if (countMatches > 0) {
             // set dates
             if (projectInfo.getStartDate() != null) {
               startDate = "<font size=2 face='Segoe UI' color='#000000'>"
@@ -731,18 +705,22 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               center = null;
             }
 
+
             String projectId =
               "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
+
+
             String projectUrl = project.getId().toString();
             Long phaseID = projectInfo.getPhase().getId();
             model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID});
+              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID, gender, youth, capacityDevelopment});
           }
         }
       }
     }
     return model;
   }
+
 
   /**
    * Get the total budget per year and type
@@ -771,8 +749,6 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == true)
           .collect(Collectors.toList())) {
-          FundingSource fsActual = pb.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2();
           total = total + pb.getAmount();
         }
         break;
@@ -785,12 +761,6 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2() != null
             && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false)
           .collect(Collectors.toList())) {
-          ProjectBudget pbActual = pb;
-          FundingSource fsActual = pbActual.getFundingSource();
-          Boolean w1w2 = pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2();
-          Boolean validation =
-            pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getW1w2().booleanValue() == false;
-
           total = total + pb.getAmount();
         }
         break;
@@ -801,7 +771,6 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
     return total;
   }
-
 
   @Override
   public void prepare() {
@@ -815,7 +784,6 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     startTime = System.currentTimeMillis();
   }
 
-
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -827,6 +795,70 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
       return null;
     }
+  }
+
+
+  private String setBooleanMatches(Boolean field, Pattern pattern, String stringCrossCutting) {
+    Set<String> matchesField = new HashSet<>();
+    String crossCutting = "";
+    if (field) {
+      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>Yes</font>";
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'>No</font>";
+    }
+
+    // Hash set list of matches, avoiding duplicates
+    // Find keys in title
+    Matcher matcher = pattern.matcher(stringCrossCutting);
+    // while are occurrences
+    while (matcher.find()) {
+      // add elements to matches
+      matchesField.add(matcher.group(1));
+    }
+    for (@SuppressWarnings("unused")
+    String match : matchesField) {
+      if (field) {
+        countMatches++;
+        crossCutting = crossCutting.replaceAll("\\b" + "Yes" + "\\b",
+          "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+      }
+    }
+    return crossCutting;
+  }
+
+
+  private String setFieldMatches(Object field, Pattern pattern, String stringCrossCutting) {
+    if (field != null) {
+      if (field instanceof Boolean) {
+        return this.setBooleanMatches((Boolean) field, pattern, stringCrossCutting);
+      } else {
+        return this.setStringMatches((String) field, pattern);
+      }
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'></font>";
+    }
+
+
+  }
+
+
+  private String setStringMatches(String field, Pattern pattern) {
+    Set<String> matchesField = new HashSet<>();
+
+    field = "<font size=2 face='Segoe UI' color='#000000'>" + field + "</font>";
+    // Hash set list of matches, avoiding duplicates
+    // Find keys in title
+    Matcher matcher = pattern.matcher(field);
+    // while are occurrences
+    while (matcher.find()) {
+      // add elements to matches
+      matchesField.add(matcher.group(1));
+      countMatches++;
+    }
+    for (String match : matchesField) {
+      field = field.replaceAll("\\b" + match + "\\b", "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+    }
+    return field;
   }
 
 
