@@ -1275,6 +1275,7 @@ public class FundingSourceAction extends BaseAction {
         || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
+
       if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
         if (fundingSource.getFundingSourceInfo().getFileResearch() != null
           && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
@@ -1284,7 +1285,7 @@ public class FundingSourceAction extends BaseAction {
       }
 
       validator.validate(this, fundingSource, true);
+
     }
   }
-
 }
