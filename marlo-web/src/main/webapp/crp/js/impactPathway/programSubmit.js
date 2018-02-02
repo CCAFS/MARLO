@@ -139,6 +139,7 @@ function validateButtonEvent(e) {
 
 function processTasks(tasks,id,button) {
   $(button).unbind('click');
+
   var completed = 0;
   var index = 0;
   $(button).fadeOut(function() {
