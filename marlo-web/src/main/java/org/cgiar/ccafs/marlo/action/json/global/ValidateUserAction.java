@@ -82,9 +82,9 @@ public class ValidateUserAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    Map<String, Parameter> parameters = this.getParameters();
-    userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
-    userPassword = StringUtils.trim(parameters.get(APConstants.USER_PASSWORD).getMultipleValues()[0]);
+    //Map<String, Parameter> parameters = this.getParameters();
+    //userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
+    //userPassword = StringUtils.trim(parameters.get(APConstants.USER_PASSWORD).getMultipleValues()[0]);
   }
 
 

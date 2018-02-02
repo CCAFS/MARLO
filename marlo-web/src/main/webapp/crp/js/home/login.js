@@ -1,18 +1,11 @@
 $(document).ready(init);
-var cookieTime,loginSwitch=false, hasAccess=false;
+var cookieTime,isSecondForm=false, hasAccess=false;
 var username = $("input[name='user.email']");
 var crpSession = $(".loginForm #crp-input").val();
 function init() {
   initJreject();
 
   cookieTime = 100;
-  var crpInput = $('input#crp-input').val();
-
-  // Verify "crp"
-  if(verifyCookie("CRP") && (getCookie("CRP") != "undefined") && (!crpInput)) {
-    var crpSelected = getCookie("CRP");
-    setCRP(crpSelected);
-  }
 
   // Verify user email session
   if(verifyCookie("username.email")) {
@@ -27,6 +20,7 @@ function init() {
     loadSelectedImage(selectedImageAcronym);
 
     $("input#crp-input").val(selectedImageAcronym);
+    setCRPCookie();
   });
 
   // Username cookie and Hide the wrong data message
@@ -34,7 +28,7 @@ function init() {
     setCookie("username.email", username.val(), cookieTime);
 
     $('input.login-input').removeClass("wrongData");
-    $('.loginForm p.invalidEmail').addClass("hidden");
+    $('.loginForm p.invalidField').addClass("hidden");
   });
 
   //Set focus on email input on page load
@@ -46,16 +40,19 @@ function init() {
     $(this).addClass('active');
   });
 
-  //Next button click
+  //Form button click
   $("input#login_next").on('click',function(e){
+    e.preventDefault();
+
     var email = username.val();
+    var password= $("input[name='user.password']").val();
 
     if(email == "" || !isEmail(email)){
-      e.preventDefault();
-      wrongData("invalid");
-    }else if(!loginSwitch){
-      e.preventDefault();
+      wrongData("invalidEmail");
+    }else if(!isSecondForm){
       loadAvailableItems(email);
+    }else{
+      checkPassword(email,password);
     }
   });
 
@@ -93,8 +90,13 @@ function init() {
 }
 
 function firstForm(){
-  loginSwitch=false;
+  isSecondForm=false;
   hasAccess=false;
+
+  //Hide the invalidEmail field
+  $('.loginForm p.invalidField').addClass("hidden");
+  //Remove wrongData class to input field
+  $('input.login-input').removeClass("wrongData");
 
   //Reset input password
   $(".loginForm #login-password .user-password").val("");
@@ -125,17 +127,6 @@ function firstForm(){
 
   //Reset the crp-input to init value (to preserve the crpSession in 401.ftl)
   $(".loginForm #crp-input").val(crpSession);
-}
-
-function setCRP(crpSelected) {
-  // Setting up the CRP-CENTER-PLATFORM value into a hidden input
-  $('#crp-input').val(crpSelected);
-
-  // Change central image according to selected CRP-CENTER-PLATFORM
-  $("#crpSelectedImage").attr("src", baseUrl + "/global/images/crps/" + crpSelected + ".png");
-
-  // Create crp cookie
-  setCookie("CRP", crpSelected, cookieTime);
 }
 
 function initJreject() {
@@ -175,6 +166,23 @@ function verifyCookie(nameCookie) {
   }
 }
 
+function verifyCrpCookie(){
+  var crpInput = $('input#crp-input').val();
+
+  // Verify "crp"
+  if(verifyCookie("CRP") && (getCookie("CRP") != "undefined")) {
+    var crpSelected = getCookie("CRP");
+    return crpSelected;
+  }
+  return false;
+}
+
+function setCRPCookie() {
+  var crpInput = $('input#crp-input').val();
+  // Create crp cookie
+  setCookie("CRP", crpInput, cookieTime);
+}
+
 function loadAvailableItems(email){
   $.ajax({
     url: baseUrl+"/crpByEmail.do",
@@ -183,6 +191,10 @@ function loadAvailableItems(email){
     },
     beforeSend: function() {},
     success: function(data) {
+      var crpCookie=verifyCrpCookie();
+      if(crpCookie){
+        $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
+      }
       $.each(data.crps, function(i){
         if(crpSession == data.crps[i].acronym){
           hasAccess=true;
@@ -193,9 +205,12 @@ function loadAvailableItems(email){
         }else{
           $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
         }
+        if(crpCookie==data.crps[i].acronym){
+          $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
+        }
       });
       if(data.user == null){
-        wrongData("notFound");
+        wrongData("emailNotFound");
       }else{
         //If user has access to the crpSession or crpSession is void, change form style
         if(crpSession == '' || hasAccess){
@@ -211,11 +226,11 @@ function loadAvailableItems(email){
 }
 
 function secondForm(data){
-  //Button control, just send the form when button value is "login", not "next"
-  loginSwitch=true;
+  //Button control, just send the form when is in the second part of the form
+  isSecondForm=true;
 
   //Hide the invalidEmail field
-  $('.loginForm p.invalidEmail').addClass("hidden");
+  $('.loginForm p.invalidField').addClass("hidden");
   //Remove wrongData class to input field
   $('input.login-input').removeClass("wrongData");
 
@@ -258,17 +273,37 @@ function secondForm(data){
       //move crps select side bar
       var sideBarPosition=-$(".loginForm").position().left-120;
       $(".crps-select").css("left",sideBarPosition);
+    }else{
+      //click unique crp loaded
+      $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
     }
-
-    //click to the first crps loaded
-    //$('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
   }
 }
 
 function wrongData(type){
   $('input.login-input').addClass("wrongData");
-  $('.loginForm p.invalidEmail.'+type).removeClass("hidden");
+  $('.loginForm p.invalidField.'+type).removeClass("hidden");
   $(".loginForm #login-email .user-email").focus();
+}
+
+function checkPassword(email,password){
+  $.ajax({
+    url: baseUrl+"/validateUser.do",
+    data: {
+      userEmail: email,
+      userPassword: password
+    },
+    beforeSend: function() {},
+    success: function(data) {
+      if(!data.userFound.loginSuccess){
+        wrongData("incorrectPassword");
+      }else{
+        $("input#login_formSubmit").click();
+      }
+    },
+    complete: function(data) {},
+    error: function(data) {}
+  });
 }
 
 function setCookie(cname,cvalue,mins) {
