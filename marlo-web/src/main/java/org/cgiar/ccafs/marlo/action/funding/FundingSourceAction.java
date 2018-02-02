@@ -1282,6 +1282,8 @@ public class FundingSourceAction extends BaseAction {
               || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
               fundingSource.getFundingSourceInfo().setFileResearch(null);
             }
+          } else {
+            fundingSource.getFundingSourceInfo().setFileResearch(null);
           }
         } else {
           fundingSource.getFundingSourceInfo().setFileResearch(null);
