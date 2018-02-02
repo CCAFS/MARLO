@@ -188,6 +188,7 @@ public final class APConstants {
   public static final String LIAISON_INSTITUTION_REQUEST_ID = "liaisonInstitutionID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String PHASE_ID = "phaseID";
+  public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
@@ -500,7 +501,7 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
 
-	public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
+  public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";
 
   // Cap-Dev Relations

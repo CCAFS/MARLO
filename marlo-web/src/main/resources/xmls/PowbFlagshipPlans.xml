@@ -7,19 +7,19 @@
 		table="powb_flagship_plans" optimistic-lock="version">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
-			<generator class="identity" />
+			<generator class="foreign">
+				<param name="property">powbSynthesis</param>
+			</generator>
 		</id>
 		<property name="planSummary" type="string">
-       <column name="plan_summary" length="65535" />
-     </property>
-     <many-to-one name="flagshipProgramFile"
-       class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-       <column name="flagship_program_file" not-null="false" />
-     </many-to-one>
-     <many-to-one name="powbSynthesis"
-       class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
-       <column name="powb_synthesis_id" not-null="true" />
-     </many-to-one>
+			<column name="plan_summary" length="65535" />
+		</property>
+		<many-to-one name="flagshipProgramFile"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="flagship_program_file" not-null="false" />
+		</many-to-one>
+		<one-to-one name="powbSynthesis"
+			class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" constrained="true"></one-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
