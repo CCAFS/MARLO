@@ -1409,7 +1409,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Boolean getAutoSaveFilePath(String simpleName, String actionName, long id) {
     String composedClassName = simpleName;
     String actionFile = this.getCrpSession() + "_" + actionName;
-    String autoSaveFile = id + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = id + "_" + composedClassName + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     boolean exist = Paths.get(config.getAutoSaveFolder() + autoSaveFile).toFile().exists();
     return exist;
   }
