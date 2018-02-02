@@ -803,6 +803,7 @@ public class FundingSourceAction extends BaseAction {
 
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setW1w2(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setFile(null);
+
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setDirectDonor(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setOriginalDonor(null);
       fundingSource.setBudgets(null);
@@ -1269,25 +1270,16 @@ public class FundingSourceAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (fundingSource.getFundingSourceInfo().getFile().getId() == null
+      if (fundingSource.getFundingSourceInfo().getFile() != null
+        && fundingSource.getFundingSourceInfo().getFile().getId() == null
         || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
 
-      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
-        System.out.println(fundingSource.getFundingSourceInfo().getHasFileResearch());
-        if (fundingSource.getFundingSourceInfo().getHasFileResearch()) {
-          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
-            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
-              || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
-              fundingSource.getFundingSourceInfo().setFileResearch(null);
-            }
-          } else {
-            fundingSource.getFundingSourceInfo().setFileResearch(null);
-          }
-        } else {
-          fundingSource.getFundingSourceInfo().setFileResearch(null);
-        }
+      if (fundingSource.getFundingSourceInfo().getFileResearch() != null
+        && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+        || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+        fundingSource.getFundingSourceInfo().setFileResearch(null);
       }
 
 
