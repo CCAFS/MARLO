@@ -3,34 +3,39 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Feb 2, 2018 8:27:14 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.PowbToc" table="powb_toc" optimistic-lock="version">
-        <id name="id" type="java.lang.Long">
-            <column name="id" />
-            <generator class="identity" />
-        </id>
-        <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
-            <column name="powb_synthesis_id" not-null="true" />
-        </many-to-one>
-        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="modified_by" />
-        </many-to-one>
-        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
-            <column name="created_by" />
-        </many-to-one>
-        <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-            <column name="toc_file_id" />
-        </many-to-one>
-        <property name="tocOverall" type="string">
-            <column name="toc_overall" length="65535" />
-        </property>
-        <property name="active" type="boolean">
-            <column name="is_active" not-null="true" />
-        </property>
-        <property name="activeSince" type="timestamp">
-            <column name="active_since" length="19" />
-        </property>
-        <property name="modificationJustification" type="string">
-            <column name="modification_justification" length="65535" />
-        </property>
-    </class>
+	<class name="org.cgiar.ccafs.marlo.data.model.PowbToc" table="powb_toc"
+		optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="foreign">
+				<param name="property">powbSynthesis</param>
+			</generator>
+		</id>
+		<one-to-one name="powbSynthesis"
+			class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" constrained="true"></one-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="file"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="toc_file_id" />
+		</many-to-one>
+		<property name="tocOverall" type="string">
+			<column name="toc_overall" length="65535" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+	</class>
 </hibernate-mapping>

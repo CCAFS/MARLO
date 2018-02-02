@@ -17,12 +17,14 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.PowbSynthesisDAO;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -69,6 +71,18 @@ public class PowbSynthesisMySQLDAO extends AbstractMarloDAO<PowbSynthesis, Long>
   }
 
   @Override
+  public PowbSynthesis findSynthesis(long phaseID, long liaisonInstitutionID) {
+    String query = "from " + PowbSynthesis.class.getName() + " where is_active=1 and id_phase= " + phaseID
+      + " and liaison_institution_id= " + liaisonInstitutionID;
+    List<PowbSynthesis> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+
+  }
+
+  @Override
   public PowbSynthesis save(PowbSynthesis powbSynthesis) {
     if (powbSynthesis.getId() == null) {
       super.saveEntity(powbSynthesis);
@@ -77,6 +91,16 @@ public class PowbSynthesisMySQLDAO extends AbstractMarloDAO<PowbSynthesis, Long>
     }
 
 
+    return powbSynthesis;
+  }
+
+  @Override
+  public PowbSynthesis save(PowbSynthesis powbSynthesis, String sectionName, List<String> relationsName, Phase phase) {
+    if (powbSynthesis.getId() == null) {
+      super.saveEntity(powbSynthesis, sectionName, relationsName, phase);
+    } else {
+      powbSynthesis = super.update(powbSynthesis, sectionName, relationsName, phase);
+    }
     return powbSynthesis;
   }
 
