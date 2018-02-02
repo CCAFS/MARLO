@@ -78,9 +78,6 @@
               <input id="user.email" class="login-input user-email" type="text" name="user.email" value="" required/>
               <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
-            <p class="invalidEmail invalid hidden">[@s.text name="login.error.invalidEmail"/]</p>
-            <p class="invalidEmail notFound hidden">[@s.text name="login.error.invalidEmail.notFound"/]</p>
-            <p class="invalidEmail deniedAccess hidden">[@s.text name="login.error.invalidEmail.deniedAccess"/]</p>
             [#-- CRP Session --]
             <input type="hidden" id="crp-input" name="crp" value="${(crpSession)!}" />
             
@@ -105,6 +102,10 @@
               <input id="user.password" class="login-input user-password" type="password" name="user.password" tabindex=1 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
+            <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
+            <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
+            <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
+            <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
           </div>
         </div>
         [#-- Terms and conditions checkbox --]
@@ -120,6 +121,7 @@
           <div class="col-sm-12">
             <div class="login-button-container">
               [@s.submit key="Next" name="next" cssClass="login-form-button" role="button "/]
+              [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
             </div>
           </div>
         </div>

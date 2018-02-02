@@ -2789,7 +2789,7 @@ p.login-description{
   width: 65%;
 }
 
-.loginForm p.invalidEmail{
+.loginForm p.invalidField{
   position: absolute;
   font-size: 12px;
   color: red;
