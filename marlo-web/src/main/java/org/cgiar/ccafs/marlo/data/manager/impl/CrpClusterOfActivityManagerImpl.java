@@ -77,7 +77,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     List<CrpClusterOfActivity> clusters =
       phase.getClusters().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
         && c.getIdentifier().equals(crpCluster.getIdentifier())).collect(Collectors.toList());
-    if ( clusters.isEmpty()) {
+    if (clusters.isEmpty()) {
       CrpClusterOfActivity clusterAdd = new CrpClusterOfActivity();
       clusterAdd.setActive(true);
       clusterAdd.setActiveSince(crpCluster.getActiveSince());
@@ -304,7 +304,8 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           crpClusterKeyOutputAdd.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
           crpClusterKeyOutputDAO.save(crpClusterKeyOutputAdd);
           if (crpClusterKeyOutput.getComposeID() == null) {
-            crpClusterKeyOutput.setComposeID(crpClusterKeyOutput.getComposeID() + "-" + crpClusterKeyOutputAdd.getId());
+            crpClusterKeyOutput
+              .setComposeID(crpClusterOfActivityPrev.getIdentifier() + "-" + crpClusterKeyOutputAdd.getId());
             crpClusterKeyOutputAdd.setComposeID(crpClusterKeyOutput.getComposeID());
             crpClusterKeyOutputDAO.save(crpClusterKeyOutputAdd);
           }
