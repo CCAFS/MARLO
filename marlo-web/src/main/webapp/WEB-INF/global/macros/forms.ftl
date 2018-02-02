@@ -384,7 +384,7 @@
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <div class="radioFlat radio-inline">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
-       <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
+    <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
   </div>
 [/#macro]
 
@@ -392,6 +392,25 @@
   <div class="inputsFlat">
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] </label>
+  </div>
+[/#macro]
+
+[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass=""]
+  [#assign hasFile = (fileDB.id??)!false /]
+  <div class="fileUploadContainer ${cssClass}" >
+    <label>[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
+    <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
+    [#-- Input File --]
+    [#if isEditable]
+      <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>
+    [/#if]
+    [#-- Uploaded File --]
+    <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
+      [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}" target="_blank">[/#if]
+      <span class="glyphicon glyphicon-file"></span> <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> 
+      [#if path?has_content]</a>[/#if]
+      [#if isEditable]<span class="removeIcon"> </span>[/#if]
+    </p>
   </div>
 [/#macro]
 

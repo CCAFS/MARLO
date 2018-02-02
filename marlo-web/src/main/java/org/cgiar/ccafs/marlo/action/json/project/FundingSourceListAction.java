@@ -24,10 +24,10 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -111,9 +111,18 @@ public class FundingSourceListAction extends BaseAction {
     fundingSources.clear();
     fundingSources.addAll(hs.stream()
       .filter(c -> c.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-        && c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList()));
+        && (c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(FundingStatusEnum.Ongoing.getStatusId())
+        || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+        || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(FundingStatusEnum.Informally.getStatusId())
+
+          || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Extended.getStatusId()))
+
+
+    ).collect(Collectors.toList()));
     fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
     for (FundingSource fundingSource : fundingSources) {
