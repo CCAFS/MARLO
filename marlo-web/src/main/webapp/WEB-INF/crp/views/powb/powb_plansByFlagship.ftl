@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
-[#assign pageLibs = [ ] /]
-[#assign customJS = [ ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
+[#assign pageLibs = [ "blueimp-file-upload" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/powb/powb_plansByFlagship.js" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/powb/powbGlobal.css" ] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "plansByFlagship" /]
 
@@ -38,7 +38,23 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="plansByFlagship.title" /]</h3>
         <div class="borderBox">
-        
+          
+          [#-- Summarize the plans for each flagship in 2018 --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- If major changes have been made to your flagship since the CRP proposal was published, please annex a brief summary of the current flagship program with the updated theory of change. --]
+          <div class="form-group" style="position:relative" listname="">
+            [@customForm.fileUploadAjax 
+              fileDB=(flagshipProgramFile)!{} 
+              name="flagshipProgramFile.id" 
+              label="liaisonInstitution.powb.flagshipProgramFile" 
+              dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
+              path="${(action.getPath(liaisonInstitutionID))!''}"
+              isEditable=editable
+            /]
+          </div>
         
         </div>
         
