@@ -603,11 +603,10 @@ public class FundingSourceAction extends BaseAction {
          */
         if (fundingSource.getFundingSourceLocations() != null) {
 
-          List<FundingSourceLocation> countries =
-            new ArrayList<>(fundingSource.getFundingSourceLocations().stream()
-              .filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
-                && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
-              .collect(Collectors.toList()));
+          List<FundingSourceLocation> countries = new ArrayList<>(fundingSource.getFundingSourceLocations()
+            .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+              && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
+            .collect(Collectors.toList()));
 
           fundingSource.setFundingCountry(new ArrayList<>(countries));
 
@@ -751,6 +750,7 @@ public class FundingSourceAction extends BaseAction {
     if (this.isHttpPost()) {
       fundingSource.getFundingSourceInfo().setFile(null);
       fundingSource.getFundingSourceInfo().setFileResearch(null);
+      fundingSource.getFundingSourceInfo().setHasFileResearch(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -1032,8 +1032,8 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingRegions() != null) {
 
-      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB
-        .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+      List<FundingSourceLocation> regions = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
+        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
           && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 1)
         .collect(Collectors.toList()));
 
@@ -1108,8 +1108,8 @@ public class FundingSourceAction extends BaseAction {
 
     if (fundingSource.getFundingCountry() != null) {
 
-      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB
-        .getFundingSourceLocations().stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
+      List<FundingSourceLocation> countries = new ArrayList<>(fundingSourceDB.getFundingSourceLocations()
+        .stream().filter(fl -> fl.isActive() && fl.getPhase().equals(this.getActualPhase())
           && fl.getLocElementType() == null && fl.getLocElement().getLocElementType().getId() == 2)
         .collect(Collectors.toList()));
 
@@ -1263,6 +1263,7 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        System.out.println(fundingSource.getFundingSourceInfo().getHasFileResearch());
         if (fundingSource.getFundingSourceInfo().getHasFileResearch()) {
           if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
             if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
@@ -1270,6 +1271,8 @@ public class FundingSourceAction extends BaseAction {
               fundingSource.getFundingSourceInfo().setFileResearch(null);
             }
           }
+        } else {
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
         }
       }
 
