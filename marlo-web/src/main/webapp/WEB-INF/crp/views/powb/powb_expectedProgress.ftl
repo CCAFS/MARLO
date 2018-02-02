@@ -36,7 +36,7 @@
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="expectedProgress.title" /]</h3>
-        <div class="">
+        <div class="borderBox">
         
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
@@ -164,7 +164,7 @@
 
 [#macro powbOutcomeMacro element name index isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
@@ -192,7 +192,7 @@
     [#-- Title --]
     <div class="form-group row">
       <div class="col-md-9"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!}</div>
-      <div class="col-md-3">[BOTON]</div>
+      <div class="col-md-3">[@milestoneContributions element=element /]</div>
     </div>
     
     [#-- Assessment of risk to achievement --]
@@ -213,4 +213,30 @@
     </div>
     
   </div>
+[/#macro]
+
+[#macro milestoneContributions element]
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  [@s.text name="expectedProgress.milestonesContributions" /]
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 [/#macro]
