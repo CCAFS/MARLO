@@ -14,6 +14,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 
 import java.util.List;
@@ -53,12 +54,29 @@ public interface PowbSynthesisManager {
 
 
   /**
+   * This method gets a powbSynthesis by phase and liaison Institution
+   * 
+   * @return a PowbSynthesis object or null if no exist records
+   */
+  public PowbSynthesis findSynthesis(long phaseID, long liaisonInstitutionID);
+
+  /**
    * This method gets a powbSynthesis object by a given powbSynthesis identifier.
    * 
    * @param powbSynthesisID is the powbSynthesis identifier.
    * @return a PowbSynthesis object.
    */
   public PowbSynthesis getPowbSynthesisById(long powbSynthesisID);
+
+  /**
+   * This method saves the information of the given powbSynthesis
+   * 
+   * @param powbSynthesis - is the powbSynthesis object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the powbSynthesis was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public PowbSynthesis save(PowbSynthesis powbSynthesis, String sectionName, List<String> relationsName, Phase phase);
 
   /**
    * This method saves the information of the given powbSynthesis

@@ -5,8 +5,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -31,6 +29,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
 
@@ -46,8 +45,13 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
-  // ToC List Relations <Set>
-  private Set<PowbToc> powbTocs = new HashSet<PowbToc>(0);
+  @Expose
+  private PowbFlagshipPlans flagshipPlans;
+
+
+  @Expose
+  private PowbToc powbToc;
+
 
   public PowbSynthesis() {
   }
@@ -62,7 +66,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
     this.id = id;
@@ -73,7 +76,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -105,6 +107,12 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
+  public PowbFlagshipPlans getFlagshipPlans() {
+    return flagshipPlans;
+  }
+
+
   @Override
   public Long getId() {
     return id;
@@ -113,7 +121,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -132,15 +139,14 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
 
-
-  public Set<PowbToc> getPowbTocs() {
-    return powbTocs;
+  public PowbToc getPowbToc() {
+    return powbToc;
   }
-
 
   @Override
   public int hashCode() {
@@ -159,7 +165,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -169,14 +174,18 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setFlagshipPlans(PowbFlagshipPlans flagshipPlans) {
+    this.flagshipPlans = flagshipPlans;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -187,8 +196,8 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.phase = phase;
   }
 
-  public void setPowbTocs(Set<PowbToc> powbTocs) {
-    this.powbTocs = powbTocs;
+  public void setPowbToc(PowbToc powbToc) {
+    this.powbToc = powbToc;
   }
 
 

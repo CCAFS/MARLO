@@ -25,7 +25,7 @@ public class PowbFlagshipPlans implements java.io.Serializable, IAuditLog {
   @Expose
   private FileDB flagshipProgramFile;
 
-  @Expose
+
   private PowbSynthesis powbSynthesis;
 
   @Expose
