@@ -84,5 +84,12 @@
     <property name="extensionDate" type="date">
       <column name="extended_date" length="10" />
     </property>
+    <property name="hasFileResearch" type="java.lang.Boolean">
+      <column name="has_file_research" not-null="true" />
+    </property>
+    <many-to-one name="fileResearch"
+      class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+      <column name="file_research" not-null="false" />
+    </many-to-one>
 	</class>
 </hibernate-mapping>

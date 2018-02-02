@@ -387,6 +387,11 @@ public class FundingSourceAction extends BaseAction {
     return loggedCrp;
   }
 
+  // methos to download link file
+  public String getPath(String fsId) {
+    return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
+  }
+
   public List<LocElement> getRegionLists() {
     return regionLists;
   }
@@ -395,8 +400,15 @@ public class FundingSourceAction extends BaseAction {
     return scopeRegionLists;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
+  }
+
+
+  public String getStudyFileUrlPath(String fsId) {
+    return config.getFundingSourceFolder(this.getCrpSession()) + File.separator + fundingSourceID + File.separator
+      + "fundingSourceFilesResearch" + File.separator;
   }
 
 
@@ -507,6 +519,17 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+        // fileResearch validation
+        // 20180124 - @jurodca
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
+          }
+        }
+
 
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
@@ -565,6 +588,15 @@ public class FundingSourceAction extends BaseAction {
             && pb.getPhase().equals(this.getActualPhase())
             && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
+
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
+          }
+        }
 
         /*
          * Funding source Locations
@@ -729,6 +761,8 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.getFundingSourceInfo().setFile(null);
+      fundingSource.getFundingSourceInfo().setFileResearch(null);
+      fundingSource.getFundingSourceInfo().setHasFileResearch(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -780,7 +814,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -815,6 +848,8 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
       fundingSource.getFundingSourceInfo().setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
+      fundingSource.getFundingSourceInfo()
+        .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()
@@ -849,6 +884,25 @@ public class FundingSourceAction extends BaseAction {
         }
       }
 
+      // fileResearch validation
+      // 20180124 - @jurodca
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+          if (fundingSource.getFundingSourceInfo().getHasFileResearch().booleanValue()) {
+
+            if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+              if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
+                fundingSource.getFundingSourceInfo().setFileResearch(null);
+              } else {
+                fundingSource.getFundingSourceInfo()
+                  .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+              }
+            }
+          } else {
+            fundingSource.getFundingSourceInfo().setFileResearch(null);
+          }
+        }
+      }
 
       /*
        * if (file != null) {
@@ -974,11 +1028,12 @@ public class FundingSourceAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       return SUCCESS;
-    } else {
+    } else
+
+    {
       return NOT_AUTHORIZED;
     }
   }
-
 
   /**
    * Funding Source Locations
@@ -1130,6 +1185,7 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -1217,6 +1273,22 @@ public class FundingSourceAction extends BaseAction {
         || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
+
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        System.out.println(fundingSource.getFundingSourceInfo().getHasFileResearch());
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch()) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+              || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+              fundingSource.getFundingSourceInfo().setFileResearch(null);
+            }
+          }
+        } else {
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
+        }
+      }
+
+
       validator.validate(this, fundingSource, true);
     }
   }
