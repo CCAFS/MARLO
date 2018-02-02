@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -687,7 +688,7 @@ public class CrpAdminManagmentAction extends BaseAction {
    */
   private void notifyRoleProgramManagementUnassigned(User userAssigned, Role role) {
     // Email send to nobody
-    String toEmail = null;
+    String toEmail = userAssigned.getEmail();
     // get CRPAdmin contacts
     String crpAdmins = "";
     String crpAdminsEmail = "";
@@ -730,7 +731,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
 
   private void pmuRoleData() {
-    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     Role rolePreview = roleManager.getRoleById(pmuRol);
     // Removing users roles
     int i = 0;
@@ -748,7 +748,11 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
         boolean deletePmu = true;
         for (LiaisonUser liaisonUser : liaisonUsers) {
-          if (liaisonUser.getProjects().isEmpty()) {
+          if (liaisonUser.getProjects().stream()
+            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getStatus() != null
+              && (c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || c.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
+            .collect(Collectors.toList()).isEmpty()) {
             liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
 
           } else {
@@ -761,8 +765,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
         }
         if (deletePmu) {
-          userRoleManager.deleteUserRole(userRole.getId());
+
           this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+          userRoleManager.deleteUserRole(userRole.getId());
 
         }
         this.checkCrpUserByRole(userRole.getUser());
@@ -843,8 +848,15 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      loggedCrp.getProgramManagmenTeam().clear();
-      flagshipsPrograms.clear();
+      if (loggedCrp.getProgramManagmenTeam() != null) {
+        loggedCrp.getProgramManagmenTeam().clear();
+        loggedCrp.setProgramManagmenTeam(null);
+      }
+      if (flagshipsPrograms != null) {
+        flagshipsPrograms.clear();
+        flagshipsPrograms = (null);
+      }
+
 
     }
   }
