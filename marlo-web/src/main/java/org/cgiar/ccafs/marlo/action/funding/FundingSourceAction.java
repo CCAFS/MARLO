@@ -1277,8 +1277,8 @@ public class FundingSourceAction extends BaseAction {
       }
 
       if (fundingSource.getFundingSourceInfo().getFileResearch() != null
-        && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
-        || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+        && (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+          || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1)) {
         fundingSource.getFundingSourceInfo().setFileResearch(null);
       }
 
