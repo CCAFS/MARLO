@@ -295,11 +295,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return bilateralBudget;
   }
 
-  public double getBilateralBudget(int year) {
+  public double getBilateralBudget(int year, Phase phase) {
 
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getPhase() != null && c.getPhase().equals(phase) && c.getBudgetType().getId() == 3 && c.getYear() == year)
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
@@ -442,11 +442,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getCoreBudget(int year) {
+  public double getCoreBudget(int year, Phase phase) {
 
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 1 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getBudgetType().getId() == 1 && c.getYear() == year && c.getPhase() != null && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
@@ -1017,10 +1017,10 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getW3Budget(int year) {
+  public double getW3Budget(int year, Phase phase) {
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 2 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getBudgetType().getId() == 2 && c.getYear() == year && c.getPhase() != null && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
