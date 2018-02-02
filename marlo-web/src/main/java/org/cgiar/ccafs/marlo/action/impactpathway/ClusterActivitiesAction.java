@@ -737,6 +737,7 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       if (this.isHttpPost()) {
         clusterofActivities.clear();
+        clusterofActivities = null;
       }
 
     }
@@ -784,6 +785,8 @@ public class ClusterActivitiesAction extends BaseAction {
         db.setCrpProgram(selectedProgram);
         db.setIdentifier(crpClusterOfActivity.getIdentifier());
         db.setDescription(crpClusterOfActivity.getDescription());
+        db.setKeyOutputs(crpClusterOfActivity.getKeyOutputs());
+        db.setLeaders(crpClusterOfActivity.getLeaders());
 
         db = crpClusterOfActivityManager.saveCrpClusterOfActivity(db);
 
@@ -887,7 +890,7 @@ public class ClusterActivitiesAction extends BaseAction {
               crpClusterKeyOutputPrev.setCreatedBy(this.getCurrentUser());
 
               crpClusterKeyOutputPrev.setActiveSince(new Date());
-              crpClusterKeyOutput.setActive(true);
+
               crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
               crpClusterKeyOutputPrev.setModifiedBy(this.getCurrentUser());
               crpClusterKeyOutputPrev.setModificationJustification("");
@@ -902,7 +905,8 @@ public class ClusterActivitiesAction extends BaseAction {
             }
             crpClusterKeyOutputPrev.setContribution(crpClusterKeyOutput.getContribution());
             crpClusterKeyOutputPrev.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
-
+            crpClusterKeyOutputPrev.setComposeID(crpClusterKeyOutput.getComposeID());
+            crpClusterKeyOutputPrev.setActive(true);
             crpClusterKeyOutputPrev = crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutputPrev);
 
             /*
