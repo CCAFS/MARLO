@@ -280,6 +280,10 @@ public class FundingSourceValidator extends BaseValidator {
               action.getText("fundingSource.messageFileResearch"));
           }
         }
+      } else {
+        action.addMessage(action.getText("fundingSource.doesResearchHumanSubjects"));
+        action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.hasFileResearch",
+          action.getText("fundingSource.doesResearchHumanSubjects"));
       }
     }
 
