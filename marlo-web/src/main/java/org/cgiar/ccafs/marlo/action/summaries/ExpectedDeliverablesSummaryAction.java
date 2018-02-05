@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -28,6 +27,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -95,10 +97,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private long startTime;
 
   // Managers
-  private GlobalUnitManager crpManager;
   private GenderTypeManager genderTypeManager;
   private CrpProgramManager crpProgramManager;
-  private DeliverableManager deliverableManager;
+  private Set<Deliverable> currentPhaseDeliverables = new HashSet<>();
   // XLS bytes
   private byte[] bytesXLSX;
   // Streams
@@ -107,15 +108,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   HashMap<Integer, Set<Deliverable>> deliverablePerYearList = new HashMap<Integer, Set<Deliverable>>();
   HashMap<String, Set<Deliverable>> deliverablePerTypeList = new HashMap<String, Set<Deliverable>>();
   Set<Long> projectsList = new HashSet<Long>();
-  Set<Long> deliverablesList = new HashSet<Long>();
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager, DeliverableManager deliverableManager) {
+    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
-    this.deliverableManager = deliverableManager;
   }
 
 
@@ -131,7 +130,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
      */
     masterReport.getParameterValues().put("i8nDeliverableID", this.getText("searchTerms.deliverableId"));
     masterReport.getParameterValues().put("i8nDeliverableTitle",
-      this.getText("project.deliverable.generalInformation.title"));
+      this.getText("summaries.deliverable.deliverableTitle"));
     masterReport.getParameterValues().put("i8nKeyOutput",
       this.getText("project.deliverable.generalInformation.keyOutput"));
     masterReport.getParameterValues().put("i8nExpectedYear",
@@ -149,7 +148,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nIndividual", this.getText("deliverable.individual"));
     masterReport.getParameterValues().put("i8nPartnersResponsible", this.getText("deliverable.managing"));
     masterReport.getParameterValues().put("i8nShared", this.getText("deliverable.shared"));
-    masterReport.getParameterValues().put("i8nFundingSourcesID", this.getText("deliverable.fundingSourcesID"));
+    masterReport.getParameterValues().put("i8nOpenFundingSourcesID",
+      this.getText("summaries.fundingSource.openFundingSource"));
+    masterReport.getParameterValues().put("i8nFinishedFundingSourcesID",
+      this.getText("summaries.fundingSource.finishedFundingSource"));
     masterReport.getParameterValues().put("i8nFundingWindows", this.getText("deliverable.fundingWindows"));
     masterReport.getParameterValues().put("i8nNewExpectedYear", this.getText("deliverable.newExpectedYear"));
     masterReport.getParameterValues().put("i8nOutcomes", this.getText("impactPathway.menu.hrefOutcomes"));
@@ -191,7 +193,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       // Uncomment to see which Subreports are detecting the method getAllSubreports
       // System.out.println("Pentaho SubReports: " + hm);
       this.fillSubreport((SubReport) hm.get("details"), "details");
-      masterReport.getParameterValues().put("total_deliv", deliverablesList.size());
+      masterReport.getParameterValues().put("total_deliv", currentPhaseDeliverables.size());
       masterReport.getParameterValues().put("total_projects", projectsList.size());
       this.fillSubreport((SubReport) hm.get("summary"), "summary");
       this.fillSubreport((SubReport) hm.get("summaryPerType"), "summaryPerType");
@@ -232,6 +234,17 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     subReport.setDataFactory(cdf);
   }
 
+  private int getCalendarFromDate(Date date) {
+    try {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      return cal.get(Calendar.YEAR);
+    } catch (NullPointerException e) {
+      return 0;
+    }
+  }
+
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
@@ -243,30 +256,47 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     return "application/xlsx";
   }
 
-
   private TypedTableModel getDeliverablesDetailsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
-        "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "FS",
-        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID"},
+        "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS",
+        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Long.class},
+        Long.class, String.class},
       0);
 
-    for (Deliverable deliverable : deliverableManager.findAll().stream()
-      .filter(d -> d.isActive() && d.getProject() != null && d.getProject().isActive()
-        && d.getProject().getGlobalUnitProjects().stream()
-          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
-          .collect(Collectors.toList()).size() > 0
+    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
+      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
+        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
+          .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+      .collect(Collectors.toList())) {
+      for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
         && d.getDeliverableInfo(this.getSelectedPhase()) != null
-        && d.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-        && d.getProject().getProjectInfo().getStatus().toString().equals(ProjectStatusEnum.Ongoing.getStatusId())
-        && ((d.getDeliverableInfo().getNewExpectedYear() != null
-          && d.getDeliverableInfo().getNewExpectedYear() >= this.getSelectedYear())
-          || d.getDeliverableInfo().getYear() >= this.getSelectedYear()))
+        && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+          || (d.getDeliverableInfo().getStatus() != null
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getNewExpectedYear() != null
+            && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+          || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          || (d.getDeliverableInfo().getStatus() != null
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Complete.getStatusId())
+            && ((d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+              || (d.getDeliverableInfo().getNewExpectedYear() == null
+                && d.getDeliverableInfo().getYear() == this.getSelectedYear())))))
+        .collect(Collectors.toList())) {
+        currentPhaseDeliverables.add(deliverable);
+      }
+    }
+
+    for (Deliverable deliverable : currentPhaseDeliverables.stream()
       .sorted((d1, d2) -> d1.getId().compareTo(d2.getId())).collect(Collectors.toList())) {
       DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
       Long phaseID = deliverableInfo.getPhase().getId();
@@ -628,28 +658,51 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       }
 
 
-      String FS = "";
+      String openFS = "";
+      String finishedFS = "";
       Set<String> fsWindowsSet = new HashSet<String>();
 
       for (DeliverableFundingSource deliverableFundingSource : deliverable.getDeliverableFundingSources().stream()
-        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase()))
+        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
+          && df.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
         .collect(Collectors.toList())) {
-        if (FS.isEmpty()) {
-          FS += "FS" + deliverableFundingSource.getFundingSource().getId();
-        } else {
-          FS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+        FundingSourceInfo fundingSourceInfo = deliverableFundingSource.getFundingSource().getFundingSourceInfo();
+        if (fundingSourceInfo.getEndDate() != null) {
+          Date endDate = fundingSourceInfo.getEndDate();
+          Date extentionDate = fundingSourceInfo.getExtensionDate();
+          int endYear = this.getCalendarFromDate(endDate);
+          int extentionYear = this.getCalendarFromDate(extentionDate);
+          if ((endYear >= this.getSelectedYear()
+            && fundingSourceInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            || (extentionYear >= this.getSelectedYear() && fundingSourceInfo.getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+            if (openFS.isEmpty()) {
+              openFS += "FS" + deliverableFundingSource.getFundingSource().getId();
+            } else {
+              openFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+            }
+            if (fundingSourceInfo.getBudgetType() != null) {
+              fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
+            }
+          } else {
+            if (finishedFS.isEmpty()) {
+              finishedFS += "FS" + deliverableFundingSource.getFundingSource().getId();
+            } else {
+              finishedFS += ", FS" + deliverableFundingSource.getFundingSource().getId();
+            }
+            if (fundingSourceInfo.getBudgetType() != null) {
+              fsWindowsSet.add(fundingSourceInfo.getBudgetType().getName());
+            }
+          }
         }
+      }
+      if (openFS.isEmpty()) {
+        openFS = null;
+      }
+      if (finishedFS.isEmpty()) {
+        finishedFS = null;
+      }
 
-        if (deliverableFundingSource.getFundingSource() != null
-          && deliverableFundingSource.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
-          && deliverableFundingSource.getFundingSource().getFundingSourceInfo().getBudgetType() != null) {
-          fsWindowsSet
-            .add(deliverableFundingSource.getFundingSource().getFundingSourceInfo().getBudgetType().getName());
-        }
-      }
-      if (FS.isEmpty()) {
-        FS = null;
-      }
 
       String fsWindows = "";
       for (String fsType : fsWindowsSet.stream().sorted((s1, s2) -> s1.compareTo(s2)).collect(Collectors.toList())) {
@@ -665,20 +718,19 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
-        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, FS, fsWindows, outcomes,
-        projectLeadPartner, managingResponsible, phaseID});
+        projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, openFS, fsWindows, outcomes,
+        projectLeadPartner, managingResponsible, phaseID, finishedFS});
 
-      if (completionYear != null) {
-        if (deliverablePerYearList.containsKey(completionYear)) {
-          Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
-          deliverableSet.add(deliverable);
-          deliverablePerYearList.put(completionYear, deliverableSet);
-        } else {
-          Set<Deliverable> deliverableSet = new HashSet<>();
-          deliverableSet.add(deliverable);
-          deliverablePerYearList.put(completionYear, deliverableSet);
-        }
+      if (deliverablePerYearList.containsKey(completionYear)) {
+        Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
+        deliverableSet.add(deliverable);
+        deliverablePerYearList.put(completionYear, deliverableSet);
+      } else {
+        Set<Deliverable> deliverableSet = new HashSet<>();
+        deliverableSet.add(deliverable);
+        deliverablePerYearList.put(completionYear, deliverableSet);
       }
+
       if (deliverableType != null) {
         if (deliverablePerTypeList.containsKey(deliverableType)) {
           Set<Deliverable> deliverableSet = deliverablePerTypeList.get(deliverableType);
@@ -694,13 +746,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       if (projectID != null) {
         projectsList.add(projectID);
       }
-      if (deliverableId != null) {
-        deliverablesList.add(deliverableId);
-      }
     }
     return model;
-  }
 
+  }
 
   private TypedTableModel getDeliverablesPerTypeTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"deliverableType", "delivetableTotal"},
@@ -761,8 +810,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible", "showDescription"},
-        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class});
+      new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible", "showDescription", "cycle"},
+        new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class});
     String center = this.getLoggedCrp().getAcronym();
 
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -774,7 +823,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     String date = timezone.format(format) + "(GMT" + zone + ")";
     String year = this.getSelectedYear() + "";
     model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(),
-      this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION)});
+      this.hasSpecificities(APConstants.CRP_REPORTS_DESCRIPTION), this.getSelectedCycle()});
     return model;
   }
 
