@@ -90,6 +90,8 @@ public class APConfig {
   private String AUTOSAVE_FOLDER;
   @Value("${marlo.baseUrl}")
   private String BASE_URL;
+  @Value("${file.uploads.fundingSourceFolder}")
+  private String FUNDING_SOURCE_FOLDER;
 
   public APConfig() {
   }
@@ -239,6 +241,17 @@ public class APConfig {
     return EMAIL_USER;
   }
 
+  public String getFundingSourceFolder(String crp) {
+
+    if (FUNDING_SOURCE_FOLDER == null) {
+      LOG.error("there is not a base folder to upload the funding source files configured.");
+      return null;
+    }
+
+    return crp.concat(File.separator).concat(FUNDING_SOURCE_FOLDER);
+
+  }
+
   public String getGoogleApiKey() {
 
     if (GOOGLE_API_KEY == null) {
@@ -263,6 +276,7 @@ public class APConfig {
     return MYSQL_DATABASE;
   }
 
+
   /**
    * Get the OCS ws link
    * 
@@ -275,7 +289,6 @@ public class APConfig {
     }
     return OCS_LINK;
   }
-
 
   /**
    * Get the OCS ws password
@@ -302,6 +315,7 @@ public class APConfig {
     }
     return OCS_USER;
   }
+
 
   /**
    * Get the folder that contains all the files related to a project

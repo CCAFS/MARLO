@@ -100,6 +100,7 @@ public final class APConstants {
   public static final String CRP_NEXT_USERS = "crp_next_users";
   public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
   public static final String CRP_BASELINE_INDICATORS = "crp_baseline_indicators";
+  public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
