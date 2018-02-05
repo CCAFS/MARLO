@@ -107,6 +107,7 @@ function syncFundingSource() {
 
   // Set isSynced parameter
   isSynced = true;
+  $('#isSynced').val(isSynced);
 }
 
 function unSyncFundingSource() {
@@ -159,6 +160,7 @@ function unSyncFundingSource() {
 
   // Set isSynced parameter
   isSynced = false;
+  $('#isSynced').val(isSynced);
 }
 
 function getOCSMetadata() {
