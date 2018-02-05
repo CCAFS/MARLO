@@ -45,11 +45,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
-
-  @Expose
-  private PowbFlagshipPlans flagshipPlans;
-
-
   @Expose
   private PowbToc powbToc;
 
@@ -115,10 +110,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public User getCreatedBy() {
     return createdBy;
-  }
-
-  public PowbFlagshipPlans getFlagshipPlans() {
-    return flagshipPlans;
   }
 
   @Override
@@ -189,10 +180,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
-  }
-
-  public void setFlagshipPlans(PowbFlagshipPlans flagshipPlans) {
-    this.flagshipPlans = flagshipPlans;
   }
 
   public void setId(Long id) {
