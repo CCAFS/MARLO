@@ -360,8 +360,9 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
             if (crpClusterKeyOutputOutcome != null) {
               if (crpClusterKeyOutputtoUpdate.getCrpClusterKeyOutputOutcomes().stream()
-                .filter(c -> c.isActive() && c.getCrpProgramOutcome().getComposeID()
-                  .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
+                .filter(c -> c.isActive() && crpClusterKeyOutputOutcome.getCrpProgramOutcome() != null
+                  && c.getCrpProgramOutcome().getComposeID()
+                    .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
                 .collect(Collectors.toList()).isEmpty()) {
                 CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
                 crpClusterKeyOutputOutcomeAdd.setActive(true);
