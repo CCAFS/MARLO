@@ -22,12 +22,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbFlagshipPlansManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -42,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,21 +68,17 @@ public class FlagshipPlansAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbSynthesisManager powbSynthesisManager;
   private FileDBManager fileDBManager;
-
+  private PowbFlagshipPlansManager powbFlagshipPlansManager;
+  private CrpProgramManager crpProgramManager;
+  private AuditLogManager auditLogManager;
+  private UserManager userManager;
   // Model for the front-end
   private PowbSynthesis powbSynthesis;
   private Long powbSynthesisID;
-
   private List<LiaisonInstitution> liaisonInstitutions;
-
-
   private String transaction;
-
-  private AuditLogManager auditLogManager;
-  private UserManager userManager;
   private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
-  private CrpProgramManager crpProgramManager;
   private GlobalUnit loggedCrp;
   private CrpIndicatorsValidator validator;
 
@@ -87,7 +86,8 @@ public class FlagshipPlansAction extends BaseAction {
   public FlagshipPlansAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorsValidator validator,
     AuditLogManager auditLogManager, CrpProgramManager crpProgramManager, UserManager userManager,
-    PowbSynthesisManager powbSynthesisManager, FileDBManager fileDBManager) {
+    PowbSynthesisManager powbSynthesisManager, FileDBManager fileDBManager,
+    PowbFlagshipPlansManager powbFlagshipPlansManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -97,7 +97,7 @@ public class FlagshipPlansAction extends BaseAction {
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.fileDBManager = fileDBManager;
-
+    this.powbFlagshipPlansManager = powbFlagshipPlansManager;
   }
 
   @Override
@@ -113,19 +113,6 @@ public class FlagshipPlansAction extends BaseAction {
           fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
       } else {
         powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(null);
-      }
-    }
-  }
-
-  private void checkHistoryVersion() {
-    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-      this.setPowbSynthesisIdHistory();
-    } else {
-      this.setLiaisonInstitutionIdParameter();
-      this.setPowbSynthesisIdParameter();
-      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-      if (powbSynthesisID != null) {
-        powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       }
     }
   }
@@ -215,7 +202,16 @@ public class FlagshipPlansAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     // Check history version
-    this.checkHistoryVersion();
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+      this.setPowbSynthesisIdHistory();
+    } else {
+      this.setLiaisonInstitutionIdParameter();
+      this.setPowbSynthesisIdParameter();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+      if (powbSynthesisID != null) {
+        powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+      }
+    }
     // Validate draft version
     if (powbSynthesis != null) {
       Path path = this.getAutoSaveFilePath();
@@ -250,7 +246,32 @@ public class FlagshipPlansAction extends BaseAction {
 
   @Override
   public String save() {
-    return SUCCESS;
+    if (this.hasPermission("canEdit")) {
+      // New FL Plan
+      if (powbSynthesis != null && powbSynthesis.getPowbFlagshipPlans().getId() == null) {
+        PowbFlagshipPlans powbFlagshipPlans = new PowbFlagshipPlans();
+        powbFlagshipPlans.setActive(true);
+        powbFlagshipPlans.setCreatedBy(this.getCurrentUser());
+        powbFlagshipPlans.setModifiedBy(this.getCurrentUser());
+        powbFlagshipPlans.setPowbSynthesis(powbSynthesis);
+        powbFlagshipPlans.setPlanSummary(powbSynthesis.getPowbFlagshipPlans().getPlanSummary());
+        powbFlagshipPlans.setActiveSince(new Date());
+        powbSynthesis.setPowbFlagshipPlans(powbFlagshipPlans);
+        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+        powbSynthesisManager.save(powbSynthesis, this.getActionName(), new ArrayList<>(), this.getActualPhase());
+      } else {
+        powbSynthesis.getPowbFlagshipPlans().setActiveSince(new Date());
+        powbSynthesis.getPowbFlagshipPlans().setModifiedBy(this.getCurrentUser());
+        powbSynthesis.setActiveSince(new Date());
+        powbSynthesis.setModifiedBy(this.getCurrentUser());
+        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+        powbSynthesisManager.save(powbSynthesis, this.getActionName(), new ArrayList<>(), this.getActualPhase());
+      }
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
