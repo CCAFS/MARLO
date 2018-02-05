@@ -1276,15 +1276,16 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
 
-      if (fundingSource.getFundingSourceInfo().getFileResearch() != null
-        && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
-        || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
-        fundingSource.getFundingSourceInfo().setFileResearch(null);
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        if (fundingSource.getFundingSourceInfo().getFileResearch() != null
+          && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+          || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
+        }
       }
 
-
       validator.validate(this, fundingSource, true);
+
     }
   }
-
 }

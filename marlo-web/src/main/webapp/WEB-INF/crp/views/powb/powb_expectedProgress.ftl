@@ -46,20 +46,40 @@
           [/#if]
           
           [#-- Table A: Planned Milestones 2018 --]
+          [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
             <hr />
             [@tableAMacro /]
           </div>
+          [/#if]
+          
           
           [#if flagship]
-            [#assign outcomesFake = [ 
-              { "title": "Ourcome title fake"} 
+            [#assign flagshipOutcomes = [ 
+              { "title": " # of policy decisions taken (in part) based on engagement and information dissemination by CCAFS", 
+                "milestones": [
+                  { "title": "Training materials are developed and workshops held to strengthen national/state capacities for scenario-based strategic planning, as well as targeted materials for other partner organisations (e.g. NGOs) developed (linked to CoA 1.2)"},
+                  { "title": " National/state level decision makers supported in developing CSA investment portfolios for international climate finance providers that meet funding requirements and are informed by CCAFS science; decision makers made aware..."}
+                ] 
+              },
+              { "title": "Outcome #2", 
+                "milestones": [
+                  { "title": "Milestone #1"}
+                ] 
+              },
+              { "title": "Outcome #3", 
+                "milestones": [
+                  { "title": "Milestone #1"}
+                ] 
+              }
               ]
             /]
+            
             [#-- Flagship - Outcomes 2022 --]
-            [#list outcomesFake as outcome]
-              [@powbOutcomeMacro element=outcome name="" index=outcome_index /]
+            [#-- <h4 class="sectionSubTitle">[@s.text name="expectedProgress.flagshipOutcomes"][@s.param]${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym}[/@s.param][/@s.text]</h4> --]
+            [#list flagshipOutcomes as outcome]
+              [@powbOutcomeMacro element=outcome name="outcomes" index=outcome_index /]
             [/#list]
           [/#if]
         
@@ -76,34 +96,25 @@
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
-[#macro powbOutcomeMacro element name index isTemplate=false]
-  [#local customName = "${name}[${index}]" /]
-  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Index --]
-    <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
-    [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
-    [#-- Title --]
-    <div class="form-group grayBox"><strong>${(element.title)!}</strong></div>
-  </div>
-[/#macro]
-
 [#macro tableAMacro ]
   [#assign flagships = [ 
-    { "acronym": "FP1", "milestones": [
+    { "acronym": "FP1", 
+      "milestones": [
         { "title": "Milestone #1"},
         { "title": "Milestone #2"},
         { "title": "Milestone #3"},
         { "title": "Milestone #4"}
       ] 
     },
-    { "acronym": "FP2", "milestones": [
+    { "acronym": "FP2", 
+      "milestones": [
         { "title": "Milestone #1"},
         { "title": "Milestone #2"},
         { "title": "Milestone #3"}
       ] 
     },
-    { "acronym": "FP3", "milestones": [
+    { "acronym": "FP3", 
+      "milestones": [
         { "title": "Milestone #1"},
         { "title": "Milestone #2"},
         { "title": "Milestone #3"}
@@ -148,4 +159,84 @@
       </tbody>
     </table>
   </div>
+[/#macro]
+
+
+[#macro powbOutcomeMacro element name index isTemplate=false]
+  [#local customName = "${name}[${index}]" /]
+  <div id="powbOutcome-${isTemplate?string('template', index)}" class="powbOutcome simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#-- Index --]
+    <div class="leftHead sm"><span class="index">${index+1}</span></div>
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
+    [#-- Title --]
+    <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.title)!}</div>
+    
+    [#-- Milestones List --]
+    <div class="form-group">
+      [#list element.milestones as milestone]
+        [@powbMilestoneMacro element=milestone name="${customName}.milestones" index=milestone_index /]
+      [/#list]
+    </div>
+    
+  </div>
+[/#macro]
+
+[#macro powbMilestoneMacro element name index isTemplate=false]
+  [#local customName = "${name}[${index}]" /]
+  <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#-- Index --]
+    <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
+    [#-- Title --]
+    <div class="form-group row">
+      <div class="col-md-9"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!}</div>
+      <div class="col-md-3">[@milestoneContributions element=element /]</div>
+    </div>
+    
+    [#-- Assessment of risk to achievement --]
+    <div class="form-group">
+      <p><label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label></p>
+      [#if editable]
+        [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=false cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=false cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=false cssClass="" cssClassLabel=""/]
+      [#else]
+        
+      [/#if]
+    </div>
+    
+    [#-- Means of verification --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.meansVerifications" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+    </div>
+    
+  </div>
+[/#macro]
+
+[#macro milestoneContributions element]
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  [@s.text name="expectedProgress.milestonesContributions" /]
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 [/#macro]
