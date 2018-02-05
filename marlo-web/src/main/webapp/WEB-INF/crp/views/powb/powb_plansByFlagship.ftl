@@ -48,10 +48,10 @@
           <div class="form-group" style="position:relative" listname="">
             [@customForm.fileUploadAjax 
               fileDB=(powbSynthesis.powbFlagshipPlans.flagshipProgramFile)!{} 
-              name="flagshipProgramFile.id" 
+              name="powbSynthesis.powbFlagshipPlans.flagshipProgramFile.id" 
               label="liaisonInstitution.powb.flagshipProgramFile" 
-              dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
-              path="${(action.getPath(liaisonInstitutionID))!''}"
+              dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+              path="${action.path}"
               isEditable=editable
             /]
           </div>
