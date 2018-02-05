@@ -39,13 +39,13 @@
         <h3 class="headTitle">[@s.text name="adjustmentsChanges.title" /]</h3>
         <div class="borderBox">
         
-          [#-- CRP Management and governance (up to 1/4 page) --] 
+          [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --] 
           <div class="form-group margin-panel">
             [@customForm.textArea name="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
           </div>
           
-          [#if PMU]
           [#-- Annex a brief updated summary of the crp --] 
+          [#if PMU]
           <div class="form-group margin-panel">
             <label for="fileInput">[@s.text name="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
             <div class="row">
