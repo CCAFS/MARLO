@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Report" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
-[#assign pageLibs = [ ] /]
+[#assign pageLibs = [ "blueimp-file-upload" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb/powb_adjustmentsChanges.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
@@ -46,6 +46,7 @@
           
           [#-- Annex a brief updated summary of the crp --] 
           [#if PMU]
+          [#-- 
           <div class="form-group margin-panel">
             <label for="fileInput">[@s.text name="powbSynthesis.powbToc.file" i18nkey="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
             <div class="row">
@@ -61,6 +62,16 @@
               </div>
             </div>
           </div>
+           --]
+          [@customForm.fileUploadAjax 
+            fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
+            name="powbSynthesis.powbToc.file" 
+            label="adjustmentsChanges.uploadFile" 
+            dataUrl="${baseUrl}/adjustmentsChanges.do" 
+            path="${action.getPath((fundingSource.fundingSourceInfo.id?string)!-1)}"
+            isEditable=editable
+            required=true
+          /]
           [/#if]
           
           [#if PMU]
