@@ -452,6 +452,9 @@ public final class APConstants {
   public static final String HOSTNAME_AD = "ciatroot1.ciat.cgiarad.org";
   public static final String PORT_AD = "3268";
 
+  // POWB Synthesis
+  public static final String POWB_FOLDER = "powbSynthesis";
+
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =

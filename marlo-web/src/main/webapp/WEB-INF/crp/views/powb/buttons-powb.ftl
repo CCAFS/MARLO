@@ -2,6 +2,7 @@
 [#-- Project identifier --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(liaisonInstitutionID)!}" />
 <input type="hidden"  name="powbSynthesisID" value="${(powbSynthesis.id)!}" />
+<input type="hidden"  name="liaisonInstitutionAcronym" value="${(powbSynthesis.liaisonInstitution.acronym)!}" />
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
 <input type="hidden"  name="className" value="${(program.class.name)!}"/>
 <input type="hidden"  name="id" value="${(program.id)!}"/>

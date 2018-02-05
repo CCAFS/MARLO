@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
@@ -40,26 +41,27 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
   private static final long serialVersionUID = 1L;
 
 
-  private static String POWB_FOLDER = "powbSynthesis";
-
-
   public static Logger LOG = LoggerFactory.getLogger(UploadPowbSynthesisGeneral.class);
 
 
   private File file;
+
+
   private String fileContentType;
+
+
   private String fileFileName;
-  private String programAcronym;
-  private String sectionName;
+  private String liaisonInstitutionAcronym;
+
+
+  private String actionName;
   private boolean saved;
   private long fileID;
-
 
   @Inject
   public UploadPowbSynthesisGeneral(APConfig config) {
     super(config);
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -70,13 +72,20 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
     return SUCCESS;
   }
 
+  @Override
+  public String getActionName() {
+    return actionName;
+  }
+
   public File getFile() {
     return file;
   }
 
+
   public String getFileContentType() {
     return fileContentType;
   }
+
 
   public String getFileFileName() {
     return fileFileName;
@@ -86,12 +95,14 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
     return fileID;
   }
 
-
   private String getFundingSourceFileResearchPath() {
     String upload = config.getUploadsBaseFolder();
     return upload + File.separator + this.getPowbSourceFolder() + File.separator;
   }
 
+  public String getLiaisonInstitutionAcronym() {
+    return liaisonInstitutionAcronym;
+  }
 
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
@@ -99,22 +110,19 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
 
 
   private String getPowbSourceFolder() {
-    return POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator).concat(programAcronym)
-      .concat(File.separator).concat(sectionName).concat(File.separator);
-  }
-
-
-  public String getProgramAcronym() {
-    return programAcronym;
-  }
-
-  public String getSectionName() {
-    return sectionName;
+    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
+      .concat(liaisonInstitutionAcronym).concat(File.separator).concat(actionName.replace("/", "_"))
+      .concat(File.separator);
   }
 
 
   public boolean isSaved() {
     return saved;
+  }
+
+
+  public void setActionName(String actionName) {
+    this.actionName = actionName;
   }
 
 
@@ -138,18 +146,13 @@ public class UploadPowbSynthesisGeneral extends BaseAction {
   }
 
 
-  public void setProgramAcronym(String programAcronym) {
-    this.programAcronym = programAcronym;
+  public void setLiaisonInstitutionAcronym(String liaisonInstitutionAcronym) {
+    this.liaisonInstitutionAcronym = liaisonInstitutionAcronym;
   }
 
 
   public void setSaved(boolean saved) {
     this.saved = saved;
-  }
-
-
-  public void setSectionName(String sectionName) {
-    this.sectionName = sectionName;
   }
 
 
