@@ -98,12 +98,16 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   @Inject
   public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
+    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.fileDBManager = fileDBManager;
     this.auditLogManager = auditLogManager;
+    this.userManager = userManager;
+    this.crpProgramManager = crpProgramManager;
+    this.powbSynthesisManager = powbSynthesisManager;
   }
 
 
@@ -232,7 +236,9 @@ public class ToCAdjustmentsAction extends BaseAction {
       } catch (NumberFormatException e) {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers());
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+            .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             LiaisonUser liaisonUser = new LiaisonUser();
             liaisonUser = liaisonUsers.get(0);
@@ -253,8 +259,10 @@ public class ToCAdjustmentsAction extends BaseAction {
         Phase phase = this.getActualPhase();
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
-          powbSynthesis = this.createPowbSynthesis(phase, liaisonInstitutionID);
+          powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
         }
+        powbSynthesisID = powbSynthesis.getId();
+
       }
     }
 
@@ -297,10 +305,12 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
 
     // Check if the pow toc has file
-    if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-      powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-    } else {
-      powbSynthesis.getPowbToc().setFile(null);
+    if (powbSynthesis.getPowbToc().getFile() != null) {
+      if (powbSynthesis.getPowbToc().getFile().getId() != null) {
+        powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
+      } else {
+        powbSynthesis.getPowbToc().setFile(null);
+      }
     }
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -310,6 +320,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     if (this.isHttpPost()) {
       // if(powbSynthesis.getPowbToc() != null){

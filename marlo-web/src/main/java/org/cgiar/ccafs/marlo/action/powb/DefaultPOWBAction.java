@@ -38,6 +38,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,17 @@ public class DefaultPOWBAction extends BaseAction {
     return SUCCESS;
   }
 
+  public Long firstFlagship() {
+    List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
+    return liaisonInstitutionId;
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = liaisonInstitution.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -96,7 +108,6 @@ public class DefaultPOWBAction extends BaseAction {
       + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -114,10 +125,10 @@ public class DefaultPOWBAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -151,6 +162,7 @@ public class DefaultPOWBAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -165,22 +177,21 @@ public class DefaultPOWBAction extends BaseAction {
     } catch (NumberFormatException e) {
       User user = userManager.getUser(this.getCurrentUser().getId());
       if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers());
-
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+          .collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
           LiaisonUser liaisonUser = new LiaisonUser();
           liaisonUser = liaisonUsers.get(0);
           liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
           if (liaisonInstitutionID == 1) {
-            liaisonInstitutionID = new Long(2);
+            liaisonInstitutionID = this.firstFlagship();
           }
         } else {
-          liaisonInstitutionID = new Long(2);
+          liaisonInstitutionID = this.firstFlagship();
         }
-
       } else {
-        liaisonInstitutionID = new Long(2);
+        liaisonInstitutionID = this.firstFlagship();
       }
     }
 
@@ -229,6 +240,7 @@ public class DefaultPOWBAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     // Set Base permission
     String params[] = {loggedCrp.getAcronym(), liaisonInstitution.getId() + ""};
@@ -241,7 +253,6 @@ public class DefaultPOWBAction extends BaseAction {
   public String save() {
     return SUCCESS;
   }
-
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;

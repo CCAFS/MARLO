@@ -218,5 +218,8 @@
 		<mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml" />
 		<mapping resource="xmls/EmailLogs.hbm.xml" />
 		<mapping resource="xmls/ExpectedStudyProjects.hbm.xml" />
+		<mapping resource="xmls/PowbSynthesis.xml" />
+		<mapping resource="xmls/PowbFlagshipPlans.xml" />
+		<mapping resource="xmls/PowbToc.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

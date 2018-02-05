@@ -23,16 +23,17 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
+		<many-to-one name="liaisonInstitution"
+			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+			<column name="liaison_institution_id" />
+		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
-		<set name="powbTocs" table="powb_toc" inverse="true" lazy="true"
-			fetch="select">
-			<key>
-				<column name="powb_synthesis_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbToc" />
-		</set>
+		<one-to-one name="powbToc" class="org.cgiar.ccafs.marlo.data.model.PowbToc"
+			cascade="save-update"></one-to-one>
+		<one-to-one name="powbFlagshipPlans"
+			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
 	</class>
 </hibernate-mapping>
