@@ -47,7 +47,7 @@
           [#-- If major changes have been made to your flagship since the CRP proposal was published, please annex a brief summary of the current flagship program with the updated theory of change. --]
           <div class="form-group" style="position:relative" listname="">
             [@customForm.fileUploadAjax 
-              fileDB=(flagshipProgramFile)!{} 
+              fileDB=(powbSynthesis.powbFlagshipPlans.flagshipProgramFile)!{} 
               name="flagshipProgramFile.id" 
               label="liaisonInstitution.powb.flagshipProgramFile" 
               dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
