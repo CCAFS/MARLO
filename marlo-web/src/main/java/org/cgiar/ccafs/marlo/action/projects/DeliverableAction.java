@@ -1316,34 +1316,11 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Extended.getStatusId());
 
           }
-          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer
-            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
 
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-
-              if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() < this.getActualPhase().getYear()) {
-                status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-              }
-
-            }
-
-            if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() != null) {
-                if (deliverable.getDeliverableInfo(this.getActualPhase()).getNewExpectedYear() < this.getActualPhase()
-                  .getYear()) {
-                  status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-                }
-              }
-
-            }
-
-
+          if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            status.remove(ProjectStatusEnum.Ongoing.getStatusId());
           }
-
         }
       } else {
         if (deliverable.getDeliverableInfo(this.getActualPhase()).getYear() <= this.getReportingYear()) {
