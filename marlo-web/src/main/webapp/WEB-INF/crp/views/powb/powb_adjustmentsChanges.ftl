@@ -64,11 +64,11 @@
           </div>
            --]
           [@customForm.fileUploadAjax 
-            fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
-            name="powbSynthesis.powbToc.file" 
+            fileDB=(powbSynthesis.powbToc.file)!{} 
+            name="powbSynthesis.powbToc.file.id" 
             label="adjustmentsChanges.uploadFile" 
-            dataUrl="${baseUrl}/adjustmentsChanges.do" 
-            path="${action.getPath((fundingSource.fundingSourceInfo.id?string)!-1)}"
+            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+            path="${action.path}"
             isEditable=editable
             required=true
           /]

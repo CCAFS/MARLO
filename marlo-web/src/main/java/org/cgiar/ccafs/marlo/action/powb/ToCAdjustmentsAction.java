@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -167,15 +168,26 @@ public class ToCAdjustmentsAction extends BaseAction {
     return loggedCrp;
   }
 
+  // methos to download link file
+  public String getPath() {
+    return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
+  }
+
+
+  private String getPowbSourceFolder() {
+    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
+      .concat(powbSynthesis.getLiaisonInstitution().getAcronym()).concat(File.separator)
+      .concat(this.getActionName().replace("/", "_")).concat(File.separator);
+  }
+
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
-
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -390,6 +402,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
@@ -397,7 +410,6 @@ public class ToCAdjustmentsAction extends BaseAction {
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
