@@ -18,7 +18,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
-[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false)/]
+[#assign showEXtDate = ((fundingSource.fundingSourceInfo.status == 4)!false) || (((fundingSource.fundingSourceInfo.extensionDate?has_content)!false) && !editable)/]
 [#assign startYear = ((fundingSource.fundingSourceInfo.startDate?string.yyyy)?number)!currentCycleYear /]
 [#assign endYear = ((fundingSource.fundingSourceInfo.endDate?string.yyyy)?number)!startYear /]
 [#assign extensionYear = ((fundingSource.fundingSourceInfo.extensionDate?string.yyyy)?number)!endYear /]
@@ -222,30 +222,44 @@
           [#if (editable || editStatus)]
             <input id="fundingSource.fundingSourceInfo.extensionDate" type="hidden" name="fundingSource.fundingSourceInfo.extensionDate" value="${extensionValue}" class="form-control input-sm metadataValue extensionDateInput">
             <p class="dateLabel btn btn-default ${isSynced?string('disabled','')}">${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p>    
-            [#-- <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small> --]
+            <small class="pull-right clearDate syncVisibles" style="display:${isSynced?string('none', 'block')}"> <span class="glyphicon glyphicon-remove"></span> Clear</small>
           [#else]
             <input type="hidden" class="extensionDateInput" name="fundingSource.fundingSourceInfo.extensionDate" value="${(fundingSource.fundingSourceInfo.extensionDate?string["yyyy-MM-dd"])!}" />
             <div class="input"><p>${(fundingSource.fundingSourceInfo.extensionDate?string["MMMM yyyy"])!}</p></div>
           [/#if]
         </div>
       </div>
+      <hr />
       
-      [#-- Upload bilateral contract --]
-      <div class="form-group fileUploadContainer">
-        <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign hasFile = fundingSource.fundingSourceInfo.file?? && fundingSource.fundingSourceInfo.file.id?? /]
-        <input id="fileID" type="hidden" name="fundingSource.fundingSourceInfo.file.id" value="${(fundingSource.fundingSourceInfo.file.id)!}" />
-        [#-- Input File --]
-        [#if editable]
-        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+      [#--  Does this study involve research with human subjects? --]
+      [#if action.hasSpecificities('crp_has_research_human')]
+      <div class="form-group" style="position:relative" listname="fundingSource.fundingSourceInfo.hasFileResearch">
+        [#if (fundingSource.fundingSourceInfo.hasFileResearch??)!false]
+          [#assign hasHumanSubjects = fundingSource.fundingSourceInfo.hasFileResearch /]
         [/#if]
-        [#-- Uploaded File --]
-        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if fundingSource.fundingSourceInfo.file??]${(fundingSource.fundingSourceInfo.file.fileName)!('No file name')} [/#if]</span> 
-          [#if editable]<span class="removeIcon"> </span> [/#if]
-        </p>
+        
+        <label>[@s.text name="fundingSource.doesResearchHumanSubjects" /] [@customForm.req required=editable  /]</label>
+        [#if editable]
+          [@customForm.radioFlat id="humanSubjects-yes" name="fundingSource.fundingSourceInfo.hasFileResearch" label="Yes" value="true" checked=((hasHumanSubjects)!false) cssClass="humanSubjects-yes humanSubjectsRadio" cssClassLabel="radio-label-yes"/]
+          [@customForm.radioFlat id="humanSubjects-no" name="fundingSource.fundingSourceInfo.hasFileResearch" label="No" value="false" checked=((!hasHumanSubjects)!false) cssClass="humanSubjects-no humanSubjectsRadio" cssClassLabel="radio-label-no"/]
+        [#else]
+          ${(hasHumanSubjects?string('Yes', 'No'))!}
+        [/#if]
+        [#-- Upload File (Human subjects research) fileResearch --]
+        <div class="form-group humanSubjectsBlock" style="display:${((hasHumanSubjects)!false)?string('block', 'none')}; position:relative" listname="fundingSource.fundingSourceInfo.fileResearch">
+          [@customForm.fileUploadAjax 
+            fileDB=(fundingSource.fundingSourceInfo.fileResearch)!{} 
+            name="fundingSource.fundingSourceInfo.fileResearch.id" 
+            label="fundingSource.uploadHumanSubjects" 
+            dataUrl="${baseUrl}/uploadFundingSourceResearch.do" 
+            path="${action.getPath((fundingSource.fundingSourceInfo.id?string)!-1)}"
+            isEditable=editable
+            required=true
+          /]
+        </div>
       </div>
-       
+      <hr />
+      [/#if]
       
       <div class="form-group">
         <div class="row">
@@ -278,14 +292,25 @@
         </div>
       </div>
       
+      [#-- Upload bilateral contract --]
+      <div class="form-group">
+        [@customForm.fileUploadAjax 
+          fileDB=(fundingSource.fundingSourceInfo.file)!{}
+          name="fundingSource.fundingSourceInfo.file.id" 
+          label="fundingSource.uploadContract" 
+          dataUrl="${baseUrl}/uploadFundingSource.do" 
+          isEditable=editable
+        /]
+      </div>
+      <hr />
+      
       [#-- Contact person name and email --]
       [#assign canSeePIEmail = action.hasSpecificities('crp_email_funding_source')]
       <div class="form-group row">
           <div class="col-md-6 metadataElement-pInvestigator">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonName" help="projectCofunded.contactName.help" i18nkey="projectCofunded.contactName" className="contactName metadataValue" required=true readOnly=isSynced editable=editable /]</div>
           <div class="col-md-6" style="display:${canSeePIEmail?string('block','none')}">[@customForm.input name="fundingSource.fundingSourceInfo.contactPersonEmail" i18nkey="projectCofunded.contactEmail" className="contactEmail" required=true editable=editable /]</div>
       </div>
-      
-      <br />
+      <hr />
         
       <div class="form-group-donor">
         [#-- Direct Donor --]
@@ -327,7 +352,7 @@
         [/#if]
       </div>
     </div>
-    <h4 class="headTitle">Location information</h4> 
+    <h4 class="headTitle">Location information</h4>
     <div class="borderBox informationWrapper">
     [#-- GLOBAL DIMENSION --]
     [#if editable]
@@ -368,7 +393,7 @@
            <small style="color: #337ab7;">([@s.text name="projectLocations.standardLocations" /])</small>
          </div>
          
-          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions"> 
+          <div id="regionList" class="panel-body" listname="fundingSource.fundingRegions">
             <ul class="list">
             [#if fundingSource.fundingRegions?has_content]
               [#list fundingSource.fundingRegions as region]

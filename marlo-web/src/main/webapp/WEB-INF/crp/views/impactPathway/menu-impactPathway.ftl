@@ -43,7 +43,7 @@
 
 [#-- Submition message --]
 [#if !submission?has_content && completed && !canSubmit]
-  <p class="text-center" style="display:block">The Impact Pathway can be submitted now by Flagship leaders.</p>
+  <p class="text-center" style="display:block">The Impact Pathway can be submitted now by the flagship leader.</p>
 [/#if]
 
 [#-- Check button --]
@@ -55,7 +55,7 @@
 
 [#-- Submit button --]
 [#if canEdit]
-  [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+  [#assign showSubmit=(canSubmit && (!submission?has_content) && completed)]
   <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
