@@ -168,12 +168,12 @@ public class ToCAdjustmentsAction extends BaseAction {
     return loggedCrp;
   }
 
-  // methos to download link file
+  // Method to download link file
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
   }
 
-
+  // Method to get the download folder
   private String getPowbSourceFolder() {
     return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(powbSynthesis.getLiaisonInstitution().getAcronym()).concat(File.separator)
