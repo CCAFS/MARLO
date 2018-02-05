@@ -129,7 +129,8 @@ public class DashboardAction extends BaseAction {
 
 
       }
-      List<Project> closedProjects = projectManager.getCompletedProjects(this.getCrpID());
+      List<Project> closedProjects =
+        projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
       if (closedProjects != null) {
         // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
         myProjects.removeAll(closedProjects);
