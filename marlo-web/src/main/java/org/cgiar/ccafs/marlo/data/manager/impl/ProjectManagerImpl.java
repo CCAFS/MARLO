@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -67,8 +67,8 @@ public class ProjectManagerImpl implements ProjectManager {
 
   @Override
 
-  public List<Project> getCompletedProjects(long crpId) {
-    return projectDAO.getCompletedProjects(crpId);
+  public List<Project> getCompletedProjects(long crpId, long idPhase) {
+    return projectDAO.getCompletedProjects(crpId, idPhase);
   }
 
   @Override

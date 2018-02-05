@@ -57,7 +57,7 @@ public interface ProjectDAO {
    */
   public List<Project> findAll();
 
-  public List<Project> getCompletedProjects(long crpId);
+  public List<Project> getCompletedProjects(long crpId, long idPhase);
 
   public List<Project> getNoPhaseProjects(long crpId, Phase phase);
 
