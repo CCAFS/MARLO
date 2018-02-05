@@ -99,6 +99,9 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year,
+    String sectionName);
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -106,6 +109,7 @@ public interface SectionStatusManager {
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
+
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
@@ -124,7 +128,6 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     String sectionName);
-
 
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.

@@ -5,6 +5,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -45,6 +47,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
+
   @Expose
   private PowbToc powbToc;
 
@@ -52,9 +55,12 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private PowbFlagshipPlans powbFlagshipPlans;
 
-
   @Expose
   private PowbEvidence powbEvidence;
+
+
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   public PowbSynthesis() {
   }
@@ -68,7 +74,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -112,6 +117,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   @Override
   public Long getId() {
     return id;
@@ -128,21 +134,21 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public Phase getPhase() {
     return phase;
   }
+
 
   public PowbEvidence getPowbEvidence() {
     return powbEvidence;
@@ -156,6 +162,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbToc;
   }
 
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
+  }
 
   @Override
   public int hashCode() {
@@ -164,6 +173,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -186,31 +196,35 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setPowbEvidence(PowbEvidence powbEvidence) {
     this.powbEvidence = powbEvidence;
   }
 
-
   public void setPowbFlagshipPlans(PowbFlagshipPlans powbFlagshipPlans) {
     this.powbFlagshipPlans = powbFlagshipPlans;
   }
 
+
   public void setPowbToc(PowbToc powbToc) {
     this.powbToc = powbToc;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

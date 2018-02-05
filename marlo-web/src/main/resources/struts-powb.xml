@@ -13,9 +13,9 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/adjustmentsChanges</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="powbSynthesisID">${liaisonInstitutionID}</param>
-        <param name="edit">true</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
         <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
       </result>
     </action>
     

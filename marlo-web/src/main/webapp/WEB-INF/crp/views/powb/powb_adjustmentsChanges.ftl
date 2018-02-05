@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "POWB Report" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb/powb_adjustmentsChanges.js" ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
@@ -41,13 +41,13 @@
         
           [#-- CRP Management and governance (up to 1/4 page) --] 
           <div class="form-group margin-panel">
-            [@customForm.textArea name="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#if PMU]
           [#-- Annex a brief updated summary of the crp --] 
           <div class="form-group margin-panel">
-            <label for="fileInput">[@s.text name="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
+            <label for="fileInput">[@s.text name="powbSynthesis.powbToc.file" i18nkey="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
             <div class="row">
               <div class="col-sm-7">
                 <div class="input-group">

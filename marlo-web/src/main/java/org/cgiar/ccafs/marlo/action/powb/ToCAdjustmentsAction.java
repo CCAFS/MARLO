@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -81,6 +82,8 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
+  private ToCAdjustmentsValidator validator;
+
   // Variables
   private String transaction;
 
@@ -100,7 +103,8 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Inject
   public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager) {
+    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
+    ToCAdjustmentsValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -109,6 +113,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.validator = validator;
   }
 
 
@@ -306,12 +311,16 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
 
     // Check if the pow toc has file
-    if (powbSynthesis.getPowbToc().getFile() != null) {
-      if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-        powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-      } else {
-        powbSynthesis.getPowbToc().setFile(null);
+    if (this.isPMU()) {
+      if (powbSynthesis.getPowbToc().getFile() != null) {
+        if (powbSynthesis.getPowbToc().getFile().getId() != null) {
+          powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
+        } else {
+          powbSynthesis.getPowbToc().setFile(null);
+        }
       }
+    } else {
+      powbSynthesis.getPowbToc().setFile(null);
     }
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -337,12 +346,13 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() == null) {
-          powbSynthesis.getPowbToc().setFile(null);
-        } else {
-          powbSynthesis.getPowbToc().setFile(powbSynthesis.getPowbToc().getFile());
+      if (this.isPMU()) {
+        if (powbSynthesis.getPowbToc().getFile() != null) {
+          if (powbSynthesis.getPowbToc().getFile().getId() == null) {
+            powbSynthesis.getPowbToc().setFile(null);
+          } else {
+            powbSynthesis.getPowbToc().setFile(powbSynthesis.getPowbToc().getFile());
+          }
         }
       }
 
@@ -360,6 +370,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -372,7 +383,6 @@ public class ToCAdjustmentsAction extends BaseAction {
       } else {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-
 
       return SUCCESS;
     } else {
@@ -403,6 +413,13 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, powbSynthesis, true);
+    }
   }
 
 }
