@@ -228,22 +228,19 @@ public class FundingSourceValidator extends BaseValidator {
         double currentBudget = 0;
 
         for (FundingSourceBudget fundingSourceBudget : budgets) {
-          if (fundingSourceBudget.getBudget() != null) {
-            currentBudget += fundingSourceBudget.getBudget();
+          if (fundingSourceBudget != null) {
+            if (fundingSourceBudget.getBudget() != null) {
+              currentBudget += fundingSourceBudget.getBudget();
+            }
           }
-
         }
 
         if (currentBudget > grantAmount) {
-
-
           for (int i = 0; i < budgets.size(); i++) {
             action.addMessage(action.getText("fundingSource.budgetWrongValue"));
             action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
               InvalidFieldsMessages.WRONGVALUE);
-
           }
-
         }
 
 
