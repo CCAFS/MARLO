@@ -46,11 +46,19 @@
           
           [#-- Annex a brief updated summary of the crp --] 
           [#if PMU]
-          [#-- 
           <div class="form-group margin-panel">
-            <label for="fileInput">[@s.text name="powbSynthesis.powbToc.file" i18nkey="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
             <div class="row">
               <div class="col-sm-7">
+                [@customForm.fileUploadAjax 
+                  fileDB=(powbSynthesis.powbToc.file)!{} 
+                  name="powbSynthesis.powbToc.file.id" 
+                  label="adjustmentsChanges.uploadFile" 
+                  dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+                  path="${action.path}"
+                  isEditable=editable
+                  required=true
+                /]
+                [#-- 
                 <div class="input-group">
                     <input type="text" class="form-control" readonly>
                     <label class="input-group-btn">
@@ -59,19 +67,10 @@
                         </span>
                     </label>
                 </div>
+                 --]
               </div>
             </div>
           </div>
-           --]
-          [@customForm.fileUploadAjax 
-            fileDB=(powbSynthesis.powbToc.file)!{} 
-            name="powbSynthesis.powbToc.file.id" 
-            label="adjustmentsChanges.uploadFile" 
-            dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
-            path="${action.path}"
-            isEditable=editable
-            required=true
-          /]
           [/#if]
           
           [#if PMU]
