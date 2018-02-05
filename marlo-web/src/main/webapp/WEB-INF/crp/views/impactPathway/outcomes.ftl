@@ -256,6 +256,7 @@
             [#-- Uploaded File --]
             <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
               <span class="contentResult">[#if outcome.file??]
+              ${action.getBaseLineFileURL((outcome.id?string)!-1)}
                 <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}/${(outcome.file.fileName)!}">${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span> 
               [#if editable]<span class="removeIcon"> </span> [/#if]

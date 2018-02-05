@@ -44,7 +44,7 @@
     </action>
     
     <!--  1.4 Plans by CRP Flagships -->
-    <action name="{crp}/plansByFlagship" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+    <action name="{crp}/plansByFlagship" class="org.cgiar.ccafs.marlo.action.powb.FlagshipPlansAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_plansByFlagship.ftl</result>
       <result name="success" type="redirectAction">

@@ -221,5 +221,7 @@
 		<mapping resource="xmls/PowbSynthesis.xml" />
 		<mapping resource="xmls/PowbFlagshipPlans.xml" />
 		<mapping resource="xmls/PowbToc.hbm.xml" />
+		<mapping resource="xmls/PowbEvidencePlannedStudies.hbm.xml" />
+		<mapping resource="xmls/PowbEvidences.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
