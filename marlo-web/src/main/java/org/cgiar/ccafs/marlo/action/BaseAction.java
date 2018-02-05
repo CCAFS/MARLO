@@ -1182,9 +1182,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param phase
    * @return PowbSynthesis object
    */
-  public PowbSynthesis createPowbSynthesis(Phase phase, long liaisonInstitutionID) {
+  public PowbSynthesis createPowbSynthesis(long phaseID, long liaisonInstitutionID) {
 
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+    Phase phase = phaseManager.getPhaseById(phaseID);
 
     PowbSynthesis synthesis = new PowbSynthesis();
     synthesis.setActive(true);
@@ -1195,7 +1196,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     synthesis.setLiaisonInstitution(liaisonInstitution);
 
     synthesis = powbSynthesisManager.savePowbSynthesis(synthesis);
-
+    this.clearPermissionsCache();
     return synthesis;
 
   }

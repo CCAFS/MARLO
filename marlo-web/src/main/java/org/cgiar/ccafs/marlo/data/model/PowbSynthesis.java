@@ -45,12 +45,16 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
+
   @Expose
   private PowbFlagshipPlans flagshipPlans;
 
 
   @Expose
   private PowbToc powbToc;
+
+  @Expose
+  private PowbFlagshipPlans powbFlagshipPlans;
 
 
   public PowbSynthesis() {
@@ -65,6 +69,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -107,20 +112,20 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
   public PowbFlagshipPlans getFlagshipPlans() {
     return flagshipPlans;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -139,10 +144,14 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public Phase getPhase() {
     return phase;
   }
+
+  public PowbFlagshipPlans getPowbFlagshipPlans() {
+    return powbFlagshipPlans;
+  }
+
 
   public PowbToc getPowbToc() {
     return powbToc;
@@ -173,27 +182,31 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setFlagshipPlans(PowbFlagshipPlans flagshipPlans) {
     this.flagshipPlans = flagshipPlans;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+
+  public void setPowbFlagshipPlans(PowbFlagshipPlans powbFlagshipPlans) {
+    this.powbFlagshipPlans = powbFlagshipPlans;
   }
 
   public void setPowbToc(PowbToc powbToc) {
