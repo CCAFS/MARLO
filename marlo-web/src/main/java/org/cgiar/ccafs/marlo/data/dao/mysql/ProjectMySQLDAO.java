@@ -170,7 +170,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     query.append("where p.is_active=1 and gup.`origin`=1 and gup.global_unit_id=");
     query.append(crpId);
     query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
-      + ProjectStatusEnum.Complete.getStatusId() + " ) and pi.id_phase" + phaseID);
+      + ProjectStatusEnum.Complete.getStatusId() + " ) and pi.id_phase=" + phaseID);
     List<Map<String, Object>> list = super.findCustomQuery(query.toString());
 
     List<Project> projects = new ArrayList<Project>();
