@@ -39,19 +39,19 @@
         <h3 class="headTitle">[@s.text name="evidenceRelevant.title" /]</h3>
         <div class="borderBox">
           [#-- Provide a short narrative for any outcome --]
-          <div class="form-group evidence-panel">
+          <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
             [@customForm.textArea name="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
-          <div class="form-group evidence-panel">
+          <div class="form-group margin-panel">
             <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.table.title" /]</h4>
             <hr />
             [@tableBMacro /]
           </div>
           [#-- Planned Studies for Relevant Outcomes and Impacts --]
-          <div class="form-group evidence-panel">
+          <div class="form-group margin-panel">
             <div class="evidence-plannedStudies-header row">
               <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
               <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>

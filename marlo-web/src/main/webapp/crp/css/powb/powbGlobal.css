@@ -55,6 +55,12 @@ table ul {
   vertical-align:middle;
 }
 
+form .form-group.margin-panel {
+  margin-bottom: 40px;
+}
+
+/************* 1.1 ToC Adjustments/Changes ***************/
+
 /************* 1.2 Expected CRP Progress ***************/
 
 .powbOutcome {
@@ -64,9 +70,6 @@ table ul {
   padding-top: 20px;
 }
 /************* 1.3 Evidence ***************/
-form .form-group.evidence-panel {
-  margin-bottom: 40px;
-}
 
 .evidence-plannedStudies-header .flagship-planned-studies-button {
   position: absolute;
