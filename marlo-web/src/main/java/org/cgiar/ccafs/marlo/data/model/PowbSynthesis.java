@@ -53,9 +53,13 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private PowbToc powbToc;
 
+
   @Expose
   private PowbFlagshipPlans powbFlagshipPlans;
 
+
+  @Expose
+  private PowbEvidence powbEvidence;
 
   public PowbSynthesis() {
   }
@@ -104,6 +108,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -121,11 +126,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -134,10 +137,12 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -148,14 +153,18 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
+  public PowbEvidence getPowbEvidence() {
+    return powbEvidence;
+  }
+
   public PowbFlagshipPlans getPowbFlagshipPlans() {
     return powbFlagshipPlans;
   }
 
-
   public PowbToc getPowbToc() {
     return powbToc;
   }
+
 
   @Override
   public int hashCode() {
@@ -186,22 +195,26 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.flagshipPlans = flagshipPlans;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void setPowbEvidence(PowbEvidence powbEvidence) {
+    this.powbEvidence = powbEvidence;
   }
 
 

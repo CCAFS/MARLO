@@ -35,5 +35,7 @@
 			cascade="save-update"></one-to-one>
 		<one-to-one name="powbFlagshipPlans"
 			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
+		<one-to-one name="powbEvidence"
+			class="org.cgiar.ccafs.marlo.data.model.PowbEvidence" cascade="save-update"></one-to-one>
 	</class>
 </hibernate-mapping>
