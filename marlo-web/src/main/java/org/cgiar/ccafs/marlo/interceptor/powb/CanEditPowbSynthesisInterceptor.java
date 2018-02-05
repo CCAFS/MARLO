@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.interceptor.powb;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -56,14 +57,15 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
   private UserManager userManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbSynthesisManager powbSynthesisManager;
+  private GlobalUnitManager crpManager;
 
   @Inject
   public CanEditPowbSynthesisInterceptor(UserManager userManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    PowbSynthesisManager powbSynthesisManager) {
+    PowbSynthesisManager powbSynthesisManager, GlobalUnitManager crpManager) {
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-
+    this.crpManager = crpManager;
   }
 
   public Long firstFlagship() {
@@ -81,6 +83,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
