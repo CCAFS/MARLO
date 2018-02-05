@@ -341,6 +341,8 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
               && crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId() != null) {
               crpClusterKeyOutputOutcome.setCrpProgramOutcome(
                 crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+            } else {
+              crpClusterKeyOutputOutcome.setCrpProgramOutcome(null);
             }
 
           }
