@@ -246,7 +246,7 @@ function updateKeyOtuputsIndex(item,clustersName) {
     $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
     $(keyOutputItem).find('.id').attr('name', customName + '.id');
     $(keyOutputItem).find('.keyOutputContribution').attr('name', customName + '.contribution');
-
+    $(keyOutputItem).find('.composeId').attr('name', customName + '.composeId');
     updateOutcomesIndex(keyOutputItem, customName);
   });
 
