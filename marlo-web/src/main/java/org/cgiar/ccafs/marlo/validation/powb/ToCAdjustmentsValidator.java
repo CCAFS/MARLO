@@ -24,10 +24,14 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ToCAdjustmentsValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
@@ -48,7 +52,7 @@ public class ToCAdjustmentsValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
-
+    action.setInvalidFields(new HashMap<>());
     if (powbSynthesis != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(powbSynthesis, action.getCrpID());
