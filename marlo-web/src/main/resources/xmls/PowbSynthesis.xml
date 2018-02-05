@@ -31,6 +31,13 @@
 			fetch="select">
 			<column name="modified_by" />
 		</many-to-one>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
 		<one-to-one name="powbToc" class="org.cgiar.ccafs.marlo.data.model.PowbToc"
 			cascade="save-update"></one-to-one>
 		<one-to-one name="powbFlagshipPlans"
