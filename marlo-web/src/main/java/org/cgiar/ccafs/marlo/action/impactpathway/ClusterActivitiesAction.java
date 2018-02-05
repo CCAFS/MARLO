@@ -933,24 +933,28 @@ public class ClusterActivitiesAction extends BaseAction {
              */
             if (crpClusterKeyOutput.getKeyOutputOutcomes() != null) {
               for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
-                if (crpClusterKeyOutputOutcome.getId() == null) {
-                  crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
 
-                  crpClusterKeyOutputOutcome.setActiveSince(new Date());
-                  crpClusterKeyOutputOutcome.setActive(true);
-                } else {
-                  CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
-                    .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
-                  crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
-                  crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
-                  crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
+                if (crpClusterKeyOutputOutcome != null) {
+                  if (crpClusterKeyOutputOutcome.getId() == null) {
+                    crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
 
+                    crpClusterKeyOutputOutcome.setActiveSince(new Date());
+                    crpClusterKeyOutputOutcome.setActive(true);
+                  } else {
+                    CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
+                      .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
+                    crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
+                    crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
+                    crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
+
+                  }
+
+                  crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                  crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
+                  crpClusterKeyOutputOutcome.setModificationJustification("");
+                  crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
                 }
 
-                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
-                crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
-                crpClusterKeyOutputOutcome.setModificationJustification("");
-                crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
               }
             }
 
