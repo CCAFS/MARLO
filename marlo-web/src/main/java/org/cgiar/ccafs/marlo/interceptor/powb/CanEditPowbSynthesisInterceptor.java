@@ -144,7 +144,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params))) {
-        if (baseAction.isReportingActive()) {
+        if (baseAction.isPlanningActive()) {
           canEdit = true;
         }
       }
