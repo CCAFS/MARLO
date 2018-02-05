@@ -185,10 +185,6 @@ function getOCSMetadata() {
         if(data.json) {
           var agreement = data.json;
           console.log(agreement);
-          // Extension date validation
-          if(!allowExtensionDate){
-            // agreement.endDate = agreement.extensionDate;
-          }
           // Principal Investigator
           agreement.pInvestigator = agreement.researcher.name;
           // Donors

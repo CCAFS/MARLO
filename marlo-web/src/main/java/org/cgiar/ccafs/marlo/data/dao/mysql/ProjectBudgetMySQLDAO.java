@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -183,8 +184,9 @@ public class ProjectBudgetMySQLDAO extends AbstractMarloDAO<ProjectBudget, Long>
 
   @Override
   public double getTotalBudget(long projetId, long phaseID, int type, int year) {
-    String query = "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId
-      + " and pb.id_phase=" + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type;
+    String query =
+      "select sum(pb.amount)'amount' from project_budgets pb where pb.project_id=" + projetId + " and pb.id_phase="
+        + phaseID + " and pb.`year`=" + year + " and pb.budget_type=" + type + " and pb.is_active=1";
     List<Map<String, Object>> list = super.findCustomQuery(query);
     try {
       if (list.size() > 0) {
