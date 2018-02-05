@@ -718,7 +718,10 @@ public class ClusterActivitiesAction extends BaseAction {
         selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
         outcomes = selectedProgram.getCrpProgramOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+        if (!selectedProgram.getSubmissions().stream()
+          .filter(c -> ((c.isUnSubmit() == null || !c.isUnSubmit())
+            && c.getYear().intValue() == this.getActualPhase().getYear()
+            && c.getCycle().equals(this.getActualPhase().getDescription())))
           .collect(Collectors.toList()).isEmpty()) {
 
           if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
