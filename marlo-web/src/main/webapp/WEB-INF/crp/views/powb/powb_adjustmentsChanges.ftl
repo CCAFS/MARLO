@@ -44,29 +44,33 @@
             [@customForm.textArea name="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
           </div>
           
+          [#if PMU]
           [#-- Annex a brief updated summary of the crp --] 
           <div class="form-group margin-panel">
-            <label for="fileInput">[@s.text name="adjustmentsChanges.uploadFile" /]</label>
+            <label for="fileInput">[@s.text name="adjustmentsChanges.uploadFile" /]:[@customForm.req required=required/]</label>
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-7">
                 <div class="input-group">
                     <input type="text" class="form-control" readonly>
                     <label class="input-group-btn">
                         <span class="btn btn-info">
-                            Select a file<input id="fileInput" type="file" style="display: none;" multiple>
+                            Select a file<input id="fileInput" type="file" style="display: none;">
                         </span>
                     </label>
                 </div>
               </div>
             </div>
           </div>
+          [/#if]
           
+          [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="adjustmentsChanges.flagshipsTable.title" /]</h4>
             <hr />
             [@FlagshipsAdjustmentsMacro /]
           </div>
-
+          [/#if]
+          
         </div>
         
         [#-- Section Buttons & hidden inputs--]
@@ -79,11 +83,11 @@
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro FlagshipsAdjustmentsMacro ]
-  <table class="table-flagshipsAdjustments" id="table-flagshipsAdjustments">
+  <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">
     <thead>
       <tr class="subHeader">
-        <th id="tb-name" width="30%">[@s.text name="adjustmentsChanges.flagshipsTable.flagshipName" /]</th>
-        <th id="tb-narrative" width="70%">[@s.text name="adjustmentsChanges.flagshipsTable.narrative" /]</th>
+        <th id="tb-name" width="40%">[@s.text name="adjustmentsChanges.flagshipsTable.flagshipName" /]</th>
+        <th id="tb-narrative" class="text-center" width="60%">[@s.text name="adjustmentsChanges.flagshipsTable.narrative" /]</th>
       </tr>
     </thead>
     <tbody>
