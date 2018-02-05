@@ -55,6 +55,14 @@ table ul {
   vertical-align:middle;
 }
 
+/************* 1.2 Expected CRP Progress ***************/
+
+.powbOutcome {
+  padding-top: 16px;
+}
+.powbMilestone{
+  padding-top: 20px;
+}
 /************* 1.3 Evidence ***************/
 form .form-group.evidence-panel {
   margin-bottom: 40px;
@@ -97,5 +105,4 @@ form .form-group.evidence-panel {
 .modal-content h3.subTitle.headTitle {
   display: inline;
 }
-
 
