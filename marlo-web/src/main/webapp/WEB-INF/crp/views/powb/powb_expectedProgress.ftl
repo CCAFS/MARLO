@@ -135,8 +135,8 @@
               <td> <i>${milestone.title}</i> </td>
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td> ${(action.getPowbExpectedCrpProgress(milestone.id,fp.id).assesmentName)!} </td>
-              <td> ${action.getPowbExpectedCrpProgress(milestone.id,fp.id).means}</td>
+              <td> </td>
+              <td> </td>
             </tr>
           [/#list]
         [/#list]

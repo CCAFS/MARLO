@@ -336,7 +336,9 @@ public class ExpectedCRPProgressAction extends BaseAction {
     return powbSynthesis.getExpectedCrpProgresses().get(this.getIndex(crpMilestoneID));
   }
 
-  public PowbExpectedCrpProgress getPowbExpectedCrpProgress(Long crpMilestoneID, Long crpProgramID) {
+  public PowbExpectedCrpProgress getPowbExpectedCrpProgressProgram(Long crpMilestoneID, Long crpProgramID) {
+    int a = 0;
+    System.out.println(a);
     List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
       powbExpectedCrpProgressManager.findByProgram(crpProgramID);
     List<PowbExpectedCrpProgress> powbExpectedCrpProgressMilestone = powbExpectedCrpProgresses.stream()
