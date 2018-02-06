@@ -382,10 +382,14 @@
 [/#macro]
 
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+  [#if editable]
   <div class="radioFlat radio-inline">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
   </div>
+  [#elseif checked]
+    <p>${label}</p>
+  [/#if]
 [/#macro]
 
 [#macro checkBoxFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
