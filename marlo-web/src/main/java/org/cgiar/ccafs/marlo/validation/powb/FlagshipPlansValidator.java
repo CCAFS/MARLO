@@ -63,7 +63,8 @@ public class FlagshipPlansValidator extends BaseValidator {
 
     this.validateFlagshipPlans(action, powbSynthesis);
 
-    if (powbSynthesis != null) {
+    if (powbSynthesis != null && powbSynthesis.getPowbFlagshipPlans() != null
+      && powbSynthesis.getPowbFlagshipPlans().getId() != null) {
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (action.getValidationMessage().length() > 0) {
@@ -73,7 +74,6 @@ public class FlagshipPlansValidator extends BaseValidator {
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus(), action);
     }
-
   }
 
   private void validateFlagshipPlans(BaseAction action, PowbSynthesis powbSynthesis) {
