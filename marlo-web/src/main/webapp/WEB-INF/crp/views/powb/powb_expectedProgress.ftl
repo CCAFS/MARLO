@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
@@ -185,14 +185,10 @@
     
     [#-- Assessment of risk to achievement --]
     <div class="form-group">
-      <p><label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label></p>
-      [#if editable]
-        [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
-      [#else]
-        
-      [/#if]
+      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label><br />
+      [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
     </div>
     
     [#-- Means of verification --]
