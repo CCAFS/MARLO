@@ -18,8 +18,9 @@
       </result>
     </action>
     
+    
     <!--  1.2 Expected CRP Progress Towards Intermediate Outcomes and SLOs -->
-    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+    <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_expectedProgress.ftl</result>
       <result name="success" type="redirectAction">
@@ -31,7 +32,7 @@
     </action>
     
     <!--  1.3 Obtaining Evidence on Relevant Outcomes and Impacts -->
-    <action name="{crp}/evidenceRelevant" class="org.cgiar.ccafs.marlo.action.powb.">
+    <action name="{crp}/evidenceRelevant" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_evidenceRelevant.ftl</result>
       <result name="success" type="redirectAction">

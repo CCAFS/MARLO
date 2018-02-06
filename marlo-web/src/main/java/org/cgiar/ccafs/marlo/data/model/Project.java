@@ -784,8 +784,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         this.setProjectInfo(infos.get(0));
         return this.getProjectInfo();
       } else {
-        this.setProjectInfo(this.getProjectInfoLast(phase));
-        return this.getProjectInfo();
+        return null;
       }
     }
 
