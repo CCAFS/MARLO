@@ -14,7 +14,7 @@
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
 [#attempt]
-  [#assign recordsList = (action.getListLog(program))!{} /]
+  [#assign recordsList = (action.getListLog(powbSynthesis))!{} /]
 [#recover]
   [#assign recordsList = [] /]
 [/#attempt]
