@@ -21,12 +21,15 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 @Named
-public class PowbExpectedCrpProgressMySQLDAO extends AbstractMarloDAO<PowbExpectedCrpProgress, Long> implements PowbExpectedCrpProgressDAO {
+public class PowbExpectedCrpProgressMySQLDAO extends AbstractMarloDAO<PowbExpectedCrpProgress, Long>
+  implements PowbExpectedCrpProgressDAO {
 
 
   @Inject
@@ -66,6 +69,17 @@ public class PowbExpectedCrpProgressMySQLDAO extends AbstractMarloDAO<PowbExpect
     }
     return null;
 
+  }
+
+  @Override
+  public List<PowbExpectedCrpProgress> findByProgram(long crpProgramID) {
+    String query = "select distinct pp from PowbExpectedCrpProgress as pp inner join pp.powbSynthesis as powbSynthesis "
+      + " inner join powbSynthesis.liaisonInstitution liai" + " where liai.crpProgram.id = :crpProgramID ";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("crpProgramID", crpProgramID);
+    List<PowbExpectedCrpProgress> powbExpectedCrpProgresses = createQuery.list();
+    return powbExpectedCrpProgresses;
   }
 
   @Override
