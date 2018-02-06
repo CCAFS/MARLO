@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = ["${baseUrlMedia}/js/projects/projectExpectedStudies.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
@@ -41,7 +41,7 @@
           [#-- Provide a short narrative for any outcome --]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
@@ -67,7 +67,7 @@
                 </div>
               </div>
             </div>
-            [@plannedStudiesMacro /]
+            [@plannedStudiesMacro element=powbSynthesis.powbEvidence.plannedStudies /]
             [#if canEdit && editable]
               <div class="text-right">
                 <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedTopicStudy"/]</div>
@@ -148,7 +148,7 @@
   </table>
 [/#macro]
 
-[#macro plannedStudiesMacro isEditable=true]
+[#macro plannedStudiesMacro element isEditable=true]
   <div id="plannedStudies" class="plannedStudies borderBox form-group" style="position:relative; display:block">
     
     [#-- Index --]
@@ -156,33 +156,33 @@
     [#-- Remove Button --]
     [#if isEditable]<div class="removePlannedStudies removeElement" title="Remove Planned Study"></div>[/#if]
     [#-- Hidden inputs --]
-    [#-- <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <br />
     
     <div class="form-group row"> 
       [#-- Planned topic of study --] 
       <div class="col-md-7">
-        [@customForm.input name="" i18nkey="evidenceRelevant.pannedStudies.plannedTopic" placeholder="" className="" required=true editable=isEditable/]
+        [@customForm.input name="element.plannedTopic" i18nkey="evidenceRelevant.pannedStudies.plannedTopic" placeholder="" className="" required=true editable=isEditable/]
       </div>
       [#-- Geographic Scope --]
       <div class="col-md-5">
-        [@customForm.select name="" label=""  i18nkey="evidenceRelevant.pannedStudies.geographicScope" listName="scopes"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="element.geographicScope" label=""  i18nkey="evidenceRelevant.pannedStudies.geographicScope" listName="scopes"  required=true  className="" editable=isEditable/]
       </div>
     </div>
     
     [#-- Relevant to Sub-IDO --] 
     <div class="form-group "> 
-      [@customForm.select name="" label=""  i18nkey="evidenceRelevant.pannedStudies.relevant" listName="subIdos"  required=true  className="" editable=isEditable/]
+      [@customForm.select name="element.srfSubIdo.id" label=""  i18nkey="evidenceRelevant.pannedStudies.relevant" listName="subIdos"  required=true  className="" editable=isEditable/]
     </div>
     
     [#-- SRF target if appropriate --] 
     <div class="form-group "> 
-      [@customForm.select name="" label=""  i18nkey="evidenceRelevant.pannedStudies.srfTarget" listName="targets"  required=false  className="" editable=isEditable/]
+      [@customForm.select name="element.srfSloIndicator.id" label=""  i18nkey="evidenceRelevant.pannedStudies.srfTarget" listName="targets"  required=false  className="" editable=isEditable/]
     </div>
     
     [#-- Comments --] 
     <div class="form-group"> 
-      [@customForm.textArea name="" i18nkey="evidenceRelevant.pannedStudies.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+      [@customForm.textArea name="element.comments" i18nkey="evidenceRelevant.pannedStudies.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
     
     <div class="clearfix"></div>
