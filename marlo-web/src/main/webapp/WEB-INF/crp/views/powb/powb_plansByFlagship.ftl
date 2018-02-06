@@ -102,19 +102,21 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th> [@s.text name="plansByFlagship.tableOverall.fp" /] </th>
+          <th class="col-md-1"> [@s.text name="plansByFlagship.tableOverall.fp" /] </th>
           <th> [@s.text name="plansByFlagship.tableOverall.flagshipPlan" /] </th>
-          <th> [@s.text name="plansByFlagship.tableOverall.attached" /] </th>
+          <th class="col-md-3"> [@s.text name="plansByFlagship.tableOverall.attached" /] </th>
         </tr>
       </thead>
       <tbody>
-        [#list flagships as fp]
-          <tr>
-            <td>${fp.acronym}</td>
-            <td></td>
-            <td></td>
-          </tr>
-        [/#list]
+        [#if powbFlagshipPlans??]
+          [#list powbFlagshipPlans as fp]
+            <tr>
+              <td>${fp.liaisonInstitution.acronym}</td>
+              <td>${fp.liaisonInstitution.acronym}</td>
+              <td></td>
+            </tr>
+          [/#list]
+        [/#if]
       </tbody>
     </table>
   </div>

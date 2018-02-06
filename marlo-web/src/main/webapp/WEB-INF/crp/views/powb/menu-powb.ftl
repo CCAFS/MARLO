@@ -79,12 +79,14 @@
 [/#if]
 
 [#-- Check button --]
+[#-- 
 [#if canEdit && !completed && !submission]
   <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
   <div id="validateProject-${liaisonInstitutionID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
   <div id="progressbar-${liaisonInstitutionID}" class="progressbar" style="display:none"></div>
 [/#if]
-
+ --]
+ 
 [#-- Submit button --]
 [#if canEdit]
   [#assign showSubmit=(canSubmit && !submission && completed)]
