@@ -80,7 +80,7 @@ form .form-group.margin-panel {
   padding-top: 20px;
 }
 
-span.milestoneContributionButton {
+.milestoneContributionButton {
   margin:10px;
 }
 
@@ -111,6 +111,3 @@ span.milestoneContributionButton {
 .modal-content h3.subTitle.headTitle {
   display: inline;
 }
-
-
-
