@@ -18,83 +18,69 @@ package org.cgiar.ccafs.marlo.data.model.dto;
 
 import java.io.Serializable;
 
-public class CrossCuttingDimensionDTO implements Serializable {
+public class LiaisonInstitutionDTO implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -3240330586886973844L;
 
   private Long id;
+  private String name;
+  private String acronym;
+  private InstitutionDTO institution;
+  private CrpProgramaDTO crpProgram;
+  private GlobalUnitDTO crp;
 
-  private String summarize;
-
-  private String assets;
-
-  private LiaisonInstitutionDTO liaisonInstitution;
-
-  private PhaseDTO phase;
-
-  private boolean active;
-
-  public CrossCuttingDimensionDTO() {
+  public LiaisonInstitutionDTO() {
 
   }
 
-
-  public String getAssets() {
-    return assets;
+  public String getAcronym() {
+    return acronym;
   }
 
+  public GlobalUnitDTO getCrp() {
+    return crp;
+  }
+
+  public CrpProgramaDTO getCrpProgram() {
+    return crpProgram;
+  }
 
   public Long getId() {
     return id;
   }
 
-
-  public LiaisonInstitutionDTO getLiaisonInstitution() {
-    return liaisonInstitution;
+  public InstitutionDTO getInstitution() {
+    return institution;
   }
 
-
-  public PhaseDTO getPhase() {
-    return phase;
+  public String getName() {
+    return name;
   }
 
-
-  public String getSummarize() {
-    return summarize;
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
-
-  public boolean isActive() {
-    return active;
+  public void setCrp(GlobalUnitDTO crp) {
+    this.crp = crp;
   }
 
-
-  public void setActive(boolean active) {
-    this.active = active;
+  public void setCrpProgram(CrpProgramaDTO crpProgram) {
+    this.crpProgram = crpProgram;
   }
-
-  public void setAssets(String assets) {
-    this.assets = assets;
-  }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
 
-  public void setLiaisonInstitution(LiaisonInstitutionDTO liaisonInstitution) {
-    this.liaisonInstitution = liaisonInstitution;
+  public void setInstitution(InstitutionDTO institution) {
+    this.institution = institution;
   }
 
 
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-
-  public void setSummarize(String summarize) {
-    this.summarize = summarize;
+  public void setName(String name) {
+    this.name = name;
   }
 
 

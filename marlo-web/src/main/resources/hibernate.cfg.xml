@@ -223,5 +223,6 @@
 		<mapping resource="xmls/PowbToc.hbm.xml" />
 		<mapping resource="xmls/PowbEvidencePlannedStudies.hbm.xml" />
 		<mapping resource="xmls/PowbEvidences.hbm.xml" />
+		<mapping resource="xmls/CrossCuttingDimensions.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
