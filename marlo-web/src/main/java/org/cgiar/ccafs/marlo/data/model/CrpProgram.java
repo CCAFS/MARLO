@@ -99,6 +99,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private List<CrpProgramLeader> managers;
 
   private List<PowbExpectedCrpProgress> powbs;
+  private List<CrpMilestone> milestones;
 
 
   @Expose
@@ -111,13 +112,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public CrpProgram() {
   }
 
+
   public CrpProgram(GlobalUnit crps, String name, String acronym, int programType) {
     this.crp = crps;
     this.name = name;
     this.acronym = acronym;
     this.programType = programType;
   }
-
 
   public CrpProgram(GlobalUnit crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
@@ -130,7 +131,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -152,6 +152,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
@@ -161,14 +162,15 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return action;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
+
   public Boolean getBaseLine() {
     return baseLine;
   }
+
 
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
@@ -178,7 +180,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return color;
   }
 
-
   public String getComposedName() {
     return this.acronym + ": " + this.name;
   }
@@ -187,19 +188,19 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public GlobalUnit getCrp() {
     return crp;
   }
-
 
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
 
-
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
+
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
@@ -214,6 +215,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
@@ -233,16 +235,19 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public List<CrpProgramLeader> getManagers() {
     return managers;
   }
+
+  public List<CrpMilestone> getMilestones() {
+    return milestones;
+  }
+
 
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -253,6 +258,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public String getName() {
     return this.name;
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -311,7 +317,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.clusterofActivities = clusterofActivities;
   }
 
-
   public void setColor(String color) {
     this.color = color;
   }
@@ -325,6 +330,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
     this.crpClusterOfActivities = crpClusterOfActivities;
@@ -342,10 +348,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLeaders(List<CrpProgramLeader> leaders) {
     this.leaders = leaders;
@@ -357,6 +363,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setManagers(List<CrpProgramLeader> managers) {
     this.managers = managers;
+  }
+
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
   }
 
   public void setModificationJustification(String modificationJustification) {
