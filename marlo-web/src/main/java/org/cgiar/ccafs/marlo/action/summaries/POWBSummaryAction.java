@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -26,6 +27,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -58,6 +61,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   // Parameters
   private int year;
   private long startTime;
+  private List<PowbSynthesis> powbSynthesisList;
 
   // RTF bytes
   private byte[] bytesRTF;
@@ -78,6 +82,9 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
     // masterReport.getParameterValues().put("i8nParameterName", "i8nText"));
+    masterReport.getParameterValues().put("i8nPlansCRPFlagshipTitle",
+      this.getText("summaries.powb.synthesis.flagshipPlans.title"));
+
     return masterReport;
   }
 
@@ -107,7 +114,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       // TODO: Complete POWB subreports
-      // this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
+      this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
       // this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
       // this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
       // // Table A
@@ -154,7 +161,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
    * @param subReport Subreport to fill
    * @param query Name of the query in Pentaho Report Data Set
    */
-  @SuppressWarnings("unused")
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -302,8 +308,22 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class},
       0);
+    String unitName = "", leadCenter = "", participantingCenters = "", adjustmentsDescription = "",
+      expectedCrpDescription = "", evidenceDescription = "", plansCRPFlagshipDescription = "",
+      crossCuttingGenderDescription = "", crossCuttingOpenDataDescription = "";
 
-    model.addRow(new Object[] {"Text", "Text", "Text", "Text", "Text", "Text", "Text", "Text", "Text"});
+    unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
+      ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+
+    if (powbSynthesisList != null && !powbSynthesisList.isEmpty()) {
+      for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+        plansCRPFlagshipDescription =
+          this.getPowbSynthesisFlagshipPlanSummary(powbSynthesis, plansCRPFlagshipDescription);
+      }
+    }
+    model.addRow(new Object[] {unitName, leadCenter, participantingCenters, adjustmentsDescription,
+      expectedCrpDescription, evidenceDescription, plansCRPFlagshipDescription, crossCuttingGenderDescription,
+      crossCuttingOpenDataDescription});
     return model;
   }
 
@@ -378,6 +398,22 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
     model.addRow(new Object[] {"Text"});
     return model;
+  }
+
+
+  private String getPowbSynthesisFlagshipPlanSummary(PowbSynthesis powbSynthesis, String plansCRPFlagshipDescription) {
+    if (powbSynthesis.getPowbFlagshipPlans() != null) {
+      if (powbSynthesis.getPowbFlagshipPlans().getPlanSummary() != null) {
+        if (plansCRPFlagshipDescription.isEmpty()) {
+          plansCRPFlagshipDescription = powbSynthesis.getLiaisonInstitution().getAcronym() + ": "
+            + powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
+        } else {
+          plansCRPFlagshipDescription += "<br>" + powbSynthesis.getLiaisonInstitution().getAcronym() + ": "
+            + powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
+        }
+      }
+    }
+    return plansCRPFlagshipDescription;
   }
 
 
@@ -462,6 +498,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   @Override
   public void prepare() {
     this.setGeneralParameters();
+    powbSynthesisList =
+      this.getSelectedPhase().getPowbSynthesis().stream().filter(ps -> ps.isActive()).collect(Collectors.toList());
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info(
