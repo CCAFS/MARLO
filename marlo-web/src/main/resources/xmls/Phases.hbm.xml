@@ -167,6 +167,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship" />
         </set>
+        <set name="powbSynthesis" table="powb_flagship_plans" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="id_phase" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
+        </set>
         
     </class>
 </hibernate-mapping>
