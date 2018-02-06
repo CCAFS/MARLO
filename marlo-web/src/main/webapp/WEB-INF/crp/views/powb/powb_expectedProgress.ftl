@@ -190,9 +190,9 @@
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
     [#-- Title --]
-    <div class="form-group row">
-      <div class="col-md-9"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!}</div>
-      <div class="col-md-3">[@milestoneContributions element=element /]</div>
+    <div class="form-group">
+      <div class="pull-right">[@milestoneContributions element=element /]</div>
+      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!}</p>
     </div>
     
     [#-- Assessment of risk to achievement --]
@@ -217,25 +217,46 @@
 
 [#macro milestoneContributions element]
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-  [@s.text name="expectedProgress.milestonesContributions" /]
-</button>
+<span class="milestoneContributionButton btn btn-primary" data-toggle="modal" data-target="#myModal">
+  <small>[@s.text name="expectedProgress.milestonesContributions" /]</small>
+</span>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
       </div>
       <div class="modal-body">
-        ...
+        <h5>${(element.description!)}</h5>
+        
+        <div class="">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th> Project ID </th>
+                <th> Project Title </th>
+                <th> Target Value and Unit </th>
+                <th> Narrative of the  expected target </th>
+              </tr>
+            </thead>
+            <tbody>
+              [#list 0..2 as contribution]
+                <tr>
+                  <td> P${contribution} </td>
+                  <td> <i>Pre-filled</i> </td>
+                  <td> <i>Pre-filled</i> </td>
+                  <td> <i>Pre-filled</i> </td>
+                </tr>
+              [/#list]
+            </tbody>
+          </table>
+        </div>
+        
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
     </div>
   </div>
 </div>
