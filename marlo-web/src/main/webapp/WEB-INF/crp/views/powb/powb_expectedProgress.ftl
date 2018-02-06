@@ -41,7 +41,9 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
+            <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
           [/#if]
           
@@ -56,29 +58,11 @@
           
           
           [#if flagship]
-            [#assign flagshipOutcomes = [ 
-              { "title": " # of policy decisions taken (in part) based on engagement and information dissemination by CCAFS", 
-                "milestones": [
-                  { "title": "Training materials are developed and workshops held to strengthen national/state capacities for scenario-based strategic planning, as well as targeted materials for other partner organisations (e.g. NGOs) developed (linked to CoA 1.2)"},
-                  { "title": " National/state level decision makers supported in developing CSA investment portfolios for international climate finance providers that meet funding requirements and are informed by CCAFS science; decision makers made aware..."}
-                ] 
-              },
-              { "title": "Outcome #2", 
-                "milestones": [
-                  { "title": "Milestone #1"}
-                ] 
-              },
-              { "title": "Outcome #3", 
-                "milestones": [
-                  { "title": "Milestone #1"}
-                ] 
-              }
-              ]
-            /]
+           
             
             [#-- Flagship - Outcomes 2022 --]
             [#-- <h4 class="sectionSubTitle">[@s.text name="expectedProgress.flagshipOutcomes"][@s.param]${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym}[/@s.param][/@s.text]</h4> --]
-            [#list flagshipOutcomes as outcome]
+            [#list outcomes as outcome]
               [@powbOutcomeMacro element=outcome name="outcomes" index=outcome_index /]
             [/#list]
           [/#if]
@@ -97,31 +81,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-  [#assign flagships = [ 
-    { "acronym": "FP1", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"},
-        { "title": "Milestone #4"}
-      ] 
-    },
-    { "acronym": "FP2", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    },
-    { "acronym": "FP3", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    }
-    ]
-  /]
+  
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -168,9 +128,8 @@
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
     [#-- Title --]
-    <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.title)!}</div>
+    <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     
     [#-- Milestones List --]
     <div class="form-group">
@@ -183,16 +142,21 @@
 [/#macro]
 
 [#macro powbMilestoneMacro element name index isTemplate=false]
-  [#local customName = "${name}[${index}]" /]
+  [#assign indexPowb=action.getIndex(element.id)]
+  [#assign powebElement=action.getPowbExpectedCrpProgress(element.id)]
+  
+  [#local customName = "powbSynthesis.expectedCrpProgresses[${indexPowb}]" /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
+    <input type="hidden" name="${customName}.id" value="${(powebElement.id)!}" >
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(powebElement.crpMilestone.id)!}" >
+    
     [#-- Title --]
     <div class="form-group">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
-      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!}</p>
+      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} ${element.id}</p>
     </div>
     
     [#-- Assessment of risk to achievement --]
@@ -209,7 +173,7 @@
     
     [#-- Means of verification --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.meansVerifications" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
     </div>
     
   </div>
@@ -243,12 +207,12 @@
               </tr>
             </thead>
             <tbody>
-              [#list 0..2 as contribution]
+              [#list action.getContributions(element.id) as contribution]
                 <tr>
-                  <td> P${contribution} </td>
-                  <td> <i>Pre-filled</i> </td>
-                  <td> <i>Pre-filled</i> </td>
-                  <td> <i>Pre-filled</i> </td>
+                  <td> P${contribution.projectOutcome.project.id} </td>
+                  <td> <i>${contribution.projectOutcome.project.projectInfo.title} </i> </td>
+                  <td> <i>${(contribution.expectedUnit.name)!}  </i> </td>
+                  <td> <i>${contribution.narrativeTarget} </i> </td>
                 </tr>
               [/#list]
             </tbody>

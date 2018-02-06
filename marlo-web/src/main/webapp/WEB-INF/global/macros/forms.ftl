@@ -414,6 +414,34 @@
   </div>
 [/#macro]
 
+                
+
+[#macro fileUploadAjaxTwo fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass=""]
+  [#assign hasFile = (fileDB.id??)!false /]
+  <div class="fileUploadContainer ${cssClass}" >
+    <label>[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
+    <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
+    [#-- Input File --]
+    [#if isEditable]
+    <div class="input-group fileUpload">
+      <input type="text" class="form-control contentResult" value="${(fileDB.fileName)!('No file name')}" readonly>
+      <label class="input-group-btn ">
+          <span class="btn btn-info">
+              Select a file<input id="fileInput" name="file" class="upload" data-url="${dataUrl}" type="file" style="display: none;">
+          </span>
+      </label>
+    </div>
+    [/#if]
+    [#-- Uploaded File
+    <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
+      [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}" target="_blank">[/#if]
+      <span class="glyphicon glyphicon-file"></span> <span class="contentResult">${(fileDB.fileName)!('No file name')}</span> 
+      [#if path?has_content]</a>[/#if]
+      [#if isEditable]<span class="removeIcon"> </span>[/#if]
+    </p> --]
+  </div>
+[/#macro]
+
 [#function changedField name]
   [#if action.changedField(name)??]
     [#assign fieldObj = action.changedField(name)]

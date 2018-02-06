@@ -15,15 +15,15 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${project.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${project.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<span>${powbSynthesis.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${powbSynthesis.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
       [#-- Differences --]
       [#include "/WEB-INF/global/macros/historyDiff.ftl" /]
       [#-- Justification --]
-      <p><i>${(project.modificationJustification)!}</i></p>
+      <p><i>${(powbSynthesis.modificationJustification)!}</i></p>
     [/#if]
   </div>
 [#else]

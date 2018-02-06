@@ -210,14 +210,13 @@ public class ImpactSubmissionAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
-    // subject
-    String subject = null;
-    subject = this.getText("impact.submit.email.subject",
-      new String[] {crpProgram.getCrp().getName(), crpProgram.getAcronym()});
-    // Building the email message
     String crp = crpProgram.getCrp().getAcronym() != null && !crpProgram.getCrp().getAcronym().isEmpty()
       ? crpProgram.getCrp().getAcronym() : crpProgram.getCrp().getName();
+    // subject
+    String subject = null;
+    subject = this.getText("impact.submit.email.subject", new String[] {crp, crpProgram.getAcronym()});
+    // Building the email message
+
     StringBuilder message = new StringBuilder();
     String[] values = new String[4];
     values[0] = this.getCurrentUser().getFirstName();

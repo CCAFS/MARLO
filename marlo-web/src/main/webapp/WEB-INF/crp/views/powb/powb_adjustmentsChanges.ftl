@@ -49,7 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
-                [@customForm.fileUploadAjax 
+                [@customForm.fileUploadAjaxTwo
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
                   label="adjustmentsChanges.uploadFile" 
@@ -77,7 +77,7 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="adjustmentsChanges.flagshipsTable.title" /]</h4>
             <hr />
-            [@FlagshipsAdjustmentsMacro /]
+            [@FlagshipsTableACMacro elements=tocList/]
           </div>
           [/#if]
           
@@ -92,7 +92,7 @@
 </section>
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
-[#macro FlagshipsAdjustmentsMacro ]
+[#macro FlagshipsTableACMacro elements={}]
   <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">
     <thead>
       <tr class="subHeader">
@@ -101,24 +101,28 @@
       </tr>
     </thead>
     <tbody>
-    [#-- if deliverables?has_content 1--]
-      [#-- list deliverables as deliverable 2--]
+    [#if elements?has_content ]
+      [#list elements as element ]
         <tr>
           [#-- Flagship Name --]
           <td class="left">
-            FP2 - Climate-Smart Technologies and Practices
+            ${element.powbSynthesis.liaisonInstitution.acronym!'None'}: ${element.powbSynthesis.liaisonInstitution.name!'None'}
           </td>
           
           [#-- Narrative--]
           <td class="left">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            ${element.tocOverall!'None'}
           </td>
           
         </tr>
-      [#-- [/#list] 2--]
-      [#-- [/#if] 1--]
+      [/#list]
+    [#else]
+      <tr>
+        <td colspan="2" class="text-center">
+          There is not data to show
+        </td>
+      </tr>
+    [/#if]
     </tbody>
   </table>
 [/#macro]

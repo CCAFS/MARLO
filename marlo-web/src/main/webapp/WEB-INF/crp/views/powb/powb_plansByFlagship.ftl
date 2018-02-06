@@ -40,11 +40,14 @@
         <div class="borderBox">
           
           [#-- Summarize the plans for each flagship in 2018 --] 
+          [#if flagship]
           <div class="form-group">
             [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
+          [/#if]
           
           [#-- If major changes have been made to your flagship since the CRP proposal was published, please annex a brief summary of the current flagship program with the updated theory of change. --]
+          [#if flagship]
           <div class="form-group" style="position:relative" listname="">
             [@customForm.fileUploadAjax 
               fileDB=(powbSynthesis.powbFlagshipPlans.flagshipProgramFile)!{} 
@@ -55,6 +58,16 @@
               isEditable=editable
             /]
           </div>
+          [/#if]
+          
+          [#-- Table: Overall Flagship Plans --]
+          [#if PMU]
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="plansByFlagship.tableOverall.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <hr />
+            [@tableOverallMacro /]
+          </div>
+          [/#if]
         
         </div>
         
@@ -66,3 +79,43 @@
   </div> 
 </section>
 [#include "/WEB-INF/crp/pages/footer.ftl"]
+
+[#---------------------------------------------- MACROS ----------------------------------------------]
+
+[#macro tableOverallMacro ]
+  [#assign flagships = [ 
+    { "acronym": "FP1"
+    },
+    { "acronym": "FP2"
+    
+    },
+    { "acronym": "FP3"
+    
+    },
+    { "acronym": "FP4"
+    
+    }
+    ]
+  /]
+
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th> [@s.text name="plansByFlagship.tableOverall.fp" /] </th>
+          <th> [@s.text name="plansByFlagship.tableOverall.flagshipPlan" /] </th>
+          <th> [@s.text name="plansByFlagship.tableOverall.attached" /] </th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list flagships as fp]
+          <tr>
+            <td>${fp.acronym}</td>
+            <td></td>
+            <td></td>
+          </tr>
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
