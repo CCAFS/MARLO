@@ -38,7 +38,23 @@
         [#-- Title --]
         <h3 class="headTitle">[@s.text name="crossCuttingDimensions.title" /]</h3>
         <div class="borderBox">
+          
+          [#-- Briefly summarize the main areas of work in 2018 relevant to cross-cutting dimensions --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.summarizeCorssCutting" help="liaisonInstitution.powb.summarizeCorssCutting.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+          </div>
         
+          [#-- Open Data and Intellectual Assets --] 
+          <div class="form-group">
+            [@customForm.textArea name="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+          </div>
+          
+          [#-- Table C: Cross-cutting Aspect of Expected Deliverables (OPTIONAL) --]
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="crossCuttingDimensions.tableC.title" /]</h4>
+            <hr />
+            [@tableHMacro /]
+          </div>
         
         </div>
         
@@ -50,3 +66,54 @@
   </div> 
 </section>
 [#include "/WEB-INF/crp/pages/footer.ftl"]
+
+
+[#---------------------------------------------- MACROS ----------------------------------------------]
+
+[#macro tableHMacro ]
+  [#assign crossCuttingDimesions = [ 
+    { "title": "Gender",
+      "principal": "5",
+      "significant": "10",
+      "notTargeted": "50"
+    },
+    { "title": "Youth",
+      "principal": "25",
+      "significant": "30",
+      "notTargeted": "45"
+    
+    },
+    { "title": "CapDev",
+      "principal": "18",
+      "significant": "6",
+      "notTargeted": "45"
+    
+    }
+    ]
+  /]
+
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th> [@s.text name="crossCuttingDimensions.tableC.crossCutting" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.principal" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.significant" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.notTargeted" /] </th>
+          <th> [@s.text name="crossCuttingDimensions.tableC.overall" /] </th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list crossCuttingDimesions as cc]
+          <tr>
+            <td class="row">${cc.title}</td>
+            <td class="text-center"> <span class="animated flipInX">${cc.principal}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${cc.significant}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${cc.notTargeted}%</span> </td>
+            [#if cc_index == 0]<th rowspan="${crossCuttingDimesions?size}" class="text-center"> <h3 class="animated flipInX">250</span> </h3>[/#if]
+          </tr>
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
