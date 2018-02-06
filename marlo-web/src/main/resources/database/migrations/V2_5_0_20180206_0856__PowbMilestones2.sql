@@ -1,6 +1,6 @@
 drop table if exists powb_expected_crp_progress;
-CREATE TABLE `powb_expected_crp_progress` (
-`id`  bigint(20) NOT NULL ,
+CREATE TABLE `powb_expected_crp_progress` (`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+`powb_synthesis`  bigint(20) NULL ,
 `crp_milestone_id`  bigint(20) NULL ,
 `assessment`  varchar(5) NULL ,
 `means`  text NULL ,
@@ -14,7 +14,7 @@ PRIMARY KEY (`id`),
 FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
 FOREIGN KEY (`crp_milestone_id`) REFERENCES `crp_milestones` (`id`),
-FOREIGN KEY (`id`) REFERENCES `powb_synthesis` (`id`)
-)ENGINE=InnoDB
+FOREIGN KEY (`powb_synthesis`) REFERENCES `powb_synthesis` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+ENGINE=InnoDB
 ;
-
