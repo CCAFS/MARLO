@@ -69,6 +69,7 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
 
 
   public String getAssesmentName() {
+
     if (assessment == null) {
       return "";
     } else {
@@ -85,6 +86,7 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
       }
     }
     return "";
+
   }
 
   public String getAssessment() {
