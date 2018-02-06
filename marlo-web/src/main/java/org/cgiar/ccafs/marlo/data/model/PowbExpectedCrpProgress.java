@@ -35,11 +35,17 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
   @Expose
   private String assessment;
 
+
   @Expose
   private String means;
 
+
+  private String assesmentName;
+
+
   @Expose
   private String expectedHighlights;
+
 
   @Expose
   private boolean active;
@@ -50,15 +56,36 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
   @Expose
   private String modificationJustification;
 
+  private Double w1;
+
+  private Double w3;
 
   public PowbExpectedCrpProgress() {
   }
-
 
   public Date getActiveSince() {
     return activeSince;
   }
 
+
+  public String getAssesmentName() {
+    if (assessment == null) {
+      return "";
+    } else {
+      switch (assessment) {
+        case "1":
+          return "Low";
+
+        case "2":
+          return "Medium";
+
+        case "3":
+          return "High";
+
+      }
+    }
+    return "";
+  }
 
   public String getAssessment() {
     return assessment;
@@ -115,17 +142,35 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
     return powbSynthesis;
   }
 
+
+  public Double getW1() {
+    return w1;
+  }
+
+
+  public Double getW3() {
+    return w3;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setAssesmentName(String assesmentName) {
+    this.assesmentName = assesmentName;
   }
 
   public void setAssessment(String assessment) {
@@ -152,6 +197,7 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
     this.means = means;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -162,6 +208,14 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
+  }
+
+  public void setW1(Double w1) {
+    this.w1 = w1;
+  }
+
+  public void setW3(Double w3) {
+    this.w3 = w3;
   }
 }
 

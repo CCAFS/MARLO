@@ -102,17 +102,17 @@
       </thead>
       <tbody>
         [#list flagships as fp]
-          [#assign milestoneSize = fp.milestones?size]
-          [#list fp.milestones as milestone]
+          [#assign milestoneSize = fp.powbs?size]
+          [#list fp.powbs as milestone]
             <tr>
               [#if milestone_index == 0]<th rowspan="${milestoneSize}" > ${fp.acronym}</th>[/#if]
               <td> <i>Pre-filled</i> </td>
               <td> <i>Pre-filled</i> </td>
-              <td> <i>${milestone.title}</i> </td>
+              <td> <i>${milestone.crpMilestone.title}</i> </td>
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td> FL to fill this info. </td>
-              <td> FL to fill this info. </td>
+              <td> ${(milestone.assessmentName)!} </td>
+              <td> ${milestone.means}</td>
             </tr>
           [/#list]
         [/#list]
