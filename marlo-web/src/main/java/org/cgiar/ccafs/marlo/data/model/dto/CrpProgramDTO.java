@@ -18,18 +18,16 @@ package org.cgiar.ccafs.marlo.data.model.dto;
 
 import java.io.Serializable;
 
-public class LiaisonInstitutionDTO implements Serializable {
+public class CrpProgramDTO implements Serializable {
 
-  private static final long serialVersionUID = -3240330586886973844L;
+  private static final long serialVersionUID = -4402900937493896893L;
 
   private Long id;
   private String name;
   private String acronym;
-  private InstitutionDTO institution;
-  private CrpProgramDTO crpProgram;
   private GlobalUnitDTO crp;
 
-  public LiaisonInstitutionDTO() {
+  public CrpProgramDTO() {
 
   }
 
@@ -41,16 +39,8 @@ public class LiaisonInstitutionDTO implements Serializable {
     return crp;
   }
 
-  public CrpProgramDTO getCrpProgram() {
-    return crpProgram;
-  }
-
   public Long getId() {
     return id;
-  }
-
-  public InstitutionDTO getInstitution() {
-    return institution;
   }
 
   public String getName() {
@@ -65,19 +55,9 @@ public class LiaisonInstitutionDTO implements Serializable {
     this.crp = crp;
   }
 
-  public void setCrpProgram(CrpProgramDTO crpProgram) {
-    this.crpProgram = crpProgram;
-  }
-
   public void setId(Long id) {
     this.id = id;
   }
-
-
-  public void setInstitution(InstitutionDTO institution) {
-    this.institution = institution;
-  }
-
 
   public void setName(String name) {
     this.name = name;
