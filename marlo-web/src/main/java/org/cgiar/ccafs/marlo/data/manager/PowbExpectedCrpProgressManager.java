@@ -52,6 +52,8 @@ public interface PowbExpectedCrpProgressManager {
   public List<PowbExpectedCrpProgress> findAll();
 
 
+  public List<PowbExpectedCrpProgress> findByProgram(long crpProgramID);
+
   /**
    * This method gets a powbExpectedCrpProgress object by a given powbExpectedCrpProgress identifier.
    * 

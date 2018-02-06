@@ -262,6 +262,11 @@ public class ExpectedCRPProgressAction extends BaseAction {
     return milestones;
   }
 
+  public List<CrpProgram> getFlagships() {
+    return flagships;
+  }
+
+
   public int getIndex(Long crpMilestoneID) {
     if (powbSynthesis.getExpectedCrpProgresses() != null) {
       int i = 0;
@@ -291,7 +296,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -308,10 +312,10 @@ public class ExpectedCRPProgressAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
-
 
   // Method to download link file
   public String getPath() {
@@ -350,6 +354,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
     return transaction;
   }
 
+
   public boolean isFlagship() {
     boolean isFP = false;
     if (powbSynthesis.getLiaisonInstitution() != null) {
@@ -377,7 +382,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -387,6 +391,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -505,8 +510,14 @@ public class ExpectedCRPProgressAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     if (this.isPMU()) {
       flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       for (CrpProgram crpProgram : flagships) {
-        // crpProgram.setPowbs();
+        crpProgram.setPowbs(powbExpectedCrpProgressManager.findByProgram(crpProgram.getId()));
+        for (PowbExpectedCrpProgress powbExpectedCrpProgress : crpProgram.getPowbs()) {
+          powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome()
+            .setSubIdos(powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome().getCrpOutcomeSubIdos().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
       }
     }
     // Base Permission
@@ -519,6 +530,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public String save() {
@@ -556,6 +568,10 @@ public class ExpectedCRPProgressAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setFlagships(List<CrpProgram> flagships) {
+    this.flagships = flagships;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
