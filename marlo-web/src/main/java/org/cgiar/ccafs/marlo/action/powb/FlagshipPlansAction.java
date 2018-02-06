@@ -225,6 +225,12 @@ public class FlagshipPlansAction extends BaseAction {
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_FLAGSHIPPLANS_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (powbSynthesis.getPowbFlagshipPlans() != null) {
+        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(null);
+      }
+    }
   }
 
   private void readJsonAndLoadPowbSynthesis(Path path) throws IOException {
@@ -385,10 +391,12 @@ public class FlagshipPlansAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
-        && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() == null
-        || powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId().longValue() == -1) {
-        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(null);
+      if (powbSynthesis.getPowbFlagshipPlans() != null && powbSynthesis.getPowbFlagshipPlans().getId() != null) {
+        if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
+          && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() == null
+          || powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId().longValue() == -1) {
+          powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(null);
+        }
       }
       validator.validate(this, powbSynthesis, true);
     }
