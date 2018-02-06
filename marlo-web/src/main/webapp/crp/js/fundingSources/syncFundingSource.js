@@ -42,7 +42,7 @@ function setMetadata(data) {
     var $hide = $parent.find('.hide');
 
     $input.val(value);
-    $spanSuggested.text("Recorded in CIAT OCS as: " + value).animateCss("flipInY");
+    $spanSuggested.text("Recorded in CIAT-OCS as: " + value).animateCss("flipInY");
     $parent.find('textarea').autoGrow();
     $input.attr('readOnly', true);
     $hide.val("true");
@@ -102,6 +102,7 @@ function syncFundingSource() {
   $('.lastDaySync span').html($.datepicker.formatDate( "M dd, yy", new Date(yyyy, mm -1, dd) ));
   // Hide Date labels
   $('.dateLabel').addClass('disabled');
+  $('.dateLabel').removeClass('fieldError');
   // Update component
   $(document).trigger('updateComponent');
 
@@ -155,6 +156,15 @@ function unSyncFundingSource() {
   // Set datepicker
   settingDate(".startDateInput", ".endDateInput", ".extensionDateInput");
 
+  // Hide End date
+  if($('.extensionDateInput').val()){
+    $('.extensionDateBlock').show();
+    $('.endDateBlock .dateLabel').addClass('disabled');
+  } else {
+    $('.extensionDateBlock').hide();
+    $('.endDateBlock .dateLabel').removeClass('disabled');
+  }
+  
   // Update component
   $(document).trigger('updateComponent');
 
@@ -209,15 +219,24 @@ function getOCSMetadata() {
             agreement.fundingTypeId = 2;
           }
           // Set Agreement Status
-          /*
-           * if(agreement.contractStatus == "C") { agreement.contractStatusId = 3; } else if(agreement.contractStatus ==
-           * "O") { // On-Going agreement.contractStatusId = 2; } else if(agreement.contractStatus == "S") {
-           * agreement.contractStatusId = 2; }
-           */
+          if(agreement.contractStatus == "C") { 
+            agreement.agreementStatus = 3; 
+          } else if(agreement.contractStatus =="O") {
+            agreement.agreementStatus = 2; 
+          } else if(agreement.contractStatus == "S") {
+            agreement.agreementStatus = 2; 
+          }
+           
 
           // Set Funding Source Agreement Status
           if(agreement.extensionDate){
-            $('.agreementStatus').val(4);
+            agreement.agreementStatus = EXTENDED_STATUS;
+            $('.extensionDateBlock').show();
+            $('.endDateBlock .dateLabel').addClass('disabled');
+          } else {
+            agreement.agreementStatus = ON_GOING;
+            $('.extensionDateBlock').hide();
+            $('.endDateBlock .dateLabel').removeClass('disabled');
           }
 
           // Set Countries

@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -61,9 +62,13 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
+  private Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses = new HashSet<PowbExpectedCrpProgress>(0);
+  private List<PowbExpectedCrpProgress> expectedCrpProgresses;
+
 
   public PowbSynthesis() {
   }
+
 
   public PowbSynthesis(Long id, Phase phase, boolean active, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -75,6 +80,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
     this.id = id;
@@ -85,6 +91,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -113,10 +120,15 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
+
+  public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
+    return expectedCrpProgresses;
+  }
 
   @Override
   public Long getId() {
@@ -134,6 +146,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -149,18 +162,24 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return phase;
   }
 
-
   public PowbEvidence getPowbEvidence() {
     return powbEvidence;
+  }
+
+
+  public Set<PowbExpectedCrpProgress> getPowbExpectedCrpProgresses() {
+    return powbExpectedCrpProgresses;
   }
 
   public PowbFlagshipPlans getPowbFlagshipPlans() {
     return powbFlagshipPlans;
   }
 
+
   public PowbToc getPowbToc() {
     return powbToc;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -173,7 +192,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -188,8 +206,13 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setExpectedCrpProgresses(List<PowbExpectedCrpProgress> expectedCrpProgresses) {
+    this.expectedCrpProgresses = expectedCrpProgresses;
   }
 
   public void setId(Long id) {
@@ -199,7 +222,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -212,6 +234,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setPowbEvidence(PowbEvidence powbEvidence) {
     this.powbEvidence = powbEvidence;
+  }
+
+
+  public void setPowbExpectedCrpProgresses(Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses) {
+    this.powbExpectedCrpProgresses = powbExpectedCrpProgresses;
   }
 
   public void setPowbFlagshipPlans(PowbFlagshipPlans powbFlagshipPlans) {

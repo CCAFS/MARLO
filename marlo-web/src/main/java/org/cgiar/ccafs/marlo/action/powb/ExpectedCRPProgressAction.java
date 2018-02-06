@@ -58,13 +58,15 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia- CIAT/CCAFS
  */
-public class ToCAdjustmentsAction extends BaseAction {
+public class ExpectedCRPProgressAction extends BaseAction {
 
 
-  private static final long serialVersionUID = -3785412578513649561L;
-
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 87856461770557046L;
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -81,7 +83,6 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private CrpProgramManager crpProgramManager;
 
-
   private FileDBManager fileDBManager;
 
   private ToCAdjustmentsValidator validator;
@@ -93,18 +94,17 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private Long liaisonInstitutionID;
 
+
   private Long powbSynthesisID;
 
-  private GlobalUnit loggedCrp;
 
+  private GlobalUnit loggedCrp;
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
-  private List<PowbToc> tocList;
-
   @Inject
-  public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
+  public ExpectedCRPProgressAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
     ToCAdjustmentsValidator validator) {
@@ -118,6 +118,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
   }
+
 
   @Override
   public String cancel() {
@@ -138,7 +139,6 @@ public class ToCAdjustmentsAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -148,7 +148,6 @@ public class ToCAdjustmentsAction extends BaseAction {
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
@@ -162,6 +161,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -169,7 +169,6 @@ public class ToCAdjustmentsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   // Method to download link file
   public String getPath() {
@@ -183,17 +182,13 @@ public class ToCAdjustmentsAction extends BaseAction {
       .concat(this.getActionName().replace("/", "_")).concat(File.separator);
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
-  }
-
-
-  public List<PowbToc> getTocList() {
-    return tocList;
   }
 
   public String getTransaction() {
@@ -347,27 +342,9 @@ public class ToCAdjustmentsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() != null
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
-    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
-    // Setup the PUM ToC Table
-    if (this.isPMU()) {
-      tocList = new ArrayList<>();
-      Phase phase = this.getActualPhase();
-      for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-        if (powbSynthesis != null) {
-          if (powbSynthesis.getPowbToc() != null) {
-            if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-              tocList.add(powbSynthesis.getPowbToc());
-            }
-          }
-        }
-      }
-    }
-    // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
-
+    liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
@@ -427,10 +404,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -446,10 +423,6 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
-  }
-
-  public void setTocList(List<PowbToc> tocList) {
-    this.tocList = tocList;
   }
 
   public void setTransaction(String transaction) {
