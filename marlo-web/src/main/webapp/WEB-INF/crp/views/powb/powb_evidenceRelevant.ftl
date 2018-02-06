@@ -115,7 +115,7 @@
           </td>
           [/#if]
           [#-- Planned topic of study --]
-          <td class="left">
+          <td>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </td>
           [#if flagshipPlannedStudies]

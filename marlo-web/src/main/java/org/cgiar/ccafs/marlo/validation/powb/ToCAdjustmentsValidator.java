@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -72,6 +73,18 @@ public class ToCAdjustmentsValidator extends BaseValidator {
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus(), action);
     }
+
+  }
+
+  public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
+    if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
+      && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
+      action.addMessage(action.getText("liaisonInstitution.powb.planSummary",
+        new String[] {Integer.toString(action.getCurrentCycleYear())}));
+      action.getInvalidFields().put("input-powbSynthesis.powbFlagshipPlans.planSummary",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
 
   }
 
