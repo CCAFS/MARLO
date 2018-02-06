@@ -374,9 +374,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // if(powbSynthesis.getPowbToc() != null){
-      // powbSynthesis.setPowbToc(null);
-      // }
+      powbSynthesis.getPowbToc().setFile(null);
     }
   }
 
@@ -459,6 +457,14 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+
+      if (this.isPMU()) {
+        if (powbSynthesis.getPowbToc().getFile() != null && powbSynthesis.getPowbToc().getFile().getId() == null
+          || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
+          powbSynthesis.getPowbToc().setFile(null);
+        }
+      }
+
       validator.validate(this, powbSynthesis, true);
     }
   }

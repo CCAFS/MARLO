@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -168,6 +169,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
       if (nameClass.equals(FundingSource.class.getName())) {
         jSon = jSon.replaceAll("fundingSource\\.", "");
+      }
+
+      if (nameClass.equals(PowbSynthesis.class.getName())) {
+        jSon = jSon.replaceAll("powbSynthesis\\.", "");
       }
 
       /****************************************************
