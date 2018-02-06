@@ -81,7 +81,31 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-  
+  [#assign flagships = [ 
+    { "acronym": "FP1", 
+      "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"},
+        { "title": "Milestone #4"}
+      ] 
+    },
+    { "acronym": "FP2", 
+      "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"}
+      ] 
+    },
+    { "acronym": "FP3", 
+      "milestones": [
+        { "title": "Milestone #1"},
+        { "title": "Milestone #2"},
+        { "title": "Milestone #3"}
+      ] 
+    }
+    ]
+  /]
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -142,8 +166,8 @@
 [/#macro]
 
 [#macro powbMilestoneMacro element name index isTemplate=false]
-  [#assign indexPowb=action.getIndex(element.id)]
-  [#assign powebElement=action.getPowbExpectedCrpProgress(element.id)]
+  [#local indexPowb=action.getIndex(element.id)]
+  [#local powebElement=action.getPowbExpectedCrpProgress(element.id)]
   
   [#local customName = "powbSynthesis.expectedCrpProgresses[${indexPowb}]" /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
@@ -163,9 +187,9 @@
     <div class="form-group">
       <p><label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label></p>
       [#if editable]
-        [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=false cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=false cssClass="" cssClassLabel=""/]
-        [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=false cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
+        [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
       [#else]
         
       [/#if]
