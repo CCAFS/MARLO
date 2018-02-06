@@ -72,6 +72,18 @@
       </result>
     </action>
     
+     <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.CrossCuttingDimensionsAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/crossCuttingDimensions</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="phaseID">${phaseID}</param>
+        <param name="edit">true</param>        
+      </result>
+    </action>
+    
+    
     <!--  2.1 CRP Staffing in 2018 -->
     
     <!--  2.2 Financial Plan for 2018, including use of W1/3 -->

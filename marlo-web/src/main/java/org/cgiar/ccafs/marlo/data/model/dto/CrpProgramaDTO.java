@@ -18,83 +18,49 @@ package org.cgiar.ccafs.marlo.data.model.dto;
 
 import java.io.Serializable;
 
-public class CrossCuttingDimensionDTO implements Serializable {
+public class CrpProgramaDTO implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -4402900937493896893L;
 
   private Long id;
+  private String name;
+  private String acronym;
+  private GlobalUnitDTO crp;
 
-  private String summarize;
-
-  private String assets;
-
-  private LiaisonInstitutionDTO liaisonInstitution;
-
-  private PhaseDTO phase;
-
-  private boolean active;
-
-  public CrossCuttingDimensionDTO() {
+  public CrpProgramaDTO() {
 
   }
 
-
-  public String getAssets() {
-    return assets;
+  public String getAcronym() {
+    return acronym;
   }
 
+  public GlobalUnitDTO getCrp() {
+    return crp;
+  }
 
   public Long getId() {
     return id;
   }
 
-
-  public LiaisonInstitutionDTO getLiaisonInstitution() {
-    return liaisonInstitution;
+  public String getName() {
+    return name;
   }
 
-
-  public PhaseDTO getPhase() {
-    return phase;
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
-
-  public String getSummarize() {
-    return summarize;
+  public void setCrp(GlobalUnitDTO crp) {
+    this.crp = crp;
   }
-
-
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setAssets(String assets) {
-    this.assets = assets;
-  }
-
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
-  public void setLiaisonInstitution(LiaisonInstitutionDTO liaisonInstitution) {
-    this.liaisonInstitution = liaisonInstitution;
-  }
-
-
-  public void setPhase(PhaseDTO phase) {
-    this.phase = phase;
-  }
-
-
-  public void setSummarize(String summarize) {
-    this.summarize = summarize;
+  public void setName(String name) {
+    this.name = name;
   }
 
 

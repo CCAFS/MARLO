@@ -121,6 +121,9 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
 
+  private List<CrpProgram> flagships;
+
+
   @Inject
   public ExpectedCRPProgressAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
@@ -196,6 +199,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         powbExpectedCrpProgressNew.setExpectedHighlights(powbExpectedCrpProgress.getExpectedHighlights());
         powbExpectedCrpProgressNew.setMeans(powbExpectedCrpProgress.getMeans());
         powbExpectedCrpProgressNew.setAssessment(powbExpectedCrpProgress.getAssessment());
+        powbExpectedCrpProgressNew.setCrpMilestone(powbExpectedCrpProgress.getCrpMilestone());
 
         powbExpectedCrpProgressNew =
           powbExpectedCrpProgressManager.savePowbExpectedCrpProgress(powbExpectedCrpProgressNew);
@@ -247,7 +251,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
             Calendar cal = Calendar.getInstance();
             cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
             if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-              System.out.println(project.getId());
               milestonesSet.add(projectMilestone);
             }
           }
@@ -313,6 +316,15 @@ public class ExpectedCRPProgressAction extends BaseAction {
   // Method to download link file
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
+  }
+
+  public PowbExpectedCrpProgress getPMUPowbExpectedCrpProgress() {
+    if (powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
+      PowbExpectedCrpProgress powbExpectedCrpProgress = new PowbExpectedCrpProgress();
+      powbExpectedCrpProgress.setPowbSynthesis(powbSynthesis);
+      powbSynthesis.getExpectedCrpProgresses().add(powbExpectedCrpProgress);
+    }
+    return powbSynthesis.getExpectedCrpProgresses().get(0);
   }
 
   public PowbExpectedCrpProgress getPowbExpectedCrpProgress(Long crpMilestoneID) {
@@ -382,6 +394,28 @@ public class ExpectedCRPProgressAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
+    try {
+      liaisonInstitutionID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+    } catch (NumberFormatException e) {
+      User user = userManager.getUser(this.getCurrentUser().getId());
+      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
+        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+          .collect(Collectors.toList()));
+        if (!liaisonUsers.isEmpty()) {
+          LiaisonUser liaisonUser = new LiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+        } else {
+          liaisonInstitutionID = this.firstFlagship();
+        }
+      } else {
+        liaisonInstitutionID = this.firstFlagship();
+      }
+    }
+    liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
@@ -395,27 +429,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     } else {
       // Get Liaison institution ID Parameter
-      try {
-        liaisonInstitutionID =
-          Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
-      } catch (NumberFormatException e) {
-        User user = userManager.getUser(this.getCurrentUser().getId());
-        if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-            .collect(Collectors.toList()));
-          if (!liaisonUsers.isEmpty()) {
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser = liaisonUsers.get(0);
-            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
-          } else {
-            liaisonInstitutionID = this.firstFlagship();
-          }
-        } else {
-          liaisonInstitutionID = this.firstFlagship();
-        }
-      }
-      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       try {
         powbSynthesisID =
@@ -490,7 +503,12 @@ public class ExpectedCRPProgressAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
-
+    if (this.isPMU()) {
+      flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (CrpProgram crpProgram : flagships) {
+        // crpProgram.setPowbs();
+      }
+    }
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
