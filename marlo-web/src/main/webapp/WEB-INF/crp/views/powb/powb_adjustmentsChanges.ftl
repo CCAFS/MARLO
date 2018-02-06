@@ -18,7 +18,7 @@
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="adaptativeManagement.help" /]
+[@utilities.helpBox name="" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
@@ -49,7 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
-                [@customForm.fileUploadAjaxTwo
+                [@customForm.fileUploadAjax
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
                   label="adjustmentsChanges.uploadFile" 
@@ -58,16 +58,6 @@
                   isEditable=editable
                   required=true
                 /]
-                [#-- 
-                <div class="input-group">
-                    <input type="text" class="form-control" readonly>
-                    <label class="input-group-btn">
-                        <span class="btn btn-info">
-                            Select a file<input id="fileInput" type="file" style="display: none;">
-                        </span>
-                    </label>
-                </div>
-                 --]
               </div>
             </div>
           </div>

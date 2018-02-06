@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbTocManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -86,6 +87,8 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private ToCAdjustmentsValidator validator;
 
+  private PowbTocManager powbTocManager;
+
   // Variables
   private String transaction;
 
@@ -95,8 +98,9 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private Long powbSynthesisID;
 
-  private GlobalUnit loggedCrp;
+  private LiaisonInstitution liaisonInstitution;
 
+  private GlobalUnit loggedCrp;
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
@@ -107,7 +111,7 @@ public class ToCAdjustmentsAction extends BaseAction {
   public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator) {
+    ToCAdjustmentsValidator validator, PowbTocManager powbTocManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -117,6 +121,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
+    this.powbTocManager = powbTocManager;
   }
 
   @Override
@@ -153,8 +158,8 @@ public class ToCAdjustmentsAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile =
-      powbSynthesis.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -202,10 +207,10 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public boolean isFlagship() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() != null) {
-        CrpProgram crpProgram = crpProgramManager
-          .getCrpProgramById(powbSynthesis.getLiaisonInstitution().getCrpProgram().getId().longValue());
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null) {
+        CrpProgram crpProgram =
+          crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           isFP = true;
         }
@@ -217,8 +222,8 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Override
   public boolean isPMU() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() == null) {
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
         isFP = true;
       }
     }
@@ -275,6 +280,8 @@ public class ToCAdjustmentsAction extends BaseAction {
           liaisonInstitutionID = this.firstFlagship();
         }
       }
+
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       try {
         powbSynthesisID =
@@ -358,7 +365,9 @@ public class ToCAdjustmentsAction extends BaseAction {
         if (powbSynthesis != null) {
           if (powbSynthesis.getPowbToc() != null) {
             if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-              tocList.add(powbSynthesis.getPowbToc());
+              if (powbSynthesis.getPowbToc().getTocOverall().trim().length() > 0) {
+                tocList.add(powbSynthesis.getPowbToc());
+              }
             }
           }
         }
@@ -381,19 +390,24 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      PowbToc powbTocDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbToc();
+
       if (this.isPMU()) {
         if (powbSynthesis.getPowbToc().getFile() != null) {
           if (powbSynthesis.getPowbToc().getFile().getId() == null) {
-            powbSynthesis.getPowbToc().setFile(null);
+            powbTocDB.setFile(null);
           } else {
-            powbSynthesis.getPowbToc().setFile(powbSynthesis.getPowbToc().getFile());
+            powbTocDB.setFile(powbSynthesis.getPowbToc().getFile());
           }
         }
       }
 
-      List<String> relationsName = new ArrayList<>();
+      powbTocDB.setTocOverall(powbSynthesis.getPowbToc().getTocOverall());
+      powbTocDB = powbTocManager.savePowbToc(powbTocDB);
 
-      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+
+      List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setModifiedBy(this.getCurrentUser());
       powbSynthesis.setActiveSince(new Date());
