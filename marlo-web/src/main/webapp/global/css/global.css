@@ -784,6 +784,7 @@ img.icon {
 
 .removeElement.disable {
   opacity:0.4;
+  cursor: not-allowed;
 }
 
 .removeElement.sm {
