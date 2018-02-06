@@ -156,6 +156,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
     if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
       // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
       String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
+      editParameter = stringEditable.equals("true");
       if (!editParameter) {
         baseAction.setEditableParameter(hasPermissionToEdit);
       }
@@ -167,7 +168,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
         : baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params));
     }
 
-    baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+    baseAction.setEditableParameter(editParameter && canEdit);
     baseAction.setCanEdit(canEdit);
 
   }
