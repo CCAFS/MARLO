@@ -2,13 +2,12 @@
 [#-- Project identifier --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(liaisonInstitutionID)!}" />
 <input type="hidden"  name="powbSynthesisID" value="${(powbSynthesis.id)!}" />
+<input type="hidden"  name="id" value="${(powbSynthesis.id)!}"/>
 <input type="hidden"  name="liaisonInstitutionAcronym" value="${(powbSynthesis.liaisonInstitution.acronym)!}" />
 <input type="hidden"  name="phaseID" value="${(actualPhase.id)!}"/>
-<input type="hidden"  name="className" value="${(program.class.name)!}"/>
-<input type="hidden"  name="id" value="${(program.id)!}"/>
+<input type="hidden"  name="className" value="${(powbSynthesis.class.name)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
-<input type="hidden"  name="program.crpProgram.id" value="${(program.crpProgram.id)!}"/>
 
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
@@ -28,12 +27,6 @@
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
-      [#-- Back Button 
-      <a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-      --]
-      [#-- Discard Button 
-      [@s.submit type="button" cssStyle="display:${draft?string('inline-block','none')}"   name="cancel" cssClass="button-cancel"]<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> [@s.text name="form.buttons.discard" /] [/@s.submit]
-      --]
       [#-- Save Button --]
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> <span class="saveText">[@s.text name="form.buttons.save" /]</span> [/@s.submit]
     [#elseif canEdit]
