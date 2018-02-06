@@ -71,12 +71,20 @@ public class CrossCuttingDimensions implements java.io.Serializable {
   }
 
 
+  public LiaisonInstitution getLiaisonInstitution() {
+    return liaisonInstitution;
+  }
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
 
   public Long getModifiedBy() {
     return this.modifiedBy;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public String getSummarize() {
@@ -95,17 +103,22 @@ public class CrossCuttingDimensions implements java.io.Serializable {
     this.assets = assets;
   }
 
+
   public void setCreatedBy(Long createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setIsActive(boolean isActive) {
     this.isActive = isActive;
+  }
+
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
   }
 
 
@@ -113,9 +126,16 @@ public class CrossCuttingDimensions implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(Long modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
+
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
 
   public void setSummarize(String summarize) {
     this.summarize = summarize;
