@@ -358,6 +358,8 @@ public final class APConstants {
   public static final String PROJECT_INFO_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectInfos)";
 
+  public static final String SYNTHESIS_EXPECTED_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbExpectedCrpProgresses)";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";

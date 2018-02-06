@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
@@ -68,7 +67,6 @@ public class FlagshipPlansAction extends BaseAction {
   private GlobalUnitManager crpManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private PowbSynthesisManager powbSynthesisManager;
-  private FileDBManager fileDBManager;
   private CrpProgramManager crpProgramManager;
   private AuditLogManager auditLogManager;
   private UserManager userManager;
@@ -86,7 +84,7 @@ public class FlagshipPlansAction extends BaseAction {
   public FlagshipPlansAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    FileDBManager fileDBManager, FlagshipPlansValidator validator) {
+    FlagshipPlansValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -94,7 +92,6 @@ public class FlagshipPlansAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.fileDBManager = fileDBManager;
     this.validator = validator;
   }
 
@@ -143,13 +140,23 @@ public class FlagshipPlansAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
   }
 
+  public List<PowbSynthesis> getPowbFlagshipPlans() {
+    List<PowbSynthesis> powbFlagshipPlans = this.getActualPhase().getPowbSynthesis().stream()
+      .filter(fp -> fp.isActive() && fp.getPowbFlagshipPlans() != null).collect(Collectors.toList());
+    if (powbFlagshipPlans != null) {
+      return powbFlagshipPlans;
+    } else {
+      return new ArrayList<>();
+    }
+  }
+
+
   // Method to get the download folder
   private String getPowbSourceFolder() {
     return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(powbSynthesis.getLiaisonInstitution().getAcronym()).concat(File.separator)
       .concat(this.getActionName().replace("/", "_")).concat(File.separator);
   }
-
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -342,10 +349,10 @@ public class FlagshipPlansAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
@@ -383,10 +390,10 @@ public class FlagshipPlansAction extends BaseAction {
     powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {
