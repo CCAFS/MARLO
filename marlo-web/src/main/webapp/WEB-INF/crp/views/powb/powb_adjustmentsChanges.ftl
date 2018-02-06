@@ -49,7 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
-                [@customForm.fileUploadAjax 
+                [@customForm.fileUploadAjaxTwo
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
                   label="adjustmentsChanges.uploadFile" 
@@ -77,7 +77,7 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="adjustmentsChanges.flagshipsTable.title" /]</h4>
             <hr />
-            [@FlagshipsAdjustmentsMacro /]
+            [@FlagshipsTableACMacro/]
           </div>
           [/#if]
           
@@ -92,7 +92,7 @@
 </section>
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
-[#macro FlagshipsAdjustmentsMacro ]
+[#macro FlagshipsTableACMacro]
   <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">
     <thead>
       <tr class="subHeader">
