@@ -16,9 +16,9 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -38,14 +38,14 @@ public class SummaryListAction extends BaseSummariesAction {
 
   private List<Project> allProjects;
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
   private final PhaseManager phaseManager;
 
   @Inject
-  public SummaryListAction(APConfig config, PhaseManager phaseManager, CrpManager crpManager) {
+  public SummaryListAction(APConfig config, PhaseManager phaseManager, GlobalUnitManager crpManager) {
     super(config, crpManager, phaseManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;

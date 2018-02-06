@@ -18,18 +18,21 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,18 +43,18 @@ import javax.inject.Named;
 @Named
 public class FundingSourceValidator extends BaseValidator {
 
-  private final CrpManager crpManager;
+  private final GlobalUnitManager crpManager;
 
   private final InstitutionManager institutionManager;
 
   @Inject
-  public FundingSourceValidator(CrpManager crpManager, InstitutionManager institutionManager) {
+  public FundingSourceValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
     this.crpManager = crpManager;
     this.institutionManager = institutionManager;
   }
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
     String autoSaveFile =
@@ -107,6 +110,56 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    Calendar cal = Calendar.getInstance();
+
+    if (fundingSource.getFundingSourceInfo().getEndDate() != null
+      && fundingSource.getFundingSourceInfo().getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo().getEndDate());
+      if ((fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+        || fundingSource.getFundingSourceInfo().getStatus() == Integer
+          .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+        || fundingSource.getFundingSourceInfo().getStatus() == Integer
+          .parseInt(FundingStatusEnum.Informally.getStatusId()))
+        && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.endDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(FundingStatusEnum.Ongoing.getStatusId())
+        || fundingSource.getFundingSourceInfo().getStatus() == Integer
+          .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+        || fundingSource.getFundingSourceInfo().getStatus() == Integer
+          .parseInt(FundingStatusEnum.Informally.getStatusId())
+
+      ) {
+        action.addMessage(action.getText("fundingSource.endDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.endDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+
+    if (fundingSource.getFundingSourceInfo().getExtensionDate() != null
+      && fundingSource.getFundingSourceInfo().getStatus() != null) {
+      cal.setTime(fundingSource.getFundingSourceInfo().getExtensionDate());
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(FundingStatusEnum.Extended.getStatusId())
+        && action.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
+        action.addMessage(action.getText("fundingSource.extensionDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.extensionDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } else {
+      if (fundingSource.getFundingSourceInfo().getStatus().longValue() == Long
+        .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+        action.addMessage(action.getText("fundingSource.extensionDate"));
+        action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.extensionDate",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
     // Validate the donor with id -1, beacause front end send this when there is not one selected
     if (fundingSource.getFundingSourceInfo().getDirectDonor() == null
       || fundingSource.getFundingSourceInfo().getDirectDonor().getId() == null
@@ -175,22 +228,19 @@ public class FundingSourceValidator extends BaseValidator {
         double currentBudget = 0;
 
         for (FundingSourceBudget fundingSourceBudget : budgets) {
-          if (fundingSourceBudget.getBudget() != null) {
-            currentBudget += fundingSourceBudget.getBudget();
+          if (fundingSourceBudget != null) {
+            if (fundingSourceBudget.getBudget() != null) {
+              currentBudget += fundingSourceBudget.getBudget();
+            }
           }
-
         }
 
         if (currentBudget > grantAmount) {
-
-
           for (int i = 0; i < budgets.size(); i++) {
             action.addMessage(action.getText("fundingSource.budgetWrongValue"));
             action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
               InvalidFieldsMessages.WRONGVALUE);
-
           }
-
         }
 
 
@@ -206,6 +256,31 @@ public class FundingSourceValidator extends BaseValidator {
         action.addMessage(action.getText("fundingSource.contactPersonEmail"));
         action.getInvalidFields().put("input-fundingSource.fundingSourceInfo.contactPersonEmail",
           InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
+    if (action.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+      if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch().booleanValue()) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+              || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+
+              action.addMessage(action.getText("fundingSource.messageFileResearch"));
+              action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.fileResearch",
+                action.getText("fundingSource.messageFileResearch"));
+
+            }
+          } else {
+            action.addMessage(action.getText("fundingSource.messageFileResearch"));
+            action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.fileResearch",
+              action.getText("fundingSource.messageFileResearch"));
+          }
+        }
+      } else {
+        action.addMessage(action.getText("fundingSource.doesResearchHumanSubjects"));
+        action.getInvalidFields().put("list-fundingSource.fundingSourceInfo.hasFileResearch",
+          action.getText("fundingSource.doesResearchHumanSubjects"));
       }
     }
 

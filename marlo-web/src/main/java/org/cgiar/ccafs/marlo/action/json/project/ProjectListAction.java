@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.summaries.BaseSummariesAction;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.apache.struts2.dispatcher.Parameter;
 
 public class ProjectListAction extends BaseSummariesAction {
 
@@ -44,14 +43,14 @@ public class ProjectListAction extends BaseSummariesAction {
   private List<Project> allProjects;
 
 
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
 
 
   private PhaseManager phaseManager;
 
 
   @Inject
-  public ProjectListAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public ProjectListAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;

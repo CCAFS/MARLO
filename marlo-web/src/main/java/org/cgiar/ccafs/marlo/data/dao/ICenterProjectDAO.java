@@ -54,6 +54,13 @@ public interface ICenterProjectDAO {
    */
   public List<CenterProject> findAll();
 
+  /**
+   * Get the Center Project by OcsCode
+   * 
+   * @param ocsCode - the ocs Code
+   * @return CenterProject Object
+   */
+  CenterProject getCenterProjectsByOcsCode(String ocsCode);
 
   /**
    * This method gets a list of projects belongs of the user

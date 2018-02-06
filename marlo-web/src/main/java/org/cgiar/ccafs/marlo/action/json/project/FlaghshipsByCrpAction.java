@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -45,10 +45,11 @@ public class FlaghshipsByCrpAction extends BaseAction {
   private List<Map<String, Object>> flagships;
 
   private Long crpID;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public FlaghshipsByCrpAction(APConfig config, CrpManager crpManager) {
+  public FlaghshipsByCrpAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -58,7 +59,7 @@ public class FlaghshipsByCrpAction extends BaseAction {
   public String execute() throws Exception {
     flagships = new ArrayList<Map<String, Object>>();
     Map<String, Object> flagShip;
-    List<CrpProgram> crpPrograms = crpManager.getCrpById(crpID).getCrpPrograms().stream()
+    List<CrpProgram> crpPrograms = crpManager.getGlobalUnitById(crpID).getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());;
     for (CrpProgram crpProgram : crpPrograms) {

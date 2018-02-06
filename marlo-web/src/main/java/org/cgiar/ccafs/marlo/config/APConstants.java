@@ -100,6 +100,7 @@ public final class APConstants {
   public static final String CRP_NEXT_USERS = "crp_next_users";
   public static final String CRP_IP_OUTCOME_INDICATOR = "crp_ip_outcome_indicator";
   public static final String CRP_BASELINE_INDICATORS = "crp_baseline_indicators";
+  public static final String CRP_HAS_RESEARCH_HUMAN = "crp_has_research_human";
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
@@ -212,6 +213,7 @@ public final class APConstants {
   public static final String PAGE_ID = "pageID";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String PLANNING = "Planning";
+  public static final int FIRST_YEAR = 2017;
 
   public static final String PPA_PARAMETER = "isPPA";
   public static final String PROGRAM_ACTIVITIES_RELATION =
@@ -225,11 +227,15 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
 
+  public static final String PROJECT_EXPECTED_STUDIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectExpectedStudies)";
+
   public static final String PROJECT_BILATERAL = "BILATERAL";
   // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
-
+  public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsFlagships)";
   public static final String PROJECT_BUDGETS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
   public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
@@ -387,6 +393,10 @@ public final class APConstants {
 
   public static final String YEAR_REQUEST = "year";
 
+
+  /** cross cutting scores ****/
+  public static final long CROSS_CUTTING_NOT_TARGETED = 0;
+
   /**
    * -------------------------------------------------------------------------------
    * *******************************************************************************
@@ -399,7 +409,6 @@ public final class APConstants {
   public static Integer CENTER_END_YEAR = 2022;
 
 
-  public static final String SESSION_CENTER = "current_center";
   public static final String SESSION_RESEARCH_AREA = "current_research_area";
   public static final String SESSION_RESEARCH_PROGRAM = "current_research_program";
 
@@ -414,6 +423,11 @@ public final class APConstants {
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
   public static final String CENTER_SUMMARIES_ACTIVE = "center_summaries_active";
   public static final String CENTER_CAPDEV_ACTIVE = "center_summaries_active";
+  public static final String CENTER_YEAR = "center_year";
+  public static final String CENTER_CURRENT_PHASE = "center_current_phase";
+  public static final String CENTER_CRP_PHASE_YEAR = "center_crp_phase_year";
+  public static final String CENTER_CRP_PHASE_CYCLE = "center_crp_phase_cycle";
+  public static final String CENTER_CRP_PHASE = "center_crp_phase";
 
   public static final String CENTER_DELIVERABLE_ID = "deliverableID";
   public static final String CENTER_PROGRAM_ID = "programID";
@@ -428,6 +442,15 @@ public final class APConstants {
   public static final String OUTPUT_NAME = "outputName";
   public static final String CENTER_PROJECT_SYNC_CODE = "syncCode";
   public static final String CENTER_PROJECT_SYNC_TYPE = "syncTypeID";
+  public static final String CAPDEV_ID = "capdevID";
+  public static final String CAPDEV_PARTICIPANT_CODE_SYNC = "syncParticipantCode";
+
+  // parameters used to connect to the active directory to get users by capdev
+  public static final String GENERICUSER_AD = "ldapuser";
+  public static final String GENERICPASSWORD_AD = "ldap2005";
+  public static final String HOSTNAME_AD = "ciatroot1.ciat.cgiarad.org";
+  public static final String PORT_AD = "3268";
+
 
   // Relations Name
   public static final String RESEARCH_PROGRAM_IMPACT_RELATION =
@@ -477,8 +500,33 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
 
-  public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
+	public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";
+
+  // Cap-Dev Relations
+  public static final String CAPDEV_LOCATIONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevLocations)";
+
+  public static final String CAPDEV_PARTICIPANTS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevParticipant)";
+
+  public static final String CAPDEV_DISCIPLINES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevDiscipline)";
+
+  public static final String CAPDEV_TARGETGROUPS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevTargetgroup)";
+
+  public static final String CAPDEV_PARTNERS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevPartners)";
+
+  public static final String CAPDEV_OUTPUTS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevOutputs)";
+
+  public static final String CAPDEV_SUPPORTTINGDOCS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapacityDevelopment.capdevSupportingDocs)";
+
+  public static final String SUPPORTINGDOCS_DOCUMENTS_RALATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs.capdevSuppDocsDocuments)";
 
   public static String getFilterBy() {
     return FILTER_BY;

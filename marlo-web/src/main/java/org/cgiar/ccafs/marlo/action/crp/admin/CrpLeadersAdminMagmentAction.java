@@ -18,14 +18,14 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -51,8 +51,13 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
   private static final long serialVersionUID = 4581809312156690381L;
 
 
-  private Crp loggedCrp;
-  private CrpManager crpManager;
+  private GlobalUnit loggedCrp;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private UserManager userManager;
   private UserRoleManager userRoleManager;
@@ -62,7 +67,7 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
   private Role rplRole;
 
   @Inject
-  public CrpLeadersAdminMagmentAction(APConfig config, CrpManager crpManager,
+  public CrpLeadersAdminMagmentAction(APConfig config, GlobalUnitManager crpManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, RoleManager roleManager,
     UserRoleManager userRoleManager) {
     super(config);
@@ -73,7 +78,7 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
     this.roleManager = roleManager;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -81,10 +86,11 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
     return programs;
   }
 
+
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
 
@@ -107,7 +113,6 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -196,9 +201,11 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
     }
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;

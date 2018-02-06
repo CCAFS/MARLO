@@ -471,6 +471,7 @@ textarea#justification {
 .fileUploaded {
   border: 1px dashed #ccc;
   position: relative;
+  padding-left: 6px;
 }
 
 input[type="radio"] {
@@ -1096,7 +1097,7 @@ select#partnerSave_activityPartner_partner_type_id {
     background-color: #F7F7F7;
     border: 1px solid #E0E0E0 !important;
     box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    border-radius: 2px;
     margin-bottom: 5px;
     position: relative;
 }
@@ -2601,7 +2602,7 @@ input.userName {
 }
 
 #newProject{
-  cursor: pointer;
+  /* cursor: pointer; */
   background-image: url(../../global/images/decision-tree-1.png);
 }
 #updatePlanning{
@@ -5517,6 +5518,7 @@ h4.testEnvironment {
 
 #superadminBlock ul li ul.subMenu {
   display:none; 
+  min-width: 170px;
 }
 #superadminBlock ul li ul.subMenu:hover {
   display:block; 
@@ -5929,7 +5931,7 @@ textarea{
 }
 
 input.fieldChecked {
-    background: url(../../../global/images/icon-check-tiny.png) no-repeat;
+    background: url(../../../marlo-web/global/images/icon-check-tiny.png) no-repeat;
     background-position: 97% 50%;
     background-size: 12px;
     border-color: #8ea786 !important;
@@ -5968,6 +5970,10 @@ span.errorTag {
 
 .missingSelect{
   border-bottom: 1px solid #F44;
+}
+
+.missingSelect .select2-container--default .select2-selection--single{
+  border: 1px solid #F44;
 }
 
 div#projectsList {
@@ -6422,6 +6428,11 @@ img#crpSelectedImage {
   background: url(../../global/images/calendar.png) no-repeat scroll 99% 2px;
 }
 
+p.dateLabel.fieldError {
+  border-color: #F52626 !important;
+  color: #F52626 !important;
+}
+
 .dateLabel.disabled {
   background-color: #eee;
   opacity: 1;
@@ -6446,6 +6457,7 @@ img#crpSelectedImage {
   height: 1.2em;
   position: relative;
   /* top: -0.2em; */
+  left: 0.1em;
   margin-right: 0.3em;
   vertical-align: top;
   cursor: pointer;

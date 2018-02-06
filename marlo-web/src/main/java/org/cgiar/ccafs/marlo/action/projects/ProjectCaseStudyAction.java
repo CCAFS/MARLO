@@ -20,15 +20,15 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -56,10 +56,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,52 +74,54 @@ public class ProjectCaseStudyAction extends BaseAction {
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(ProjectCaseStudyAction.class);
+
+
   /**
    * 
    */
   private static final long serialVersionUID = -5209003027874233584L;
+
+
   private AuditLogManager auditLogManager;
   private HistoryComparator historyComparator;
-
-
   // Model for the back-end
   private CaseStudy caseStudy;
-
   // Model for the front-end
   private long caseStudyID;
+
+
   private CaseStudyIndicatorManager caseStudyIndicatorManager;
 
-
   private Map<String, String> caseStudyIndicators;
-
-
   private CaseStudyManager caseStudyManager;
 
+
   private CaseStudyProjectManager caseStudyProjectManager;
+
+
   private ProjectCaseStudyValidation caseStudyValidation;
+
   private String contentType;
-  private CrpManager crpManager;
-
+  private GlobalUnitManager crpManager;
   private File file;
-
   private FileDBManager fileDBManager;
+
   // private ProjectHighLightValidator validator;
   private String fileFileName;
+
   private IpIndicatorManager ipIndicatorManager;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<Project> myProjects;
   private Project project;
   private long projectID;
   // Manager
   private ProjectManager projectManager;
   private PhaseManager phaseManager;
-
   private String transaction;
-
 
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
-    CrpManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
+    GlobalUnitManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
     CaseStudyProjectManager projectHighligthTypeManager, IpIndicatorManager ipIndicatorManager,
     HistoryComparator historyComparator, ProjectCaseStudyValidation caseStudyValidation,
     CaseStudyIndicatorManager caseStudyIndicatorManager, PhaseManager phaseManager) {
@@ -137,7 +140,6 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String cancel() {
@@ -187,6 +189,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     return caseStudyIndicators;
   }
 
+
   private String getCaseStudyPath() {
     return config.getUploadsBaseFolder() + File.separator + this.getCaseStudyUrlPath() + File.separator;
   }
@@ -195,7 +198,6 @@ public class ProjectCaseStudyAction extends BaseAction {
   public String getCaseStudyUrl() {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
   }
-
 
   public String getCaseStudyUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
@@ -224,7 +226,7 @@ public class ProjectCaseStudyAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -260,8 +262,8 @@ public class ProjectCaseStudyAction extends BaseAction {
 
     super.prepare();
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     caseStudyID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.CASE_STUDY_REQUEST_ID)));
 
 
@@ -305,13 +307,13 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         caseStudy = (CaseStudy) autoSaveReader.readFromJson(jReader);
-      
+
         if (caseStudy.getProjects() != null) {
           for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
             caseStudyProject.setProject(projectManager.getProjectById(caseStudyProject.getProject().getId()));
@@ -493,6 +495,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     this.caseStudy = caseStudy;
   }
 
+
   public void setCaseStudyID(long highlightID) {
     this.caseStudyID = highlightID;
   }
@@ -500,7 +503,6 @@ public class ProjectCaseStudyAction extends BaseAction {
   public void setCaseStudyIndicators(Map<String, String> caseStudyIndicators) {
     this.caseStudyIndicators = caseStudyIndicators;
   }
-
 
   public void setContentType(String contentType) {
     this.contentType = contentType;
@@ -517,10 +519,9 @@ public class ProjectCaseStudyAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;

@@ -322,9 +322,6 @@
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/jfree/jcommon -->
-    <!-- https://mvnrepository.com/artifact/jfree/jcommon -->
     <dependency>
       <groupId>jfree</groupId>
       <artifactId>jcommon</artifactId>
@@ -366,9 +363,15 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.easyrules</groupId>
+      <artifactId>easyrules-core</artifactId>
+    </dependency>
   </dependencies>
-
-
 
   <!-- Profile configuration -->
   <profiles>

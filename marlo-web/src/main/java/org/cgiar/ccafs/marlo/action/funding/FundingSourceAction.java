@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
@@ -28,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceLocationsManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -36,18 +36,18 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerDivisionManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
-import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -92,8 +92,8 @@ public class FundingSourceAction extends BaseAction {
 
   private static final long serialVersionUID = -3919022306156272887L;
 
-  private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
+  private static Logger LOG = LoggerFactory.getLogger(FundingSourceAction.class);
 
   private AuditLogManager auditLogManager;
 
@@ -105,24 +105,24 @@ public class FundingSourceAction extends BaseAction {
   private List<BudgetType> budgetTypesList;
 
 
-  private CrpManager crpManager;
-
+  private GlobalUnitManager crpManager;
 
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private File file;
 
+
   private String fileContentType;
 
 
   private FileDBManager fileDBManager;
 
-
   private String fileFileName;
 
 
   private Integer fileID;
+
 
   private FundingSource fundingSource;
 
@@ -130,30 +130,32 @@ public class FundingSourceAction extends BaseAction {
   private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   private long fundingSourceID;
+
+
   private FundingSourceInstitutionManager fundingSourceInstitutionManager;
+
   private FundingSourceManager fundingSourceManager;
   private FundingSourceInfoManager fundingSourceInfoManager;
-
   private InstitutionManager institutionManager;
-
-
   private List<Institution> institutions;
 
   private List<Institution> institutionsDonors;
+
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   private List<LiaisonInstitution> liaisonInstitutions;
-
   private HistoryComparator historyComparator;
-
   private PartnerDivisionManager partnerDivisionManager;
-
 
   private List<PartnerDivision> divisions;
 
-  private Crp loggedCrp;
-  private Map<String, String> status;
-  private String transaction;
+  private GlobalUnit loggedCrp;
 
+
+  private Map<String, String> status;
+
+  private String transaction;
   private UserManager userManager;
   private FundingSourceValidator validator;
 
@@ -162,6 +164,7 @@ public class FundingSourceAction extends BaseAction {
    */
   private FundingSourceLocationsManager fundingSourceLocationsManager;
   private LocElementManager locElementManager;
+
   private LocElementTypeManager locElementTypeManager;
   private List<LocElement> regionLists;
   private List<LocElementType> scopeRegionLists;
@@ -171,7 +174,7 @@ public class FundingSourceAction extends BaseAction {
   private RoleManager userRoleManager;
 
   @Inject
-  public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
+  public FundingSourceAction(APConfig config, GlobalUnitManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
@@ -242,7 +245,6 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
     return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
@@ -256,6 +258,7 @@ public class FundingSourceAction extends BaseAction {
       .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList()).isEmpty();
   }
+
 
   private Path getAutoSaveFilePath() {
 
@@ -309,7 +312,6 @@ public class FundingSourceAction extends BaseAction {
   public List<PartnerDivision> getDivisions() {
     return divisions;
   }
-
 
   public File getFile() {
     return file;
@@ -372,6 +374,7 @@ public class FundingSourceAction extends BaseAction {
     return institutions;
   }
 
+
   public List<Institution> getInstitutionsDonors() {
     return institutionsDonors;
   }
@@ -380,10 +383,14 @@ public class FundingSourceAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
+  // methos to download link file
+  public String getPath(String fsId) {
+    return config.getDownloadURL() + "/" + this.getStudyFileUrlPath(fsId).replace('\\', '/');
+  }
 
   public List<LocElement> getRegionLists() {
     return regionLists;
@@ -399,6 +406,12 @@ public class FundingSourceAction extends BaseAction {
   }
 
 
+  public String getStudyFileUrlPath(String fsId) {
+    return config.getFundingSourceFolder(this.getCrpSession()) + File.separator + fundingSourceID + File.separator
+      + "fundingSourceFilesResearch" + File.separator;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -411,8 +424,8 @@ public class FundingSourceAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     fundingSourceID =
       Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
@@ -506,6 +519,17 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+        // fileResearch validation
+        // 20180124 - @jurodca
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
+          }
+        }
+
 
         if (fundingSource.getInstitutions() != null) {
           for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
@@ -565,6 +589,15 @@ public class FundingSourceAction extends BaseAction {
             && pb.getProject().getProjecInfoPhase(this.getActualPhase()) != null)
           .collect(Collectors.toList()));
 
+        if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+          if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+            if (fundingSource.getFundingSourceInfo().getFileResearch().getId() != null) {
+              fundingSource.getFundingSourceInfo().setFileResearch(
+                fileDBManager.getFileDBById(fundingSource.getFundingSourceInfo().getFileResearch().getId()));
+            }
+          }
+        }
+
         /*
          * Funding source Locations
          */
@@ -617,17 +650,22 @@ public class FundingSourceAction extends BaseAction {
 
       status = new HashMap<>();
       // projectStatuses = new HashMap<>();
-      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
-      for (ProjectStatusEnum projectStatusEnum : list) {
+      List<FundingStatusEnum> list = Arrays.asList(FundingStatusEnum.values());
+      for (FundingStatusEnum projectStatusEnum : list) {
+        switch (FundingStatusEnum.getValue(Integer.parseInt(projectStatusEnum.getStatusId()))) {
+          case Pipeline:
+          case Informally:
+            if (this.hasSpecificities(APConstants.CRP_STATUS_FUNDING_SOURCES)) {
+              status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
 
-        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
-      }
+            }
+            break;
+          default:
+            status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+            break;
+        }
 
 
-      if (fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
-        && fundingSource.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        status.remove(ProjectStatusEnum.Ongoing.getStatusId());
       }
 
 
@@ -723,6 +761,8 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.getFundingSourceInfo().setFile(null);
+      fundingSource.getFundingSourceInfo().setFileResearch(null);
+      fundingSource.getFundingSourceInfo().setHasFileResearch(null);
       if (fundingSource.getInstitutions() != null) {
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
           fundingSourceInstitution
@@ -763,6 +803,7 @@ public class FundingSourceAction extends BaseAction {
 
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setW1w2(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setFile(null);
+
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setDirectDonor(null);
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setOriginalDonor(null);
       fundingSource.setBudgets(null);
@@ -773,7 +814,6 @@ public class FundingSourceAction extends BaseAction {
       return;
     }
   }
-
 
   @Override
   public String save() {
@@ -809,6 +849,8 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setStartDate(fundingSource.getFundingSourceInfo().getStartDate());
       fundingSource.getFundingSourceInfo().setEndDate(fundingSource.getFundingSourceInfo().getEndDate());
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
+      fundingSource.getFundingSourceInfo()
+        .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()
@@ -843,6 +885,25 @@ public class FundingSourceAction extends BaseAction {
         }
       }
 
+      // fileResearch validation
+      // 20180124 - @jurodca
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        if (fundingSource.getFundingSourceInfo().getHasFileResearch() != null) {
+          if (fundingSource.getFundingSourceInfo().getHasFileResearch().booleanValue()) {
+
+            if (fundingSource.getFundingSourceInfo().getFileResearch() != null) {
+              if (fundingSource.getFundingSourceInfo().getFileResearch().getId() == null) {
+                fundingSource.getFundingSourceInfo().setFileResearch(null);
+              } else {
+                fundingSource.getFundingSourceInfo()
+                  .setFileResearch(fundingSource.getFundingSourceInfo().getFileResearch());
+              }
+            }
+          } else {
+            fundingSource.getFundingSourceInfo().setFileResearch(null);
+          }
+        }
+      }
 
       /*
        * if (file != null) {
@@ -968,7 +1029,9 @@ public class FundingSourceAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       return SUCCESS;
-    } else {
+    } else
+
+    {
       return NOT_AUTHORIZED;
     }
   }
@@ -1123,6 +1186,7 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -1159,7 +1223,6 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSource = fundingSource;
   }
 
-
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
   }
@@ -1169,19 +1232,19 @@ public class FundingSourceAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setRegion(boolean region) {
     this.region = region;
@@ -1207,12 +1270,22 @@ public class FundingSourceAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      if (fundingSource.getFundingSourceInfo().getFile().getId() == null
+      if (fundingSource.getFundingSourceInfo().getFile() != null
+        && fundingSource.getFundingSourceInfo().getFile().getId() == null
         || fundingSource.getFundingSourceInfo().getFile().getId().longValue() == -1) {
         fundingSource.getFundingSourceInfo().setFile(null);
       }
+
+      if (this.hasSpecificities(APConstants.CRP_HAS_RESEARCH_HUMAN)) {
+        if (fundingSource.getFundingSourceInfo().getFileResearch() != null
+          && fundingSource.getFundingSourceInfo().getFileResearch().getId() == null
+          || fundingSource.getFundingSourceInfo().getFileResearch().getId().longValue() == -1) {
+          fundingSource.getFundingSourceInfo().setFileResearch(null);
+        }
+      }
+
       validator.validate(this, fundingSource, true);
+
     }
   }
-
 }

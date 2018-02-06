@@ -17,11 +17,12 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -85,7 +86,7 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
   private String selectedFormat;
 
   @Inject
-  public CaseStudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager,
+  public CaseStudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.caseStudyManager = caseStudyManager;
@@ -133,11 +134,11 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudies-Annualization.prpt"),
-          MasterReport.class);
+        reportResource =
+          manager.createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesExcel.prpt"), MasterReport.class);
       } else {
-        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy-Annualization.prpt"),
-          MasterReport.class);
+        reportResource =
+          manager.createDirectly(this.getClass().getResource("/pentaho/crp/CaseStudiesPDF.prpt"), MasterReport.class);
       }
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -219,10 +220,10 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year"},
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year", "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, Long.class},
       0);
     Long id = null;
     if (caseStudyManager.findAll() != null) {
@@ -281,9 +282,14 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
               }
             }
 
-            if (caseStudyProject.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()) {
+            // Get The Crp/Center/Platform where the project was created
+            GlobalUnitProject globalUnitProject = caseStudyProject.getProject().getGlobalUnitProjects().stream()
+              .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+
+            if (globalUnitProject.getGlobalUnit().getId().longValue() == this.getLoggedCrp().getId().longValue()) {
               add = true;
             }
+
           }
           List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
             caseStudy.getCaseStudyIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -300,10 +306,11 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
             anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
+          Long phaseID = this.getSelectedPhase().getId();
           if (add) {
             model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
               nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
-              anex, owner.trim(), indicators.trim(), shared.trim(), year});
+              anex, owner.trim(), indicators.trim(), shared.trim(), year, phaseID});
           }
         }
       }

@@ -2,11 +2,14 @@
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","jsUri"] /]
-[#assign customJS = [ 
-  "${baseUrl}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries.js"
-  ] 
-/]
+
+
+[#assign customJS = ["${baseUrl}/global/js/utils.js", 
+                    "${baseUrlMedia}/js/summaries/boardSummaries.js", 
+                    "${baseUrlMedia}/js/capDev/capdevSummaries.js", 
+                    "${baseUrlMedia}/js/capDev/year-select.js"] /]
+
+
 [#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
 
@@ -27,6 +30,7 @@
       <div id="impactPathway" class="summariesSection current"><span></span><a href="">[@s.text name="summaries.board.options.impactPathway" /]</a></div>
       <div id="projects" class="summariesSection" style="opacity:0.5;" ><span></span><a href="">[@s.text name="summaries.board.options.projects" /]</a></div>
       <div id="monitoring" class="summariesSection" style="opacity:0.5;"><span></span><a href="">[@s.text name="summaries.board.options.monitoring" /]</a> </div>
+      <div id="capdev" class="summariesSection" style="opacity:0.5;"><span></span><a href="">[@s.text name="summaries.board.options.capdev" /]</a> </div>
     </div>
     <div class="summariesContent borderBox col-md-12">
       <div class="loading" style="display:none"></div>
@@ -152,6 +156,57 @@
           
           
         </div>
+
+        [#-- -- -- capdev reports -- -- --]
+        <div id="capdev-contentOptions" style="display:none">
+        
+        [#--  capdev  report by research area --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
+              <label for="">Full capacity development interventions report by Research Areas </label>
+            </div>
+            <div class="col-md-12"> 
+              <div class="col-md-6 ">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Area"  listName="researchAreas"  keyFieldName="id"  displayFieldName="name" className="researchAreasSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
+              </div>
+             
+              <div class="col-md-6 capdevYearSelect">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="yearArea"   multiple=false required=true   editable=true/]
+              </div>
+              
+              <div class="pull-right">
+                <a id="generarReportCapdevByArea" target="_blank" class=" addButton pull-right  generarReportCapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+            
+          </div>
+
+
+          [#-- capdev report by research program --]
+          <div class="summariesFiles borderBox col-md-12">
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="projectSummary"/>
+              <label for="">Full capacity development interventions report by Research Program </label>
+            </div>
+            <div class="col-md-12"> 
+              
+              <div class="col-md-6 ">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Research Program"  listName="programs"  keyFieldName="id"  displayFieldName="name" className="researchProgramSelect"   multiple=false required=true placeholder="ALL"  editable=true/]
+              </div>
+              <div class="col-md-6 capdevYearSelect">
+                [@customForm.select name="" header=false   label=""  i18nkey="Select a Year"  listName=""  keyFieldName=""  displayFieldName="" className="yearProgram"   multiple=false required=true   editable=true/]
+              </div>
+              
+              <div class="pull-right">
+                <a id="generarReportCapdevByProgram" target="_blank" class=" addButton pull-right  generarReportCapdev" href="#">[@s.text name="form.buttons.generate" /]</a>
+              </div>
+            </div>
+            
+          </div>
+          
+        </div>
+
       </div>
       <br />
       

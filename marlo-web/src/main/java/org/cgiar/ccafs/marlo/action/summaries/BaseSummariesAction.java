@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -39,24 +39,26 @@ import org.slf4j.LoggerFactory;
 
 public class BaseSummariesAction extends BaseAction {
 
+
   private static final long serialVersionUID = 2837063045483756677L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(BaseSummariesAction.class);
+
   // parameters
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private int selectedYear;
   private String selectedCycle;
   private Phase selectedPhase;
-
   // Managers
-  private CrpManager crpManager;
+  private GlobalUnitManager crpManager;
   private PhaseManager phaseManager;
 
-  public BaseSummariesAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
     super(config);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
   }
-
 
   /**
    * Get all subreports and store then in a hash map.
@@ -150,10 +152,10 @@ public class BaseSummariesAction extends BaseAction {
     }
   }
 
-  public Crp getLoggedCrp() {
+
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public String getSelectedCycle() {
     return selectedCycle;
@@ -172,8 +174,8 @@ public class BaseSummariesAction extends BaseAction {
 
   public void setGeneralParameters() {
     try {
-      this.setLoggedCrp((Crp) this.getSession().get(APConstants.SESSION_CRP));
-      this.setLoggedCrp(crpManager.getCrpById(loggedCrp.getId()));
+      this.setLoggedCrp((GlobalUnit) this.getSession().get(APConstants.SESSION_CRP));
+      this.setLoggedCrp(crpManager.getGlobalUnitById(loggedCrp.getId()));
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }
@@ -203,7 +205,7 @@ public class BaseSummariesAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

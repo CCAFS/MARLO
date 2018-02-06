@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -119,7 +120,7 @@ public class IPOutcomesSummaryAction extends BaseAction implements Summary {
     try {
 
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/centerOutcomes.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/center/CenterOutcomes.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();

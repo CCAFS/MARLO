@@ -15,13 +15,17 @@ public class Parameter implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 3839084224660636191L;
+
+
   private Long id;
+
   private String key;
   private String description;
   private Integer format;
-
   private String defaultValue;
   private Integer category;
+
+  private GlobalUnitType globalUnitType;
   private Set<CustomParameter> customParameters = new HashSet<CustomParameter>(0);
 
   public Parameter() {
@@ -30,7 +34,6 @@ public class Parameter implements java.io.Serializable {
   public Parameter(String description) {
     this.description = description;
   }
-
 
   public Parameter(String key, String description, Integer format, String defaultValue, Integer category,
     Set<CustomParameter> customParameterses) {
@@ -46,6 +49,7 @@ public class Parameter implements java.io.Serializable {
     return this.category;
   }
 
+
   public Set<CustomParameter> getCustomParameters() {
     return this.customParameters;
   }
@@ -60,6 +64,10 @@ public class Parameter implements java.io.Serializable {
 
   public Integer getFormat() {
     return this.format;
+  }
+
+  public GlobalUnitType getGlobalUnitType() {
+    return globalUnitType;
   }
 
   public Long getId() {
@@ -88,6 +96,10 @@ public class Parameter implements java.io.Serializable {
 
   public void setFormat(Integer format) {
     this.format = format;
+  }
+
+  public void setGlobalUnitType(GlobalUnitType globalUnitType) {
+    this.globalUnitType = globalUnitType;
   }
 
   public void setId(Long id) {

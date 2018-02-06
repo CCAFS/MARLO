@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.validation.sythesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
@@ -40,16 +40,18 @@ import javax.inject.Named;
 @Named
 public class SynthesisByOutcomeValidator extends BaseValidator {
 
-  private final CrpManager crpManager;
+  @Inject
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
-  public SynthesisByOutcomeValidator(CrpManager crpManager) {
+  public SynthesisByOutcomeValidator(GlobalUnitManager crpManager) {
     super();
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = ipProgram.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus().replace("/", "_");
     String autoSaveFile =

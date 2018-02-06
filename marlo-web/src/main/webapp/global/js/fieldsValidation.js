@@ -116,6 +116,12 @@ function getInputElement(fieldName,message) {
     $tab.find('.badge').addClass('fieldError');
   }
 
+  // Find date label
+  var $dateLabel = $(elementQuery).parent().find('.dateLabel');
+  if($dateLabel) {
+    $dateLabel.addClass('fieldError');
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 

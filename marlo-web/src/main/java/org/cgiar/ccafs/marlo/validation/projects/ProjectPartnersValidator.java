@@ -17,9 +17,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -50,12 +51,18 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPartnersValidator.class);
 
-  private final CrpManager crpManager;
-  private final InstitutionManager institutionManager;
-  private final ProjectValidator projectValidator;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
+  private ProjectManager projectManager;
+
+  private ProjectValidator projectValidator;
+
+  private InstitutionManager institutionManager;
 
   @Inject
-  public ProjectPartnersValidator(ProjectValidator projectValidator, CrpManager crpManager,
+  public ProjectPartnersValidator(ProjectValidator projectValidator, GlobalUnitManager crpManager,
     InstitutionManager institutionManager) {
     super();
     this.projectValidator = projectValidator;
@@ -64,7 +71,7 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.PARTNERS.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -134,19 +141,22 @@ public class ProjectPartnersValidator extends BaseValidator {
           }
         }
 
+        if (project.getProjectInfo().getNewPartnershipsPlanned() == null
+          || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
+          action.addMissingField("project.projectInfo.newPartnershipsPlanned");
+          action.getInvalidFields().put("input-project.projectInfo.newPartnershipsPlanned",
+            action.getText("Please provide new partnerships  planned for " + action.getActualPhase().getYear()));
+        }
       }
+
       this.validateCCAFSProject(action, project);
 
       if (!action.getFieldErrors().isEmpty()) {
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
-        System.out.println(action.getFieldErrors());
-
-
       } else if (action.getValidationMessage().length() > 0) {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-
       }
 
       this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),

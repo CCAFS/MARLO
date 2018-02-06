@@ -1,0 +1,11 @@
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:01:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='1';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:02:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='2';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:03:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='3';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:03:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='4';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:05:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='5';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:06:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='6';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:07:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='7';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:08:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='8';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:09:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='9';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:10:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='10';
+UPDATE  `target_groups` SET `is_active`='1', `active_since`='2017-07-17 12:11:38', `created_by`='1454', `modified_by`='1454' WHERE `id`='11';

@@ -15,38 +15,42 @@ public class GenderType implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = 1694753404214696770L;
+
+
   @Expose
   private Long id;
-  private Crp crp;
+
+
+  private GlobalUnit crp;
+
+
   @Expose
   private String description;
   @Expose
   private String completeDescription;
 
-
   public GenderType() {
   }
 
-
-  public GenderType(Crp crp, String description) {
+  public GenderType(GlobalUnit crp, String description) {
     this.crp = crp;
     this.description = description;
   }
 
-
   public GenderType(String description) {
     this.description = description;
   }
-
 
   public String getCompleteDescription() {
     return completeDescription;
   }
 
 
-  public Crp getCrp() {
-    return this.crp;
+
+  public GlobalUnit getCrp() {
+    return crp;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -92,8 +96,7 @@ public class GenderType implements java.io.Serializable, IAuditLog {
     this.completeDescription = completeDescription;
   }
 
-
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 

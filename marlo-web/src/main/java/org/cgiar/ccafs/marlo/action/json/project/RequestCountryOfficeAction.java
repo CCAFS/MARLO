@@ -18,12 +18,12 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -62,7 +62,7 @@ public class RequestCountryOfficeAction extends BaseAction {
   private Long projectID;
   private Long institutionID;
   private String[] countries;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   private final SendMailS sendMail;
 
@@ -71,14 +71,15 @@ public class RequestCountryOfficeAction extends BaseAction {
   private ProjectManager projectManager;
   private LocElementManager locElementManager;
   private PartnerRequestManager partnerRequestManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private boolean messageSent;
 
   @Inject
   public RequestCountryOfficeAction(APConfig config, InstitutionManager institutionManager,
     LocElementManager locElementManager, ProjectManager projectManager, PartnerRequestManager partnerRequestManager,
-    CrpManager crpManager, SendMailS sendMail) {
+    GlobalUnitManager crpManager, SendMailS sendMail) {
     super(config);
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
@@ -188,8 +189,8 @@ public class RequestCountryOfficeAction extends BaseAction {
 
     // Get loggerCrp
     try {
-      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
     }

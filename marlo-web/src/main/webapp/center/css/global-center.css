@@ -10,6 +10,7 @@ table{
 }
 
 label {
+  margin:0;
 }
 
 .input-sm {
@@ -4116,6 +4117,7 @@ margin: 0;}
   padding: 4px 12px;
   border-radius: 2px;
   cursor: pointer;
+  text-align: center;
 }
 .checkButton:hover{
   background-color: #749E66;
@@ -6265,4 +6267,12 @@ span.hint{
 
 img.hint-img {
   display: none !important;
+}
+
+table.ui-datepicker-calendar {
+     display: block !important; 
+}
+
+.form-group.capdevRegional.regionsBox {
+    /* position: relative; */
 }

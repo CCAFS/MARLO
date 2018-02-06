@@ -19,11 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -49,17 +49,18 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
-  private Crp crp;
+  private GlobalUnit crp;
   private long caseStudyId = 0;
 
-  private final CaseStudyManager caseStudyManager;
-  private final CaseStudyProjectManager caseStudyProjectManager;
-  private final ProjectManager projectManager;
-  private final CrpManager crpManager;
+  private CaseStudyManager caseStudyManager;
+  private CaseStudyProjectManager caseStudyProjectManager;
+  private ProjectManager projectManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public EditCaseStudyInterceptor(CaseStudyManager caseStudyManager, ProjectManager projectManager,
-    CrpManager crpManager, CaseStudyProjectManager caseStudyProjectManager) {
+    GlobalUnitManager crpManager, CaseStudyProjectManager caseStudyProjectManager) {
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.caseStudyManager = caseStudyManager;
@@ -71,8 +72,8 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
-    crp = crpManager.getCrpById(crp.getId());
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getGlobalUnitById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -162,10 +163,12 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         System.out.println(studyProject.getProject().getId());
       }
 
-      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
-        .filter(
-          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-        .collect(Collectors.toList()));
+      List<CaseStudyProject> caseStudyProjects =
+        new ArrayList<>(
+          caseStudy
+            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
+              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
+            .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

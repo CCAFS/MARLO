@@ -58,6 +58,7 @@ file.uploads.project.WorkplanFolder=workplan/
 # sub-folder to upload bilateral project contract proposal
 file.uploads.project.bilateralProposalFolder=bilateralProposal/
 file.uploads.project.bilateralPAnualReport=anualReport/
+file.uploads.fundingSourceFolder=fundingSource/
 # Maximum size allowed
 file.maxSizeAllowed.bytes=3145728
 

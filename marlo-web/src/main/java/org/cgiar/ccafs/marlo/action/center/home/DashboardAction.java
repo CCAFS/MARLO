@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.center.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import javax.inject.Inject;
@@ -28,9 +28,15 @@ import javax.inject.Inject;
  */
 public class DashboardAction extends BaseAction {
 
+
   private static final long serialVersionUID = -4006598729888638344L;
-  private Center loggedCrp;
-  private ICenterManager crpManager;
+
+
+  private GlobalUnit loggedCrp;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   /**
    * @param config
@@ -38,28 +44,29 @@ public class DashboardAction extends BaseAction {
    * @param crpManager
    */
   @Inject
-  public DashboardAction(APConfig config, ICenterManager crpManager) {
+  public DashboardAction(APConfig config, GlobalUnitManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
 
-
-  public Center getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
   @Override
   public void prepare() throws Exception {
-    loggedCrp = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     if (this.isSwitchSession()) {
       this.clearPermissionsCache();
     }
   }
 
-  public void setLoggedCrp(Center loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
 }

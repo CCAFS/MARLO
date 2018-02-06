@@ -23,10 +23,17 @@
 		</many-to-one>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProject" fetch="select">
-			<column name="project_id" not-null="true" />
+			<column name="project_id"  />
 		</many-to-one>
+		<many-to-one name="capdev"
+			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
+			<column name="capdev_id"  />
+		</many-to-one>
+		<property name="capdevD" type="java.lang.Boolean">
+			<column name="is_capdev" />
+		</property>
 		<many-to-one name="deliverableType"
-			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
+			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select" >
 			<column name="type_id" />
 		</many-to-one>
 		<one-to-one name="deliverableCrosscutingTheme"

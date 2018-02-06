@@ -38,11 +38,12 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   private Long id;
 
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
 
 
   @Expose
   private LocElement locElement;
+
 
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
@@ -65,6 +66,7 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+
   private List<String> programName;
 
   private List<CrpSitesLeader> siteLeaders;
@@ -72,13 +74,12 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   public CrpsSiteIntegration() {
   }
 
-
-  public CrpsSiteIntegration(Crp crps, LocElement locElements) {
+  public CrpsSiteIntegration(GlobalUnit crps, LocElement locElements) {
     this.crp = crps;
     this.locElement = locElements;
   }
 
-  public CrpsSiteIntegration(Crp crps, LocElement locElements, Set<CrpSitesLeader> crpSitesLeaders) {
+  public CrpsSiteIntegration(GlobalUnit crps, LocElement locElements, Set<CrpSitesLeader> crpSitesLeaders) {
     this.crp = crps;
     this.locElement = locElements;
     this.crpSitesLeaders = crpSitesLeaders;
@@ -110,22 +111,25 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
-  public Crp getCrp() {
-    return this.crp;
+  public GlobalUnit getCrp() {
+    return crp;
   }
 
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return this.crpSitesLeaders;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public LocElement getLocElement() {
     return this.locElement;
@@ -173,18 +177,19 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crps) {
-    this.crp = crps;
+  public void setCrp(GlobalUnit crp) {
+    this.crp = crp;
   }
+
 
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -216,7 +221,7 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CrpsSiteIntegration [id=" + id + ", crp=" + crp + ", locElement=" + locElement + ", regional=" + regional
+     return "CrpsSiteIntegration [id=" + id + ", crp=" + crp + ", locElement=" + locElement + ", regional=" + regional
       + ", programName=" + programName + "]";
   }
 

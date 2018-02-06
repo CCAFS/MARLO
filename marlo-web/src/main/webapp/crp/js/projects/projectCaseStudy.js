@@ -49,7 +49,6 @@ function addProject(option) {
   if(option.val() == "-1") {
     canAdd = false;
   }
-
   var $list = $(option).parents(".select").parents("#myProjectsList").find(".list");
   var $item = $("#sharedProject-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();

@@ -169,6 +169,17 @@
   </li>
 </ul>
 
+[#-- Gender level list template --]
+<ul style="display:none">
+  <li id="genderLevel-template" class="genderLevel clearfix" style="display:none;">
+    <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
+    <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
+
 [#-- Remove deliverable files modal  template --]
 <div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 
 

@@ -19,9 +19,9 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -29,11 +29,11 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -86,7 +86,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private ProjectCommunicationManager projectCommunicationManager;
-  private CrpManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -98,7 +99,7 @@ public class ProjectOutcomeAction extends BaseAction {
   // Front-end
   private long projectID;
   private long projectOutcomeID;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private Project project;
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
@@ -114,7 +115,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
@@ -359,8 +360,8 @@ public class ProjectOutcomeAction extends BaseAction {
   public void prepare() throws Exception {
 
     // Get current CRP
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     try {
       projectOutcomeID =

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Sep 18, 2017 3:03:15 PM by Hibernate Tools 5.2.3.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.FundingSourceInfo"
@@ -84,5 +84,12 @@
     <property name="extensionDate" type="date">
       <column name="extended_date" length="10" />
     </property>
+    <property name="hasFileResearch" type="java.lang.Boolean">
+      <column name="has_file_research" />
+    </property>
+    <many-to-one name="fileResearch"
+      class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+      <column name="file_research"/>
+    </many-to-one>
 	</class>
 </hibernate-mapping>

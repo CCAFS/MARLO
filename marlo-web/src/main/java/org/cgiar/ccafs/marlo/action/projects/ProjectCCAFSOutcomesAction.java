@@ -19,13 +19,13 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpElementType;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -65,52 +65,55 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectCCAFSOutcomesAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -6970673687247245375L;
+
+
   private List<IpElement> midOutcomes;
+
   private List<IpElement> midOutcomesSelected;
-
-
   private List<IpProgram> projectFocusList;
-
-
   private List<IpElement> previousOutputs;
+
+
   private List<IpIndicator> previousIndicators;
+
+
   private List<Integer> allYears;
   private ProjectCCAFSOutcomeValidator ccafsOutcomeValidator;
   private HistoryComparator historyComparator;
-
   private long projectID;
-
-
   private Project project;
-
 
   private String transaction;
 
+
   private AuditLogManager auditLogManager;
+
+
   // Managers
   private ProjectManager projectManager;
 
-
   private CrpProgramManager crpProgramManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
 
-  private CrpManager crpManager;
   private IpElementManager ipElementManager;
 
+
   private IpIndicatorManager ipIndicatorManager;
+  private GlobalUnit loggedCrp;
 
-
-  private Crp loggedCrp;
   private IpProjectIndicatorManager ipProjectIndicatorManager;
 
 
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
-    IpElementManager ipElementManager, CrpManager crpManager, AuditLogManager auditLogManager,
+    IpElementManager ipElementManager, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
     IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager,
     HistoryComparator historyComparator, ProjectCCAFSOutcomeValidator ccafsOutcomeValidator) {
     super(config);
@@ -177,6 +180,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return String.valueOf(acumulative);
   }
 
+
   @Override
   public String cancel() {
 
@@ -201,7 +205,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -218,7 +221,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return false;
   }
 
-
+  @Override
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -231,6 +234,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public IpProjectIndicator getIndicator(long indicatorID, long midOutcome, int year) {
 
@@ -279,9 +283,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return project.getProjectIndicators().size() - 1;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpElement> outputs = new ArrayList<>();
@@ -317,6 +322,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   }
 
+
   public List<IpElement> getMidOutcomes() {
     return midOutcomes;
   }
@@ -335,7 +341,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
-
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -362,6 +367,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
+
 
   private void getMidOutcomesByProjectFocuses() {
     boolean isGlobalProject;
@@ -394,7 +400,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return midOutcomesSelected;
   }
 
-
   public int getMidOutcomeYear() {
     return APConstants.MID_OUTCOME_YEAR;
   }
@@ -426,6 +431,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return previousOutputs;
   }
 
+
   public Project getProject() {
     return project;
   }
@@ -434,10 +440,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return projectFocusList;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -449,7 +455,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       ipElementManager.getIPElementsRelated(outcome.getId().intValue(), APConstants.ELEMENT_RELATION_TRANSLATION);
     return !translatedOf.isEmpty();
   }
-
 
   /**
    * The regional midOutcomes only can be selected if they are translation of
@@ -479,13 +484,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return false;
   }
 
+
   @Override
   public void prepare() throws Exception {
     super.prepare();
 
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     midOutcomes = new ArrayList<>();
     midOutcomesSelected = new ArrayList<>();
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -537,11 +543,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         reader = new BufferedReader(new FileReader(path.toFile()));
         Gson gson = new GsonBuilder().create();
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
- 	      reader.close();
- 	
+        reader.close();
+
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         project = (Project) autoSaveReader.readFromJson(jReader);
-      
+
 
         Project projectDB = projectManager.getProjectById(projectID);
         project.setProjectInfo(projectDB.getProjecInfoPhase(this.getActualPhase()));
@@ -645,7 +651,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   }
 
-
   private void removeOutcomesAlreadySelected() {
     for (int i = 0; i < midOutcomes.size(); i++) {
       if (midOutcomesSelected.contains(midOutcomes.get(i))) {
@@ -747,9 +752,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.allYears = allYears;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setMidOutcomes(List<IpElement> midOutcomes) {
     this.midOutcomes = midOutcomes;

@@ -61,6 +61,12 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   private String otherLicense;
   @Expose
   private Boolean allowModifications;
+  @Expose
+  private Long crossCuttingScoreGender;
+  @Expose
+  private Long crossCuttingScoreYouth;
+  @Expose
+  private Long crossCuttingScoreCapacity;
 
   public DeliverableInfo() {
   }
@@ -70,7 +76,8 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     String typeOther, Integer newExpectedYear, int year, Integer status, String statusDescription,
     String modificationJustification, Boolean crossCuttingGender, Boolean crossCuttingYouth,
     Boolean crossCuttingCapacity, Boolean crossCuttingNa, Boolean adoptedLicense, String license, String otherLicense,
-    Boolean allowModifications) {
+    Boolean allowModifications, Long crossCuttingScoreGender, Long crossCuttingScoreYouth,
+    Long crossCuttingScoreCapacity) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
     this.crpProgramOutcome = crpProgramOutcome;
     this.deliverableType = deliverableType;
@@ -93,6 +100,9 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     this.license = license;
     this.otherLicense = otherLicense;
     this.allowModifications = allowModifications;
+    this.crossCuttingScoreGender = crossCuttingScoreGender;
+    this.crossCuttingScoreYouth = crossCuttingScoreYouth;
+    this.crossCuttingScoreCapacity = crossCuttingScoreCapacity;
   }
 
   public DeliverableInfo(User modifiedBy, int year, String modificationJustification) {
@@ -123,13 +133,28 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Long getCrossCuttingScoreCapacity() {
+    return crossCuttingScoreCapacity;
+  }
+
+  public Long getCrossCuttingScoreGender() {
+    return crossCuttingScoreGender;
+  }
+
+  public Long getCrossCuttingScoreYouth() {
+    return crossCuttingScoreYouth;
+  }
+
+
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
   }
 
+
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
+
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -327,6 +352,21 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCrossCuttingScoreCapacity(Long crossCuttingScoreCapacity) {
+    this.crossCuttingScoreCapacity = crossCuttingScoreCapacity;
+  }
+
+
+  public void setCrossCuttingScoreGender(Long crossCuttingScoreGender) {
+    this.crossCuttingScoreGender = crossCuttingScoreGender;
+  }
+
+
+  public void setCrossCuttingScoreYouth(Long crossCuttingScoreYouth) {
+    this.crossCuttingScoreYouth = crossCuttingScoreYouth;
+  }
+
+
   public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
     this.crossCuttingYouth = crossCuttingYouth;
   }
@@ -416,7 +456,6 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     this.year = year;
   }
 
-
   public void updateDeliverableInfo(DeliverableInfo update) {
     this.setAdoptedLicense(update.getAdoptedLicense());
     this.setAllowModifications(update.getAllowModifications());
@@ -439,6 +478,9 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     this.setCrossCuttingGender(update.getCrossCuttingGender());
     this.setYear(update.getYear());
     this.setStatusDescription(update.getStatusDescription());
+    this.setCrossCuttingScoreGender(update.getCrossCuttingScoreGender());
+    this.setCrossCuttingScoreYouth(update.getCrossCuttingScoreYouth());
+    this.setCrossCuttingScoreCapacity(update.getCrossCuttingScoreCapacity());
 
 
   }

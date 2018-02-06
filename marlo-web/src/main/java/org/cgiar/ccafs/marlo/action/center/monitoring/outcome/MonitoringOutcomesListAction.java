@@ -17,19 +17,19 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.outcome;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -50,8 +50,9 @@ public class MonitoringOutcomesListAction extends BaseAction {
   private static final long serialVersionUID = 131978907868869233L;
 
 
-  private ICenterManager centerService;
-  private Center loggedCenter;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
+  private GlobalUnit loggedCenter;
   private List<CenterOutcome> outcomes;
   private ICenterProgramManager programService;
   private List<CenterArea> researchAreas;
@@ -70,7 +71,7 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
 
   @Inject
-  public MonitoringOutcomesListAction(APConfig config, ICenterManager centerService,
+  public MonitoringOutcomesListAction(APConfig config, GlobalUnitManager centerService,
     ICenterProgramManager programService, ICenterAreaManager researchAreaService, UserManager userService,
     ICenterTopicManager researchTopicService, ICenterOutcomeManager outcomeService) {
     super(config);
@@ -104,11 +105,6 @@ public class MonitoringOutcomesListAction extends BaseAction {
 
   public long getAreaID() {
     return areaID;
-  }
-
-
-  public Center getLoggedCenter() {
-    return loggedCenter;
   }
 
 
@@ -159,11 +155,11 @@ public class MonitoringOutcomesListAction extends BaseAction {
     programID = -1;
     topicID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -280,9 +276,6 @@ public class MonitoringOutcomesListAction extends BaseAction {
     this.areaID = areaID;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setOutcomeID(long outcomeID) {
     this.outcomeID = outcomeID;

@@ -77,7 +77,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
     List<CrpClusterOfActivity> clusters =
       phase.getClusters().stream().filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgramID
         && c.getIdentifier().equals(crpCluster.getIdentifier())).collect(Collectors.toList());
-    if ( clusters.isEmpty()) {
+    if (clusters.isEmpty()) {
       CrpClusterOfActivity clusterAdd = new CrpClusterOfActivity();
       clusterAdd.setActive(true);
       clusterAdd.setActiveSince(crpCluster.getActiveSince());
@@ -304,7 +304,8 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           crpClusterKeyOutputAdd.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
           crpClusterKeyOutputDAO.save(crpClusterKeyOutputAdd);
           if (crpClusterKeyOutput.getComposeID() == null) {
-            crpClusterKeyOutput.setComposeID(crpClusterKeyOutput.getComposeID() + "-" + crpClusterKeyOutputAdd.getId());
+            crpClusterKeyOutput
+              .setComposeID(crpClusterOfActivityPrev.getIdentifier() + "-" + crpClusterKeyOutputAdd.getId());
             crpClusterKeyOutputAdd.setComposeID(crpClusterKeyOutput.getComposeID());
             crpClusterKeyOutputDAO.save(crpClusterKeyOutputAdd);
           }
@@ -336,8 +337,14 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
           }
 
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
-            crpClusterKeyOutputOutcome.setCrpProgramOutcome(
-              crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+            if (crpClusterKeyOutputOutcome != null && crpClusterKeyOutputOutcome.getCrpProgramOutcome() != null
+              && crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId() != null) {
+              crpClusterKeyOutputOutcome.setCrpProgramOutcome(
+                crpProgramOutcomeDAO.find(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getId()));
+            } else {
+              crpClusterKeyOutputOutcome.setCrpProgramOutcome(null);
+            }
+
           }
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutputtoUpdate
             .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -351,22 +358,25 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
             }
           }
           for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
-
-            if (crpClusterKeyOutputtoUpdate.getCrpClusterKeyOutputOutcomes().stream()
-              .filter(c -> c.isActive() && c.getCrpProgramOutcome().getComposeID()
-                .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
-              .collect(Collectors.toList()).isEmpty()) {
-              CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
-              crpClusterKeyOutputOutcomeAdd.setActive(true);
-              crpClusterKeyOutputOutcomeAdd.setActiveSince(crpClusterKeyOutputtoUpdate.getActiveSince());
-              crpClusterKeyOutputOutcomeAdd.setContribution(crpClusterKeyOutputOutcome.getContribution());
-              crpClusterKeyOutputOutcomeAdd.setCreatedBy(crpClusterKeyOutputtoUpdate.getCreatedBy());
-              crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusterKeyOutputtoUpdate);
-              crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
-              crpClusterKeyOutputOutcomeAdd.setModificationJustification("");
-              crpClusterKeyOutputOutcomeAdd.setModifiedBy(crpClusterKeyOutputtoUpdate.getModifiedBy());
-              crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
+            if (crpClusterKeyOutputOutcome != null) {
+              if (crpClusterKeyOutputtoUpdate.getCrpClusterKeyOutputOutcomes().stream()
+                .filter(c -> c.isActive() && crpClusterKeyOutputOutcome.getCrpProgramOutcome() != null
+                  && c.getCrpProgramOutcome().getComposeID()
+                    .equals(crpClusterKeyOutputOutcome.getCrpProgramOutcome().getComposeID()))
+                .collect(Collectors.toList()).isEmpty()) {
+                CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomeAdd = new CrpClusterKeyOutputOutcome();
+                crpClusterKeyOutputOutcomeAdd.setActive(true);
+                crpClusterKeyOutputOutcomeAdd.setActiveSince(crpClusterKeyOutputtoUpdate.getActiveSince());
+                crpClusterKeyOutputOutcomeAdd.setContribution(crpClusterKeyOutputOutcome.getContribution());
+                crpClusterKeyOutputOutcomeAdd.setCreatedBy(crpClusterKeyOutputtoUpdate.getCreatedBy());
+                crpClusterKeyOutputOutcomeAdd.setCrpClusterKeyOutput(crpClusterKeyOutputtoUpdate);
+                crpClusterKeyOutputOutcomeAdd.setCrpProgramOutcome(crpClusterKeyOutputOutcome.getCrpProgramOutcome());
+                crpClusterKeyOutputOutcomeAdd.setModificationJustification("");
+                crpClusterKeyOutputOutcomeAdd.setModifiedBy(crpClusterKeyOutputtoUpdate.getModifiedBy());
+                crpClusterKeyOutputOutcomeDAO.save(crpClusterKeyOutputOutcomeAdd);
+              }
             }
+
           }
         }
       }

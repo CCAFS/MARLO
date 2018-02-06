@@ -212,6 +212,7 @@ function validateInputTerms() {
 }
 
 function selectSummariesSection(e) {
+  console.log("esta es la prueba")
   e.preventDefault();
   var $section = $(e.target).parents('.summariesSection');
 

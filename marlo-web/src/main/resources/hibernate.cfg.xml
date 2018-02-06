@@ -22,11 +22,9 @@
 		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
 		<mapping resource="xmls/Auditlog.hbm.xml" />
 		<mapping resource="xmls/Users.hbm.xml" />
-		<mapping resource="xmls/Crps.hbm.xml" />
 		<mapping resource="xmls/CrpUsers.hbm.xml" />
 		<mapping resource="xmls/Roles.hbm.xml" />
 		<mapping resource="xmls/UserRoles.hbm.xml" />
-
 		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
@@ -145,12 +143,9 @@
 		<mapping resource="xmls/InstitutionsLocations.hbm.xml" />
 		<mapping resource="xmls/ProjectPartnerLocations.hbm.xml" />
 		<mapping resource="xmls/ProjectsInfo.hbm.xml" />
-
-		<mapping resource="xmls/CenterUsers.hbm.xml" />
 		<mapping resource="xmls/CenterAllTypes.hbm.xml" />
 		<mapping resource="xmls/CenterMilestones.hbm.xml" />
 		<mapping resource="xmls/CenterAreas.hbm.xml" />
-		<mapping resource="xmls/Centers.hbm.xml" />
 		<mapping resource="xmls/CenterImpact.hbm.xml" />
 		<mapping resource="xmls/CenterLeaders.hbm.xml" />
 		<mapping resource="xmls/CenterObjective.hbm.xml" />
@@ -158,8 +153,6 @@
 		<mapping resource="xmls/CenterOutput.hbm.xml" />
 		<mapping resource="xmls/CenterPrograms.hbm.xml" />
 		<mapping resource="xmls/CenterTopic.hbm.xml" />
-		<mapping resource="xmls/CenterRoles.hbm.xml" />
-		<mapping resource="xmls/CenterUserRoles.hbm.xml" />
 		<mapping resource="xmls/CenterImpactObjectives.hbm.xml" />
 		<mapping resource="xmls/CenterSectionStatuses.hbm.xml" />
 		<mapping resource="xmls/CenterTargetUnits.hbm.xml" />
@@ -189,22 +182,41 @@
 		<mapping resource="xmls/CenterDeliverableCrosscutingThemes.hbm.xml" />
 		<mapping resource="xmls/CenterDeliverableOutputs.hbm.xml" />
 		<mapping resource="xmls/CenterProjectTypes.hbm.xml" />
-		<mapping resource="xmls/CenterParameters.hbm.xml" />
-		<mapping resource="xmls/CenterCustomParameters.hbm.xml" />
 		<mapping resource="xmls/CenterImpactStatement.hbm.xml" />
 		<mapping resource="xmls/DeliverablesInfo.hbm.xml" />
+		<mapping resource="xmls/CapacityDevelopment.hbm.xml" />
+		<mapping resource="xmls/CapacityDevelopmentTypes.hbm.xml" />
+		<mapping resource="xmls/CapdevLocations.hbm.xml" />
+		<mapping resource="xmls/Disciplines.hbm.xml" />
+		<mapping resource="xmls/CapdevDiscipline.hbm.xml" />
+		<mapping resource="xmls/TargetGroups.hbm.xml" />
+		<mapping resource="xmls/CapdevTargetgroup.hbm.xml" />
+		<mapping resource="xmls/CapdevParticipant.hbm.xml" />
+		<mapping resource="xmls/Participant.hbm.xml" />
+		<mapping resource="xmls/CapdevOutputs.hbm.xml" />
+		<mapping resource="xmls/CapdevPartners.hbm.xml" />
+		<mapping resource="xmls/CapdevSupportingDocs.hbm.xml" />
+		<mapping resource="xmls/CapdevSuppDocsDocuments.hbm.xml" />
+		<mapping resource="xmls/CapdevFoundingType.hbm.xml" />
+		<mapping resource="xmls/CapdevHighestDegree.hbm.xml" />
 		<mapping resource="xmls/Agreement.hbm.xml" />
 		<mapping resource="xmls/CountryAgreement.hbm.xml" />
 		<mapping resource="xmls/CrpAgreement.hbm.xml" />
 		<mapping resource="xmls/FundingSourceAgreement.hbm.xml" />
 		<mapping resource="xmls/PlaAgreement.hbm.xml" />
+		<mapping resource="xmls/AdUser.hbm.xml" />
+		<mapping resource="xmls/CapdevRangeAge.hbm.xml" />
 		<mapping resource="xmls/RepositoryChannel.hbm.xml" />
 		<mapping resource="xmls/CenterFundingSyncTypes.hbm.xml" />
-	  <mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml"/>
-	  <mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml"/>
-		<mapping resource="xmls/EmailLogs.hbm.xml"/>
-		
+		<mapping resource="xmls/GlobalUnitTypes.hbm.xml" />
+		<mapping resource="xmls/GlobalUnits.hbm.xml" />
+		<mapping resource="xmls/GlobalUnitProjects.hbm.xml" />
+		<mapping resource="xmls/ProjectExpectedStudies.hbm.xml" />
+		<mapping resource="xmls/ProjectBudgetsFlagships.hbm.xml" />
+		<mapping resource="xmls/CrossCuttingScoring.hbm.xml" />
+		<mapping resource="xmls/CrpProgramOutcomeIndicator.hbm.xml" />
+		<mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml" />
+		<mapping resource="xmls/EmailLogs.hbm.xml" />
+		<mapping resource="xmls/ExpectedStudyProjects.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
-
-   

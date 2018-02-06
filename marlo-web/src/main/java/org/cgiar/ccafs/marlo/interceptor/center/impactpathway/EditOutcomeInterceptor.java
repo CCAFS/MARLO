@@ -19,9 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
@@ -48,7 +48,7 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
   private Map<String, Parameter> parameters;
 
   private Map<String, Object> session;
-  private Center researchCenter;
+  private GlobalUnit researchCenter;
   private long outcomeID = -1;
   private long areaID = -1;
   private long programID = -1;
@@ -66,9 +66,11 @@ public class EditOutcomeInterceptor extends AbstractInterceptor implements Seria
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    researchCenter = (Center) session.get(APConstants.SESSION_CENTER);
+    baseAction.setSession(session);
+    researchCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
     try {
       // outcomeID = Long.parseLong(((String[]) parameters.get(APConstants.OUTCOME_ID))[0]);

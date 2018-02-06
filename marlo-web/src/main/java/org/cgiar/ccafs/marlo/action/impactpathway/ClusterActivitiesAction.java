@@ -23,14 +23,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -39,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
@@ -74,7 +74,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -82,10 +82,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ClusterActivitiesAction extends BaseAction {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -2049759808815382048L;
+
 
   /**
    * Helper method to read a stream into memory.
@@ -105,39 +107,39 @@ public class ClusterActivitiesAction extends BaseAction {
     return baos.toByteArray();
   }
 
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
   private final AuditLogManager auditLogManager;
   private final CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private final CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private final CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   private final CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private final CrpManager crpManager;
   private final CrpProgramManager crpProgramManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
   private final CrpUserManager crpUserManager;
   private final UserManager userManager;
   private final UserRoleManager userRoleManager;
   private final RoleManager roleManager;
-
-
   private final HistoryComparator historyComparator;
   private final ClusterActivitiesValidator validator;
 
   // Util
   private final SendMailS sendMail;
-
   private long crpProgramID;
   private long clRol;
   private List<CrpClusterOfActivity> clusterofActivities;
-  private String transaction;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private Role roleCl;
   private CrpProgram selectedProgram;
+  private String transaction;
+
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
+    GlobalUnitManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
     SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager, HistoryComparator historyComparator,
@@ -180,7 +182,6 @@ public class ClusterActivitiesAction extends BaseAction {
     }
   }
 
-
   @Override
   public String cancel() {
 
@@ -217,6 +218,7 @@ public class ClusterActivitiesAction extends BaseAction {
     }
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -234,15 +236,14 @@ public class ClusterActivitiesAction extends BaseAction {
     return clusterofActivities;
   }
 
-
   public long getCrpProgramID() {
     return crpProgramID;
   }
 
-
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -263,10 +264,10 @@ public class ClusterActivitiesAction extends BaseAction {
     return selectedProgram;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -287,8 +288,6 @@ public class ClusterActivitiesAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
       // Building the Email message:
@@ -314,9 +313,13 @@ public class ClusterActivitiesAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
 
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       // Send UserManual.pdf
       String contentType = "application/pdf";
       String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -433,6 +436,7 @@ public class ClusterActivitiesAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
+
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
     // Send email to the new user and the P&R notification email.
     // TO
@@ -511,8 +515,8 @@ public class ClusterActivitiesAction extends BaseAction {
   public void prepare() throws Exception {
 
     // Get the Users list that have the pmu role in this crp.
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     clRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_CL_ROLE));
     roleCl = roleManager.getRoleById(clRol);
     clusterofActivities = new ArrayList<>();
@@ -638,6 +642,10 @@ public class ClusterActivitiesAction extends BaseAction {
           for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
             crpClusterKeyOutput.setKeyOutputOutcomes(crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream()
               .filter(c -> c.isActive()).collect(Collectors.toList()));
+            for (CrpClusterKeyOutputOutcome keyOuputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+              keyOuputOutcome.setCrpProgramOutcome(
+                crpProgramOutcomeManager.getCrpProgramOutcomeById(keyOuputOutcome.getCrpProgramOutcome().getId()));
+            }
           }
         }
       }
@@ -710,7 +718,10 @@ public class ClusterActivitiesAction extends BaseAction {
         selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
         outcomes = selectedProgram.getCrpProgramOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+        if (!selectedProgram.getSubmissions().stream()
+          .filter(c -> ((c.isUnSubmit() == null || !c.isUnSubmit())
+            && c.getYear().intValue() == this.getActualPhase().getYear()
+            && c.getCycle().equals(this.getActualPhase().getDescription())))
           .collect(Collectors.toList()).isEmpty()) {
 
           if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
@@ -729,18 +740,18 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       if (this.isHttpPost()) {
         clusterofActivities.clear();
+        clusterofActivities = null;
       }
 
     }
 
   }
 
-
   @Override
   public String save() {
 
     if (this.hasPermission("canEdit")) {
-
+      this.setUsersToActive(new ArrayList<>());
       /*
        * Removing outcomes
        */
@@ -777,6 +788,8 @@ public class ClusterActivitiesAction extends BaseAction {
         db.setCrpProgram(selectedProgram);
         db.setIdentifier(crpClusterOfActivity.getIdentifier());
         db.setDescription(crpClusterOfActivity.getDescription());
+        db.setKeyOutputs(crpClusterOfActivity.getKeyOutputs());
+        db.setLeaders(crpClusterOfActivity.getLeaders());
 
         db = crpClusterOfActivityManager.saveCrpClusterOfActivity(db);
 
@@ -880,7 +893,7 @@ public class ClusterActivitiesAction extends BaseAction {
               crpClusterKeyOutputPrev.setCreatedBy(this.getCurrentUser());
 
               crpClusterKeyOutputPrev.setActiveSince(new Date());
-              crpClusterKeyOutput.setActive(true);
+
               crpClusterKeyOutputPrev.setCrpClusterOfActivity(db);
               crpClusterKeyOutputPrev.setModifiedBy(this.getCurrentUser());
               crpClusterKeyOutputPrev.setModificationJustification("");
@@ -895,7 +908,8 @@ public class ClusterActivitiesAction extends BaseAction {
             }
             crpClusterKeyOutputPrev.setContribution(crpClusterKeyOutput.getContribution());
             crpClusterKeyOutputPrev.setKeyOutput(crpClusterKeyOutput.getKeyOutput());
-
+            crpClusterKeyOutputPrev.setComposeID(crpClusterKeyOutput.getComposeID());
+            crpClusterKeyOutputPrev.setActive(true);
             crpClusterKeyOutputPrev = crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutputPrev);
 
             /*
@@ -919,24 +933,28 @@ public class ClusterActivitiesAction extends BaseAction {
              */
             if (crpClusterKeyOutput.getKeyOutputOutcomes() != null) {
               for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
-                if (crpClusterKeyOutputOutcome.getId() == null) {
-                  crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
 
-                  crpClusterKeyOutputOutcome.setActiveSince(new Date());
-                  crpClusterKeyOutputOutcome.setActive(true);
-                } else {
-                  CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
-                    .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
-                  crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
-                  crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
-                  crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
+                if (crpClusterKeyOutputOutcome != null) {
+                  if (crpClusterKeyOutputOutcome.getId() == null) {
+                    crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
 
+                    crpClusterKeyOutputOutcome.setActiveSince(new Date());
+                    crpClusterKeyOutputOutcome.setActive(true);
+                  } else {
+                    CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
+                      .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
+                    crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
+                    crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
+                    crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
+
+                  }
+
+                  crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutputPrev);
+                  crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
+                  crpClusterKeyOutputOutcome.setModificationJustification("");
+                  crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
                 }
 
-                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutput);
-                crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
-                crpClusterKeyOutputOutcome.setModificationJustification("");
-                crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
               }
             }
 
@@ -953,7 +971,7 @@ public class ClusterActivitiesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
-
+      this.addUsers();
 
       Path path = this.getAutoSaveFilePath();
 
@@ -1007,7 +1025,7 @@ public class ClusterActivitiesAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

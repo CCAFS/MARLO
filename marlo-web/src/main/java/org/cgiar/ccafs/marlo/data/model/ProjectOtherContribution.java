@@ -13,7 +13,7 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectOtherContribution implements java.io.Serializable, IAuditLog {
 
-
+  private static final long serialVersionUID = -8637978743393930655L;
   @Expose
   private Long id;
   private Project project;

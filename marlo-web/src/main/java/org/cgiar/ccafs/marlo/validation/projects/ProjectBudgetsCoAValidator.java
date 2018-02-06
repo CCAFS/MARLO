@@ -17,9 +17,9 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
@@ -50,13 +50,16 @@ import org.apache.commons.collections.CollectionUtils;
 @Named
 public class ProjectBudgetsCoAValidator extends BaseValidator {
 
-  private final BudgetTypeManager budgetTypeManager;
-  private final ProjectManager projectManager;
-  private final CrpManager crpManager;
+  private BudgetTypeManager budgetTypeManager;
+  private ProjectManager projectManager;
+
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
 
   @Inject
   public ProjectBudgetsCoAValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
-    ProjectManager projectManager, CrpManager crpManager) {
+    ProjectManager projectManager, GlobalUnitManager crpManager) {
     super();
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -81,7 +84,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
-    Crp crp = crpManager.getCrpById(crpID);
+    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGETBYCOA.getStatus().replace("/", "_");
     String autoSaveFile =
@@ -138,32 +141,29 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         if (CollectionUtils.isNotEmpty(project.getBudgetsCluserActvities())) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
             List<ProjectBudgetsCluserActvity> w1w2List = project
-              .getBudgetsCluserActvities().stream().filter(c -> c != null && c.isActive()
+              .getBudgetsCluserActvities().stream().filter(c -> c != null
                 && (c.getBudgetType().getId().longValue() == 1) && (c.getYear() == action.getCurrentCycleYear()))
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1),
               this.calculateGender(new Long(1), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsCluserActvity> w3List = project
-              .getBudgetsCluserActvities().stream().filter(c -> c.isActive()
-                && c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
+            List<ProjectBudgetsCluserActvity> w3List = project.getBudgetsCluserActvities().stream()
+              .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, w3List, new Long(2),
               this.calculateGender(new Long(2), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsCluserActvity> bilateralList = project
-              .getBudgetsCluserActvities().stream().filter(c -> c.isActive()
-                && c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
+            List<ProjectBudgetsCluserActvity> bilateralList = project.getBudgetsCluserActvities().stream()
+              .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, bilateralList, new Long(3),
               this.calculateGender(new Long(3), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsCluserActvity> centerFundsList = project
-              .getBudgetsCluserActvities().stream().filter(c -> c.isActive()
-                && c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
+            List<ProjectBudgetsCluserActvity> centerFundsList = project.getBudgetsCluserActvities().stream()
+              .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, centerFundsList, new Long(4),
               this.calculateGender(new Long(4), action.getCurrentCycleYear(), project.getId()));

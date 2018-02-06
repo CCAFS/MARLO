@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.web.filter;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 
@@ -53,14 +53,14 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
   private BaseSecurityContext securityContext;
 
   @Inject
-  private CrpManager crpManager;
+  private GlobalUnitManager globalUnitManager;
 
   @Inject
   private APCustomRealm realm;
 
   private final Logger LOG = LoggerFactory.getLogger(AddSessionToRestRequestFilter.class);
 
-  private void addCrpToSession(String crpAcronym) {
+  private void addCrpToSession(String globalUnitAcronym) {
     Subject subject = securityContext.getSubject();
 
     /**
@@ -74,13 +74,13 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     if (session.getAttribute(APConstants.SESSION_CRP) == null) {
 
-      Crp crp = crpManager.findCrpByAcronym(crpAcronym);
+      GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(globalUnitAcronym);
 
-      if (crp == null) {
-        throw new IllegalArgumentException("crp with acronymn: " + crpAcronym + ", could not be found");
+      if (globalUnit == null) {
+        throw new IllegalArgumentException("globalUnit with acronymn: " + globalUnitAcronym + ", could not be found");
       }
 
-      session.setAttribute(APConstants.SESSION_CRP, crp);
+      session.setAttribute(APConstants.SESSION_CRP, globalUnit);
     }
   }
 
@@ -102,13 +102,13 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
     String[] split = restApiString.split("/");
 
-    String crpAcronym = split[0];
+    String globalUnitAcronym = split[0];
 
-    // Check to see if a swagger request and if so, skip trying to extract the crp from the url.
-    if (StringUtils.isNotEmpty(crpAcronym) && !crpAcronym.equals("v2") && !crpAcronym.equals("swagger-ui.html")
-      && !crpAcronym.equals("webjars") && !crpAcronym.equals("swagger-resources")
-      && !crpAcronym.equals("configuration")) {
-      this.addCrpToSession(crpAcronym);
+    // Check to see if a swagger request and if so, skip trying to extract the globalUnit from the url.
+    if (StringUtils.isNotEmpty(globalUnitAcronym) && !globalUnitAcronym.equals("v2")
+      && !globalUnitAcronym.equals("swagger-ui.html") && !globalUnitAcronym.equals("webjars")
+      && !globalUnitAcronym.equals("swagger-resources") && !globalUnitAcronym.equals("configuration")) {
+      this.addCrpToSession(globalUnitAcronym);
     }
 
     filterChain.doFilter(request, response);

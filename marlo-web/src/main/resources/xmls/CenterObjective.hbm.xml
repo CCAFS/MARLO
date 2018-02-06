@@ -30,9 +30,9 @@
       <column name="modification_justification" length="65535"
         not-null="false" />
     </property>
-      <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.Center"
+      <many-to-one name="researchCenter" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
       fetch="select">
-      <column name="research_center_id" not-null="true" />
+      <column name="global_unit_id" not-null="true" />
     </many-to-one>
     <set lazy="true" name="researchImpactObjectives" table="center_impact_objectives" order-by="id"
       cascade="save-update" fetch="select">

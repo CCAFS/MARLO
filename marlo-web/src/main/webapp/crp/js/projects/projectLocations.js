@@ -25,7 +25,9 @@ function init() {
   });
   // From funding source countries
   $(".recommendedList").find(".recommended.locElement").each(function(i,e) {
-    if($(e).find(".isoAlpha").exists()) {
+    var isChecked = $(e).find('input[type="checkbox"]:checked').exists();
+    var hasValidCode = $(e).find(".isoAlpha").exists();
+    if(isChecked && hasValidCode) {
       countries.push($(e).find(".isoAlpha").text());
     }
   });

@@ -70,8 +70,8 @@ public class CrpTargetUnitMySQLDAO extends AbstractMarloDAO<CrpTargetUnit, Long>
 
   @Override
   public CrpTargetUnit getByTargetUnitIdAndCrpId(long crpId, long targetUnitId) {
-    String query =
-      "from " + CrpTargetUnit.class.getName() + " where crp_id=" + crpId + " and target_unit_id=" + targetUnitId;
+    String query = "from " + CrpTargetUnit.class.getName() + " where global_unit_id=" + crpId + " and target_unit_id="
+      + targetUnitId;
     List<CrpTargetUnit> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);

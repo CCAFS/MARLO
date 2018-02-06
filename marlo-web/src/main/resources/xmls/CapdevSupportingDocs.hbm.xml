@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jul 26, 2017 8:32:12 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.CapdevSupportingDocs"
+		table="capdev_supporting_docs" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" />
+		</many-to-one>
+		<many-to-one name="centerDeliverableType"
+			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
+			<column name="deliverable_type" />
+		</many-to-one>
+		<many-to-one name="deliverableSubtype"
+			class="org.cgiar.ccafs.marlo.data.model.CenterDeliverableType" fetch="select">
+			<column name="deliverable_subtype" />
+		</many-to-one>
+		<many-to-one name="capacityDevelopment"
+			class="org.cgiar.ccafs.marlo.data.model.CapacityDevelopment" fetch="select">
+			<column name="capdev_id" />
+		</many-to-one>
+		<property name="title" type="string">
+			<column name="title" length="200" />
+		</property>
+		<property name="publicationDate" type="date">
+			<column name="publication_date" length="19" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+		<set name="capdevSuppDocsDocuments" table="capdev_supp_docs_documents"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="capdev_supporting_docs_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments" />
+		</set>
+	</class>
+</hibernate-mapping>

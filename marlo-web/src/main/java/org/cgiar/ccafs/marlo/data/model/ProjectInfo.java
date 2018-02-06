@@ -77,6 +77,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   private Boolean reporting;
   @Expose
   private Boolean locationRegional;
+  @Expose
+  private String newPartnershipsPlanned;
 
   public ProjectInfo() {
   }
@@ -86,7 +88,8 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     String leaderResponsabilities, String modificationJustification, Boolean isProjectLeaderEdit, int scale,
     Boolean noRegional, Date presetDate, Boolean isLocationGlobal, Long status, String statusJustification,
     String genderAnalysis, Boolean crossCuttingGender, Boolean crossCuttingYouth, Boolean crossCuttingCapacity,
-    Boolean crossCuttingNa, String dimension, Boolean administrative, Boolean reporting) {
+    Boolean crossCuttingNa, String dimension, Boolean administrative, Boolean reporting,
+    String newPartnershipsPlanned) {
     this.liaisonInstitution = liaisonInstitution;
     this.liaisonUser = liaisonUser;
     this.phase = phase;
@@ -115,6 +118,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.dimension = dimension;
     this.administrative = administrative;
     this.reporting = reporting;
+    this.newPartnershipsPlanned = newPartnershipsPlanned;
   }
 
 
@@ -125,10 +129,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.scale = scale;
   }
 
+
   public Boolean getAdministrative() {
     return administrative;
   }
-
 
   public List<Integer> getAllYears() {
     List<Integer> allYears = new ArrayList<>();
@@ -180,10 +184,10 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
-
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
@@ -193,15 +197,14 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return crossCuttingNa;
   }
 
+
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
   }
 
-
   public String getDimension() {
     return dimension;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -218,6 +221,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
   }
@@ -226,7 +230,6 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public LiaisonUser getLiaisonUser() {
     return liaisonUser;
@@ -259,6 +262,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public String getNewPartnershipsPlanned() {
+    return newPartnershipsPlanned;
   }
 
 
@@ -325,6 +333,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return false;
   }
 
+
   public String getStatusName() {
 
     if (statusName != null) {
@@ -336,15 +345,14 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   public String getSummary() {
     return summary;
   }
 
+
   public String getTitle() {
     return title;
   }
-
 
   public String getType() {
     return type;
@@ -472,6 +480,11 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setNewPartnershipsPlanned(String newPartnershipsPlanned) {
+    this.newPartnershipsPlanned = newPartnershipsPlanned;
+  }
+
+
   public void setNoRegional(Boolean noRegional) {
     this.noRegional = noRegional;
   }
@@ -569,6 +582,7 @@ public class ProjectInfo implements java.io.Serializable, IAuditLog {
     this.setSummary(update.getSummary());
     this.setTitle(update.getTitle());
     this.setType(update.getType());
+    this.setNewPartnershipsPlanned(update.getNewPartnershipsPlanned());
   }
 
 

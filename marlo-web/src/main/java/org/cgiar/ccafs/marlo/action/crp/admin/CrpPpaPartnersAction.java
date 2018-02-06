@@ -17,18 +17,18 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -46,14 +46,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * CrpPpaPartnersAction:
@@ -67,6 +69,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
 
   private static final long serialVersionUID = -8561096521514225205L;
+
 
   /**
    * Helper method to read a stream into memory.
@@ -88,7 +91,9 @@ public class CrpPpaPartnersAction extends BaseAction {
 
   // Managers
   private InstitutionManager institutionManager;
-  private CrpManager crpManager;
+
+  private GlobalUnitManager crpManager;
+
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -96,17 +101,18 @@ public class CrpPpaPartnersAction extends BaseAction {
   private RoleManager roleManager;
   private Role cpRole;
   private CrpUserManager crpUserManager;
-
   private UserManager userManager;
   // Variables
   private List<Institution> institutions;
+
   private List<Institution> crpInstitutions;
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
   // Util
   private SendMailS sendMail;
 
+
   @Inject
-  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager,
+  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, GlobalUnitManager crpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserRoleManager userRoleManager, RoleManager roleManager,
     UserManager userManager, CrpUserManager crpUserManager, SendMailS sendMail) {
@@ -293,7 +299,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     return institutions;
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -315,9 +321,10 @@ public class CrpPpaPartnersAction extends BaseAction {
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
+
         password = RandomStringUtils.randomNumeric(6);
         // Applying the password to the user.
-        user.setPassword(password);
+
       }
 
       // Building the Email message:
@@ -343,9 +350,13 @@ public class CrpPpaPartnersAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
       // Saving crpUser
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
       this.addCrpUserIfNotExist(user);
 
       // Send UserManual.pdf
@@ -378,6 +389,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * This method notify the user that is been assigned as Contact Point for an specific PPA / Managing Partner
@@ -506,7 +518,6 @@ public class CrpPpaPartnersAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-
   /**
    * Add cpRole as a flag to avoid contact points
    * 
@@ -518,8 +529,8 @@ public class CrpPpaPartnersAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     super.prepare();
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
     String params[] = {loggedCrp.getAcronym()};
 
@@ -558,6 +569,7 @@ public class CrpPpaPartnersAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      this.setUsersToActive(new ArrayList<>());
       List<CrpPpaPartner> ppaPartnerReview;
       ppaPartnerReview = crpPpaPartnerManager.findAll();
       if (ppaPartnerReview != null) {
@@ -664,6 +676,7 @@ public class CrpPpaPartnersAction extends BaseAction {
         }
 
       }
+      this.addUsers();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -685,6 +698,7 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.cpRole = cpRole;
   }
 
+
   public void setCrpInstitutions(List<Institution> crpInstitutions) {
     this.crpInstitutions = crpInstitutions;
   }
@@ -693,8 +707,9 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.institutions = institutions;
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
 }
