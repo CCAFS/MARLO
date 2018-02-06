@@ -41,7 +41,9 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
+            <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
           [/#if]
           
@@ -79,31 +81,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-  [#assign flagships = [ 
-    { "acronym": "FP1", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"},
-        { "title": "Milestone #4"}
-      ] 
-    },
-    { "acronym": "FP2", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    },
-    { "acronym": "FP3", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    }
-    ]
-  /]
+  
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -150,7 +128,6 @@
     [#-- Index --]
     <div class="leftHead sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
     [#-- Title --]
     <div class="form-group grayBox"><strong>${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym} Outcome: </strong> ${(element.description)!}</div>
     
@@ -165,12 +142,17 @@
 [/#macro]
 
 [#macro powbMilestoneMacro element name index isTemplate=false]
-  [#local customName = "${name}[${index}]" /]
+  [#assign indexPowb=action.getIndex(element.id)]
+  [#assign powebElement=action.getPowbExpectedCrpProgress(element.id)]
+  
+  [#local customName = "powbSynthesis.expectedCrpProgresses[${indexPowb}]" /]
   <div id="powbMilestone-${isTemplate?string('template', index)}" class="powbMilestone simpleBox" style="display:${isTemplate?string('none','block')}">
     [#-- Index --]
     <div class="leftHead gray sm"><span class="index">${index+1}</span></div>
     [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" >
+    <input type="hidden" name="${customName}.id" value="${(powebElement.id)!}" >
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(powebElement.crpMilestone.id)!}" >
+    
     [#-- Title --]
     <div class="form-group">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
@@ -191,7 +173,7 @@
     
     [#-- Means of verification --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.meansVerifications" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
     </div>
     
   </div>

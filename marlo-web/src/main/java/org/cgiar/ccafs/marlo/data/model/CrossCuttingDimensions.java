@@ -1,5 +1,5 @@
 package org.cgiar.ccafs.marlo.data.model;
-// Generated Feb 5, 2018 4:00:22 PM by Hibernate Tools 5.2.5.Final
+// Generated Feb 6, 2018 11:25:23 AM by Hibernate Tools 5.2.5.Final
 
 
 import java.util.Date;
@@ -11,106 +11,114 @@ public class CrossCuttingDimensions implements java.io.Serializable {
 
 
   private Long id;
+
+  private LiaisonInstitution liaisonInstitution;
+
   private String summarize;
+
   private String assets;
-  private long idPhase;
+
+  private Phase phase;
+
   private boolean isActive;
+
   private Long createdBy;
+
   private Long modifiedBy;
+
   private Date activeSince;
+
   private String modificationJustification;
+
 
   public CrossCuttingDimensions() {
   }
 
 
-  public CrossCuttingDimensions(long idPhase, boolean isActive) {
-    this.idPhase = idPhase;
+  public CrossCuttingDimensions(LiaisonInstitution liaisonInstitutionId, Phase idPhase, boolean isActive) {
+    this.liaisonInstitution = liaisonInstitutionId;
+    this.phase = idPhase;
     this.isActive = isActive;
   }
 
-  public CrossCuttingDimensions(String summarize, String assets, long idPhase, boolean isActive, Long createdBy,
-    Long modifiedBy, Date activeSince, String modificationJustification) {
+  public CrossCuttingDimensions(LiaisonInstitution liaisonInstitutionId, String summarize, String assets, Phase idPhase,
+    boolean isActive, Long createdBy, Long modifiedBy, Date activeSince, String modificationJustification) {
+    this.liaisonInstitution = liaisonInstitutionId;
     this.summarize = summarize;
     this.assets = assets;
-    this.idPhase = idPhase;
+    this.phase = idPhase;
     this.isActive = isActive;
     this.createdBy = createdBy;
     this.modifiedBy = modifiedBy;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
-  }
-
-  public Long getId() {
-    return this.id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getSummarize() {
-    return this.summarize;
-  }
-
-  public void setSummarize(String summarize) {
-    this.summarize = summarize;
-  }
-
-  public String getAssets() {
-    return this.assets;
-  }
-
-  public void setAssets(String assets) {
-    this.assets = assets;
-  }
-
-  public long getIdPhase() {
-    return this.idPhase;
-  }
-
-  public void setIdPhase(long idPhase) {
-    this.idPhase = idPhase;
-  }
-
-  public boolean isIsActive() {
-    return this.isActive;
-  }
-
-  public void setIsActive(boolean isActive) {
-    this.isActive = isActive;
-  }
-
-  public Long getCreatedBy() {
-    return this.createdBy;
-  }
-
-  public void setCreatedBy(Long createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public Long getModifiedBy() {
-    return this.modifiedBy;
-  }
-
-  public void setModifiedBy(Long modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
   public Date getActiveSince() {
     return this.activeSince;
   }
 
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
+  public String getAssets() {
+    return this.assets;
   }
+
+  public Long getCreatedBy() {
+    return this.createdBy;
+  }
+
+  public Long getId() {
+    return this.id;
+  }
+
 
   public String getModificationJustification() {
     return this.modificationJustification;
   }
 
+  public Long getModifiedBy() {
+    return this.modifiedBy;
+  }
+
+  public String getSummarize() {
+    return this.summarize;
+  }
+
+  public boolean isIsActive() {
+    return this.isActive;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setAssets(String assets) {
+    this.assets = assets;
+  }
+
+  public void setCreatedBy(Long createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+
+  public void setIsActive(boolean isActive) {
+    this.isActive = isActive;
+  }
+
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(Long modifiedBy) {
+    this.modifiedBy = modifiedBy;
+  }
+
+  public void setSummarize(String summarize) {
+    this.summarize = summarize;
   }
 
 
