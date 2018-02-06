@@ -19,35 +19,41 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.GlobalScopeEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbToc;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
+import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -60,35 +66,41 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ToCAdjustmentsAction extends BaseAction {
+public class EvidencesAction extends BaseAction {
 
 
-  private static final long serialVersionUID = -3785412578513649561L;
+  private static final long serialVersionUID = 6318765683403322101L;
 
 
   // Managers
   private GlobalUnitManager crpManager;
 
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-
 
   private PowbSynthesisManager powbSynthesisManager;
+
 
   private AuditLogManager auditLogManager;
 
 
   private UserManager userManager;
 
+
   private CrpProgramManager crpProgramManager;
 
-  private FileDBManager fileDBManager;
 
-  private ToCAdjustmentsValidator validator;
+  private SrfSubIdoManager srfSubIdoManager;
+
+
+  private SrfSloIndicatorManager srfSloIndicatorManager;
+
+  private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
   // Variables
   private String transaction;
 
+
   private PowbSynthesis powbSynthesis;
+
 
   private Long liaisonInstitutionID;
 
@@ -98,23 +110,33 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private GlobalUnit loggedCrp;
 
+
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
+  private Map<Long, String> subIdos;
+
+
+  private Map<Long, String> targets;
+
+
+  private Map<Integer, String> scopes;
+
+
   @Inject
-  public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator) {
+  public EvidencesAction(APConfig config, GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
+    AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
+    SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
+    PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager) {
     super(config);
     this.crpManager = crpManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.fileDBManager = fileDBManager;
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.validator = validator;
+    this.srfSubIdoManager = srfSubIdoManager;
+    this.srfSloIndicatorManager = srfSloIndicatorManager;
+    this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
   }
 
 
@@ -135,6 +157,54 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
     messages = this.getActionMessages();
     return SUCCESS;
+  }
+
+
+  public void expectedStudiesNewData() {
+
+    for (PowbEvidencePlannedStudy evidencePlannedStudy : powbSynthesis.getPowbEvidence().getPlannedStudies()) {
+      if (evidencePlannedStudy != null) {
+
+        PowbEvidencePlannedStudy evidencePlannedStudyNew;
+
+        if (evidencePlannedStudy.getSrfSloIndicator() != null) {
+          if (evidencePlannedStudy.getSrfSloIndicator().getId() > 0) {
+            evidencePlannedStudy.setSrfSloIndicator(
+              srfSloIndicatorManager.getSrfSloIndicatorById(evidencePlannedStudy.getSrfSloIndicator().getId()));
+          }
+        }
+
+        if (evidencePlannedStudy.getSrfSubIdo() != null) {
+          if (evidencePlannedStudy.getSrfSubIdo().getId() > 0) {
+            evidencePlannedStudy
+              .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(evidencePlannedStudy.getSrfSubIdo().getId()));
+          }
+        }
+
+        if (evidencePlannedStudy.getId() == null) {
+          evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+          evidencePlannedStudyNew.setActive(true);
+          evidencePlannedStudyNew.setActiveSince(new Date());
+          evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
+          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
+          evidencePlannedStudyNew.setModificationJustification("");
+
+        } else {
+          evidencePlannedStudyNew =
+            powbEvidencePlannedStudyManager.getPowbEvidencePlannedStudyById(evidencePlannedStudy.getId());
+          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
+
+        }
+        evidencePlannedStudyNew.setSrfSubIdo(evidencePlannedStudy.getSrfSubIdo());
+        evidencePlannedStudyNew.setSrfSloIndicator(evidencePlannedStudy.getSrfSloIndicator());
+        evidencePlannedStudyNew.setGeographicScope(evidencePlannedStudy.getGeographicScope());
+        evidencePlannedStudyNew.setPlannedTopic(evidencePlannedStudy.getPlannedTopic());
+        evidencePlannedStudyNew.setComments(evidencePlannedStudy.getComments());
+        evidencePlannedStudyNew = powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
+      }
+    }
+
+
   }
 
   public Long firstFlagship() {
@@ -159,7 +229,6 @@ public class ToCAdjustmentsAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -168,25 +237,24 @@ public class ToCAdjustmentsAction extends BaseAction {
     return loggedCrp;
   }
 
-  // Method to download link file
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
-  }
-
-  // Method to get the download folder
-  private String getPowbSourceFolder() {
-    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(powbSynthesis.getLiaisonInstitution().getAcronym()).concat(File.separator)
-      .concat(this.getActionName().replace("/", "_")).concat(File.separator);
-  }
-
-
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
+  }
+
+  public Map<Integer, String> getScopes() {
+    return scopes;
+  }
+
+  public Map<Long, String> getSubIdos() {
+    return subIdos;
+  }
+
+  public Map<Long, String> getTargets() {
+    return targets;
   }
 
   public String getTransaction() {
@@ -226,6 +294,19 @@ public class ToCAdjustmentsAction extends BaseAction {
       return BaseAction.NEXT;
     } else {
       return result;
+    }
+  }
+
+  public void plannedStudiesPreviousData(List<PowbEvidencePlannedStudy> plannedStudies) {
+
+    PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    List<PowbEvidencePlannedStudy> plannedStudiesPrev = new ArrayList<>(powbSynthesisDB.getPowbEvidence()
+      .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList()));
+
+    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : plannedStudiesPrev) {
+      if (!plannedStudies.contains(powbEvidencePlannedStudy)) {
+        powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbEvidencePlannedStudy.getId());
+      }
     }
   }
 
@@ -306,33 +387,25 @@ public class ToCAdjustmentsAction extends BaseAction {
       } else {
         this.setDraft(false);
         // Check if ToC relation is null -create it
-        if (powbSynthesis.getPowbToc() == null) {
-          PowbToc toc = new PowbToc();
-          toc.setActive(true);
-          toc.setActiveSince(new Date());
-          toc.setCreatedBy(this.getCurrentUser());
-          toc.setModifiedBy(this.getCurrentUser());
-          toc.setModificationJustification("");
+        if (powbSynthesis.getPowbEvidence() == null) {
+          PowbEvidence evidence = new PowbEvidence();
+          evidence.setActive(true);
+          evidence.setActiveSince(new Date());
+          evidence.setCreatedBy(this.getCurrentUser());
+          evidence.setModifiedBy(this.getCurrentUser());
+          evidence.setModificationJustification("");
           // create one to one relation
-          powbSynthesis.setPowbToc(toc);
-          toc.setPowbSynthesis(powbSynthesis);
+          powbSynthesis.setPowbEvidence(evidence);
+          evidence.setPowbSynthesis(powbSynthesis);
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
       }
     }
 
-    // Check if the pow toc has file
-    if (this.isPMU()) {
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-          powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-        } else {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-    } else {
-      powbSynthesis.getPowbToc().setFile(null);
+    if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+      powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
+        .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
     }
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -344,9 +417,28 @@ public class ToCAdjustmentsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
+    // Setup Geo Scope List
+    scopes = new HashMap<>();
+    List<GlobalScopeEnum> listScope = Arrays.asList(GlobalScopeEnum.values());
+    for (GlobalScopeEnum globalScopeEnum : listScope) {
+      scopes.put(globalScopeEnum.getId(), globalScopeEnum.getType());
+    }
+
+    // Setup Sub IDOS list
+    subIdos = new HashMap<>();
+    for (SrfSubIdo srfSubIdo : srfSubIdoManager.findAll()) {
+      subIdos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+    }
+
+    // Setup SLO Indicators List
+    targets = new HashMap<>();
+    for (SrfSloIndicator srfSloIndicator : srfSloIndicatorManager.findAll()) {
+      targets.put(srfSloIndicator.getId(), srfSloIndicator.getTitle());
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EVIDENCES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       // if(powbSynthesis.getPowbToc() != null){
@@ -358,15 +450,19 @@ public class ToCAdjustmentsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      if (this.isPMU()) {
-        if (powbSynthesis.getPowbToc().getFile() != null) {
-          if (powbSynthesis.getPowbToc().getFile().getId() == null) {
-            powbSynthesis.getPowbToc().setFile(null);
-          } else {
-            powbSynthesis.getPowbToc().setFile(powbSynthesis.getPowbToc().getFile());
-          }
-        }
+
+
+      if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
+        powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
       }
+
+      this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
+      this.expectedStudiesNewData();
+
+      if (this.isPMU()) {
+        powbSynthesis.getPowbEvidence().setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
+      }
+      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
 
       List<String> relationsName = new ArrayList<>();
 
@@ -382,7 +478,6 @@ public class ToCAdjustmentsAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -396,12 +491,12 @@ public class ToCAdjustmentsAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
 
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -423,15 +518,21 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
-  public void setTransaction(String transaction) {
-    this.transaction = transaction;
+  public void setScopes(Map<Integer, String> scopes) {
+    this.scopes = scopes;
   }
 
-  @Override
-  public void validate() {
-    if (save) {
-      validator.validate(this, powbSynthesis, true);
-    }
+  public void setSubIdos(Map<Long, String> subIdos) {
+    this.subIdos = subIdos;
+  }
+
+  public void setTargets(Map<Long, String> targets) {
+    this.targets = targets;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 }

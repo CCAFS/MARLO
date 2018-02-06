@@ -86,7 +86,7 @@
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#macro tableBMacro flagshipPlannedStudies=false]
-  <table class="table-plannedStudies" id="table-plannedStudies">
+  <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
         [#if !flagshipPlannedStudies]

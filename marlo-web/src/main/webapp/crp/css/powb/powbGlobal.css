@@ -59,6 +59,16 @@ form .form-group.margin-panel {
   margin-bottom: 40px;
 }
 
+.table-border-powb {
+  border-collapse: collapse;
+}
+.table-border-powb td {
+  border: 1px solid rgb(224, 224, 224);
+}
+.table-border-powb tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
 /************* 1.1 ToC Adjustments/Changes ***************/
 
 /************* 1.2 Expected CRP Progress ***************/
@@ -69,6 +79,11 @@ form .form-group.margin-panel {
 .powbMilestone{
   padding-top: 20px;
 }
+
+span.milestoneContributionButton {
+  margin:10px;
+}
+
 /************* 1.3 Evidence ***************/
 
 .evidence-plannedStudies-header .flagship-planned-studies-button {
@@ -81,24 +96,12 @@ form .form-group.margin-panel {
   cursor: pointer;
 }
 
-#table-plannedStudies {
-  border-collapse: collapse;
-}
-
 #table-plannedStudies .subHeader th {
   text-align: center;
 }
 
-#table-plannedStudies td {
-  border: 1px solid rgb(224, 224, 224);
-}
-
 #table-plannedStudies .relevantSubIDO ul {
   padding-left: 15px;
-}
-
-#table-plannedStudies tr:nth-child(even) {
-  background-color: #f2f2f2;
 }
 
 .modal-content {
@@ -108,4 +111,6 @@ form .form-group.margin-panel {
 .modal-content h3.subTitle.headTitle {
   display: inline;
 }
+
+
 

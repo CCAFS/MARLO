@@ -41,17 +41,17 @@
           
           [#-- Summarize the plans for each flagship in 2018 --] 
           <div class="form-group">
-            [@customForm.textArea name="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- If major changes have been made to your flagship since the CRP proposal was published, please annex a brief summary of the current flagship program with the updated theory of change. --]
           <div class="form-group" style="position:relative" listname="">
             [@customForm.fileUploadAjax 
-              fileDB=(flagshipProgramFile)!{} 
-              name="flagshipProgramFile.id" 
+              fileDB=(powbSynthesis.powbFlagshipPlans.flagshipProgramFile)!{} 
+              name="powbSynthesis.powbFlagshipPlans.flagshipProgramFile.id" 
               label="liaisonInstitution.powb.flagshipProgramFile" 
-              dataUrl="${baseUrl}/UPLOAD_SERVICE_HERE.do" 
-              path="${(action.getPath(liaisonInstitutionID))!''}"
+              dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
+              path="${action.path}"
               isEditable=editable
             /]
           </div>
