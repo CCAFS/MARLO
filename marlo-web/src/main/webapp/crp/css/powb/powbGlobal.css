@@ -79,6 +79,11 @@ form .form-group.margin-panel {
 .powbMilestone{
   padding-top: 20px;
 }
+
+span.milestoneContributionButton {
+  margin:10px;
+}
+
 /************* 1.3 Evidence ***************/
 
 .evidence-plannedStudies-header .flagship-planned-studies-button {
@@ -106,4 +111,6 @@ form .form-group.margin-panel {
 .modal-content h3.subTitle.headTitle {
   display: inline;
 }
+
+
 
