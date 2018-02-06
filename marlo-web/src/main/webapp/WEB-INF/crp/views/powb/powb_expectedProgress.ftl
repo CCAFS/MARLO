@@ -41,7 +41,7 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
             [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
@@ -107,7 +107,7 @@
     ]
   /]
 
-  <div class="table-responsive">
+  <div class="">[#-- <div class="table-responsive"> --]
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -189,6 +189,9 @@
       [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
+      
+      [#local assessmentSelected = ((powebElement.assessment == "1")!false) || ((powebElement.assessment == "2")!false) || ((powebElement.assessment == "3")!false)]
+      [#if !editable && !assessmentSelected][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
     [#-- Means of verification --]
