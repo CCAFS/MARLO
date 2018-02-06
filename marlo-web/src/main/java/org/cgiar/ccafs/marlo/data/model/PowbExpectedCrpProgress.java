@@ -23,7 +23,7 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
   @Expose
   private CrpMilestone crpMilestone;
 
-
+  @Expose
   private PowbSynthesis powbSynthesis;
 
   @Expose
