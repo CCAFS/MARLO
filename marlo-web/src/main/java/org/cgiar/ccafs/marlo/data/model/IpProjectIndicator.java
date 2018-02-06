@@ -14,9 +14,6 @@ import com.google.gson.annotations.Expose;
 public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -8487278796647428448L;
 
   @Expose

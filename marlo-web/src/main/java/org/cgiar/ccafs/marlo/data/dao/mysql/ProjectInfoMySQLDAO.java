@@ -69,6 +69,16 @@ public class ProjectInfoMySQLDAO extends AbstractMarloDAO<ProjectInfo, Long> imp
   }
 
   @Override
+  public ProjectInfo getProjectInfoByProjectPhase(long projectId, long phase) {
+    String query = "from " + ProjectInfo.class.getName() + " where project_id=" + projectId + " and id_phase=" + phase;
+    List<ProjectInfo> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public ProjectInfo save(ProjectInfo projectInfo) {
     if (projectInfo.getId() == null) {
       super.saveEntity(projectInfo);

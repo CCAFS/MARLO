@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -48,7 +48,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
   private static final long serialVersionUID = -2220001958027276963L;
   Map<String, Parameter> parameters;
   Map<String, Object> session;
-  Crp crp;
+  GlobalUnit crp;
 
   private final IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
   private final UserManager userManager;
@@ -64,7 +64,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
   public String intercept(ActionInvocation invocation) throws Exception {
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
-    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();

@@ -1,0 +1,1 @@
+UPDATE `capacity_development_types` SET `name`='Individual trainee' WHERE `id`='3';

@@ -16,8 +16,8 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -78,8 +78,6 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
   private long startTime;
 
   // Managers
-  private final CrpManager crpManager;
-  private final PhaseManager phaseManager;
   private final CrpProgramManager programManager;
   private final ProjectBudgetManager projectBudgetManager;
   private final InstitutionManager institutionManager;
@@ -92,14 +90,13 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
 
 
   @Inject
-  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+  public budgetByCoAsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
     ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectBudgetManager = projectBudgetManager;
     this.institutionManager = institutionManager;
-    this.phaseManager = phaseManager;
-    this.crpManager = crpManager;
+
   }
 
 
@@ -166,8 +163,8 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager.createDirectly(
-        this.getClass().getResource("/pentaho/budgetByCoAsSummary-Annualization.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/BudgetByCoAs.prpt"), MasterReport.class);
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       String center = this.getLoggedCrp().getAcronym();
@@ -310,11 +307,11 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
         "w1w2_of_total", "gender_w1w2", "w1w2_gender_per", "w1w2_of_gender", "total_w3", "w3_total_per", "w3_of_total",
         "gender_w3", "w3_gender_per", "w3_of_gender", "total_bilateral", "bilateral_total_per", "bilateral_of_total",
         "gender_bilateral", "bilateral_gender_per", "bilateral_of_gender", "total_center", "center_total_per",
-        "center_of_total", "gender_center", "center_gender_per", "center_of_gender"},
+        "center_of_total", "gender_center", "center_gender_per", "center_of_gender", "phaseID"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Double.class,
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
-        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
+        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, String.class},
       0);
     // Get amount of total and gender
     Double totalW1w = 0.0, totalW3 = 0.0, totalBilateral = 0.0, totalCenter = 0.0, totalW1w2Gender = 0.0,
@@ -367,11 +364,12 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
         .collect(Collectors.toList());
 
       if (coAs.size() == 1) {
-        String projectId = "", title = "", projectUrl = "", flagships = "", regions = "", coa = "";
+        String projectId = "", title = "", projectUrl = "", flagships = "", regions = "", coa = "", phaseID = "";
 
         projectId = project.getId().toString();
         projectUrl = "P" + project.getId().toString();
         title = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+        phaseID = this.getSelectedPhase().getId().toString();
         // get Flagships related to the project sorted by acronym
         List<CrpProgram> flagshipsList = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -452,11 +450,11 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
           totalW1w, totalW1w2Gender, w1w2PerGender, totalW1w2Gender, totalW3, w3PerTotal, totalW3, totalW3Gender,
           w3PerGender, totalW3Gender, totalBilateral, bilateralPerTotal, totalBilateral, totalBilateralGender,
           bilateralPerGender, totalBilateralGender, totalCenter, centerPerTotal, totalCenter, totalCenterGender,
-          centerPerGender, totalCenterGender});
+          centerPerGender, totalCenterGender, phaseID});
       } else {
 
         for (ProjectClusterActivity clusterActivity : coAs) {
-          String projectId = "", title = "", projectUrl = "", flagships = "", regions = "", coa = "";
+          String projectId = "", title = "", projectUrl = "", flagships = "", regions = "", coa = "", phaseID = "";
 
           Double w1w2 = 0.0;
           Double w3 = 0.0;
@@ -479,6 +477,7 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
           projectId = project.getId().toString();
           projectUrl = "P" + project.getId().toString();
           title = project.getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+          phaseID = this.getSelectedPhase().getId().toString();
           // get Flagships related to the project sorted by acronym
           List<CrpProgram> flagshipsList = new ArrayList<>();
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -567,10 +566,11 @@ public class budgetByCoAsSummaryAction extends BaseSummariesAction implements Su
           }
 
 
-          model.addRow(new Object[] {projectId, title, projectUrl, flagships, regions, coa, totalW1w, w1w2PerTotal,
-            w1w2, totalW1w2Gender, w1w2PerGender, w1w2Gender, totalW3, w3PerTotal, w3, totalW3Gender, w3PerGender,
-            w3Gender, totalBilateral, bilateralPerTotal, bilateral, totalBilateralGender, bilateralPerGender,
-            bilateralGender, totalCenter, centerPerTotal, center, totalCenterGender, centerPerGender, centerGender});
+          model
+            .addRow(new Object[] {projectId, title, projectUrl, flagships, regions, coa, totalW1w, w1w2PerTotal, w1w2,
+              totalW1w2Gender, w1w2PerGender, w1w2Gender, totalW3, w3PerTotal, w3, totalW3Gender, w3PerGender, w3Gender,
+              totalBilateral, bilateralPerTotal, bilateral, totalBilateralGender, bilateralPerGender, bilateralGender,
+              totalCenter, centerPerTotal, center, totalCenterGender, centerPerGender, centerGender, phaseID});
         }
       }
     }

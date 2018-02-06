@@ -152,8 +152,9 @@
       [/#if]
     [/#if]
     <div class="leftHead">
+      [#assign globalFlagship][@s.text name="global.flagship"/][/#assign]
       <span class="index">${index+1}</span>
-      <span class="elementId">${(element.composedName)!'Flagship'}</span>
+      <span class="elementId">${(element.composedName)!globalFlagship}</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]

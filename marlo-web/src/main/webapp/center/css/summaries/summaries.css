@@ -123,6 +123,14 @@ vertical-align: middle;}
   background-position: -92px -220px;
 }
 
+#capdev.summariesSection span {
+  background-position: 9px -123px;
+}
+
+#capdev.summariesSection.current span {
+  background-position: -88px -123px;
+}
+
 #budget.summariesSection span {
   background-position: 5px -173px;
 }

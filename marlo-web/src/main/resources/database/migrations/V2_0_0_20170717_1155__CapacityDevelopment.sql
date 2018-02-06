@@ -1,0 +1,23 @@
+CREATE TABLE `capacity_development` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `capdev_type` varchar(100) NOT NULL,
+  `category` int(11) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `modification_justification` text,
+  `ct_firstName` varchar(45) NOT NULL,
+  `ct_lastName` varchar(45) NOT NULL,
+  `ct_email` varchar(200) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `num_participants` int(11) DEFAULT NULL,
+  `research_area` int(11) DEFAULT NULL,
+  `research_program` int(11) DEFAULT NULL,
+  `project` bigint(20) DEFAULT NULL,
+  `crp` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `capdev_created_fk` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `capdev_modified_fk` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`)
+);

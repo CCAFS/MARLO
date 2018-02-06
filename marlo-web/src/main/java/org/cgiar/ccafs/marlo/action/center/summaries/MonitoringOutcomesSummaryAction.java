@@ -114,8 +114,8 @@ public class MonitoringOutcomesSummaryAction extends BaseAction implements Summa
     // manager.registerDefaults();
     try {
 
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/centerOutcomeMonitoring.prpt"), MasterReport.class);
+      Resource reportResource = manager.createDirectly(
+        this.getClass().getResource("/pentaho/center/CenterOutcomeMonitoring.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();

@@ -13,9 +13,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
 			<column name="parent_id" />
 		</many-to-one>
-			<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
+			<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="crp_id" />
+			<column name="global_unit_id" />
 		
 		</many-to-one>
 		<property name="name" type="string">

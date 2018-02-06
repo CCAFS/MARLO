@@ -5,7 +5,6 @@
     <thead>
       <tr class="header">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="sync">[@s.text name="projectsList.projectSync" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectOutputs" >[@s.text name="projectsList.projectOutputs" /]</th>
         <th id="projectLeader">[@s.text name="projectsList.projectLeader" /]</th>
@@ -22,15 +21,11 @@
         <td class="projectId">
           <a href="${projectUrl}"> P${project.id}</a>
         </td>
-        [#-- Sync Project --]
-        <td class="projectId">
-          <a href="${projectUrl}"> ${action.getProjectSyncCode(project.id)}</a>
-        </td>
           [#-- Project Title --]
           <td class="left">
-            [#if project.name?has_content]
-              <a href="${projectUrl}" title="${project.name}">
-              [#if project.name?length < 120] ${project.name}</a> [#else] [@utilities.wordCutter string=project.name maxPos=120 /]...</a> [/#if]
+            [#if project.projectInfo.title?has_content]
+              <a href="${projectUrl}" title="${project.projectInfo.title}">
+              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.none" /]
@@ -51,15 +46,15 @@
           </td>
           [#-- Contact person--]
           <td>
-           [#if project.projectLeader?has_content]${(project.projectLeader.composedName)!""}[#else][@s.text name="projectsList.none" /][/#if]
+           [#if project.centerProject.projectLeader?has_content]${(project.centerProject.projectLeader.composedName)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
           [#-- Status --]
           <td>
-           [#if project.projectStatus?has_content]${(project.projectStatus.name)!""}[#else][@s.text name="projectsList.none" /][/#if]
+           [#if project.centerProject.projectStatus?has_content]${(project.centerProject.projectStatus.name)!""}[#else][@s.text name="projectsList.none" /][/#if]
           </td>
           [#-- Delete project--]
           <td class="text-center">
-            [#if canEdit && action.centerCanBeDeleted(project.id, project.class.name)!false]
+            [#if canEdit && action.centerCanBeDeleted(project.id, project.centerProject.class.name)!false]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/global/images/trash.png" title="[@s.text name="projectsList.removeProject" /]" /> 
               </a>

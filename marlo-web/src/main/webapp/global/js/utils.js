@@ -278,6 +278,11 @@ function isMonitoringSection() {
   return url.includes("/monitoring/");
 }
 
+function isCapDevSection(){
+  var url = window.location.href;
+  return url.includes("/capdev/");
+}
+
 /**
  * Search from url that has GET parameters
  */

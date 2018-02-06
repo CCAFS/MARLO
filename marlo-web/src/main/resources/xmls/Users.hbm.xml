@@ -125,20 +125,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpLiaisonUser" />
 		</set>
-		<set lazy="true" name="centerUserRoles" order-by="user_id" table="user_roles"
-			inverse="true" fetch="select">
-			<key>
-				<column name="user_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterUserRole" />
-		</set>
-		<set lazy="true" name="centerUsers" table="center_users" inverse="true"
-			fetch="select">
-			<key>
-				<column name="user_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterUser" />
-		</set>
 		<set lazy="true" name="researchLeaders" table="center_leaders"
 			inverse="true" fetch="select">
 			<key>

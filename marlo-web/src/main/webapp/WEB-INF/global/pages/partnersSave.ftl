@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Insert a partner" /]
+[#assign title = "Request new institution" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
 [#assign customJS = ["${baseUrl}/global/js/partnersSave.js"] /]
 [#assign customCSS = ["${baseUrl}/global/css/partnersSave.css"] /]

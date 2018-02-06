@@ -16,8 +16,11 @@
 package org.cgiar.ccafs.marlo.interceptor.center;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,19 +38,23 @@ public class ValidCenterActionInterceptor extends AbstractInterceptor {
   private static final long serialVersionUID = 2239276003694732851L;
 
   // managers
-  private final ICenterManager crpManager;
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
+
 
   @Inject
-  public ValidCenterActionInterceptor(ICenterManager crpManager) {
+  public ValidCenterActionInterceptor(GlobalUnitManager crpManager) {
     this.crpManager = crpManager;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
     String[] actionMap = ActionContext.getContext().getName().split("/");
+    Map<String, Object> session = invocation.getInvocationContext().getSession();
+    session.remove(APConstants.TEMP_CYCLE);
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
-      Center crp = crpManager.findCrpByAcronym(enteredCrp);
+      GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);
       if (crp != null) {
         return invocation.invoke();
       } else {

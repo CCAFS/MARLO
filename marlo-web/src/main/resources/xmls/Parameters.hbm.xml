@@ -23,6 +23,9 @@
         <property name="category" type="java.lang.Integer">
             <column name="category" />
         </property>
+        <many-to-one name="globalUnitType" class="org.cgiar.ccafs.marlo.data.model.GlobalUnitType" fetch="select">
+            <column name="global_unit_type_id" not-null="true" />
+        </many-to-one>
         <set name="customParameters" table="custom_parameters" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="parameter_id" not-null="true" />

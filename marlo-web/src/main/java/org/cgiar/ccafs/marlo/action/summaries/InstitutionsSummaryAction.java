@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -61,7 +61,7 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, CrpManager crpManager, PhaseManager phaseManager) {
+  public InstitutionsSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
   }
 
@@ -93,8 +93,8 @@ public class InstitutionsSummaryAction extends BaseSummariesAction implements Su
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     try {
-      Resource reportResource = manager
-        .createDirectly(this.getClass().getResource("/pentaho/institutions-Annualization.prpt"), MasterReport.class);
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/crp/Institutions.prpt"), MasterReport.class);
       MasterReport masterReport = (MasterReport) reportResource.getResource();
       Number idParam = this.getLoggedCrp().getId();
       // Get datetime

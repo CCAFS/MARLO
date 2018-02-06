@@ -249,7 +249,7 @@ public class ActivityManagerImpl implements ActivityManager {
           deliverableActivityDAO.save(deliverableActivityAdd);
         }
       }
-      for (DeliverableActivity deliverableActivity : activity.getDeliverableActivities().stream()
+      for (DeliverableActivity deliverableActivity : activityAdd.getDeliverableActivities().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (activity.getDeliverables().stream()
           .filter(c -> c.getDeliverable().equals(deliverableActivity.getDeliverable())).collect(Collectors.toList())

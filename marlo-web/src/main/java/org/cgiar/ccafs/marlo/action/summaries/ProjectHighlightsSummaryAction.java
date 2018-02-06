@@ -16,7 +16,7 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
@@ -85,7 +85,7 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
   InputStream inputStream;
 
   @Inject
-  public ProjectHighlightsSummaryAction(APConfig config, CrpManager crpManager,
+  public ProjectHighlightsSummaryAction(APConfig config, GlobalUnitManager crpManager,
     ProjectHighligthManager projectHighLightManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.projectHighLightManager = projectHighLightManager;
@@ -134,11 +134,11 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     try {
       Resource reportResource;
       if (this.getSelectedFormat().equals(APConstants.SUMMARY_FORMAT_EXCEL)) {
-        reportResource = manager.createDirectly(
-          this.getClass().getResource("/pentaho/projectHighlightsExcel-Annualization.prpt"), MasterReport.class);
+        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsExcel.prpt"),
+          MasterReport.class);
       } else {
-        reportResource = manager.createDirectly(
-          this.getClass().getResource("/pentaho/projectHighlightsPDF-Annualization.prpt"), MasterReport.class);
+        reportResource = manager.createDirectly(this.getClass().getResource("/pentaho/crp/ProjectHighlightsPDF.prpt"),
+          MasterReport.class);
       }
 
       MasterReport masterReport = (MasterReport) reportResource.getResource();
@@ -293,17 +293,20 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
-        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl", "imageName"},
+        "introduction", "results", "partners", "links", "width", "heigth", "project_id", "imageurl", "imageName",
+        "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Integer.class, Integer.class, String.class, String.class,
-        String.class},
+        String.class, Long.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     for (ProjectHighlight projectHighlight : projectHighLightManager.findAll().stream()
       .sorted((h1, h2) -> Long.compare(h1.getId(), h2.getId()))
       .filter(ph -> ph.isActive() && ph.getProject() != null && ph.getYear() == this.getSelectedYear()
-        && ph.getProject().getCrp().getId().longValue() == this.getLoggedCrp().getId().longValue()
+        && ph.getProject().getGlobalUnitProjects().stream()
+          .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          .collect(Collectors.toList()).size() > 0
         && ph.getProject().isActive() && ph.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
         && ph.getProject().getProjectInfo().getReporting())
       .collect(Collectors.toList())) {
@@ -453,9 +456,10 @@ public class ProjectHighlightsSummaryAction extends BaseSummariesAction implemen
           imageName = "";
         }
       }
+      Long phaseID = this.getSelectedPhase().getId();
       model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, yearReported,
         highlightsTypes, highlightsIsGlobal, startDate, endDate, keywords, countries, image, highlightDesc,
-        introduction, results, partners, links, width, heigth, projectId, imageurl, imageName});
+        introduction, results, partners, links, width, heigth, projectId, imageurl, imageName, phaseID});
     }
     return model;
   }

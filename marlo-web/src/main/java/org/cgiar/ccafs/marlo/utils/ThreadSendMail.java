@@ -62,6 +62,7 @@ public class ThreadSendMail extends Thread {
         sent = true;
         emailLog.setTried(i++);
         emailLog.setSucces(true);
+        emailLog.setFileContent(null);
         sessionFactory.getCurrentSession().beginTransaction();
         emailLogManager.saveEmailLog(emailLog);
         sessionFactory.getCurrentSession().getTransaction().commit();

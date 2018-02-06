@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleStageInterceptor.class);
 
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
 
   public AccessibleStageInterceptor() {
   }
@@ -53,7 +53,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     Map<String, Object> session = invocation.getInvocationContext().getSession();
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     // Check what section is the user loading and
     // validate if it is active
     if (stageName.startsWith("/admin")) {
@@ -75,9 +75,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
 
   public String sectionActive(String section) {
     List<CustomParameter> parameters = loggedCrp.getCustomParameters().stream()
-      .filter(
-        p -> p.getParameter().getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
-      .collect(Collectors.toList());
+      .filter(p -> p.getParameter().getKey().equals(section) && p.isActive()).collect(Collectors.toList());
 
     if (parameters.size() == 0) {
       return "false";

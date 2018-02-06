@@ -24,7 +24,12 @@ public class InvalidFieldsMessages {
   public static String EMPTYUSERLIST = "There must be at least one person here.";
   public static String INVALID_NUMBER = "Invalid Number";
   public static String CHECKBOX = "Select an option";
+  public static String INVALID_FORMAT = "Only excel files(.xls, xlsx) are allowed.";
+  public static String FILE_SIZE = "The maximun size allowed is 30MB";
+  public static String WRONG_FILE = "The file does not match the template.";
+  public static String EMPTY_FILE = "The file can be empty or can has empty fields.";
   public static String WRONGVALUE = "Wrong value";
+  public static String WRONG_EMAIL = "Invalid Email";
 
 
 }

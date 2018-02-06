@@ -17,14 +17,14 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.TargetUnitSelect;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -46,18 +46,23 @@ public class CrpTargetUnitsAction extends BaseAction {
 
   private static final long serialVersionUID = -1004871247517845386L;
 
+
   // Managers
   private SrfTargetUnitManager targetUnitManager;
-  private CrpTargetUnitManager crpTargetUnitManager;
-  private CrpManager crpManager;
 
+
+  private CrpTargetUnitManager crpTargetUnitManager;
+
+  // GlobalUnit Manager
+  private GlobalUnitManager crpManager;
   // Variables
-  private Crp loggedCrp;
+  private GlobalUnit loggedCrp;
+
   private List<SrfTargetUnit> targetUnitsList;
 
   @Inject
   public CrpTargetUnitsAction(APConfig config, SrfTargetUnitManager targetUnitManager,
-    CrpTargetUnitManager crpTargetUnitManager, CrpManager crpManager) {
+    CrpTargetUnitManager crpTargetUnitManager, GlobalUnitManager crpManager) {
     super(config);
     this.targetUnitManager = targetUnitManager;
     this.crpManager = crpManager;
@@ -92,7 +97,7 @@ public class CrpTargetUnitsAction extends BaseAction {
 
               SrfTargetUnit targetUnitOutcome = crpProgramOutcome.getSrfTargetUnit();
 
-              if (targetUnitOutcome.equals(targetUnit)) {
+              if (targetUnit.equals(targetUnitOutcome)) {
                 return false;
               }
 
@@ -102,7 +107,7 @@ public class CrpTargetUnitsAction extends BaseAction {
               for (CrpMilestone crpMilestone : milestones) {
                 SrfTargetUnit targetUnitMilestone = crpMilestone.getSrfTargetUnit();
 
-                if (targetUnitMilestone.equals(targetUnit)) {
+                if (targetUnit.equals(targetUnitMilestone)) {
                   return false;
                 }
               }
@@ -127,11 +132,12 @@ public class CrpTargetUnitsAction extends BaseAction {
 
       return true;
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
   }
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -139,11 +145,12 @@ public class CrpTargetUnitsAction extends BaseAction {
     return targetUnitsList;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
 
     targetUnitsList =
@@ -239,7 +246,7 @@ public class CrpTargetUnitsAction extends BaseAction {
 
   }
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.outcome;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeEvidenceManager;
@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterMonitoringOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterMilestone;
@@ -37,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -74,7 +74,8 @@ public class MonitoringOutcomeAction extends BaseAction {
   private static final long serialVersionUID = 8641483319512138926L;
 
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
 
   private ICenterOutcomeManager outcomeService;
 
@@ -86,7 +87,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   private ICenterMonitoringOutcomeManager monitoringOutcomeService;
   private ICenterMonitoringMilestoneManager monitoringMilestoneService;
   private ICenterMonitoringOutcomeEvidenceManager evidenceService;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
@@ -105,7 +106,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   private String transaction;
 
   @Inject
-  public MonitoringOutcomeAction(APConfig config, ICenterManager centerService, ICenterOutcomeManager outcomeService,
+  public MonitoringOutcomeAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
     ICenterTargetUnitManager targetUnitService, ICenterProgramManager programService,
     ICenterMilestoneManager milestoneService, AuditLogManager auditLogService,
     ICenterMonitoringOutcomeManager monitoringOutcomeService,
@@ -241,9 +242,6 @@ public class MonitoringOutcomeAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public CenterOutcome getOutcome() {
     return outcome;
@@ -311,8 +309,8 @@ public class MonitoringOutcomeAction extends BaseAction {
     programID = -1;
     topicID = -1;
 
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
       outcomeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTCOME_ID)));
@@ -337,8 +335,8 @@ public class MonitoringOutcomeAction extends BaseAction {
     }
 
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     Collections.sort(researchAreas, (ra1, ra2) -> ra1.getId().compareTo(ra2.getId()));
 
@@ -577,10 +575,6 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   public void setAreaID(long areaID) {
     this.areaID = areaID;
-  }
-
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
   }
 
 

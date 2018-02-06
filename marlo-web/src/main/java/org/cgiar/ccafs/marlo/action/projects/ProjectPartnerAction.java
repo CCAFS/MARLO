@@ -19,15 +19,17 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
@@ -38,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
-import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -47,6 +48,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -94,7 +97,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +109,8 @@ public class ProjectPartnerAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 7833194831832715444L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ProjectPartnerAction.class);
 
   /**
@@ -131,7 +136,9 @@ public class ProjectPartnerAction extends BaseAction {
   private final ProjectPartnerPersonManager projectPartnerPersonManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
+
   private final ProjectPartnerContributionManager projectPartnerContributionManager;
+
   private final ProjectPartnerOverallManager projectPartnerOverallManager;
   private final InstitutionManager institutionManager;
   private final InstitutionTypeManager institutionTypeManager;
@@ -140,24 +147,27 @@ public class ProjectPartnerAction extends BaseAction {
   private final UserRoleManager userRoleManager;
   private final RoleManager roleManager;
   private final ProjectManager projectManager;
+  private final ProjectInfoManager projectInfoManager;
   private final CrpPpaPartnerManager crpPpaPartnerManager;
   private final ProjectPartnerLocationManager projectPartnerLocationManager;
   private final InstitutionLocationManager institutionLocationManager;
-
-  private final CrpManager crpManager;
-
+  private final GlobalUnitManager crpManager;
   private final CrpUserManager crpUserManager;
-  private final ProjectPartnersValidator projectPartnersValidator;
-  private long projectID;
-  private Crp loggedCrp;
+  private final GlobalUnitProjectManager globalUnitProjectManager;
 
+
+  private final ProjectPartnersValidator projectPartnersValidator;
+
+  private long projectID;
+  private GlobalUnit loggedCrp;
   private Project project;
   private ProjectComponentLesson projectComponentLesson;
+
   // Model for the view
   private List<InstitutionType> intitutionTypes;
-
   private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
   private List<LocElement> countries;
+
   private List<Institution> allInstitutions; // Is used to list all the partner institutions that have the system.
   private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
@@ -168,14 +178,13 @@ public class ProjectPartnerAction extends BaseAction {
   private final AuditLogManager auditLogManager;
   private String transaction;
   private final HistoryComparator historyComparator;
-
   // Util
   private final SendMailS sendMail;
 
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
     InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, CrpManager crpManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, GlobalUnitManager crpManager,
     ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMailS sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
@@ -183,8 +192,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnersValidator projectPartnersValidator, HistoryComparator historyComparator,
     ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager,
     ProjectPartnerLocationManager projectPartnerLocationManager,
-    DeliverablePartnershipManager deliverablePartnershipManager,
-    InstitutionLocationManager institutionLocationManager) {
+    DeliverablePartnershipManager deliverablePartnershipManager, InstitutionLocationManager institutionLocationManager,
+    ProjectInfoManager projectInfoManager, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -207,6 +216,8 @@ public class ProjectPartnerAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpUserManager = crpUserManager;
+    this.projectInfoManager = projectInfoManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
 
   }
 
@@ -266,7 +277,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -286,10 +296,10 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   public List<Institution> getAllInstitutions() {
     return allInstitutions;
   }
-
 
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
@@ -311,7 +321,6 @@ public class ProjectPartnerAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public List<LocElement> getCountries() {
     return countries;
@@ -412,7 +421,7 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
-  public Crp getLoggedCrp() {
+  public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
 
@@ -421,10 +430,10 @@ public class ProjectPartnerAction extends BaseAction {
     return partnerPersonTypes;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -433,7 +442,6 @@ public class ProjectPartnerAction extends BaseAction {
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -461,8 +469,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (!user.isCgiarUser()) {
           // Generating a random password.
           password = RandomStringUtils.randomNumeric(6);
-          // Applying the password to the user.
-          user.setPassword(password);
+
+
         }
 
         // Building the Email message:
@@ -488,9 +496,12 @@ public class ProjectPartnerAction extends BaseAction {
         message.append(this.getText("email.bye"));
 
         // Saving the new user configuration.
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-
+        // user.setActive(true);
+        // userManager.saveUser(user, this.getCurrentUser());
+        Map<String, Object> mapUser = new HashMap<>();
+        mapUser.put("user", user);
+        mapUser.put("password", password);
+        this.getUsersToActive().add(mapUser);
         // Send UserManual.pdf
         String contentType = "application/pdf";
         String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -527,6 +538,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   /**
    * This method notify the user that is been assigned as Project Leader/Coordinator for a specific project.
    * 
@@ -534,6 +546,12 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the role (Project Leader or Project Coordinator).
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
+
+
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     userAssigned = userManager.getUser(userAssigned.getId());
     Project project = projectManager.getProjectById(this.projectID);
 
@@ -587,8 +605,8 @@ public class ProjectPartnerAction extends BaseAction {
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project
-            .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+          List<CrpProgram> crpPrograms = globalUnitProject
+            .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
               .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
@@ -665,6 +683,10 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the user role that stopped contributing (Project Leader or Project Coordinator).
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
+    // Get The Crp/Center/Platform where the project was created
+    GlobalUnitProject globalUnitProject =
+
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     // Send email to the new user and the P&R notification email.
     // TO
     String toEmail = userUnassigned.getEmail();
@@ -716,8 +738,8 @@ public class ProjectPartnerAction extends BaseAction {
           && project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram()
             .getProgramType() == 1) {
           // If Managment liason is FL
-          List<CrpProgram> crpPrograms = project
-            .getCrp().getCrpPrograms().stream().filter(cp -> cp.getId() == project
+          List<CrpProgram> crpPrograms = globalUnitProject
+            .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
               .getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
             .collect(Collectors.toList());
           if (crpPrograms != null) {
@@ -791,12 +813,11 @@ public class ProjectPartnerAction extends BaseAction {
     sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
-
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -872,7 +893,9 @@ public class ProjectPartnerAction extends BaseAction {
           differences.addAll(historyComparator.getDifferencesList(project.getProjectComponentLesson(), transaction,
             specialList, "project.projectComponentLesson", "project", 1));
         }
-
+        if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        }
 
         this.setDifferences(differences);
 
@@ -884,6 +907,9 @@ public class ProjectPartnerAction extends BaseAction {
 
     } else {
       project = projectManager.getProjectById(projectID);
+      if ((project.getProjecInfoPhase(this.getActualPhase())) != null) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      }
     }
 
 
@@ -1138,6 +1164,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   /**
    * Delete projectPartner if it is not in the list of partners sent back from the UI.
    * 
@@ -1185,6 +1212,9 @@ public class ProjectPartnerAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      this.setUsersToActive(new ArrayList<>());
+
       Project projectDB = projectManager.getProjectById(projectID);
       List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersonsDB(this.getActualPhase());
       ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB(this.getActualPhase());
@@ -1292,7 +1322,13 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
+      if (project.getProjectInfo() != null && project.getProjectInfo().getNewPartnershipsPlanned() != null) {
+        projectDB.setProjectInfo(project.getProjectInfo());
+        projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
+      }
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
+
+      this.addUsers();
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -1310,6 +1346,7 @@ public class ProjectPartnerAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+
         return SUCCESS;
       } else {
         this.addActionMessage("");
@@ -1536,7 +1573,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-
   public void setAllInstitutions(List<Institution> allInstitutions) {
     this.allInstitutions = allInstitutions;
   }
@@ -1562,7 +1598,7 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
-  public void setLoggedCrp(Crp loggedCrp) {
+  public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 

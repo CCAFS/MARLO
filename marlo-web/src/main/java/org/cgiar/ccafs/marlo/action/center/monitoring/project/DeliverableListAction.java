@@ -17,16 +17,16 @@ package org.cgiar.ccafs.marlo.action.center.monitoring.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterDeliverableManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProjectManager;
-import org.cgiar.ccafs.marlo.data.model.Center;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableCrosscutingTheme;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectStatus;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -47,14 +47,15 @@ public class DeliverableListAction extends BaseAction {
 
   private static final long serialVersionUID = 2828289817791232470L;
 
-  private ICenterManager centerService;
+  // GlobalUnit Manager
+  private GlobalUnitManager centerService;
   private ICenterProjectManager projectService;
   private ICenterDeliverableManager deliverableService;
 
 
   private CenterArea selectedResearchArea;
   private CenterProgram selectedProgram;
-  private Center loggedCenter;
+  private GlobalUnit loggedCenter;
   private CenterProject project;
   private List<CenterDeliverable> deliverables;
   private List<CenterArea> researchAreas;
@@ -65,7 +66,7 @@ public class DeliverableListAction extends BaseAction {
   private long deliverableID;
 
   @Inject
-  public DeliverableListAction(APConfig config, ICenterManager centerService, ICenterProjectManager projectService,
+  public DeliverableListAction(APConfig config, GlobalUnitManager centerService, ICenterProjectManager projectService,
     ICenterDeliverableManager deliverableService) {
     super(config);
     this.centerService = centerService;
@@ -158,9 +159,6 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
-  public Center getLoggedCenter() {
-    return loggedCenter;
-  }
 
   public long getProgramID() {
     return programID;
@@ -196,11 +194,11 @@ public class DeliverableListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    loggedCenter = (Center) this.getSession().get(APConstants.SESSION_CENTER);
-    loggedCenter = centerService.getCrpById(loggedCenter.getId());
+    loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
-    researchAreas = new ArrayList<>(
-      loggedCenter.getResearchAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
+    researchAreas =
+      new ArrayList<>(loggedCenter.getCenterAreas().stream().filter(ra -> ra.isActive()).collect(Collectors.toList()));
 
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
@@ -241,9 +239,6 @@ public class DeliverableListAction extends BaseAction {
     this.deliverables = deliverables;
   }
 
-  public void setLoggedCenter(Center loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
 
   public void setProgramID(long programID) {
     this.programID = programID;

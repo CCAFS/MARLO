@@ -39,6 +39,12 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private CenterProject project;
 
+  @Expose
+  private CapacityDevelopment capdev;
+
+  @Expose
+  private Boolean capdevD;
+
 
   @Expose
   private CenterDeliverableType deliverableType;
@@ -89,18 +95,21 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public CenterDeliverable(CenterProject project, boolean active) {
+  public CenterDeliverable(CenterProject project, CapacityDevelopment capdev, boolean active) {
     this.project = project;
+    this.capdev = capdev;
     this.active = active;
   }
 
   public CenterDeliverable(User modifiedBy, User createdBy, CenterProjectStatus projectStatus, CenterProject project,
-    CenterDeliverableType deliverableType, String name, Date startDate, Date endDate, boolean active, Date activeSince,
-    String modificationJustification) {
+    CapacityDevelopment capdev, Boolean capdevD, CenterDeliverableType deliverableType, String name, Date startDate,
+    Date endDate, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.projectStatus = projectStatus;
     this.project = project;
+    this.capdev = capdev;
+    this.capdevD = capdevD;
     this.deliverableType = deliverableType;
     this.name = name;
     this.startDate = startDate;
@@ -135,6 +144,10 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public CapacityDevelopment getCapdev() {
+    return capdev;
   }
 
   public User getCreatedBy() {
@@ -199,6 +212,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     return outputs;
   }
 
+
   public CenterProject getProject() {
     return project;
   }
@@ -222,7 +236,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = (prime * result) + ((id == null) ? 0 : id.hashCode());
     return result;
   }
 
@@ -230,6 +244,11 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public Boolean isCapdevD() {
+    return capdevD;
   }
 
 
@@ -243,15 +262,21 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCapdev(CapacityDevelopment capdev) {
+    this.capdev = capdev;
+  }
+
+  public void setCapdevD(Boolean capdevD) {
+    this.capdevD = capdevD;
+  }
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-
   public void setDateCreated(Date dateCreated) {
     this.dateCreated = dateCreated;
   }
-
 
   public void setDeliverableCrosscutingTheme(CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme) {
     this.deliverableCrosscutingTheme = deliverableCrosscutingTheme;
@@ -269,6 +294,7 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
   public void setDeliverableType(CenterDeliverableType deliverableType) {
     this.deliverableType = deliverableType;
   }
+
 
   public void setDocuments(List<CenterDeliverableDocument> documents) {
     this.documents = documents;
@@ -295,13 +321,16 @@ public class CenterDeliverable implements java.io.Serializable, IAuditLog {
     this.name = name;
   }
 
+
   public void setOutputs(List<CenterDeliverableOutput> outputs) {
     this.outputs = outputs;
   }
 
+
   public void setProject(CenterProject project) {
     this.project = project;
   }
+
 
   public void setProjectStatus(CenterProjectStatus projectStatus) {
     this.projectStatus = projectStatus;

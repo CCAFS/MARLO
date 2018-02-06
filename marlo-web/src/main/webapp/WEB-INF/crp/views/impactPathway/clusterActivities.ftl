@@ -275,13 +275,19 @@
 [#macro outcomeByCluster element index name  isTemplate=false]
   [#local customName = "${name}[${index}]" /]
   <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  simpleBox ${customForm.changedField('${customName}.id')}"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
+    [#if editable && action.canBeDeleted((element.id)!-1,(element.class.name)!"")] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeOutcome sm removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
       </div>
     [/#if]    
       [#-- Statement --]
       <div class="form-group">
+         [#if !isTemplate]
+       
+         <div class="pull-right">
+          [@popUps.relationsMacro element=element /]
+        </div>
+      [/#if]
         <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">
           <strong>${(element.crpProgramOutcome.crpProgram.acronym)!} Outcome:</strong> ${(element.crpProgramOutcome.description)!}
           [#if action.hasSpecificities('crp_ip_outcome_indicator')]

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -109,8 +110,8 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
     // manager.registerDefaults();
     try {
 
-      Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/impactPathwayOutcomes.prpt"), MasterReport.class);
+      Resource reportResource = manager
+        .createDirectly(this.getClass().getResource("/pentaho/center/ImpactPathwayOutcomes.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();

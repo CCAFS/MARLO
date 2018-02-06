@@ -33,19 +33,21 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2344785951769472166L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
   @Expose
   private User user;
   @Expose
-  private Crp crp;
+  private GlobalUnit crp;
   @Expose
   private boolean active;
-
   private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
-
 
   public LiaisonUser() {
   }
@@ -55,12 +57,12 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.user = user;
   }
 
+
   public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<ProjectInfo> projectses) {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
     this.projects = projectses;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -89,7 +91,7 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Crp getCrp() {
+  public GlobalUnit getCrp() {
     return crp;
   }
 
@@ -134,10 +136,10 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return projects;
   }
 
+
   public User getUser() {
     return user;
   }
-
 
   @Override
   public boolean isActive() {
@@ -145,13 +147,15 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
+
 
   public void setId(Long id) {
     this.id = id;
