@@ -296,6 +296,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -333,6 +334,17 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   public PowbExpectedCrpProgress getPowbExpectedCrpProgress(Long crpMilestoneID) {
     return powbSynthesis.getExpectedCrpProgresses().get(this.getIndex(crpMilestoneID));
+  }
+
+  public PowbExpectedCrpProgress getPowbExpectedCrpProgress(Long crpMilestoneID, Long crpProgramID) {
+    List<PowbExpectedCrpProgress> powbExpectedCrpProgresses =
+      powbExpectedCrpProgressManager.findByProgram(crpProgramID);
+    List<PowbExpectedCrpProgress> powbExpectedCrpProgressMilestone = powbExpectedCrpProgresses.stream()
+      .filter(c -> c.getCrpMilestone().getId().longValue() == crpProgramID.longValue()).collect(Collectors.toList());
+    if (!powbExpectedCrpProgressMilestone.isEmpty()) {
+      return powbExpectedCrpProgressMilestone.get(0);
+    }
+    return new PowbExpectedCrpProgress();
   }
 
   // Method to get the download folder
@@ -511,13 +523,23 @@ public class ExpectedCRPProgressAction extends BaseAction {
     if (this.isPMU()) {
       flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
       for (CrpProgram crpProgram : flagships) {
-        crpProgram.setPowbs(powbExpectedCrpProgressManager.findByProgram(crpProgram.getId()));
-        for (PowbExpectedCrpProgress powbExpectedCrpProgress : crpProgram.getPowbs()) {
-          powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome()
-            .setSubIdos(powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome().getCrpOutcomeSubIdos().stream()
-              .filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.setMilestones(new ArrayList<>());
+        for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+          crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+            .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+            .collect(Collectors.toList()));
+          crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
         }
+
+        // crpProgram.setPowbs(powbExpectedCrpProgressManager.findByProgram(crpProgram.getId()));
+        // for (PowbExpectedCrpProgress powbExpectedCrpProgress : crpProgram.getPowbs()) {
+        // powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome()
+        // .setSubIdos(powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome().getCrpOutcomeSubIdos().stream()
+        // .filter(c -> c.isActive()).collect(Collectors.toList()));
+        // }
       }
     }
     // Base Permission

@@ -126,17 +126,17 @@
       </thead>
       <tbody>
         [#list flagships as fp]
-          [#assign milestoneSize = fp.powbs?size]
-          [#list fp.powbs as milestone]
+          [#assign milestoneSize = fp.milestones?size]
+          [#list fp.milestones as milestone]
             <tr>
               [#if milestone_index == 0]<th rowspan="${milestoneSize}" > ${fp.acronym}</th>[/#if]
               <td> <i>Pre-filled</i> </td>
               <td> <i>Pre-filled</i> </td>
-              <td> <i>${milestone.crpMilestone.title}</i> </td>
+              <td> <i>${milestone.title}</i> </td>
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td> ${(milestone.assessmentName)!} </td>
-              <td> ${milestone.means}</td>
+              <td> ${(action.getPowbExpectedCrpProgress(milestone.id,fp.id).assesmentName)!} </td>
+              <td> ${action.getPowbExpectedCrpProgress(milestone.id,fp.id).means}</td>
             </tr>
           [/#list]
         [/#list]
