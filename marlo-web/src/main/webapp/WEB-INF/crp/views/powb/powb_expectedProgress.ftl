@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
-[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
+[#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ ] /]
 [#assign customJS = [ ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
