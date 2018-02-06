@@ -908,9 +908,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail});
+      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail,
+      this.getSelectedCycle()});
     return model;
   }
 
