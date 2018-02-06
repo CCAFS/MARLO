@@ -163,6 +163,8 @@
     [#-- Remove Button --]
     [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
       <div class="removeOutcome removeElement" title="Remove Outcome"></div>
+    [#elseif editable]
+      <div class="removeElement disable" title="[@s.text name="global.CrpProgramOutcome"/] can not be deleted"></div>
     [/#if]
     
     [#if !isTemplate]
@@ -328,6 +330,8 @@
     [#-- Remove Button --]
     [#if editable && action.canBeDeleted((milestone.id)!-1,(milestone.class.name)!"" )]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
+    [#elseif editable]
+      <div class="removeElement sm disable" title="[@s.text name="global.CrpMilestone"/] can not be deleted"></div>
     [/#if]
     
     [#if !isTemplate]
@@ -378,7 +382,9 @@
     
     [#-- Remove Button --]
     [#if editable && action.canBeDeleted((subIdo.id)!-1,(subIdo.class.name)!"" )]
-    <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
+      <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
+    [#elseif editable]
+      <div class="removeElement sm disable" title="[@s.text name="global.SrfSubIdo"/] can not be deleted"></div>
     [/#if]
     <br />
     <div class="form-group">
