@@ -51,6 +51,8 @@ public interface PowbExpectedCrpProgressManager {
    */
   public List<PowbExpectedCrpProgress> findAll();
 
+  public List<PowbExpectedCrpProgress> findByProgram(long crpProgramID);
+
 
   /**
    * This method gets a powbExpectedCrpProgress object by a given powbExpectedCrpProgress identifier.
@@ -63,8 +65,10 @@ public interface PowbExpectedCrpProgressManager {
   /**
    * This method saves the information of the given powbExpectedCrpProgress
    * 
-   * @param powbExpectedCrpProgress - is the powbExpectedCrpProgress object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the powbExpectedCrpProgress was
+   * @param powbExpectedCrpProgress - is the powbExpectedCrpProgress object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the powbExpectedCrpProgress
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
