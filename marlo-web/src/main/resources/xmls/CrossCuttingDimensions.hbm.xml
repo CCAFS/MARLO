@@ -12,9 +12,12 @@
         <property generated="never" lazy="false" name="assets" optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="assets"/>
         </property>
-        <property generated="never" lazy="false" name="idPhase" optimistic-lock="true" type="long" unique="false">
-            <column name="id_phase" not-null="true"/>
-        </property>
+        <many-to-one name="liaisonInstitution" class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
+            <column name="liaison_institution_id" />
+        </many-to-one>
+        <many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+          <column name="id_phase" />
+        </many-to-one>
         <property generated="never" lazy="false" name="isActive" optimistic-lock="true" type="boolean" unique="false">
             <column name="is_active" not-null="true"/>
         </property>
@@ -30,5 +33,6 @@
         <property generated="never" lazy="false" name="modificationJustification" optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="modification_justification"/>
         </property>
+      
     </class>
 </hibernate-mapping>
