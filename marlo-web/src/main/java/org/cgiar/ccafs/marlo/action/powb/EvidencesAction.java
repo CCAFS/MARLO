@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
@@ -81,6 +82,7 @@ public class EvidencesAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private UserManager userManager;
 
@@ -130,7 +132,8 @@ public class EvidencesAction extends BaseAction {
   public EvidencesAction(APConfig config, GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
-    PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager) {
+    PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -140,6 +143,7 @@ public class EvidencesAction extends BaseAction {
     this.srfSubIdoManager = srfSubIdoManager;
     this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   @Override
