@@ -80,7 +80,7 @@
                 </div>
               </div>
             </div>
-            <div class="expectedStudies-list" listname="">
+            <div class="expectedStudies-list" listname="list-plannedStudies">
             [#if powbSynthesis.powbEvidence.plannedStudies?has_content]
               [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
                 [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbEvidence.plannedStudies"  index=plannedStudy_index isEditable=editable/]
