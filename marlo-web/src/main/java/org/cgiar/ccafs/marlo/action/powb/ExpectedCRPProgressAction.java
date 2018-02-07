@@ -413,6 +413,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
         crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
           .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
           .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
         if (!crpProgram.getMilestones().isEmpty()) {
           validOutcomes.add(crpProgramOutcome);
@@ -428,12 +430,15 @@ public class ExpectedCRPProgressAction extends BaseAction {
         Project project = projectFocus.getProject();
         if (project.isActive()) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-          if (project.getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || project.getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            myProjects.add(project);
+          if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+            if (project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || project.getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              myProjects.add(project);
+            }
           }
+
 
         }
       }
@@ -583,7 +588,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
