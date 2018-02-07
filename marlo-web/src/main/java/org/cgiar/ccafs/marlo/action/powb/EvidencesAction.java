@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -37,6 +38,9 @@ import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -78,19 +82,19 @@ public class EvidencesAction extends BaseAction {
   // Managers
   private GlobalUnitManager crpManager;
 
-
   private PowbSynthesisManager powbSynthesisManager;
 
 
   private AuditLogManager auditLogManager;
-
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
   private UserManager userManager;
 
+
   private CrpProgramManager crpProgramManager;
+
 
   private SrfSubIdoManager srfSubIdoManager;
 
@@ -100,33 +104,33 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
-
   private PowbEvidenceManager powbEvidenceManager;
 
   private EvidencesValidator validator;
 
 
+  private ProjectFocusManager projectFocusManager;
+
+
   // Variables
   private String transaction;
 
-  private PowbSynthesis powbSynthesis;
 
+  private PowbSynthesis powbSynthesis;
 
   private Long liaisonInstitutionID;
 
   private Long powbSynthesisID;
 
-  private GlobalUnit loggedCrp;
 
+  private GlobalUnit loggedCrp;
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
   private Map<Long, String> subIdos;
 
-
   private Map<Long, String> targets;
-
 
   private Map<Integer, String> scopes;
 
@@ -136,13 +140,17 @@ public class EvidencesAction extends BaseAction {
 
   private List<PowbEvidencePlannedStudy> flagshipPlannedList;
 
+
+  private List<ProjectExpectedStudy> popUpProjects;
+
+
   @Inject
   public EvidencesAction(APConfig config, GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
     LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager,
-    EvidencesValidator validator) {
+    EvidencesValidator validator, ProjectFocusManager projectFocusManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -155,7 +163,9 @@ public class EvidencesAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.powbEvidenceManager = powbEvidenceManager;
     this.validator = validator;
+    this.projectFocusManager = projectFocusManager;
   }
+
 
   @Override
   public String cancel() {
@@ -175,6 +185,7 @@ public class EvidencesAction extends BaseAction {
     messages = this.getActionMessages();
     return SUCCESS;
   }
+
 
   public void expectedStudiesNewData(PowbEvidence powbEvidenceDB) {
 
@@ -228,7 +239,6 @@ public class EvidencesAction extends BaseAction {
 
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -246,7 +256,6 @@ public class EvidencesAction extends BaseAction {
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public List<PowbEvidencePlannedStudy> getFlagshipPlannedList() {
     return flagshipPlannedList;
@@ -279,6 +288,7 @@ public class EvidencesAction extends BaseAction {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
@@ -291,6 +301,10 @@ public class EvidencesAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<ProjectExpectedStudy> getPopUpProjects() {
+    return popUpProjects;
+  }
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -298,6 +312,7 @@ public class EvidencesAction extends BaseAction {
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
+
 
   public Map<Integer, String> getScopes() {
     return scopes;
@@ -341,7 +356,6 @@ public class EvidencesAction extends BaseAction {
 
   }
 
-
   @Override
   public String next() {
     String result = this.save();
@@ -363,6 +377,31 @@ public class EvidencesAction extends BaseAction {
         powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbEvidencePlannedStudy.getId());
       }
     }
+  }
+
+
+  public void popUpProject() {
+
+    popUpProjects = new ArrayList<>();
+    Phase phase = this.getActualPhase();
+    if (projectFocusManager.findAll() != null) {
+
+      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+          && pf.getPhase() != null && pf.getPhase().getId() == phase.getId())
+        .collect(Collectors.toList()));
+
+      for (ProjectFocus focus : projectFocus) {
+        Project project = focus.getProject();
+        List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
+          .filter(es -> es.isActive() && es.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+          popUpProjects.add(projectExpectedStudy);
+        }
+      }
+    }
+
+
   }
 
   @Override
@@ -463,6 +502,8 @@ public class EvidencesAction extends BaseAction {
             powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
               .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
           }
+
+          this.popUpProject();
         }
       }
     }
@@ -573,10 +614,10 @@ public class EvidencesAction extends BaseAction {
     this.flagshipPlannedList = flagshipPlannedList;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -590,9 +631,14 @@ public class EvidencesAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setPopUpProjects(List<ProjectExpectedStudy> popUpProjects) {
+    this.popUpProjects = popUpProjects;
+  }
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
+
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
@@ -606,10 +652,10 @@ public class EvidencesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+
   public void setTargets(Map<Long, String> targets) {
     this.targets = targets;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
