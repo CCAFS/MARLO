@@ -93,6 +93,26 @@ function attachEvents() {
       $(this).find(".errorTag").fadeIn(1000);
     });
   });
+  
+  $('.button-save').on('click', function(e) {
+    var missingFields = 0
+    $('form select.institutionsList').each(function(i,e){
+      if(!e.value){
+        missingFields++;
+      }
+    });
+    
+    // Validate if there are missing fields
+    if(missingFields) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = "You must select a partner organization";
+      noty(notyOptions);
+      // Turn off the saving button state
+      turnSavingStateOff(this);
+      return
+    }
+  });
 
   /**
    * Project partner Events
