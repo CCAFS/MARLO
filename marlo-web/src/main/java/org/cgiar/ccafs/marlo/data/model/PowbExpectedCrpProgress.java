@@ -56,9 +56,6 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
   @Expose
   private String modificationJustification;
 
-  private Double w1;
-
-  private Double w3;
 
   public PowbExpectedCrpProgress() {
   }
@@ -145,16 +142,6 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
   }
 
 
-  public Double getW1() {
-    return w1;
-  }
-
-
-  public Double getW3() {
-    return w3;
-  }
-
-
   @Override
   public boolean isActive() {
     return active;
@@ -212,12 +199,6 @@ public class PowbExpectedCrpProgress implements java.io.Serializable, IAuditLog 
     this.powbSynthesis = powbSynthesis;
   }
 
-  public void setW1(Double w1) {
-    this.w1 = w1;
-  }
 
-  public void setW3(Double w3) {
-    this.w3 = w3;
-  }
 }
 
