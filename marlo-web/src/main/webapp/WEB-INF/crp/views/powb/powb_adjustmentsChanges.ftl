@@ -21,6 +21,9 @@
 [@utilities.helpBox name="adjustmentsChanges.help" /]
     
 <section class="container">
+  [#-- Section Messages --]
+  [#-- include "/WEB-INF/crp/views/powb/messages-powb.ftl" /--]
+  
   [#-- Program (Flagships and PMU) --]
   [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
   
@@ -95,12 +98,12 @@
       [#list elements as element ]
         <tr>
           [#-- Flagship Name --]
-          <td class="left">
+          <td class="left flagship-name">
             ${element.powbSynthesis.liaisonInstitution.acronym!'None'}: ${element.powbSynthesis.liaisonInstitution.name!'None'}
           </td>
           
           [#-- Narrative--]
-          <td class="left">
+          <td class="left narrative">
             ${element.tocOverall!'None'}
           </td>
           

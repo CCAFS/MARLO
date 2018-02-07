@@ -21,6 +21,9 @@
 [@utilities.helpBox name="evidenceRelevant.help" /]
     
 <section class="container">
+  [#-- Section Messages --]
+  [#-- include "/WEB-INF/crp/views/powb/messages-powb.ftl" /--]
+
   [#-- Program (Flagships and PMU) --]
   [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
   
@@ -115,7 +118,7 @@
     [#-- Index --]
     <div class="leftHead"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removeExpectedStudy removeElement" title="Remove Expected Study"></div>[/#if]
+    [#if isEditable]<div class="removeExpectedStudy removeElement" title="Remove Planned topic of study"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
