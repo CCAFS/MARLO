@@ -119,7 +119,7 @@ public class EvidencesValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus(), action);
+        PowbSynthesisSectionStatusEnum.EVIDENCES.getStatus(), action);
     }
   }
 

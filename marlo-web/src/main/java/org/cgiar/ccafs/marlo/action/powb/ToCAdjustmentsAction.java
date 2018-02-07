@@ -483,34 +483,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       if (powbSynthesis != null) {
         if (powbSynthesis.getPowbToc() != null) {
           tocList.add(powbSynthesis.getPowbToc());
-        } else {
-          PowbToc toc = new PowbToc();
-          toc.setActive(true);
-          toc.setActiveSince(new Date());
-          toc.setCreatedBy(this.getCurrentUser());
-          toc.setModifiedBy(this.getCurrentUser());
-          toc.setModificationJustification("");
-          // create one to one relation
-          powbSynthesis.setPowbToc(toc);
-          toc.setPowbSynthesis(powbSynthesis);
-          // save the changes
-          powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-          tocList.add(toc);
         }
-      } else {
-        powbSynthesis = this.createPowbSynthesis(phaseID, liaisonInstitutionID);
-        PowbToc toc = new PowbToc();
-        toc.setActive(true);
-        toc.setActiveSince(new Date());
-        toc.setCreatedBy(this.getCurrentUser());
-        toc.setModifiedBy(this.getCurrentUser());
-        toc.setModificationJustification("");
-        // create one to one relation
-        powbSynthesis.setPowbToc(toc);
-        toc.setPowbSynthesis(powbSynthesis);
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-        tocList.add(toc);
       }
     }
   }
