@@ -619,12 +619,14 @@ public class ExpectedCRPProgressAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") & c.isActive())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
     if (this.isPMU()) {
       this.loadTablePMU();
     }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EXPECTED_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       if (powbSynthesis.getExpectedCrpProgresses() != null) {
