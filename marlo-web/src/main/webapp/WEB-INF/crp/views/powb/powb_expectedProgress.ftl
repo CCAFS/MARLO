@@ -49,9 +49,9 @@
           
           [#-- Table A: Planned Milestones 2018 --]
           [#if PMU]
+          <hr />
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
-            <hr />
             [@tableAMacro /]
           </div>
           [/#if]
