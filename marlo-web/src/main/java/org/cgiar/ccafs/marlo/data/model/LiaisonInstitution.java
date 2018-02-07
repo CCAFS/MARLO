@@ -55,9 +55,12 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   private boolean active;
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
   private Set<ProjectInfo> projects = new HashSet<ProjectInfo>(0);
+  private Set<PowbSynthesis> powbSynthesis = new HashSet<PowbSynthesis>(0);
+
 
   public LiaisonInstitution() {
   }
+
 
   public LiaisonInstitution(CrpProgram crpProgram, Institution institution, String name, String acronym,
     Set<LiaisonUser> liaisonUserses, Set<ProjectInfo> projectses) {
@@ -78,7 +81,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
-
   public String getComposedName() {
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
@@ -93,20 +95,20 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public GlobalUnit getCrp() {
     return crp;
   }
+
 
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -126,7 +128,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -148,19 +149,25 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<PowbSynthesis> getPowbSynthesis() {
+    return powbSynthesis;
+  }
+
+
   public Set<ProjectInfo> getProjects() {
     return projects;
   }
+
 
   @Override
   public boolean isActive() {
     return active;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -170,10 +177,10 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -189,6 +196,10 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPowbSynthesis(Set<PowbSynthesis> powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
   }
 
 
