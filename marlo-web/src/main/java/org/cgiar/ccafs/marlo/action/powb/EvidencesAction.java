@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.powb.EvidencesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -102,6 +103,8 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidenceManager powbEvidenceManager;
 
+  private EvidencesValidator validator;
+
 
   // Variables
   private String transaction;
@@ -138,7 +141,8 @@ public class EvidencesAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager,
+    EvidencesValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -150,6 +154,7 @@ public class EvidencesAction extends BaseAction {
     this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.powbEvidenceManager = powbEvidenceManager;
+    this.validator = validator;
   }
 
   @Override
@@ -543,9 +548,7 @@ public class EvidencesAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      // TODO
-      this.setInvalidFields(new HashMap<>());
-      this.setActionMessages(new ArrayList<>());
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -610,6 +613,13 @@ public class EvidencesAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, powbSynthesis, true);
+    }
   }
 
 }
