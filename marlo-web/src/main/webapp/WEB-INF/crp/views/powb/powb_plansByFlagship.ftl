@@ -54,7 +54,7 @@
               name="powbSynthesis.powbFlagshipPlans.flagshipProgramFile.id" 
               label="liaisonInstitution.powb.flagshipProgramFile" 
               dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
-              path="${action.path}"
+              path="${action.getPath(liaisonInstitutionID)}"
               isEditable=editable
             /]
           </div>
@@ -64,7 +64,6 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="plansByFlagship.tableOverall.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <hr />
             [@tableOverallMacro /]
           </div>
           [/#if]
@@ -72,7 +71,9 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [#if flagship]
+          [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [/#if]
         
       [/@s.form] 
     </div> 
@@ -83,21 +84,6 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableOverallMacro ]
-  [#assign flagships = [ 
-    { "acronym": "FP1"
-    },
-    { "acronym": "FP2"
-    
-    },
-    { "acronym": "FP3"
-    
-    },
-    { "acronym": "FP4"
-    
-    }
-    ]
-  /]
-
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -108,12 +94,19 @@
         </tr>
       </thead>
       <tbody>
-        [#if powbFlagshipPlans??]
-          [#list powbFlagshipPlans as fp]
+        [#if flagships??]
+          [#list flagships as liaisonInstitution]
+            [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id))!{}]
             <tr>
-              <td>${fp.liaisonInstitution.acronym}</td>
-              <td>${fp.liaisonInstitution.acronym}</td>
-              <td></td>
+              <td><span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${liaisonInstitution.crpProgram.acronym}</span></td>              
+              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>
+                [#if (flagshipPlan.flagshipProgramFile.fileName?has_content)!false]
+                  <a href="${action.getPath(liaisonInstitution.id)}/${flagshipPlan.flagshipProgramFile.fileName}" target="_blank">${flagshipPlan.flagshipProgramFile.fileName}</a>
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
             </tr>
           [/#list]
         [/#if]

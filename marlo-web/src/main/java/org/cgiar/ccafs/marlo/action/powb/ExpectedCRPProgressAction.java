@@ -37,13 +37,15 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
+import org.cgiar.ccafs.marlo.validation.powb.ExpectedCRPProgressValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,7 +57,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,7 +97,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-  private ToCAdjustmentsValidator validator;
+  private ExpectedCRPProgressValidator validator;
 
   // Variables
   private String transaction;
@@ -128,7 +129,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
   public ExpectedCRPProgressAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator, CrpMilestoneManager crpMilestoneManager,
+    ExpectedCRPProgressValidator validator, CrpMilestoneManager crpMilestoneManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager) {
     super(config);
     this.crpManager = crpManager;
@@ -241,21 +242,24 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
     for (ProjectMilestone projectMilestone : projectMilestones) {
       projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase());
-      Project project = projectMilestone.getProjectOutcome().getProject();
-      if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-            .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
-          if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
-            if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-              milestonesSet.add(projectMilestone);
+      if (projectMilestone.getProjectOutcome().isActive()) {
+        Project project = projectMilestone.getProjectOutcome().getProject();
+        if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+              Calendar cal = Calendar.getInstance();
+              cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+              if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+                milestonesSet.add(projectMilestone);
+              }
             }
           }
         }
       }
+
 
     }
     milestones.addAll(milestonesSet);
@@ -394,6 +398,102 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
+  public void loadTablePMU() {
+    flagships = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgramOutcome.setSubIdos(
+          crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+
+
+      List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+        .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+      List<Project> myProjects = new ArrayList<>();
+      for (ProjectFocus projectFocus : projects) {
+        Project project = projectFocus.getProject();
+        if (project.isActive()) {
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+          if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+            if (project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || project.getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              myProjects.add(project);
+            }
+          }
+
+
+        }
+      }
+      for (Project project : myProjects) {
+
+
+        double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+        double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+        double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+        List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+          .collect(Collectors.toList());
+        double percentageW1 = 0;
+        double percentageW3 = 0;
+        double percentageB = 0;
+
+        if (!this.getCountProjectFlagships(project.getId())) {
+          percentageW1 = 100;
+          percentageW3 = 100;
+          percentageB = 100;
+
+        }
+        for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+          switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+            case 1:
+              percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+              break;
+            case 2:
+              percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+              break;
+            case 3:
+              percentageB = percentageB + projectBudgetsFlagship.getAmount();
+              break;
+            default:
+              break;
+          }
+        }
+        w1 = w1 * (percentageW1) / 100;
+        w3 = w3 * (percentageW3) / 100;
+        bilateral = bilateral * (percentageB) / 100;
+        crpProgram.setW1(crpProgram.getW1() + w1);
+        crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
+
+
+      }
+
+
+    }
+  }
+
+
   @Override
   public String next() {
     String result = this.save();
@@ -421,9 +521,28 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
           .collect(Collectors.toList()));
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = liaisonUsers.get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          boolean isLeader = false;
+          for (LiaisonUser liaisonUser : liaisonUsers) {
+            LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+            if (institution.isActive()) {
+              if (institution.getCrpProgram() != null) {
+                if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                  liaisonInstitutionID = institution.getId();
+                  isLeader = true;
+                  break;
+                }
+              } else {
+                if (institution.getAcronym().equals("PMU")) {
+                  liaisonInstitutionID = institution.getId();
+                  isLeader = true;
+                  break;
+                }
+              }
+            }
+          }
+          if (!isLeader) {
+            liaisonInstitutionID = this.firstFlagship();
+          }
         } else {
           liaisonInstitutionID = this.firstFlagship();
         }
@@ -478,6 +597,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
+        powbSynthesis.setLiaisonInstitution(liaisonInstitution);
         powbSynthesisID = powbSynthesis.getId();
         this.setDraft(true);
         reader.close();
@@ -499,7 +619,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
@@ -511,36 +631,26 @@ public class ExpectedCRPProgressAction extends BaseAction {
     }
     outcomes.addAll(outcomesSet);
     outcomes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    powbSynthesis.getExpectedCrpProgresses()
+      .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") & c.isActive())
+      .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
     if (this.isPMU()) {
-      flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
-
-      for (CrpProgram crpProgram : flagships) {
-        crpProgram.setMilestones(new ArrayList<>());
-        crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-        for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
-          crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-            .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
-            .collect(Collectors.toList()));
-          crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        }
-
-
-      }
+      this.loadTablePMU();
     }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EXPECTED_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       if (powbSynthesis.getExpectedCrpProgresses() != null) {
@@ -548,7 +658,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -568,7 +677,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      this.setInvalidFields(new HashMap<>());
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -628,7 +737,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, powbSynthesis, true);
+      validator.validate(this, powbSynthesis, true);
     }
   }
 }
