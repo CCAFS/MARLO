@@ -54,7 +54,7 @@
               name="powbSynthesis.powbFlagshipPlans.flagshipProgramFile.id" 
               label="liaisonInstitution.powb.flagshipProgramFile" 
               dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
-              path="${action.path}"
+              path="${action.getPath(liaisonInstitutionID)}"
               isEditable=editable
             /]
           </div>
@@ -72,7 +72,9 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [#if flagship]
+          [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [/#if]
         
       [/@s.form] 
     </div> 
@@ -101,12 +103,11 @@
               <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>
                 [#if (flagshipPlan.flagshipProgramFile.fileName?has_content)!false]
-                  <a href="">${flagshipPlan.flagshipProgramFile.fileName}</a>
+                  <a href="${action.getPath(liaisonInstitution.id)}/${flagshipPlan.flagshipProgramFile.fileName}" target="_blank">${flagshipPlan.flagshipProgramFile.fileName}</a>
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
-              
             </tr>
           [/#list]
         [/#if]
