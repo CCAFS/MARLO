@@ -59,7 +59,6 @@
       </p>
     </div>
     
-    
     [#-- Concurrence Hidden Block --]
     <div id="concurrenceBlock" class="text-center" style="display:none">
       <div class="layer"></div>

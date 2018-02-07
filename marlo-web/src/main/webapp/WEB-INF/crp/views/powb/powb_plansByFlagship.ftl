@@ -83,8 +83,6 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableOverallMacro ]
-
-
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -97,10 +95,18 @@
       <tbody>
         [#if flagships??]
           [#list flagships as liaisonInstitution]
+            [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id))!{}]
             <tr>
-              <td>${liaisonInstitution.acronym}</td>              
-              <td>${(action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id).planSummary)!}</td>
-              <td>${(action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id).flagshipProgramFile.fileName)!}</td>
+              <td><span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${liaisonInstitution.crpProgram.acronym}</span></td>              
+              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>
+                [#if (flagshipPlan.flagshipProgramFile.fileName?has_content)!false]
+                  <a href="">${flagshipPlan.flagshipProgramFile.fileName}</a>
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
+              
             </tr>
           [/#list]
         [/#if]
