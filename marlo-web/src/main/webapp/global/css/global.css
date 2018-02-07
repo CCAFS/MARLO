@@ -5308,6 +5308,10 @@ table.evaluationRank thead th{
     /* margin: 0 10px !important; */
 }
 
+.radio-label.fieldError {
+  color:red;
+}
+
 .radio-label .onoffswitch-radio:checked + label{ 
    background-color: #34A7C1; 
    color: #FFFFFF;

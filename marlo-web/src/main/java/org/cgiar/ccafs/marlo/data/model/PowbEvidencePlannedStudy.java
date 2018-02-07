@@ -135,10 +135,18 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
   }
 
 
+  public String getScopeName() {
+    if (geographicScope == null || geographicScope.intValue() == -1) {
+      return "";
+    }
+    return GlobalScopeEnum.getValue(geographicScope.intValue()).getType();
+
+  }
+
+
   public SrfSloIndicator getSrfSloIndicator() {
     return srfSloIndicator;
   }
-
 
   public SrfSubIdo getSrfSubIdo() {
     return srfSubIdo;
@@ -197,10 +205,10 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
     this.powbEvidence = powbEvidence;
   }
 
+
   public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
     this.srfSloIndicator = srfSloIndicator;
   }
-
 
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
     this.srfSubIdo = srfSubIdo;
