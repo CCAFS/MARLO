@@ -578,6 +578,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
+        powbSynthesis.setLiaisonInstitution(liaisonInstitution);
         powbSynthesisID = powbSynthesis.getId();
         this.setDraft(true);
         reader.close();
@@ -599,7 +600,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
