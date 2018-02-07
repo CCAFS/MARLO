@@ -115,8 +115,8 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
               }
               if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
                 action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
-                action.getInvalidFields().put("list-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
-                  InvalidFieldsMessages.EMPTYLIST);
+                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
+                  InvalidFieldsMessages.EMPTYFIELD);
               }
 
             }
