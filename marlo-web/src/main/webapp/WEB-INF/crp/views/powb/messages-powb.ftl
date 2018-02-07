@@ -37,9 +37,7 @@
   
   [#-- Privileges Message --]
   [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
-    [#if crpClosed]
-      <p class="readPrivileges">MARLO is closed.</p>  
-    [/#if]
+    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
   [/#if]
   
   
@@ -60,7 +58,6 @@
       [/@s.text]
       </p>
     </div>
-    
     
     [#-- Concurrence Hidden Block --]
     <div id="concurrenceBlock" class="text-center" style="display:none">

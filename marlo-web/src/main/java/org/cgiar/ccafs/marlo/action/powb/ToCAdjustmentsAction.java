@@ -246,6 +246,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -270,9 +271,28 @@ public class ToCAdjustmentsAction extends BaseAction {
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser = liaisonUsers.get(0);
-            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+            boolean isLeader = false;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+              if (institution.isActive()) {
+                if (institution.getCrpProgram() != null) {
+                  if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                } else {
+                  if (institution.getAcronym().equals("PMU")) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!isLeader) {
+              liaisonInstitutionID = this.firstFlagship();
+            }
           } else {
             liaisonInstitutionID = this.firstFlagship();
           }
@@ -281,14 +301,12 @@ public class ToCAdjustmentsAction extends BaseAction {
         }
       }
 
-      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-
       try {
         powbSynthesisID =
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
+
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -304,6 +322,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -351,31 +370,19 @@ public class ToCAdjustmentsAction extends BaseAction {
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     // Setup the PUM ToC Table
     if (this.isPMU()) {
-      tocList = new ArrayList<>();
-      Phase phase = this.getActualPhase();
-      for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-        if (powbSynthesis != null) {
-          if (powbSynthesis.getPowbToc() != null) {
-            if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-              if (powbSynthesis.getPowbToc().getTocOverall().trim().length() > 0) {
-                tocList.add(powbSynthesis.getPowbToc());
-              }
-            }
-          }
-        }
-      }
+      this.tocList(phase.getId());
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
 
 
     // Base Permission
@@ -443,10 +450,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -466,6 +473,46 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  public void tocList(long phaseID) {
+    tocList = new ArrayList<>();
+
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbToc() != null) {
+          tocList.add(powbSynthesis.getPowbToc());
+        } else {
+          PowbToc toc = new PowbToc();
+          toc.setActive(true);
+          toc.setActiveSince(new Date());
+          toc.setCreatedBy(this.getCurrentUser());
+          toc.setModifiedBy(this.getCurrentUser());
+          toc.setModificationJustification("");
+          // create one to one relation
+          powbSynthesis.setPowbToc(toc);
+          toc.setPowbSynthesis(powbSynthesis);
+          // save the changes
+          powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+          tocList.add(toc);
+        }
+      } else {
+        powbSynthesis = this.createPowbSynthesis(phaseID, liaisonInstitutionID);
+        PowbToc toc = new PowbToc();
+        toc.setActive(true);
+        toc.setActiveSince(new Date());
+        toc.setCreatedBy(this.getCurrentUser());
+        toc.setModifiedBy(this.getCurrentUser());
+        toc.setModificationJustification("");
+        // create one to one relation
+        powbSynthesis.setPowbToc(toc);
+        toc.setPowbSynthesis(powbSynthesis);
+        // save the changes
+        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+        tocList.add(toc);
+      }
+    }
   }
 
   @Override

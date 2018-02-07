@@ -49,9 +49,9 @@
           
           [#-- Table A: Planned Milestones 2018 --]
           [#if PMU]
+          <hr />
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
-            <hr />
             [@tableAMacro /]
           </div>
           [/#if]
@@ -79,10 +79,8 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-
-
   <div class="">[#-- <div class="table-responsive"> --]
-    <table class="table table-bordered">
+    <table id="tableA" class="table table-bordered">
       <thead>
         <tr>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.fp" /]</th>
@@ -101,23 +99,62 @@
       <tbody>
         [#list flagships as fp]
           [#assign milestoneSize = fp.milestones?size]
-          [#list fp.milestones as milestone]
-            <tr>
-              [#if milestone_index == 0]<th rowspan="${milestoneSize}" > ${fp.acronym}</th>[/#if]
-              <td> <i>Pre-filled</i> </td>
-              <td> <i>Pre-filled</i> </td>
-              <td> <i>${milestone.title}</i> </td>
-              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).assesmentName!} </td>
-              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).means!} </td>
-              
-                </tr>
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            [#list outcome.milestones as milestone]
+              [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
+              [#assign isOutcomeRow = (milestone_index == 0)]
+              [#assign milestoneProgress = action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id) ]
+              <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
+                [#-- Flagship --]
+                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
+                [#-- Sub-IDO --]
+                [#if isOutcomeRow]<td rowspan="${outcomesSize}"> 
+                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                </td>
+                [/#if]
+                [#-- Outcomes --]
+                [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
+                [#-- Milestone --]
+                <td> ${milestone.composedName} <div class="pull-right">[@milestoneContributions element=milestone tiny=true /]</div></td>
+                [#-- W1W2 --]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w1?number?string(",##0.00")}</span> </td>[/#if]
+                [#-- W3/Bilateral --]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w3?number?string(",##0.00")}</span> </td>[/#if]
+                [#-- Assessment --]
+                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                [#-- Means Verification --]
+                <td>[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              </tr>
+            [/#list]
           [/#list]
         [/#list]
       </tbody>
     </table>
   </div>
+  
+  [#-- 
+  <h5>TEST</h5>
+  <ul>
+    [#list flagships as fp]
+      [#assign milestoneSize = fp.milestones?size]
+      <li> ${fp.acronym} - <strong>Milestones Size: ${milestoneSize}</strong>
+        <ul>
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            <li> ${outcome.composedName} - <strong>Milestones Size: ${outcomesSize}</strong>
+              <ul>
+                [#list outcome.milestones as milestone]
+                  <li>${milestone.composedName}</li>
+                [/#list]
+              </ul>
+            </li>
+          [/#list]
+        </ul>
+      </li>
+    [/#list]
+  </ul>
+   --]
 [/#macro]
 
 
@@ -177,10 +214,11 @@
   </div>
 [/#macro]
 
-[#macro milestoneContributions element]
+[#macro milestoneContributions element tiny=false]
 [#local projectContributions = action.getContributions(element.id) ]
+[#if projectContributions?size > 0]
 <button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
-  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [@s.text name="expectedProgress.milestonesContributions" /]
+  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
 </button>
 
 <!-- Modal -->
@@ -232,4 +270,5 @@
     </div>
   </div>
 </div>
+[/#if]
 [/#macro]

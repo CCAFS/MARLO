@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -37,12 +38,16 @@ import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.powb.EvidencesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -77,13 +82,13 @@ public class EvidencesAction extends BaseAction {
   // Managers
   private GlobalUnitManager crpManager;
 
-
   private PowbSynthesisManager powbSynthesisManager;
 
 
   private AuditLogManager auditLogManager;
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
 
   private UserManager userManager;
 
@@ -101,29 +106,31 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidenceManager powbEvidenceManager;
 
+  private EvidencesValidator validator;
+
+
+  private ProjectFocusManager projectFocusManager;
+
 
   // Variables
   private String transaction;
 
+
   private PowbSynthesis powbSynthesis;
 
   private Long liaisonInstitutionID;
-
 
   private Long powbSynthesisID;
 
 
   private GlobalUnit loggedCrp;
 
-
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
   private Map<Long, String> subIdos;
 
-
   private Map<Long, String> targets;
-
 
   private Map<Integer, String> scopes;
 
@@ -131,12 +138,19 @@ public class EvidencesAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
 
 
+  private List<PowbEvidencePlannedStudy> flagshipPlannedList;
+
+
+  private List<ProjectExpectedStudy> popUpProjects;
+
+
   @Inject
   public EvidencesAction(APConfig config, GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager,
+    EvidencesValidator validator, ProjectFocusManager projectFocusManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -148,7 +162,10 @@ public class EvidencesAction extends BaseAction {
     this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.powbEvidenceManager = powbEvidenceManager;
+    this.validator = validator;
+    this.projectFocusManager = projectFocusManager;
   }
+
 
   @Override
   public String cancel() {
@@ -181,6 +198,8 @@ public class EvidencesAction extends BaseAction {
           if (evidencePlannedStudy.getSrfSloIndicator().getId() > 0) {
             evidencePlannedStudy.setSrfSloIndicator(
               srfSloIndicatorManager.getSrfSloIndicatorById(evidencePlannedStudy.getSrfSloIndicator().getId()));
+          } else {
+            evidencePlannedStudy.setSrfSloIndicator(null);
           }
         }
 
@@ -188,6 +207,8 @@ public class EvidencesAction extends BaseAction {
           if (evidencePlannedStudy.getSrfSubIdo().getId() > 0) {
             evidencePlannedStudy
               .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(evidencePlannedStudy.getSrfSubIdo().getId()));
+          } else {
+            evidencePlannedStudy.setSrfSubIdo(null);
           }
         }
 
@@ -218,7 +239,6 @@ public class EvidencesAction extends BaseAction {
 
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -229,7 +249,6 @@ public class EvidencesAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -238,9 +257,38 @@ public class EvidencesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<PowbEvidencePlannedStudy> getFlagshipPlannedList() {
+    return flagshipPlannedList;
+  }
+
+  /**
+   * 
+   */
+  public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
+    flagshipPlannedList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbEvidence() != null) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+              .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+            if (studies != null || !studies.isEmpty()) {
+              for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                flagshipPlannedList.add(powbEvidencePlannedStudy);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -254,6 +302,10 @@ public class EvidencesAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<ProjectExpectedStudy> getPopUpProjects() {
+    return popUpProjects;
+  }
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -261,6 +313,7 @@ public class EvidencesAction extends BaseAction {
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
+
 
   public Map<Integer, String> getScopes() {
     return scopes;
@@ -291,7 +344,6 @@ public class EvidencesAction extends BaseAction {
     }
     return isFP;
   }
-
 
   @Override
   public boolean isPMU() {
@@ -328,11 +380,37 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
+
+  public void popUpProject(long phaseID) {
+
+    popUpProjects = new ArrayList<>();
+
+    if (projectFocusManager.findAll() != null) {
+
+      List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
+          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
+        .collect(Collectors.toList()));
+
+      for (ProjectFocus focus : projectFocus) {
+        Project project = focus.getProject();
+        List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
+          .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
+        for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+          popUpProjects.add(projectExpectedStudy);
+        }
+      }
+    }
+
+
+  }
+
   @Override
   public void prepare() throws Exception {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -357,9 +435,28 @@ public class EvidencesAction extends BaseAction {
             .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser = liaisonUsers.get(0);
-            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+            boolean isLeader = false;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+              if (institution.isActive()) {
+                if (institution.getCrpProgram() != null) {
+                  if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                } else {
+                  if (institution.getAcronym().equals("PMU")) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!isLeader) {
+              liaisonInstitutionID = this.firstFlagship();
+            }
           } else {
             liaisonInstitutionID = this.firstFlagship();
           }
@@ -368,14 +465,13 @@ public class EvidencesAction extends BaseAction {
         }
       }
 
-      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       try {
         powbSynthesisID =
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
+
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -391,6 +487,7 @@ public class EvidencesAction extends BaseAction {
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -420,22 +517,34 @@ public class EvidencesAction extends BaseAction {
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
+
+        if (this.isFlagship()) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
+              .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+          }
+
+          this.popUpProject(phase.getId());
+        }
       }
     }
 
-    if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-      powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
-        .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
-    }
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
-    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+
+    if (this.isPMU()) {
+      this.getFpPlannedList(liaisonInstitutions, phase.getId());
+    }
+
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
+
 
     // Setup Geo Scope List
     scopes = new HashMap<>();
@@ -461,9 +570,9 @@ public class EvidencesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EVIDENCES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // if(powbSynthesis.getPowbToc() != null){
-      // powbSynthesis.setPowbToc(null);
-      // }
+      if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
+        powbSynthesis.getPowbEvidence().getPlannedStudies().clear();
+      }
     }
   }
 
@@ -472,22 +581,24 @@ public class EvidencesAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       PowbEvidence powbEvidenceDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbEvidence();
+      if (this.isFlagship()) {
+        if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
+          powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
+        }
 
-      if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
-        powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
+
+        this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
+        this.expectedStudiesNewData(powbEvidenceDB);
       }
-
-      this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
-      this.expectedStudiesNewData(powbEvidenceDB);
 
       if (this.isPMU()) {
-        powbSynthesis.getPowbEvidence().setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
+        powbEvidenceDB.setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
       }
-      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+
+      powbEvidenceDB = powbEvidenceManager.savePowbEvidence(powbEvidenceDB);
 
       List<String> relationsName = new ArrayList<>();
 
-      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setModifiedBy(this.getCurrentUser());
       powbSynthesis.setActiveSince(new Date());
@@ -499,6 +610,7 @@ public class EvidencesAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -519,9 +631,14 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
+  public void setFlagshipPlannedList(List<PowbEvidencePlannedStudy> flagshipPlannedList) {
+    this.flagshipPlannedList = flagshipPlannedList;
+  }
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -535,9 +652,14 @@ public class EvidencesAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setPopUpProjects(List<ProjectExpectedStudy> popUpProjects) {
+    this.popUpProjects = popUpProjects;
+  }
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
+
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
@@ -551,13 +673,20 @@ public class EvidencesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+
   public void setTargets(Map<Long, String> targets) {
     this.targets = targets;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, powbSynthesis, true);
+    }
   }
 
 }

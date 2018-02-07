@@ -42,12 +42,13 @@ public class ToCAdjustmentsValidator extends BaseValidator {
     this.crpManager = crpManager;
   }
 
-  private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID) {
+  private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().replace("/", "_");
     String autoSaveFile =
-      powbSynthesis.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+      powbSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
+        + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -56,12 +57,14 @@ public class ToCAdjustmentsValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
     if (powbSynthesis != null) {
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(powbSynthesis, action.getCrpID());
+        Path path = this.getAutoSaveFilePath(powbSynthesis, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");
         }
       }
+
+      this.validateToC(action, powbSynthesis);
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -79,10 +82,8 @@ public class ToCAdjustmentsValidator extends BaseValidator {
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
     if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
       && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
-      action.addMessage(action.getText("liaisonInstitution.powb.planSummary",
-        new String[] {Integer.toString(action.getCurrentCycleYear())}));
-      action.getInvalidFields().put("input-powbSynthesis.powbFlagshipPlans.planSummary",
-        InvalidFieldsMessages.EMPTYFIELD);
+      action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
+      action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
