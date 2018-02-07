@@ -175,7 +175,7 @@
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-            ${popUp.scope}
+            ${popUp.scopeName}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
@@ -224,7 +224,7 @@
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-            ${flagshipPlanned.geographicScope}
+            ${flagshipPlanned.scopeName}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
