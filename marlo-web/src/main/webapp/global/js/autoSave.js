@@ -187,7 +187,6 @@ function validateThisSection() {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
           } else {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
-
           }
         }
         $sectionMenu.removeClass('loadingSection');

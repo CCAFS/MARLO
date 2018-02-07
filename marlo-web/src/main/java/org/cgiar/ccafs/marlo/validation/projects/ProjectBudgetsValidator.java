@@ -53,12 +53,12 @@ public class ProjectBudgetsValidator extends BaseValidator {
     this.fundingSourceManager = fundingSourceManager;
   }
 
-  private Path getAutoSaveFilePath(Project project, long crpID) {
+  private Path getAutoSaveFilePath(Project project, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGET.getStatus().replace("/", "_");
     String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -86,7 +86,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
     hasErros = false;
     if (project != null) {
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(project, action.getCrpID());
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");

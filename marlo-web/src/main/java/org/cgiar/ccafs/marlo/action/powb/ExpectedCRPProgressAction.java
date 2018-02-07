@@ -611,6 +611,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
     }
     outcomes.addAll(outcomesSet);
     outcomes.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    powbSynthesis.getExpectedCrpProgresses()
+      .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
