@@ -16,8 +16,9 @@
 
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
+import org.cgiar.ccafs.marlo.data.dao.CrossCuttingDimensionsDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrossCuttingDimensionManager;
-import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionDTO;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 import javax.inject.Inject;
@@ -26,27 +27,27 @@ import javax.inject.Named;
 @Named
 public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionManager {
 
+  private CrossCuttingDimensionsDAO crossCuttingDAO;
 
   @Inject
-  public CrossCuttingDimensionManagerImpl() {
-
+  public CrossCuttingDimensionManagerImpl(CrossCuttingDimensionsDAO crossCuttingDAO) {
+    this.crossCuttingDAO = crossCuttingDAO;
   }
 
   @Override
-  public CrossCuttingDimensionDTO loadCrossCuttingDimensionByPMU(Long liaisonInstitution) {
-    // TODO Auto-generated method stub
+  public CrossCuttingDimensions loadCrossCuttingDimensionByPMU(Long liaisonInstitution) {
     return null;
   }
 
   @Override
   public CrossCuttingDimensionTableDTO loadTableByLiaisonAndPhase(Long liaisonInstitution, Long phaseId) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void saveCrossCuttingDimensions(CrossCuttingDimensionDTO crossCuttingDimensions) {
-    // TODO Auto-generated method stub
+  public CrossCuttingDimensions saveCrossCuttingDimensions(CrossCuttingDimensions crossCuttingDimensions) {
+
+    return crossCuttingDAO.save(crossCuttingDimensions);
 
   }
 
