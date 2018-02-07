@@ -55,6 +55,7 @@ public class Permission {
   public static final String POWB_SYNTHESIS_FLAGSHIPPLANS_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:flagshipPlans";
   public static final String POWB_SYNTHESIS_PERMISSION = "crp:{0}:powbSynthesis:{1}:canEdit";
   public static final String POWB_SYNTHESIS_EVIDENCES_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:evidences";
+  public static final String POWB_SYNTHESIS_EXPECTED_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:expectedProgress";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
