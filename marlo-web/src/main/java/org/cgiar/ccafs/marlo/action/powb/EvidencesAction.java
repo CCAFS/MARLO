@@ -461,9 +461,9 @@ public class EvidencesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_EVIDENCES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // if(powbSynthesis.getPowbToc() != null){
-      // powbSynthesis.setPowbToc(null);
-      // }
+      if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
+        powbSynthesis.getPowbEvidence().getPlannedStudies().clear();
+      }
     }
   }
 
@@ -472,22 +472,24 @@ public class EvidencesAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
 
       PowbEvidence powbEvidenceDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbEvidence();
+      if (this.isFlagship()) {
+        if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
+          powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
+        }
 
-      if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
-        powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
+
+        this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
+        this.expectedStudiesNewData(powbEvidenceDB);
       }
-
-      this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
-      this.expectedStudiesNewData(powbEvidenceDB);
 
       if (this.isPMU()) {
-        powbSynthesis.getPowbEvidence().setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
+        powbEvidenceDB.setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
       }
-      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+
+      powbEvidenceDB = powbEvidenceManager.savePowbEvidence(powbEvidenceDB);
 
       List<String> relationsName = new ArrayList<>();
 
-      powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setModifiedBy(this.getCurrentUser());
       powbSynthesis.setActiveSince(new Date());
