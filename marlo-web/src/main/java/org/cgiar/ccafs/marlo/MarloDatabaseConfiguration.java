@@ -15,17 +15,11 @@
 
 package org.cgiar.ccafs.marlo;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
@@ -97,41 +91,7 @@ public class MarloDatabaseConfiguration {
   @Bean(name = "flyway")
   public Flyway getFlyway(final DataSource dataSource) {
     Flyway flyway = new Flyway();
-    try {
-      Statement st = dataSource.getConnection().createStatement();
-      st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + databaseSchema + ";");
-      st.close();
-    } catch (SQLException e) {
-      log.error("Error " + e.getLocalizedMessage());
-    }
 
-    flyway.setDataSource(dataSource);
-    flyway.setLocations("database/migrations");
-
-    Map<String, String> placeHolders = new HashMap<>();
-
-    placeHolders.put("database", databaseSchema);
-    placeHolders.put("user", databaseUser);
-
-    flyway.setPlaceholders(placeHolders);
-    flyway.setPlaceholderPrefix("$[");
-    flyway.setPlaceholderSuffix("]");
-    flyway.setPlaceholderReplacement(true);
-
-    // DELETE ALL DB
-    //
-    if (flyway.info().current() == null) {
-      log.info("Setting baseline version 2.0");
-      flyway.setBaselineVersion(MigrationVersion.fromVersion("2.0"));
-      flyway.baseline();
-      flyway.migrate();
-    } else {
-      // Show the changes to be applied
-      flyway.repair();
-      flyway.setOutOfOrder(true);
-      flyway.migrate();
-
-    }
     return flyway;
   }
 
