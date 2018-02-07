@@ -14,6 +14,7 @@
 
 [#assign toolItems= [
   { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
+  { 'slug': 'emails',    'name': 'menu.superadmin.emails', 'action': 'emails',   'active': true },
   { 'slug': 'users',            'name': 'menu.superadmin.users', 'action': 'guestUser',   'active': false },
   { 'slug': 'permissions',    'name': 'menu.superadmin.permissions', 'action': 'marloPermissions',   'active': false }
   { 'slug': 'parameters',    'name': 'menu.superadmin.parameters', 'action': 'marloParameters',   'active': true },

@@ -25,8 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
@@ -52,6 +53,14 @@ public class UserManagerImp implements UserManager {
   @Inject
   public UserManagerImp(UserDAO userDAO) {
     this.userDAO = userDAO;
+  }
+
+  @Override
+  public User activeUser(User user, User createdBy) {
+
+    user.setCreatedBy(createdBy);
+    return userDAO.saveUser(user);
+
   }
 
   @Override
@@ -164,7 +173,7 @@ public class UserManagerImp implements UserManager {
 
   @Override
   public User saveUser(User user, User createdBy) {
-    if (!user.isCgiarUser()) {
+    if (!user.isCgiarUser() && user.getPassword() != null) {
       user.setPassword(MD5Convert.stringToMD5(user.getPassword()));
     }
     user.setCreatedBy(createdBy);

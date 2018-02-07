@@ -97,7 +97,7 @@ import javax.inject.Inject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +154,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final GlobalUnitManager crpManager;
   private final CrpUserManager crpUserManager;
   private final GlobalUnitProjectManager globalUnitProjectManager;
+
 
   private final ProjectPartnersValidator projectPartnersValidator;
 
@@ -468,8 +469,8 @@ public class ProjectPartnerAction extends BaseAction {
         if (!user.isCgiarUser()) {
           // Generating a random password.
           password = RandomStringUtils.randomNumeric(6);
-          // Applying the password to the user.
-          user.setPassword(password);
+
+
         }
 
         // Building the Email message:
@@ -495,9 +496,12 @@ public class ProjectPartnerAction extends BaseAction {
         message.append(this.getText("email.bye"));
 
         // Saving the new user configuration.
-        user.setActive(true);
-        userManager.saveUser(user, this.getCurrentUser());
-
+        // user.setActive(true);
+        // userManager.saveUser(user, this.getCurrentUser());
+        Map<String, Object> mapUser = new HashMap<>();
+        mapUser.put("user", user);
+        mapUser.put("password", password);
+        this.getUsersToActive().add(mapUser);
         // Send UserManual.pdf
         String contentType = "application/pdf";
         String fileName = "Introduction_To_MARLO_v2.1.pdf";
@@ -680,8 +684,9 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    GlobalUnitProject globalUnitProject =
+
+      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     // Send email to the new user and the P&R notification email.
     // TO
     String toEmail = userUnassigned.getEmail();
@@ -1207,6 +1212,9 @@ public class ProjectPartnerAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      this.setUsersToActive(new ArrayList<>());
+
       Project projectDB = projectManager.getProjectById(projectID);
       List<ProjectPartnerPerson> previousCoordinators = projectDB.getCoordinatorPersonsDB(this.getActualPhase());
       ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB(this.getActualPhase());
@@ -1319,6 +1327,8 @@ public class ProjectPartnerAction extends BaseAction {
         projectInfoManager.saveProjectInfo(projectDB.getProjectInfo());
       }
       projectManager.saveProject(projectDB, this.getActionName(), relationsName, this.getActualPhase());
+
+      this.addUsers();
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -1336,6 +1346,7 @@ public class ProjectPartnerAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+
         return SUCCESS;
       } else {
         this.addActionMessage("");

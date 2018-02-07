@@ -220,10 +220,10 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year"},
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year", "phaseID"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, Long.class},
       0);
     Long id = null;
     if (caseStudyManager.findAll() != null) {
@@ -306,10 +306,11 @@ public class CaseStudySummaryAction extends BaseSummariesAction implements Summa
             anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
+          Long phaseID = this.getSelectedPhase().getId();
           if (add) {
             model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
               nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
-              anex, owner.trim(), indicators.trim(), shared.trim(), year});
+              anex, owner.trim(), indicators.trim(), shared.trim(), year, phaseID});
           }
         }
       }

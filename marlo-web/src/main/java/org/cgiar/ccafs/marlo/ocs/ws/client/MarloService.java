@@ -18,8 +18,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  */
 @WebServiceClient(name = "MarloService", targetNamespace = "http://logic.control.abw.ciat.cgiar.org/",
-  wsdlLocation = "http://beta.ciat.cgiar.org:80/abwinterface/MarloPort?WSDL")
-
+  wsdlLocation = "")
 public class MarloService extends Service {
 
   private final static URL MARLOSERVICE_WSDL_LOCATION;

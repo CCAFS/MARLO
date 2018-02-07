@@ -46,11 +46,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.apache.commons.lang3.RandomStringUtils;
+
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -210,8 +213,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
-        // Applying the password to the user.
-        user.setPassword(password);
       }
 
 
@@ -238,8 +239,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
       message.append(this.getText("email.bye"));
 
       // Saving the new user configuration.
-      user.setActive(true);
-      userManager.saveUser(user, this.getCurrentUser());
+      // user.setActive(true);
+      // userManager.saveUser(user, this.getCurrentUser());
+      Map<String, Object> mapUser = new HashMap<>();
+      mapUser.put("user", user);
+      mapUser.put("password", password);
+      this.getUsersToActive().add(mapUser);
 
 
       // Send UserManual.pdf
@@ -349,11 +354,11 @@ public class CrpSiteIntegrationAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("*")) {
-
+      this.setUsersToActive(new ArrayList<>());
       this.siteIntegrationPreviusData();
       this.siteIntegrationNewData();
       this.loadData();
-
+      this.addUsers();
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();

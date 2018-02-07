@@ -85,6 +85,9 @@ public class CrpPhasesAction extends BaseAction {
 
       this.getSession().remove(APConstants.PHASES);
       this.getSession().remove(APConstants.PHASES_IMPACT);
+      this.getSession().remove(APConstants.ALL_PHASES);
+      this.getSession().remove(APConstants.CURRENT_PHASE);
+
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
