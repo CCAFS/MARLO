@@ -169,13 +169,14 @@ public class FlagshipPlansAction extends BaseAction {
   }
 
   // Method to download link file
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
+  public String getPath(Long liaisonInstitutionID) {
+    return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitutionID).replace('\\', '/');
   }
 
 
   // Method to get the download folder
-  private String getPowbSourceFolder() {
+  private String getPowbSourceFolder(Long liaisonInstitutionID) {
+    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
     return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
       .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
       .concat(File.separator);
