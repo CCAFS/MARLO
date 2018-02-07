@@ -122,9 +122,9 @@
                 [#-- W3/Bilateral --]
                 [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w3?number?string(",##0.00")}</span> </td>[/#if]
                 [#-- Assessment --]
-                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i>[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Means Verification --]
-                <td>[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i>[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
