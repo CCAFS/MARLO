@@ -197,12 +197,12 @@
           <td class="relevantSubIDO">
             <ul>  
               <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
-              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.description)!''}" maxPos=50 /]</li>
+              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
             </ul>
           </td>
           [#-- Comments --]
           <td class="comments"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.comments)!''}" maxPos=50 /]
+            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=50 /]
           </td>
         </tr>
       [/#list]
