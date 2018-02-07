@@ -110,7 +110,7 @@
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
                 [#-- Sub-IDO --]
                 [#if isOutcomeRow]<td rowspan="${outcomesSize}"> 
-                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting Issue">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
                 </td>
                 [/#if]
                 [#-- Outcomes --]
