@@ -624,7 +624,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
     }
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_PERMISSION, params));
 
     if (this.isHttpPost()) {
       if (powbSynthesis.getExpectedCrpProgresses() != null) {
