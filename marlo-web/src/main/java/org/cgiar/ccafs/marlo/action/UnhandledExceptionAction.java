@@ -23,6 +23,7 @@ import java.io.StringWriter;
 
 import javax.inject.Inject;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +50,9 @@ public class UnhandledExceptionAction extends BaseAction {
     // Print the exception in the log
     LOG.error("There was an unexpected exception", exception);
     // Send email only if we are in production mode.
-    // if (config.isProduction() && !(exception instanceof ClientAbortException)) {
-    this.sendExceptionMessage();
-    // }
+    if (config.isProduction() && !(exception instanceof ClientAbortException)) {
+      this.sendExceptionMessage();
+    }
     return super.execute();
   }
 
