@@ -12,16 +12,16 @@ function init() {
 
 function attachEvents() {
 
-  // Add a Expected Study
+  // Add a Planned topic of study
   $('.addExpectedStudy').on('click', addExpectedStudy);
 
-  // Remove a Expected Study
+  // Remove a Planned topic of study
   $('.removeExpectedStudy').on('click', removeExpectedStudy);
 
-  // Add Expected study shared projects
-  $(".addSharedProject").on("change", addSharedProject);
+  // Add Planned topic of study shared projects
+  //$(".addSharedProject").on("change", addSharedProject);
 
-  // Remove Expected study shared projects
+  // Remove Planned topic of study shared projects
   $(".removeProject").on("click", removeProject);
 
 }
@@ -76,15 +76,15 @@ function updateIndexes() {
     $(expectedStudy).find(".index").html(i + 1);
 
     // Shared projects
-    var $sharedProjects = $(expectedStudy).find(".sharedProject");
+/*    var $sharedProjects = $(expectedStudy).find(".sharedProject");
     if($sharedProjects.length > 0) {
       $(expectedStudy).find('.emptyText').hide();
-      // Update expected study projects
+      // Update Planned topic of study projects
       $sharedProjects.each(function(j,sharedProject) {
         $(sharedProject).setNameIndexes(2, j);
       });
     } else {
       $(expectedStudy).find('.emptyText').show();
-    }
+    }*/
   });
 }

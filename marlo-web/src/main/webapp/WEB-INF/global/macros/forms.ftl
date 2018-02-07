@@ -408,6 +408,9 @@
     [#if isEditable]
       <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>
     [/#if]
+    [#if !isEditable && !hasFile]
+      <p>Prefilled if available</p>
+    [/#if]
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
       [#if path?has_content]<a href="${path}/${(fileDB.fileName)!('fileNotFound')}" target="_blank">[/#if]
