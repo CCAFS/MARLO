@@ -79,9 +79,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-
-
-  <div class="">[#-- <div class="table-responsive"> --]
+  <div class="table-responsive">[#-- <div class="table-responsive"> --]
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -101,23 +99,58 @@
       <tbody>
         [#list flagships as fp]
           [#assign milestoneSize = fp.milestones?size]
-          [#list fp.milestones as milestone]
-            <tr>
-              [#if milestone_index == 0]<th rowspan="${milestoneSize}" > ${fp.acronym}</th>[/#if]
-              <td> <i>Pre-filled</i> </td>
-              <td> <i>Pre-filled</i> </td>
-              <td> <i>${milestone.title}</i> </td>
-              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).assesmentName!} </td>
-              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).means!} </td>
-              
-                </tr>
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            [#list outcome.milestones as milestone]
+              [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
+              [#assign isOutcomeRow = (milestone_index == 0)]
+              <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
+                [#-- Flagship --]
+                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}">${fp.acronym}</th>[/#if]
+                [#-- Sub-IDO --]
+                [#if isOutcomeRow]<td rowspan="${outcomesSize}"> <ul>[#list outcome.subIdos as subIdo] <li>${subIdo.srfSubIdo.description}</li>  [/#list] </ul></td>[/#if]
+                [#-- Outcomes --]
+                [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
+                [#-- Milestone --]
+                <td> ${milestone.composedName} </td>
+                [#-- W1W2 --]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ ${fp.w1} </td>[/#if]
+                [#-- W3/Bilateral --]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ ${fp.w3} </td>[/#if]
+                [#-- Assessment --]
+                <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).assesmentName!} </td>
+                [#-- Means Verification --]
+                <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).means!} </td>
+              </tr>
+            [/#list]
           [/#list]
         [/#list]
       </tbody>
     </table>
   </div>
+  
+  [#-- 
+  <h5>TEST</h5>
+  <ul>
+    [#list flagships as fp]
+      [#assign milestoneSize = fp.milestones?size]
+      <li> ${fp.acronym} - <strong>Milestones Size: ${milestoneSize}</strong>
+        <ul>
+          [#list fp.outcomes as outcome]
+            [#assign outcomesSize = outcome.milestones?size]
+            <li> ${outcome.composedName} - <strong>Milestones Size: ${outcomesSize}</strong>
+              <ul>
+                [#list outcome.milestones as milestone]
+                  <li>${milestone.composedName}</li>
+                [/#list]
+              </ul>
+            </li>
+          [/#list]
+        </ul>
+      </li>
+    [/#list]
+  </ul>
+   --]
 [/#macro]
 
 
