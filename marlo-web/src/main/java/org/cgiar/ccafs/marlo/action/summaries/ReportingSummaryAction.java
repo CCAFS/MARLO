@@ -1870,7 +1870,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             } else {
               crossCutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
+                .filter(
+                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
                     + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
@@ -2385,7 +2387,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             } else {
               crossCutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels().stream()
-                .filter(dgl -> dgl.isActive()).collect(Collectors.toList())) {
+                .filter(
+                  dgl -> dgl.isActive() && dgl.getPhase() != null && dgl.getPhase().equals(this.getSelectedPhase()))
+                .collect(Collectors.toList())) {
                 if (dgl.getGenderLevel() != 0.0) {
                   crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
                     + genderTypeManager.getGenderTypeById(dgl.getGenderLevel()).getDescription() + "<br>";
