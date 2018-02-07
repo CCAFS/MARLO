@@ -183,10 +183,11 @@ function validateThisSection() {
         if(jQuery.isEmptyObject(data)) {
           $sectionMenu.removeClass('submitted');
         } else {
-          if(data.section.missingFields == "") {
-            $sectionMenu.addClass('submitted').removeClass('toSubmit');
-          } else {
+          var missingFields = (data.section.missingFields) || "";
+          if(!(missingFields) ){
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
+          } else {
+            $sectionMenu.addClass('submitted').removeClass('toSubmit');
           }
         }
         $sectionMenu.removeClass('loadingSection');
