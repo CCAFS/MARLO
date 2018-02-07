@@ -45,7 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
+import org.cgiar.ccafs.marlo.validation.powb.ExpectedCRPProgressValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +57,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,7 +97,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   private FileDBManager fileDBManager;
 
-  private ToCAdjustmentsValidator validator;
+  private ExpectedCRPProgressValidator validator;
 
   // Variables
   private String transaction;
@@ -130,7 +129,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
   public ExpectedCRPProgressAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator, CrpMilestoneManager crpMilestoneManager,
+    ExpectedCRPProgressValidator validator, CrpMilestoneManager crpMilestoneManager,
     PowbExpectedCrpProgressManager powbExpectedCrpProgressManager) {
     super(config);
     this.crpManager = crpManager;
@@ -243,21 +242,24 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
     for (ProjectMilestone projectMilestone : projectMilestones) {
       projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getActualPhase());
-      Project project = projectMilestone.getProjectOutcome().getProject();
-      if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
-        if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-          .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
-          || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
-            .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
-          if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
-            if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-              milestonesSet.add(projectMilestone);
+      if (projectMilestone.getProjectOutcome().isActive()) {
+        Project project = projectMilestone.getProjectOutcome().getProject();
+        if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+            .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjecInfoPhase(this.getActualPhase()).getStatus().longValue() == Long
+              .parseLong(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getEndDate() != null) {
+              Calendar cal = Calendar.getInstance();
+              cal.setTime(project.getProjecInfoPhase(this.getActualPhase()).getEndDate());
+              if (cal.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
+                milestonesSet.add(projectMilestone);
+              }
             }
           }
         }
       }
+
 
     }
     milestones.addAll(milestonesSet);
@@ -653,7 +655,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      this.setInvalidFields(new HashMap<>());
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -713,7 +715,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, powbSynthesis, true);
+      validator.validate(this, powbSynthesis, true);
     }
   }
 }
