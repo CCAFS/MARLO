@@ -163,32 +163,32 @@
       </tr>
     </thead>
     <tbody>
-    [#if flagshipPlannedList?has_content]
-      [#list flagshipPlannedList as flagshipPlanned]
+    [#if popUpProjects?has_content]
+      [#list popUpProjects as popUp]
         <tr>
           [#-- Planned topic of study --]
           <td>
-            ${(flagshipPlanned.plannedTopic)!''}
+            ${(popUp.topicStudy)!''}
           </td>
           <td class="tb-projectId text-center">
-            ${(flagshipPlanned.plannedTopic)!''}
+            P${(popUp.project.id)!''}
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-            ${flagshipPlanned.geographicScope}
+            ${popUp.scope}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
             <ul>  
-              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
-              [#if flagshipPlanned.srfSloIndicator?has_content]
-              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+              <li title="${(popUp.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(popUp.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              [#if popUp.srfSloIndicator?has_content]
+              <li title="${(popUp.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(popUp.srfSloIndicator.title)!''}" maxPos=50 /]</li>
               [/#if]
             </ul>
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(flagshipPlanned.comments)!''}"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=100 /]
+          <td class="comments" title="${(popUp.comments)!''}"> 
+            [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=100 /]
           </td>
         </tr>
       [/#list]
