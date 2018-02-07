@@ -267,7 +267,10 @@ public class ToCAdjustmentsAction extends BaseAction {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().isActive() && lu.getLiaisonInstitution().getCrpProgram() != null
+              && (lu.getLiaisonInstitution().getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE
+                .getValue() || lu.getLiaisonInstitution().getCrpProgram().getAcronym().equals("PMU")))
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             LiaisonUser liaisonUser = new LiaisonUser();
@@ -358,20 +361,7 @@ public class ToCAdjustmentsAction extends BaseAction {
 
     // Setup the PUM ToC Table
     if (this.isPMU()) {
-      tocList = new ArrayList<>();
-      Phase phase = this.getActualPhase();
-      for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
-        if (powbSynthesis != null) {
-          if (powbSynthesis.getPowbToc() != null) {
-            if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-              if (powbSynthesis.getPowbToc().getTocOverall().trim().length() > 0) {
-                tocList.add(powbSynthesis.getPowbToc());
-              }
-            }
-          }
-        }
-      }
+      this.tocList();
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
@@ -444,10 +434,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
+
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -467,6 +457,31 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  public void tocList() {
+    tocList = new ArrayList<>();
+    Phase phase = this.getActualPhase();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbToc() != null) {
+          tocList.add(powbSynthesis.getPowbToc());
+        }
+      } else {
+        PowbToc toc = new PowbToc();
+        toc.setActive(true);
+        toc.setActiveSince(new Date());
+        toc.setCreatedBy(this.getCurrentUser());
+        toc.setModifiedBy(this.getCurrentUser());
+        toc.setModificationJustification("");
+        // create one to one relation
+        powbSynthesis.setPowbToc(toc);
+        toc.setPowbSynthesis(powbSynthesis);
+        // save the changes
+        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+      }
+    }
   }
 
   @Override

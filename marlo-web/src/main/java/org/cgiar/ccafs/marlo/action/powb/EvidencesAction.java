@@ -430,7 +430,10 @@ public class EvidencesAction extends BaseAction {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
+              && lu.getLiaisonInstitution().isActive() && lu.getLiaisonInstitution().getCrpProgram() != null
+              && (lu.getLiaisonInstitution().getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE
+                .getValue() || lu.getLiaisonInstitution().getCrpProgram().getAcronym().equals("PMU")))
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
             LiaisonUser liaisonUser = new LiaisonUser();

@@ -161,7 +161,7 @@ public class EvidencesValidator extends BaseValidator {
     }
 
     if (plannedStudy.getSrfSubIdo() != null) {
-      if (plannedStudy.getSrfSloIndicator().getId() == -1) {
+      if (plannedStudy.getSrfSubIdo().getId() == -1) {
         action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.relevant", params));
         action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].srfSubIdo.id",
           InvalidFieldsMessages.EMPTYFIELD);
