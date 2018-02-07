@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
@@ -98,6 +99,8 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
+  private PowbEvidenceManager powbEvidenceManager;
+
 
   // Variables
   private String transaction;
@@ -133,7 +136,7 @@ public class EvidencesAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -144,6 +147,7 @@ public class EvidencesAction extends BaseAction {
     this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.powbEvidenceManager = powbEvidenceManager;
   }
 
   @Override
@@ -166,7 +170,7 @@ public class EvidencesAction extends BaseAction {
   }
 
 
-  public void expectedStudiesNewData() {
+  public void expectedStudiesNewData(PowbEvidence powbEvidenceDB) {
 
     for (PowbEvidencePlannedStudy evidencePlannedStudy : powbSynthesis.getPowbEvidence().getPlannedStudies()) {
       if (evidencePlannedStudy != null) {
@@ -201,6 +205,7 @@ public class EvidencesAction extends BaseAction {
           evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
 
         }
+        evidencePlannedStudyNew.setPowbEvidence(powbEvidenceDB);
         evidencePlannedStudyNew.setSrfSubIdo(evidencePlannedStudy.getSrfSubIdo());
         evidencePlannedStudyNew.setSrfSloIndicator(evidencePlannedStudy.getSrfSloIndicator());
         evidencePlannedStudyNew.setGeographicScope(evidencePlannedStudy.getGeographicScope());
@@ -466,13 +471,14 @@ public class EvidencesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
+      PowbEvidence powbEvidenceDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbEvidence();
 
       if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
         powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
       }
 
       this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
-      this.expectedStudiesNewData();
+      this.expectedStudiesNewData(powbEvidenceDB);
 
       if (this.isPMU()) {
         powbSynthesis.getPowbEvidence().setNarrative(powbSynthesis.getPowbEvidence().getNarrative());
