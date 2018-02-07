@@ -18,7 +18,7 @@
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
 
 [#-- Helptext --]
-[@utilities.helpBox name="" /]
+[@utilities.helpBox name="adjustmentsChanges.help" /]
     
 <section class="container">
   [#-- Program (Flagships and PMU) --]
