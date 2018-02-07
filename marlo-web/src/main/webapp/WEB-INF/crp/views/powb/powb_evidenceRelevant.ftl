@@ -2,7 +2,7 @@
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${powbSynthesisID}" /]
 [#assign pageLibs = [ ] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectExpectedStudies.js"] /]
+[#assign customJS = ["${baseUrlMedia}/js/powb/powb_evidenceRelevant.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/powb/powbGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "evidenceRelevant" /]
@@ -69,15 +69,22 @@
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <h3 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</h3>
                   <hr />
-                  [@tableBMacro flagshipPlannedStudies=true/]
+                  [@tableBMacro modalTableB=true/]
                 </div>
               </div>
             </div>
-            [@plannedStudiesMacro element=powbSynthesis.powbEvidence.plannedStudies /]
+            <div class="expectedStudies-list" listname="">
+            [#if powbSynthesis.powbEvidence.plannedStudies?has_content]
+              [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
+                [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbEvidence.plannedStudies"  index=plannedStudy_index isEditable=editable/]
+              [/#list]
+            [/#if]
+            </div>
+            
             [#if canEdit && editable]
-              <div class="text-right">
-                <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedTopicStudy"/]</div>
-              </div> 
+            <div class="text-right">
+              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedTopicStudy"/]</div>
+            </div> 
             [/#if]
           </div>
           [/#if]
@@ -91,17 +98,64 @@
     </div> 
   </div> 
 </section>
+
+[#-- Planned Study Template --]
+[@plannedStudyMacro element={} name=""  index=-1 template=true/]
+
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
-[#macro tableBMacro flagshipPlannedStudies=false]
+[#macro plannedStudyMacro element name index template=false isEditable=true]
+  [#local customName = "${name}[${index}]" /]
+  <div id="expectedStudy-${template?string('template', index)}" class="expectedStudy borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+    
+    [#-- Index --]
+    <div class="leftHead"><span class="index">${index+1}</span></div>
+    [#-- Remove Button --]
+    [#if isEditable]<div class="removeExpectedStudy removeElement" title="Remove Expected Study"></div>[/#if]
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    <br />
+    
+    
+    <div class="form-group row"> 
+      [#-- Planned topic of study --] 
+      <div class="col-md-7">
+        [@customForm.input name="${customName}.plannedTopic" i18nkey="evidenceRelevant.pannedStudies.plannedTopic" placeholder="" className="" required=true editable=isEditable/]
+      </div>
+      [#-- Geographic Scope --]
+      <div class="col-md-5">
+        [@customForm.select name="${customName}.geographicScope" label=""  i18nkey="evidenceRelevant.pannedStudies.geographicScope" listName="scopes"  required=true  className="" editable=isEditable/]
+      </div>
+    </div>
+    
+    [#-- Relevant to Sub-IDO --] 
+    <div class="form-group "> 
+      [@customForm.select name="${customName}.srfSubIdo.id" label=""  i18nkey="evidenceRelevant.pannedStudies.relevant" listName="subIdos"  required=true  className="" editable=isEditable/]
+    </div>
+    
+    [#-- SRF target if appropriate --] 
+    <div class="form-group "> 
+      [@customForm.select name="${customName}.srfSloIndicator.id" label=""  i18nkey="evidenceRelevant.pannedStudies.srfTarget" listName="targets"  required=false  className="" editable=isEditable/]
+    </div>
+    
+    [#-- Comments --] 
+    <div class="form-group"> 
+      [@customForm.textArea name="${customName}.comments" i18nkey="evidenceRelevant.pannedStudies.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+    </div>
+    
+    <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro tableBMacro modalTableB=false]
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
-        [#if !flagshipPlannedStudies]
+        [#if !modalTableB]
           <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
         [/#if]
         <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
-        [#if flagshipPlannedStudies]
+        [#if modalTableB]
           <th id="tb-projectId" width="11%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
         [/#if]
         <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
@@ -114,7 +168,7 @@
       [#-- list deliverables as deliverable 2--]
         <tr>
           [#-- FP --]
-          [#if !flagshipPlannedStudies]
+          [#if !modalTableB]
           <td class="tb-fp text-center">
             <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
               [#-- F${deliverable.id} --]
@@ -126,7 +180,7 @@
           <td>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </td>
-          [#if flagshipPlannedStudies]
+          [#if modalTableB]
           <td class="tb-projectId text-center">
             <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
               [#-- F${deliverable.id} --]
@@ -154,46 +208,4 @@
       [#-- [/#if] 1--]
     </tbody>
   </table>
-[/#macro]
-
-[#macro plannedStudiesMacro element isEditable=true]
-  <div id="plannedStudies" class="plannedStudies borderBox form-group" style="position:relative; display:block">
-    
-    [#-- Index --]
-    <div class="leftHead"><span class="index">1</span></div>
-    [#-- Remove Button --]
-    [#if isEditable]<div class="removePlannedStudies removeElement" title="Remove Planned Study"></div>[/#if]
-    [#-- Hidden inputs --]
-    <input type="hidden" name="" value=""/>
-    <br />
-    
-    <div class="form-group row"> 
-      [#-- Planned topic of study --] 
-      <div class="col-md-7">
-        [@customForm.input name="element.plannedTopic" i18nkey="evidenceRelevant.pannedStudies.plannedTopic" placeholder="" className="" required=true editable=isEditable/]
-      </div>
-      [#-- Geographic Scope --]
-      <div class="col-md-5">
-        [@customForm.select name="element.geographicScope" label=""  i18nkey="evidenceRelevant.pannedStudies.geographicScope" listName="scopes"  required=true  className="" editable=isEditable/]
-      </div>
-    </div>
-    
-    [#-- Relevant to Sub-IDO --] 
-    <div class="form-group "> 
-      [@customForm.select name="element.srfSubIdo.id" label=""  i18nkey="evidenceRelevant.pannedStudies.relevant" listName="subIdos"  required=true  className="" editable=isEditable/]
-    </div>
-    
-    [#-- SRF target if appropriate --] 
-    <div class="form-group "> 
-      [@customForm.select name="element.srfSloIndicator.id" label=""  i18nkey="evidenceRelevant.pannedStudies.srfTarget" listName="targets"  required=false  className="" editable=isEditable/]
-    </div>
-    
-    [#-- Comments --] 
-    <div class="form-group"> 
-      [@customForm.textArea name="element.comments" i18nkey="evidenceRelevant.pannedStudies.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
-    </div>
-    
-    <div class="clearfix"></div>
-    
-  </div>
 [/#macro]
