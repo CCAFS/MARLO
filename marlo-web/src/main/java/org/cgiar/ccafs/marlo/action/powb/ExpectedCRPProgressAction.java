@@ -525,13 +525,14 @@ public class ExpectedCRPProgressAction extends BaseAction {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
       for (CrpProgram crpProgram : flagships) {
+        crpProgram.setMilestones(new ArrayList<>());
         crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
         for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
           crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
             .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList()));
-
+          crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
         }
 
 
