@@ -37,6 +37,8 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -394,6 +396,88 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
+  public void loadTablePMU() {
+    flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
+    for (CrpProgram crpProgram : flagships) {
+      crpProgram.setMilestones(new ArrayList<>());
+      crpProgram.setW1(new Double(0));
+      crpProgram.setW3(new Double(0));
+
+      crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      List<CrpProgramOutcome> validOutcomes = new ArrayList<>();
+      for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
+
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
+          .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
+          .collect(Collectors.toList()));
+        crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
+        if (!crpProgram.getMilestones().isEmpty()) {
+          validOutcomes.add(crpProgramOutcome);
+        }
+      }
+      crpProgram.setOutcomes(validOutcomes);
+
+
+      List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+        .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+      List<Project> myProjects = new ArrayList<>();
+      for (ProjectFocus projectFocus : projects) {
+        Project project = projectFocus.getProject();
+        if (project.isActive()) {
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+
+        }
+      }
+      for (Project project : myProjects) {
+
+        Double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+        Double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+        Double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+        List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+          .collect(Collectors.toList());
+        Double percentageW1 = new Double(0.0);
+        Double percentageW3 = new Double(0.0);
+        Double percentageB = new Double(0.0);
+
+        for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+          switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+            case 1:
+              percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+              break;
+            case 2:
+              percentageW3 = percentageW1 + projectBudgetsFlagship.getAmount();
+              break;
+            case 3:
+              percentageB = percentageW1 + projectBudgetsFlagship.getAmount();
+              break;
+            default:
+              break;
+          }
+        }
+        w1 = w1 * percentageW1;
+        w3 = w3 * percentageW3;
+        bilateral = bilateral * percentageB;
+        crpProgram.setW1(crpProgram.getW1() + w1);
+        crpProgram.setW1(crpProgram.getW3() + w3 + bilateral);
+
+
+      }
+
+
+    }
+  }
+
+
   @Override
   public String next() {
     String result = this.save();
@@ -521,22 +605,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     if (this.isPMU()) {
-      flagships = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
-
-      for (CrpProgram crpProgram : flagships) {
-        crpProgram.setMilestones(new ArrayList<>());
-        crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-        for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
-          crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
-            .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
-            .collect(Collectors.toList()));
-          crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
-        }
-
-
-      }
+      this.loadTablePMU();
     }
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
@@ -548,7 +617,6 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
