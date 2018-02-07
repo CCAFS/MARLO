@@ -79,7 +79,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-  <div class="table-responsive">[#-- <div class="table-responsive"> --]
+  <div class="">[#-- <div class="table-responsive"> --]
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -108,7 +108,10 @@
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}">${fp.acronym}</th>[/#if]
                 [#-- Sub-IDO --]
-                [#if isOutcomeRow]<td rowspan="${outcomesSize}"> <ul>[#list outcome.subIdos as subIdo] <li>${subIdo.srfSubIdo.description}</li>  [/#list] </ul></td>[/#if]
+                [#if isOutcomeRow]<td rowspan="${outcomesSize}"> 
+                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong>CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                </td>
+                [/#if]
                 [#-- Outcomes --]
                 [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Milestone --]
