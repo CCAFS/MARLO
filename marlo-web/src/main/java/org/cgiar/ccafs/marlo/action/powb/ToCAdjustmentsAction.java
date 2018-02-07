@@ -268,15 +268,31 @@ public class ToCAdjustmentsAction extends BaseAction {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
-              && lu.getLiaisonInstitution().isActive() && lu.getLiaisonInstitution().getCrpProgram() != null
-              && (lu.getLiaisonInstitution().getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE
-                .getValue() || lu.getLiaisonInstitution().getCrpProgram().getAcronym().equals("PMU")))
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser = liaisonUsers.get(0);
-            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+            boolean isLeader = false;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+              if (institution.isActive()) {
+                if (institution.getCrpProgram() != null) {
+                  if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                } else {
+                  if (institution.getAcronym().equals("PMU")) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!isLeader) {
+              liaisonInstitutionID = this.firstFlagship();
+            }
           } else {
             liaisonInstitutionID = this.firstFlagship();
           }
@@ -284,7 +300,6 @@ public class ToCAdjustmentsAction extends BaseAction {
           liaisonInstitutionID = this.firstFlagship();
         }
       }
-
 
       try {
         powbSynthesisID =
@@ -468,8 +483,22 @@ public class ToCAdjustmentsAction extends BaseAction {
       if (powbSynthesis != null) {
         if (powbSynthesis.getPowbToc() != null) {
           tocList.add(powbSynthesis.getPowbToc());
+        } else {
+          PowbToc toc = new PowbToc();
+          toc.setActive(true);
+          toc.setActiveSince(new Date());
+          toc.setCreatedBy(this.getCurrentUser());
+          toc.setModifiedBy(this.getCurrentUser());
+          toc.setModificationJustification("");
+          // create one to one relation
+          powbSynthesis.setPowbToc(toc);
+          toc.setPowbSynthesis(powbSynthesis);
+          // save the changes
+          powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+          tocList.add(toc);
         }
       } else {
+        powbSynthesis = this.createPowbSynthesis(phaseID, liaisonInstitutionID);
         PowbToc toc = new PowbToc();
         toc.setActive(true);
         toc.setActiveSince(new Date());
@@ -481,6 +510,7 @@ public class ToCAdjustmentsAction extends BaseAction {
         toc.setPowbSynthesis(powbSynthesis);
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+        tocList.add(toc);
       }
     }
   }
