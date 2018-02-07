@@ -20,12 +20,10 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
-import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 import javax.inject.Named;
 
@@ -33,61 +31,26 @@ import javax.inject.Named;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
-public class ToCAdjustmentsValidator extends BaseValidator {
+public class EvidencesValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
 
-  public ToCAdjustmentsValidator(GlobalUnitManager crpManager) {
+
+  public EvidencesValidator(GlobalUnitManager crpManager) {
     super();
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
+
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
-    String actionFile = PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().replace("/", "_");
+    String actionFile = PowbSynthesisSectionStatusEnum.EVIDENCES.getStatus().replace("/", "_");
     String autoSaveFile =
       powbSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
-
-  public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
-    action.setInvalidFields(new HashMap<>());
-    if (powbSynthesis != null) {
-      if (!saving) {
-        Path path = this.getAutoSaveFilePath(powbSynthesis, action.getCrpID(), action);
-
-        if (path.toFile().exists()) {
-          action.addMissingField("draft");
-        }
-      }
-
-      this.validateToC(action, powbSynthesis);
-
-      if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
-      } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-      }
-
-      this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus(), action);
-    }
-
-  }
-
-  public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
-      && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
-      action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges",
-        new String[] {Integer.toString(action.getCurrentCycleYear())}));
-      action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
   }
 
 }
