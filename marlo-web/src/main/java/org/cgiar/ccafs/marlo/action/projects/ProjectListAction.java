@@ -96,7 +96,8 @@ public class ProjectListAction extends BaseAction {
   public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
     ProjectPhaseManager projectPhaseManager, PhaseManager phaseManager, ProjectInfoManager projectInfoManager,
-    ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager, SectionStatusManager sectionStatusManager) {
+    ProjectBudgetManager projectBudgetManager, GlobalUnitProjectManager globalUnitProjectManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -491,13 +492,19 @@ public class ProjectListAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          myProjects.add(projectPhase.getProject());
+          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+            myProjects.add(projectPhase.getProject());
+          }
+
         }
         allProjects = new ArrayList<>();
       } else {
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+            allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+          }
+
         }
         if (this.isPlanningActive()) {
           myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
@@ -512,22 +519,27 @@ public class ProjectListAction extends BaseAction {
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
           }
+          if (project.getProjecInfoPhase(this.getActualPhase()) == null) {
+            myProjects.remove(project);
+          }
         }
         allProjects.removeAll(myProjects);
       }
 
       for (Project project : allProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
       }
       for (Project project : myProjects) {
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
       }
 
 
       this.loadFlagshipgsAndRegions(myProjects);
       this.loadFlagshipgsAndRegions(allProjects);
     }
-    closedProjects = projectManager.getCompletedProjects(this.getCrpID());
+    closedProjects = projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
 
     if (closedProjects != null) {
       // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));

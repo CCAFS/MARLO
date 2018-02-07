@@ -59,8 +59,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   private User createdBy;
 
 
-
-
   @Expose
   private boolean isActive;
 
@@ -77,7 +75,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date createDate;
-  
+
   private String customID;
 
   @Expose
@@ -129,8 +127,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
-
-
 
 
   private List<Activity> closedProjectActivities;
@@ -237,7 +233,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private List<ProjectOutcomePandr> outcomesPandr;
-  
+
   private Set<ProjectExpectedStudy> projectExpectedStudies = new HashSet<ProjectExpectedStudy>(0);
 
 
@@ -277,11 +273,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
 
     Project other = (Project) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.getId())) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -299,11 +295,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return bilateralBudget;
   }
 
-  public double getBilateralBudget(int year) {
+  public double getBilateralBudget(int year, Phase phase) {
 
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getPhase() != null && c.getPhase().equals(phase) && c.getBudgetType().getId() == 3 && c.getYear() == year)
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
@@ -446,11 +442,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getCoreBudget(int year) {
+  public double getCoreBudget(int year, Phase phase) {
 
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 1 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getBudgetType().getId() == 1 && c.getYear() == year && c.getPhase() != null && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
@@ -788,8 +784,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         this.setProjectInfo(infos.get(0));
         return this.getProjectInfo();
       } else {
-        this.setProjectInfo(this.getProjectInfoLast(phase));
-        return this.getProjectInfo();
+        return null;
       }
     }
 
@@ -1021,10 +1016,10 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getW3Budget(int year) {
+  public double getW3Budget(int year, Phase phase) {
     double total = 0;
-    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 2 && c.getYear() == year)
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream().filter(c -> c.isActive()
+      && c.getBudgetType().getId() == 2 && c.getYear() == year && c.getPhase() != null && c.getPhase().equals(phase))
       .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
@@ -1144,7 +1139,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
+  public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
     this.expectedStudies = expectedStudies;
   }
 

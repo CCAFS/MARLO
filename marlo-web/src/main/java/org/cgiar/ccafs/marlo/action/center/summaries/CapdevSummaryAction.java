@@ -105,7 +105,7 @@ public class CapdevSummaryAction extends BaseAction implements Summary {
     manager.registerDefaults();
 
     final Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/reportCapdev.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/center/Capdev.prpt"), MasterReport.class);
 
     final MasterReport masterReport = (MasterReport) reportResource.getResource();
 

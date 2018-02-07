@@ -471,6 +471,7 @@ textarea#justification {
 .fileUploaded {
   border: 1px dashed #ccc;
   position: relative;
+  padding-left: 6px;
 }
 
 input[type="radio"] {
@@ -783,6 +784,7 @@ img.icon {
 
 .removeElement.disable {
   opacity:0.4;
+  cursor: not-allowed;
 }
 
 .removeElement.sm {
@@ -2601,7 +2603,7 @@ input.userName {
 }
 
 #newProject{
-  cursor: pointer;
+  /* cursor: pointer; */
   background-image: url(../../global/images/decision-tree-1.png);
 }
 #updatePlanning{
@@ -6456,6 +6458,7 @@ p.dateLabel.fieldError {
   height: 1.2em;
   position: relative;
   /* top: -0.2em; */
+  left: 0.1em;
   margin-right: 0.3em;
   vertical-align: top;
   cursor: pointer;

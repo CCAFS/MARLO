@@ -75,7 +75,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     if (deliverable.getDeliverableInfo(phase).getStatus() != null) {
       if (deliverable.getDeliverableInfo(phase).getStatus().intValue() == Integer
         .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        return true;
+        if (deliverable.getDeliverableInfo(phase).getNewExpectedYear() != null
+          && deliverable.getDeliverableInfo(phase).getNewExpectedYear() >= phase.getYear()) {
+          return true;
+        }
+
       }
       if (deliverable.getDeliverableInfo(phase).getStatus().intValue() == Integer
         .parseInt(ProjectStatusEnum.Complete.getStatusId())) {
@@ -268,6 +272,9 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         baseAction.setEditStatus(false);
       }
       // Set the variable that indicates if the user can edit the section
+      if (!editParameter) {
+        baseAction.setEditStatus(false);
+      }
       baseAction.setEditableParameter(editParameter && canEdit);
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
