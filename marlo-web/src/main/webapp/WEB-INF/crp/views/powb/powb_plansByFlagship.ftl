@@ -83,21 +83,6 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableOverallMacro ]
-  [#assign flagships = [ 
-    { "acronym": "FP1"
-    },
-    { "acronym": "FP2"
-    
-    },
-    { "acronym": "FP3"
-    
-    },
-    { "acronym": "FP4"
-    
-    }
-    ]
-  /]
-
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -108,12 +93,20 @@
         </tr>
       </thead>
       <tbody>
-        [#if powbFlagshipPlans??]
-          [#list powbFlagshipPlans as fp]
+        [#if flagships??]
+          [#list flagships as liaisonInstitution]
+            [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id))!{}]
             <tr>
-              <td>${fp.liaisonInstitution.acronym}</td>
-              <td>${fp.liaisonInstitution.acronym}</td>
-              <td></td>
+              <td><span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${liaisonInstitution.crpProgram.acronym}</span></td>              
+              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>
+                [#if (flagshipPlan.flagshipProgramFile.fileName?has_content)!false]
+                  <a href="">${flagshipPlan.flagshipProgramFile.fileName}</a>
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
+              
             </tr>
           [/#list]
         [/#if]
