@@ -430,12 +430,15 @@ public class ExpectedCRPProgressAction extends BaseAction {
         Project project = projectFocus.getProject();
         if (project.isActive()) {
           project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-          if (project.getProjectInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || project.getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            myProjects.add(project);
+          if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+            if (project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || project.getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              myProjects.add(project);
+            }
           }
+
 
         }
       }
