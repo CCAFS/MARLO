@@ -271,7 +271,7 @@
           [/#if]
           
           [#-- Lessons and progress --]
-          [#if !action.isProjectNew(project.id)]
+          [#if !action.isProjectNew(project.id) && action.isReportingActive()]
           <div id="lessons" class="borderBox">
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
