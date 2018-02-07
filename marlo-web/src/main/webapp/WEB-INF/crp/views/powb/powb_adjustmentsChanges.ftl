@@ -86,7 +86,7 @@
   <table class="table-flagshipsAdjustments table-border-powb" id="table-flagshipsAdjustments">
     <thead>
       <tr class="subHeader">
-        <th id="tb-name" width="40%">[@s.text name="adjustmentsChanges.flagshipsTable.flagshipName" /]</th>
+        <th id="tb-name" class="col-md-1">[@s.text name="adjustmentsChanges.flagshipsTable.flagshipName" /]</th>
         <th id="tb-narrative" class="text-center" width="60%">[@s.text name="adjustmentsChanges.flagshipsTable.narrative" /]</th>
       </tr>
     </thead>
@@ -96,7 +96,9 @@
         <tr>
           [#-- Flagship Name --]
           <td class="left flagship-name">
-            ${element.powbSynthesis.liaisonInstitution.acronym!'None'}: ${element.powbSynthesis.liaisonInstitution.name!'None'}
+            <span class="programTag" style="border-color:${(element.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
+              ${element.powbSynthesis.liaisonInstitution.crpProgram.acronym}
+            </span>
           </td>
           
           [#-- Narrative--]
