@@ -81,31 +81,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableAMacro ]
-  [#assign flagships = [ 
-    { "acronym": "FP1", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"},
-        { "title": "Milestone #4"}
-      ] 
-    },
-    { "acronym": "FP2", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    },
-    { "acronym": "FP3", 
-      "milestones": [
-        { "title": "Milestone #1"},
-        { "title": "Milestone #2"},
-        { "title": "Milestone #3"}
-      ] 
-    }
-    ]
-  /]
+
 
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -135,9 +111,10 @@
               <td> <i>${milestone.title}</i> </td>
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
               [#if milestone_index == 0]<td rowspan="${milestoneSize}"> <i>Pre-filled</i> </td>[/#if]
-              <td> </td>
-              <td> </td>
-            </tr>
+              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).assesmentName!} </td>
+              <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).means!} </td>
+              
+                </tr>
           [/#list]
         [/#list]
       </tbody>
