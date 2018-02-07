@@ -350,8 +350,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
   // Method to get the download folder
   private String getPowbSourceFolder() {
     return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(powbSynthesis.getLiaisonInstitution().getAcronym()).concat(File.separator)
-      .concat(this.getActionName().replace("/", "_")).concat(File.separator);
+      .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
+      .concat(File.separator);
   }
 
   public PowbSynthesis getPowbSynthesis() {
