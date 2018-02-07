@@ -19,8 +19,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbFlagshipPlansManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -70,6 +72,8 @@ public class FlagshipPlansAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private AuditLogManager auditLogManager;
   private UserManager userManager;
+  private PowbFlagshipPlansManager powbFlagshipPlansManager;
+  private FileDBManager fileDBManager;
   // Model for the front-end
   private PowbSynthesis powbSynthesis;
   private Long powbSynthesisID;
@@ -84,7 +88,7 @@ public class FlagshipPlansAction extends BaseAction {
   public FlagshipPlansAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    FlagshipPlansValidator validator) {
+    FlagshipPlansValidator validator, PowbFlagshipPlansManager powbFlagshipPlansManager, FileDBManager fileDBManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -93,6 +97,8 @@ public class FlagshipPlansAction extends BaseAction {
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
+    this.powbFlagshipPlansManager = powbFlagshipPlansManager;
+    this.fileDBManager = fileDBManager;
   }
 
   @Override
@@ -118,10 +124,37 @@ public class FlagshipPlansAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public PowbFlagshipPlans getFlagshipPlansByliaisonInstitutionID(Long liaisonInstitutionID) {
+    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+    if (liaisonInstitution != null) {
+      List<PowbSynthesis> powbSynthesisList = liaisonInstitution.getPowbSynthesis().stream()
+        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase().equals(this.getActualPhase()))
+        .collect(Collectors.toList());
+      if (powbSynthesisList != null && !powbSynthesisList.isEmpty()
+        && powbSynthesisList.get(0).getPowbFlagshipPlans() != null) {
+        return powbSynthesisList.get(0).getPowbFlagshipPlans();
+      }
+    }
+    return null;
+  }
+
+  public List<LiaisonInstitution> getFlagships() {
+    List<LiaisonInstitution> flagshipsList = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
+    if (flagshipsList != null) {
+      flagshipsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+      return flagshipsList;
+    } else {
+      return new ArrayList<>();
+    }
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -138,16 +171,6 @@ public class FlagshipPlansAction extends BaseAction {
   // Method to download link file
   public String getPath() {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
-  }
-
-  public List<PowbSynthesis> getPowbFlagshipPlans() {
-    List<PowbSynthesis> powbFlagshipPlans = this.getActualPhase().getPowbSynthesis().stream()
-      .filter(fp -> fp.isActive() && fp.getPowbFlagshipPlans() != null).collect(Collectors.toList());
-    if (powbFlagshipPlans != null) {
-      return powbFlagshipPlans;
-    } else {
-      return new ArrayList<>();
-    }
   }
 
 
@@ -224,10 +247,11 @@ public class FlagshipPlansAction extends BaseAction {
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
@@ -245,17 +269,23 @@ public class FlagshipPlansAction extends BaseAction {
     reader = new BufferedReader(new FileReader(path.toFile()));
     Gson gson = new GsonBuilder().create();
     JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-    reader.close();
     AutoSaveReader autoSaveReader = new AutoSaveReader();
     // We read the JSON serialized by the front-end and cast it to the object
     powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
+    if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
+      && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
+      powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(
+        fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
+    }
     powbSynthesisID = powbSynthesis.getId();
+    this.setDraft(true);
+    reader.close();
   }
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      if (powbSynthesis.getPowbFlagshipPlans().getId() == null) {
+      if (powbSynthesis.getPowbFlagshipPlans() == null || powbSynthesis.getPowbFlagshipPlans().getId() == null) {
         this.saveNewPowbSynthesis();
       } else {
         this.saveUpdatePowbSynthesis();
@@ -264,6 +294,16 @@ public class FlagshipPlansAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -271,39 +311,48 @@ public class FlagshipPlansAction extends BaseAction {
   }
 
   private void saveNewPowbSynthesis() {
-    PowbFlagshipPlans powbFlagshipPlans = new PowbFlagshipPlans();
-    powbFlagshipPlans.setActive(true);
-    powbFlagshipPlans.setCreatedBy(this.getCurrentUser());
-    powbFlagshipPlans.setModifiedBy(this.getCurrentUser());
-    powbFlagshipPlans.setPowbSynthesis(powbSynthesis);
-    powbFlagshipPlans.setPlanSummary(powbSynthesis.getPowbFlagshipPlans().getPlanSummary());
+    PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
+    newPowbFlagshipPlans.setActive(true);
+    newPowbFlagshipPlans.setCreatedBy(this.getCurrentUser());
+    newPowbFlagshipPlans.setModifiedBy(this.getCurrentUser());
+    newPowbFlagshipPlans.setPlanSummary(powbSynthesis.getPowbFlagshipPlans().getPlanSummary());
+    newPowbFlagshipPlans.setActiveSince(new Date());
     if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
       if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() == null) {
-        powbFlagshipPlans.setFlagshipProgramFile(null);
+        newPowbFlagshipPlans.setFlagshipProgramFile(null);
       } else {
-        powbFlagshipPlans.setFlagshipProgramFile(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile());
+        newPowbFlagshipPlans.setFlagshipProgramFile(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile());
       }
     }
-    powbFlagshipPlans.setActiveSince(new Date());
-    powbSynthesis.setPowbFlagshipPlans(powbFlagshipPlans);
-    powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
+    newPowbFlagshipPlans = powbFlagshipPlansManager.savePowbFlagshipPlans(newPowbFlagshipPlans);
+
+    powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     powbSynthesis.setActiveSince(new Date());
     powbSynthesis.setModifiedBy(this.getCurrentUser());
     powbSynthesisManager.save(powbSynthesis, this.getActionName(), new ArrayList<>(), this.getActualPhase());
   }
 
   private void saveUpdatePowbSynthesis() {
-    powbSynthesis.getPowbFlagshipPlans().setActiveSince(new Date());
-    powbSynthesis.getPowbFlagshipPlans().setModifiedBy(this.getCurrentUser());
+    PowbFlagshipPlans powbFlagshipPlansDB =
+      powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbFlagshipPlans();
+    powbFlagshipPlansDB.setActiveSince(new Date());
+    powbFlagshipPlansDB.setModifiedBy(this.getCurrentUser());
     if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
       if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() == null) {
-        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(null);
+        powbFlagshipPlansDB.setFlagshipProgramFile(null);
+      } else {
+        powbFlagshipPlansDB.setFlagshipProgramFile(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile());
       }
     }
-    powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    powbFlagshipPlansDB.setPlanSummary(powbSynthesis.getPowbFlagshipPlans().getPlanSummary());
+    powbFlagshipPlansDB = powbFlagshipPlansManager.savePowbFlagshipPlans(powbFlagshipPlansDB);
+    List<String> relationsName = new ArrayList<>();
+
+    powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
     powbSynthesis.setActiveSince(new Date());
     powbSynthesis.setModifiedBy(this.getCurrentUser());
-    powbSynthesisManager.save(powbSynthesis, this.getActionName(), new ArrayList<>(), this.getActualPhase());
+    powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
@@ -363,8 +412,14 @@ public class FlagshipPlansAction extends BaseAction {
     PowbSynthesis history = (PowbSynthesis) auditLogManager.getHistory(transaction);
     if (history != null) {
       powbSynthesis = history;
+      if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
+        && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
+        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(
+          fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
+      }
       powbSynthesisID = powbSynthesis.getId();
       liaisonInstitutionID = powbSynthesis.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
     } else {
       this.transaction = null;
       this.setTransaction("-1");
