@@ -64,7 +64,6 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="plansByFlagship.tableOverall.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <hr />
             [@tableOverallMacro /]
           </div>
           [/#if]
