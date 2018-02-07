@@ -83,13 +83,13 @@ public class EvidencesAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
 
   private UserManager userManager;
 
-
   private CrpProgramManager crpProgramManager;
-
 
   private SrfSubIdoManager srfSubIdoManager;
 
@@ -99,6 +99,7 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
+
   private PowbEvidenceManager powbEvidenceManager;
 
 
@@ -107,11 +108,10 @@ public class EvidencesAction extends BaseAction {
 
   private PowbSynthesis powbSynthesis;
 
+
   private Long liaisonInstitutionID;
 
-
   private Long powbSynthesisID;
-
 
   private GlobalUnit loggedCrp;
 
@@ -129,6 +129,9 @@ public class EvidencesAction extends BaseAction {
 
 
   private LiaisonInstitution liaisonInstitution;
+
+
+  private List<PowbEvidencePlannedStudy> flagshipPlannedList;
 
 
   @Inject
@@ -181,6 +184,8 @@ public class EvidencesAction extends BaseAction {
           if (evidencePlannedStudy.getSrfSloIndicator().getId() > 0) {
             evidencePlannedStudy.setSrfSloIndicator(
               srfSloIndicatorManager.getSrfSloIndicatorById(evidencePlannedStudy.getSrfSloIndicator().getId()));
+          } else {
+            evidencePlannedStudy.setSrfSloIndicator(null);
           }
         }
 
@@ -188,6 +193,8 @@ public class EvidencesAction extends BaseAction {
           if (evidencePlannedStudy.getSrfSubIdo().getId() > 0) {
             evidencePlannedStudy
               .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(evidencePlannedStudy.getSrfSubIdo().getId()));
+          } else {
+            evidencePlannedStudy.setSrfSubIdo(null);
           }
         }
 
@@ -218,7 +225,6 @@ public class EvidencesAction extends BaseAction {
 
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -237,6 +243,12 @@ public class EvidencesAction extends BaseAction {
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
+
+  public List<PowbEvidencePlannedStudy> getFlagshipPlannedList() {
+    return flagshipPlannedList;
+  }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -292,7 +304,6 @@ public class EvidencesAction extends BaseAction {
     return isFP;
   }
 
-
   @Override
   public boolean isPMU() {
     boolean isFP = false;
@@ -304,6 +315,7 @@ public class EvidencesAction extends BaseAction {
     return isFP;
 
   }
+
 
   @Override
   public String next() {
@@ -420,13 +432,16 @@ public class EvidencesAction extends BaseAction {
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
+
+        if (this.isFlagship()) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
+              .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+          }
+        }
       }
     }
 
-    if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-      powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
-        .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
-    }
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -501,6 +516,9 @@ public class EvidencesAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+      // TODO
+      this.setInvalidFields(new HashMap<>());
+      this.setActionMessages(new ArrayList<>());
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -520,6 +538,11 @@ public class EvidencesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
+  public void setFlagshipPlannedList(List<PowbEvidencePlannedStudy> flagshipPlannedList) {
+    this.flagshipPlannedList = flagshipPlannedList;
+  }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
