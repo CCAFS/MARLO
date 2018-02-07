@@ -268,13 +268,15 @@ public class EvidencesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
     for (LiaisonInstitution liaisonInstitution : lInstitutions) {
       PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis.getPowbEvidence() != null) {
-        if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-          List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
-            .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-          if (studies != null || !studies.isEmpty()) {
-            for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
-              flagshipPlannedList.add(powbEvidencePlannedStudy);
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbEvidence() != null) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+              .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+            if (studies != null || !studies.isEmpty()) {
+              for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                flagshipPlannedList.add(powbEvidencePlannedStudy);
+              }
             }
           }
         }
@@ -430,15 +432,31 @@ public class EvidencesAction extends BaseAction {
         User user = userManager.getUser(this.getCurrentUser().getId());
         if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
           List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId()
-              && lu.getLiaisonInstitution().isActive() && lu.getLiaisonInstitution().getCrpProgram() != null
-              && (lu.getLiaisonInstitution().getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE
-                .getValue() || lu.getLiaisonInstitution().getCrpProgram().getAcronym().equals("PMU")))
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
             .collect(Collectors.toList()));
           if (!liaisonUsers.isEmpty()) {
-            LiaisonUser liaisonUser = new LiaisonUser();
-            liaisonUser = liaisonUsers.get(0);
-            liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+            boolean isLeader = false;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+              if (institution.isActive()) {
+                if (institution.getCrpProgram() != null) {
+                  if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                } else {
+                  if (institution.getAcronym().equals("PMU")) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!isLeader) {
+              liaisonInstitutionID = this.firstFlagship();
+            }
           } else {
             liaisonInstitutionID = this.firstFlagship();
           }

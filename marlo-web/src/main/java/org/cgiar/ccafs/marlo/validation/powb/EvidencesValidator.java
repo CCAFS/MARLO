@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.validation.powb;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -43,15 +42,12 @@ public class EvidencesValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final PowbSynthesisManager powbSynthesisManager;
-  private final LiaisonInstitutionManager liaisonInstitutionManager;
 
 
-  public EvidencesValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+  public EvidencesValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager) {
     super();
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
