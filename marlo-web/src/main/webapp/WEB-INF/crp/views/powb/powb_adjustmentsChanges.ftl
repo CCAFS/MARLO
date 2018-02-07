@@ -95,12 +95,12 @@
       [#list elements as element ]
         <tr>
           [#-- Flagship Name --]
-          <td class="left">
+          <td class="left flagship-name">
             ${element.powbSynthesis.liaisonInstitution.acronym!'None'}: ${element.powbSynthesis.liaisonInstitution.name!'None'}
           </td>
           
           [#-- Narrative--]
-          <td class="left">
+          <td class="left narrative">
             ${element.tocOverall!'None'}
           </td>
           

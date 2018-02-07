@@ -66,10 +66,15 @@ form .form-group.margin-panel {
   border: 1px solid rgb(224, 224, 224);
 }
 .table-border-powb tr:nth-child(even) {
-  background-color: #f7f7f7;
+  background-color: #fcfcfc;
 }
 
 /************* 1.1 ToC Adjustments/Changes ***************/
+
+.table-flagshipsAdjustments .flagship-name, .table-flagshipsAdjustments .narrative{
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
 
 /************* 1.2 Expected CRP Progress ***************/
 
