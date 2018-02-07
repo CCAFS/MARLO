@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.inject.Named;
@@ -61,6 +62,31 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public int getIndex(Long crpMilestoneID, PowbSynthesis powbSynthesis) {
+    if (powbSynthesis.getExpectedCrpProgresses() != null) {
+      int i = 0;
+      for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
+        if (powbExpectedCrpProgress != null) {
+          if (powbExpectedCrpProgress.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()) {
+            return i;
+          }
+
+        }
+        i++;
+      }
+
+
+    } else
+
+    {
+      powbSynthesis.setExpectedCrpProgresses(new ArrayList<>());
+    }
+
+
+    return -1;
+
+  }
+
   public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (powbSynthesis != null) {
@@ -73,25 +99,26 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
       }
 
       LiaisonInstitution liaisonInstitution =
-        liaisonInstitutionManager.getLiaisonInstitutionById(powbSynthesis.getId());
+        liaisonInstitutionManager.getLiaisonInstitutionById(powbSynthesis.getLiaisonInstitution().getId());
       if (liaisonInstitution.getCrpProgram() != null) {
         CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           if (powbSynthesis.getExpectedCrpProgresses() != null) {
-            int i = 0;
+
             for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
+              int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
               if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
                 && this.wordCount(powbExpectedCrpProgress.getMeans()) <= 100)) {
-                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.means"));
-                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "]+means",
+                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
+                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
               if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
-                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.assessment"));
-                action.getInvalidFields().put("list-powbSynthesis.expectedCrpProgresses[" + i + "]+assessment",
+                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
+                action.getInvalidFields().put("list-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
                   InvalidFieldsMessages.EMPTYLIST);
               }
-              i++;
+
             }
 
           }
@@ -100,9 +127,9 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
         int i = 0;
         for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
           if (!(this.isValidString(powbExpectedCrpProgress.getExpectedHighlights())
-            && this.wordCount(powbExpectedCrpProgress.getMeans()) <= 100)) {
+            && this.wordCount(powbExpectedCrpProgress.getExpectedHighlights()) <= 100)) {
             action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.expectedHighlights"));
-            action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "]+expectedHighlights",
+            action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].expectedHighlights",
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
