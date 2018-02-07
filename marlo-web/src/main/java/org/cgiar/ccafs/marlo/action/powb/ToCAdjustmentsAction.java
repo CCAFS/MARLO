@@ -281,7 +281,6 @@ public class ToCAdjustmentsAction extends BaseAction {
         }
       }
 
-      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       try {
         powbSynthesisID =
@@ -304,6 +303,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -351,7 +351,7 @@ public class ToCAdjustmentsAction extends BaseAction {
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
@@ -375,7 +375,8 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+      .collect(Collectors.toList()));
 
 
     // Base Permission
