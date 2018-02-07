@@ -158,11 +158,18 @@ function validateThisSection() {
     validateService = "/validateProject.do";
   }
 
-  //validate CapDev
+  // validate CapDev
   if(isCapDevSection()) {
     sectionData.capdevID = $('input[name="capdevID"]').val();
     sectionData.deliverableID = $('input[name="deliverableID"]').val();
     validateService = "/validateCenterCapdev.do";
+  }
+
+  // Validate POWB Synthesis section
+  if(isPOWBSection()) {
+    sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
+    sectionData.powbSynthesisID = $('input[name="powbSynthesisID"]').val();
+    validateService = "/validatePOWB.do";
   }
 
   $.ajax({

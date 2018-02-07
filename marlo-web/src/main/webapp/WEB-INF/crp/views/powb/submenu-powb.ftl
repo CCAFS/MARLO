@@ -5,7 +5,7 @@
     [#assign isCompleted = false /]
     [#assign hasPermission = true/]
     <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
-      <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">
+      <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
         ${(institution.crpProgram.acronym)!institution.acronym}: [@utilities.wordCutter string=(institution.crpProgram.name)!institution.name maxPos=25 /]</a>
       [#if isCompleted] <p class="synthesisCompleted"> <img src="${baseUrlMedia}/images/global/icon-check-tiny${isActive?string('-white','')}.png" /> </p> [/#if]
     </li>

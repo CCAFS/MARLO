@@ -41,7 +41,7 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
             [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
@@ -58,8 +58,6 @@
           
           
           [#if flagship]
-           
-            
             [#-- Flagship - Outcomes 2022 --]
             [#-- <h4 class="sectionSubTitle">[@s.text name="expectedProgress.flagshipOutcomes"][@s.param]${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym}[/@s.param][/@s.text]</h4> --]
             [#list outcomes as outcome]
@@ -83,7 +81,7 @@
 [#macro tableAMacro ]
 
 
-  <div class="table-responsive">
+  <div class="">[#-- <div class="table-responsive"> --]
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -166,6 +164,9 @@
       [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
+      
+      [#local assessmentSelected = ((powebElement.assessment == "1")!false) || ((powebElement.assessment == "2")!false) || ((powebElement.assessment == "3")!false)]
+      [#if !editable && !assessmentSelected][@s.text name="form.values.fieldEmpty"/][/#if]
     </div>
     
     [#-- Means of verification --]
@@ -177,13 +178,13 @@
 [/#macro]
 
 [#macro milestoneContributions element]
-<!-- Button trigger modal -->
-<span class="milestoneContributionButton btn btn-primary" data-toggle="modal" data-target="#myModal">
-  <small>[@s.text name="expectedProgress.milestonesContributions" /]</small>
-</span>
+[#local projectContributions = action.getContributions(element.id) ]
+<button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
+  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [@s.text name="expectedProgress.milestonesContributions" /]
+</button>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="milestone-${element.id}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -191,25 +192,35 @@
         <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
       </div>
       <div class="modal-body">
-        <h5>${(element.description!)}</h5>
+        <p> <strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
         
         <div class="">
           <table class="table table-bordered">
             <thead>
               <tr>
-                <th> Project ID </th>
-                <th> Project Title </th>
-                <th> Target Value and Unit </th>
-                <th> Narrative of the  expected target </th>
+                <th class="col-md-1"> Project ID </th>
+                <th class="col-md-4"> Project Title </th>
+                <th class="col-md-1"> Target Value and Unit </th>
+                <th class="col-md-6"> Narrative of the  expected target </th>
+                <th> </th>
               </tr>
             </thead>
             <tbody>
-              [#list action.getContributions(element.id) as contribution]
+              [#list projectContributions as contribution]
+                [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${contribution.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <tr>
-                  <td> P${contribution.projectOutcome.project.id} </td>
-                  <td> <i>${contribution.projectOutcome.project.projectInfo.title} </i> </td>
-                  <td> <i>${(contribution.expectedUnit.name)!}  </i> </td>
-                  <td> <i>${contribution.narrativeTarget} </i> </td>
+                  <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
+                  <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
+                  <td>
+                    [#if (contribution.expectedUnit.name??)!false]
+                      ${(contribution.expectedValue)!} ( ${(contribution.expectedUnit.name)!})
+                    [#else]
+                      <i>N/A</i>
+                    [/#if]
+                  </td>
+                  <td> ${contribution.narrativeTarget} </td>
+                  <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                 </tr>
               [/#list]
             </tbody>

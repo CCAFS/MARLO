@@ -14,54 +14,18 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+package org.cgiar.ccafs.marlo.data.model.dto.mapper;
 
-import java.io.Serializable;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.dto.CrpProgramDTO;
 
-public class CrpProgramaDTO implements Serializable {
+import org.mapstruct.Mapper;
 
-  private static final long serialVersionUID = -4402900937493896893L;
+@Mapper
+public interface CrpProgramMapper {
 
-  private Long id;
-  private String name;
-  private String acronym;
-  private GlobalUnitDTO crp;
+  public CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgram);
 
-  public CrpProgramaDTO() {
-
-  }
-
-  public String getAcronym() {
-    return acronym;
-  }
-
-  public GlobalUnitDTO getCrp() {
-    return crp;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-  public void setCrp(GlobalUnitDTO crp) {
-    this.crp = crp;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+  public CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
 
 }
