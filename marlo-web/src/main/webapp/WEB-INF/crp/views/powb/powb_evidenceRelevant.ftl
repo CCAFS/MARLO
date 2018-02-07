@@ -42,7 +42,7 @@
           [#if PMU]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" paramText="${(actualPhase.year)!}" editable=editable /]
           </div>
           [/#if]
           
