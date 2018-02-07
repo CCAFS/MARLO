@@ -109,9 +109,9 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean baseLine;
 
-  private Double w1;
+  private double w1;
 
-  private Double w3;
+  private double w3;
 
 
   public CrpProgram() {
@@ -297,11 +297,12 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-  public Double getW1() {
+
+  public double getW1() {
     return w1;
   }
 
-  public Double getW3() {
+  public double getW3() {
     return w3;
   }
 
@@ -338,9 +339,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.color = color;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
@@ -351,11 +354,9 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivities = crpClusterOfActivities;
   }
 
-
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
   }
-
 
   public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
     this.crpProgramLeaders = crpProgramLeaders;
@@ -369,6 +370,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setLeaders(List<CrpProgramLeader> leaders) {
     this.leaders = leaders;
   }
@@ -376,7 +378,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setManagers(List<CrpProgramLeader> managers) {
     this.managers = managers;
@@ -418,21 +419,26 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
+
   public void setSelectedCountries(List<String> selectedCountries) {
     this.selectedCountries = selectedCountries;
   }
+
 
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
   }
 
-  public void setW1(Double w1) {
+
+  public void setW1(double w1) {
     this.w1 = w1;
   }
 
-  public void setW3(Double w3) {
+
+  public void setW3(double w3) {
     this.w3 = w3;
   }
+
 
   @Override
   public String toString() {
