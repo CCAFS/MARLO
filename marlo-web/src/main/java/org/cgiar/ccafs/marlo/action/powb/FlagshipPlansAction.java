@@ -111,10 +111,10 @@ public class FlagshipPlansAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = liaisonInstitution.getClass().getSimpleName();
+    String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = liaisonInstitution.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_"
-      + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 

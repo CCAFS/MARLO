@@ -278,9 +278,14 @@ function isMonitoringSection() {
   return url.includes("/monitoring/");
 }
 
-function isCapDevSection(){
+function isCapDevSection() {
   var url = window.location.href;
   return url.includes("/capdev/");
+}
+
+function isPOWBSection() {
+  var url = window.location.href;
+  return url.includes("/powb/");
 }
 
 /**

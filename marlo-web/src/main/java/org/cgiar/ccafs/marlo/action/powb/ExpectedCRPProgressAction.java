@@ -225,8 +225,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile =
-      powbSynthesis.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -369,10 +369,10 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   public boolean isFlagship() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() != null) {
-        CrpProgram crpProgram = crpProgramManager
-          .getCrpProgramById(powbSynthesis.getLiaisonInstitution().getCrpProgram().getId().longValue());
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null) {
+        CrpProgram crpProgram =
+          crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           isFP = true;
         }
@@ -385,8 +385,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
   @Override
   public boolean isPMU() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() == null) {
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
         isFP = true;
       }
     }
@@ -499,7 +499,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()

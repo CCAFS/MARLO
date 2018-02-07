@@ -93,14 +93,14 @@ public class EvidencesAction extends BaseAction {
 
   private SrfSloIndicatorManager srfSloIndicatorManager;
 
+
   private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
+
 
   // Variables
   private String transaction;
 
-
   private PowbSynthesis powbSynthesis;
-
 
   private Long liaisonInstitutionID;
 
@@ -123,6 +123,9 @@ public class EvidencesAction extends BaseAction {
   private Map<Integer, String> scopes;
 
 
+  private LiaisonInstitution liaisonInstitution;
+
+
   @Inject
   public EvidencesAction(APConfig config, GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
@@ -138,7 +141,6 @@ public class EvidencesAction extends BaseAction {
     this.srfSloIndicatorManager = srfSloIndicatorManager;
     this.powbEvidencePlannedStudyManager = powbEvidencePlannedStudyManager;
   }
-
 
   @Override
   public String cancel() {
@@ -207,6 +209,7 @@ public class EvidencesAction extends BaseAction {
 
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -217,12 +220,17 @@ public class EvidencesAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile =
-      powbSynthesis.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + this.getActualPhase().getDescription() + "_"
+      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public LiaisonInstitution getLiaisonInstitution() {
+    return liaisonInstitution;
   }
 
   public Long getLiaisonInstitutionID() {
@@ -263,10 +271,10 @@ public class EvidencesAction extends BaseAction {
 
   public boolean isFlagship() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() != null) {
-        CrpProgram crpProgram = crpProgramManager
-          .getCrpProgramById(powbSynthesis.getLiaisonInstitution().getCrpProgram().getId().longValue());
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null) {
+        CrpProgram crpProgram =
+          crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           isFP = true;
         }
@@ -275,11 +283,12 @@ public class EvidencesAction extends BaseAction {
     return isFP;
   }
 
+
   @Override
   public boolean isPMU() {
     boolean isFP = false;
-    if (powbSynthesis.getLiaisonInstitution() != null) {
-      if (powbSynthesis.getLiaisonInstitution().getCrpProgram() == null) {
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
         isFP = true;
       }
     }
@@ -496,6 +505,10 @@ public class EvidencesAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
   }
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
