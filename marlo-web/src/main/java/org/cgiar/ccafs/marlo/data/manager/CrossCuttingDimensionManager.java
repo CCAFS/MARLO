@@ -16,15 +16,15 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
-import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionDTO;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 public interface CrossCuttingDimensionManager {
 
-  public CrossCuttingDimensionDTO loadCrossCuttingDimensionByPMU(Long liaisonInstitution);
+  public CrossCuttingDimensions loadCrossCuttingDimensionByPMU(Long liaisonInstitution);
 
   public CrossCuttingDimensionTableDTO loadTableByLiaisonAndPhase(Long liaisonInstitution, Long phaseId);
 
-  public void saveCrossCuttingDimensions(CrossCuttingDimensionDTO crossCuttingDimensions);
+  public CrossCuttingDimensions saveCrossCuttingDimensions(CrossCuttingDimensions crossCuttingDimensions);
 
 }

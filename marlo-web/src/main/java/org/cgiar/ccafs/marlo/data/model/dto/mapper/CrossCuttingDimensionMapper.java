@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionDTO;
 
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "jsr330")
 public interface CrossCuttingDimensionMapper {
 
   public CrossCuttingDimensions crossCuttingDimensionDTOToCrossCuttingDimensions(CrossCuttingDimensionDTO dimension);
