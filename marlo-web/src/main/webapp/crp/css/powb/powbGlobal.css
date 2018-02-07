@@ -101,6 +101,10 @@ form .form-group.margin-panel {
   cursor: pointer;
 }
 
+.evidence-plannedStudies-header .flagship-planned-studies-button:hover{
+  background-color: #41b9dd;
+}
+
 #table-plannedStudies .subHeader th {
   text-align: center;
 }

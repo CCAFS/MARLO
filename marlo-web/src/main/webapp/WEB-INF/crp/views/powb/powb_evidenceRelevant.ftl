@@ -21,6 +21,9 @@
 [@utilities.helpBox name="evidenceRelevant.help" /]
     
 <section class="container">
+  [#-- Section Messages --]
+  [#-- include "/WEB-INF/crp/views/powb/messages-powb.ftl" /--]
+
   [#-- Program (Flagships and PMU) --]
   [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
   
