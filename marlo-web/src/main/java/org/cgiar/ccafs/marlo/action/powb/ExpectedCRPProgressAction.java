@@ -225,8 +225,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + this.getActualPhase().getDescription() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+    String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
+      + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -499,7 +499,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-          .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
@@ -526,20 +526,16 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
       for (CrpProgram crpProgram : flagships) {
         crpProgram.setMilestones(new ArrayList<>());
-        for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+        crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
+          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+        for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
           crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream()
             .filter(c -> c.isActive() && c.getYear().intValue() == this.getActualPhase().getYear())
             .collect(Collectors.toList()));
           crpProgram.getMilestones().addAll(crpProgramOutcome.getMilestones());
         }
 
-        // crpProgram.setPowbs(powbExpectedCrpProgressManager.findByProgram(crpProgram.getId()));
-        // for (PowbExpectedCrpProgress powbExpectedCrpProgress : crpProgram.getPowbs()) {
-        // powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome()
-        // .setSubIdos(powbExpectedCrpProgress.getCrpMilestone().getCrpProgramOutcome().getCrpOutcomeSubIdos().stream()
-        // .filter(c -> c.isActive()).collect(Collectors.toList()));
-        // }
+
       }
     }
     // Base Permission

@@ -153,6 +153,14 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       }
     }
 
+
+    // Check the permission if user want to edit or save the form
+    if (editParameter || parameters.get("save") != null) {
+      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
+        : baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params));
+    }
+
+
     if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
       // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
       String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
@@ -162,12 +170,19 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       }
     }
 
-    // Check the permission if user want to edit or save the form
-    if (editParameter || parameters.get("save") != null) {
-      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
-        : baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params));
+    if (parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+      // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      editParameter = false;
+    }
+    // If the user is not asking for edition privileges we don't need to validate them.
+    if (!baseAction.getActualPhase().getEditable()) {
+      canEdit = false;
+      baseAction.setCanEditPhase(false);
     }
 
+    if (!editParameter) {
+      baseAction.setEditStatus(false);
+    }
     baseAction.setEditableParameter(editParameter && canEdit);
     baseAction.setCanEdit(canEdit);
 
