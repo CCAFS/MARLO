@@ -21,9 +21,6 @@
 [@utilities.helpBox name="evidenceRelevant.help" /]
     
 <section class="container">
-  [#-- Section Messages --]
-  [#-- include "/WEB-INF/crp/views/powb/messages-powb.ftl" /--]
-
   [#-- Program (Flagships and PMU) --]
   [#include "/WEB-INF/crp/views/powb/submenu-powb.ftl" /]
   
@@ -76,11 +73,11 @@
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <h3 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</h3>
                   <hr />  
-                  [@tableBMacro modalTableB=true/]
+                  [@tablePlannedStudiesMacro/]
                 </div>
               </div>
             </div>
-            <div class="expectedStudies-list" listname="">
+            <div class="expectedStudies-list" listname="list-plannedStudies">
             [#if powbSynthesis.powbEvidence.plannedStudies?has_content]
               [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
                 [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbEvidence.plannedStudies"  index=plannedStudy_index isEditable=editable/]
@@ -154,59 +151,93 @@
   </div>
 [/#macro]
 
+[#macro tablePlannedStudiesMacro ]
+  <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
+    <thead>
+      <tr class="subHeader">
+        <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.tablePlannedStudies.plannedTopic" /]</th>
+        <th id="tb-projectId" width="11%">[@s.text name="evidenceRelevant.tablePlannedStudies.projectId" /]</th>
+        <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
+        <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
+        <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if flagshipPlannedList?has_content]
+      [#list flagshipPlannedList as flagshipPlanned]
+        <tr>
+          [#-- Planned topic of study --]
+          <td>
+            ${(flagshipPlanned.plannedTopic)!''}
+          </td>
+          <td class="tb-projectId text-center">
+            ${(flagshipPlanned.plannedTopic)!''}
+          </td>
+          [#-- Geographic scope --]
+          <td class="text-center">
+            ${flagshipPlanned.geographicScope}
+          </td>
+          [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
+          <td class="relevantSubIDO">
+            <ul>  
+              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+            </ul>
+          </td>
+          [#-- Comments --]
+          <td class="comments" title="${(flagshipPlanned.comments)!''}"> 
+            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=100 /]
+          </td>
+        </tr>
+      [/#list]
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
 [#macro tableBMacro modalTableB=false]
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
-        [#if !modalTableB]
-          <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
-        [/#if]
+        <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
         <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
-        [#if modalTableB]
-          <th id="tb-projectId" width="11%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
-        [/#if]
         <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
         <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.table.comments" /]</th>
       </tr>
     </thead>
     <tbody>
-      [#if flagshipPlannedList?has_content]
+    [#if flagshipPlannedList?has_content]
       [#list flagshipPlannedList as flagshipPlanned]
         <tr>
           [#-- FP --]
-          [#if !modalTableB]
           <td class="tb-fp text-center">
-            ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.composedName}
+            <span class="programTag" style="border-color:${(flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
+              ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.acronym}
+            </span>
           </td>
-          [/#if]
           [#-- Planned topic of study --]
           <td>
             ${(flagshipPlanned.plannedTopic)!''}
           </td>
-          [#if modalTableB]
-          <td class="tb-projectId text-center">
-            ${(flagshipPlanned.plannedTopic)!''}
-          </td>
-          [/#if]
           [#-- Geographic scope --]
-          <td >
+          <td class="text-center">
             ${flagshipPlanned.geographicScope}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
             <ul>  
-              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
-              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
             </ul>
           </td>
           [#-- Comments --]
-          <td class="comments"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=50 /]
+          <td class="comments" title="${(flagshipPlanned.comments)!''}"> 
+            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=100 /]
           </td>
         </tr>
       [/#list]
-      [/#if]
+    [/#if]
     </tbody>
   </table>
 [/#macro]
