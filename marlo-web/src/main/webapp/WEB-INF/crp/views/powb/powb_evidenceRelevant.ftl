@@ -75,7 +75,7 @@
                 <div class="modal-content">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <h3 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</h3>
-                  <hr />
+                  <hr />  
                   [@tableBMacro modalTableB=true/]
                 </div>
               </div>
@@ -171,48 +171,42 @@
       </tr>
     </thead>
     <tbody>
-    [#-- if deliverables?has_content 1--]
-      [#-- list deliverables as deliverable 2--]
+      [#if flagshipPlannedList?has_content]
+      [#list flagshipPlannedList as flagshipPlanned]
         <tr>
           [#-- FP --]
           [#if !modalTableB]
           <td class="tb-fp text-center">
-            <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
-              [#-- F${deliverable.id} --]
-              F123
-            </a>
+            ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.composedName}
           </td>
           [/#if]
           [#-- Planned topic of study --]
           <td>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            ${(flagshipPlanned.plannedTopic)!''}
           </td>
           [#if modalTableB]
           <td class="tb-projectId text-center">
-            <a href="[#-- @s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url--]">
-              [#-- F${deliverable.id} --]
-              P321
-            </a>
+            ${(flagshipPlanned.plannedTopic)!''}
           </td>
           [/#if]
           [#-- Geographic scope --]
           <td >
-            Sub-national: Single district or municipality
+            ${flagshipPlanned.geographicScope}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
-            <ul>
-              <li>[@utilities.wordCutter string="Increased capacity for innovation in partner development organizations and in poor and vulnerable communities" maxPos=50 /]</li>
-              <li>[@utilities.wordCutter string="# of more people, of which 50% are women, without deficiencies of one or more of the following essentials micronutrients: iron, zinc, iodine, vitamin A, folate and vitamin B12" maxPos=50 /]</li>
+            <ul>  
+              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              <li>[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.description)!''}" maxPos=50 /]</li>
             </ul>
           </td>
           [#-- Comments --]
           <td class="comments"> 
-            [@utilities.wordCutter string="Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit." maxPos=50 /]
+            [@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.comments)!''}" maxPos=50 /]
           </td>
         </tr>
-      [#-- [/#list] 2--]
-      [#-- [/#if] 1--]
+      [/#list]
+      [/#if]
     </tbody>
   </table>
 [/#macro]
