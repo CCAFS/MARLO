@@ -59,8 +59,12 @@
           [#if Flagship]
           <div class="form-group margin-panel">
             <div class="evidence-plannedStudies-header row">
+            [#-- if powbSynthesis.powbEvidence.plannedStudies?has_content --]
               <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
               <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
+            [#-- else ]
+              <p>Prefilled if available</p>
+            [/#if --]
             </div>
             [#-- Project planned studies (Modal) --]
             <div class="modal fade flagship-planned-studies-modal" tabindex="-1" role="dialog" aria-labelledby="flagship-planned-studies-modal" aria-hidden="true">
@@ -100,7 +104,7 @@
 </section>
 
 [#-- Planned Study Template --]
-[@plannedStudyMacro element={} name=""  index=-1 template=true/]
+[@plannedStudyMacro element={} name="powbSynthesis.powbEvidence.plannedStudies"  index=-1 template=true/]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
