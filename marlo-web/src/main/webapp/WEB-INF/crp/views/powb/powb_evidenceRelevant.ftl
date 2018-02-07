@@ -181,7 +181,9 @@
           <td class="relevantSubIDO">
             <ul>  
               <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              [#if flagshipPlanned.srfSloIndicator?has_content]
               <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+              [/#if]
             </ul>
           </td>
           [#-- Comments --]
@@ -195,7 +197,7 @@
   </table>
 [/#macro]
 
-[#macro tableBMacro modalTableB=false]
+[#macro tableBMacro]
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
@@ -226,9 +228,12 @@
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
-            <ul>  
-              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=50 /]</li>
-              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+            <ul>
+              [#if flagshipPlanned.srfSubIdo?has_content && flagshipPlanned.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
+              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=maxPosition /]</li>
+              [#if flagshipPlanned.srfSloIndicator?has_content]
+              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=maxPosition /]</li>
+              [/#if]
             </ul>
           </td>
           [#-- Comments --]
