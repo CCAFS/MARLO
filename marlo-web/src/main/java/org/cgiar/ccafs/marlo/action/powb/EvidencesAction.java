@@ -264,11 +264,10 @@ public class EvidencesAction extends BaseAction {
   /**
    * 
    */
-  public void getFpPlannedList(List<LiaisonInstitution> lInstitutions) {
+  public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
     flagshipPlannedList = new ArrayList<>();
-    Phase phase = this.getActualPhase();
     for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
       if (powbSynthesis.getPowbEvidence() != null) {
         if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
           List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
@@ -380,21 +379,21 @@ public class EvidencesAction extends BaseAction {
   }
 
 
-  public void popUpProject() {
+  public void popUpProject(long phaseID) {
 
     popUpProjects = new ArrayList<>();
-    Phase phase = this.getActualPhase();
+
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
         .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase() != null && pf.getPhase().getId() == phase.getId())
+          && pf.getPhase() != null && pf.getPhase().getId() == phaseID)
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
         Project project = focus.getProject();
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           popUpProjects.add(projectExpectedStudy);
         }
@@ -409,6 +408,7 @@ public class EvidencesAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -453,7 +453,7 @@ public class EvidencesAction extends BaseAction {
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
+
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -506,7 +506,7 @@ public class EvidencesAction extends BaseAction {
               .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
           }
 
-          this.popUpProject();
+          this.popUpProject(phase.getId());
         }
       }
     }
@@ -520,7 +520,7 @@ public class EvidencesAction extends BaseAction {
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
     if (this.isPMU()) {
-      this.getFpPlannedList(liaisonInstitutions);
+      this.getFpPlannedList(liaisonInstitutions, phase.getId());
     }
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
