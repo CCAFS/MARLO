@@ -80,7 +80,7 @@
 
 [#macro tableAMacro ]
   <div class="">[#-- <div class="table-responsive"> --]
-    <table class="table table-bordered">
+    <table id="tableA" class="table table-bordered">
       <thead>
         <tr>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.fp" /]</th>
@@ -104,26 +104,27 @@
             [#list outcome.milestones as milestone]
               [#assign isFlagshipRow = (outcome_index == 0) && (milestone_index == 0)]
               [#assign isOutcomeRow = (milestone_index == 0)]
+              [#assign milestoneProgress = action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id) ]
               <tr class="fp-index-${fp_index} outcome-index-${outcome_index} milestone-index-${milestone_index}">
                 [#-- Flagship --]
-                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}">${fp.acronym}</th>[/#if]
+                [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
                 [#-- Sub-IDO --]
                 [#if isOutcomeRow]<td rowspan="${outcomesSize}"> 
-                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong>CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
+                  <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting Issue">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
                 </td>
                 [/#if]
                 [#-- Outcomes --]
                 [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Milestone --]
-                <td> ${milestone.composedName} </td>
+                <td> ${milestone.composedName} <div class="pull-right">[@milestoneContributions element=milestone tiny=true /]</div></td>
                 [#-- W1W2 --]
-                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ ${fp.w1} </td>[/#if]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w1?number?string(",##0.00")}</span> </td>[/#if]
                 [#-- W3/Bilateral --]
-                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ ${fp.w3} </td>[/#if]
+                [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w3?number?string(",##0.00")}</span> </td>[/#if]
                 [#-- Assessment --]
-                <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).assesmentName!} </td>
+                <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i>[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Means Verification --]
-                <td>${(action.getPowbExpectedCrpProgressProgram(milestone.id,fp.id)).means!} </td>
+                <td>[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i>[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
@@ -213,10 +214,11 @@
   </div>
 [/#macro]
 
-[#macro milestoneContributions element]
+[#macro milestoneContributions element tiny=false]
 [#local projectContributions = action.getContributions(element.id) ]
+[#if projectContributions?size > 0]
 <button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
-  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [@s.text name="expectedProgress.milestonesContributions" /]
+  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [#if !tiny][@s.text name="expectedProgress.milestonesContributions" /][/#if]
 </button>
 
 <!-- Modal -->
@@ -268,4 +270,5 @@
     </div>
   </div>
 </div>
+[/#if]
 [/#macro]
