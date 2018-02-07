@@ -585,7 +585,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-          .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
@@ -600,11 +600,12 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList());
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") & c.isActive())
+      .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
     if (this.isPMU()) {
       this.loadTablePMU();
