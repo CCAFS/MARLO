@@ -58,8 +58,6 @@
           
           
           [#if flagship]
-           
-            
             [#-- Flagship - Outcomes 2022 --]
             [#-- <h4 class="sectionSubTitle">[@s.text name="expectedProgress.flagshipOutcomes"][@s.param]${(liaisonInstitution.crpProgram.acronym)!liaisonInstitution.acronym}[/@s.param][/@s.text]</h4> --]
             [#list outcomes as outcome]
@@ -203,10 +201,9 @@
 [/#macro]
 
 [#macro milestoneContributions element]
-
 [#local projectContributions = action.getContributions(element.id) ]
 <button type="button" class="milestoneContributionButton btn btn-default btn-xs" data-toggle="modal" data-target="#milestone-${element.id}">
-  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [@s.text name="expectedProgress.milestonesContributions" /](s)
+  <span class="icon-20 project"></span> <strong>${projectContributions?size}</strong> [@s.text name="expectedProgress.milestonesContributions" /]
 </button>
 
 <!-- Modal -->
@@ -226,18 +223,27 @@
               <tr>
                 <th class="col-md-1"> Project ID </th>
                 <th class="col-md-4"> Project Title </th>
-                <th class="col-md-2"> Target Value and Unit </th>
-                <th class="col-md-5"> Narrative of the  expected target </th>
+                <th class="col-md-1"> Target Value and Unit </th>
+                <th class="col-md-6"> Narrative of the  expected target </th>
+                <th> </th>
               </tr>
             </thead>
             <tbody>
               [#list projectContributions as contribution]
                 [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionsCrpList"][@s.param name='projectID']${contribution.projectOutcome.project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                [#local poURL][@s.url namespace="/projects" action="${(crpSession)!}/contributionCrp"][@s.param name='projectOutcomeID']${contribution.projectOutcome.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                 <tr>
                   <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
                   <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
-                  <td> ${(contribution.expectedUnit.name)!'<i>N/A</i>'} </td>
+                  <td>
+                    [#if (contribution.expectedUnit.name??)!false]
+                      ${(contribution.expectedValue)!} ( ${(contribution.expectedUnit.name)!})
+                    [#else]
+                      <i>N/A</i>
+                    [/#if]
+                  </td>
                   <td> ${contribution.narrativeTarget} </td>
+                  <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                 </tr>
               [/#list]
             </tbody>
