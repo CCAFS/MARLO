@@ -288,10 +288,10 @@ public class EvidencesAction extends BaseAction {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -313,10 +313,10 @@ public class EvidencesAction extends BaseAction {
     return powbSynthesisID;
   }
 
+
   public Map<Integer, String> getScopes() {
     return scopes;
   }
-
 
   public Map<Long, String> getSubIdos() {
     return subIdos;
@@ -379,20 +379,22 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
+
   public void popUpProject() {
 
     popUpProjects = new ArrayList<>();
+    Phase phase = this.getActualPhase();
     if (projectFocusManager.findAll() != null) {
 
       List<ProjectFocus> projectFocus = new ArrayList<>(projectFocusManager.findAll().stream()
         .filter(pf -> pf.isActive() && pf.getCrpProgram().getId() == liaisonInstitution.getCrpProgram().getId()
-          && pf.getPhase().equals(this.getActualPhase()))
+          && pf.getPhase() != null && pf.getPhase().getId() == phase.getId())
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
         Project project = focus.getProject();
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
-          .filter(es -> es.isActive() && es.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+          .filter(es -> es.isActive() && es.getPhase().getId() == phase.getId()).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
           popUpProjects.add(projectExpectedStudy);
         }
@@ -401,7 +403,6 @@ public class EvidencesAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -617,10 +618,10 @@ public class EvidencesAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -638,10 +639,10 @@ public class EvidencesAction extends BaseAction {
     this.powbSynthesis = powbSynthesis;
   }
 
+
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
   }
-
 
   public void setScopes(Map<Integer, String> scopes) {
     this.scopes = scopes;
@@ -651,10 +652,10 @@ public class EvidencesAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+
   public void setTargets(Map<Long, String> targets) {
     this.targets = targets;
   }
-
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
