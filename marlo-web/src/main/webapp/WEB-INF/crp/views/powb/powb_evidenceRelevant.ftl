@@ -177,7 +177,9 @@
           [#-- FP --]
           [#if !modalTableB]
           <td class="tb-fp text-center">
-            ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.composedName}
+            <span class="programTag" style="border-color:${(flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
+              ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.acronym}
+            </span>
           </td>
           [/#if]
           [#-- Planned topic of study --]
