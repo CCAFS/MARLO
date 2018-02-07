@@ -246,6 +246,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -290,7 +291,7 @@ public class ToCAdjustmentsAction extends BaseAction {
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
+
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -361,7 +362,7 @@ public class ToCAdjustmentsAction extends BaseAction {
 
     // Setup the PUM ToC Table
     if (this.isPMU()) {
-      this.tocList();
+      this.tocList(phase.getId());
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
@@ -459,11 +460,11 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.transaction = transaction;
   }
 
-  public void tocList() {
+  public void tocList(long phaseID) {
     tocList = new ArrayList<>();
-    Phase phase = this.getActualPhase();
+
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitution.getId());
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
       if (powbSynthesis != null) {
         if (powbSynthesis.getPowbToc() != null) {
           tocList.add(powbSynthesis.getPowbToc());
