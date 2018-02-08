@@ -371,13 +371,12 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.addAll(fundingSources);
     }
 
-    /*
-     * closedProjects.sort(Comparator.nullsLast((p1, p2) -> p1.getFundingSourceInfo(this.getActualPhase()).getEndDate()
-     * .compareTo(p2.getFundingSourceInfo(this.getActualPhase()).getEndDate())));
-     * myProjects.sort(Comparator.nullsLast((p1, p2) -> p1.getFundingSourceInfo(this.getActualPhase()).getEndDate()
-     * .compareTo(p2.getFundingSourceInfo(this.getActualPhase())!=null
-     * p2.getFundingSourceInfo(this.getActualPhase()).getEndDate())));
-     */
+    closedProjects.sort(Comparator.comparing(o -> o.getFundingSourceInfo(this.getActualPhase()).getEndDate()));
+
+
+    myProjects
+      .sort(Comparator.comparing(FundingSource::getEndDatePhase, Comparator.nullsFirst(Comparator.naturalOrder())));
+
 
   }
 
