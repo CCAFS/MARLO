@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -370,6 +371,13 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.addAll(fundingSources);
     }
 
+    /*
+     * closedProjects.sort(Comparator.nullsLast((p1, p2) -> p1.getFundingSourceInfo(this.getActualPhase()).getEndDate()
+     * .compareTo(p2.getFundingSourceInfo(this.getActualPhase()).getEndDate())));
+     * myProjects.sort(Comparator.nullsLast((p1, p2) -> p1.getFundingSourceInfo(this.getActualPhase()).getEndDate()
+     * .compareTo(p2.getFundingSourceInfo(this.getActualPhase())!=null
+     * p2.getFundingSourceInfo(this.getActualPhase()).getEndDate())));
+     */
 
   }
 

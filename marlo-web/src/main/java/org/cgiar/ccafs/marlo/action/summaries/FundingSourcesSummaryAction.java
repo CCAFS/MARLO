@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -94,7 +93,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   // Managers
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -103,12 +101,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
-    PhaseManager phaseManager) {
+    ProjectManager projectManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectManager = projectManager;
-    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
   private void addCurrentCycleFundingSources() {
@@ -120,8 +116,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
         int endYear = this.getCalendarFromDate(endDate);
         int extentionYear = this.getCalendarFromDate(extentionDate);
-        if (endYear >= this.getSelectedYear() || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
+        if ((endYear == this.getSelectedYear() && fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear == this.getSelectedYear())) {
           currentCycleFundingSources.add((fundingSource));
         }
       }
@@ -801,11 +799,29 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       // get deliverable funding sources
       String deliverables = "";
-      for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll().stream()
-        .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue() && df.isActive()
-          && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase()) && df.getDeliverable() != null
-          && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
-          && df.getDeliverable().getProject().isActive())
+      for (DeliverableFundingSource deliverableFundingSource : fundingSource.getDeliverableFundingSources().stream()
+        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
+          && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
+          && df.getDeliverable().getProject().isActive()
+          && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+          && ((df.getDeliverable().getDeliverableInfo().getStatus() == null
+            && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
+            || (df.getDeliverable().getDeliverableInfo().getStatus() != null
+              && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
+              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+            || (df.getDeliverable().getDeliverableInfo().getStatus() != null
+              && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear()
+              && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            || (df.getDeliverable().getDeliverableInfo().getStatus() != null
+              && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && ((df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
+                && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+                || (df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == null
+                  && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())))))
         .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
         .collect(Collectors.toList())) {
         if (deliverables.length() == 0) {
@@ -892,9 +908,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail});
+      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail,
+      this.getSelectedCycle()});
     return model;
   }
 

@@ -246,7 +246,7 @@ function updateKeyOtuputsIndex(item,clustersName) {
     $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
     $(keyOutputItem).find('.id').attr('name', customName + '.id');
     $(keyOutputItem).find('.keyOutputContribution').attr('name', customName + '.contribution');
-
+    $(keyOutputItem).find('.composeId').attr('name', customName + '.composeId');
     updateOutcomesIndex(keyOutputItem, customName);
   });
 
@@ -316,7 +316,7 @@ function removeOutcome() {
     updateClustersIndex();
     checkOutcomes($list);
   });
-// Add outcome option again
+  // Add outcome option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
   verifyContributions();
@@ -330,6 +330,7 @@ function updateOutcomesIndex(item,keyOutputName) {
     $(outcomeItem).find('.outcomeContributionId').attr('name', customName + '.id');
     $(outcomeItem).find('.outcomeContribution').attr('name', customName + '.contribution');
     $(outcomeItem).find('.outcomeId').attr('name', customName + '.crpProgramOutcome.id');
+    $(outcomeItem).find('.outcomeComposeID').attr('name', customName + '.crpProgramOutcome.composeID');
   });
 
   // Update component event

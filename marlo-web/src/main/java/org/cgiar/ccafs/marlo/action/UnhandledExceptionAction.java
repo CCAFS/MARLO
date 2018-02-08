@@ -67,6 +67,9 @@ public class UnhandledExceptionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
 
     StringWriter writer = new StringWriter();
+    if (exception == null) {
+      exception = new Exception("MARLOCustomPersistFilter ERROR!");
+    }
     exception.printStackTrace(new PrintWriter(writer));
 
 
@@ -78,9 +81,10 @@ public class UnhandledExceptionAction extends BaseAction {
       + this.getCurrentUser().getEmail() + "> ");
     message.append("has experienced an exception on the platform. </br>");
     message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
+    String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
     if (crp != null) {
       message.append("In the CRP : " + crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
-        : crp.getName() + ".</br>");
+        : crpAcronymName + ".</br>");
     }
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());

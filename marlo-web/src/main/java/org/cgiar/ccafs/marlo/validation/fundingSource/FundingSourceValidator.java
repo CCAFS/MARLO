@@ -53,12 +53,12 @@ public class FundingSourceValidator extends BaseValidator {
     this.institutionManager = institutionManager;
   }
 
-  private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
+  private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = "fundingSource";
     String autoSaveFile =
-      fundingSource.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+      fundingSource.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -88,7 +88,7 @@ public class FundingSourceValidator extends BaseValidator {
     }
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(fundingSource, action.getCrpID());
+      Path path = this.getAutoSaveFilePath(fundingSource, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -228,22 +228,19 @@ public class FundingSourceValidator extends BaseValidator {
         double currentBudget = 0;
 
         for (FundingSourceBudget fundingSourceBudget : budgets) {
-          if (fundingSourceBudget.getBudget() != null) {
-            currentBudget += fundingSourceBudget.getBudget();
+          if (fundingSourceBudget != null) {
+            if (fundingSourceBudget.getBudget() != null) {
+              currentBudget += fundingSourceBudget.getBudget();
+            }
           }
-
         }
 
         if (currentBudget > grantAmount) {
-
-
           for (int i = 0; i < budgets.size(); i++) {
             action.addMessage(action.getText("fundingSource.budgetWrongValue"));
             action.getInvalidFields().put("input-fundingSource.budgets[" + i + "].budget",
               InvalidFieldsMessages.WRONGVALUE);
-
           }
-
         }
 
 
