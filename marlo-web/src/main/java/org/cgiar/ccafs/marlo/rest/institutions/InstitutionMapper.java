@@ -13,13 +13,14 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto.mapper;
+package org.cgiar.ccafs.marlo.rest.institutions;
 
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +34,10 @@ public abstract class InstitutionMapper {
 
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
 
+  // Ignore InstitutionLocations for updates
+  @Mapping(target = "institutionsLocations", ignore = true)
   public abstract Institution updateInstitutionFromInstitutionDto(InstitutionDTO institutionDTO,
     @MappingTarget Institution institution);
-
 
   @AfterMapping
   protected void updateInstitutionLocationWithInstitution(InstitutionDTO institutionDTO,

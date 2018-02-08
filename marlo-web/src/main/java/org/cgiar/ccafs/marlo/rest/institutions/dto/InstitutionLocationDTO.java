@@ -13,24 +13,30 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto;
+package org.cgiar.ccafs.marlo.rest.institutions.dto;
 
-public class LocElementTypeDTO {
+import javax.validation.constraints.NotNull;
+
+public class InstitutionLocationDTO {
 
   private Long id;
 
+  @NotNull
+  private String countryIsoAlpha2Code;
 
-  private String name;
+  private String countryName;
+
+  private boolean headquater;
+
+  private Long institutionId;
+
+  public String getCountryIsoAlpha2Code() {
+    return countryIsoAlpha2Code;
+  }
 
 
-  private boolean scope;
-
-
-  private Boolean hasCoordinates;
-
-
-  public Boolean getHasCoordinates() {
-    return hasCoordinates;
+  public String getCountryName() {
+    return countryName;
   }
 
 
@@ -39,29 +45,38 @@ public class LocElementTypeDTO {
   }
 
 
-  public String getName() {
-    return name;
+  public Long getInstitutionId() {
+    return institutionId;
   }
 
 
-  public boolean isScope() {
-    return scope;
+  public boolean isHeadquater() {
+    return headquater;
+  }
+
+  public void setCountryIsoAlpha2Code(String countryIsoAlpha2Code) {
+    this.countryIsoAlpha2Code = countryIsoAlpha2Code;
   }
 
 
-  public void setHasCoordinates(Boolean hasCoordinates) {
-    this.hasCoordinates = hasCoordinates;
+  public void setCountryName(String countryName) {
+    this.countryName = countryName;
   }
+
+
+  public void setHeadquater(boolean headquater) {
+    this.headquater = headquater;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setName(String name) {
-    this.name = name;
+
+  public void setInstitutionId(Long institutionId) {
+    this.institutionId = institutionId;
   }
 
-  public void setScope(boolean scope) {
-    this.scope = scope;
-  }
+
 }
