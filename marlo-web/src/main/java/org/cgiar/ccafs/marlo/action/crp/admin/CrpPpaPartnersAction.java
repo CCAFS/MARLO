@@ -438,15 +438,17 @@ public class CrpPpaPartnersAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
+    String ppaPartner =
+      crpPpaPartner.getInstitution().getAcronym() != null && !crpPpaPartner.getInstitution().getAcronym().isEmpty()
+        ? crpPpaPartner.getInstitution().getAcronym() : crpPpaPartner.getInstitution().getName();
 
-    String subject =
-      this.getText("email.contactpoint.assigned.subject", new String[] {crpPpaPartner.getInstitution().getName(), crp});
+    String subject = this.getText("email.contactpoint.assigned.subject", new String[] {ppaPartner, crp});
 
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRoleAssigned.getUser().getFirstName()}));
-    message.append(this.getText("email.contactpoint.assigned", new String[] {crpPpaPartner.getInstitution().getName(),
-      crp, this.getText("email.contactpoint.responsabilities")}));
+    message.append(this.getText("email.contactpoint.assigned",
+      new String[] {ppaPartner, crp, this.getText("email.contactpoint.responsabilities")}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.getStarted"));
@@ -504,13 +506,15 @@ public class CrpPpaPartnersAction extends BaseAction {
 
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
+    String ppaPartner = institution.getAcronym() != null && !institution.getAcronym().isEmpty()
+      ? institution.getAcronym() : institution.getName();
 
-    String subject = this.getText("email.contactpoint.unassigned.subject", new String[] {crp, institution.getName()});
+    String subject = this.getText("email.contactpoint.unassigned.subject", new String[] {crp, ppaPartner});
 
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userRoleUnassigned.getUser().getFirstName()}));
-    message.append(this.getText("email.contactpoint.unassigned", new String[] {crp, institution.getName()}));
+    message.append(this.getText("email.contactpoint.unassigned", new String[] {crp, ppaPartner}));
 
     message.append(this.getText("email.support", new String[] {crpAdmins}));
     message.append(this.getText("email.bye"));
