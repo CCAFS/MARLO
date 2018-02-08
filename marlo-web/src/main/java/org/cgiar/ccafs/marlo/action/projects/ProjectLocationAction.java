@@ -711,7 +711,7 @@ public class ProjectLocationAction extends BaseAction {
             this
               .getDBLocations().stream().filter(p -> p.isActive() && p.getLocElementType() != null
                 && p.getLocElement() == null && p.getPhase().equals(this.getActualPhase()))
-              .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
       }
     }
@@ -871,36 +871,39 @@ public class ProjectLocationAction extends BaseAction {
     for (FundingSource fundingSource : fundingSources) {
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSource.getId());
       fundingSource.setFundingSourceInfo(fundingSource.getFundingSourceInfo(this.getActualPhase()));
-      if (calculateYesOrNo) {
-        project.getProjecInfoPhase(this.getActualPhase())
-          .setLocationGlobal(project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal()
-            || fundingSource.getFundingSourceInfo(this.getActualPhase()).isGlobal());
+      if (fundingSource.getFundingSourceInfo() != null) {
 
-      }
-      // get the funding source info from db
-      fundingSource = fundingSourceManager.getFundingSourceById(fundingSource.getId());
-      FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getActualPhase());
-      // Filter The Fundign Source Location Acroding
-      List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(fundingSource.getFundingSourceLocations()
-        .stream().filter(fs -> fs.isActive() && fs.getPhase().equals(fundingSourceInfo.getPhase()))
-        .collect(Collectors.toList()));
+        if (calculateYesOrNo) {
+          project.getProjecInfoPhase(this.getActualPhase())
+            .setLocationGlobal(project.getProjecInfoPhase(this.getActualPhase()).getLocationGlobal()
+              || fundingSource.getFundingSourceInfo(this.getActualPhase()).isGlobal());
 
-      for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
-        if (fundingSourceLocation.getLocElementType() == null) {
-          locElements.add(fundingSourceLocation.getLocElement());
-          if (fundingSourceLocation.getLocElement().getLocElementType().getId() != 2) {
+        }
+        // get the funding source info from db
+        fundingSource = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+        FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getActualPhase());
+        // Filter The Fundign Source Location Acroding
+        List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(fundingSource.getFundingSourceLocations()
+          .stream().filter(fs -> fs.isActive() && fs.getPhase().equals(fundingSourceInfo.getPhase()))
+          .collect(Collectors.toList()));
+
+        for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
+          if (fundingSourceLocation.getLocElementType() == null) {
+            locElements.add(fundingSourceLocation.getLocElement());
+            if (fundingSourceLocation.getLocElement().getLocElementType().getId() != 2) {
+              if (calculateYesOrNo) {
+                project.getProjecInfoPhase(this.getActualPhase())
+                  .setLocationRegional(project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional() || true);
+              }
+
+            }
+
+          } else {
+            locElementTypes.add(fundingSourceLocation.getLocElementType());
             if (calculateYesOrNo) {
               project.getProjecInfoPhase(this.getActualPhase())
                 .setLocationRegional(project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional() || true);
             }
-
-          }
-
-        } else {
-          locElementTypes.add(fundingSourceLocation.getLocElementType());
-          if (calculateYesOrNo) {
-            project.getProjecInfoPhase(this.getActualPhase())
-              .setLocationRegional(project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional() || true);
           }
         }
       }
