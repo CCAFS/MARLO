@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 public interface CrossCuttingDimensionsDAO {
 
@@ -39,6 +40,16 @@ public interface CrossCuttingDimensionsDAO {
    * @return a cross cutting dimension object
    */
   public CrossCuttingDimensions findCrossCutting(Long liaisonInstitutionId, Long phaseId);
+
+
+  /**
+   * load Table C from POWB by liaison institution and phase
+   * 
+   * @param liaisonInstitution
+   * @param phaseId
+   * @return object with table c fields
+   */
+  public CrossCuttingDimensionTableDTO getTableC(Long liaisonInstitution, Long phaseId);
 
 
   /**
