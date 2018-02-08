@@ -12,6 +12,12 @@ p.permission = 'crp:{0}:powbSynthesis:{1}:flagshipPlans:canEdit';
 -- ----------------------------
 -- Procedure structure for getPermissions
 -- ----------------------------
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Procedure structure for getPermissions
+-- ----------------------------
 DROP PROCEDURE
 IF EXISTS `getPermissions`;
 DELIMITER ;;
@@ -1043,17 +1049,12 @@ UNION
                               `cp`.`id` = `crp`.`global_unit_id`
                             )
                           )
-                          JOIN `global_unit_projects` `gup` ON (
-                            (
-                              `gup`.`global_unit_id` = `cp`.`id`
-                            )
-                          )
                           JOIN phases ph ON cp.id = ph.global_unit_id
                         )
                         JOIN `funding_sources` `pro` ON (
                           (
                             (
-                              `pro`.`id` = `gup`.`project_id`
+                              `pro`.`global_unit_id` = `cp`.`id`
                             )
                             AND (`pro`.`is_active` = 1)
                           )
@@ -2284,7 +2285,8 @@ UNION
                                                             JOIN `liaison_institutions` `li` ON (
                                                               (
                                                                 `li`.`global_unit_id` = cp.id
-                                                              ) and `pro`.`id`=li.crp_program
+                                                              )
+                                                              AND `pro`.`id` = li.crp_program
                                                               AND (
                                                                 `li`.`crp_program` IS NOT NULL
                                                                 OR `li`.`acronym` = 'PMU'
@@ -2299,7 +2301,7 @@ UNION
                                                           (
                                                             (`p`.`type` = 3)
                                                             AND (
-                                                              `r`.`acronym` IN ('FPL', 'PMU','FPM')
+                                                              `r`.`acronym` IN ('FPL', 'PMU', 'FPM')
                                                             )
                                                             AND (
                                                               `cp`.`global_unit_type_id` = 1
