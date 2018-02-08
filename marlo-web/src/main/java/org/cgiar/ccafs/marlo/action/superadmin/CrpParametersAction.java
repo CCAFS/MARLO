@@ -85,12 +85,11 @@ public class CrpParametersAction extends BaseAction {
 
       crp.setParameters(crp.getCustomParameters().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      List<Parameter> parameters =
-        parameterManager.findAll().stream()
-          .filter(c -> c.getGlobalUnitType().getId() == crp.getGlobalUnitType().getId()
-            && c.getCustomParameters().stream().filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId()))
-              .collect(Collectors.toList()).isEmpty())
-          .collect(Collectors.toList());
+      List<Parameter> parameters = parameterManager.findAll().stream()
+        .filter(c -> c.getGlobalUnitType() != null && c.getGlobalUnitType().getId() != null
+          && c.getGlobalUnitType().getId() == crp.getGlobalUnitType().getId() && c.getCustomParameters().stream()
+            .filter(p -> p.isActive() && p.getCrp().getId().equals(crp.getId())).collect(Collectors.toList()).isEmpty())
+        .collect(Collectors.toList());
 
       for (Parameter parameter : parameters) {
         CustomParameter customParameter = new CustomParameter();
@@ -142,8 +141,10 @@ public class CrpParametersAction extends BaseAction {
               parameter.setActive(true);
               parameter.setCreatedBy(this.getCurrentUser());
               parameter.setCrp(crpDB);
-              parameter
-                .setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId));
+
+              Parameter parameterDB = parameterManager.getParameterById(parameter.getParameter().getId());
+
+              parameter.setParameter(parameterDB);
               parameter.setModificationJustification("");
               parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);
@@ -154,8 +155,10 @@ public class CrpParametersAction extends BaseAction {
               parameter.setActive(true);
               parameter.setCreatedBy(customParameterDB.getCreatedBy());
               parameter.setCrp(crpDB);
-              parameter
-                .setParameter(parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId));
+              Parameter parameterDB =
+                // parameterManager.getParameterByKey(parameter.getParameter().getKey(), globalUnitTypeId);
+                parameterManager.getParameterById(parameter.getParameter().getId());
+              parameter.setParameter(parameterDB);
               parameter.setModificationJustification("");
               parameter.setModifiedBy(this.getCurrentUser());
               crpParameterManager.saveCustomParameter(parameter);
