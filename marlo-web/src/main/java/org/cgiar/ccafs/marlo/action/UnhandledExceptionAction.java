@@ -67,6 +67,9 @@ public class UnhandledExceptionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
 
     StringWriter writer = new StringWriter();
+    if (exception == null) {
+      exception = new Exception("MARLOCustomPersistFilter ERROR!");
+    }
     exception.printStackTrace(new PrintWriter(writer));
 
 
