@@ -22,18 +22,16 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * A Filter that implements the 'open session in view' pattern. See link here
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author GrantL
  */
 @Named("MARLOCustomPersistFilter")
-public class MARLOCustomPersistFilter implements Filter {
+public class MARLOCustomPersistFilter extends OncePerRequestFilter {
 
   @Inject
   private SessionFactory sessionFactory;
@@ -69,9 +67,8 @@ public class MARLOCustomPersistFilter implements Filter {
   }
 
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-    throws IOException, ServletException {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
+  protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse response, FilterChain chain)
+    throws ServletException, IOException {
     String url = httpRequest.getRequestURL().toString();
     String queryString = httpRequest.getQueryString();
     StringBuilder stringBuilder = new StringBuilder();
@@ -92,7 +89,7 @@ public class MARLOCustomPersistFilter implements Filter {
       sessionFactory.getCurrentSession().beginTransaction();
 
       // Continue filter chain
-      chain.doFilter(request, response);
+      chain.doFilter(httpRequest, response);
 
       if (sessionFactory.getCurrentSession() != null && sessionFactory.getCurrentSession().getTransaction() != null) {
         sessionFactory.getCurrentSession().getTransaction().commit();
@@ -110,7 +107,6 @@ public class MARLOCustomPersistFilter implements Filter {
       throw staleEx;
     } catch (Throwable ex) {
 
-      ex.printStackTrace();
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");
       try {
@@ -136,11 +132,6 @@ public class MARLOCustomPersistFilter implements Filter {
     }
 
 
-  }
-
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
-    LOG.debug("Initializing MARLOCustomPersistFilter");
   }
 
 }
