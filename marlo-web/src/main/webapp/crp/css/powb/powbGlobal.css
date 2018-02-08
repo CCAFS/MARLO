@@ -124,3 +124,7 @@ form .form-group.margin-panel {
 .modal-content h3.subTitle.headTitle {
   display: inline;
 }
+
+.modal-dialog.modal-lg.bigger {
+  width: 95%;
+}
