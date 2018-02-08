@@ -97,7 +97,7 @@
           [#-- Flagship Name --]
           <td class="left flagship-name">
             <span class="programTag" style="border-color:${(element.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${element.liaisonInstitution.composedName}
+              ${element.liaisonInstitution.acronym}
             </span>
           </td>
           
