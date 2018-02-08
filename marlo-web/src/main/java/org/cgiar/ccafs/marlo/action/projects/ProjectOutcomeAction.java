@@ -217,7 +217,7 @@ public class ProjectOutcomeAction extends BaseAction {
     int i = 0;
     for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
 
-      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId && crpMilestone.getYear() == year) {
+      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId) {
         return i;
       }
       i++;
