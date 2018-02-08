@@ -76,7 +76,7 @@
           </td>
           
            <td class="">
-            <span class="hidden">${project?index}</span> 
+            <span class="hidden">${project?index}</span>
             ${(project.fundingSourceInfo.endDate)!'Not defined'}
           </td>
           
