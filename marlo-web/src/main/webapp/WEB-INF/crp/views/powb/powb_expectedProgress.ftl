@@ -49,8 +49,24 @@
           
           [#-- Table A: Planned Milestones 2018 --]
           [#if PMU]
-          <hr />
           <div class="form-group">
+            <hr />
+          
+            [#-- Modal Large --]
+            <button type="button" class="pull-right btn btn-default btn-xs" data-toggle="modal" data-target=".bs-example-modal-lg"> 
+              <span class="glyphicon glyphicon-fullscreen"></span>
+            </button>
+            <div class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+              <div class="modal-dialog modal-lg bigger" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  </div>
+                  [@tableAMacro /]
+                </div>
+              </div>
+            </div>
+            
             <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
             [@tableAMacro /]
           </div>

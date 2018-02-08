@@ -82,6 +82,8 @@
               [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
                 [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbEvidence.plannedStudies"  index=plannedStudy_index isEditable=editable/]
               [/#list]
+            [#else]
+              [#if !editable]<p>[@s.text name="evidenceRelevant.plannedStudies.empty" /]</p>[/#if]
             [/#if]
             </div>
             
