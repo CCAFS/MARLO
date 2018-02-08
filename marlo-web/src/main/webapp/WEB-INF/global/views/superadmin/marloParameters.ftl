@@ -100,6 +100,8 @@
     <td>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       <input type="hidden" name="${customName}.parameter.key" value="${(element.parameter.key)!}" />
+            <input type="hidden" name="${customName}.parameter.id" value="${(element.parameter.id)!}" />
+      
       [#if isTemplate]
         [@customForm.input name="${customName}.paramater.description" placeholder="Description" showTitle=false /]
         [@customForm.input name="${customName}.paramater.key" placeholder="Key" showTitle=false /]
