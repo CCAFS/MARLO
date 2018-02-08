@@ -33,21 +33,20 @@ public class CrossCuttingValidator extends BaseValidator {
     super();
   }
 
-  public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
+  public void validate(BaseAction action, PowbSynthesis powbSynthesis, String summarize, String assets,
+    boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
 
-    if (!(this.isValidString(powbSynthesis.getCrossCutting().getSummarize())
-      && this.wordCount(powbSynthesis.getCrossCutting().getSummarize()) <= 100)) {
+    if (!(this.isValidString(summarize) && this.wordCount(summarize) <= 100)) {
       action.addMessage(action.getText("liaisonInstitution.powb.summarizeCorssCutting"));
       action.getInvalidFields().put("input-powbSynthesis.crossCutting.summarize", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
-    if (!(this.isValidString(powbSynthesis.getCrossCutting().getAssets())
-      && this.wordCount(powbSynthesis.getCrossCutting().getAssets()) <= 100)) {
+    if (!(this.isValidString(assets) && this.wordCount(assets) <= 100)) {
       action.addMessage(action.getText("liaisonInstitution.powb.openDataIntellectualAssests"));
-      action.getInvalidFields().put("input-powbSynthesis.crossCutting.summarize", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-powbSynthesis.crossCutting.assets", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (!action.getFieldErrors().isEmpty()) {

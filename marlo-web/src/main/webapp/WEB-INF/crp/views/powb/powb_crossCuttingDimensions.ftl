@@ -41,7 +41,7 @@
           
           [#-- Briefly summarize the main areas of work in 2018 relevant to cross-cutting dimensions --] 
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.crossCutting.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.crossCutting.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
           </div>
         
           [#-- Open Data and Intellectual Assets --] 
