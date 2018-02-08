@@ -285,9 +285,9 @@
             [/#if]
           </div>
           [#-- Agreement status --]
-          <div class="col-md-6">
-            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=(editable || editStatus) /] 
-            [#--  --if (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if --]
+          <div class="col-md-6 metadataElement-agreementStatus">
+            [@customForm.select name="fundingSource.fundingSourceInfo.status" i18nkey="projectCofunded.agreementStatus" className="agreementStatus metadataValue"  listName="status" keyFieldName=""  displayFieldName="" disabled=isSynced header=false editable=(editable || editStatus) /] 
+            [#if isSynced && (editable || editStatus)]<input type="hidden" class="selectHiddenInput" name="fundingSource.fundingSourceInfo.status" value="${(fundingSource.fundingSourceInfo.status)!}" />[/#if]
           </div>
         </div>
       </div>

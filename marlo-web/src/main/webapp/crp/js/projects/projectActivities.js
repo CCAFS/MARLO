@@ -44,7 +44,6 @@ function init() {
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
       $(this).find(".errorTag").hide();
-      console.log($(this).find(".errorTag"));
       $(this).find(".errorTag").css("left", $(this).find(".deliverableWrapper").outerWidth());
       $(this).find(".errorTag").fadeIn(2000);
     });
@@ -65,6 +64,12 @@ function init() {
 
     $statusDescription.find('textarea').val('');
   });
+
+  //Open Current Activity from url
+  var currentActivity = window.location.hash.substring(1);
+  if (currentActivity != ''){
+    $('.activitiesOG-content #'+currentActivity+' .blockTitle').click();
+  }
 }
 
 /** FUNCTIONS * */

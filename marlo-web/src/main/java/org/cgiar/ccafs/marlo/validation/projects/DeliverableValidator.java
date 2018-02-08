@@ -66,12 +66,12 @@ public class DeliverableValidator extends BaseValidator {
     this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
-  private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
+  private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.DELIVERABLE.getStatus().replace("/", "_");
     String autoSaveFile =
-      deliverable.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+      deliverable.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -88,7 +88,12 @@ public class DeliverableValidator extends BaseValidator {
       }
       if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-        validate = true;
+        if (deliverable.getDeliverableInfo().getNewExpectedYear() != null) {
+          if (deliverable.getDeliverableInfo().getNewExpectedYear() >= action.getActualPhase().getYear()) {
+            validate = true;
+          }
+        }
+
       }
 
     } else {
@@ -99,7 +104,7 @@ public class DeliverableValidator extends BaseValidator {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
 
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
+        Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");

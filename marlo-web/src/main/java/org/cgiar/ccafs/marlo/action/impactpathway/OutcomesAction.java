@@ -193,7 +193,9 @@ public class OutcomesAction extends BaseAction {
   }
 
   public String getBaseLineFileURL(String outcomeID) {
-    return config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+    String path = config.getDownloadURL() + "/" + this.getBaseLineFileUrlPath(outcomeID).replace('\\', '/');
+    System.out.println(path);
+    return path;
   }
 
 
