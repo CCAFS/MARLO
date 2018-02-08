@@ -13,21 +13,21 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest.dto.mapper;
+package org.cgiar.ccafs.marlo.rest.institutions;
 
-import org.cgiar.ccafs.marlo.data.model.LocElementType;
-import org.cgiar.ccafs.marlo.rest.dto.LocElementTypeDTO;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionTypeDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "jsr330")
-public interface LocElementTypeMapper {
+public interface InstitutionTypeMapper {
 
-  public LocElementType locElementTypeDTOToLocElementType(LocElementTypeDTO locElementTypeDTO);
+  public InstitutionType institutionTypeDTOToInstitutionType(InstitutionTypeDTO institutionTypeDTO);
 
-  public LocElementTypeDTO locElementTypeToLocElementTypeDTO(LocElementType locElementType);
+  public InstitutionTypeDTO institutionTypeToInstitutionTypeDTO(InstitutionType institutionType);
 
-  public LocElementType updateLocElementTypeFromLocElementTypeDto(LocElementTypeDTO locElementTypeDTO,
-    @MappingTarget LocElementType locElementType);
+  public InstitutionType updateInstitutionTypeFromInstitutionTypeDto(InstitutionTypeDTO institutionTypeDTO,
+    @MappingTarget InstitutionType institutionType);
 }

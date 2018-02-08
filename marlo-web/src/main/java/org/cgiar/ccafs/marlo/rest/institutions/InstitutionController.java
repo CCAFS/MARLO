@@ -13,18 +13,19 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.rest;
+package org.cgiar.ccafs.marlo.rest.institutions;
 
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.rest.dto.InstitutionDTO;
-import org.cgiar.ccafs.marlo.rest.dto.mapper.InstitutionMapper;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
+import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -90,12 +91,23 @@ public class InstitutionController {
       HttpStatus.CREATED);
   }
 
-  // TODO check if the institutionLocation(s) are deleted.
   @RequiresPermissions(Permission.INSTITUTIONS_DELETE_REST_API_PERMISSION)
   @RequestMapping(value = "/{globalUnit}/institutions/{id}", method = RequestMethod.DELETE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteInstitution(@PathVariable String globalUnit, @PathVariable Long id) {
     LOG.debug("Delete institution with id: {}", id);
+
+    /**
+     * We need to enable cascade delete on the institution -> institutionLocations relationship
+     * if we want to avoid doing this.
+     */
+    Institution institutionToDelete = institutionManager.getInstitutionById(id);
+    Set<InstitutionLocation> institutionsLocations = institutionToDelete.getInstitutionsLocations();
+    for (InstitutionLocation institutionLocation : institutionsLocations) {
+      institutionLocationManager.deleteInstitutionLocation(institutionLocation.getId());
+    }
+
+    // Now delete the institution.
     institutionManager.deleteInstitution(id);
     return ResponseEntity.ok().build();
   }
@@ -130,10 +142,11 @@ public class InstitutionController {
 
     Institution existingInstitution = institutionManager.getInstitutionById(institutionDTO.getId());
 
+    /**
+     * Note that the institutionLocation information will be ignored as this is better done in a separate web service
+     * where each location can be updated individually rather than in bulk.
+     */
     existingInstitution = institutionMapper.updateInstitutionFromInstitutionDto(institutionDTO, existingInstitution);
-
-    // // Auditing information should be done in a hibernate post-update/insert listener.
-    // existingInstitution.setModifiedBy(this.getCurrentUser());
 
     // Now update the existingInstitution with the updated values.
     existingInstitution = institutionManager.saveInstitution(existingInstitution);
