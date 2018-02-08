@@ -34,10 +34,9 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.sythesis.CrpIndicatorsValidator;
+import org.cgiar.ccafs.marlo.validation.powb.CrossCuttingValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -71,12 +70,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private PowbSynthesisManager powbSynthesisManager;
   private CrossCuttingDimensionManager crossCuttingManager;
+  private CrossCuttingValidator validator;
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
   private UserManager userManager;
   private LiaisonInstitution liaisonInstitution;
-  private CrpIndicatorsValidator validator;
   private String transaction;
   private CrossCuttingDimensions crossCutting;
   private Long crossCuttingId;
@@ -88,7 +87,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   @Inject
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorsValidator validator,
+    LiaisonInstitutionManager liaisonInstitutionManager, CrossCuttingValidator validator,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
     CrossCuttingDimensionManager crossCuttingManager) {
     super(config);
@@ -97,9 +96,29 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpProgramManager = crpProgramManager;
     this.userManager = userManager;
-    this.validator = validator;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.crossCuttingManager = crossCuttingManager;
+    this.validator = validator;
 
+  }
+
+  @Override
+  public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+    if (path.toFile().exists()) {
+      boolean fileDeleted = path.toFile().delete();
+    }
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+    return SUCCESS;
   }
 
   public Long firstFlagship() {
@@ -309,7 +328,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    // this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
 
@@ -408,9 +427,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.userManager = userManager;
   }
 
+
   @Override
   public void validate() {
     if (save) {
+
+      validator.validate(this, powbSynthesis, true);
 
     }
   }

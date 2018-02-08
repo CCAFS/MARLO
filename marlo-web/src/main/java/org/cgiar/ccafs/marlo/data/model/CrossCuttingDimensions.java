@@ -53,7 +53,7 @@ public class CrossCuttingDimensions implements java.io.Serializable, IAuditLog {
 
   @Override
   public Long getId() {
-    return this.id;
+    return id;
   }
 
 

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated Feb 5, 2018 4:00:22 PM by Hibernate Tools 5.2.5.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
-    <class catalog="marlo_new" dynamic-insert="false" dynamic-update="false" mutable="true" name="org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="cross_cutting_dimensions">
+<hibernate-mapping >
+    <class  name="org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions" optimistic-lock="version"  table="cross_cutting_dimensions">
         <id name="id" type="java.lang.Long">
             <column name="id"/>
-            <generator class="identity"/>
+						<generator class="foreign">
+			        <param name="property">powbSynthesis</param>
+			      </generator>
         </id>
         <property generated="never" lazy="false" name="summarize" optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="summarize"/>
@@ -12,9 +14,6 @@
         <property generated="never" lazy="false" name="assets" optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="assets"/>
         </property>
-         <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
-            <column name="powb_synthesis" />
-        </many-to-one>       
         <property generated="never" lazy="false" name="isActive" optimistic-lock="true" type="boolean" unique="false">
             <column name="is_active" not-null="true"/>
         </property>
@@ -30,6 +29,8 @@
         <property generated="never" lazy="false" name="modificationJustification" optimistic-lock="true" type="string" unique="false">
             <column length="65535" name="modification_justification"/>
         </property>
+        <one-to-one name="powbSynthesis"
+            class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" constrained="true"></one-to-one>
       
     </class>
 </hibernate-mapping>
