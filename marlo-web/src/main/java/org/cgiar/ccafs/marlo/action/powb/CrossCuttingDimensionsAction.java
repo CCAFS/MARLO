@@ -82,8 +82,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
   private PowbSynthesis powbSynthesis;
-  private Long powbSynthesisID;
 
+  private Long powbSynthesisID;
 
   @Inject
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
@@ -121,6 +121,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -131,18 +132,18 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
-    String composedClassName = liaisonInstitution.getClass().getSimpleName();
+    String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = liaisonInstitution.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_"
-      + actionFile + ".json";
+    String autoSaveFile =
+      powbSynthesis.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public CrossCuttingDimensions getCrossCutting() {
     return crossCutting;
   }
-
 
   public Long getCrossCuttingId() {
     return crossCuttingId;
@@ -153,10 +154,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -166,6 +167,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
+
+  public PowbSynthesis getPowbSynthesis() {
+    return powbSynthesis;
+  }
+
 
   public String getTransaction() {
     return transaction;
@@ -276,6 +283,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -387,7 +395,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   }
 
-
   public void setCrossCutting(CrossCuttingDimensions crossCutting) {
     this.crossCutting = crossCutting;
   }
@@ -418,6 +425,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   }
 
 
+  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
+  }
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
@@ -427,12 +438,12 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.userManager = userManager;
   }
 
-
   @Override
   public void validate() {
     if (save) {
 
-      validator.validate(this, powbSynthesis, true);
+      validator.validate(this, powbSynthesis, powbSynthesis.getCrossCutting().getSummarize(),
+        powbSynthesis.getCrossCutting().getAssets(), true);
 
     }
   }
