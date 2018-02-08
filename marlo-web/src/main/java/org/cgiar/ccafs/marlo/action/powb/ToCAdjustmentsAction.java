@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbToc;
+import org.cgiar.ccafs.marlo.data.model.PowbTocList;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -87,6 +88,7 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private ToCAdjustmentsValidator validator;
 
+
   private PowbTocManager powbTocManager;
 
   // Variables
@@ -104,8 +106,7 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
-
-  private List<PowbToc> tocList;
+  private List<PowbTocList> tocList;
 
   @Inject
   public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
@@ -123,6 +124,7 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.validator = validator;
     this.powbTocManager = powbTocManager;
   }
+
 
   @Override
   public String cancel() {
@@ -143,7 +145,6 @@ public class ToCAdjustmentsAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -154,7 +155,6 @@ public class ToCAdjustmentsAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -163,9 +163,11 @@ public class ToCAdjustmentsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -174,7 +176,6 @@ public class ToCAdjustmentsAction extends BaseAction {
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
-
 
   // Method to download link file
   public String getPath() {
@@ -188,6 +189,7 @@ public class ToCAdjustmentsAction extends BaseAction {
       .concat(File.separator);
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -196,14 +198,14 @@ public class ToCAdjustmentsAction extends BaseAction {
     return powbSynthesisID;
   }
 
-
-  public List<PowbToc> getTocList() {
+  public List<PowbTocList> getTocList() {
     return tocList;
   }
 
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -454,10 +456,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
@@ -467,9 +469,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
-  public void setTocList(List<PowbToc> tocList) {
+  public void setTocList(List<PowbTocList> tocList) {
     this.tocList = tocList;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
@@ -477,14 +480,19 @@ public class ToCAdjustmentsAction extends BaseAction {
 
   public void tocList(long phaseID) {
     tocList = new ArrayList<>();
-
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbTocList powbTocList = new PowbTocList();
+      powbTocList.setLiaisonInstitution(liaisonInstitution);
+      powbTocList.setOverall("");
       PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
       if (powbSynthesis != null) {
         if (powbSynthesis.getPowbToc() != null) {
-          tocList.add(powbSynthesis.getPowbToc());
+          if (powbSynthesis.getPowbToc().getTocOverall() != null) {
+            powbTocList.setOverall(powbSynthesis.getPowbToc().getTocOverall());
+          }
         }
       }
+      tocList.add(powbTocList);
     }
   }
 
