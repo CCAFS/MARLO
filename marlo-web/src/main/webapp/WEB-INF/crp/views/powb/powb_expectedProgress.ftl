@@ -49,10 +49,26 @@
           
           [#-- Table A: Planned Milestones 2018 --]
           [#if PMU]
-          <hr />
           <div class="form-group">
+            <hr />
+          
+            [#-- Modal Large --]
+            <button type="button" class="pull-right btn btn-default btn-xs" data-toggle="modal" data-target="#tableA-bigger"> 
+              <span class="glyphicon glyphicon-fullscreen"></span>
+            </button>
+            <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+              <div class="modal-dialog modal-lg bigger" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  </div>
+                  [@tableAMacro allowPopups=false/]
+                </div>
+              </div>
+            </div>
+            
             <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
-            [@tableAMacro /]
+            [@tableAMacro  /]
           </div>
           [/#if]
           
@@ -78,7 +94,7 @@
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
-[#macro tableAMacro ]
+[#macro tableAMacro allowPopups=true id="" ]
   <div class="">[#-- <div class="table-responsive"> --]
     <table id="tableA" class="table table-bordered">
       <thead>
@@ -116,7 +132,7 @@
                 [#-- Outcomes --]
                 [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Milestone --]
-                <td> ${milestone.composedName} <div class="pull-right">[@milestoneContributions element=milestone tiny=true /]</div></td>
+                <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- W1W2 --]
                 [#if isFlagshipRow]<td rowspan="${milestoneSize}"> US$ <span >${fp.w1?number?string(",##0.00")}</span> </td>[/#if]
                 [#-- W3/Bilateral --]

@@ -22,10 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
 
-
+@Named
 public class CrossCuttingDimensionsMySQLDAO extends AbstractMarloDAO<CrossCuttingDimensions, Long>
   implements CrossCuttingDimensionsDAO {
 

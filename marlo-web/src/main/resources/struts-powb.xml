@@ -60,6 +60,7 @@
     </action>
     
     <!--  1.5 Cross Cutting Dimensions -->
+    <!-- 
     <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
@@ -70,16 +71,17 @@
         <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
       </result>
-    </action>
+    </action> -->
     
      <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.CrossCuttingDimensionsAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crossCuttingDimensions</param>
+         <param name="actionName">${crpSession}/crossCuttingDimensions</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
         <param name="phaseID">${phaseID}</param>
-        <param name="edit">true</param>        
       </result>
     </action>
     
