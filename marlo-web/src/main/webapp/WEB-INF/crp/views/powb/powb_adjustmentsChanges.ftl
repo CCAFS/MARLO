@@ -103,7 +103,11 @@
           
           [#-- Narrative--]
           <td class="left narrative">
+            [#if element.overall!='']
             ${element.overall!'None'}
+            [#else]
+            <i>Prefilled when available</i>
+            [/#if]
           </td>
           
         </tr>
