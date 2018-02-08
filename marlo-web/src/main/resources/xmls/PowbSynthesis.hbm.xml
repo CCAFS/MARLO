@@ -44,6 +44,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
 		<one-to-one name="powbEvidence"
 			class="org.cgiar.ccafs.marlo.data.model.PowbEvidence" cascade="save-update"></one-to-one>
+			
+		<one-to-one name="crossCutting"
+      class="org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions" cascade="save-update"></one-to-one>	
 
 		<set name="powbExpectedCrpProgresses" table="powb_expected_crp_progress"
 			inverse="true" lazy="true" fetch="select">

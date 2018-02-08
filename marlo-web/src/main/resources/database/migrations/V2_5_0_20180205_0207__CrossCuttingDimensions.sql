@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS `cross_cutting_dimensions`;
 CREATE TABLE `cross_cutting_dimensions`
 (
-  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
-  `powb_synthesis` bigint(20) DEFAULT NULL,
+  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,  
   `summarize` text null,
   `assets` text null,
   `is_active`  tinyint(1) NOT NULL ,
