@@ -494,7 +494,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
         if (projectPartnerPrev.getProjectPartnerPersons().stream()
-          .filter(c -> c.isActive() && c.getUser().getId().equals(partnerPerson.getUser().getId()))
+          .filter(c -> c.isActive() && c.getUser() != null && partnerPerson.getUser() != null
+            && partnerPerson.getUser().getId() != null && c.getUser().getId() != null
+            && c.getUser().getId().equals(partnerPerson.getUser().getId()))
           .collect(Collectors.toList()).isEmpty()) {
 
           ProjectPartnerPerson partnerPersonAdd = new ProjectPartnerPerson();
