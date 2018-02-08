@@ -96,14 +96,14 @@
         <tr>
           [#-- Flagship Name --]
           <td class="left flagship-name">
-            <span class="programTag" style="border-color:${(element.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${element.powbSynthesis.liaisonInstitution.crpProgram.acronym}
+            <span class="programTag" style="border-color:${(element.liaisonInstitution.crpProgram.color)!'#fff'}">
+              ${element.liaisonInstitution.composedName}
             </span>
           </td>
           
           [#-- Narrative--]
           <td class="left narrative">
-            ${element.tocOverall!'None'}
+            ${element.overall!'None'}
           </td>
           
         </tr>
