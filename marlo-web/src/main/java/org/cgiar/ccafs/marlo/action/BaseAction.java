@@ -3842,7 +3842,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         if (expecetedSection == 0) {
-          totalSections++;
+          if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
+            totalSections++;
+          }
+
         }
         if (this.getCountProjectFlagships(project.getId())) {
           budgetFlagshipSection = 1;
