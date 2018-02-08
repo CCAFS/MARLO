@@ -41,7 +41,7 @@ public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionMa
 
   @Override
   public CrossCuttingDimensionTableDTO loadTableByLiaisonAndPhase(Long liaisonInstitution, Long phaseId) {
-    return null;
+    return crossCuttingDAO.getTableC(liaisonInstitution, phaseId);
   }
 
   @Override

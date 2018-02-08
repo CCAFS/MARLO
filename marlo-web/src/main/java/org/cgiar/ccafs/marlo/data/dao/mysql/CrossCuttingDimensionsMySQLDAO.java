@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.CrossCuttingDimensionsDAO;
 import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,6 +55,32 @@ public class CrossCuttingDimensionsMySQLDAO extends AbstractMarloDAO<CrossCuttin
     return null;
 
 
+  }
+
+  @Override
+  public CrossCuttingDimensionTableDTO getTableC(Long liaisonInstitution, Long phaseId) {
+
+    CrossCuttingDimensionTableDTO table = new CrossCuttingDimensionTableDTO();
+    String sql = "select " + "(" + "select count(id) " + "from deliverables_info di " + "where exists( "
+      + "select 'x' from deliverables d" + "where exists( " + "select 'y' from projects_info p"
+      + "where p.liaison_institution_id = " + liaisonInstitution + " and p.id_phase = " + phaseId
+      + " and p.id = d.project_id)" + "and di.deliverable_id = d.id) "
+      + "and di.cross_cutting_score_gender is not null " + " and di.id_phase = " + phaseId + ") gender," + "( "
+      + "select count(id)  num_youth " + " from deliverables_info di " + "where exists( "
+      + "select 'x' from deliverables d " + "where exists( " + "select 'y' from projects_info p "
+      + "where p.liaison_institution_id = " + liaisonInstitution + "and p.id_phase =" + phaseId
+      + "and p.id = d.project_id) " + " and di.deliverable_id = d.id) "
+      + "and di.cross_cutting_score_youth is not null " + " and di.id_phase = " + phaseId + ")youth," + "("
+      + "select count(id)  num_capacity " + "from deliverables_info di " + "where exists( "
+      + "select 'x' from deliverables d " + "where exists( " + "select 'y' from projects_info p "
+      + "where p.liaison_institution_id = " + liaisonInstitution + "and p.id_phase = " + phaseId
+      + "and p.id = d.project_id)" + "and di.deliverable_id = d.id)"
+      + "and di.cross_cutting_score_capacity is not null " + " and di.id_phase = " + phaseId + ")capacity "
+      + "from dual";
+
+    List<Map<String, Object>> fieldsTableC = super.findCustomQuery(sql);
+
+    return null;
   }
 
   @Override
