@@ -1,1 +1,1 @@
-INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES ('68', '444');
+INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES ('68', '445');
