@@ -22,7 +22,9 @@ package org.cgiar.ccafs.marlo.data.model;
 public enum PowbSynthesisSectionStatusEnum {
 
   TOC_ADJUSTMENTS("adjustmentsChanges"), CRP_PROGRESS("expectedProgress"), EVIDENCES("evidenceRelevant"),
-  FLAGSHIP_PLANS("plansByFlagship"), CROSS_CUTTING_DIMENSIONS("crossCuttingDimensions");
+  FLAGSHIP_PLANS("plansByFlagship"), CROSS_CUTTING_DIMENSIONS("crossCuttingDimensions"), STAFFING("staffing"),
+  FINANCIAL_PLAN("financialPlan"), COLABORATION_INTEGRATION("collaborationIntegration"), MEL("mel"),
+  MANAGEMENT_RISK("managementRisk"), MANAGEMENT_GOVERNANCE("ManagementGovernances");
 
   public static PowbSynthesisSectionStatusEnum value(String status) {
     PowbSynthesisSectionStatusEnum[] lst = PowbSynthesisSectionStatusEnum.values();
