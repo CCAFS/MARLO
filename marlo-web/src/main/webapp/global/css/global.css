@@ -2837,6 +2837,10 @@ p.login-description{
   width: 35%;
 }
 
+#loginFormContainer .loginForm div input[type=text] {
+  box-shadow: none;
+}
+
 #loginFormContainer .alreadyLogged {
   font-size: 20px;
 }
