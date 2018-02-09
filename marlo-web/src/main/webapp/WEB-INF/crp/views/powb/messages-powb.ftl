@@ -37,7 +37,11 @@
   
   [#-- Privileges Message --]
   [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
-    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+    [#if actualPhase.editable]
+      <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+    [#else]
+      <p class="readPrivileges">[@s.text name="message.noCycleEditable"][@param]${(actualPhase.composedName)!}[/@param][/@s.text]</p>
+    [/#if]
   [/#if]
   
   
