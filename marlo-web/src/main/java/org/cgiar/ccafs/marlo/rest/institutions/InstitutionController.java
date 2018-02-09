@@ -15,11 +15,18 @@
 
 package org.cgiar.ccafs.marlo.rest.institutions;
 
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -31,7 +38,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -54,12 +63,26 @@ public class InstitutionController {
 
   private final InstitutionLocationManager institutionLocationManager;
 
+  private final PartnerRequestManager partnerRequestManager;
+
+  private final GlobalUnitManager globalUnitManager;
+
+  private final LocElementManager locElementManager;
+
+  private final UserManager userManager;
+
   @Inject
   public InstitutionController(InstitutionManager institutionManager, UserManager userManager,
-    InstitutionMapper institutionMapper, InstitutionLocationManager institutionLocationManager) {
+    InstitutionMapper institutionMapper, InstitutionLocationManager institutionLocationManager,
+    PartnerRequestManager partnerRequestManager, GlobalUnitManager globalUnitManager,
+    LocElementManager locElementManager) {
     this.institutionManager = institutionManager;
     this.institutionMapper = institutionMapper;
     this.institutionLocationManager = institutionLocationManager;
+    this.partnerRequestManager = partnerRequestManager;
+    this.globalUnitManager = globalUnitManager;
+    this.locElementManager = locElementManager;
+    this.userManager = userManager;
   }
 
   @RequiresPermissions(Permission.INSTITUTIONS_CREATE_REST_API_PERMISSION)
@@ -68,26 +91,26 @@ public class InstitutionController {
   public ResponseEntity<InstitutionDTO> createInstitution(@PathVariable String globalUnit,
     @Valid @RequestBody InstitutionDTO institutionDTO) {
     LOG.debug("Create a new institution with : {}", institutionDTO);
-    Institution newInstitution = institutionMapper.institutionDTOToInstitution(institutionDTO);
 
     /**
-     * TODO find out why Institution entities implement IAuditLog but doesn't have any audit fields.
+     * For an institution to be accepted it needs to be reviewed. We have a separate entity for this (not sure this
+     * is a good idea), so we will use the same institutionDTO and hide the complexity from them and map back and forth
+     * between the institutionDTO and the PartnerRequest. Question - how to handle the ids - do we leave blank?
      */
-    // newInstitution.setCreatedBy(this.getCurrentUser());
-    // // This should not be a non-nullable field in the database, as when created it should be null.
-    // newInstitution.setModifiedBy(this.getCurrentUser());
-    // newInstitution.setActiveSince(new Date());
 
-    newInstitution = institutionManager.saveInstitution(newInstitution);
+    GlobalUnit globalUnitEntity = globalUnitManager.findGlobalUnitByAcronym(globalUnit);
 
-    /**
-     * Unfortunately we are not using hibernate cascade update which means we need to save each
-     * of the locations after saving the institution.
-     */
-    newInstitution.getInstitutionsLocations()
-      .forEach(institutionLocation -> institutionLocationManager.saveInstitutionLocation(institutionLocation));
+    LocElement locElement = locElementManager
+      .getLocElementByISOCode(institutionDTO.getInstitutionsLocations().get(0).getCountryIsoAlpha2Code());
 
-    return new ResponseEntity<InstitutionDTO>(institutionMapper.institutionToInstitutionDTO(newInstitution),
+    PartnerRequest partnerRequest = institutionMapper.institutionDTOToPartnerRequest(institutionDTO, globalUnitEntity,
+      locElement, this.getCurrentUser());
+
+    partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
+
+    // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
+    // away.
+    return new ResponseEntity<InstitutionDTO>(institutionMapper.partnerRequestToInstitutionDTO(partnerRequest),
       HttpStatus.CREATED);
   }
 
@@ -121,6 +144,13 @@ public class InstitutionController {
     List<InstitutionDTO> institutionDTOs = institutions.stream()
       .map(institution -> institutionMapper.institutionToInstitutionDTO(institution)).collect(Collectors.toList());
     return institutionDTOs;
+  }
+
+  private User getCurrentUser() {
+    Subject subject = SecurityUtils.getSubject();
+    Long principal = (Long) subject.getPrincipal();
+    User user = userManager.getUser(principal);
+    return user;
   }
 
   @RequiresPermissions(Permission.INSTITUTIONS_READ_REST_API_PERMISSION)
