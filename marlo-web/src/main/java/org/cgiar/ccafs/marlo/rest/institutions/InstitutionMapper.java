@@ -15,13 +15,22 @@
 
 package org.cgiar.ccafs.marlo.rest.institutions;
 
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionDTO;
+import org.cgiar.ccafs.marlo.rest.institutions.dto.InstitutionLocationDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +39,36 @@ public abstract class InstitutionMapper {
 
   private static final Logger LOG = LoggerFactory.getLogger(InstitutionMapper.class);
 
-  public abstract Institution institutionDTOToInstitution(InstitutionDTO institutionDTO);
+  // public abstract Institution institutionDTOToInstitution(InstitutionDTO institutionDTO);
+
+  @Mappings({@Mapping(target = "partnerName", source = "institutionDTO.name"),
+    @Mapping(target = "acronym", source = "institutionDTO.acronym"),
+    @Mapping(target = "webPage", source = "institutionDTO.websiteLink"), @Mapping(target = "id", ignore = true),
+    @Mapping(target = "crp", source = "globalUnit"), @Mapping(target = "locElement", source = "locElement"),
+    @Mapping(target = "createdBy", source = "requestor"), @Mapping(target = "modifiedBy", source = "requestor"),
+    @Mapping(target = "modificationJustification", constant = ""),
+    @Mapping(target = "activeSince", source = "institutionDTO.added"), @Mapping(target = "active", constant = "true"),
+    @Mapping(target = "office", constant = "false"), @Mapping(target = "requestSource", constant = "rest api")})
+  public abstract PartnerRequest institutionDTOToPartnerRequest(InstitutionDTO institutionDTO, GlobalUnit globalUnit,
+    LocElement locElement, User requestor);
 
   public abstract InstitutionDTO institutionToInstitutionDTO(Institution institution);
+
+  public List<InstitutionLocationDTO> locElementToInstitutionLocations(LocElement locElement) {
+    List<InstitutionLocationDTO> institutionLocations = new ArrayList<>();
+
+    InstitutionLocationDTO instituionLocationDTO = new InstitutionLocationDTO();
+    instituionLocationDTO.setCountryIsoAlpha2Code(locElement.getIsoAlpha2());
+    instituionLocationDTO.setCountryName(locElement.getName());
+    institutionLocations.add(instituionLocationDTO);
+    return institutionLocations;
+
+  }
+
+
+  @Mappings({@Mapping(target = "name", source = "partnerName"), @Mapping(target = "websiteLink", source = "webPage"),
+    @Mapping(target = "id", ignore = true), @Mapping(target = "institutionsLocations", source = "locElement")})
+  public abstract InstitutionDTO partnerRequestToInstitutionDTO(PartnerRequest partnerRequest);
 
   // Ignore InstitutionLocations for updates
   @Mapping(target = "institutionsLocations", ignore = true)

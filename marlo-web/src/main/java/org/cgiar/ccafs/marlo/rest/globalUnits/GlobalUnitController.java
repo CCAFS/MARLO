@@ -108,7 +108,6 @@ public class GlobalUnitController {
     Long principal = (Long) subject.getPrincipal();
     User user = userManager.getUser(principal);
     return user;
-
   }
 
   @RequiresPermissions(Permission.CRPS_READ_REST_API_PERMISSION)
