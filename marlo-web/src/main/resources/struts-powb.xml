@@ -100,14 +100,69 @@
     </action>
     
     <!--  2.2 Financial Plan for 2018, including use of W1/3 -->
+    <action name="{crp}/financialPlan" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_financialPlan.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/financialPlan</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
     
     <!--  2.3 Collaboration and Integration -->
+    <action name="{crp}/collaborationIntegration" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_collaborationIntegration.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/collaborationIntegration</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
     
     <!--  2.4 Monitoring, Evaluation, and Learning -->
+    <action name="{crp}/mel" class="org.cgiar.ccafs.marlo.action.powb.MonitoringEvaluationLearningAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_mel.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/mel</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
     
     <!--  3.1 Management of Risks to Your CRP -->
+    <action name="{crp}/managementRisk" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_managementRisk.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/managementRisk</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
     
     <!--  3.2 CRP Management and Governance -->
+    <action name="{crp}/ManagementGovernance" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+      <interceptor-ref name="editPowbStack" />
+      <result name="input">/WEB-INF/crp/views/powb/powb_ManagementGovernance.ftl</result>
+      <result name="success" type="redirectAction">
+         <param name="actionName">${crpSession}/ManagementGovernance</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="edit">true</param>
+        <param name="phaseID">${phaseID}</param>
+      </result>
+    </action>
     
     
 

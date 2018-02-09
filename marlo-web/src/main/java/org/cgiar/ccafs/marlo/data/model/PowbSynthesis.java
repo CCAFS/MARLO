@@ -64,7 +64,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private CrossCuttingDimensions crossCutting;
 
-
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   private Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses = new HashSet<PowbExpectedCrpProgress>(0);
@@ -72,6 +71,8 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   private List<PowbExpectedCrpProgress> expectedCrpProgresses;
 
+  @Expose
+  private PowbMonitoringEvaluationLearning powbMonitoringEvaluationLearning;
 
   @Expose
   private PowbCrpStaffing crpStaffing;
@@ -82,7 +83,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public PowbSynthesis() {
   }
-
 
   public PowbSynthesis(Long id, Phase phase, boolean active, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -142,11 +142,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return crossCutting;
   }
 
-
   public PowbCrpStaffing getCrpStaffing() {
     return crpStaffing;
   }
-
 
   public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
     return expectedCrpProgresses;
@@ -198,6 +196,10 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbFlagshipPlans;
   }
 
+  public PowbMonitoringEvaluationLearning getPowbMonitoringEvaluationLearning() {
+    return powbMonitoringEvaluationLearning;
+  }
+
 
   public Set<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategory() {
     return powbSynthesisCrpStaffingCategory;
@@ -233,6 +235,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -280,6 +283,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setPowbFlagshipPlans(PowbFlagshipPlans powbFlagshipPlans) {
     this.powbFlagshipPlans = powbFlagshipPlans;
+  }
+
+
+  public void setPowbMonitoringEvaluationLearning(PowbMonitoringEvaluationLearning powbMonitoringEvaluationLearning) {
+    this.powbMonitoringEvaluationLearning = powbMonitoringEvaluationLearning;
   }
 
   public void
