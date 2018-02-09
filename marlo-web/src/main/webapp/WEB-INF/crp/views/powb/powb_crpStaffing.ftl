@@ -36,7 +36,7 @@
       [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
         [#-- Title --]
-        <h3 class="headTitle">[@s.text name="crpStaffing.title" /]</h3>
+        <h3 class="headTitle">[@s.text name="crpStaffing.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h3>
         <div class="borderBox">
           
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
@@ -94,10 +94,10 @@
           [#list categories as category]
             <tr>
               <td>${category}</td>
-              <td> [@customForm.input name="powbSynthesis.crpStaffing.female" i18nkey="" showTitle=false className="currencyInput" required=true /]  </td>
-              <td> [@customForm.input name="powbSynthesis.crpStaffing.male" i18nkey="" showTitle=false className="currencyInput" required=true /] </td>
-              <td></td>
-              <td></td>
+              <td> [@customForm.input name="powbSynthesis.crpStaffing.female" i18nkey="" showTitle=false className="currencyInput text-center femaleInput category-${category_index}" required=true /]  </td>
+              <td> [@customForm.input name="powbSynthesis.crpStaffing.male" i18nkey="" showTitle=false className="currencyInput text-center maleInput category-${category_index}" required=true /] </td>
+              <td class="text-center"> <span> 0 </span> </td>
+              <td class="text-center"> <span>0</span>% </td>
             </tr>
           [/#list]
         [/#if]
