@@ -2837,7 +2837,7 @@ p.login-description{
   width: 35%;
 }
 
-#loginFormContainer .loginForm div input[type=text] {
+#loginFormContainer .loginForm div input[type=text],#loginFormContainer .loginForm div input[type=password] {
   box-shadow: none;
 }
 
