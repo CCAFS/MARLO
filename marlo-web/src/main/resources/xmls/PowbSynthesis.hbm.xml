@@ -44,9 +44,11 @@
 			class="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans" cascade="save-update"></one-to-one>
 		<one-to-one name="powbEvidence"
 			class="org.cgiar.ccafs.marlo.data.model.PowbEvidence" cascade="save-update"></one-to-one>
-			
+
 		<one-to-one name="crossCutting"
-      class="org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions" cascade="save-update"></one-to-one>	
+			class="org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions"
+			cascade="save-update"></one-to-one>
+
 
 		<set name="powbExpectedCrpProgresses" table="powb_expected_crp_progress"
 			inverse="true" lazy="true" fetch="select">
@@ -56,6 +58,18 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress" />
 		</set>
+
+		<one-to-one name="crpStaffing"
+			class="org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing" cascade="save-update"></one-to-one>
+
+		<set name="powbSynthesisCrpStaffingCategory" table="powb_synthesis_crp_staffing_category"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="powbCrpStaffingCategory" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory" />
+    </set>
 
 	</class>
 </hibernate-mapping>
