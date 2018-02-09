@@ -343,7 +343,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean reportingActive;
   private int reportingYear;
 
-  private HttpServletRequest request;
+  protected HttpServletRequest request;
 
   /*********************************************************
    * CENTER VARIABLES
