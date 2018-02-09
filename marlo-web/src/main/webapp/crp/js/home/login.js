@@ -1,7 +1,9 @@
 $(document).ready(init);
 var cookieTime,isSecondForm=false, hasAccess=false;
 var username = $("input[name='user.email']");
-var crpSession = $(".loginForm #crp-input").val();
+var crpSession="";
+
+
 function init() {
   initJreject();
 
@@ -126,7 +128,7 @@ function firstForm(){
   $("input#login_next").val("Next");
 
   //Reset the crp-input to init value (to preserve the crpSession in 401.ftl)
-  $(".loginForm #crp-input").val(crpSession);
+  //$(".loginForm #crp-input").val(crpSession);
 }
 
 function initJreject() {
@@ -192,10 +194,12 @@ function loadAvailableItems(email){
     beforeSend: function() {},
     success: function(data) {
       var crpCookie=verifyCrpCookie();
-      if(crpCookie){
+      $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
+      /*if(crpCookie){
         $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
-      }
+      }*/
       $.each(data.crps, function(i){
+        if(window.location.pathname.split("/")[2] != "logout.do"){crpSession = window.location.pathname.split("/")[2]};
         if(crpSession == data.crps[i].acronym){
           hasAccess=true;
         }
@@ -213,7 +217,8 @@ function loadAvailableItems(email){
         wrongData("emailNotFound");
       }else{
         //If user has access to the crpSession or crpSession is void, change form style
-        if(crpSession == '' || hasAccess){
+        console.log(crpSession);
+        if(hasAccess || crpSession==""){
           secondForm(data);
         }else{
           wrongData("deniedAccess");
@@ -280,9 +285,15 @@ function secondForm(data){
   }
 }
 
-function wrongData(type){
+function wrongData(type,customMessage){
   $('input.login-input').addClass("wrongData");
-  $('.loginForm p.invalidField.'+type).removeClass("hidden");
+  if(customMessage != null){
+    console.log("test"+customMessage);
+    $('.loginForm p.invalidField.'+type).text(customMessage);
+    $('.loginForm p.invalidField.'+type).removeClass("hidden");
+  }else{
+    $('.loginForm p.invalidField.'+type).removeClass("hidden");
+  }
   $(".loginForm #login-email .user-email").focus();
 }
 
@@ -296,7 +307,12 @@ function checkPassword(email,password){
     beforeSend: function() {},
     success: function(data) {
       if(!data.userFound.loginSuccess){
-        wrongData("incorrectPassword");
+        console.log(data.messageError);
+        if(data.message=="Invalid CGIAR email or password, please try again"){
+          wrongData("incorrectPassword");
+        }else{
+          wrongData("deniedAccess",data.messageError);
+        }
       }else{
         $("input#login_formSubmit").click();
       }
