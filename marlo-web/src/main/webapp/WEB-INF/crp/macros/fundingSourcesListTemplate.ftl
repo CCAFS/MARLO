@@ -75,7 +75,8 @@
             [/#if]
           </td>
           
-           <td class=""> 
+           <td class="">
+            <span class="hidden">${project?index}</span>
             ${(project.fundingSourceInfo.endDate)!'Not defined'}
           </td>
           

@@ -148,14 +148,21 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Date getEndDatePhase() {
+    if (this.getFundingSourceInfo() != null) {
+      return this.getFundingSourceInfo().getEndDate();
+    }
+    return null;
+  }
+
   public List<FundingSourceLocation> getFundingCountry() {
     return fundingCountry;
   }
 
+
   public List<FundingSourceLocation> getFundingRegions() {
     return fundingRegions;
   }
-
 
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
