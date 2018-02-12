@@ -433,8 +433,8 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MEL_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
-        powbSynthesis.getPowbEvidence().getPlannedStudies().clear();
+      if (powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises() != null) {
+        powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises().clear();
       }
     }
   }
