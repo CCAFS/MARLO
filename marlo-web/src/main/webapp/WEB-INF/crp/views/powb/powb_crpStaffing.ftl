@@ -66,7 +66,6 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableD ]
-
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -79,12 +78,13 @@
         </tr>
       </thead>
       <tbody>
-        [#if powbCrpStaffingCategories ??]
+        [#if powbCrpStaffingCategories??]
+          Exists
           [#list powbCrpStaffingCategories  as crpStaffingCategory]
             [#assign customName = "powbSynthesis.crpStaffing[${crpStaffingCategory_index}]" /]
             <tr>
               <td>
-                <span>${crpStaffingCategory.category}</span> 
+                <span>${crpStaffingCategory.category}</span>
                 <input type="hidden" name="${customName}.id" value="" />
                 <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="" />
               </td>
