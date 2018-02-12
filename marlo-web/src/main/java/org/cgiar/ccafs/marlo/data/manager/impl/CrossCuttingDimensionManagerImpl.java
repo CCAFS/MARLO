@@ -51,6 +51,8 @@ public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionMa
       total += tableC.getYouthPrincipal() + tableC.getYouthSignificant() + tableC.getYouthScored();
       total += tableC.getCapDevPrincipal() + tableC.getCapDevSignificant() + tableC.getCapDevScored();
 
+      tableC.setTotal(new Double(total));
+
       // Gender Principal
       if (total == 0) {
         tableC.setPercentageGenderPrincipal(new Double(0));
