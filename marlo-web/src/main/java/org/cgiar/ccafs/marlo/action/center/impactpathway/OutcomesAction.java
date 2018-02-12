@@ -343,7 +343,7 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       CenterOutcome outcomeDb = outcomeService.getResearchOutcomeById(outcomeID);
 

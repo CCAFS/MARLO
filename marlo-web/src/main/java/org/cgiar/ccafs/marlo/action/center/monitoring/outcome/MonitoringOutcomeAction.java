@@ -445,7 +445,7 @@ public class MonitoringOutcomeAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       this.setInvalidFields(new HashMap<>());
 
