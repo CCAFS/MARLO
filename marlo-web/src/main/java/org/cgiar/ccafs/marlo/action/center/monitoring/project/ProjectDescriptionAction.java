@@ -647,7 +647,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       Phase phase = this.getCurrentCenterPhase();
 
