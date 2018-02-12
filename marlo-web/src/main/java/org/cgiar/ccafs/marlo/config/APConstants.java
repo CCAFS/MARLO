@@ -365,6 +365,9 @@ public final class APConstants {
   public static final String SYNTHESIS_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbEvidence.powbEvidencePlannedStudies)";
 
+  public static final String SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbSynthesisCrpStaffingCategory)";
+
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
   public static final String REPORTING = "Reporting";

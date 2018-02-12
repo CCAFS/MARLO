@@ -74,12 +74,15 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private PowbMonitoringEvaluationLearning powbMonitoringEvaluationLearning;
 
+
   @Expose
   private PowbCrpStaffing crpStaffing;
+
 
   private Set<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategory =
     new HashSet<PowbSynthesisCrpStaffingCategory>(0);
 
+  private List<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategoryList;
 
   public PowbSynthesis() {
   }
@@ -93,6 +96,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -127,11 +131,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -142,24 +144,25 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return crossCutting;
   }
 
+
   public PowbCrpStaffing getCrpStaffing() {
     return crpStaffing;
   }
 
+
   public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
     return expectedCrpProgresses;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -167,6 +170,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -177,7 +181,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public Phase getPhase() {
     return phase;
@@ -196,19 +199,23 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbFlagshipPlans;
   }
 
+
   public PowbMonitoringEvaluationLearning getPowbMonitoringEvaluationLearning() {
     return powbMonitoringEvaluationLearning;
   }
-
 
   public Set<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategory() {
     return powbSynthesisCrpStaffingCategory;
   }
 
+  public List<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategoryList() {
+    return powbSynthesisCrpStaffingCategoryList;
+  }
+
+
   public PowbToc getPowbToc() {
     return powbToc;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -223,6 +230,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return true;
@@ -236,7 +244,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -245,6 +252,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setCrossCutting(CrossCuttingDimensions crossCutting) {
     this.crossCutting = crossCutting;
   }
+
 
   public void setCrpStaffing(PowbCrpStaffing crpStaffing) {
     this.crpStaffing = crpStaffing;
@@ -266,7 +274,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -276,10 +283,10 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.powbEvidence = powbEvidence;
   }
 
+
   public void setPowbExpectedCrpProgresses(Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses) {
     this.powbExpectedCrpProgresses = powbExpectedCrpProgresses;
   }
-
 
   public void setPowbFlagshipPlans(PowbFlagshipPlans powbFlagshipPlans) {
     this.powbFlagshipPlans = powbFlagshipPlans;
@@ -290,9 +297,15 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.powbMonitoringEvaluationLearning = powbMonitoringEvaluationLearning;
   }
 
+
   public void
     setPowbSynthesisCrpStaffingCategory(Set<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategory) {
     this.powbSynthesisCrpStaffingCategory = powbSynthesisCrpStaffingCategory;
+  }
+
+  public void setPowbSynthesisCrpStaffingCategoryList(
+    List<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategoryList) {
+    this.powbSynthesisCrpStaffingCategoryList = powbSynthesisCrpStaffingCategoryList;
   }
 
 
