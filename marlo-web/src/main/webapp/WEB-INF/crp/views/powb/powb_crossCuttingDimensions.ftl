@@ -106,15 +106,25 @@
         </tr>
       </thead>
       <tbody>
-        [#list crossCuttingDimesions as cc]
           <tr>
-            <td class="row">${cc.title}</td>
-            <td class="text-center"> <span class="animated flipInX">${cc.principal}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${cc.significant}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${cc.notTargeted}%</span> </td>
-            [#if cc_index == 0]<th rowspan="${crossCuttingDimesions?size}" class="text-center"> <h3 class="animated flipInX">250</span> </h3>[/#if]
+            <td class="row">Gender</td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored}%</span> </td> 
+            <th rowspan="3" class="text-center"> <h3 class="animated flipInX">${tableC.total}</span> </h3>           
           </tr>
-        [/#list]
+          <tr>
+            <td class="row">Youth</td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthPrincipal}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthSignificant}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthNotScored}%</span> </td>            
+          </tr>
+          <tr>
+            <td class="row">CapDev</td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevPrincipal}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevSignificant}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevNotScored}%</span> </td>            
+          </tr>
       </tbody>
     </table>
   </div>
