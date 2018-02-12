@@ -38,7 +38,7 @@
   	[#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#if help != ""]
-          <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" style="display:inline-block" />
+          <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"][@s.param]${paramText}[/@s.param][/@s.text]" style="display:inline-block" />
           <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>
         [/#if]
       </label>

@@ -10,7 +10,7 @@
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},
   {"label":"powbReport", "nameSpace":"powb", "action":"${crpSession}/adjustmentsChanges"},
-  {"label":"evidenceRelevant", "nameSpace":"powb", "action":"${crpSession}/monitoringLearning"}
+  {"label":"monitoringLearning", "nameSpace":"powb", "action":""}
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
@@ -55,7 +55,7 @@
           </div>
           [/#if]
           
-          [#-- Planned Studies for Relevant Outcomes and Impacts --]
+          [#-- Planned Monitoring Evaluation, and Learning Exercises --]
           [#if Flagship]
           <div class="form-group margin-panel">
             <div class="evidence-plannedStudies-header row">
@@ -64,10 +64,10 @@
             <div class="expectedStudies-list" listname="list-plannedStudies">
             [#if powbSynthesis.powbMonitoringEvaluationLearning.exercises?has_content]
               [#list powbSynthesis.powbMonitoringEvaluationLearning.exercises as exercise]
-                [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=plannedStudy_index isEditable=editable/]
+                [@flagshipsPlannedMELMacro element=exercise name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=exercise_index isEditable=editable/]
               [/#list]
             [#else]
-              [#if !editable]<p>[@s.text name="monitoringLearning.plannedStudies.empty" /]</p>[/#if]
+              [#-- if !editable]<p>[@s.text name="monitoringLearning.plannedStudies.empty" /]</p>[/#if--]
             [/#if]
             </div>
             
@@ -90,11 +90,11 @@
 </section>
 
 [#-- Planned Study Template --]
-[@plannedStudyMacro element={} name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=-1 template=true/]
+[@flagshipsPlannedMELMacro element={} name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=-1 template=true/]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
-[#macro plannedStudyMacro element name index template=false isEditable=true]
+[#macro flagshipsPlannedMELMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="expectedStudy-${template?string('template', index)}" class="expectedStudy borderBox form-group" style="position:relative; display:${template?string('none','block')}">
     
@@ -127,7 +127,7 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-fp" width="11%">[@s.text name="monitoringLearning.table.fp" /]</th>
-        <th id="tb-plannedTopic" width="45%">[@s.text name="monitoringLearning.table.plannedStudies" /]</th>
+        <th id="tb-plannedTopic" width="45%">[@s.text name="monitoringLearning.table.plannedStudies"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
         <th id="tb-comments" width="44%">[@s.text name="monitoringLearning.table.comments" /]</th>
       </tr>
     </thead>
