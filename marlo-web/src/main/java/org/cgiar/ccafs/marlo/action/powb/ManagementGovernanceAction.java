@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbManagementRiskManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbManagementGovernanceManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -29,15 +29,15 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.PowbManagementRisk;
-import org.cgiar.ccafs.marlo.data.model.PowbManagementRiskListDTO;
+import org.cgiar.ccafs.marlo.data.model.PowbManagementGovernance;
+import org.cgiar.ccafs.marlo.data.model.PowbManagementGovernanceListDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ManagementRiskValidator;
+import org.cgiar.ccafs.marlo.validation.powb.ManagementGovernanceValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -62,7 +62,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ManagementGovernanceAction extends BaseAction {
 
-  private static final long serialVersionUID = 6919416555256812688L;
+
+  private static final long serialVersionUID = -2923314842639211882L;
 
   // Managers
   private GlobalUnitManager crpManager;
@@ -71,8 +72,9 @@ public class ManagementGovernanceAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
-  private PowbManagementRiskManager powbManagementRiskManager;
-  private ManagementRiskValidator validator;
+  private PowbManagementGovernanceManager powbManagementGovernanceManager;
+  private ManagementGovernanceValidator validator;
+
 
   // Variables
   private String transaction;
@@ -82,13 +84,13 @@ public class ManagementGovernanceAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<PowbManagementRiskListDTO> managementRiskList;
+  private List<PowbManagementGovernanceListDTO> managementGovernanceList;
 
   @Inject
   public ManagementGovernanceAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager, UserManager userManager,
     CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    PowbManagementRiskManager powbManagementRiskManager, ManagementRiskValidator validator) {
+    PowbManagementGovernanceManager powbManagementGovernanceManager, ManagementGovernanceValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -96,7 +98,7 @@ public class ManagementGovernanceAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.powbManagementRiskManager = powbManagementRiskManager;
+    this.powbManagementGovernanceManager = powbManagementGovernanceManager;
     this.validator = validator;
   }
 
@@ -154,10 +156,6 @@ public class ManagementGovernanceAction extends BaseAction {
     return loggedCrp;
   }
 
-  public List<PowbManagementRiskListDTO> getManagementRiskList() {
-    return managementRiskList;
-  }
-
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -196,21 +194,21 @@ public class ManagementGovernanceAction extends BaseAction {
 
   }
 
-  public void managementRiskList(long phaseID) {
-    managementRiskList = new ArrayList<>();
+  public void managementGovernanceList(long phaseID) {
+    managementGovernanceList = new ArrayList<>();
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      PowbManagementRiskListDTO riskList = new PowbManagementRiskListDTO();
-      riskList.setLiaisonInstitution(liaisonInstitution);
-      riskList.setHighlight("");
+      PowbManagementGovernanceListDTO governanceList = new PowbManagementGovernanceListDTO();
+      governanceList.setLiaisonInstitution(liaisonInstitution);
+      governanceList.setDescription("");
       PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
       if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbManagementRisk() != null) {
-          if (powbSynthesis.getPowbManagementRisk().getHighlight() != null) {
-            riskList.setHighlight(powbSynthesis.getPowbManagementRisk().getHighlight());
+        if (powbSynthesis.getPowbManagementGovernance() != null) {
+          if (powbSynthesis.getPowbManagementGovernance().getDescription() != null) {
+            governanceList.setDescription(powbSynthesis.getPowbManagementGovernance().getDescription());
           }
         }
       }
-      managementRiskList.add(riskList);
+      managementGovernanceList.add(governanceList);
     }
   }
 
@@ -322,16 +320,16 @@ public class ManagementGovernanceAction extends BaseAction {
       } else {
         this.setDraft(false);
         // Check if ToC relation is null -create it
-        if (powbSynthesis.getPowbManagementRisk() == null) {
-          PowbManagementRisk managementRisk = new PowbManagementRisk();
-          managementRisk.setActive(true);
-          managementRisk.setActiveSince(new Date());
-          managementRisk.setCreatedBy(this.getCurrentUser());
-          managementRisk.setModifiedBy(this.getCurrentUser());
-          managementRisk.setModificationJustification("");
+        if (powbSynthesis.getPowbManagementGovernance() == null) {
+          PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
+          managementGovernance.setActive(true);
+          managementGovernance.setActiveSince(new Date());
+          managementGovernance.setCreatedBy(this.getCurrentUser());
+          managementGovernance.setModifiedBy(this.getCurrentUser());
+          managementGovernance.setModificationJustification("");
           // create one to one relation
-          powbSynthesis.setPowbManagementRisk(managementRisk);
-          managementRisk.setPowbSynthesis(powbSynthesis);
+          powbSynthesis.setPowbManagementGovernance(managementGovernance);
+          managementGovernance.setPowbSynthesis(powbSynthesis);
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
@@ -347,7 +345,7 @@ public class ManagementGovernanceAction extends BaseAction {
 
     // Setup the PUM Management Risk Table
     if (this.isPMU()) {
-      this.managementRiskList(phase.getId());
+      this.managementGovernanceList(phase.getId());
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
@@ -356,7 +354,7 @@ public class ManagementGovernanceAction extends BaseAction {
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
 
@@ -367,11 +365,12 @@ public class ManagementGovernanceAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      PowbManagementRisk powbManagementRiskDB =
-        powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbManagementRisk();
+      PowbManagementGovernance powbManagementGovernancekDB =
+        powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbManagementGovernance();
 
-      powbManagementRiskDB.setHighlight(powbSynthesis.getPowbManagementRisk().getHighlight());
-      powbManagementRiskDB = powbManagementRiskManager.savePowbManagementRisk(powbManagementRiskDB);
+      powbManagementGovernancekDB.setDescription(powbSynthesis.getPowbManagementGovernance().getDescription());
+      powbManagementGovernancekDB =
+        powbManagementGovernanceManager.savePowbManagementGovernance(powbManagementGovernancekDB);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -419,10 +418,6 @@ public class ManagementGovernanceAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-  public void setManagementRiskList(List<PowbManagementRiskListDTO> managementRiskList) {
-    this.managementRiskList = managementRiskList;
   }
 
 

@@ -11,8 +11,7 @@ import com.google.gson.annotations.Expose;
 public class PowbManagementGovernance implements java.io.Serializable, IAuditLog {
 
 
-  private static final long serialVersionUID = -1756166028966293976L;
-
+  private static final long serialVersionUID = 5581818739310700654L;
 
   @Expose
   private Long id;
