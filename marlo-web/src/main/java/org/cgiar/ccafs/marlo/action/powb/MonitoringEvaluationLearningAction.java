@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -476,6 +478,9 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+      // TODO
+      this.setInvalidFields(new HashMap<>());
+      this.setActionMessages(new HashSet<>());
 
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
