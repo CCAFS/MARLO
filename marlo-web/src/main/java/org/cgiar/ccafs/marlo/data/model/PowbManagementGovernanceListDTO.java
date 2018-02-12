@@ -20,25 +20,24 @@ import java.io.Serializable;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class PowbManagementRiskListDTO implements Serializable {
+public class PowbManagementGovernanceListDTO implements Serializable {
 
-
-  private static final long serialVersionUID = -8872624233706614783L;
+  private static final long serialVersionUID = -2177574215343193880L;
 
 
   private LiaisonInstitution liaisonInstitution;
 
 
-  private String highlight;
+  private String description;
 
 
-  public PowbManagementRiskListDTO() {
+  public PowbManagementGovernanceListDTO() {
 
   }
 
 
-  public String getHighlight() {
-    return highlight;
+  public String getDescription() {
+    return description;
   }
 
 
@@ -46,8 +45,9 @@ public class PowbManagementRiskListDTO implements Serializable {
     return liaisonInstitution;
   }
 
-  public void setHighlight(String highlight) {
-    this.highlight = highlight;
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 
