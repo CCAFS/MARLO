@@ -116,10 +116,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
         int endYear = this.getCalendarFromDate(endDate);
         int extentionYear = this.getCalendarFromDate(extentionDate);
-        if ((endYear == this.getSelectedYear() && fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+        if ((endYear >= this.getSelectedYear() && fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
           || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear == this.getSelectedYear())) {
+            .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
           currentCycleFundingSources.add((fundingSource));
         }
       }
