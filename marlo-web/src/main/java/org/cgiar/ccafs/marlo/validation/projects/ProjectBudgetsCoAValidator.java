@@ -87,8 +87,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGETBYCOA.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -99,8 +99,11 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       .stream().filter(c -> c.isActive() && c.getYear() == year
         && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
       .collect(Collectors.toList());
-
-    return budgets.size() > 0;
+    Double totalAmount = 0.0;
+    for (ProjectBudget projectBudget : budgets) {
+      totalAmount += projectBudget.getAmount();
+    }
+    return budgets.size() > 0 && totalAmount > 0.0;
   }
 
   public void replaceAll(StringBuilder builder, String from, String to) {
@@ -212,11 +215,13 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       gender = this.round(gender, 2);
 
     }
-
-    if (amount != 100) {
-      action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
-      action.addMessage(action.getText("project.budget.coa.amount", params));
+    if (amount > 0) {
+      if (amount != 100) {
+        action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
+        action.addMessage(action.getText("project.budget.coa.amount", params));
+      }
     }
+
     if (genderTotal > 0) {
       if (gender != 100) {
 
