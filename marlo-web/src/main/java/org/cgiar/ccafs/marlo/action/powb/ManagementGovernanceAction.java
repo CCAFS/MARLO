@@ -19,29 +19,27 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbManagementRiskManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbTocManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbManagementRisk;
+import org.cgiar.ccafs.marlo.data.model.PowbManagementRiskListDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbToc;
-import org.cgiar.ccafs.marlo.data.model.PowbTocListDTO;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.ToCAdjustmentsValidator;
+import org.cgiar.ccafs.marlo.validation.powb.ManagementRiskValidator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,67 +60,44 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ToCAdjustmentsAction extends BaseAction {
+public class ManagementGovernanceAction extends BaseAction {
 
-
-  private static final long serialVersionUID = -3785412578513649561L;
-
+  private static final long serialVersionUID = 6919416555256812688L;
 
   // Managers
   private GlobalUnitManager crpManager;
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private PowbSynthesisManager powbSynthesisManager;
-
   private AuditLogManager auditLogManager;
-
-
   private UserManager userManager;
-
   private CrpProgramManager crpProgramManager;
-
-
-  private FileDBManager fileDBManager;
-
-  private ToCAdjustmentsValidator validator;
-
-
-  private PowbTocManager powbTocManager;
+  private PowbManagementRiskManager powbManagementRiskManager;
+  private ManagementRiskValidator validator;
 
   // Variables
   private String transaction;
-
   private PowbSynthesis powbSynthesis;
-
   private Long liaisonInstitutionID;
-
   private Long powbSynthesisID;
-
   private LiaisonInstitution liaisonInstitution;
-
   private GlobalUnit loggedCrp;
-
   private List<LiaisonInstitution> liaisonInstitutions;
-
-  private List<PowbTocListDTO> tocList;
+  private List<PowbManagementRiskListDTO> managementRiskList;
 
   @Inject
-  public ToCAdjustmentsAction(APConfig config, GlobalUnitManager crpManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    UserManager userManager, CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
-    ToCAdjustmentsValidator validator, PowbTocManager powbTocManager) {
+  public ManagementGovernanceAction(APConfig config, GlobalUnitManager crpManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager, UserManager userManager,
+    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager,
+    PowbManagementRiskManager powbManagementRiskManager, ManagementRiskValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-    this.fileDBManager = fileDBManager;
     this.auditLogManager = auditLogManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.powbManagementRiskManager = powbManagementRiskManager;
     this.validator = validator;
-    this.powbTocManager = powbTocManager;
   }
 
 
@@ -163,11 +138,13 @@ public class ToCAdjustmentsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public LiaisonInstitution getLiaisonInstitution() {
+    return liaisonInstitution;
+  }
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -177,18 +154,9 @@ public class ToCAdjustmentsAction extends BaseAction {
     return loggedCrp;
   }
 
-  // Method to download link file
-  public String getPath() {
-    return config.getDownloadURL() + "/" + this.getPowbSourceFolder().replace('\\', '/');
+  public List<PowbManagementRiskListDTO> getManagementRiskList() {
+    return managementRiskList;
   }
-
-  // Method to get the download folder
-  private String getPowbSourceFolder() {
-    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
-      .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
-      .concat(File.separator);
-  }
-
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -198,14 +166,9 @@ public class ToCAdjustmentsAction extends BaseAction {
     return powbSynthesisID;
   }
 
-  public List<PowbTocListDTO> getTocList() {
-    return tocList;
-  }
-
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isFlagship() {
     boolean isFP = false;
@@ -231,6 +194,24 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
     return isFP;
 
+  }
+
+  public void managementRiskList(long phaseID) {
+    managementRiskList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      PowbManagementRiskListDTO riskList = new PowbManagementRiskListDTO();
+      riskList.setLiaisonInstitution(liaisonInstitution);
+      riskList.setHighlight("");
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbManagementRisk() != null) {
+          if (powbSynthesis.getPowbManagementRisk().getHighlight() != null) {
+            riskList.setHighlight(powbSynthesis.getPowbManagementRisk().getHighlight());
+          }
+        }
+      }
+      managementRiskList.add(riskList);
+    }
   }
 
   @Override
@@ -341,33 +322,20 @@ public class ToCAdjustmentsAction extends BaseAction {
       } else {
         this.setDraft(false);
         // Check if ToC relation is null -create it
-        if (powbSynthesis.getPowbToc() == null) {
-          PowbToc toc = new PowbToc();
-          toc.setActive(true);
-          toc.setActiveSince(new Date());
-          toc.setCreatedBy(this.getCurrentUser());
-          toc.setModifiedBy(this.getCurrentUser());
-          toc.setModificationJustification("");
+        if (powbSynthesis.getPowbManagementRisk() == null) {
+          PowbManagementRisk managementRisk = new PowbManagementRisk();
+          managementRisk.setActive(true);
+          managementRisk.setActiveSince(new Date());
+          managementRisk.setCreatedBy(this.getCurrentUser());
+          managementRisk.setModifiedBy(this.getCurrentUser());
+          managementRisk.setModificationJustification("");
           // create one to one relation
-          powbSynthesis.setPowbToc(toc);
-          toc.setPowbSynthesis(powbSynthesis);
+          powbSynthesis.setPowbManagementRisk(managementRisk);
+          managementRisk.setPowbSynthesis(powbSynthesis);
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
       }
-    }
-
-    // Check if the pow toc has file
-    if (this.isPMU()) {
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-          powbSynthesis.getPowbToc().setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-        } else {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-    } else {
-      powbSynthesis.getPowbToc().setFile(null);
     }
 
     // Get the list of liaison institutions Flagships and PMU.
@@ -377,22 +345,21 @@ public class ToCAdjustmentsAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    // Setup the PUM ToC Table
+    // Setup the PUM Management Risk Table
     if (this.isPMU()) {
-      this.tocList(phase.getId());
+      this.managementRiskList(phase.getId());
     }
     // ADD PMU as liasion Institutio too
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
-    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_TOC_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      powbSynthesis.getPowbToc().setFile(null);
+
     }
   }
 
@@ -400,20 +367,11 @@ public class ToCAdjustmentsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      PowbToc powbTocDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbToc();
+      PowbManagementRisk powbManagementRiskDB =
+        powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbManagementRisk();
 
-      if (this.isPMU()) {
-        if (powbSynthesis.getPowbToc().getFile() != null) {
-          if (powbSynthesis.getPowbToc().getFile().getId() == null) {
-            powbTocDB.setFile(null);
-          } else {
-            powbTocDB.setFile(powbSynthesis.getPowbToc().getFile());
-          }
-        }
-      }
-
-      powbTocDB.setTocOverall(powbSynthesis.getPowbToc().getTocOverall());
-      powbTocDB = powbTocManager.savePowbToc(powbTocDB);
+      powbManagementRiskDB.setHighlight(powbSynthesis.getPowbManagementRisk().getHighlight());
+      powbManagementRiskDB = powbManagementRiskManager.savePowbManagementRisk(powbManagementRiskDB);
 
 
       List<String> relationsName = new ArrayList<>();
@@ -422,7 +380,6 @@ public class ToCAdjustmentsAction extends BaseAction {
       powbSynthesis.setActiveSince(new Date());
 
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
-
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
@@ -448,6 +405,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     }
   }
 
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
+  }
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
@@ -460,6 +421,10 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setManagementRiskList(List<PowbManagementRiskListDTO> managementRiskList) {
+    this.managementRiskList = managementRiskList;
+  }
+
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
@@ -469,46 +434,14 @@ public class ToCAdjustmentsAction extends BaseAction {
     this.powbSynthesisID = powbSynthesisID;
   }
 
-  public void setTocList(List<PowbTocListDTO> tocList) {
-    this.tocList = tocList;
-  }
-
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
-  }
-
-  public void tocList(long phaseID) {
-    tocList = new ArrayList<>();
-    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      PowbTocListDTO powbTocList = new PowbTocListDTO();
-      powbTocList.setLiaisonInstitution(liaisonInstitution);
-      powbTocList.setOverall("");
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbToc() != null) {
-          if (powbSynthesis.getPowbToc().getTocOverall() != null) {
-            powbTocList.setOverall(powbSynthesis.getPowbToc().getTocOverall());
-          }
-        }
-      }
-      tocList.add(powbTocList);
-    }
   }
 
   @Override
   public void validate() {
     if (save) {
-
-      if (this.isPMU()) {
-        if (powbSynthesis.getPowbToc().getFile() != null && powbSynthesis.getPowbToc().getFile().getId() == null
-          || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
-          powbSynthesis.getPowbToc().setFile(null);
-        }
-      }
-
       validator.validate(this, powbSynthesis, true);
     }
   }
-
 }

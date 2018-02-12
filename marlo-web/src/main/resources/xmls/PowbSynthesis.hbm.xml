@@ -58,7 +58,8 @@
 		<one-to-one name="crpStaffing"
 			class="org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing" cascade="save-update"></one-to-one>
 		<one-to-one name="powbMonitoringEvaluationLearning"
-			class="org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearning" cascade="save-update"></one-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearning"
+			cascade="save-update"></one-to-one>
 		<set name="powbSynthesisCrpStaffingCategory" table="powb_synthesis_crp_staffing_category"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -68,6 +69,9 @@
 				class="org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory" />
 		</set>
 		<one-to-one name="powbManagementRisk"
-      class="org.cgiar.ccafs.marlo.data.model.PowbManagementRisk" cascade="save-update"></one-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.PowbManagementRisk" cascade="save-update"></one-to-one>
+		<one-to-one name="powbManagementGovernance"
+			class="org.cgiar.ccafs.marlo.data.model.PowbManagementGovernance"
+			cascade="save-update"></one-to-one>
 	</class>
 </hibernate-mapping>

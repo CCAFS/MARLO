@@ -230,5 +230,7 @@
     <mapping resource="xmls/PowbSynthesisCrpStaffingCategory.hbm.xml" />
     <mapping resource="xmls/PowbMonitoringEvaluationLearning.hbm.xml" />
     <mapping resource="xmls/PowbMonitoringEvaluationLearningExercises.hbm.xml" />
+    <mapping resource="xmls/PowbManagementRisk.hbm.xml" />
+    <mapping resource="xmls/PowbManagementGovernance.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

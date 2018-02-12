@@ -30,7 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbManagementRisk;
-import org.cgiar.ccafs.marlo.data.model.PowbManagementRiskList;
+import org.cgiar.ccafs.marlo.data.model.PowbManagementRiskListDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -82,7 +82,7 @@ public class ManagementRiskAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
-  private List<PowbManagementRiskList> managementRiskList;
+  private List<PowbManagementRiskListDTO> managementRiskList;
 
   @Inject
   public ManagementRiskAction(APConfig config, GlobalUnitManager crpManager,
@@ -154,7 +154,7 @@ public class ManagementRiskAction extends BaseAction {
     return loggedCrp;
   }
 
-  public List<PowbManagementRiskList> getManagementRiskList() {
+  public List<PowbManagementRiskListDTO> getManagementRiskList() {
     return managementRiskList;
   }
 
@@ -199,7 +199,7 @@ public class ManagementRiskAction extends BaseAction {
   public void managementRiskList(long phaseID) {
     managementRiskList = new ArrayList<>();
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
-      PowbManagementRiskList riskList = new PowbManagementRiskList();
+      PowbManagementRiskListDTO riskList = new PowbManagementRiskListDTO();
       riskList.setLiaisonInstitution(liaisonInstitution);
       riskList.setHighlight("");
       PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
@@ -421,7 +421,7 @@ public class ManagementRiskAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setManagementRiskList(List<PowbManagementRiskList> managementRiskList) {
+  public void setManagementRiskList(List<PowbManagementRiskListDTO> managementRiskList) {
     this.managementRiskList = managementRiskList;
   }
 
