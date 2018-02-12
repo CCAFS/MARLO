@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbMonitoringEvaluationLearningExerciseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbMonitoringEvaluationLearningManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -39,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.powb.MonitoringEvaluationLearningValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -48,8 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,9 +74,9 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
-  private ProjectFocusManager projectFocusManager;
   private PowbMonitoringEvaluationLearningExerciseManager powbMonitoringEvaluationLearningExerciseManager;
   private PowbMonitoringEvaluationLearningManager powbMonitoringEvaluationLearningManager;
+  private MonitoringEvaluationLearningValidator validator;
 
 
   // Variables
@@ -97,9 +95,9 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
   public MonitoringEvaluationLearningAction(APConfig config, GlobalUnitManager crpManager,
     PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    ProjectFocusManager projectFocusManager,
     PowbMonitoringEvaluationLearningExerciseManager powbMonitoringEvaluationLearningExerciseManager,
-    PowbMonitoringEvaluationLearningManager powbMonitoringEvaluationLearningManager) {
+    PowbMonitoringEvaluationLearningManager powbMonitoringEvaluationLearningManager,
+    MonitoringEvaluationLearningValidator validator) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -107,9 +105,9 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
-    this.projectFocusManager = projectFocusManager;
     this.powbMonitoringEvaluationLearningExerciseManager = powbMonitoringEvaluationLearningExerciseManager;
     this.powbMonitoringEvaluationLearningManager = powbMonitoringEvaluationLearningManager;
+    this.validator = validator;
   }
 
   @Override
@@ -478,9 +476,6 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      // TODO
-      this.setInvalidFields(new HashMap<>());
-      this.setActionMessages(new HashSet<>());
 
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
@@ -532,5 +527,12 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, powbSynthesis, true);
+    }
   }
 }

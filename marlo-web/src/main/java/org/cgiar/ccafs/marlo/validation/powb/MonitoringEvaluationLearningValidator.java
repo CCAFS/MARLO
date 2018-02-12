@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
+import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -38,13 +39,14 @@ import javax.inject.Named;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 @Named
-public class EvidencesValidator extends BaseValidator {
+public class MonitoringEvaluationLearningValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
   private final PowbSynthesisManager powbSynthesisManager;
 
 
-  public EvidencesValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager) {
+  public MonitoringEvaluationLearningValidator(GlobalUnitManager crpManager,
+    PowbSynthesisManager powbSynthesisManager) {
     super();
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -54,7 +56,7 @@ public class EvidencesValidator extends BaseValidator {
 
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = powbSynthesis.getClass().getSimpleName();
-    String actionFile = PowbSynthesisSectionStatusEnum.EVIDENCES.getStatus().replace("/", "_");
+    String actionFile = PowbSynthesisSectionStatusEnum.MEL.getStatus().replace("/", "_");
     String autoSaveFile =
       powbSynthesis.getId() + "_" + composedClassName + "_" + baseAction.getActualPhase().getDescription() + "_"
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
@@ -89,21 +91,21 @@ public class EvidencesValidator extends BaseValidator {
         }
       }
 
-      this.validateEvidence(action, powbSynthesis);
+      this.validateMEL(action, powbSynthesis);
 
       if (!this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
-        if (powbSynthesis.getPowbEvidence() != null) {
-          if (powbSynthesis.getPowbEvidence().getPlannedStudies() != null) {
-            if (powbSynthesis.getPowbEvidence().getPlannedStudies().size() == 0) {
+        if (powbSynthesis.getPowbMonitoringEvaluationLearning() != null) {
+          if (powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises() != null) {
+            if (powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises().size() == 0) {
 
-              action.addMessage(action.getText("evidenceRelevant.plannedStudies.projectPlannedStudies"));
-              action.getInvalidFields().put("list-powbSynthesis.powbEvidence.plannedStudies",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"list-plannedStudies"}));
+              action.addMessage(action.getText("monitoringLearning.plannedStudies"));
+              action.getInvalidFields().put("list-powbSynthesis.powbMonitoringEvaluationLearning.exercises",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"list-exercises"}));
 
             } else {
               for (int i = 0; i < powbSynthesis.getPowbEvidence().getPlannedStudies().size(); i++) {
                 PowbEvidencePlannedStudy plannedStudy = powbSynthesis.getPowbEvidence().getPlannedStudies().get(i);
-                this.validatePlannedStudies(action, plannedStudy, i);
+                // this.validatePlannedStudies(action, plannedStudy, i);
               }
             }
 
@@ -119,51 +121,37 @@ public class EvidencesValidator extends BaseValidator {
       }
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.EVIDENCES.getStatus(), action);
+        PowbSynthesisSectionStatusEnum.MEL.getStatus(), action);
     }
   }
 
-
-  public void validateEvidence(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbEvidence().getNarrative())
-      && this.wordCount(powbSynthesis.getPowbEvidence().getNarrative()) <= 100)) {
-      action.addMessage(action.getText("evidenceRelevant.narrative"));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.narrative", InvalidFieldsMessages.EMPTYFIELD);
-    }
-  }
-
-  public void validatePlannedStudies(BaseAction action, PowbEvidencePlannedStudy plannedStudy, int i) {
+  public void validateExercises(BaseAction action, PowbMonitoringEvaluationLearningExercise exercise, int i) {
 
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
-    if (!(this.isValidString(plannedStudy.getPlannedTopic())
-      && this.wordCount(plannedStudy.getPlannedTopic()) <= 100)) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.plannedTopic", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].plannedTopic",
+    if (!(this.isValidString(exercise.getExercise()) && this.wordCount(exercise.getExercise()) <= 100)) {
+      action.addMessage(action.getText("monitoringLearning.plannedStudies.studyLearningExercise", params));
+      action.getInvalidFields().put(
+        "input-powbSynthesis.powbMonitoringEvaluationLearning.exercises[" + i + "].exercise",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!(this.isValidString(plannedStudy.getComments()) && this.wordCount(plannedStudy.getComments()) <= 100)) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.comments", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].comments",
+    if (!(this.isValidString(exercise.getComments()) && this.wordCount(exercise.getComments()) <= 100)) {
+      action.addMessage(action.getText("monitoringLearning.plannedStudies.comments", params));
+      action.getInvalidFields().put(
+        "input-powbSynthesis.powbMonitoringEvaluationLearning.exercises[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+  }
 
-    if (plannedStudy.getGeographicScope() == -1) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.geographicScope", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].geographicScope",
+  public void validateMEL(BaseAction action, PowbSynthesis powbSynthesis) {
+    if (!(this.isValidString(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight())
+      && this.wordCount(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight()) <= 100)) {
+      action.addMessage(action.getText("monitoringLearning.areasOfInterest"));
+      action.getInvalidFields().put("input-powbSynthesis.powbMonitoringEvaluationLearning.highlight",
         InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (plannedStudy.getSrfSubIdo() != null) {
-      if (plannedStudy.getSrfSubIdo().getId() == -1) {
-        action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.relevant", params));
-        action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].srfSubIdo.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
     }
   }
 
 }
-
