@@ -11,11 +11,15 @@ function attachEvents() {
   $('#systemReset button').on('click', function() {
     var pushData = {
         message: $('textarea.systemReset-message').val(),
-        diffTime: $('input.systemReset-diffTime').val(),
+        diffTime: $('input.systemReset-diffTime').val() || 120,
     }
-    //globalChannel.trigger("client-system-reset", pushData);
+    // globalChannel.trigger("client-system-reset", pushData);
 
-      $.ajax({ url: baseURL + '/sendNotification.do', data: pushData, success: resetSuccess });
+    $.ajax({
+        url: baseURL + '/sendNotification.do',
+        data: pushData,
+        success: resetSuccess
+    });
     $('#systemReset').find('textarea, input').val('');
 
   });
@@ -28,4 +32,5 @@ function attachEvents() {
     $('#simpleNotification').find('textarea, input').val('');
   });
 }
-function resetSuccess(){}
+function resetSuccess() {
+}
