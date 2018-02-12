@@ -30,6 +30,8 @@ import java.util.Map;
 
 public interface UserDAO {
 
+  public List<Map<String, Object>> findCustomQuery(String string);
+
   /**
    * This method gets the data of a Permissions identified with a given id.
    * 

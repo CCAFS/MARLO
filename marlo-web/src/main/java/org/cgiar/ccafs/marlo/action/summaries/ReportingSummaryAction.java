@@ -1716,29 +1716,28 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && d.getProject().getGlobalUnitProjects().stream()
             .filter(gup -> gup.isActive() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0
-          && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
-          && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
-              || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
-                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this
-                  .getSelectedYear())))
-            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
-              && (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
-                .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))
-            || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-              && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear()
-                || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
-                  && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this
-                    .getSelectedYear()))))
-          && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+        && d.getDeliverableInfo(this.getSelectedPhase()).getStatus() != null
+        && ((d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear()
+            || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
+              .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() >= this.getSelectedYear())))
+          || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
+            && (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null && d
+              .getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this.getSelectedYear()))
+          || (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            && (d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear()
+              || (d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear() != null
+                && d.getDeliverableInfo(this.getSelectedPhase()).getNewExpectedYear().intValue() == this
+                  .getSelectedYear()))))
+        && (d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || d.getDeliverableInfo(this.getSelectedPhase()).getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Cancelled.getStatusId())))
         .collect(Collectors.toList()));
 
       deliverables
@@ -2878,9 +2877,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   private TypedTableModel getOtherContributionsDetailTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"region", "indicator", "contribution_description", "target_contribution", "otherContributionyear"},
-      new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"region", "indicator", "contribution_description", "target_contribution",
+          "otherContributionyear"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Integer.class}, 0);
     for (OtherContribution otherContribution : project.getOtherContributions().stream().filter(oc -> oc.isActive())
       .collect(Collectors.toList())) {
       String region = null, indicator = null, contributionDescription = null;
@@ -3678,7 +3679,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
 
 
-    ServletActionContext.getContext().setLocale(locale);
+    try {
+      ServletActionContext.getContext().setLocale(locale);
+    } catch (Exception e) {
+
+    }
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
 
