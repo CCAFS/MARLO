@@ -291,10 +291,11 @@ public class ProjectDeliverableAction extends BaseAction {
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverable.getId());
 
       is_capdev = String.valueOf(deliverable.isCapdevD());
-      capdevs = capdevService.findAll().stream()
-        .filter(
-          c -> (c.getProject() != null) && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
-        .collect(Collectors.toList());
+      capdevs =
+        capdevService
+          .findAll().stream().filter(c -> (c.getProject() != null)
+            && (c.getProject().getId() == deliverable.getProject().getId()) && c.isActive())
+          .collect(Collectors.toList());
       Collections.sort(capdevs, (ra1, ra2) -> (int) (ra2.getId() - ra1.getId()));
       Path path = this.getAutoSaveFilePath();
 
@@ -431,7 +432,7 @@ public class ProjectDeliverableAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       CenterDeliverable deliverableDB = deliverableService.getDeliverableById(deliverableID);
 
@@ -660,6 +661,7 @@ public class ProjectDeliverableAction extends BaseAction {
   public void setIs_capdev(String is_capdev) {
     this.is_capdev = is_capdev;
   }
+
   public void setLoggedCenter(GlobalUnit loggedCenter) {
     this.loggedCenter = loggedCenter;
   }
