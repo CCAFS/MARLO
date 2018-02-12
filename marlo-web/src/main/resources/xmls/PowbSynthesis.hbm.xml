@@ -67,5 +67,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory" />
 		</set>
+		<one-to-one name="powbManagementRisk"
+      class="org.cgiar.ccafs.marlo.data.model.PowbManagementRisk" cascade="save-update"></one-to-one>
 	</class>
 </hibernate-mapping>

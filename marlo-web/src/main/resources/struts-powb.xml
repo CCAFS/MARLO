@@ -139,7 +139,7 @@
     </action>
     
     <!--  3.1 Management of Risks to Your CRP -->
-    <action name="{crp}/managementRisk" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+    <action name="{crp}/managementRisk" class="org.cgiar.ccafs.marlo.action.powb.ManagementRiskAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_managementRisk.ftl</result>
       <result name="success" type="redirectAction">
