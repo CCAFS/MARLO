@@ -621,7 +621,9 @@ public class CrpPpaPartnersAction extends BaseAction {
         } else {
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
             .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
+
           if (liaisonInstitution != null) {
+            partner.setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
             liaisonInstitution = new LiaisonInstitution();
             liaisonInstitution.setInstitution(partner.getInstitution());
             liaisonInstitution.setCrp(loggedCrp);
