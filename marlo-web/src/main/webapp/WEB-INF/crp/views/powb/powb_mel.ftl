@@ -42,7 +42,7 @@
           [#if PMU]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="powbSynthesis.monitoringLearning.areasOfInterest" i18nkey="monitoringLearning.areasOfInterest" help="monitoringLearning.areasOfInterest.help" display=true required=true className="limitWords-100" paramText="${(actualPhase.year)!}" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbMonitoringEvaluationLearning.highlight" i18nkey="monitoringLearning.areasOfInterest" help="monitoringLearning.areasOfInterest.help" display=true required=true className="limitWords-100" paramText="${(actualPhase.year)!}" editable=editable /]
           </div>
           [/#if]
           
@@ -62,9 +62,9 @@
               <h4 class="subTitle headTitle col-md-9">[@s.text name="monitoringLearning.plannedStudies" /]</h4>
             </div>
             <div class="expectedStudies-list" listname="list-plannedStudies">
-            [#if powbSynthesis.powbEvidence.plannedStudies?has_content]
-              [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
-                [@plannedStudyMacro element=plannedStudy name="powbSynthesis.monitoringLearning.plannedStudies"  index=plannedStudy_index isEditable=editable/]
+            [#if powbSynthesis.powbMonitoringEvaluationLearning.exercises?has_content]
+              [#list powbSynthesis.powbMonitoringEvaluationLearning.exercises as exercise]
+                [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=plannedStudy_index isEditable=editable/]
               [/#list]
             [#else]
               [#if !editable]<p>[@s.text name="monitoringLearning.plannedStudies.empty" /]</p>[/#if]
@@ -90,7 +90,7 @@
 </section>
 
 [#-- Planned Study Template --]
-[@plannedStudyMacro element={} name="powbSynthesis.monitoringLearning.plannedStudies"  index=-1 template=true/]
+[@plannedStudyMacro element={} name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=-1 template=true/]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -110,7 +110,7 @@
     <div class="form-group row"> 
       [#-- Study/Learning exercise --] 
       <div class="col-xs-12">
-        [@customForm.input name="${customName}.studyLearningExercise" i18nkey="monitoringLearning.plannedStudies.studyLearningExercise" placeholder="" className="" required=true editable=isEditable/]
+        [@customForm.input name="${customName}.exercise" i18nkey="monitoringLearning.plannedStudies.studyLearningExercise" placeholder="" className="" required=true editable=isEditable/]
       </div>
     </div>
     [#-- Comments --] 
@@ -122,7 +122,7 @@
   </div>
 [/#macro]
 
-[#macro tableBMacro]
+[#macro tableFlagshipsPlannedMacro]
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
@@ -132,22 +132,22 @@
       </tr>
     </thead>
     <tbody>
-    [#if flagshipPlannedList?has_content]
-      [#list flagshipPlannedList as flagshipPlanned]
+    [#if flagshipExercises?has_content]
+      [#list flagshipExercises as flagshipExercise]
         <tr>
           [#-- FP --]
           <td class="tb-fp text-center">
-            <span class="programTag" style="border-color:${(flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.acronym}
+            <span class="programTag" style="border-color:${(flagshipExercise.powbMonitoringEvaluationLearning.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
+              ${flagshipExercise.powbMonitoringEvaluationLearning.powbSynthesis.liaisonInstitution.crpProgram.acronym}
             </span>
           </td>
-          [#-- Planned topic of study --]
+          [#-- Planned Study Exercise --]
           <td>
-            ${(flagshipPlanned.plannedTopic)!''}
+            ${(flagshipExercise.exercise)!''}
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(flagshipPlanned.comments)!''}"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=100 /]
+          <td class="comments" title="${(flagshipExercise.comments)!''}"> 
+            [@utilities.wordCutter string="${(flagshipExercise.comments)!''}" maxPos=100 /]
           </td>
         </tr>
       [/#list]

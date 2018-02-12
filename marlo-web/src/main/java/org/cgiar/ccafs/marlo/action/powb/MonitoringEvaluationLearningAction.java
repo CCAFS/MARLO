@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
 import java.io.BufferedReader;
@@ -91,11 +92,13 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
 
   @Inject
-  public MonitoringEvaluationLearningAction(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
-    AuditLogManager auditLogManager, LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    CrpProgramManager crpProgramManager, ProjectFocusManager projectFocusManager,
+  public MonitoringEvaluationLearningAction(APConfig config, GlobalUnitManager crpManager,
+    PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
+    ProjectFocusManager projectFocusManager,
     PowbMonitoringEvaluationLearningExerciseManager powbMonitoringEvaluationLearningExerciseManager,
     PowbMonitoringEvaluationLearningManager powbMonitoringEvaluationLearningManager) {
+    super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.auditLogManager = auditLogManager;

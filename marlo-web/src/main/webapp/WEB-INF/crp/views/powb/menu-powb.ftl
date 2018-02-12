@@ -15,7 +15,7 @@
     { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': flagship || PMU },
     { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': flagship || PMU },
     { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false  },
-    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'monitoringLearning',         'active': flagship || PMU }
+    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',         'active': flagship || PMU }
     ]
   },
   { 'title': '3.  CRP Management', 'show': true,
