@@ -122,7 +122,7 @@ public class SendMailS {
     EmailLog emailLog = new EmailLog();
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
-    emailLog.setTo(bbcEmail);
+    emailLog.setTo(toEmail);
     emailLog.setDate(new Date());
     emailLog.setMessage(messageContent);
     emailLog.setSubject(subject);
