@@ -90,7 +90,9 @@ public class MonitoringEvaluationLearningValidator extends BaseValidator {
         }
       }
 
-      this.validateMEL(action, powbSynthesis);
+      if (this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
+        this.validateMEL(action, powbSynthesis);
+      }
 
       if (!this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
         if (powbSynthesis.getPowbMonitoringEvaluationLearning() != null) {
