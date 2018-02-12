@@ -380,7 +380,10 @@ $(document).ready(
                     $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
                   }
                   $item.find(".currentBudget").html(
-                      "<br> <strong> Current Budget</strong> - $" + setCurrencyFormat(source.amount));
+                      "<br> <strong> Current Budget:</strong>  $" + setCurrencyFormat(source.amount));
+                  if(source.financeCode) {
+                    $item.find(".financeCode").html("<br> <strong> Finance Code:</strong> " + source.financeCode);
+                  }
                   $item.find('.contactId').html(source.id);
                   $item.find('.budget').html(source.amount);
                   $item.find('.budgetTypeName').html(source.type);
