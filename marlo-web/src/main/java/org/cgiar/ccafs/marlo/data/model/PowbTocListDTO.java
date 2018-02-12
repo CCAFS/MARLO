@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class PowbTocList implements Serializable {
+public class PowbTocListDTO implements Serializable {
 
 
   private static final long serialVersionUID = -3990241163829321362L;
@@ -32,7 +32,7 @@ public class PowbTocList implements Serializable {
   private String overall;
 
 
-  public PowbTocList() {
+  public PowbTocListDTO() {
 
   }
 

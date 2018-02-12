@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class PowbManagementRiskList implements Serializable {
+public class PowbManagementRiskListDTO implements Serializable {
 
 
   private static final long serialVersionUID = -3990241163829321362L;
@@ -32,7 +32,7 @@ public class PowbManagementRiskList implements Serializable {
   private String highlight;
 
 
-  public PowbManagementRiskList() {
+  public PowbManagementRiskListDTO() {
 
   }
 

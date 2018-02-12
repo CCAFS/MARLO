@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `powb_management_risk`;
 CREATE TABLE `powb_management_risk` (
 `id`  bigint(20) NOT NULL ,
 `highlight`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
