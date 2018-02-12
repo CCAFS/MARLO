@@ -27,103 +27,231 @@ public class CrossCuttingDimensionTableDTO implements Serializable {
     return serialVersionUID;
   }
 
-  private String genderPrincipal;
+  private int genderPrincipal;
 
-  private String genderSignificant;
+  private int genderSignificant;
 
-  private String genderScored;
+  private int genderScored;
 
-  private String youthPrincipal;
+  private int youthPrincipal;
 
-  private String youthSignificant;
+  private int youthSignificant;
 
-  private String youthScored;
+  private int youthScored;
 
-  private String capDevPrincipal;
+  private int capDevPrincipal;
 
-  private String capDevSignificant;
+  private int capDevSignificant;
 
-  private String capDevScored;
+  private int capDevScored;
 
-  private String total;
+  private double percentageGenderSignificant;
 
-  public String getCapDevPrincipal() {
+  private double percentageGenderPrincipal;
+
+  private double percentageGenderNotScored;
+
+  private double percentageYouthPrincipal;
+
+  private double percentageYouthSignificant;
+
+  private double percentageYouthNotScored;
+
+  private double percentageCapDevSignificant;
+
+  private double percentageCapDevPrincipal;
+
+  private double percentageCapDevNotScored;
+
+  private double total;
+
+
+  public int getCapDevPrincipal() {
     return capDevPrincipal;
   }
 
-  public String getCapDevScored() {
+
+  public int getCapDevScored() {
     return capDevScored;
   }
 
-  public String getCapDevSignificant() {
+
+  public int getCapDevSignificant() {
     return capDevSignificant;
   }
 
-  public String getGenderPrincipal() {
+
+  public int getGenderPrincipal() {
     return genderPrincipal;
   }
 
-  public String getGenderScored() {
+
+  public int getGenderScored() {
     return genderScored;
   }
 
-  public String getGenderSignificant() {
+
+  public int getGenderSignificant() {
     return genderSignificant;
   }
 
-  public String getTotal() {
+
+  public double getPercentageCapDevNotScored() {
+    return percentageCapDevNotScored;
+  }
+
+
+  public double getPercentageCapDevPrincipal() {
+    return percentageCapDevPrincipal;
+  }
+
+
+  public double getPercentageCapDevSignificant() {
+    return percentageCapDevSignificant;
+  }
+
+
+  public double getPercentageGenderNotScored() {
+    return percentageGenderNotScored;
+  }
+
+
+  public double getPercentageGenderPrincipal() {
+    return percentageGenderPrincipal;
+  }
+
+
+  public double getPercentageGenderSignificant() {
+    return percentageGenderSignificant;
+  }
+
+
+  public double getPercentageYouthNotScored() {
+    return percentageYouthNotScored;
+  }
+
+
+  public double getPercentageYouthPrincipal() {
+    return percentageYouthPrincipal;
+  }
+
+
+  public double getPercentageYouthSignificant() {
+    return percentageYouthSignificant;
+  }
+
+
+  public double getTotal() {
     return total;
   }
 
-  public String getYouthPrincipal() {
+
+  public int getYouthPrincipal() {
     return youthPrincipal;
   }
 
-  public String getYouthScored() {
+
+  public int getYouthScored() {
     return youthScored;
   }
 
-  public String getYouthSignificant() {
+
+  public int getYouthSignificant() {
     return youthSignificant;
   }
 
-  public void setCapDevPrincipal(String capDevPrincipal) {
+
+  public void setCapDevPrincipal(int capDevPrincipal) {
     this.capDevPrincipal = capDevPrincipal;
   }
 
-  public void setCapDevScored(String capDevScored) {
+
+  public void setCapDevScored(int capDevScored) {
     this.capDevScored = capDevScored;
   }
 
-  public void setCapDevSignificant(String capDevSignificant) {
+
+  public void setCapDevSignificant(int capDevSignificant) {
     this.capDevSignificant = capDevSignificant;
   }
 
-  public void setGenderPrincipal(String genderPrincipal) {
+
+  public void setGenderPrincipal(int genderPrincipal) {
     this.genderPrincipal = genderPrincipal;
   }
 
-  public void setGenderScored(String genderScored) {
+
+  public void setGenderScored(int genderScored) {
     this.genderScored = genderScored;
   }
 
-  public void setGenderSignificant(String genderSignificant) {
+
+  public void setGenderSignificant(int genderSignificant) {
     this.genderSignificant = genderSignificant;
   }
 
-  public void setTotal(String total) {
+
+  public void setPercentageCapDevNotScored(double percentageCapDevNotScored) {
+    this.percentageCapDevNotScored = percentageCapDevNotScored;
+  }
+
+
+  public void setPercentageCapDevPrincipal(double percentageCapDevPrincipal) {
+    this.percentageCapDevPrincipal = percentageCapDevPrincipal;
+  }
+
+
+  public void setPercentageCapDevSignificant(double percentageCapDevSignificant) {
+    this.percentageCapDevSignificant = percentageCapDevSignificant;
+  }
+
+
+  public void setPercentageGenderNotScored(double percentageGenderNotScored) {
+    this.percentageGenderNotScored = percentageGenderNotScored;
+  }
+
+
+  public void setPercentageGenderPrincipal(double percentageGenderPrincipal) {
+    this.percentageGenderPrincipal = percentageGenderPrincipal;
+  }
+
+
+  public void setPercentageGenderSignificant(double percentageGenderSignificant) {
+    this.percentageGenderSignificant = percentageGenderSignificant;
+  }
+
+
+  public void setPercentageYouthNotScored(double percentageYouthNotScored) {
+    this.percentageYouthNotScored = percentageYouthNotScored;
+  }
+
+
+  public void setPercentageYouthPrincipal(double percentageYouthPrincipal) {
+    this.percentageYouthPrincipal = percentageYouthPrincipal;
+  }
+
+
+  public void setPercentageYouthSignificant(double percentageYouthSignificant) {
+    this.percentageYouthSignificant = percentageYouthSignificant;
+  }
+
+
+  public void setTotal(double total) {
     this.total = total;
   }
 
-  public void setYouthPrincipal(String youthPrincipal) {
+
+  public void setYouthPrincipal(int youthPrincipal) {
     this.youthPrincipal = youthPrincipal;
   }
 
-  public void setYouthScored(String youthScored) {
+
+  public void setYouthScored(int youthScored) {
     this.youthScored = youthScored;
   }
 
-  public void setYouthSignificant(String youthSignificant) {
+
+  public void setYouthSignificant(int youthSignificant) {
     this.youthSignificant = youthSignificant;
   }
 

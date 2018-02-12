@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.powb.CrossCuttingValidator;
@@ -82,6 +83,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
   private PowbSynthesis powbSynthesis;
+  private CrossCuttingDimensionTableDTO tableC;
 
   private Long powbSynthesisID;
 
@@ -174,6 +176,11 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   }
 
 
+  public CrossCuttingDimensionTableDTO getTableC() {
+    return tableC;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
@@ -225,6 +232,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    Phase phase = this.getActualPhase();
 
 
     // If there is a history version being loaded
@@ -268,7 +276,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       } catch (Exception e) {
-        Phase phase = this.getActualPhase();
+
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
           powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
@@ -333,6 +341,9 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
 
+    // get the table c
+    this.tableC = crossCuttingManager.loadTableByLiaisonAndPhase(liaisonInstitutionID, phase.getId());
+
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
@@ -344,7 +355,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -395,6 +405,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   }
 
+
   public void setCrossCutting(CrossCuttingDimensions crossCutting) {
     this.crossCutting = crossCutting;
   }
@@ -424,10 +435,15 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
+
+
+  public void setTableC(CrossCuttingDimensionTableDTO tableC) {
+    this.tableC = tableC;
+  }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
