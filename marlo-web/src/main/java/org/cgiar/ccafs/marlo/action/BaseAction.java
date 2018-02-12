@@ -353,7 +353,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean reportingActive;
   private int reportingYear;
 
-  private HttpServletRequest request;
+  protected HttpServletRequest request;
 
   /*********************************************************
    * CENTER VARIABLES
@@ -4556,14 +4556,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isVisibleTopGUList() {
-    User user = this.getCurrentUser();
-    user = userManager.getUser(user.getId());
-    List<CrpUser> crpUsers =
-      new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
-    if (crpUsers.size() > 1) {
-      return true;
+    if (this.getSession().containsKey(APConstants.CRP_VISIBLE_TOP_GULIST)) {
+      Boolean viBoolean = (Boolean) this.getSession().get(APConstants.CRP_VISIBLE_TOP_GULIST);
+      return viBoolean.booleanValue();
+    } else {
+      User user = this.getCurrentUser();
+      user = userManager.getUser(user.getId());
+      List<CrpUser> crpUsers =
+        new ArrayList<>(user.getCrpUsers().stream().filter(u -> u.isActive()).collect(Collectors.toList()));
+      if (crpUsers.size() > 1) {
+        return true;
+      }
+      return false;
     }
-    return false;
+
   }
 
   public void loadDissemination(Deliverable deliverableBD) {
