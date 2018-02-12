@@ -41,7 +41,94 @@ public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionMa
 
   @Override
   public CrossCuttingDimensionTableDTO loadTableByLiaisonAndPhase(Long liaisonInstitution, Long phaseId) {
-    return crossCuttingDAO.getTableC(liaisonInstitution, phaseId);
+
+    CrossCuttingDimensionTableDTO tableC = crossCuttingDAO.getTableC(liaisonInstitution, phaseId);
+
+    // get the values of participation of every dimension
+
+    if (tableC != null) {
+      int total = tableC.getGenderPrincipal() + tableC.getGenderSignificant() + tableC.getGenderScored();
+      total += tableC.getYouthPrincipal() + tableC.getYouthSignificant() + tableC.getYouthScored();
+      total += tableC.getCapDevPrincipal() + tableC.getCapDevSignificant() + tableC.getCapDevScored();
+
+      // Gender Principal
+      if (total == 0) {
+        tableC.setPercentageGenderPrincipal(new Double(0));
+      } else {
+        double percentage = (tableC.getGenderPrincipal() * 100) / total;
+        tableC.setPercentageGenderPrincipal(new Double(percentage));
+      }
+
+      // Gender Significant
+      if (total == 0) {
+        tableC.setPercentageGenderSignificant(new Double(0));
+      } else {
+        double percentage = (tableC.getGenderSignificant() * 100) / total;
+        tableC.setPercentageGenderSignificant(new Double(percentage));
+      }
+
+      // Gender Scored
+      if (total == 0) {
+        tableC.setPercentageGenderNotScored(new Double(0));
+      } else {
+        double percentage = (tableC.getGenderScored() * 100) / total;
+        tableC.setPercentageGenderNotScored(new Double(percentage));
+      }
+
+      // Youth Principal
+      if (total == 0) {
+        tableC.setPercentageYouthPrincipal(new Double(0));
+      } else {
+        double percentage = (tableC.getYouthPrincipal() * 100) / total;
+        tableC.setPercentageYouthPrincipal(new Double(percentage));
+      }
+
+      // Youth Significant
+      if (total == 0) {
+        tableC.setPercentageYouthSignificant(new Double(0));
+      } else {
+        double percentage = (tableC.getYouthSignificant() * 100) / total;
+        tableC.setPercentageYouthSignificant(new Double(percentage));
+      }
+
+      // Youth Scored
+      if (total == 0) {
+        tableC.setPercentageYouthNotScored(new Double(0));
+      } else {
+        double percentage = (tableC.getYouthScored() * 100) / total;
+        tableC.setPercentageYouthNotScored(new Double(percentage));
+      }
+
+
+      // CapDev Principal
+      if (total == 0) {
+        tableC.setPercentageCapDevPrincipal(new Double(0));
+      } else {
+        double percentage = (tableC.getCapDevPrincipal() * 100) / total;
+        tableC.setPercentageCapDevPrincipal(new Double(percentage));
+      }
+
+      // CapDev Significant
+      if (total == 0) {
+        tableC.setPercentageCapDevSignificant(new Double(0));
+      } else {
+        double percentage = (tableC.getCapDevSignificant() * 100) / total;
+        tableC.setPercentageCapDevSignificant(new Double(percentage));
+      }
+
+      // CapDev Scored
+      if (total == 0) {
+        tableC.setPercentageCapDevNotScored(new Double(0));
+      } else {
+        double percentage = (tableC.getCapDevScored() * 100) / total;
+        tableC.setPercentageCapDevNotScored(new Double(percentage));
+      }
+
+
+    }
+
+
+    return tableC;
   }
 
   @Override
