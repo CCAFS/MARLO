@@ -90,7 +90,7 @@ public class StrategicObjectivesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
       List<CenterObjective> objectivesDB = new ArrayList<>(objectiveService.findAll().stream()
         .filter(o -> o.isActive() && o.getResearchCenter().equals(loggedCenter)).collect(Collectors.toList()));
 
