@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
@@ -103,9 +102,10 @@ public class MonitoringEvaluationLearningValidator extends BaseValidator {
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"list-exercises"}));
 
             } else {
-              for (int i = 0; i < powbSynthesis.getPowbEvidence().getPlannedStudies().size(); i++) {
-                PowbEvidencePlannedStudy plannedStudy = powbSynthesis.getPowbEvidence().getPlannedStudies().get(i);
-                // this.validatePlannedStudies(action, plannedStudy, i);
+              for (int i = 0; i < powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises().size(); i++) {
+                PowbMonitoringEvaluationLearningExercise exercise =
+                  powbSynthesis.getPowbMonitoringEvaluationLearning().getExercises().get(i);
+                this.validateExercises(action, exercise, i);
               }
             }
 
