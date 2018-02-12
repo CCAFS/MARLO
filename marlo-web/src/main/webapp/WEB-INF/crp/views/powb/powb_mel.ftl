@@ -61,7 +61,7 @@
             <div class="evidence-plannedStudies-header row">
               <h4 class="subTitle headTitle col-md-9">[@s.text name="monitoringLearning.plannedStudies" /]</h4>
             </div>
-            <div class="expectedStudies-list" listname="list-plannedStudies">
+            <div class="expectedStudies-list" listname="list-exercises">
             [#if powbSynthesis.powbMonitoringEvaluationLearning.exercises?has_content]
               [#list powbSynthesis.powbMonitoringEvaluationLearning.exercises as exercise]
                 [@flagshipsPlannedMELMacro element=exercise name="powbSynthesis.powbMonitoringEvaluationLearning.exercises"  index=exercise_index isEditable=editable/]
