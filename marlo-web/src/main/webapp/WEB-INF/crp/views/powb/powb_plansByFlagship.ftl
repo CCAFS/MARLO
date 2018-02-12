@@ -99,7 +99,7 @@
             [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(liaisonInstitution.id))!{}]
             <tr>
               <td><span class="programTag" style="border-color:${(liaisonInstitution.crpProgram.color)!'#fff'}">${liaisonInstitution.crpProgram.acronym}</span></td>              
-              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary?html}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               <td>
                 [#if (flagshipPlan.flagshipProgramFile.fileName?has_content)!false]
                   <a href="${action.getPath(liaisonInstitution.id)}/${flagshipPlan.flagshipProgramFile.fileName}" target="_blank">${flagshipPlan.flagshipProgramFile.fileName}</a>
