@@ -5,4 +5,7 @@ $(document).ready(function() {
   // Setting Numeric Inputs
   $('form input.currencyInput').numericInput();
 
+  $('.currencyInput').on('keyup', function() {
+    console.log($(this).attr('class'));
+  });
 });

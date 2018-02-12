@@ -103,11 +103,7 @@
           
           [#-- Narrative--]
           <td class="left narrative">
-            [#if element.overall!='']
-            ${element.overall!'None'}
-            [#else]
-            <i>Prefilled when available</i>
-            [/#if]
+            [#if (element.overall?has_content)!false]${element.overall?html}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
           </td>
           
         </tr>

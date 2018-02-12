@@ -67,17 +67,6 @@
 
 [#macro tableD ]
 
-  [#assign categories = [
-    "Program director & flagship leaders",
-    "Principal Investigators",
-    "Other Senior Scientists (not PIs)",
-    "Post-docs / junior scientists",
-    "Research fellows",
-    "Other science support staff",
-    "TOTAL CRP"
-    ] 
-  /]
-
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -90,13 +79,18 @@
         </tr>
       </thead>
       <tbody>
-        [#if categories??]
-          [#list categories as category]
+        [#if powbCrpStaffingCategories ??]
+          [#list powbCrpStaffingCategories  as crpStaffingCategory]
+            [#assign customName = "powbSynthesis.crpStaffing[${crpStaffingCategory_index}]" /]
             <tr>
-              <td>${category}</td>
-              <td> [@customForm.input name="powbSynthesis.crpStaffing.female" i18nkey="" showTitle=false className="currencyInput text-center femaleInput category-${category_index}" required=true /]  </td>
-              <td> [@customForm.input name="powbSynthesis.crpStaffing.male" i18nkey="" showTitle=false className="currencyInput text-center maleInput category-${category_index}" required=true /] </td>
-              <td class="text-center"> <span> 0 </span> </td>
+              <td>
+                <span>${crpStaffingCategory.category}</span> 
+                <input type="hidden" name="${customName}.id" value="" />
+                <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="" />
+              </td>
+              <td> [@customForm.input name="${customName}.female" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true /]  </td>
+              <td> [@customForm.input name="${customName}.male" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true /] </td>
+              <td class="text-center"> <span class=" ">0</span> </td>
               <td class="text-center"> <span>0</span>% </td>
             </tr>
           [/#list]
