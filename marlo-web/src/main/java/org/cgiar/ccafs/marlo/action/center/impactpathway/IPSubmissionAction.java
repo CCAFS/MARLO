@@ -90,7 +90,7 @@ public class IPSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
       if (this.isCompleteIP(programID)) {
         if (submissionService.findAll() != null) {
           CenterProgram program = programService.getProgramById(programID);
