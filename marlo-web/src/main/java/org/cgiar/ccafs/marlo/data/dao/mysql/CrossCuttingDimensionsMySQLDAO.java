@@ -64,47 +64,47 @@ public class CrossCuttingDimensionsMySQLDAO extends AbstractMarloDAO<CrossCuttin
     String sql = "select " + "(" + "select count(id) " + " from deliverables_info di " + "where exists(  "
       + " select 'x' from deliverables d " + " where exists( " + " select 'y' from projects_info p "
       + " where p.liaison_institution_id =  " + liaisonInstitution + " and p.id_phase = " + phaseId
-      + " and p.id = d.project_id) " + " and di.deliverable_id = d.id) "
+      + " and p.project_id = d.project_id) " + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_gender is not null " + " and di.cross_cutting_score_gender = 2 "
       + " and di.id_phase = " + phaseId + ") genderPrincipal, " + " (select count(id)  " + " from deliverables_info di "
       + " where exists( " + " select 'x' from deliverables d " + " where exists( " + " select 'y' from projects_info p "
       + " where p.liaison_institution_id = " + liaisonInstitution + " and p.id_phase = " + phaseId
-      + " and p.id = d.project_id)" + " and di.deliverable_id = d.id) "
+      + " and p.project_id = d.project_id)" + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_gender is not null " + " and di.cross_cutting_score_gender = 1 "
       + " and di.id_phase = " + phaseId + ") genderSignificant, " + " (select count(id)  "
       + " from deliverables_info di " + " where exists( " + " select 'x' from deliverables d " + " where exists( "
       + " select 'y' from projects_info p " + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id)" + " and di.deliverable_id = d.id) "
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id)" + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_gender is not null " + " and di.cross_cutting_score_gender = 0 "
       + " and di.id_phase = " + phaseId + ") genderNotTargered, " + "(" + " select count(id)  num_youth "
       + " from deliverables_info di " + " where exists( " + " select 'x' from deliverables d " + "where exists( "
       + " select 'y' from projects_info p " + " where p.liaison_institution_id =  " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id) " + " and di.deliverable_id = d.id) "
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id) " + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_youth is not null " + " and di.cross_cutting_score_youth = 2 "
       + " and di.id_phase = " + phaseId + ")youthPrincipal, " + "(" + "select count(id)  num_youth "
       + " from deliverables_info di " + " where exists(" + " select 'x' from deliverables d " + " where exists("
       + " select 'y' from projects_info p " + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id) " + " and di.deliverable_id = d.id) "
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id) " + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_youth is not null " + " and di.cross_cutting_score_youth = 1 "
       + " and di.id_phase = " + phaseId + ")youthSignificant," + "(" + " select count(id)  num_youth "
       + " from deliverables_info di " + " where exists(" + " select 'x' from deliverables d" + " where exists("
       + " select 'y' from projects_info p" + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id)" + " and di.deliverable_id = d.id)"
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id)" + " and di.deliverable_id = d.id)"
       + " and di.cross_cutting_score_youth is not null " + " and di.cross_cutting_score_youth = 0 "
       + " and di.id_phase = " + phaseId + ")youthNotTargered, " + "(" + " select count(id)  num_capacity "
       + " from deliverables_info di" + " where exists(" + " select 'x' from deliverables d " + " where exists( "
       + " select 'y' from projects_info p " + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id) " + " and di.deliverable_id = d.id)"
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id) " + " and di.deliverable_id = d.id)"
       + " and di.cross_cutting_score_capacity is not null " + " and di.cross_cutting_score_capacity = 2 "
       + " and di.id_phase =  " + phaseId + ")capacityPrincipal, " + "(" + "select count(id)  num_capacity "
       + " from deliverables_info di " + " where exists( " + "select 'x' from deliverables d " + "where exists( "
       + " select 'y' from projects_info p " + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id) " + " and di.deliverable_id = d.id) "
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id) " + " and di.deliverable_id = d.id) "
       + " and di.cross_cutting_score_capacity is not null " + " and di.cross_cutting_score_capacity = 1 "
       + " and di.id_phase = " + phaseId + ")capacitySignificant, " + "(" + "select count(id)  num_capacity "
       + " from deliverables_info di" + " where exists(" + "select 'x' from deliverables d" + " where exists("
       + " select 'y' from projects_info p " + " where p.liaison_institution_id = " + liaisonInstitution
-      + " and p.id_phase = " + phaseId + " and p.id = d.project_id)" + " and di.deliverable_id = d.id)"
+      + " and p.id_phase = " + phaseId + " and p.project_id = d.project_id)" + " and di.deliverable_id = d.id)"
       + " and di.cross_cutting_score_capacity is not null " + " and di.cross_cutting_score_capacity = 0 "
       + " and di.id_phase = " + phaseId + ")capacityNotScored";
 
