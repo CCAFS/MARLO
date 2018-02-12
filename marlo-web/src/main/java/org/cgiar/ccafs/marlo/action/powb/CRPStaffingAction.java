@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbCrpStaffingCategoriesManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCrpStaffingManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisCrpStaffingCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
@@ -30,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
+import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffingCategories;
 import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
@@ -74,12 +76,18 @@ public class CRPStaffingAction extends BaseAction {
   private UserManager userManager;
   private PowbCrpStaffingManager powbCrpStaffingManager;
   private PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager;
+  private PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager;
   // Model for the front-end
   private PowbSynthesis powbSynthesis;
   private Long powbSynthesisID;
   private List<LiaisonInstitution> liaisonInstitutions;
+  private List<PowbCrpStaffingCategories> powbCrpStaffingCategories;
+
   private String transaction;
+
+
   private LiaisonInstitution liaisonInstitution;
+
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
   private CrpStaffingValidator validator;
@@ -89,7 +97,8 @@ public class CRPStaffingAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
     CrpStaffingValidator validator, PowbCrpStaffingManager powbCrpStaffingManager,
-    PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager) {
+    PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager,
+    PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -100,6 +109,7 @@ public class CRPStaffingAction extends BaseAction {
     this.validator = validator;
     this.powbCrpStaffingManager = powbCrpStaffingManager;
     this.powbSynthesisCrpStaffingCategoryManager = powbSynthesisCrpStaffingCategoryManager;
+    this.powbCrpStaffingCategoriesManager = powbCrpStaffingCategoriesManager;
   }
 
   @Override
@@ -147,7 +157,6 @@ public class CRPStaffingAction extends BaseAction {
     return null;
   }
 
-
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -165,6 +174,7 @@ public class CRPStaffingAction extends BaseAction {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
@@ -177,11 +187,15 @@ public class CRPStaffingAction extends BaseAction {
     return loggedCrp;
   }
 
-
   // Method to download link file
   public String getPath(Long liaisonInstitutionID) {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitutionID).replace('\\', '/');
   }
+
+  public List<PowbCrpStaffingCategories> getPowbCrpStaffingCategories() {
+    return powbCrpStaffingCategories;
+  }
+
 
   // Method to get the download folder
   private String getPowbSourceFolder(Long liaisonInstitutionID) {
@@ -265,6 +279,9 @@ public class CRPStaffingAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+    powbCrpStaffingCategories = new ArrayList<>();
+    powbCrpStaffingCategories =
+      powbCrpStaffingCategoriesManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_CRPSTAFFING_BASE_PERMISSION, params));
@@ -452,6 +469,10 @@ public class CRPStaffingAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPowbCrpStaffingCategories(List<PowbCrpStaffingCategories> powbCrpStaffingCategories) {
+    this.powbCrpStaffingCategories = powbCrpStaffingCategories;
   }
 
 
