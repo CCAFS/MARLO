@@ -89,7 +89,9 @@ public class EvidencesValidator extends BaseValidator {
         }
       }
 
-      this.validateEvidence(action, powbSynthesis);
+      if (this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
+        this.validateEvidence(action, powbSynthesis);
+      }
 
       if (!this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
         if (powbSynthesis.getPowbEvidence() != null) {
