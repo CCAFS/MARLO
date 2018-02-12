@@ -126,6 +126,7 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("(fsi.title LIKE '%" + query + "%' ");
     q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
     q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR fsi.finance_code LIKE '%" + query + "%' ");
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
     q.append("AND fsi.type = 1 ");
     q.append("AND fsi.id_phase = " + phaseID);
@@ -172,8 +173,8 @@ public class FundingSourceMySQLDAO extends AbstractMarloDAO<FundingSource, Long>
     q.append("(fsi.title LIKE '%" + query + "%' ");
     q.append("OR fsi.funding_source_id LIKE '%" + query + "%' ");
     q.append("OR CONCAT('FS', fsi.funding_source_id) LIKE '%" + query + "%' ");
+    q.append("OR fsi.finance_code LIKE '%" + query + "%' ");
     q.append("OR (SELECT NAME FROM budget_types bt WHERE bt.id = fsi.type) LIKE '%" + query + "%' )");
-
     q.append("AND fsi.id_phase = " + phaseID);
     q.append(" AND fsi.end_date IS NOT NULL ");
     q.append("AND " + year + " <= YEAR(fsi.end_date) ");
