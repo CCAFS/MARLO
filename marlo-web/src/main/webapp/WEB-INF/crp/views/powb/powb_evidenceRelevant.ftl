@@ -60,8 +60,10 @@
           <div class="form-group margin-panel">
             <div class="evidence-plannedStudies-header row">
             [#-- if powbSynthesis.powbEvidence.plannedStudies?has_content --]
-              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
-              <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
+              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>`
+              [#if popUpProjects?has_content]
+                <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
+              [/#if]
             [#-- else ]
               <p>Prefilled if available</p>
             [/#if --]
@@ -194,6 +196,12 @@
           </td>
         </tr>
       [/#list]
+    [#else]
+      <tr>
+        <td class="text-center">
+          Prefilled when available
+        </td>
+      </tr>
     [/#if]
     </tbody>
   </table>
