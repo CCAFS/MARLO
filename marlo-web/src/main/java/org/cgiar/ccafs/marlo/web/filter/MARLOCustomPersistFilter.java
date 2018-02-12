@@ -100,6 +100,7 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
     } catch (StaleObjectStateException staleEx) {
       LOG.error("This interceptor does not implement optimistic concurrency control!");
       LOG.error("Your application will not work until you add compensation actions!");
+      httpRequest.getSession().setAttribute("exception", staleEx);
       // Rollback, close everything, possibly compensate for any permanent changes
       // during the conversation, and finally restart business conversation. Maybe
       // give the user of the application a chance to merge some of his work with
@@ -107,6 +108,7 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       throw staleEx;
     } catch (Throwable ex) {
 
+      httpRequest.getSession().setAttribute("exception", ex);
       // Rollback only
       LOG.error("Exception occurred when trying to commit transaction");
       try {
@@ -121,6 +123,8 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       // Let others handle it... maybe another interceptor for exceptions?
       throw new ServletException(ex);
     }
+
+
     /**
      * We want to decouple or AuditLogInterceptor from our DAOs so we need a mechanism to
      * pass entity values from the DAOs to the Hibernate Interceptors/Hibernate Listeners.
