@@ -15,9 +15,14 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -63,14 +68,19 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private long startTime;
   private List<PowbSynthesis> powbSynthesisList;
 
+  // Managers
+  private CrossCuttingDimensionManager crossCuttingManager;
+
   // RTF bytes
   private byte[] bytesRTF;
   // Streams
   InputStream inputStream;
 
   @Inject
-  public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager) {
+  public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
+    CrossCuttingDimensionManager crossCuttingManager) {
     super(config, crpManager, phaseManager);
+    this.crossCuttingManager = crossCuttingManager;
   }
 
 
@@ -124,8 +134,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       // this.fillSubreport((SubReport) hm.get("PlannedStudies"), "PlannedStudies");
       // this.fillSubreport((SubReport) hm.get("TableBContent"), "TableBContent");
       // // Table C
-      // this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
-      // this.fillSubreport((SubReport) hm.get("TableCContent"), "TableCContent");
+      this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
+      this.fillSubreport((SubReport) hm.get("TableCContent"), "TableCContent");
       // // Table D
       // this.fillSubreport((SubReport) hm.get("CRPStaffing"), "CRPStaffing");
       // this.fillSubreport((SubReport) hm.get("TableDContent"), "TableDContent");
@@ -315,10 +325,38 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
       ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
 
+
+    LiaisonInstitution PMU = null;
+
+    // get the PMU institution
+    for (LiaisonInstitution institution : this.getLoggedCrp().getLiaisonInstitutions()) {
+      if (this.isPMU(institution)) {
+        PMU = institution;
+        break;
+      }
+    }
+
     if (powbSynthesisList != null && !powbSynthesisList.isEmpty()) {
       for (PowbSynthesis powbSynthesis : powbSynthesisList) {
         plansCRPFlagshipDescription =
           this.getPowbSynthesisFlagshipPlanSummary(powbSynthesis, plansCRPFlagshipDescription);
+
+
+        // Cross Cutting Dimensions Info
+        LiaisonInstitution institution = powbSynthesis.getLiaisonInstitution();
+        Phase phase = powbSynthesis.getPhase();
+
+        if (institution != null && phase != null) {
+          if (phase.equals(this.getSelectedPhase())) {
+            if (institution.getId() == PMU.getId()) {
+              CrossCuttingDimensions crossCutting = powbSynthesis.getCrossCutting();
+              crossCuttingGenderDescription = crossCutting.getSummarize();
+              crossCuttingOpenDataDescription = crossCutting.getAssets();
+            }
+          }
+        }
+
+
       }
     }
     model.addRow(new Object[] {unitName, leadCenter, participantingCenters, adjustmentsDescription,
@@ -447,9 +485,52 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       new Class[] {Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
         Double.class, Double.class, Double.class},
       0);
-    for (int i = 0; i < 5; i++) {
-      model.addRow(new Object[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+
+    LiaisonInstitution PMU = null;
+
+    // get the PMU institution
+    for (LiaisonInstitution institution : this.getLoggedCrp().getLiaisonInstitutions()) {
+      if (this.isPMU(institution)) {
+        PMU = institution;
+        break;
+      }
     }
+
+
+    if (powbSynthesisList != null && !powbSynthesisList.isEmpty()) {
+      for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+        LiaisonInstitution institution = powbSynthesis.getLiaisonInstitution();
+        Phase phase = powbSynthesis.getPhase();
+
+        if (institution != null && phase != null) {
+
+          if (phase.equals(this.getSelectedPhase())) {
+
+            if (institution.getId() == PMU.getId()) {
+              CrossCuttingDimensionTableDTO tableC =
+                this.crossCuttingManager.loadTableByLiaisonAndPhase(institution.getId(), phase.getId());
+
+              if (tableC != null) {
+                model.addRow(new Object[] {tableC.getPercentageGenderPrincipal(), tableC.getPercentageYouthPrincipal(),
+                  tableC.getPercentageCapDevPrincipal(), tableC.getPercentageGenderSignificant(),
+                  tableC.getPercentageYouthSignificant(), tableC.getPercentageCapDevSignificant(),
+                  tableC.getPercentageGenderNotScored(), tableC.getPercentageYouthNotScored(),
+                  tableC.getPercentageCapDevNotScored(), tableC.getTotal()});
+              }
+
+            }
+
+
+          }
+
+
+        }
+
+
+      }
+    }
+
+
     return model;
   }
 
@@ -493,6 +574,14 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   public int getYear() {
     return year;
+  }
+
+  public boolean isPMU(LiaisonInstitution institution) {
+    if (institution.getAcronym().equals("PMU")) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
