@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.validation.powb;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -36,10 +38,12 @@ import javax.inject.Named;
 public class ToCAdjustmentsValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
+  private final PowbSynthesisManager powbSynthesisManager;
 
-  public ToCAdjustmentsValidator(GlobalUnitManager crpManager) {
+  public ToCAdjustmentsValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager) {
     super();
     this.crpManager = crpManager;
+    this.powbSynthesisManager = powbSynthesisManager;
   }
 
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
@@ -51,6 +55,22 @@ public class ToCAdjustmentsValidator extends BaseValidator {
         + baseAction.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public LiaisonInstitution getLiaisonInstitution(BaseAction action, long powbSynthesisID) {
+    PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    LiaisonInstitution liaisonInstitution = powbSynthesis.getLiaisonInstitution();
+    return liaisonInstitution;
+  }
+
+  public boolean isPMU(LiaisonInstitution liaisonInstitution) {
+    boolean isFP = false;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
+        isFP = true;
+      }
+    }
+    return isFP;
   }
 
   public void validate(BaseAction action, PowbSynthesis powbSynthesis, boolean saving) {
@@ -80,6 +100,24 @@ public class ToCAdjustmentsValidator extends BaseValidator {
   }
 
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
+
+
+    if (this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
+
+      if (powbSynthesis.getPowbToc().getFile() != null) {
+        if (powbSynthesis.getPowbToc().getFile().getId() == null
+          || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
+          action.addMessage(action.getText("adjustmentsChanges.uploadFile"));
+          action.getInvalidFields().put("input-powbSynthesis.powbToc.file.id",
+            action.getText("adjustmentsChanges.uploadFile"));
+        }
+      } else {
+        action.addMessage(action.getText("adjustmentsChanges.uploadFile"));
+        action.getInvalidFields().put("input-powbSynthesis.powbToc.file.id",
+          action.getText("adjustmentsChanges.uploadFile"));
+      }
+    }
+
     if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
       && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
       action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
