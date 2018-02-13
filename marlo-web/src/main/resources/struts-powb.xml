@@ -139,11 +139,11 @@
     </action>
     
     <!--  3.1 Management of Risks to Your CRP -->
-    <action name="{crp}/managementRisk" class="org.cgiar.ccafs.marlo.action.powb.ManagementRiskAction">
+    <action name="{crp}/managementRisks" class="org.cgiar.ccafs.marlo.action.powb.ManagementRiskAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/powb/powb_managementRisk.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powb_managementRisks.ftl</result>
       <result name="success" type="redirectAction">
-         <param name="actionName">${crpSession}/managementRisk</param>
+         <param name="actionName">${crpSession}/managementRisks</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="powbSynthesisID">${powbSynthesisID}</param>
         <param name="edit">true</param>
@@ -152,11 +152,11 @@
     </action>
     
     <!--  3.2 CRP Management and Governance -->
-    <action name="{crp}/ManagementGovernance" class="org.cgiar.ccafs.marlo.action.powb.ManagementGovernanceAction">
+    <action name="{crp}/managementGovernance" class="org.cgiar.ccafs.marlo.action.powb.ManagementGovernanceAction">
       <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/powb/powb_ManagementGovernance.ftl</result>
+      <result name="input">/WEB-INF/crp/views/powb/powb_managementGovernance.ftl</result>
       <result name="success" type="redirectAction">
-         <param name="actionName">${crpSession}/ManagementGovernance</param>
+         <param name="actionName">${crpSession}/managementGovernance</param>
         <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
         <param name="powbSynthesisID">${powbSynthesisID}</param>
         <param name="edit">true</param>
