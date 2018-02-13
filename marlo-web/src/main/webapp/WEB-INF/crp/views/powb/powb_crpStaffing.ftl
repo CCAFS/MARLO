@@ -53,7 +53,7 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#if flagship]
+        [#if PMU]
           [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
         [/#if]
         
@@ -79,19 +79,19 @@
       </thead>
       <tbody>
         [#if powbCrpStaffingCategories??]
-          Exists
           [#list powbCrpStaffingCategories  as crpStaffingCategory]
             [#assign customName = "powbSynthesis.crpStaffing[${crpStaffingCategory_index}]" /]
+            [#assign element = (action.getSynthesisCrpStaffingCategory(crpStaffingCategory.id))!{}]
             <tr>
               <td>
                 <span>${crpStaffingCategory.category}</span>
-                <input type="hidden" name="${customName}.id" value="" />
-                <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="" />
+                <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+                <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="${(crpStaffingCategory.id)!}" />
               </td>
               <td> [@customForm.input name="${customName}.female" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true /]  </td>
               <td> [@customForm.input name="${customName}.male" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true /] </td>
-              <td class="text-center"> <span class="type-total category-${crpStaffingCategory_index}">0</span> </td>
-              <td class="text-center"> <span class="type-percFemale category-${crpStaffingCategory_index}">0</span>% </td>
+              <td class="text-center"> <span class="label-total category-${crpStaffingCategory_index}">0</span> </td>
+              <td class="text-center"> <span class="label-percFemale category-${crpStaffingCategory_index}">0</span>% </td>
             </tr>
           [/#list]
         [/#if]

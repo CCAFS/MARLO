@@ -24,6 +24,8 @@ jQuery.fn.numericInput = function() {
       if((inputVal % 1) == 0) {
         $(input).val(parseInt(inputVal));
       }
+    } else {
+      $(input).val(0);
     }
     $(input).on("keydown", function(e) {
       isNumber(e);
