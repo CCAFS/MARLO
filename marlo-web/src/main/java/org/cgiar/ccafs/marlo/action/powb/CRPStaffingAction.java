@@ -196,7 +196,6 @@ public class CRPStaffingAction extends BaseAction {
     return powbCrpStaffingCategories;
   }
 
-
   // Method to get the download folder
   private String getPowbSourceFolder(Long liaisonInstitutionID) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
@@ -205,12 +204,30 @@ public class CRPStaffingAction extends BaseAction {
       .concat(File.separator);
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
+  }
+
+  public PowbSynthesisCrpStaffingCategory getSynthesisCrpStaffingCategory(Long crpStaffingcategory) {
+    if (crpStaffingcategory != null) {
+      PowbCrpStaffingCategories powbCrpStaffingCategories =
+        powbCrpStaffingCategoriesManager.getPowbCrpStaffingCategoriesById(crpStaffingcategory);
+      List<PowbSynthesisCrpStaffingCategory> PowbSynthesisCrpStaffingCategory =
+        powbCrpStaffingCategories.getPowbSynthesisCrpStaffingCategory().stream()
+          .filter(cc -> cc.isActive() && cc.getPowbSynthesis().equals(powbSynthesis)).collect(Collectors.toList());
+      if (PowbSynthesisCrpStaffingCategory != null && !PowbSynthesisCrpStaffingCategory.isEmpty()) {
+        return PowbSynthesisCrpStaffingCategory.get(0);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   public String getTransaction() {
@@ -282,6 +299,8 @@ public class CRPStaffingAction extends BaseAction {
     powbCrpStaffingCategories = new ArrayList<>();
     powbCrpStaffingCategories =
       powbCrpStaffingCategoriesManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory = this.getSynthesisCrpStaffingCategory(1l);
+    System.out.println(powbSynthesisCrpStaffingCategory);
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_CRPSTAFFING_BASE_PERMISSION, params));
