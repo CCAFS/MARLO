@@ -97,7 +97,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
       }
 
 
-      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+      if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
         String stringEditable = parameters.get(APConstants.EDITABLE_REQUEST).getMultipleValues()[0];
         editParameter = stringEditable.equals("true");
         // If the user is not asking for edition privileges we don't need to validate them.
