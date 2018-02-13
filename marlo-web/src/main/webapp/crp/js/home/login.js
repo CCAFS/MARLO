@@ -9,6 +9,8 @@ function init() {
 
   cookieTime = 100;
 
+  setCrpSession();
+
   // Verify user email session
   if(verifyCookie("username.email")) {
     username.val(getCookie("username.email"));
@@ -179,6 +181,18 @@ function verifyCrpCookie(){
   return false;
 }
 
+function setCrpSession(){
+  var availableList=['A4NH','CCAFS','FTA','Livestock','Maize','PIM','WLE','Wheat','CIAT','BigData'];
+  var path = window.location.pathname.split("/");
+  $.each(path, function(i){
+    $.each(availableList,function(j){
+      if(path[i]==availableList[j]){
+        crpSession = path[i];
+      }
+    });
+  });
+}
+
 function setCRPCookie() {
   var crpInput = $('input#crp-input').val();
   // Create crp cookie
@@ -199,7 +213,6 @@ function loadAvailableItems(email){
         $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
       }*/
       $.each(data.crps, function(i){
-        if(window.location.pathname.split("/")[2] != "logout.do"){crpSession = window.location.pathname.split("/")[2]};
         if(crpSession == data.crps[i].acronym){
           hasAccess=true;
         }
