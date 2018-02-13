@@ -29,8 +29,6 @@ function init() {
 
   $('.helpMessage3').on("click", openDialog);
 
-  // select name
-  $(".keyOutput").attr("name", "deliverable.deliverableInfo.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
   keyOutputs();
@@ -127,7 +125,7 @@ function init() {
   // CHANGE STATUS
   $statuses.on("change", function() {
     justificationByStatus($(this).val());
-  });
+  }).trigger('change');
 
   $(".yearExpected").on("change", validateCurrentDate);
 

@@ -41,9 +41,14 @@
            </div>
          </div>
          <br />
-         <div class="form-group">
-          <button type="button" class="btn btn-primary">[@s.text name="form.buttons.sendMessage" /]</button>
-         </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary">[@s.text name="form.buttons.sendMessage" /]</button>
+          </div>
+          <hr />
+          <ul>
+            <li><strong>Message #1:</strong> This message is to inform you that in 2 minutes we will restart the server, please save your changes. Thank you</li>
+            <li><strong>Message #2:</strong> [@s.text name="systemMessage.serverReset" /]</li>
+          </ul>
         </div>
         
         <h4 class="sectionTitle">Simple Message</h4>
