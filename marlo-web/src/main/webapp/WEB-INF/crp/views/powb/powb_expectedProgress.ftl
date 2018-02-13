@@ -208,7 +208,7 @@
     [#-- Title --]
     <div class="form-group">
       <div class="pull-right">[@milestoneContributions element=element /]</div>
-      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} ${element.id}</p>
+      <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
     [#-- Assessment of risk to achievement --]
@@ -246,15 +246,15 @@
         <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
       </div>
       <div class="modal-body">
-        <p> <strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
-        
+        <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
+        [#if element.srfTargetUnit??]<strong>Target unit:</strong> ${(element.srfTargetUnit.name!)}[/#if]
         <div class="">
           <table class="table table-bordered">
             <thead>
               <tr>
                 <th class="col-md-1"> Project ID </th>
                 <th class="col-md-4"> Project Title </th>
-                <th class="col-md-1"> Target Value and Unit </th>
+                [#if element.srfTargetUnit??]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
                 <th class="col-md-6"> Narrative of the  expected target </th>
                 <th> </th>
               </tr>
@@ -266,13 +266,11 @@
                 <tr>
                   <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
                   <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
-                  <td>
-                    [#if (contribution.expectedUnit.name??)!false]
-                      ${(contribution.expectedValue)!} ( ${(contribution.expectedUnit.name)!})
-                    [#else]
-                      <i>N/A</i>
-                    [/#if]
+                  [#if element.srfTargetUnit??]
+                  <td class="text-center">
+                    [#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]
                   </td>
+                  [/#if]
                   <td> ${contribution.narrativeTarget} </td>
                   <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                 </tr>
