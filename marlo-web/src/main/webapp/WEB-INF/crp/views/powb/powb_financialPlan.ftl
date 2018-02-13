@@ -41,9 +41,21 @@
           
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.financialPlan.highlight" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+          </div>
+          <br />
+          
+          [#-- Table E: CRP Planned Budget   --]
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="financialPlan.tableE.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            [@tableE /]
           </div>
           
+          [#-- Table F: Main Areas of W1/2 Expenditure   --]
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="financialPlan.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            [@tableF /]
+          </div>
           
         </div>
         
@@ -60,3 +72,55 @@
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
+[#macro tableE ]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th rowspan="2"></th>
+          <th colspan="3">[@s.text name="financialPlan.tableE.plannedBudget"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
+          <th rowspan="2">[@s.text name="financialPlan.tableE.comments" /]</th>
+        </tr>
+        <tr>
+          <th>[@s.text name="financialPlan.tableE.w1w2" /]</th>
+          <th>[@s.text name="financialPlan.tableE.w3bilateral" /]</th>
+          <th>[@s.text name="financialPlan.tableE.total" /]</th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list 0 .. 5 as element]
+          <tr>
+            <td>FP ${element}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableF ]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>[@s.text name="financialPlan.tableF.expenditureArea" /]</th>
+          <th>[@s.text name="financialPlan.tableF.estimatedPercentage"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
+          <th>[@s.text name="financialPlan.tableF.comments" /]</th>
+        </tr>
+      </thead>
+      <tbody>
+        [#list 0 .. 12 as element]
+          <tr>
+            <td>  ${element}</td>
+            <td></td>
+            <td class="col-md-7"></td>
+          </tr>
+        [/#list]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
