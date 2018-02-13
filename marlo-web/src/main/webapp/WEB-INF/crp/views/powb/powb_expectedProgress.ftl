@@ -140,7 +140,7 @@
                 [#-- Assessment --]
                 <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Means Verification --]
-                <td>[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td class="col-md-3">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]
@@ -244,17 +244,21 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">[@s.text name="expectedProgress.milestonesContributions" /]</h4>
+        <hr />
+        <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
+        [#assign hasTarget = element.srfTargetUnit?? && (element.srfTargetUnit.id != -1) /]
+        [#if hasTarget]
+          <p><strong>Target unit:</strong> ${(element.srfTargetUnit.name!)} <br /> <strong>Target value:</strong> ${(element.value!)}</p>
+        [/#if]
       </div>
       <div class="modal-body">
-        <p><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title!)}</p>
-        [#if element.srfTargetUnit??]<strong>Target unit:</strong> ${(element.srfTargetUnit.name!)}[/#if]
         <div class="">
           <table class="table table-bordered">
             <thead>
               <tr>
                 <th class="col-md-1"> Project ID </th>
                 <th class="col-md-4"> Project Title </th>
-                [#if element.srfTargetUnit??]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
+                [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
                 <th class="col-md-6"> Narrative of the  expected target </th>
                 <th> </th>
               </tr>
@@ -266,12 +270,12 @@
                 <tr>
                   <td> <a href="${pURL}" target="_blank"> P${contribution.projectOutcome.project.id} </a> </td>
                   <td> <a href="${pURL}" target="_blank"> ${contribution.projectOutcome.project.projectInfo.title} </a></td>
-                  [#if element.srfTargetUnit??]
+                  [#if hasTarget]
                   <td class="text-center">
                     [#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]
                   </td>
                   [/#if]
-                  <td> ${contribution.narrativeTarget} </td>
+                  <td> ${contribution.narrativeTarget?replace('\n', '<br>')} </td>
                   <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                 </tr>
               [/#list]
