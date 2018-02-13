@@ -118,6 +118,7 @@ public class CapdevDescriptionAction extends BaseAction {
   private final ICapdevOutputsService capdevOutputService;
   private String transaction;
   private final AuditLogManager auditLogService;
+  private CapacityDevelopment capdevDB;
 
   @Inject
   public CapdevDescriptionAction(APConfig config, ICenterAreaManager researchAreaService,
@@ -329,9 +330,12 @@ public class CapdevDescriptionAction extends BaseAction {
       researchProgramSercive.findAll().stream().filter(rp -> rp.isActive()).collect(Collectors.toList());
     Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
-    projects =
-      projectService.findAll().stream().filter(p -> p.isActive() && (p.getName() != null)).collect(Collectors.toList());
-    Collections.sort(projects, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+    if (projectService.findAll() != null) {
+      projects = projectService.findAll().stream().filter(p -> p.isActive() && (p.getName() != null))
+        .collect(Collectors.toList());
+      Collections.sort(projects, (r1, r2) -> r1.getName().compareTo(r2.getName()));
+    }
+
 
     crps = crpService.findAll().stream().filter(out -> out.isActive()).collect(Collectors.toList());
     Collections.sort(crps, (r1, r2) -> r1.getName().compareTo(r2.getName()));
@@ -464,6 +468,8 @@ public class CapdevDescriptionAction extends BaseAction {
 
     }
 
+    capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+
     if (this.isHttpPost()) {
       capdev.setResearchArea(null);
       capdev.setResearchProgram(null);
@@ -486,8 +492,6 @@ public class CapdevDescriptionAction extends BaseAction {
   @Override
   public String save() {
 
-
-    CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
 
     capdevDB.setOtherDiscipline(capdev.getOtherDiscipline());
     capdevDB.setOtherTargetGroup(capdev.getOtherTargetGroup());
