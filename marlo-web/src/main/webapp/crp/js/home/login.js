@@ -1,6 +1,7 @@
 $(document).ready(init);
 var cookieTime,isSecondForm=false, hasAccess=false;
 var username = $("input[name='user.email']");
+var inputPassword= $("input[name='user.password']");
 var crpSession="";
 
 
@@ -35,6 +36,12 @@ function init() {
     $('.loginForm p.invalidField').addClass("hidden");
   });
 
+  // Password - Hide the wrong data message
+  inputPassword.on("change", function(e) {
+    $('input.login-input').removeClass("wrongData");
+    $('.loginForm p.invalidField').addClass("hidden");
+  });
+
   //Set focus on email input on page load
   $(".loginForm #login-email .user-email").focus();
 
@@ -49,14 +56,15 @@ function init() {
     e.preventDefault();
 
     var email = username.val();
-    var password= $("input[name='user.password']").val();
 
     if(email == "" || !isEmail(email)){
       wrongData("invalidEmail");
     }else if(!isSecondForm){
       loadAvailableItems(email);
+    }else if(inputPassword.val()==""){
+      wrongData("voidPassword");
     }else{
-      checkPassword(email,password);
+      checkPassword(email,inputPassword.val());
     }
   });
 
@@ -298,6 +306,32 @@ function secondForm(data){
   }
 }
 
+function checkPassword(email,password){
+  $.ajax({
+    url: baseUrl+"/validateUser.do",
+    data: {
+      userEmail: email,
+      userPassword: password
+    },
+    beforeSend: function() {},
+    success: function(data) {
+      console.log("ajax= "+data.messageEror);
+      if(!data.userFound.loginSuccess){
+        if(data.messageEror=="Invalid CGIAR email or password, please try again"){
+          wrongData("incorrectPassword");
+        }else{
+
+          wrongData("deniedAccess",data.messageEror);
+        }
+      }else{
+        $("input#login_formSubmit").click();
+      }
+    },
+    complete: function(data) {},
+    error: function(data) {}
+  });
+}
+
 function wrongData(type,customMessage){
   $('input.login-input').addClass("wrongData");
   if(customMessage != null){
@@ -308,31 +342,6 @@ function wrongData(type,customMessage){
     $('.loginForm p.invalidField.'+type).removeClass("hidden");
   }
   $(".loginForm #login-email .user-email").focus();
-}
-
-function checkPassword(email,password){
-  $.ajax({
-    url: baseUrl+"/validateUser.do",
-    data: {
-      userEmail: email,
-      userPassword: password
-    },
-    beforeSend: function() {},
-    success: function(data) {
-      if(!data.userFound.loginSuccess){
-        console.log(data.messageError);
-        if(data.message=="Invalid CGIAR email or password, please try again"){
-          wrongData("incorrectPassword");
-        }else{
-          wrongData("deniedAccess",data.messageError);
-        }
-      }else{
-        $("input#login_formSubmit").click();
-      }
-    },
-    complete: function(data) {},
-    error: function(data) {}
-  });
 }
 
 function setCookie(cname,cvalue,mins) {
