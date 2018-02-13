@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -111,6 +112,8 @@ public class EvidencesAction extends BaseAction {
 
   private ProjectFocusManager projectFocusManager;
 
+  private ProjectManager projectManager;
+
 
   // Variables
   private String transaction;
@@ -150,7 +153,7 @@ public class EvidencesAction extends BaseAction {
     SrfSubIdoManager srfSubIdoManager, SrfSloIndicatorManager srfSloIndicatorManager,
     PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager,
     LiaisonInstitutionManager liaisonInstitutionManager, PowbEvidenceManager powbEvidenceManager,
-    EvidencesValidator validator, ProjectFocusManager projectFocusManager) {
+    EvidencesValidator validator, ProjectFocusManager projectFocusManager, ProjectManager projectManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -164,6 +167,7 @@ public class EvidencesAction extends BaseAction {
     this.powbEvidenceManager = powbEvidenceManager;
     this.validator = validator;
     this.projectFocusManager = projectFocusManager;
+    this.projectManager = projectManager;
   }
 
 
@@ -394,7 +398,8 @@ public class EvidencesAction extends BaseAction {
         .collect(Collectors.toList()));
 
       for (ProjectFocus focus : projectFocus) {
-        Project project = focus.getProject();
+        Project project = projectManager.getProjectById(focus.getProject().getId());
+        System.out.println("Project : " + project.getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
           .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
@@ -520,10 +525,10 @@ public class EvidencesAction extends BaseAction {
         }
 
         if (this.isFlagship()) {
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-            powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
-              .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
-          }
+          // if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+          // powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
+          // .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+          // }
 
           this.popUpProject(phase.getId());
         }
@@ -538,9 +543,9 @@ public class EvidencesAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    if (this.isPMU()) {
-      this.getFpPlannedList(liaisonInstitutions, phase.getId());
-    }
+    // if (this.isPMU()) {
+    // this.getFpPlannedList(liaisonInstitutions, phase.getId());
+    // }
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
