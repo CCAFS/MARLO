@@ -198,8 +198,8 @@
       [/#list]
     [#else]
       <tr>
-        <td class="text-center">
-          Prefilled when available
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
     [/#if]
@@ -252,6 +252,12 @@
           </td>
         </tr>
       [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="5">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
     [/#if]
     </tbody>
   </table>

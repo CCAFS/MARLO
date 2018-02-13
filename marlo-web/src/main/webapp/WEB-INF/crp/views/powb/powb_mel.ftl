@@ -143,14 +143,20 @@
           </td>
           [#-- Planned Study Exercise --]
           <td>
-            ${(flagshipExercise.exercise)!''}
+            [#if flagshipExercise.exercise?has_content]${(flagshipExercise.exercise)!''}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
           </td>
           [#-- Comments --]
           <td class="comments" title="${(flagshipExercise.comments)!''}"> 
-            [@utilities.wordCutter string="${(flagshipExercise.comments)!''}" maxPos=100 /]
+            [#if flagshipExercise.comments?has_content][@utilities.wordCutter string="${(flagshipExercise.comments)!''}" maxPos=100 /][#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
           </td>
         </tr>
       [/#list]
+    [#else]
+      <tr>
+        <td class="text-center" colspan="3">
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+        </td>
+      </tr>
     [/#if]
     </tbody>
   </table>
