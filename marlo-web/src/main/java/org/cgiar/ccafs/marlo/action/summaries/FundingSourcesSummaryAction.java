@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -116,10 +117,14 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
         int endYear = this.getCalendarFromDate(endDate);
         int extentionYear = this.getCalendarFromDate(extentionDate);
-        if ((endYear >= this.getSelectedYear() && fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        if ((endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus()
+          .intValue() == Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Informally.getStatusId())))
           || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
+            .parseInt(FundingStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
           currentCycleFundingSources.add((fundingSource));
         }
       }
@@ -639,7 +644,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String extentionDate = "";
 
       if (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        .parseInt(FundingStatusEnum.Extended.getStatusId())) {
         if (fundingSource.getFundingSourceInfo().getExtensionDate() != null) {
           extentionDate = formatter.format(fundingSource.getFundingSourceInfo().getExtensionDate());
         } else {
@@ -657,7 +662,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         contract = this.getFundingSourceFileURL() + fundingSource.getFundingSourceInfo().getFile().getFileName();
         contractName = fundingSource.getFundingSourceInfo().getFile().getFileName();
       }
-
       String status = "";
       status = fundingSource.getFundingSourceInfo().getStatusName();
 
