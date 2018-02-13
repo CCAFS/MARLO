@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -42,7 +41,6 @@ public class CenterProjectDescriptionValidator extends BaseValidator {
   private GlobalUnitManager centerService;
 
 
-  @Inject
   public CenterProjectDescriptionValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }
