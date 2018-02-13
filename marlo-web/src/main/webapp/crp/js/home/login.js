@@ -56,8 +56,8 @@ function init() {
     e.preventDefault();
 
     var email = username.val();
-
-    if(email == "" || !isEmail(email)){
+    /*|| !isEmail(email) if you want to check if isEmail*/
+    if(email == "" ){
       wrongData("invalidEmail");
     }else if(!isSecondForm){
       loadAvailableItems(email);
