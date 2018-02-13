@@ -87,6 +87,7 @@
         <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
         <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
+        <th id="tb-checkbox" width="0%">Checkbox</th>
       </tr>
     </thead>
     <tbody>
@@ -117,11 +118,15 @@
           <td class="comments" title="${(popUp.comments)!''}"> 
             [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=100 /]
           </td>
+          [#-- Checkbox --]
+          <td class="checkbox"> 
+            [@customForm.checkbox name="checkbox" /]
+          </td>
         </tr>
       [/#list]
     [#else]
       <tr>
-        <td class="text-center" colspan="5">
+        <td class="text-center" colspan="6">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
