@@ -828,6 +828,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setModifiedBy(this.getCurrentUser());
       fundingSource.getFundingSourceInfo().setModificationJustification("");
 
+
       // if donor has a select option, no option put donor null
       if (fundingSource.getFundingSourceInfo().getDirectDonor() != null
         && fundingSource.getFundingSourceInfo().getDirectDonor().getId() != null
@@ -851,6 +852,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
       fundingSource.getFundingSourceInfo()
         .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
+      fundingSource.getFundingSourceInfo().setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()

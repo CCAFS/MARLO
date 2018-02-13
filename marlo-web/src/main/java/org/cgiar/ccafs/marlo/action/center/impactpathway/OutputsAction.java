@@ -355,7 +355,7 @@ public class OutputsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       CenterOutput outputDb = outputService.getResearchOutputById(outputID);
 

@@ -131,7 +131,6 @@
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne]
     <div class="form-group">
-
       [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
     </div>
   [/#if]

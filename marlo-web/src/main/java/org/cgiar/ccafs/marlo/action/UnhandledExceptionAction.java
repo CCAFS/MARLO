@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
@@ -62,6 +63,10 @@ public class UnhandledExceptionAction extends BaseAction {
     return writer.toString();
   }
 
+  public HttpServletRequest getServletRequest() {
+    return this.request;
+  }
+
   public void sendExceptionMessage() {
     String subject;
     StringBuilder message = new StringBuilder();
@@ -70,6 +75,12 @@ public class UnhandledExceptionAction extends BaseAction {
     if (exception == null) {
       exception = new Exception("MARLOCustomPersistFilter ERROR!");
     }
+
+    Exception e = (Exception) request.getSession().getAttribute("exception");
+    if (e != null) {
+      exception = e;
+    }
+    request.getSession().setAttribute("exception", null);
     exception.printStackTrace(new PrintWriter(writer));
 
 

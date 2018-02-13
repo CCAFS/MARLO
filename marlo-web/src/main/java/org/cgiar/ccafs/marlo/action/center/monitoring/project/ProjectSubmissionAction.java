@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
       if (this.isCompleteCenterProject(projectID)) {
         if (submissionService.findAll() != null) {
           project = projectService.getCenterProjectById(projectID);
