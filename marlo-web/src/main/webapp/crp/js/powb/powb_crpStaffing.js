@@ -8,16 +8,23 @@ $(document).ready(function() {
   $('.currencyInput').on('keyup', function() {
     var type = $(this).classParam('type');
     var category = $(this).classParam('category');
+    var total = getTotalByCategory(category);
+    var totalFemale = getTotalByCategoryAndType(category, "female");
 
-    var $total = $('span.label-total.category-' + category);
-    $total.text(getTotalByCategory(category));
-    $total.animateCss('flipInX');
+    var $totalLabel = $('span.label-total.category-' + category);
+    var $percFemaleLabel = $('span.label-percFemale.category-' + category);
+
+    $totalLabel.text(total);
+    $totalLabel.animateCss('flipInX');
+
+    $percFemaleLabel.text(((totalFemale / total) * 100).toFixed(2));
+    $percFemaleLabel.animateCss('flipInX');
 
   });
 });
 
 /**
- * Get total FTE per category (All budget types included)
+ * Get total FTE per category (All types included)
  * 
  * @param {string} category
  * @returns {number} total
@@ -25,7 +32,22 @@ $(document).ready(function() {
 function getTotalByCategory(category) {
   var total = 0
   $('input.category-' + category).each(function(i,input) {
-    total = total + ($(input).val() || 0);
+    total = total + (parseInt($(input).val()) || 0);
+  });
+  return total;
+}
+
+/**
+ * Get total FTE per category and Type
+ * 
+ * @param {string} category
+ * @param {string} type
+ * @returns {number} total
+ */
+function getTotalByCategoryAndType(category,type) {
+  var total = 0
+  $('input.category-' + category + '.type-' + type).each(function(i,input) {
+    total = total + (parseInt($(input).val()) || 0);
   });
   return total;
 }
