@@ -110,7 +110,7 @@
     [#else]
       <tr>
         <td colspan="2" class="text-center">
-          There is not data to show
+          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
     [/#if]
