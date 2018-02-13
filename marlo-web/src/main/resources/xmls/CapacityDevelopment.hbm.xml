@@ -32,7 +32,7 @@
 		</many-to-one>
 		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit"
 			fetch="select">
-			<column name="global_unit_id" />
+			<column name="crp" />
 		</many-to-one>
 		<many-to-one name="researchProgram"
 			class="org.cgiar.ccafs.marlo.data.model.CenterProgram" fetch="select">
