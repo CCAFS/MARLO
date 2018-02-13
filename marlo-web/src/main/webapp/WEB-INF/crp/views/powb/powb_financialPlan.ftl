@@ -60,7 +60,7 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#if flagship]
+        [#if PMU]
           [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
         [/#if]
         
@@ -92,10 +92,14 @@
           [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
           [#assign element = {} /]
           <tr>
-            <td>CRP Management & Support Cost ${category}</td>
+            <td>
+              <span>CRP Management & Support Cost ${category}</span>
+              <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+              <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
+            </td>
             <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${category_index}" required=true editable=editable && PMU /]</td>
             <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${category_index}" required=true editable=editable && PMU /]</td>
-            <td> US$ 0.00 </td>
+            <td> US$ <span class="label-total category-${category_index}">0.00</span> </td>
             <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
           </tr>
         [/#list]
@@ -119,7 +123,11 @@
           [#assign customName = "powbSynthesis.expenditures[${category_index}]" /]
           [#assign element = {} /]
           <tr>
-            <td> Start-up or maintenance of partnerships (internal or external) ${category} </td>
+            <td> 
+              <span>Start-up or maintenance of partnerships (internal or external) ${category} </span>
+              <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+              <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
+            </td>
             <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${category_index}" required=true editable=editable && PMU /]</td>
             <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
           </tr>
