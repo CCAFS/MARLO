@@ -740,7 +740,10 @@ public class DeliverableAction extends BaseAction {
       .getDeliverablePartnerships().stream()
       .filter(c -> c.isActive() && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
-      deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
+      if (deliverablePartnership.getProjectPartner() != null && deliverablePartnership.getProjectPartner().isActive()) {
+        deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
+      }
+
     }
 
     deliverablePartnerPersons.addAll(deliverablePartnerPersonsSet);
@@ -758,7 +761,9 @@ public class DeliverableAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProjectPartner().getId().longValue() == partnerID
         && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList())) {
-      if (deliverablePartnership.getProjectPartnerPerson() != null) {
+      if (deliverablePartnership.getProjectPartnerPerson() != null
+        && deliverablePartnership.getProjectPartnerPerson().isActive()
+        && deliverablePartnership.getProjectPartnerPerson().getProjectPartner().isActive()) {
         deliverablePartnerPersons.add(deliverablePartnership.getProjectPartnerPerson());
       }
     }
@@ -807,10 +812,10 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list =
-        deliverable.getDeliverablePartnerships().stream()
-          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
-            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+
+          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
         .collect(Collectors.toList());
 
 
