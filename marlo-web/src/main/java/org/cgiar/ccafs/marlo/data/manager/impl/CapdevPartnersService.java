@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.model.CapdevPartners;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class CapdevPartnersService implements ICapdevPartnersService {
 
 
