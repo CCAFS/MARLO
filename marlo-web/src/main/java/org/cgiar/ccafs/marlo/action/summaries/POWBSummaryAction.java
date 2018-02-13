@@ -511,11 +511,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
                 this.crossCuttingManager.loadTableByLiaisonAndPhase(institution.getId(), phase.getId());
 
               if (tableC != null) {
-                model.addRow(new Object[] {tableC.getPercentageGenderPrincipal(), tableC.getPercentageYouthPrincipal(),
-                  tableC.getPercentageCapDevPrincipal(), tableC.getPercentageGenderSignificant(),
-                  tableC.getPercentageYouthSignificant(), tableC.getPercentageCapDevSignificant(),
-                  tableC.getPercentageGenderNotScored(), tableC.getPercentageYouthNotScored(),
-                  tableC.getPercentageCapDevNotScored(), tableC.getTotal()});
+                model.addRow(
+                  new Object[] {tableC.getPercentageGenderPrincipal() / 100, tableC.getPercentageYouthPrincipal() / 100,
+                    tableC.getPercentageCapDevPrincipal() / 100, tableC.getPercentageGenderSignificant() / 100,
+                    tableC.getPercentageYouthSignificant() / 100, tableC.getPercentageCapDevSignificant() / 100,
+                    tableC.getPercentageGenderNotScored() / 100, tableC.getPercentageYouthNotScored() / 100,
+                    tableC.getPercentageCapDevNotScored() / 100, tableC.getTotal()});
               }
 
             }
