@@ -61,7 +61,7 @@
 		
 		<div class=" form-group "> 
 
-			[@s.form action=actionName enctype="multipart/form-data" cssClass=""]
+			[@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 			<!-- Radio Buttons-->
 			
 			<div class="radio">
