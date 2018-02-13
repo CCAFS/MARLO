@@ -86,6 +86,7 @@ public class ManagementGovernanceAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<PowbManagementGovernanceListDTO> managementGovernanceList;
 
+
   @Inject
   public ManagementGovernanceAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager, UserManager userManager,
@@ -122,6 +123,7 @@ public class ManagementGovernanceAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -131,6 +133,7 @@ public class ManagementGovernanceAction extends BaseAction {
     long liaisonInstitutionId = liaisonInstitutions.get(0).getId();
     return liaisonInstitutionId;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
@@ -154,6 +157,10 @@ public class ManagementGovernanceAction extends BaseAction {
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<PowbManagementGovernanceListDTO> getManagementGovernanceList() {
+    return managementGovernanceList;
   }
 
   public PowbSynthesis getPowbSynthesis() {
@@ -418,6 +425,10 @@ public class ManagementGovernanceAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setManagementGovernanceList(List<PowbManagementGovernanceListDTO> managementGovernanceList) {
+    this.managementGovernanceList = managementGovernanceList;
   }
 
 

@@ -24,7 +24,7 @@ public enum PowbSynthesisSectionStatusEnum {
   TOC_ADJUSTMENTS("adjustmentsChanges"), CRP_PROGRESS("expectedProgress"), EVIDENCES("evidenceRelevant"),
   FLAGSHIP_PLANS("plansByFlagship"), CROSS_CUTTING_DIMENSIONS("crossCuttingDimensions"), STAFFING("crpStaffing"),
   FINANCIAL_PLAN("financialPlan"), COLABORATION_INTEGRATION("collaborationIntegration"), MEL("mel"),
-  MANAGEMENT_RISK("managementRisk"), MANAGEMENT_GOVERNANCE("ManagementGovernances");
+  MANAGEMENT_RISK("managementRisks"), MANAGEMENT_GOVERNANCE("managementGovernance");
 
   public static PowbSynthesisSectionStatusEnum value(String status) {
     PowbSynthesisSectionStatusEnum[] lst = PowbSynthesisSectionStatusEnum.values();
