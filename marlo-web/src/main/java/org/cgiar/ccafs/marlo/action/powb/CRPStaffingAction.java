@@ -211,11 +211,9 @@ public class CRPStaffingAction extends BaseAction {
 
   public PowbSynthesisCrpStaffingCategory getSynthesisCrpStaffingCategory(Long crpStaffingcategory) {
     if (crpStaffingcategory != null) {
-      PowbCrpStaffingCategories powbCrpStaffingCategories =
-        powbCrpStaffingCategoriesManager.getPowbCrpStaffingCategoriesById(crpStaffingcategory);
       List<PowbSynthesisCrpStaffingCategory> PowbSynthesisCrpStaffingCategory =
-        powbCrpStaffingCategories.getPowbSynthesisCrpStaffingCategory().stream()
-          .filter(cc -> cc.isActive() && cc.getPowbSynthesis().equals(powbSynthesis)).collect(Collectors.toList());
+        powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().stream()
+          .filter(c -> c.getPowbCrpStaffingCategory().getId().equals(crpStaffingcategory)).collect(Collectors.toList());
       if (PowbSynthesisCrpStaffingCategory != null && !PowbSynthesisCrpStaffingCategory.isEmpty()) {
         return PowbSynthesisCrpStaffingCategory.get(0);
       } else {
@@ -315,9 +313,9 @@ public class CRPStaffingAction extends BaseAction {
     // We read the JSON serialized by the front-end and cast it to the object
     powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
     powbSynthesisID = powbSynthesis.getId();
-    PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
-    powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesisDB.getPowbSynthesisCrpStaffingCategory().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    // powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().clear();
+    // powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().addAll(powbSynthesisCrpStaffingCategoryList);
     this.setDraft(true);
     reader.close();
   }
