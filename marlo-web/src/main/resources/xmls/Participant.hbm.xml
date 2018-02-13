@@ -46,7 +46,7 @@
 		</property>
 		<many-to-one name="age" class="org.cgiar.ccafs.marlo.data.model.CapdevRangeAge"
 			fetch="select">
-			<column name="age" not-null="true" />
+			<column name="age"/>
 		</many-to-one>
 		<many-to-one name="highestDegree"
 			class="org.cgiar.ccafs.marlo.data.model.CapdevHighestDegree" fetch="select">
