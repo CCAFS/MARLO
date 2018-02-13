@@ -101,23 +101,6 @@ public class ToCAdjustmentsValidator extends BaseValidator {
 
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
 
-
-    if (this.isPMU(this.getLiaisonInstitution(action, powbSynthesis.getId()))) {
-
-      if (powbSynthesis.getPowbToc().getFile() != null) {
-        if (powbSynthesis.getPowbToc().getFile().getId() == null
-          || powbSynthesis.getPowbToc().getFile().getId().longValue() == -1) {
-          action.addMessage(action.getText("adjustmentsChanges.uploadFile"));
-          action.getInvalidFields().put("input-powbSynthesis.powbToc.file.id",
-            action.getText("adjustmentsChanges.uploadFile"));
-        }
-      } else {
-        action.addMessage(action.getText("adjustmentsChanges.uploadFile"));
-        action.getInvalidFields().put("input-powbSynthesis.powbToc.file.id",
-          action.getText("adjustmentsChanges.uploadFile"));
-      }
-    }
-
     if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
       && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
       action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
