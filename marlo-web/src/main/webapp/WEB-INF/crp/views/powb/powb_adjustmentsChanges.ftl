@@ -56,7 +56,6 @@
                   dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
                   path="${action.path}"
                   isEditable=editable
-                  required=true
                 /]
               </div>
             </div>
