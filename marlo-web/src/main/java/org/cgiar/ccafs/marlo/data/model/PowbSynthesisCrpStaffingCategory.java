@@ -69,6 +69,13 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return female;
   }
 
+  public Double getFemalePercentage() {
+    if (this.getTotalFTE() != 0) {
+      return Math.round(((female * 100) / this.getTotalFTE()) * 100.0) / 100.0;
+    } else {
+      return 0.0;
+    }
+  }
 
   @Override
   public Long getId() {
@@ -105,10 +112,15 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return powbCrpStaffingCategory;
   }
 
-
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
+
+  public Double getTotalFTE() {
+    return male + female;
+  }
+
 
   @Override
   public boolean isActive() {
@@ -120,15 +132,14 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setFemale(Double female) {
     this.female = female;
@@ -143,6 +154,7 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     this.male = male;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -152,16 +164,13 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setPowbCrpStaffingCategory(PowbCrpStaffingCategories powbCrpStaffingCategory) {
     this.powbCrpStaffingCategory = powbCrpStaffingCategory;
   }
 
-
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
 }
 
