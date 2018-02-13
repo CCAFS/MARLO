@@ -41,7 +41,7 @@
           
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
           </div>
           
           [#-- Table D: CRP Staffing (OPTIONAL IN POWB 2018)  --]
@@ -88,8 +88,8 @@
                 <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
                 <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="${(crpStaffingCategory.id)!}" />
               </td>
-              <td> [@customForm.input name="${customName}.female" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true /]  </td>
-              <td> [@customForm.input name="${customName}.male" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true /] </td>
+              <td> [@customForm.input name="${customName}.female" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]  </td>
+              <td> [@customForm.input name="${customName}.male" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true editable=editable && PMU  /] </td>
               <td class="text-center"> <span class="label-total category-${crpStaffingCategory_index}">0</span> </td>
               <td class="text-center"> <span class="label-percFemale category-${crpStaffingCategory_index}">0</span>% </td>
             </tr>
