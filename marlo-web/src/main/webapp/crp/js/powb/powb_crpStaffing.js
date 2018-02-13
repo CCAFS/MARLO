@@ -10,6 +10,10 @@ $(document).ready(function() {
     var category = $(this).classParam('category');
     var total = getTotalByCategory(category);
     var totalFemale = getTotalByCategoryAndType(category, "female");
+    var percFemale = ((totalFemale / total) * 100).toFixed(1);
+    if(isNaN(percFemale)) {
+      percFemale = 0;
+    }
 
     var $totalLabel = $('span.label-total.category-' + category);
     var $percFemaleLabel = $('span.label-percFemale.category-' + category);
@@ -17,7 +21,7 @@ $(document).ready(function() {
     $totalLabel.text(total);
     $totalLabel.animateCss('flipInX');
 
-    $percFemaleLabel.text(((totalFemale / total) * 100).toFixed(2));
+    $percFemaleLabel.text(percFemale);
     $percFemaleLabel.animateCss('flipInX');
 
   });
