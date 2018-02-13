@@ -70,9 +70,16 @@
               <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
             </div>
           [/#if]
+          <div class="addDeliverable-container text-right">
+            [#if canEdit && action.hasPermission("addDeliverable")]
+            <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addDeliverable" /]
+            </a></div>
+            [/#if]
+          </div>
           <h3 class="subTitle headTitle">On going deliverables</h3>
-          <span class="extended-simple-version" data-toggle="modal" data-target=".ongoing-modal">Extended version</span>
           <div class="deliverables-extended-version" data-toggle="modal" data-target=".ongoing-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+          <span class="extended-simple-version" data-toggle="modal" data-target=".ongoing-modal">Extended version</span>
            [#if reportingActive]
              <p class="note">
               [@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]
@@ -93,18 +100,11 @@
           [#-- Simple table --]
            [@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
                      
-          <div class="text-right">
-            [#if canEdit && action.hasPermission("addDeliverable")]
-            <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addDeliverable" /]
-            </a></div>
-            [/#if]
-          </div>
           [#if action.getDeliverables(false,false)?has_content]
             <div class="deliverables-table-header">
               <h3 class="subTitle headTitle">Completed deliverables</h3>
-              <span class="extended-simple-version" data-toggle="modal" data-target=".completed-modal">Extended version</span>
               <div class="deliverables-extended-version" data-toggle="modal" data-target=".completed-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+              <span class="extended-simple-version" data-toggle="modal" data-target=".completed-modal">Extended version</span>
             </div>
             <hr />
             [#-- Completed Extended table (Modal) --]
@@ -125,8 +125,8 @@
           [#if action.getDeliverables(false,true)?has_content]
             <div class="deliverables-table-header">
               <h3 class="subTitle headTitle">Cancelled deliverables</h3>
-              <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
               <div class="deliverables-extended-version" data-toggle="modal" data-target=".cancelled-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
+              <span class="extended-simple-version" data-toggle="modal" data-target=".cancelled-modal">Extended version</span>
             </div>
             <hr />
             [#-- Cancelled Extended table (Modal) --]

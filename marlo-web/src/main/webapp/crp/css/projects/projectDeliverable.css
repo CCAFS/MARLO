@@ -66,6 +66,14 @@ ul.nav li a {
   text-decoration: initial;
 }
 
+
+.addDeliverable-container{
+  margin-bottom: 5px;
+  position: relative;
+  float: right;
+}
+
+
 span#achieved {
   background-color: green;
   padding: 0px 8px;
@@ -556,14 +564,17 @@ form#CCAFS_deliverableList {
 
 .deliverables-extended-version {
   display: inline-block;
+  position: relative;
   width: 25px;
   height: 25px;
   background-color: #0b7ba6;
   border-radius: 5px;
   text-align: center;
-  margin-right: 10px;
+  margin-right: 3px;
+  margin-left: 15px;
+  bottom: 5px;
   cursor: pointer;
-  float: right;
+  /* float: right; */
 }
 
 .deliverables-extended-version span {
@@ -574,10 +585,12 @@ form#CCAFS_deliverableList {
 }
 
 .extended-simple-version {
+  position: relative;
   color: #0b7ba6;
   cursor: pointer;
   font-size: 12px;
-  float: right;
+  bottom: 3px;
+  /* float: right; */
   margin-top: 3px;
 }
 
