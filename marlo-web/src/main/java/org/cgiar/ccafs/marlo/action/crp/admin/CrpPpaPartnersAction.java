@@ -274,6 +274,7 @@ public class CrpPpaPartnersAction extends BaseAction {
    * @param crpPpaPartner
    */
   private void fillContactPoints(CrpPpaPartner crpPpaPartner) {
+
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
       .getLiasonInstitutionByInstitutionId(crpPpaPartner.getInstitution().getId(), loggedCrp.getId());
     if (cpRole != null && liaisonInstitution != null && liaisonInstitution.isActive()) {
@@ -622,7 +623,7 @@ public class CrpPpaPartnersAction extends BaseAction {
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
             .getLiasonInstitutionByInstitutionId(partner.getInstitution().getId(), loggedCrp.getId());
 
-          if (liaisonInstitution != null) {
+          if (liaisonInstitution == null) {
             partner.setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
             liaisonInstitution = new LiaisonInstitution();
             liaisonInstitution.setInstitution(partner.getInstitution());
