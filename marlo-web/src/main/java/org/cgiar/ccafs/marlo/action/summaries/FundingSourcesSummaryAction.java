@@ -114,15 +114,18 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       .collect(Collectors.toList())) {
       if (fundingSource.getFundingSourceInfo().getEndDate() != null) {
         Date endDate = fundingSource.getFundingSourceInfo().getEndDate();
+        Date startDate = fundingSource.getFundingSourceInfo().getStartDate();
         Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
         int endYear = this.getCalendarFromDate(endDate);
+        int startYear = this.getCalendarFromDate(startDate);
         int extentionYear = this.getCalendarFromDate(extentionDate);
-        if ((endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus()
-          .intValue() == Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId())
-          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
-          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-            .parseInt(FundingStatusEnum.Informally.getStatusId())))
+        if (startYear <= this.getSelectedYear()
+          && (endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus()
+            .intValue() == Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId())
+            || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+              .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+            || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+              .parseInt(FundingStatusEnum.Informally.getStatusId())))
           || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
             .parseInt(FundingStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
           currentCycleFundingSources.add((fundingSource));
