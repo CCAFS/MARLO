@@ -59,41 +59,10 @@
           [#if Flagship]
           <div class="form-group margin-panel">
             <div class="evidence-plannedStudies-header row">
-            [#-- if powbSynthesis.powbEvidence.plannedStudies?has_content --]
-              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>`
-              [#if popUpProjects?has_content]
-                <span class="flagship-planned-studies-button label label-info" data-toggle="modal" data-target=".flagship-planned-studies-modal">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</span>
-              [/#if]
-            [#-- else ]
-              <p>Prefilled if available</p>
-            [/#if --]
+              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
             </div>
-            [#-- Project planned studies (Modal) --]
-            <div class="modal fade flagship-planned-studies-modal" tabindex="-1" role="dialog" aria-labelledby="flagship-planned-studies-modal" aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h3 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies.projectPlannedStudies" /]</h3>
-                  <hr />  
-                  [@tablePlannedStudiesMacro/]
-                </div>
-              </div>
-            </div>
-            <div class="expectedStudies-list" listname="list-plannedStudies">
-            [#if powbSynthesis.powbEvidence.plannedStudies?has_content]
-              [#list powbSynthesis.powbEvidence.plannedStudies as plannedStudy]
-                [@plannedStudyMacro element=plannedStudy name="powbSynthesis.powbEvidence.plannedStudies"  index=plannedStudy_index isEditable=editable/]
-              [/#list]
-            [#else]
-              [#if !editable]<p>[@s.text name="evidenceRelevant.plannedStudies.empty" /]</p>[/#if]
-            [/#if]
-            </div>
-            
-            [#if canEdit && editable]
-            <div class="text-right">
-              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedTopicStudy"/]</div>
-            </div> 
-            [/#if]
+            [#-- Project planned studies (Table) --]
+            [@tablePlannedStudiesMacro/]
           </div>
           [/#if]
           
@@ -107,53 +76,7 @@
   </div> 
 </section>
 
-[#-- Planned Study Template --]
-[@plannedStudyMacro element={} name="powbSynthesis.powbEvidence.plannedStudies"  index=-1 template=true/]
-
 [#include "/WEB-INF/crp/pages/footer.ftl"]
-
-[#macro plannedStudyMacro element name index template=false isEditable=true]
-  [#local customName = "${name}[${index}]" /]
-  <div id="expectedStudy-${template?string('template', index)}" class="expectedStudy borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-    
-    [#-- Index --]
-    <div class="leftHead"><span class="index">${index+1}</span></div>
-    [#-- Remove Button --]
-    [#if isEditable]<div class="removeExpectedStudy removeElement" title="Remove Planned topic of study"></div>[/#if]
-    [#-- Hidden inputs --]
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
-    <br />
-    
-    
-    <div class="form-group row"> 
-      [#-- Planned topic of study --] 
-      <div class="col-md-7">
-        [@customForm.input name="${customName}.plannedTopic" i18nkey="evidenceRelevant.pannedStudies.plannedTopic" placeholder="" className="" required=true editable=isEditable/]
-      </div>
-      [#-- Geographic Scope --]
-      <div class="col-md-5">
-        [@customForm.select name="${customName}.geographicScope" label=""  i18nkey="evidenceRelevant.pannedStudies.geographicScope" listName="scopes"  required=true  className="" editable=isEditable/]
-      </div>
-    </div>
-    
-    [#-- Relevant to Sub-IDO --] 
-    <div class="form-group "> 
-      [@customForm.select name="${customName}.srfSubIdo.id" label=""  i18nkey="evidenceRelevant.pannedStudies.relevant" listName="subIdos"  required=true  className="" editable=isEditable/]
-    </div>
-    
-    [#-- SRF target if appropriate --] 
-    <div class="form-group "> 
-      [@customForm.select name="${customName}.srfSloIndicator.id" label=""  i18nkey="evidenceRelevant.pannedStudies.srfTarget" listName="targets"  required=false  className="" editable=isEditable/]
-    </div>
-    
-    [#-- Comments --] 
-    <div class="form-group"> 
-      [@customForm.textArea name="${customName}.comments" i18nkey="evidenceRelevant.pannedStudies.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
-    </div>
-    
-    <div class="clearfix"></div>
-  </div>
-[/#macro]
 
 [#macro tablePlannedStudiesMacro ]
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
