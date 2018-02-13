@@ -78,23 +78,25 @@
       <thead>
         <tr>
           <th rowspan="2"></th>
-          <th colspan="3">[@s.text name="financialPlan.tableE.plannedBudget"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
+          <th colspan="3" class="text-center">[@s.text name="financialPlan.tableE.plannedBudget"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
           <th rowspan="2">[@s.text name="financialPlan.tableE.comments" /]</th>
         </tr>
         <tr>
-          <th>[@s.text name="financialPlan.tableE.w1w2" /]</th>
-          <th>[@s.text name="financialPlan.tableE.w3bilateral" /]</th>
-          <th>[@s.text name="financialPlan.tableE.total" /]</th>
+          <th class="text-center col-md-2">[@s.text name="financialPlan.tableE.w1w2" /]</th>
+          <th class="text-center col-md-2">[@s.text name="financialPlan.tableE.w3bilateral" /]</th>
+          <th class="text-center">[@s.text name="financialPlan.tableE.total" /]</th>
         </tr>
       </thead>
       <tbody>
-        [#list 0 .. 5 as element]
+        [#list 0 .. 5 as category]
+          [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
+          [#assign element = {} /]
           <tr>
-            <td>FP ${element}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>CRP Management & Support Cost ${category}</td>
+            <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${category_index}" required=true editable=editable && PMU /]</td>
+            <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${category_index}" required=true editable=editable && PMU /]</td>
+            <td> US$ 0.00 </td>
+            <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
           </tr>
         [/#list]
       </tbody>
@@ -113,11 +115,13 @@
         </tr>
       </thead>
       <tbody>
-        [#list 0 .. 12 as element]
+        [#list 0 .. 12 as category]
+          [#assign customName = "powbSynthesis.expenditures[${category_index}]" /]
+          [#assign element = {} /]
           <tr>
-            <td>  ${element}</td>
-            <td></td>
-            <td class="col-md-7"></td>
+            <td> Start-up or maintenance of partnerships (internal or external) ${category} </td>
+            <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${category_index}" required=true editable=editable && PMU /]</td>
+            <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
           </tr>
         [/#list]
       </tbody>
