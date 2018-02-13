@@ -65,6 +65,7 @@ public class CrpByUserEmailAction extends BaseAction {
     crps = new ArrayList<Map<String, Object>>();
     Map<String, Object> crpMap;
     List<GlobalUnit> crps = crpManager.crpUsers(userEmail);
+
     for (GlobalUnit crp : crps) {
       try {
         crpMap = new HashMap<String, Object>();
@@ -85,6 +86,11 @@ public class CrpByUserEmailAction extends BaseAction {
       User usrDB = userManager.getUserByEmail(userEmail);
       if (usrDB != null) {
         user.put("name", usrDB.getComposedCompleteName());
+      } else {
+        usrDB = userManager.getUserByUsername(userEmail);
+        if (usrDB != null) {
+          user.put("name", usrDB.getComposedCompleteName());
+        }
       }
 
     }
