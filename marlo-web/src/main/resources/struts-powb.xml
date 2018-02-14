@@ -59,20 +59,6 @@
       </result>
     </action>
     
-    <!--  1.5 Cross Cutting Dimensions -->
-    <!-- 
-    <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
-      <interceptor-ref name="editPowbStack" />
-      <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/crossCuttingDimensions</param>
-        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
-        <param name="powbSynthesisID">${powbSynthesisID}</param>
-        <param name="edit">true</param>
-        <param name="phaseID">${phaseID}</param>
-      </result>
-    </action> -->
-    
      <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.CrossCuttingDimensionsAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
@@ -100,7 +86,7 @@
     </action>
     
     <!--  2.2 Financial Plan for 2018, including use of W1/3 -->
-    <action name="{crp}/financialPlan" class="org.cgiar.ccafs.marlo.action.powb.FlagshipPlansAction">
+    <action name="{crp}/financialPlan" class="org.cgiar.ccafs.marlo.action.powb.FinancialPlanAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_financialPlan.ftl</result>
       <result name="success" type="redirectAction">

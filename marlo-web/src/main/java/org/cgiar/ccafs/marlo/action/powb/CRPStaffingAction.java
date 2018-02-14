@@ -520,9 +520,11 @@ public class CRPStaffingAction extends BaseAction {
   }
 
   private void setPowbSynthesisIdParameter() {
-    try {
-      powbSynthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
-    } catch (NumberFormatException e) {
+    List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .collect(Collectors.toList());
+    if (pmuList != null && !pmuList.isEmpty()) {
+      Long liaisonInstitutionID = pmuList.get(0).getId();
       PowbSynthesis powbSynthesis =
         powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
       if (powbSynthesis != null) {
