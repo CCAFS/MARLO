@@ -310,11 +310,11 @@
                   </tr>
                   <tr>
                     [#if type == "W1W2"]<th class="text-center">[@s.text name="project.coreBudget" /]  Total Amount</th>[/#if]
-                    [#if type == "W1W2"]<th class="text-center">  ${element.acronym} %/Amount </th>[/#if]
+                    [#if type == "W1W2"]<th class="text-center">  ${element.acronym} % (Amount) </th>[/#if]
                     [#if type == "W3BILATERAL"]<th class="text-center"> [@s.text name="project.w3Budget" /] Total Amount</th>[/#if]
-                    [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} %/Amount</th>[/#if]
+                    [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} % (Amount)</th>[/#if]
                     [#if type == "W3BILATERAL"]<th class="text-center"> [@s.text name="project.bilateralBudget" /] Total Amount</th>[/#if]
-                    [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} %/Amount</th>[/#if]
+                    [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} % (Amount)</th>[/#if]
                   </tr>
                 </thead>
                 <tbody>
