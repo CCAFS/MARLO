@@ -351,6 +351,14 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
         powbSynthesisID =
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+        if (!powbSynthesis.getPhase().equals(phase)) {
+          powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
+          if (powbSynthesis == null) {
+            powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
+          }
+          powbSynthesisID = powbSynthesis.getId();
+        }
       } catch (Exception e) {
 
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);

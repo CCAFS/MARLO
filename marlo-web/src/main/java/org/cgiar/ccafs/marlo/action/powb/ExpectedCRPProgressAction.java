@@ -655,6 +655,14 @@ public class ExpectedCRPProgressAction extends BaseAction {
         powbSynthesisID =
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+        if (!powbSynthesis.getPhase().equals(this.getActualPhase())) {
+          powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+          if (powbSynthesis == null) {
+            powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+          }
+          powbSynthesisID = powbSynthesis.getId();
+        }
       } catch (Exception e) {
         Phase phase = this.getActualPhase();
         powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
