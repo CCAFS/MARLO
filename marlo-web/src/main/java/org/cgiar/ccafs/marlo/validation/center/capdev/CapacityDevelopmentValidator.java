@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 
-
+@Named
 public class CapacityDevelopmentValidator extends BaseValidator {
 
   private final ReadExcelFile reader = new ReadExcelFile();
 
-  @Inject
+
   public CapacityDevelopmentValidator() {
 
   }

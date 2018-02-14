@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.model.Discipline;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
  * @author Christian Garcia
  */
+@Named
 public class DisciplineService implements IDisciplineService {
 
 
