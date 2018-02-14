@@ -114,7 +114,7 @@ public class CRPStaffingAction extends BaseAction {
   }
 
   private void createEmptyCrpStaffing() {
-    if (powbSynthesis.getCrpStaffing() == null) {
+    if (powbSynthesis.getCrpStaffing() == null && this.isPMU()) {
       PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
       newPowbCrpStaffing.setActive(true);
       newPowbCrpStaffing.setCreatedBy(this.getCurrentUser());
