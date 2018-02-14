@@ -125,6 +125,7 @@ public class ProgramImpactsAction extends BaseAction {
   private long areaID;
   private String transaction;
   private ProgramImpactsValidator validator;
+  private CenterProgram programDb;
 
   @Inject
   public ProgramImpactsAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
@@ -528,6 +529,8 @@ public class ProgramImpactsAction extends BaseAction {
     String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
+    programDb = programService.getProgramById(selectedProgram.getId());
+
     if (this.isHttpPost()) {
       if (researchAreas != null) {
         researchAreas.clear();
@@ -550,7 +553,6 @@ public class ProgramImpactsAction extends BaseAction {
   public String save() {
     if (this.hasPermissionCenter("*")) {
 
-      CenterProgram programDb = programService.getProgramById(selectedProgram.getId());
 
       for (CenterImpact researchImpact : programDb.getResearchImpacts().stream().filter(ri -> ri.isActive())
         .collect(Collectors.toList())) {

@@ -22,12 +22,12 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.HashMap;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 
-
+@Named
 public class CapDevDescriptionValidator extends BaseValidator {
 
-  @Inject
+
   public CapDevDescriptionValidator() {
 
   }
