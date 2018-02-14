@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Unauthorized Access!" /]
-[#assign customJS = ["${baseUrlMedia}/js/home/login.js" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/home/new-login.js" ] /]
 
 [#include "/WEB-INF/${(headerPath)!'crp'}/pages/header.ftl" /]
 [#include "/WEB-INF/${(headerPath)!'crp'}/pages/main-menu.ftl" /]

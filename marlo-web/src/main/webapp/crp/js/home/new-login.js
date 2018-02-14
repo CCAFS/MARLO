@@ -54,12 +54,13 @@ function init() {
   //Form button click
   $("input#login_next").on('click',function(e){
     e.preventDefault();
-
+    $('input.login-input').removeClass("wrongData");
     var email = username.val();
     /*|| !isEmail(email) if you want to check if isEmail*/
     if(email == "" ){
       wrongData("invalidEmail");
     }else if(!isSecondForm){
+      console.log("asdf");
       loadAvailableItems(email);
     }else if(inputPassword.val()==""){
       wrongData("voidPassword");
@@ -215,6 +216,7 @@ function loadAvailableItems(email){
     },
     beforeSend: function() {
       $("input#login_next").addClass("login-loadingBlock");
+      $("input#login_next").attr("disabled",true);
     },
     success: function(data) {
       if(data.user == null){
@@ -241,14 +243,17 @@ function loadAvailableItems(email){
         });
         //If user has access to the crpSession or crpSession is void, change form style
         if(hasAccess || crpSession==""){
+          console.log("what");
           secondForm(data);
         }else{
+          console.log("deni");
           wrongData("deniedAccess");
         }
       }
     },
     complete: function(data) {
       $("input#login_next").removeClass("login-loadingBlock");
+      $("input#login_next").attr("disabled",false);
     },
     error: function(data) {}
   });
@@ -318,6 +323,7 @@ function checkPassword(email,password){
     },
     beforeSend: function() {
       $("input#login_next").addClass("login-loadingBlock");
+      $("input#login_next").attr("disabled",true);
     },
     success: function(data) {
       console.log("ajax= "+data.messageEror);
@@ -325,15 +331,13 @@ function checkPassword(email,password){
       if(!data.userFound.loginSuccess){
         if(data.messageEror=="Invalid CGIAR email or password, please try again"){
           wrongData("incorrectPassword");
-          $("input#login_next").removeClass("login-loadingBlock");
         }else if(crpSession!=""){
           wrongData("incorrectPassword");
-          $("input#login_next").removeClass("login-loadingBlock");
         }else{
-          console.log("ajax2= "+data.messageEror);
           wrongData("deniedAccess",data.messageEror);
-          $("input#login_next").removeClass("login-loadingBlock");
         }
+        $("input#login_next").removeClass("login-loadingBlock");
+        $("input#login_next").attr("disabled",false);
       }else{
         $("input#login_formSubmit").click();
       }
