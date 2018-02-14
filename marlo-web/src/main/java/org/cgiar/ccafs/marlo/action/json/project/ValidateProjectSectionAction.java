@@ -101,6 +101,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     if (existProject && validSection) {
+      this.loadProvider(this.getSession());
       // getting the current section status.
       switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
         case LOCATIONS:
