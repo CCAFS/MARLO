@@ -81,7 +81,7 @@ public class FlagshipPlansValidator extends BaseValidator {
       && this.wordCount(powbSynthesis.getPowbFlagshipPlans().getPlanSummary()) <= 100)) {
       action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges",
         new String[] {Integer.toString(action.getCurrentCycleYear())}));
-      action.getInvalidFields().put("input-liaisonInstitution.powb.adjustmentsChanges",
+      action.getInvalidFields().put("input-powbSynthesis.powbFlagshipPlans.planSummary",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }

@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -61,11 +63,40 @@ public class CrpStaffingValidator extends BaseValidator {
       }
     }
 
+
+    if (!(this.isValidString(powbSynthesis.getCrpStaffing().getStaffingIssues())
+      && this.wordCount(powbSynthesis.getCrpStaffing().getStaffingIssues()) <= 100)) {
+      action.addMessage(action.getText("powbSynthesis.crpStaffing.staffingIssues.readText"));
+      action.getInvalidFields().put("input-powbSynthesis.crpStaffing.staffingIssues", InvalidFieldsMessages.EMPTYFIELD);
+    }
+    int i = 0;
+    for (PowbSynthesisCrpStaffingCategory powbStaffingCategory : powbSynthesis
+      .getPowbSynthesisCrpStaffingCategoryList()) {
+      this.validateCrpStaffingCategory(powbStaffingCategory, action, i);
+      i++;
+    }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (action.getValidationMessage().length() > 0) {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+    }
+
+    this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      PowbSynthesisSectionStatusEnum.STAFFING.getStatus(), action);
+  }
+
+  private void validateCrpStaffingCategory(PowbSynthesisCrpStaffingCategory powbStaffingCategory, BaseAction action,
+    int i) {
+    if (powbStaffingCategory.getFemale() != null && powbStaffingCategory.getFemale() < 0) {
+      action.addMissingField(action.getText("crpStaffing.tableD.female"));
+      action.getInvalidFields().put("input-powbSynthesis.powbSynthesisCrpStaffingCategoryList[" + i + "].female",
+        InvalidFieldsMessages.INVALID_NUMBER);
+    }
+    if (powbStaffingCategory.getMale() != null && powbStaffingCategory.getMale() < 0) {
+      action.addMissingField(action.getText("crpStaffing.tableD.male"));
+      action.getInvalidFields().put("input-powbSynthesis.powbSynthesisCrpStaffingCategoryList[" + i + "].male",
+        InvalidFieldsMessages.INVALID_NUMBER);
     }
   }
 
