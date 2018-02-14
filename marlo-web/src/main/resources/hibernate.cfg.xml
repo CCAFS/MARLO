@@ -232,5 +232,9 @@
     <mapping resource="xmls/PowbMonitoringEvaluationLearningExercises.hbm.xml" />
     <mapping resource="xmls/PowbManagementRisk.hbm.xml" />
     <mapping resource="xmls/PowbManagementGovernance.hbm.xml" />
+    <mapping resource="xmls/PowbFinancialPlan.hbm.xml" />
+    <mapping resource="xmls/PowbExpenditureAreas.hbm.xml" />
+    <mapping resource="xmls/PowbFinancialExpenditure.hbm.xml" />
+    <mapping resource="xmls/PowbFinancialPlannedBudget.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

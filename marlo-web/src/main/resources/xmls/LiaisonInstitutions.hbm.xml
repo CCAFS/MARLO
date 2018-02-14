@@ -55,6 +55,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" />
 		</set>
+		<set name="powbFinancialPlannedBudget" table="powb_financial_planned_budget" inverse="true"
+      lazy="true" fetch="select">
+      <key>
+        <column name="liaison_institution_id" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget" />
+    </set>
 
 
 	</class>
