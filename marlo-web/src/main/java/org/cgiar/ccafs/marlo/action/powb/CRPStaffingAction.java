@@ -313,9 +313,6 @@ public class CRPStaffingAction extends BaseAction {
     // We read the JSON serialized by the front-end and cast it to the object
     powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
     powbSynthesisID = powbSynthesis.getId();
-
-    // powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().clear();
-    // powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().addAll(powbSynthesisCrpStaffingCategoryList);
     this.setDraft(true);
     reader.close();
   }
