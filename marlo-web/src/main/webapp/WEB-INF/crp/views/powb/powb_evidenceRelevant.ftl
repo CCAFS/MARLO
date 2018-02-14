@@ -119,8 +119,8 @@
             [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=100 /]
           </td>
           [#-- Checkbox --]
-          <td class="checkbox"> 
-            [@customForm.checkbox name="checkbox" /]
+          <td class="checkbox text-center"> 
+            [@customForm.checkBoxFlat id="1" name="checkbox" /]
           </td>
         </tr>
       [/#list]
