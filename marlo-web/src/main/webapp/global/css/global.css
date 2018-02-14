@@ -848,6 +848,7 @@ img.icon {
   top: 0;
   left: 0;
 }
+
 .syncedBlock{
   background: #fff;
   width: 100%;
@@ -2419,6 +2420,15 @@ input.userName {
   font-size: 20px;
   margin-top: 20px;
 }
+
+.loginForm .login-loadingBlock {
+  width: 100%;
+  background: url(../../global/images/loading.gif) #2793ad no-repeat 50%;        
+  z-index: 99;    
+  opacity: 0.3;
+  padding: 50%;
+}
+
 .wrongData{
   border-bottom: 1px solid red !important;
 }

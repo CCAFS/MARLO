@@ -213,7 +213,9 @@ function loadAvailableItems(email){
     data: {
       userEmail: email
     },
-    beforeSend: function() {},
+    beforeSend: function() {
+      $("input#login_next").addClass("login-loadingBlock");
+    },
     success: function(data) {
       if(data.user == null){
         wrongData("emailNotFound");
@@ -245,7 +247,9 @@ function loadAvailableItems(email){
         }
       }
     },
-    complete: function(data) {},
+    complete: function(data) {
+      $("input#login_next").removeClass("login-loadingBlock");
+    },
     error: function(data) {}
   });
 }
@@ -312,15 +316,23 @@ function checkPassword(email,password){
       userEmail: email,
       userPassword: password
     },
-    beforeSend: function() {},
+    beforeSend: function() {
+      $("input#login_next").addClass("login-loadingBlock");
+    },
     success: function(data) {
       console.log("ajax= "+data.messageEror);
       console.log(crpSession);
       if(!data.userFound.loginSuccess){
-        if(data.messageEror=="Invalid CGIAR email or password, please try again" || crpSession==""){
+        if(data.messageEror=="Invalid CGIAR email or password, please try again"){
           wrongData("incorrectPassword");
+          $("input#login_next").removeClass("login-loadingBlock");
+        }else if(crpSession!=""){
+          wrongData("incorrectPassword");
+          $("input#login_next").removeClass("login-loadingBlock");
         }else{
+          console.log("ajax2= "+data.messageEror);
           wrongData("deniedAccess",data.messageEror);
+          $("input#login_next").removeClass("login-loadingBlock");
         }
       }else{
         $("input#login_formSubmit").click();
