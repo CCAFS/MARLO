@@ -268,11 +268,9 @@ public class OutputsAction extends BaseAction {
 
     if (researchAreas != null && output != null) {
 
-      selectedResearchOutcome = output.getResearchOutcome();
-      outcomeID = selectedResearchOutcome.getId();
-      programID = selectedResearchOutcome.getResearchTopic().getResearchProgram().getId();
+      programID = output.getCenterOutputsOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
+        .get(0).getCenterOutcome().getResearchImpact().getResearchProgram().getId();
       selectedProgram = programService.getProgramById(programID);
-      selectedResearchTopic = selectedResearchOutcome.getResearchTopic();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
 

@@ -510,16 +510,5 @@
         
       <div class="clearfix"></div>
     </div>
-    
-    <div class="blockContent " style="display:none">
-      <div class="form-group">
-        <label for="">Research topic:</label>
-        <div class="rTopic">${(element.researchOutput.researchOutcome.researchTopic.researchTopic)!}</div>
-      </div>
-      <div class="form-group">
-        <label for="">Outcome:</label>
-        <div class="outcome">${(element.researchOutput.researchOutcome.description)!}</div>
-      </div>
-    </div>
   </li>
 [/#macro]
