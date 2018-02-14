@@ -93,13 +93,6 @@
           [#-- Simple table --]
            [@deliverableList.deliverablesList deliverables=action.getDeliverables(true,false) canValidate=true canEdit=candit  isReportingActive=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]
                      
-          <div class="text-right">
-            [#if canEdit && action.hasPermission("addDeliverable")]
-            <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addDeliverable" /]
-            </a></div>
-            [/#if]
-          </div>
           [#if action.getDeliverables(false,false)?has_content]
             <div class="deliverables-table-header">
               <h3 class="subTitle headTitle">Completed deliverables</h3>
@@ -143,6 +136,19 @@
             [@deliverableList.deliverablesList deliverables=action.getDeliverables(false,true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/] 
           [/#if]
           <input type="hidden" name="projectID" value="${projectID}" />
+          
+          [#-- Add Deliverable Button --]
+          [#if canEdit && action.hasPermission("addDeliverable")]
+          <div class="buttons">
+            <div class="buttons-content">
+              <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addDeliverable" /]
+              </a></div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          [/#if]
+          
         [/@s.form] 
       </div>
     </div>  

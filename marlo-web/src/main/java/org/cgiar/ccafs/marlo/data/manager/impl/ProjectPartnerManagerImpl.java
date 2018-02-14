@@ -484,8 +484,8 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectPartner.getPartnerPersons() == null || projectPartner.getPartnerPersons().stream()
         .filter(c -> partnerPerson.getUser() != null && partnerPerson.getUser().getId() != null && c.getUser() != null
-          && c.getUser().getId().equals(partnerPerson.getUser().getId()) && c.getContactType() != null
-          && c.getContactType().equals(partnerPerson.getContactType()))
+          && c.getUser().getId() != null && c.getUser().getId().equals(partnerPerson.getUser().getId())
+          && c.getContactType() != null && c.getContactType().equals(partnerPerson.getContactType()))
         .collect(Collectors.toList()).isEmpty()) {
         partnerPerson.setActive(false);
         projectPartnerPersonDAO.save(partnerPerson);

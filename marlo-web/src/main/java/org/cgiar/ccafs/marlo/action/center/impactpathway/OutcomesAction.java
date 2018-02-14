@@ -100,6 +100,7 @@ public class OutcomesAction extends BaseAction {
   private long topicID;
   private long outcomeID;
   private String transaction;
+  private CenterOutcome outcomeDb;
   // Validator
   private OutcomesValidator validator;
 
@@ -322,6 +323,8 @@ public class OutcomesAction extends BaseAction {
     String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
+    outcomeDb = outcomeService.getResearchOutcomeById(outcomeID);
+
     if (this.isHttpPost()) {
       outcome.setTargetUnit(null);
 
@@ -345,11 +348,11 @@ public class OutcomesAction extends BaseAction {
   public String save() {
     if (this.hasPermissionCenter("*")) {
 
-      CenterOutcome outcomeDb = outcomeService.getResearchOutcomeById(outcomeID);
-
       CenterImpact impact = null;
-      if (outcome.getResearchImpact().getId() != -1) {
-        impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+      if (outcome.getResearchImpact() != null) {
+        if (outcome.getResearchImpact().getId() != -1) {
+          impact = impactService.getResearchImpactById(outcome.getResearchImpact().getId());
+        }
       }
 
 
