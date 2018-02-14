@@ -215,30 +215,29 @@ function loadAvailableItems(email){
     },
     beforeSend: function() {},
     success: function(data) {
-      var crpCookie=verifyCrpCookie();
-      $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
-      /*if(crpCookie){
-        $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
-      }*/
-      $.each(data.crps, function(i){
-        if(crpSession == data.crps[i].acronym){
-          hasAccess=true;
-        }
-        $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
-        if(data.crps.length<7){
-          $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
-        }else{
-          $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
-        }
-        if(crpCookie==data.crps[i].acronym){
-          $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
-        }
-      });
       if(data.user == null){
         wrongData("emailNotFound");
       }else{
+        var crpCookie=verifyCrpCookie();
+        $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
+        /*if(crpCookie){
+          $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
+        }*/
+        $.each(data.crps, function(i){
+          if(crpSession == data.crps[i].acronym){
+            hasAccess=true;
+          }
+          $(".crps-select .name-type-container.type-"+data.crps[i].type).removeClass("hidden");
+          if(data.crps.length<7){
+            $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-image').removeClass("hidden");
+          }else{
+            $('.selection-bar-options ul #crp-'+data.crps[i].acronym+' .selection-bar-acronym').removeClass("hidden");
+          }
+          if(crpCookie==data.crps[i].acronym){
+            $('.selection-bar-options ul #crp-'+data.crps[i].acronym).click();
+          }
+        });
         //If user has access to the crpSession or crpSession is void, change form style
-        console.log(crpSession);
         if(hasAccess || crpSession==""){
           secondForm(data);
         }else{
@@ -316,11 +315,11 @@ function checkPassword(email,password){
     beforeSend: function() {},
     success: function(data) {
       console.log("ajax= "+data.messageEror);
+      console.log(crpSession);
       if(!data.userFound.loginSuccess){
-        if(data.messageEror=="Invalid CGIAR email or password, please try again"){
+        if(data.messageEror=="Invalid CGIAR email or password, please try again" || crpSession==""){
           wrongData("incorrectPassword");
         }else{
-
           wrongData("deniedAccess",data.messageEror);
         }
       }else{
@@ -341,7 +340,12 @@ function wrongData(type,customMessage){
   }else{
     $('.loginForm p.invalidField.'+type).removeClass("hidden");
   }
-  $(".loginForm #login-email .user-email").focus();
+  console.log(type);
+  if(type=="voidPassword" || type=="incorrectPassword"){
+    inputPassword.focus();
+  }else{
+    username.focus();
+  }
 }
 
 function setCookie(cname,cvalue,mins) {
