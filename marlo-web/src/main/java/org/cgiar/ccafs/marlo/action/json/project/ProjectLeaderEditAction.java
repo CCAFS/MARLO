@@ -75,6 +75,7 @@ public class ProjectLeaderEditAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    this.loadProvider(this.getSession());
     Project project = projectManager.getProjectById(projectId);
     project.setProjectInfo(null);
     ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
