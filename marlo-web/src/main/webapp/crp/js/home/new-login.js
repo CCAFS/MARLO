@@ -217,6 +217,7 @@ function loadAvailableItems(email){
     beforeSend: function() {
       $("input#login_next").addClass("login-loadingBlock");
       $("input#login_next").attr("disabled",true);
+      $("input#login_next").val("");
     },
     success: function(data) {
       if(data.user == null){
@@ -254,6 +255,7 @@ function loadAvailableItems(email){
     complete: function(data) {
       $("input#login_next").removeClass("login-loadingBlock");
       $("input#login_next").attr("disabled",false);
+      $("input#login_next").val("Next");
     },
     error: function(data) {}
   });
@@ -324,6 +326,7 @@ function checkPassword(email,password){
     beforeSend: function() {
       $("input#login_next").addClass("login-loadingBlock");
       $("input#login_next").attr("disabled",true);
+      $("input#login_next").val("");
     },
     success: function(data) {
       console.log("ajax= "+data.messageEror);
@@ -338,6 +341,7 @@ function checkPassword(email,password){
         }
         $("input#login_next").removeClass("login-loadingBlock");
         $("input#login_next").attr("disabled",false);
+        $("input#login_next").val("Login");
       }else{
         $("input#login_formSubmit").click();
       }
