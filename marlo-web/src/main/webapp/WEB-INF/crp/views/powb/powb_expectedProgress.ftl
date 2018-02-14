@@ -42,7 +42,7 @@
           [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
-            [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
+            [#assign powebElement= action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
           [/#if]
