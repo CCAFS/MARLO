@@ -401,7 +401,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
     List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
       .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
-    List<Project> myProjects = new ArrayList<>();
+    Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
       if (project.isActive()) {
@@ -425,7 +425,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
+          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
         .collect(Collectors.toList());
       double percentageW1 = 0;
       double percentageW3 = 0;
@@ -467,7 +468,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
     List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
       .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
-    List<Project> myProjects = new ArrayList<>();
+    Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
       if (project.isActive()) {
@@ -485,22 +486,29 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     }
     for (Project project : myProjects) {
-
+      System.out.println(project.getId());
       project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
+          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
         .collect(Collectors.toList());
       double percentageW1 = 0;
       double percentageW3 = 0;
       double percentageB = 0;
 
       if (!this.getCountProjectFlagships(project.getId())) {
-        percentageW1 = 100;
-        percentageW3 = 100;
-        percentageB = 100;
+        if (w1 > 0) {
+          percentageW1 = 100;
+        }
+        if (w3 > 0) {
+          percentageW3 = 100;
+        }
+        if (bilateral > 0) {
+          percentageB = 100;
+        }
 
       }
       for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
@@ -523,16 +531,16 @@ public class ExpectedCRPProgressAction extends BaseAction {
       project.setBilateralBudget(bilateral);
 
       project.setPercentageW3(percentageW3);
-      project.setPercentageW1(percentageW3);
+      project.setPercentageW1(percentageW1);
       project.setPercentageBilateral(percentageB);
 
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
 
-      project.setTotalW3(percentageW3);
-      project.setTotalW1(percentageW3);
-      project.setTotalBilateral(percentageB);
+      project.setTotalW3(w3);
+      project.setTotalW1(w1);
+      project.setTotalBilateral(bilateral);
       projectsToRet.add(project);
     }
     return projectsToRet;
@@ -696,7 +704,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-        .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
