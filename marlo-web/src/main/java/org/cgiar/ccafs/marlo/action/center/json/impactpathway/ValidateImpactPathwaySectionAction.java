@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -165,8 +167,13 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
                   researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
                     .filter(rm -> rm.isActive()).collect(Collectors.toList())));
 
-                  List<CenterOutput> outputs = new ArrayList<>(researchOutcome.getResearchOutputs().stream()
-                    .filter(ro -> ro.isActive()).collect(Collectors.toList()));
+                  List<CenterOutput> outputs = new ArrayList<>();
+                  List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(researchOutcome
+                    .getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+                  for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+                    outputs.add(centerOutputsOutcome.getCenterOutput());
+                  }
+
                   if (outputs != null && !outputs.isEmpty()) {
                     for (CenterOutput researchOutput : outputs) {
                       sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(),
@@ -324,8 +331,12 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
             researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
               .filter(rm -> rm.isActive()).collect(Collectors.toList())));
 
-            List<CenterOutput> outputs = new ArrayList<>(
-              researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+            List<CenterOutput> outputs = new ArrayList<>();
+            List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(researchOutcome
+              .getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+            for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+              outputs.add(centerOutputsOutcome.getCenterOutput());
+            }
 
             for (CenterOutput researchOutput : outputs) {
 

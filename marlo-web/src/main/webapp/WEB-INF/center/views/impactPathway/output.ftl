@@ -53,7 +53,7 @@
         
         [#-- Back --]
         <h5 class="pull-right">
-          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="programID" value=programID /][@s.param name="outcomeID" value=outcomeID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outputs list
           </a>
         </h5>
@@ -76,25 +76,11 @@
             
           </div> 
           
-          [#-- Research topic --]
-          <div class="form-group">
-              <label for="">Research Topic:</label><p>${selectedResearchTopic.researchTopic}</p>
-          </div>
+        <h3 class="headTitle"> Outcome Contributions </h3>
+        <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
+          [#-- TODO Outcome List --]
+        </div>  
           
-          [#-- Outcome --]
-          <div class="form-group">
-              <label for="">Outcome:</label><p>${selectedResearchOutcome.description}</p>
-          </div>
-          
-          [#-- Contact Person --]
-          [#if contacPersons?has_content]
-            <label for="">Contact Person(s):  </label>
-            [#list contacPersons as contacPerson]
-            <p> <span class="glyphicon glyphicon-user"></span> ${contacPerson.user.composedCompleteName}</p>
-            [/#list]
-          [/#if] 
-        </div>
-        
         <h3 class="headTitle"> Next Users </h3>
         <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
           [#if output.nextUsers?has_content]

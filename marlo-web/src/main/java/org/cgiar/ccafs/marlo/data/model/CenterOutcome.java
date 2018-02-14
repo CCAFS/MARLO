@@ -45,6 +45,7 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private String description;
 
+
   @Expose
   private Integer targetYear;
 
@@ -53,7 +54,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   @Expose
   private CenterImpact researchImpact;
-
 
   @Expose
   private boolean active;
@@ -65,13 +65,13 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private CenterTopic researchTopic;
 
-
   @Expose
   private User createdBy;
 
 
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private CenterTargetUnit targetUnit;
@@ -83,23 +83,23 @@ public class CenterOutcome implements Serializable, IAuditLog {
   @Expose
   private boolean impactPathway;
 
+
   @Expose
   private String shortName;
 
-
   private Set<CenterMilestone> researchMilestones = new HashSet<CenterMilestone>(0);
-
-  private Set<CenterOutput> researchOutputs = new HashSet<CenterOutput>(0);
-
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
 
   private Set<CenterMonitoringOutcome> monitoringOutcomes = new HashSet<CenterMonitoringOutcome>(0);
 
+
   private List<CenterMilestone> milestones;
 
-
   private List<CenterMonitoringOutcome> monitorings;
+
+  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
+
 
   public CenterOutcome() {
     super();
@@ -129,6 +129,10 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public Set<CenterOutputsOutcome> getCenterOutputsOutcomes() {
+    return centerOutputsOutcomes;
   }
 
   public String getComposedName() {
@@ -165,11 +169,11 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return milestones;
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -195,9 +199,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
     return researchMilestones;
   }
 
-  public Set<CenterOutput> getResearchOutputs() {
-    return researchOutputs;
-  }
 
   /**
    * @return the researchTopic
@@ -250,6 +251,10 @@ public class CenterOutcome implements Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCenterOutputsOutcomes(Set<CenterOutputsOutcome> centerOutputsOutcomes) {
+    this.centerOutputsOutcomes = centerOutputsOutcomes;
   }
 
   public void setCreatedBy(User createdBy) {
@@ -311,12 +316,6 @@ public class CenterOutcome implements Serializable, IAuditLog {
   public void setResearchMilestones(Set<CenterMilestone> researchMilestones) {
     this.researchMilestones = researchMilestones;
   }
-
-
-  public void setResearchOutputs(Set<CenterOutput> researchOutputs) {
-    this.researchOutputs = researchOutputs;
-  }
-
 
   /**
    * @param researchTopic the researchTopic to set
