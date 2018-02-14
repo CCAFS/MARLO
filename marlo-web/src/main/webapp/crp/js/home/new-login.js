@@ -331,9 +331,9 @@ function checkPassword(email,password){
       if(!data.userFound.loginSuccess){
         if(data.messageEror=="Invalid CGIAR email or password, please try again"){
           wrongData("incorrectPassword");
-        }else if(crpSession!=""){
-          wrongData("incorrectPassword");
-        }else{
+        }/*else if(crpSession!=""){
+          wrongData("deniedAccess",data.messageEror);
+        }*/else{
           wrongData("deniedAccess",data.messageEror);
         }
         $("input#login_next").removeClass("login-loadingBlock");
