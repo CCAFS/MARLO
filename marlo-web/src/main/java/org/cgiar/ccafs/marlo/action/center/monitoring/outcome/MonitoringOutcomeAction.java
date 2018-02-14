@@ -104,6 +104,7 @@ public class MonitoringOutcomeAction extends BaseAction {
   private long topicID;
   private long outcomeID;
   private String transaction;
+  private CenterOutcome outcomeDB;
 
   @Inject
   public MonitoringOutcomeAction(APConfig config, GlobalUnitManager centerService, ICenterOutcomeManager outcomeService,
@@ -430,6 +431,8 @@ public class MonitoringOutcomeAction extends BaseAction {
     String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
+    outcomeDB = outcomeService.getResearchOutcomeById(outcomeID);
+
     if (this.isHttpPost()) {
       if (targetUnitList != null) {
         targetUnitList.clear();
@@ -449,7 +452,6 @@ public class MonitoringOutcomeAction extends BaseAction {
 
       this.setInvalidFields(new HashMap<>());
 
-      CenterOutcome outcomeDB = outcomeService.getResearchOutcomeById(outcomeID);
 
       outcomeService.saveResearchOutcome(outcomeDB);
 
