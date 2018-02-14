@@ -448,6 +448,15 @@ public class FlagshipPlansAction extends BaseAction {
   private void setPowbSynthesisIdParameter() {
     try {
       powbSynthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+      powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+      if (!powbSynthesis.getPhase().equals(this.getActualPhase())) {
+        powbSynthesis = powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+        if (powbSynthesis == null) {
+          powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+        }
+        powbSynthesisID = powbSynthesis.getId();
+      }
     } catch (NumberFormatException e) {
       PowbSynthesis powbSynthesis =
         powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);

@@ -62,28 +62,30 @@ public class CrpStaffingValidator extends BaseValidator {
         action.addMissingField("draft");
       }
     }
+    if (powbSynthesis != null) {
+      if (!(this.isValidString(powbSynthesis.getCrpStaffing().getStaffingIssues())
+        && this.wordCount(powbSynthesis.getCrpStaffing().getStaffingIssues()) <= 100)) {
+        action.addMessage(action.getText("powbSynthesis.crpStaffing.staffingIssues.readText"));
+        action.getInvalidFields().put("input-powbSynthesis.crpStaffing.staffingIssues",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      int i = 0;
+      for (PowbSynthesisCrpStaffingCategory powbStaffingCategory : powbSynthesis
+        .getPowbSynthesisCrpStaffingCategoryList()) {
+        this.validateCrpStaffingCategory(powbStaffingCategory, action, i);
+        i++;
+      }
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (action.getValidationMessage().length() > 0) {
+        action.addActionMessage(
+          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      }
 
-
-    if (!(this.isValidString(powbSynthesis.getCrpStaffing().getStaffingIssues())
-      && this.wordCount(powbSynthesis.getCrpStaffing().getStaffingIssues()) <= 100)) {
-      action.addMessage(action.getText("powbSynthesis.crpStaffing.staffingIssues.readText"));
-      action.getInvalidFields().put("input-powbSynthesis.crpStaffing.staffingIssues", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    int i = 0;
-    for (PowbSynthesisCrpStaffingCategory powbStaffingCategory : powbSynthesis
-      .getPowbSynthesisCrpStaffingCategoryList()) {
-      this.validateCrpStaffingCategory(powbStaffingCategory, action, i);
-      i++;
-    }
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (action.getValidationMessage().length() > 0) {
-      action.addActionMessage(
-        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
+      this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+        PowbSynthesisSectionStatusEnum.STAFFING.getStatus(), action);
     }
 
-    this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-      PowbSynthesisSectionStatusEnum.STAFFING.getStatus(), action);
   }
 
   private void validateCrpStaffingCategory(PowbSynthesisCrpStaffingCategory powbStaffingCategory, BaseAction action,

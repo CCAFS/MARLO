@@ -42,7 +42,7 @@
           [#if PMU]
           <div class="form-group">
             [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
-            [#assign powebElement=action.getPMUPowbExpectedCrpProgress()]
+            [#assign powebElement= action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
           [/#if]
@@ -309,11 +309,11 @@
                     [#if type == "W3BILATERAL"] <th colspan="2" class="text-center">Bilateral</th>[/#if]
                   </tr>
                   <tr>
-                    [#if type == "W1W2"]<th class="text-center">[@s.text name="project.coreBudget" /]  Total Amount</th>[/#if]
+                    [#if type == "W1W2"]<th class="text-center"> Total [@s.text name="project.coreBudget" /] Amount</th>[/#if]
                     [#if type == "W1W2"]<th class="text-center">  ${element.acronym} % (Amount) </th>[/#if]
-                    [#if type == "W3BILATERAL"]<th class="text-center"> [@s.text name="project.w3Budget" /] Total Amount</th>[/#if]
+                    [#if type == "W3BILATERAL"]<th class="text-center"> Total [@s.text name="project.w3Budget" /] Amount</th>[/#if]
                     [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} % (Amount)</th>[/#if]
-                    [#if type == "W3BILATERAL"]<th class="text-center"> [@s.text name="project.bilateralBudget" /] Total Amount</th>[/#if]
+                    [#if type == "W3BILATERAL"]<th class="text-center"> Total [@s.text name="project.bilateralBudget" /] Amount</th>[/#if]
                     [#if type == "W3BILATERAL"]<th class="text-center"> ${element.acronym} % (Amount)</th>[/#if]
                   </tr>
                 </thead>

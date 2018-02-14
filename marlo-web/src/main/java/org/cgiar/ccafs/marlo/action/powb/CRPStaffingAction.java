@@ -113,6 +113,20 @@ public class CRPStaffingAction extends BaseAction {
     return SUCCESS;
   }
 
+  private void createEmptyCrpStaffing() {
+    if (powbSynthesis.getCrpStaffing() == null && this.isPMU()) {
+      PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
+      newPowbCrpStaffing.setActive(true);
+      newPowbCrpStaffing.setCreatedBy(this.getCurrentUser());
+      newPowbCrpStaffing.setModifiedBy(this.getCurrentUser());
+      newPowbCrpStaffing.setActiveSince(new Date());
+      newPowbCrpStaffing.setStaffingIssues("");
+      newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
+      powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    }
+  }
+
   private void deleteAllPowbSynthesisCategories() {
     for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesis
       .getPowbSynthesisCrpStaffingCategory().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -166,10 +180,10 @@ public class CRPStaffingAction extends BaseAction {
     }
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -192,6 +206,7 @@ public class CRPStaffingAction extends BaseAction {
     return powbCrpStaffingCategories;
   }
 
+
   // Method to get the download folder
   private String getPowbSourceFolder(Long liaisonInstitutionID) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
@@ -199,7 +214,6 @@ public class CRPStaffingAction extends BaseAction {
       .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
       .concat(File.separator);
   }
-
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -281,6 +295,8 @@ public class CRPStaffingAction extends BaseAction {
           .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       }
     }
+
+    this.createEmptyCrpStaffing();
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -321,11 +337,7 @@ public class CRPStaffingAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       // CrpStaffing: staffing issues
-      if (powbSynthesis.getCrpStaffing() == null || powbSynthesis.getCrpStaffing().getId() == null) {
-        this.saveNewCrpStaffing();
-      } else {
-        this.saveUpdateCrpStaffing();
-      }
+      this.saveUpdateCrpStaffing();
       // CrpStaffing: Categories
       if (powbSynthesis.getPowbSynthesisCrpStaffingCategoryList() != null
         && !powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().isEmpty()) {
@@ -390,16 +402,6 @@ public class CRPStaffingAction extends BaseAction {
       powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(newPowbCrpStaffingCategories);
   }
 
-  private void saveNewCrpStaffing() {
-    PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
-    newPowbCrpStaffing.setActive(true);
-    newPowbCrpStaffing.setCreatedBy(this.getCurrentUser());
-    newPowbCrpStaffing.setModifiedBy(this.getCurrentUser());
-    newPowbCrpStaffing.setStaffingIssues(powbSynthesis.getCrpStaffing().getStaffingIssues());
-    newPowbCrpStaffing.setActiveSince(new Date());
-    newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
-    newPowbCrpStaffing = powbCrpStaffingManager.savePowbCrpStaffing(newPowbCrpStaffing);
-  }
 
   private void saveUpdateCategory(PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory) {
     PowbSynthesisCrpStaffingCategory powbCrpStaffingCategories = powbSynthesisCrpStaffingCategoryManager
@@ -518,9 +520,11 @@ public class CRPStaffingAction extends BaseAction {
   }
 
   private void setPowbSynthesisIdParameter() {
-    try {
-      powbSynthesisID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
-    } catch (NumberFormatException e) {
+    List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+      .collect(Collectors.toList());
+    if (pmuList != null && !pmuList.isEmpty()) {
+      Long liaisonInstitutionID = pmuList.get(0).getId();
       PowbSynthesis powbSynthesis =
         powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
       if (powbSynthesis != null) {
