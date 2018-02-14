@@ -41,7 +41,7 @@
           
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.financialPlan.highlight" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           <br />
           
@@ -88,8 +88,9 @@
         </tr>
       </thead>
       <tbody>
-        [#list 0 .. 5 as category]
-          [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
+       [#if powbExpenditureAreas??]
+        [#list powbExpenditureAreas  as category]
+       [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
           [#assign element = {} /]
           <tr>
             <td>
@@ -103,6 +104,8 @@
             <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
           </tr>
         [/#list]
+         [/#if]
+          
       </tbody>
     </table>
   </div>
