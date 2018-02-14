@@ -13,8 +13,8 @@
   { 'title': '2.  Planning for CRP Effectiveness and Efficiency', 'show': true,
     'items': [
     { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': flagship || PMU },
-    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': flagship || PMU },
-    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false  },
+    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': false },
+    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false },
     { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': flagship || PMU }
     ]
   },
