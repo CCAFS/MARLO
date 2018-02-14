@@ -70,8 +70,10 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
   }
 
   public Double getFemalePercentage() {
+    Double femaleT;
+    femaleT = female == null ? 0.0 : female;
     if (this.getTotalFTE() != 0) {
-      return Math.round(((female * 100) / this.getTotalFTE()) * 100.0) / 100.0;
+      return Math.round(((femaleT * 100) / this.getTotalFTE()) * 10.0) / 10.0;
     } else {
       return 0.0;
     }
@@ -118,7 +120,15 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
 
 
   public Double getTotalFTE() {
-    return male + female;
+    Double maleT;
+    Double femaleT;
+    maleT = male == null ? 0.0 : male;
+    femaleT = female == null ? 0.0 : female;
+    if (maleT + femaleT != 0) {
+      return Math.round(((maleT + femaleT)) * 10.0) / 10.0;
+    } else {
+      return 0.0;
+    }
   }
 
 

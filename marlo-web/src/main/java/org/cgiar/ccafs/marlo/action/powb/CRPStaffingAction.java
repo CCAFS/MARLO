@@ -378,9 +378,13 @@ public class CRPStaffingAction extends BaseAction {
       .setPowbCrpStaffingCategory(powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory());
     if (powbSynthesisCrpStaffingCategory.getFemale() != null) {
       newPowbCrpStaffingCategories.setFemale(powbSynthesisCrpStaffingCategory.getFemale());
+    } else {
+      newPowbCrpStaffingCategories.setFemale(0.0);
     }
     if (powbSynthesisCrpStaffingCategory.getMale() != null) {
       newPowbCrpStaffingCategories.setMale(powbSynthesisCrpStaffingCategory.getMale());
+    } else {
+      newPowbCrpStaffingCategories.setMale(0.0);
     }
     newPowbCrpStaffingCategories =
       powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(newPowbCrpStaffingCategories);
@@ -405,9 +409,13 @@ public class CRPStaffingAction extends BaseAction {
     powbCrpStaffingCategories.setActiveSince(new Date());
     if (powbSynthesisCrpStaffingCategory.getFemale() != null) {
       powbCrpStaffingCategories.setFemale(powbSynthesisCrpStaffingCategory.getFemale());
+    } else {
+      powbCrpStaffingCategories.setFemale(0.0);
     }
     if (powbSynthesisCrpStaffingCategory.getMale() != null) {
       powbCrpStaffingCategories.setMale(powbSynthesisCrpStaffingCategory.getMale());
+    } else {
+      powbCrpStaffingCategories.setMale(0.0);
     }
     powbCrpStaffingCategories =
       powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(powbCrpStaffingCategories);
