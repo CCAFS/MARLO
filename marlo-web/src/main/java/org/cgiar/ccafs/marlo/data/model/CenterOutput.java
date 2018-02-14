@@ -46,9 +46,6 @@ public class CenterOutput implements Serializable, IAuditLog {
   private Date dateAdded;
 
   @Expose
-  private CenterOutcome researchOutcome;
-
-  @Expose
   private Date activeSince;
 
 
@@ -86,11 +83,10 @@ public class CenterOutput implements Serializable, IAuditLog {
    * @param dateAdded
    * @param researchOutcome
    */
-  public CenterOutput(String title, Date dateAdded, CenterOutcome researchOutcome, Date activeSince) {
+  public CenterOutput(String title, Date dateAdded, Date activeSince) {
     super();
     this.title = title;
     this.dateAdded = dateAdded;
-    this.researchOutcome = researchOutcome;
     this.activeSince = activeSince;
   }
 
@@ -174,13 +170,6 @@ public class CenterOutput implements Serializable, IAuditLog {
   }
 
 
-  /**
-   * @return the researchOutcome
-   */
-  public CenterOutcome getResearchOutcome() {
-    return researchOutcome;
-  }
-
   public Set<CenterOutputsNextUser> getResearchOutputsNextUsers() {
     return researchOutputsNextUsers;
   }
@@ -257,14 +246,6 @@ public class CenterOutput implements Serializable, IAuditLog {
 
   public void setProjectOutputs(Set<CenterProjectOutput> projectOutputs) {
     this.projectOutputs = projectOutputs;
-  }
-
-
-  /**
-   * @param researchOutcome the researchOutcome to set
-   */
-  public void setResearchOutcome(CenterOutcome researchOutcome) {
-    this.researchOutcome = researchOutcome;
   }
 
 
