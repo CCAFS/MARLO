@@ -104,6 +104,7 @@ public class OutputsAction extends BaseAction {
   private long outputID;
   private String transaction;
   private long nextUserTypeID;
+  private CenterOutput outputDb;
   // Validator
   private OutputsValidator validator;
 
@@ -335,6 +336,8 @@ public class OutputsAction extends BaseAction {
       String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
       this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
+      outputDb = outputService.getResearchOutputById(outputID);
+
       if (this.isHttpPost()) {
         if (contacPersons != null) {
           contacPersons.clear();
@@ -356,8 +359,6 @@ public class OutputsAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermissionCenter("*")) {
-
-      CenterOutput outputDb = outputService.getResearchOutputById(outputID);
 
       outputDb.setTitle(output.getTitle());
 
