@@ -73,5 +73,23 @@
 		<one-to-one name="powbManagementGovernance"
 			class="org.cgiar.ccafs.marlo.data.model.PowbManagementGovernance"
 			cascade="save-update"></one-to-one>
+		<one-to-one name="financialPlan"
+			class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan" cascade="save-update"></one-to-one>
+		<set name="powbFinancialExpenditures" table="powb_financial_expenditure"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure" />
+		</set>
+		<set name="powbFinancialPlannedBudget" table="powb_financial_planned_budget"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget" />
+		</set>
 	</class>
 </hibernate-mapping>

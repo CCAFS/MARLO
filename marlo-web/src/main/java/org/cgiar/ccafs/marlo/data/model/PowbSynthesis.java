@@ -94,8 +94,23 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   private PowbManagementGovernance powbManagementGovernance;
 
 
+  @Expose
+  private PowbFinancialPlan financialPlan;
+
+
+  private Set<PowbFinancialExpenditure> powbFinancialExpenditures = new HashSet<PowbFinancialExpenditure>(0);
+
+  private List<PowbFinancialExpenditure> powbFinancialExpendituresList;
+
+
+  private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget = new HashSet<PowbFinancialPlannedBudget>(0);
+
+  private List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList;
+
+
   public PowbSynthesis() {
   }
+
 
   public PowbSynthesis(Long id, Phase phase, boolean active, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
@@ -107,6 +122,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public PowbSynthesis(Long id, Phase phase, boolean active, User createdBy, Date activeSince, User modifiedBy,
     LiaisonInstitution liaisonInstitution) {
     this.id = id;
@@ -117,6 +133,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -140,9 +157,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -153,12 +172,19 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return crossCutting;
   }
 
+
   public PowbCrpStaffing getCrpStaffing() {
     return crpStaffing;
   }
 
+
   public List<PowbExpectedCrpProgress> getExpectedCrpProgresses() {
     return expectedCrpProgresses;
+  }
+
+
+  public PowbFinancialPlan getFinancialPlan() {
+    return financialPlan;
   }
 
   @Override
@@ -166,11 +192,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -178,7 +202,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -199,10 +222,28 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbEvidence;
   }
 
-
   public Set<PowbExpectedCrpProgress> getPowbExpectedCrpProgresses() {
     return powbExpectedCrpProgresses;
   }
+
+  public Set<PowbFinancialExpenditure> getPowbFinancialExpenditures() {
+    return powbFinancialExpenditures;
+  }
+
+  public List<PowbFinancialExpenditure> getPowbFinancialExpendituresList() {
+    return powbFinancialExpendituresList;
+  }
+
+
+  public Set<PowbFinancialPlannedBudget> getPowbFinancialPlannedBudget() {
+    return powbFinancialPlannedBudget;
+  }
+
+
+  public List<PowbFinancialPlannedBudget> getPowbFinancialPlannedBudgetList() {
+    return powbFinancialPlannedBudgetList;
+  }
+
 
   public PowbFlagshipPlans getPowbFlagshipPlans() {
     return powbFlagshipPlans;
@@ -221,10 +262,10 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbMonitoringEvaluationLearning;
   }
 
+
   public Set<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategory() {
     return powbSynthesisCrpStaffingCategory;
   }
-
 
   public List<PowbSynthesisCrpStaffingCategory> getPowbSynthesisCrpStaffingCategoryList() {
     return powbSynthesisCrpStaffingCategoryList;
@@ -257,7 +298,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
@@ -265,6 +305,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrossCutting(CrossCuttingDimensions crossCutting) {
     this.crossCutting = crossCutting;
@@ -280,6 +321,10 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setFinancialPlan(PowbFinancialPlan financialPlan) {
+    this.financialPlan = financialPlan;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -292,9 +337,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
+
 
   public void setPowbEvidence(PowbEvidence powbEvidence) {
     this.powbEvidence = powbEvidence;
@@ -302,6 +349,22 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public void setPowbExpectedCrpProgresses(Set<PowbExpectedCrpProgress> powbExpectedCrpProgresses) {
     this.powbExpectedCrpProgresses = powbExpectedCrpProgresses;
+  }
+
+  public void setPowbFinancialExpenditures(Set<PowbFinancialExpenditure> powbFinancialExpenditures) {
+    this.powbFinancialExpenditures = powbFinancialExpenditures;
+  }
+
+  public void setPowbFinancialExpendituresList(List<PowbFinancialExpenditure> powbFinancialExpendituresList) {
+    this.powbFinancialExpendituresList = powbFinancialExpendituresList;
+  }
+
+  public void setPowbFinancialPlannedBudget(Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget) {
+    this.powbFinancialPlannedBudget = powbFinancialPlannedBudget;
+  }
+
+  public void setPowbFinancialPlannedBudgetList(List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList) {
+    this.powbFinancialPlannedBudgetList = powbFinancialPlannedBudgetList;
   }
 
 
