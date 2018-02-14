@@ -398,6 +398,147 @@ public class ExpectedCRPProgressAction extends BaseAction {
 
   }
 
+  public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
+    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<Project> myProjects = new ArrayList<>();
+    for (ProjectFocus projectFocus : projects) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+        .collect(Collectors.toList());
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+      if (!this.getCountProjectFlagships(project.getId())) {
+        percentageW1 = 100;
+        percentageW3 = 100;
+        percentageB = 100;
+
+      }
+      for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+        switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+          case 1:
+            percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+            break;
+          case 2:
+            percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+            break;
+          case 3:
+            percentageB = percentageB + projectBudgetsFlagship.getAmount();
+            break;
+          default:
+            break;
+        }
+      }
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+      crpProgram.setW1(crpProgram.getW1() + w1);
+      crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
+
+
+    }
+  }
+
+  public List<Project> loadFlagShipBudgetInfoProgram(long crpProgramID) {
+    List<Project> projectsToRet = new ArrayList<>();
+    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<Project> myProjects = new ArrayList<>();
+    for (ProjectFocus projectFocus : projects) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
+        .collect(Collectors.toList());
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+      if (!this.getCountProjectFlagships(project.getId())) {
+        percentageW1 = 100;
+        percentageW3 = 100;
+        percentageB = 100;
+
+      }
+      for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+        switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+          case 1:
+            percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+            break;
+          case 2:
+            percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+            break;
+          case 3:
+            percentageB = percentageB + projectBudgetsFlagship.getAmount();
+            break;
+          default:
+            break;
+        }
+      }
+      project.setW3Budget(w3);
+      project.setCoreBudget(w1);
+      project.setBilateralBudget(bilateral);
+
+      project.setPercentageW3(percentageW3);
+      project.setPercentageW1(percentageW3);
+      project.setPercentageBilateral(percentageB);
+
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+
+      project.setTotalW3(percentageW3);
+      project.setTotalW1(percentageW3);
+      project.setTotalBilateral(percentageB);
+      projectsToRet.add(project);
+    }
+    return projectsToRet;
+  }
+
+
   public void loadTablePMU() {
     flagships = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -425,74 +566,10 @@ public class ExpectedCRPProgressAction extends BaseAction {
         }
       }
       crpProgram.setOutcomes(validOutcomes);
-
-
-      List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
-        .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
-      List<Project> myProjects = new ArrayList<>();
-      for (ProjectFocus projectFocus : projects) {
-        Project project = projectFocus.getProject();
-        if (project.isActive()) {
-          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-          if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
-            if (project.getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || project.getProjectInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              myProjects.add(project);
-            }
-          }
-
-
-        }
-      }
-      for (Project project : myProjects) {
-
-
-        double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
-        double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
-        double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
-        List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
-          .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue())
-          .collect(Collectors.toList());
-        double percentageW1 = 0;
-        double percentageW3 = 0;
-        double percentageB = 0;
-
-        if (!this.getCountProjectFlagships(project.getId())) {
-          percentageW1 = 100;
-          percentageW3 = 100;
-          percentageB = 100;
-
-        }
-        for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
-          switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
-            case 1:
-              percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
-              break;
-            case 2:
-              percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
-              break;
-            case 3:
-              percentageB = percentageB + projectBudgetsFlagship.getAmount();
-              break;
-            default:
-              break;
-          }
-        }
-        w1 = w1 * (percentageW1) / 100;
-        w3 = w3 * (percentageW3) / 100;
-        bilateral = bilateral * (percentageB) / 100;
-        crpProgram.setW1(crpProgram.getW1() + w1);
-        crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
-
-
-      }
-
+      this.loadFlagShipBudgetInfo(crpProgram);
 
     }
   }
-
 
   @Override
   public String next() {
@@ -619,7 +696,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
             && liaisonInstitution.getCrpProgram() != null
             && liaisonInstitution.getCrpProgram().getId().equals(c.getCrpProgram().getId()))
-          .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
     }
     for (CrpProgramOutcome outcome : outcomesList) {
       outcome.setMilestones(outcome.getCrpMilestones().stream()
