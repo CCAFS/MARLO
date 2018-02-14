@@ -31,7 +31,7 @@
 			<column name="title" length="65535" not-null="false" />
 		</property>
 		<property name="dateAdded" type="timestamp">
-			<column name="date_added" length="19" not-null="true" />
+			<column name="date_added" length="19"  />
 		</property>
 		<property name="shortName" type="string">
       <column name="short_name" />
