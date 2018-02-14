@@ -2423,9 +2423,10 @@ input.userName {
 
 .loginForm .login-loadingBlock {
   width: 100%;
-  background: url(../../global/images/loading.gif) #2793ad no-repeat 50%;        
+  height: 50%;
+  background: url(../../global/images/login-loading.gif) #2793ad no-repeat 50%;        
   z-index: 99;    
-  opacity: 0.3;
+  opacity: 0.7;
   padding: 50%;
 }
 
