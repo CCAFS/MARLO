@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -38,13 +39,16 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +69,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   // Model
   private boolean existProject;
   private GlobalUnit loggedCrp;
+  private final LocalizedTextProvider localizedTextProvider;
   private boolean validSection;
 
   private String sectionName;
@@ -82,12 +87,14 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   public ValidateProjectSectionAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
     SectionStatusManager sectionStatusManager,
-    ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator) {
+    ProjectSectionValidator<ValidateProjectSectionAction> projectSectionValidator,
+    LocalizedTextProvider localizedTextProvider) {
     super(config);
     this.sectionStatusManager = sectionStatusManager;
     this.projectManager = projectManager;
     this.projectSectionValidator = projectSectionValidator;
     this.crpManager = crpManager;
+    this.localizedTextProvider = localizedTextProvider;
   }
 
 
@@ -395,7 +402,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long getProjectID() {
     return projectID;
   }
@@ -411,6 +417,27 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  @Override
+  public String getText(String aTextName) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(aTextName, locale);
+  }
+
+  @Override
+  public String getText(String key, String[] args) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(key, locale, args);
+
+  }
+
   public boolean isExistProject() {
     return existProject;
   }
@@ -418,6 +445,47 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   public boolean isValidSection() {
     return validSection;
+  }
+
+  public void loadProvider(Map<String, Object> session) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+    String pathFile = APConstants.PATH_CUSTOM_FILES;
+    if (session.containsKey(APConstants.CRP_LANGUAGE)) {
+      language = (String) session.get(APConstants.CRP_LANGUAGE);
+    }
+
+    Locale locale = new Locale(language);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
+    try {
+      ServletActionContext.getContext().setLocale(locale);
+    } catch (Exception e) {
+
+    }
+
+    if (session.containsKey(APConstants.SESSION_CRP)) {
+
+      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
   }
 
   @Override
