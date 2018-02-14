@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `powb_evidences`;
 CREATE TABLE `powb_evidences` (
 `id`  bigint(20) NOT NULL ,
 `narrative`  text NULL ,

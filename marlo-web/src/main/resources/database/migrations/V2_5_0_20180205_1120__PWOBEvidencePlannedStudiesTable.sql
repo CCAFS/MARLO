@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `powb_evidence_planned_studies`;
 CREATE TABLE `powb_evidence_planned_studies` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `powb_evidence_id`  bigint(20) NOT NULL ,
