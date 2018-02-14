@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `powb_synthesis`;
 
 CREATE TABLE `powb_synthesis` (
