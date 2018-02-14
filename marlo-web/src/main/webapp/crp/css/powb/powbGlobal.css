@@ -128,3 +128,7 @@ form .form-group.margin-panel {
 .modal-dialog.modal-lg.bigger {
   width: 95%;
 }
+
+.table-plannedStudies td.checkbox {
+  display: table-cell;
+}
