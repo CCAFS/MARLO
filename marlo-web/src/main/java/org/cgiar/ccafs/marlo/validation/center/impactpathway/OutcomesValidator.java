@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -44,7 +43,6 @@ public class OutcomesValidator extends BaseValidator {
   private GlobalUnitManager centerService;
 
 
-  @Inject
   public OutcomesValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }

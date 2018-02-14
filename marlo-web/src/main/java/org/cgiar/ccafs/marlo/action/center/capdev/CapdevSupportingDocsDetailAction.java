@@ -77,6 +77,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   private String transaction;
   private final AuditLogManager auditLogService;
+  private CenterDeliverable supportingDocDB;
 
   @Inject
   public CapdevSupportingDocsDetailAction(APConfig config, ICenterDeliverableTypeManager centerDeliverableTypeService,
@@ -313,6 +314,8 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
       }
 
     }
+
+    supportingDocDB = centerDeliverableService.getDeliverableById(deliverableID);
     if (this.isHttpPost()) {
       deliverable.setDeliverableType(null);
       deliverable.setDocuments(null);
@@ -325,7 +328,7 @@ public class CapdevSupportingDocsDetailAction extends BaseAction {
 
   @Override
   public String save() {
-    final CenterDeliverable supportingDocDB = centerDeliverableService.getDeliverableById(deliverableID);
+
     supportingDocDB.setName(deliverable.getName());
 
     if (deliverable.getDeliverableType() == null) {

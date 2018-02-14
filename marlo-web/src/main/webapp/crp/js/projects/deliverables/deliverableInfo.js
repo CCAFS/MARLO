@@ -125,7 +125,7 @@ function init() {
   // CHANGE STATUS
   $statuses.on("change", function() {
     justificationByStatus($(this).val());
-  }).trigger('change');
+  });
 
   $(".yearExpected").on("change", validateCurrentDate);
 
