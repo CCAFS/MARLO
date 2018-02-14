@@ -10,7 +10,7 @@ $(document).ready(function() {
     var category = $(this).classParam('category');
     var total = getTotalByCategory(category);
     var totalFemale = getTotalByCategoryAndType(category, "female");
-    var percFemale = ((totalFemale / total) * 100).toFixed(1);
+    var percFemale = ((totalFemale / total) * 100);
     if(isNaN(percFemale)) {
       percFemale = 0;
     }
@@ -18,10 +18,10 @@ $(document).ready(function() {
     var $totalLabel = $('span.label-total.category-' + category);
     var $percFemaleLabel = $('span.label-percFemale.category-' + category);
 
-    $totalLabel.text(total);
+    $totalLabel.text(total.toFixed(1));
     $totalLabel.animateCss('flipInX');
 
-    $percFemaleLabel.text(percFemale);
+    $percFemaleLabel.text(percFemale.toFixed(1));
     $percFemaleLabel.animateCss('flipInX');
 
   });
@@ -36,7 +36,7 @@ $(document).ready(function() {
 function getTotalByCategory(category) {
   var total = 0
   $('input.category-' + category).each(function(i,input) {
-    total = total + (parseInt($(input).val()) || 0);
+    total = total + (parseFloat($(input).val()) || 0);
   });
   return total;
 }
@@ -51,7 +51,7 @@ function getTotalByCategory(category) {
 function getTotalByCategoryAndType(category,type) {
   var total = 0
   $('input.category-' + category + '.type-' + type).each(function(i,input) {
-    total = total + (parseInt($(input).val()) || 0);
+    total = total + (parseFloat($(input).val()) || 0);
   });
   return total;
 }
