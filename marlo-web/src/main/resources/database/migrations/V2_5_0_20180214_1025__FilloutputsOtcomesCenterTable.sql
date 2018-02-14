@@ -1,0 +1,2 @@
+INSERT INTO center_outputs_outcomes (output_id, outcome_id, is_active, active_since, created_by, modified_by, modification_justification)
+SELECT id, research_outcome_id, 1, NOW(), created_by, modified_by, modification_justification from center_outputs where is_active=1;
