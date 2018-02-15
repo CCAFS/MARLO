@@ -1301,7 +1301,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
 
-      if (this.isLessonsActive()) {
+      if (this.isLessonsActive() && this.isReportingActive()) {
         this.saveLessons(loggedCrp, project);
       }
 
