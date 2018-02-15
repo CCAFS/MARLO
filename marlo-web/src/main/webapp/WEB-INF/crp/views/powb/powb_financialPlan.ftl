@@ -123,8 +123,9 @@
         </tr>
       </thead>
       <tbody>
-        [#list 0 .. 12 as category]
-          [#assign customName = "powbSynthesis.expenditures[${category_index}]" /]
+      [#if expenditureAreas??]
+      [#list expenditureAreas  as category]      
+      [#assign customName = "powbSynthesis.expenditures[${category_index}]" /]
           [#assign element = {} /]
           <tr>
             <td> 
@@ -135,7 +136,8 @@
             <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${category_index}" required=true editable=editable && PMU /]</td>
             <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
           </tr>
-        [/#list]
+      [/#list]
+        [/#if]
       </tbody>
     </table>
   </div>

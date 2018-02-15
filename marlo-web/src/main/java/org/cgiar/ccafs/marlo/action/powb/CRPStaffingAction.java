@@ -29,14 +29,12 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffingCategories;
 import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -447,39 +445,11 @@ public class CRPStaffingAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
-      User user = userManager.getUser(this.getCurrentUser().getId());
-      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-          .collect(Collectors.toList()));
-        if (!liaisonUsers.isEmpty()) {
-          boolean isLeader = false;
-          for (LiaisonUser liaisonUser : liaisonUsers) {
-            LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
-            if (institution.isActive()) {
-              if (institution.getCrpProgram() != null) {
-                if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              } else {
-                if (institution.getAcronym().equals("PMU")) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              }
-            }
-          }
-          if (!isLeader) {
-            liaisonInstitutionID = this.firstFlagship();
-          }
-        } else {
-          liaisonInstitutionID = this.firstFlagship();
-        }
-      } else {
-        liaisonInstitutionID = this.firstFlagship();
+      List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+        .collect(Collectors.toList());
+      if (pmuList != null && !pmuList.isEmpty()) {
+        liaisonInstitutionID = pmuList.get(0).getId();
       }
     }
   }
