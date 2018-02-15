@@ -91,20 +91,20 @@
       <tbody>
        [#if powbExpenditureAreas??]
         [#list powbExpenditureAreas  as category]
-       [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
-          [#assign element = {} /]
-          <tr>
-            <td>
-              <span>CRP Management & Support Cost ${category}</span>
-              <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-              <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
-            </td>
-            <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${category_index}" required=true editable=editable && PMU /]</td>
-            <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${category_index}" required=true editable=editable && PMU /]</td>
-            <td> US$ <span class="label-total category-${category_index}">0.00</span> </td>
-            <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
-          </tr>
-        [/#list]
+         [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
+            [#assign element = {} /]
+            <tr>
+              <td>
+                <span>CRP Management & Support Cost ${category}</span>
+                <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+                <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
+              </td>
+              <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${category_index}" required=true editable=editable && PMU /]</td>
+              <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${category_index}" required=true editable=editable && PMU /]</td>
+              <td> US$ <span class="label-total category-${category_index}">0.00</span> </td>
+              <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
+            </tr>
+          [/#list]
          [/#if]
           
       </tbody>
