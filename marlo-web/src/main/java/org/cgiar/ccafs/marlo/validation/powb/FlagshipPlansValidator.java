@@ -63,23 +63,20 @@ public class FlagshipPlansValidator extends BaseValidator {
 
     this.validateFlagshipPlans(action, powbSynthesis);
 
-    if (powbSynthesis != null && powbSynthesis.getPowbFlagshipPlans() != null
-      && powbSynthesis.getPowbFlagshipPlans().getId() != null) {
-      if (!action.getFieldErrors().isEmpty()) {
-        action.addActionError(action.getText("saving.fields.required"));
-      } else if (action.getValidationMessage().length() > 0) {
-        action.addActionMessage(
-          " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
-      }
-      this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
-        PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus(), action);
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (action.getValidationMessage().length() > 0) {
+      action.addActionMessage(
+        " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
+    this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
+      PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus(), action);
   }
 
   private void validateFlagshipPlans(BaseAction action, PowbSynthesis powbSynthesis) {
     if (!(this.isValidString(powbSynthesis.getPowbFlagshipPlans().getPlanSummary())
       && this.wordCount(powbSynthesis.getPowbFlagshipPlans().getPlanSummary()) <= 100)) {
-      action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges",
+      action.addMessage(action.getText("liaisonInstitution.powb.planSummary.readText",
         new String[] {Integer.toString(action.getCurrentCycleYear())}));
       action.getInvalidFields().put("input-powbSynthesis.powbFlagshipPlans.planSummary",
         InvalidFieldsMessages.EMPTYFIELD);
