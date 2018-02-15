@@ -223,6 +223,21 @@ public class FinancialPlanAction extends BaseAction {
     return powbExpenditureAreas;
   }
 
+  public PowbFinancialExpenditure getPowbFinancialExpenditurebyExpenditureArea(Long expenditureAreaID) {
+    if (expenditureAreaID != null) {
+      List<PowbFinancialExpenditure> powbFinancialExpenditure =
+        powbSynthesis.getPowbFinancialExpendituresList().stream()
+          .filter(c -> c.getPowbExpenditureArea().getId().equals(expenditureAreaID)).collect(Collectors.toList());
+      if (powbFinancialExpenditure != null && !powbFinancialExpenditure.isEmpty()) {
+        return powbFinancialExpenditure.get(0);
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   public PowbFinancialPlannedBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID, Boolean isLiaison) {
     if (isLiaison) {
       LiaisonInstitution liaisonInstitution =
@@ -375,6 +390,19 @@ public class FinancialPlanAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+      // Planned Budget
+      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
+        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
+        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
+          .getPowbFinancialPlannedBudgetList()) {
+          if (PowbFinancialPlannedBudget.getId() == null) {
+            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
+          } else {
+            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
+          }
+        }
+      }
+
       // FinancialPlan:
       this.saveUpdateFinancialPlan();
       // Financial Expenditures
@@ -385,18 +413,6 @@ public class FinancialPlanAction extends BaseAction {
             this.saveNewFinancialExpenditure(powbFinancialExpenditure);
           } else {
             this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
-          }
-        }
-      }
-      // Planned Budget
-      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
-        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
-        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
-          .getPowbFinancialPlannedBudgetList()) {
-          if (PowbFinancialPlannedBudget.getId() == null) {
-            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
-          } else {
-            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
           }
         }
       }
@@ -453,6 +469,7 @@ public class FinancialPlanAction extends BaseAction {
     newPowbFinancialPlannedBudget.setActiveSince(new Date());
     newPowbFinancialPlannedBudget.setPowbSynthesis(powbSynthesis);
     newPowbFinancialPlannedBudget.setPowbExpenditureArea(powbFinancialPlannedBudget.getPowbExpenditureArea());
+    newPowbFinancialPlannedBudget.setLiaisonInstitution(powbFinancialPlannedBudget.getLiaisonInstitution());
     if (powbFinancialPlannedBudget.getW1w2() != null) {
       newPowbFinancialPlannedBudget.setW1w2(powbFinancialPlannedBudget.getW1w2());
     } else {
