@@ -117,9 +117,9 @@
       <span> ${(area.composedName)!((area.expenditureArea)!'null')}</span>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       [#if isLiaison]
-        <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
-      [#else]
         <input type="hidden" name="${customName}.liaisonInstitution.id" value="${(area.id)!}" />
+      [#else]
+        <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
       [/#if]
     </td>
     <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
@@ -142,7 +142,7 @@
       <tbody>
       [#if expenditureAreas??]
         [#list expenditureAreas  as area]      
-          [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${category_index}]" /]
+          [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${area_index}]" /]
           [#assign element = {} /]
           <tr>
             <td> 
