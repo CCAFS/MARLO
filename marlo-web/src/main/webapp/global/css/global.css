@@ -2852,6 +2852,46 @@ p.login-description{
   box-shadow: none;
 }
 
+/*input border animation*/
+
+.login-input-container { position: relative; }
+
+.login-input-container::after {
+  position: absolute;
+  bottom: 0;
+  left: 49%;
+  z-index: 1;
+  content: "";
+  width: 2%;
+  height: 2px;
+  visibility: hidden;
+  background-color: #2ca6cb;
+  transition-duration: .4s;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
+
+.login-input-container.is-focused::after {
+  left: 0;
+  width: 100%;
+  visibility: visible;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-family: 'Open Sans', sans-serif;
+  color: #666;
+  border: none;
+  border-bottom: 2px solid #ccc;
+}
+.form-control:focus {
+  border-color: #ccc;
+  outline: none;
+}
+
+/*end input animation*/
+
 #loginFormContainer .alreadyLogged {
   font-size: 20px;
 }

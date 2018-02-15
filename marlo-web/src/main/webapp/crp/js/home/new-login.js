@@ -392,3 +392,19 @@ $.fn.disableScroll = function() {
 $.fn.enableScroll = function() {
   $(window).off('scroll.scrolldisabler');
 };
+
+
+(function (window, document) {
+  'use strict';
+
+  var input = document.querySelector('.form-control');
+
+  input.addEventListener('focus', function (ev) {
+    this.parentNode.classList.add('is-focused');
+  });
+
+  input.addEventListener('blur', function (ev) {
+    this.parentNode.classList.remove('is-focused');
+  });
+
+})(window, document);
