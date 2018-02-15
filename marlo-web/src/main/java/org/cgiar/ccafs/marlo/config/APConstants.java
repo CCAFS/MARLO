@@ -368,6 +368,9 @@ public final class APConstants {
   public static final String SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbSynthesisCrpStaffingCategory)";
 
+  public static final String SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbFinancialExpenditures)";
+
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
   public static final String REPORTING = "Reporting";

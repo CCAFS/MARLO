@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated Sep 18, 2017 3:03:15 PM by Hibernate Tools 5.2.3.Final -->
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 6, 2017 8:46:55 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans"
 		table="powb_flagship_plans" optimistic-lock="version">

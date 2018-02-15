@@ -41,6 +41,7 @@
           
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
+          <input type="hidden" name="powbSynthesis.financialPlan.id" value="${(powbSynthesis.financialPlan.id)!}" />
             [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           <br />
