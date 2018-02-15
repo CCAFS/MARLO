@@ -143,7 +143,7 @@
       [#if expenditureAreas??]
         [#list expenditureAreas  as area]      
           [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${area_index}]" /]
-          [#assign element = {} /]
+          [#assign element = (action.getPowbFinancialExpenditurebyExpenditureArea(area.id))!{} /]
           <tr>
             <td> 
               <span>${area.expenditureArea} </span>
