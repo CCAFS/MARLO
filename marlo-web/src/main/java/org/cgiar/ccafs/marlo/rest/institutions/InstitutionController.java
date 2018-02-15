@@ -103,14 +103,25 @@ public class InstitutionController {
     LocElement locElement = locElementManager
       .getLocElementByISOCode(institutionDTO.getInstitutionsLocations().get(0).getCountryIsoAlpha2Code());
 
-    PartnerRequest partnerRequest = institutionMapper.institutionDTOToPartnerRequest(institutionDTO, globalUnitEntity,
-      locElement, this.getCurrentUser());
+    PartnerRequest partnerRequestParent = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+      globalUnitEntity, locElement, this.getCurrentUser());
 
-    partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
+    partnerRequestParent = partnerRequestManager.savePartnerRequest(partnerRequestParent);
+
+    /**
+     * Need to create a parent child relationship for the partnerRequest to display. That design might need to be
+     * re-visited.
+     */
+    PartnerRequest partnerRequestChild = institutionMapper.institutionDTOToPartnerRequest(institutionDTO,
+      globalUnitEntity, locElement, this.getCurrentUser());
+
+    partnerRequestChild.setPartnerRequest(partnerRequestParent);
+
+    partnerRequestChild = partnerRequestManager.savePartnerRequest(partnerRequestChild);
 
     // Return an institutionDTO with a blank id - so that the user doesn't try and look up the institution straight
     // away.
-    return new ResponseEntity<InstitutionDTO>(institutionMapper.partnerRequestToInstitutionDTO(partnerRequest),
+    return new ResponseEntity<InstitutionDTO>(institutionMapper.partnerRequestToInstitutionDTO(partnerRequestParent),
       HttpStatus.CREATED);
   }
 
