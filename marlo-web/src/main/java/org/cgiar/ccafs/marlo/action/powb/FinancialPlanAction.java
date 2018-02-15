@@ -92,6 +92,7 @@ public class FinancialPlanAction extends BaseAction {
   private GlobalUnit loggedCrp;
   private CrpStaffingValidator validator;
 
+
   @Inject
   public FinancialPlanAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
@@ -151,6 +152,16 @@ public class FinancialPlanAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<PowbExpenditureAreas> getExpenditureAreas() {
+    List<PowbExpenditureAreas> expenditureAreaList = powbExpenditureAreasManager.findAll().stream()
+      .filter(e -> e.isActive() && e.getIsExpenditure()).collect(Collectors.toList());
+    if (expenditureAreaList != null) {
+      return expenditureAreaList;
+    } else {
+      return new ArrayList<>();
+    }
+  }
+
   public PowbFlagshipPlans getFlagshipPlansByliaisonInstitutionID(Long liaisonInstitutionID) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
     if (liaisonInstitution != null) {
@@ -178,10 +189,10 @@ public class FinancialPlanAction extends BaseAction {
     }
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -190,6 +201,7 @@ public class FinancialPlanAction extends BaseAction {
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -200,9 +212,54 @@ public class FinancialPlanAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitutionID).replace('\\', '/');
   }
 
+  public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
+    List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
+      .filter(e -> e.isActive() && !e.getIsExpenditure()).collect(Collectors.toList());
+    if (plannedBudgetAreasList != null) {
+      return plannedBudgetAreasList;
+    } else {
+      return new ArrayList<>();
+    }
+  }
 
   public List<PowbExpenditureAreas> getPowbExpenditureAreas() {
     return powbExpenditureAreas;
+  }
+
+  public PowbFinancialPlannedBudget getPowbFinancialPlanBudget(Long plannedBudgetRelationID, Boolean isLiaison) {
+    if (isLiaison) {
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
+      if (liaisonInstitution != null) {
+        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesis.getPowbFinancialPlannedBudget()
+          .stream().filter(p -> p.isActive() && p.getLiaisonInstitution() != null
+            && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
+          .collect(Collectors.toList());
+        if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
+          return powbFinancialPlannedBudgetList.get(0);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      PowbExpenditureAreas powbExpenditureArea =
+        powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
+      if (powbExpenditureArea != null) {
+        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesis.getPowbFinancialPlannedBudget()
+          .stream().filter(p -> p.isActive() && p.getPowbExpenditureArea() != null
+            && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID))
+          .collect(Collectors.toList());
+        if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
+          return powbFinancialPlannedBudgetList.get(0);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    }
   }
 
   // Method to get the download folder
@@ -212,6 +269,7 @@ public class FinancialPlanAction extends BaseAction {
       .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(this.getActionName().replace("/", "_"))
       .concat(File.separator);
   }
+
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
@@ -297,10 +355,7 @@ public class FinancialPlanAction extends BaseAction {
     }
     this.createEmptyFinancialPlan();
     // Get the list of liaison institutions Flagships and PMU.
-    liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
-        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-      .collect(Collectors.toList());
+    liaisonInstitutions = this.getFlagships();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
       .collect(Collectors.toList()));
