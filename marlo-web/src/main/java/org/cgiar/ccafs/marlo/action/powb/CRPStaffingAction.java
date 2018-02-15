@@ -499,6 +499,8 @@ public class CRPStaffingAction extends BaseAction {
         powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
       if (powbSynthesis != null) {
         powbSynthesisID = powbSynthesis.getId();
+      } else {
+        this.createPowbSynthesis(this.getCurrentCenterPhase().getId(), liaisonInstitutionID);
       }
     }
   }
