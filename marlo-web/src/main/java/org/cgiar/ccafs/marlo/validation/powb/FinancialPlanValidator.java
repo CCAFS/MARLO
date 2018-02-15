@@ -70,8 +70,11 @@ public class FinancialPlanValidator extends BaseValidator {
         action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
           InvalidFieldsMessages.EMPTYFIELD);
       }
+
+
       int i = 0;
       for (PowbFinancialPlannedBudget powbFinancialPlannedBudget : powbSynthesis.getPowbFinancialPlannedBudgetList()) {
+        System.out.println(powbFinancialPlannedBudget.getId());
         this.validateFinancialPlannedBudget(powbFinancialPlannedBudget, action, i);
         i++;
       }
@@ -97,13 +100,13 @@ public class FinancialPlanValidator extends BaseValidator {
     int i) {
     if (powbFinancialExpenditure.getW1w2Percentage() != null && powbFinancialExpenditure.getW1w2Percentage() < 0) {
       action.addMissingField(action.getText("financialPlan.tableF.estimatedPercentage"));
-      action.getInvalidFields().put("input-powbSynthesis.expenditures[" + i + "].percentage",
+      action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].w1w2Percentage",
         InvalidFieldsMessages.INVALID_NUMBER);
     }
     if (!(this.isValidString(powbFinancialExpenditure.getComments())
       && this.wordCount(powbFinancialExpenditure.getComments()) <= 100)) {
       action.addMessage(action.getText("financialPlan.tableF.comments"));
-      action.getInvalidFields().put("input-powbSynthesis.expenditures[" + i + "].comments",
+      action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -112,18 +115,18 @@ public class FinancialPlanValidator extends BaseValidator {
     int i) {
     if (powbFinancialPlannedBudget.getW1w2() != null && powbFinancialPlannedBudget.getW1w2() < 0) {
       action.addMissingField(action.getText("financialPlan.tableE.w1w2"));
-      action.getInvalidFields().put("input-powbSynthesis.plannedBudget[" + i + "].w1w2",
+      action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].w1w2",
         InvalidFieldsMessages.INVALID_NUMBER);
     }
     if (powbFinancialPlannedBudget.getW3Bilateral() != null && powbFinancialPlannedBudget.getW3Bilateral() < 0) {
       action.addMissingField(action.getText("financialPlan.tableE.w3bilateral"));
-      action.getInvalidFields().put("input-powbSynthesis.plannedBudget[" + i + "].w3bilateral",
+      action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].w3Bilateral",
         InvalidFieldsMessages.INVALID_NUMBER);
     }
     if (!(this.isValidString(powbFinancialPlannedBudget.getComments())
       && this.wordCount(powbFinancialPlannedBudget.getComments()) <= 100)) {
       action.addMessage(action.getText("financialPlan.tableE.comments"));
-      action.getInvalidFields().put("input-powbSynthesis.plannedBudget[" + i + "].comments",
+      action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }

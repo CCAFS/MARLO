@@ -390,6 +390,19 @@ public class FinancialPlanAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+      // Planned Budget
+      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
+        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
+        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
+          .getPowbFinancialPlannedBudgetList()) {
+          if (PowbFinancialPlannedBudget.getId() == null) {
+            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
+          } else {
+            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
+          }
+        }
+      }
+
       // FinancialPlan:
       this.saveUpdateFinancialPlan();
       // Financial Expenditures
@@ -400,18 +413,6 @@ public class FinancialPlanAction extends BaseAction {
             this.saveNewFinancialExpenditure(powbFinancialExpenditure);
           } else {
             this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
-          }
-        }
-      }
-      // Planned Budget
-      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
-        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
-        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
-          .getPowbFinancialPlannedBudgetList()) {
-          if (PowbFinancialPlannedBudget.getId() == null) {
-            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
-          } else {
-            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
           }
         }
       }
