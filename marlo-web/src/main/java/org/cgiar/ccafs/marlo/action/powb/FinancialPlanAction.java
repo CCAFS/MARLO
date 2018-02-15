@@ -21,18 +21,20 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbCrpStaffingManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisCrpStaffingCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbFinancialExpenditureManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlanManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlannedBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
-import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
+import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
+import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
@@ -75,9 +77,10 @@ public class FinancialPlanAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private AuditLogManager auditLogManager;
   private UserManager userManager;
-  private PowbCrpStaffingManager powbCrpStaffingManager;
-  private PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager;
+  private PowbFinancialPlanManager powbFinancialPlanManager;
+  private PowbFinancialExpenditureManager powbFinancialExpenditureManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
+  private PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager;
   // Model for the front-end
   private PowbSynthesis powbSynthesis;
   private Long powbSynthesisID;
@@ -93,9 +96,10 @@ public class FinancialPlanAction extends BaseAction {
   public FinancialPlanAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    CrpStaffingValidator validator, PowbCrpStaffingManager powbCrpStaffingManager,
-    PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager,
-    PowbExpenditureAreasManager powbExpenditureAreasManager) {
+    CrpStaffingValidator validator, PowbFinancialPlanManager powbFinancialPlanManager,
+    PowbFinancialExpenditureManager powbFinancialExpenditureManager,
+    PowbExpenditureAreasManager powbExpenditureAreasManager,
+    PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -104,9 +108,10 @@ public class FinancialPlanAction extends BaseAction {
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
-    this.powbCrpStaffingManager = powbCrpStaffingManager;
-    this.powbSynthesisCrpStaffingCategoryManager = powbSynthesisCrpStaffingCategoryManager;
+    this.powbFinancialPlanManager = powbFinancialPlanManager;
+    this.powbFinancialExpenditureManager = powbFinancialExpenditureManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
+    this.powbFinancialPlannedBudgetManager = powbFinancialPlannedBudgetManager;
   }
 
   @Override
@@ -115,7 +120,7 @@ public class FinancialPlanAction extends BaseAction {
   }
 
   private void createEmptyFinancialPlan() {
-    if (powbSynthesis.getCrpStaffing() == null && this.isPMU()) {
+    if (powbSynthesis.getFinancialPlan() == null && this.isPMU()) {
       PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
       newPowbFinancialPlan.setActive(true);
       newPowbFinancialPlan.setCreatedBy(this.getCurrentUser());
@@ -125,14 +130,6 @@ public class FinancialPlanAction extends BaseAction {
       newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
       powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-    }
-  }
-
-  private void deleteAllPowbSynthesisCategories() {
-    for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesis
-      .getPowbSynthesisCrpStaffingCategory().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      powbSynthesisCrpStaffingCategoryManager
-        .deletePowbSynthesisCrpStaffingCategory(powbSynthesisCrpStaffingCategory.getId());
     }
   }
 
@@ -341,113 +338,144 @@ public class FinancialPlanAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      // CrpStaffing: staffing issues
-      if (powbSynthesis.getCrpStaffing() == null || powbSynthesis.getCrpStaffing().getId() == null) {
-        this.saveNewCrpStaffing();
-      } else {
-        this.saveUpdateCrpStaffing();
-      }
-      // CrpStaffing: Categories
-      if (powbSynthesis.getPowbSynthesisCrpStaffingCategoryList() != null
-        && !powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().isEmpty()) {
-        for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesis
-          .getPowbSynthesisCrpStaffingCategoryList()) {
-          if (powbSynthesisCrpStaffingCategory.getId() == null) {
-            this.saveNewCategory(powbSynthesisCrpStaffingCategory);
+      // FinancialPlan:
+      this.saveUpdateFinancialPlan();
+      // Financial Expenditures
+      if (powbSynthesis.getPowbFinancialExpendituresList() != null
+        && !powbSynthesis.getPowbFinancialExpendituresList().isEmpty()) {
+        for (PowbFinancialExpenditure powbFinancialExpenditure : powbSynthesis.getPowbFinancialExpendituresList()) {
+          if (powbFinancialExpenditure.getId() == null) {
+            this.saveNewFinancialExpenditure(powbFinancialExpenditure);
           } else {
-            this.saveUpdateCategory(powbSynthesisCrpStaffingCategory);
+            this.saveUpdateFinancialExpenditure(powbFinancialExpenditure);
           }
         }
-      } else {
-        this.deleteAllPowbSynthesisCategories();
+      }
+      // Planned Budget
+      if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null
+        && !powbSynthesis.getPowbFinancialPlannedBudgetList().isEmpty()) {
+        for (PowbFinancialPlannedBudget PowbFinancialPlannedBudget : powbSynthesis
+          .getPowbFinancialPlannedBudgetList()) {
+          if (PowbFinancialPlannedBudget.getId() == null) {
+            this.saveNewPlannedBudget(PowbFinancialPlannedBudget);
+          } else {
+            this.saveUpdatePlannedBudget(PowbFinancialPlannedBudget);
+          }
+        }
       }
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setActiveSince(new Date());
       powbSynthesis.setModifiedBy(this.getCurrentUser());
-      relationsName.add(APConstants.SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION);
+      relationsName.add(APConstants.SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
-
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
+      // if (!this.getInvalidFields().isEmpty()) {
+      // this.setActionMessages(null);
+      // List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      // for (String key : keys) {
+      // this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      // }
+      //
+      // } else {
+      // this.addActionMessage("message:" + this.getText("saving.saved"));
+      // }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
   }
 
-  private void saveNewCategory(PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory) {
-    PowbSynthesisCrpStaffingCategory newPowbCrpStaffingCategories = new PowbSynthesisCrpStaffingCategory();
-    newPowbCrpStaffingCategories.setActive(true);
-    newPowbCrpStaffingCategories.setCreatedBy(this.getCurrentUser());
-    newPowbCrpStaffingCategories.setModifiedBy(this.getCurrentUser());
-    newPowbCrpStaffingCategories.setActiveSince(new Date());
-    newPowbCrpStaffingCategories.setPowbSynthesis(powbSynthesis);
-    newPowbCrpStaffingCategories
-      .setPowbCrpStaffingCategory(powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory());
-    if (powbSynthesisCrpStaffingCategory.getFemale() != null) {
-      newPowbCrpStaffingCategories.setFemale(powbSynthesisCrpStaffingCategory.getFemale());
+  private void saveNewFinancialExpenditure(PowbFinancialExpenditure powbFinancialExpenditure) {
+    PowbFinancialExpenditure newPowbFinancialExpenditure = new PowbFinancialExpenditure();
+    newPowbFinancialExpenditure.setActive(true);
+    newPowbFinancialExpenditure.setCreatedBy(this.getCurrentUser());
+    newPowbFinancialExpenditure.setModifiedBy(this.getCurrentUser());
+    newPowbFinancialExpenditure.setActiveSince(new Date());
+    newPowbFinancialExpenditure.setPowbSynthesis(powbSynthesis);
+    newPowbFinancialExpenditure.setPowbExpenditureArea(powbFinancialExpenditure.getPowbExpenditureArea());
+    if (powbFinancialExpenditure.getW1w2Percentage() != null) {
+      newPowbFinancialExpenditure.setW1w2Percentage(powbFinancialExpenditure.getW1w2Percentage());
     } else {
-      newPowbCrpStaffingCategories.setFemale(0.0);
+      newPowbFinancialExpenditure.setW1w2Percentage(0.0);
     }
-    if (powbSynthesisCrpStaffingCategory.getMale() != null) {
-      newPowbCrpStaffingCategories.setMale(powbSynthesisCrpStaffingCategory.getMale());
-    } else {
-      newPowbCrpStaffingCategories.setMale(0.0);
-    }
-    newPowbCrpStaffingCategories =
-      powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(newPowbCrpStaffingCategories);
+    newPowbFinancialExpenditure.setComments(powbFinancialExpenditure.getComments());
+
+    newPowbFinancialExpenditure =
+      powbFinancialExpenditureManager.savePowbFinancialExpenditure(newPowbFinancialExpenditure);
   }
 
-  private void saveNewCrpStaffing() {
-    PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
-    newPowbCrpStaffing.setActive(true);
-    newPowbCrpStaffing.setCreatedBy(this.getCurrentUser());
-    newPowbCrpStaffing.setModifiedBy(this.getCurrentUser());
-    newPowbCrpStaffing.setStaffingIssues(powbSynthesis.getCrpStaffing().getStaffingIssues());
-    newPowbCrpStaffing.setActiveSince(new Date());
-    newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
-    newPowbCrpStaffing = powbCrpStaffingManager.savePowbCrpStaffing(newPowbCrpStaffing);
+  private void saveNewPlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget) {
+    PowbFinancialPlannedBudget newPowbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
+    newPowbFinancialPlannedBudget.setActive(true);
+    newPowbFinancialPlannedBudget.setCreatedBy(this.getCurrentUser());
+    newPowbFinancialPlannedBudget.setModifiedBy(this.getCurrentUser());
+    newPowbFinancialPlannedBudget.setActiveSince(new Date());
+    newPowbFinancialPlannedBudget.setPowbSynthesis(powbSynthesis);
+    newPowbFinancialPlannedBudget.setPowbExpenditureArea(powbFinancialPlannedBudget.getPowbExpenditureArea());
+    if (powbFinancialPlannedBudget.getW1w2() != null) {
+      newPowbFinancialPlannedBudget.setW1w2(powbFinancialPlannedBudget.getW1w2());
+    } else {
+      newPowbFinancialPlannedBudget.setW1w2(0.0);
+    }
+    if (powbFinancialPlannedBudget.getW3Bilateral() != null) {
+      newPowbFinancialPlannedBudget.setW3Bilateral(powbFinancialPlannedBudget.getW3Bilateral());
+    } else {
+      newPowbFinancialPlannedBudget.setW3Bilateral(0.0);
+    }
+    newPowbFinancialPlannedBudget.setComments(powbFinancialPlannedBudget.getComments());
+
+    newPowbFinancialPlannedBudget =
+      powbFinancialPlannedBudgetManager.savePowbFinancialPlannedBudget(newPowbFinancialPlannedBudget);
   }
 
-  private void saveUpdateCategory(PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory) {
-    PowbSynthesisCrpStaffingCategory powbCrpStaffingCategories = powbSynthesisCrpStaffingCategoryManager
-      .getPowbSynthesisCrpStaffingCategoryById(powbSynthesisCrpStaffingCategory.getId());
-    powbCrpStaffingCategories.setActive(true);
-    powbCrpStaffingCategories.setModifiedBy(this.getCurrentUser());
-    powbCrpStaffingCategories.setActiveSince(new Date());
-    if (powbSynthesisCrpStaffingCategory.getFemale() != null) {
-      powbCrpStaffingCategories.setFemale(powbSynthesisCrpStaffingCategory.getFemale());
+  private void saveUpdateFinancialExpenditure(PowbFinancialExpenditure powbFinancialExpenditure) {
+    PowbFinancialExpenditure newPowbFinancialExpenditure =
+      powbFinancialExpenditureManager.getPowbFinancialExpenditureById(powbFinancialExpenditure.getId());
+    newPowbFinancialExpenditure.setActive(true);
+    newPowbFinancialExpenditure.setModifiedBy(this.getCurrentUser());
+    newPowbFinancialExpenditure.setActiveSince(new Date());
+    if (powbFinancialExpenditure.getW1w2Percentage() != null) {
+      newPowbFinancialExpenditure.setW1w2Percentage(powbFinancialExpenditure.getW1w2Percentage());
     } else {
-      powbCrpStaffingCategories.setFemale(0.0);
+      newPowbFinancialExpenditure.setW1w2Percentage(0.0);
     }
-    if (powbSynthesisCrpStaffingCategory.getMale() != null) {
-      powbCrpStaffingCategories.setMale(powbSynthesisCrpStaffingCategory.getMale());
-    } else {
-      powbCrpStaffingCategories.setMale(0.0);
-    }
-    powbCrpStaffingCategories =
-      powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(powbCrpStaffingCategories);
+    newPowbFinancialExpenditure.setComments(powbFinancialExpenditure.getComments());
+    newPowbFinancialExpenditure =
+      powbFinancialExpenditureManager.savePowbFinancialExpenditure(newPowbFinancialExpenditure);
   }
 
-  private void saveUpdateCrpStaffing() {
-    PowbCrpStaffing PowbCrpStaffingDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getCrpStaffing();
-    PowbCrpStaffingDB.setActiveSince(new Date());
-    PowbCrpStaffingDB.setModifiedBy(this.getCurrentUser());
-    PowbCrpStaffingDB.setStaffingIssues(powbSynthesis.getCrpStaffing().getStaffingIssues());
-    PowbCrpStaffingDB = powbCrpStaffingManager.savePowbCrpStaffing(PowbCrpStaffingDB);
+  private void saveUpdateFinancialPlan() {
+    PowbFinancialPlan powbFinancialPlan = powbSynthesis.getFinancialPlan();
+    powbFinancialPlan.setActiveSince(new Date());
+    powbFinancialPlan.setModifiedBy(this.getCurrentUser());
+    powbFinancialPlan.setFinancialPlanIssues(powbSynthesis.getFinancialPlan().getFinancialPlanIssues());
+    powbFinancialPlan = powbFinancialPlanManager.savePowbFinancialPlan(powbFinancialPlan);
+  }
+
+  private void saveUpdatePlannedBudget(PowbFinancialPlannedBudget powbFinancialPlannedBudget) {
+    PowbFinancialPlannedBudget powbFinancialPlannedBudgetDB =
+      powbFinancialPlannedBudgetManager.getPowbFinancialPlannedBudgetById(powbFinancialPlannedBudget.getId());
+    powbFinancialPlannedBudgetDB.setActive(true);
+    powbFinancialPlannedBudgetDB.setModifiedBy(this.getCurrentUser());
+    powbFinancialPlannedBudgetDB.setActiveSince(new Date());
+    if (powbFinancialPlannedBudget.getW1w2() != null) {
+      powbFinancialPlannedBudgetDB.setW1w2(powbFinancialPlannedBudget.getW1w2());
+    } else {
+      powbFinancialPlannedBudgetDB.setW1w2(0.0);
+    }
+    if (powbFinancialPlannedBudget.getW3Bilateral() != null) {
+      powbFinancialPlannedBudgetDB.setW3Bilateral(powbFinancialPlannedBudget.getW3Bilateral());
+    } else {
+      powbFinancialPlannedBudgetDB.setW3Bilateral(0.0);
+    }
+    powbFinancialPlannedBudgetDB.setComments(powbFinancialPlannedBudget.getComments());
+    powbFinancialPlannedBudgetDB =
+      powbFinancialPlannedBudgetManager.savePowbFinancialPlannedBudget(powbFinancialPlannedBudgetDB);
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
@@ -568,7 +596,7 @@ public class FinancialPlanAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, powbSynthesis, true);
+      // validator.validate(this, powbSynthesis, true);
     }
   }
 
