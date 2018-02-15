@@ -42,7 +42,7 @@
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
           <input type="hidden" name="powbSynthesis.financialPlan.id" value="${(powbSynthesis.financialPlan.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
           </div>
           <br />
           
@@ -123,9 +123,9 @@
       [/#if]
     </td>
     <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
-    <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
+    <td>[@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
     <td> <nobr>US$ <span class="label-total category-${index}">0.00</span></nobr> </td>
-    <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
+    <td>[@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
 [/#macro]
 
@@ -141,17 +141,17 @@
       </thead>
       <tbody>
       [#if expenditureAreas??]
-        [#list expenditureAreas  as area]      
-          [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${area_index}]" /]
-          [#assign element = (action.getPowbFinancialExpenditurebyExpenditureArea(area.id))!{} /]
+        [#list expenditureAreas  as expenditureArea]      
+          [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${expenditureArea_index}]" /]
+          [#assign element = (action.getPowbFinancialExpenditurebyExpenditureArea(expenditureArea.id))!{} /]
           <tr>
             <td> 
-              <span>${area.expenditureArea} </span>
+              <span>${expenditureArea.expenditureArea} </span>
               <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-              <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
+              <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(expenditureArea.id)!}" />
             </td>
-            <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${area_index}" required=true editable=editable && PMU /]</td>
-            <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
+            <td> [@customForm.input name="${customName}.w1w2Percentage" value="${(element.w1w2Percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${expenditureArea_index}" required=true editable=editable && PMU /]</td>
+            <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
           </tr>
         [/#list]
       [/#if]
