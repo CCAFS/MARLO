@@ -89,27 +89,44 @@
         </tr>
       </thead>
       <tbody>
-       [#if powbExpenditureAreas??]
-        [#list powbExpenditureAreas  as category]
-         [#assign customName = "powbSynthesis.plannedBudget[${category_index}]" /]
-            [#assign element = {} /]
-            <tr>
-              <td>
-                <span>CRP Management & Support Cost ${category}</span>
-                <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-                <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
-              </td>
-              <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${category_index}" required=true editable=editable && PMU /]</td>
-              <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${category_index}" required=true editable=editable && PMU /]</td>
-              <td> US$ <span class="label-total category-${category_index}">0.00</span> </td>
-              <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
-            </tr>
-          [/#list]
-         [/#if]
+      [#assign plannedBudgetIndex = 0 /]
+      [#if flagships??]
+        [#list flagships  as area]
+          [#assign element = (action.getPowbFinancialPlanBudget(area.id, true))! /]
+          [@powbExpenditureArea area=area element=element index=plannedBudgetIndex isLiaison=true /]
+          [#assign plannedBudgetIndex = plannedBudgetIndex +1 /]
+        [/#list]
+      [/#if]
+      [#if plannedBudgetAreas??]
+        [#list plannedBudgetAreas  as area]
           
+          [#assign element = (action.getPowbFinancialPlanBudget(area.id, false))! /]
+          [@powbExpenditureArea area=area element=element index=plannedBudgetIndex isLiaison=false/]
+          [#assign plannedBudgetIndex = plannedBudgetIndex +1 /]
+        [/#list]
+      [/#if]
       </tbody>
     </table>
   </div>
+[/#macro]
+
+[#macro powbExpenditureArea area element index isLiaison]
+  [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]" /]
+  <tr>
+    <td>
+      <span> ${(area.composedName)!((area.expenditureArea)!'null')}</span>
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+      [#if isLiaison]
+        <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
+      [#else]
+        <input type="hidden" name="${customName}.liaisonInstitution.id" value="${(area.id)!}" />
+      [/#if]
+    </td>
+    <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
+    <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
+    <td> US$ <span class="label-total category-${index}">0.00</span> </td>
+    <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
+  </tr>
 [/#macro]
 
 [#macro tableF ]
@@ -124,20 +141,20 @@
       </thead>
       <tbody>
       [#if expenditureAreas??]
-      [#list expenditureAreas  as category]      
-      [#assign customName = "powbSynthesis.expenditures[${category_index}]" /]
+        [#list expenditureAreas  as area]      
+          [#assign customName = "powbSynthesis.powbFinancialExpendituresList[${category_index}]" /]
           [#assign element = {} /]
           <tr>
             <td> 
-              <span>Start-up or maintenance of partnerships (internal or external) ${category} </span>
+              <span>${area.expenditureArea} </span>
               <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-              <input type="hidden" name="${customName}.CATEGORY.id" value="${(category)!}" />
+              <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
             </td>
-            <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${category_index}" required=true editable=editable && PMU /]</td>
+            <td> [@customForm.input name="${customName}.percentage" value="${(element.percentage)!}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${area_index}" required=true editable=editable && PMU /]</td>
             <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
           </tr>
-      [/#list]
-        [/#if]
+        [/#list]
+      [/#if]
       </tbody>
     </table>
   </div>
