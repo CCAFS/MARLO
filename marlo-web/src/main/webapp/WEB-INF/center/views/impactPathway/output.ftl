@@ -76,9 +76,45 @@
             
           </div> 
           
+          [#-- Outcome Contributions--]
         <h3 class="headTitle"> Outcome Contributions </h3>
         <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
-          [#-- TODO Outcome List --]
+        
+          <div class="form-group">      
+            <div class="output panel tertiary">
+              [#-- <div class="panel-head" ><label for="">[@customForm.text name="projectDescription.outputs" readText=!editable /]<span class="red">*</span></label></div> --] 
+              <div class="panel-body" listname="project.outputs"> 
+                <ul id="outputsBlock" class="list outputList">
+                [#--  --if  project.outputs?has_content--]  
+                  [#list outcomeList as outcome]
+                     [@outcomesMacro element=outcome name="outcomes.name" index=outcome_index isTemplate=false/]
+                  [/#list] 
+                [#--  --else--]
+                  <p class="text-center outputInf"> [@s.text name="noOutcomestoshow" /] </p>  
+                [#--  --if--]  
+                </ul>
+                [#if editable]
+                  <select name="" class="outputSelect">
+                    <option value="-1">Select an option...</option>
+                    [#list outcomesSelectList as outcome]
+                      <optgroup  label="${(outcome.composedName)!}">
+                        [#list outcome.outputs as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
+                      </optgroup>
+                    [/#list]
+                  </select>
+                [/#if] 
+              </div>
+              [#-- Note --]
+              [#if editable]
+              <hr />
+              <div class="note">
+                If you don't find the <strong>output</strong> you are looking for, request to have it added by
+                <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
+              </div>
+              [/#if]
+            </div>
+          </div>
+          
         </div>  
           
         <h3 class="headTitle"> Next Users </h3>
@@ -108,6 +144,7 @@
 
 [#-- Macros --]
 [@nextUserMacro nextUser={} name="output.nextUsers" index=-1 template=true/]
+[@outcomesMacro element={} name="project.outcomes"  index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/center/pages/footer.ftl" /]
 
@@ -132,4 +169,33 @@
   
   <div class="clearfix"></div>
   </div>
+[/#macro]
+
+[#macro outcomesMacro element name index=-1 isTemplate=false]  
+  [#assign outputCustomName = "${name}[${index}]" /]
+  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox expandableBlock row "  style="display:${isTemplate?string('none','block')}">
+  <input type="hidden" name="${outputCustomName}.id" value="${(element.id)!}"/>
+  <input type="hidden" class="outputId" name="${outputCustomName}.researchOutput.id" value="${(element.researchOutput.id)!}"/>
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div id="" class="removeOutput removeElement removeLink" title="[@s.text name='projectDecription.removeOutput' /]"></div>
+      </div>
+    [/#if]
+    <div class="leftHead">
+      <span class="index">O${(element.researchOutput.id)!}</span>
+    </div>
+    [#-- Output Title --]
+    <div class="blockTitle closed form-group" style="margin-top:30px;">
+      <label for="">Output statement:</label>
+      <div class="oStatement">
+        [#if element.researchOutput?? && element.researchOutput.title?has_content]
+        ${(element.researchOutput.title)!'New output'}
+        [#else]
+        No Output
+        [/#if]
+      </div>
+        
+      <div class="clearfix"></div>
+    </div>
+  </li>
 [/#macro]
