@@ -30,20 +30,17 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
-import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.CrpStaffingValidator;
+import org.cgiar.ccafs.marlo.validation.powb.FinancialPlanValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,14 +87,14 @@ public class FinancialPlanAction extends BaseAction {
   private LiaisonInstitution liaisonInstitution;
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
-  private CrpStaffingValidator validator;
+  private FinancialPlanValidator validator;
 
 
   @Inject
   public FinancialPlanAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    CrpStaffingValidator validator, PowbFinancialPlanManager powbFinancialPlanManager,
+    FinancialPlanValidator validator, PowbFinancialPlanManager powbFinancialPlanManager,
     PowbFinancialExpenditureManager powbFinancialExpenditureManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
@@ -279,21 +276,6 @@ public class FinancialPlanAction extends BaseAction {
     return powbSynthesisID;
   }
 
-  public PowbSynthesisCrpStaffingCategory getSynthesisCrpStaffingCategory(Long crpStaffingcategory) {
-    if (crpStaffingcategory != null) {
-      List<PowbSynthesisCrpStaffingCategory> PowbSynthesisCrpStaffingCategory =
-        powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().stream()
-          .filter(c -> c.getPowbCrpStaffingCategory().getId().equals(crpStaffingcategory)).collect(Collectors.toList());
-      if (PowbSynthesisCrpStaffingCategory != null && !PowbSynthesisCrpStaffingCategory.isEmpty()) {
-        return PowbSynthesisCrpStaffingCategory.get(0);
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
   public String getTransaction() {
     return transaction;
   }
@@ -429,16 +411,15 @@ public class FinancialPlanAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      // if (!this.getInvalidFields().isEmpty()) {
-      // this.setActionMessages(null);
-      // List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-      // for (String key : keys) {
-      // this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-      // }
-      //
-      // } else {
-      // this.addActionMessage("message:" + this.getText("saving.saved"));
-      // }
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -549,39 +530,11 @@ public class FinancialPlanAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (NumberFormatException e) {
-      User user = userManager.getUser(this.getCurrentUser().getId());
-      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-          .collect(Collectors.toList()));
-        if (!liaisonUsers.isEmpty()) {
-          boolean isLeader = false;
-          for (LiaisonUser liaisonUser : liaisonUsers) {
-            LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
-            if (institution.isActive()) {
-              if (institution.getCrpProgram() != null) {
-                if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              } else {
-                if (institution.getAcronym().equals("PMU")) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              }
-            }
-          }
-          if (!isLeader) {
-            liaisonInstitutionID = this.firstFlagship();
-          }
-        } else {
-          liaisonInstitutionID = this.firstFlagship();
-        }
-      } else {
-        liaisonInstitutionID = this.firstFlagship();
+      List<LiaisonInstitution> pmuList = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU") && c.isActive())
+        .collect(Collectors.toList());
+      if (pmuList != null && !pmuList.isEmpty()) {
+        liaisonInstitutionID = pmuList.get(0).getId();
       }
     }
   }
@@ -651,7 +604,7 @@ public class FinancialPlanAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, powbSynthesis, true);
+      validator.validate(this, powbSynthesis, true);
     }
   }
 
