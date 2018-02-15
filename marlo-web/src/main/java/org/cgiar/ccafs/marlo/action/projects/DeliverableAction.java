@@ -1510,29 +1510,12 @@ public class DeliverableAction extends BaseAction {
 
 
       }
-      Set<FundingSource> hs = new HashSet();
+      Set<FundingSource> hs = new HashSet<FundingSource>();
       hs.addAll(this.fundingSources);
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
-      this.fundingSources.sort((o1, o2) -> {
-        if (o1.getFundingSourceInfo(this.getActualPhase()) != null
-          && o2.getFundingSourceInfo(this.getActualPhase()) != null &&
+      fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
-        o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-          && o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType() != null
-          && o2.getFundingSourceInfo(this.getActualPhase()).getTitle() != null) {
-
-          int cmp = o1.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId()
-            .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getBudgetType().getId());
-          if (cmp == 0) {
-            cmp = o1.getFundingSourceInfo(this.getActualPhase()).getTitle()
-              .compareTo(o2.getFundingSourceInfo(this.getActualPhase()).getTitle());
-          }
-
-          return cmp;
-        }
-        return 0;
-      });
 
       // }
       if (deliverable.getFiles() != null) {
