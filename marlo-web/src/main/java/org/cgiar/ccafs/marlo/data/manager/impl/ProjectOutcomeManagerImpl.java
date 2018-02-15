@@ -257,10 +257,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectOutcomeAdd.setActive(projectOutcome.isActive());
 
         projectOutcome.setCrpProgramOutcome(crpProgramOutcomeDAO.find(projectOutcome.getCrpProgramOutcome().getId()));
-        projectOutcome.getCrpProgramOutcome()
-          .setSrfTargetUnit(srfTargetUnitDAO.find(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId()));
-       // projectOutcomeAdd.setCrpProgramOutcome(
-        //  crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
+
+        // projectOutcomeAdd.setCrpProgramOutcome(
+        // crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
         this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
         this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
