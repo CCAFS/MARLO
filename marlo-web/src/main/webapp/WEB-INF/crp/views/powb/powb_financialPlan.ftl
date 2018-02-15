@@ -124,7 +124,7 @@
     </td>
     <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
     <td>[@customForm.input name="${customName}.w3bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
-    <td> US$ <span class="label-total category-${index}">0.00</span> </td>
+    <td> <nobr>US$ <span class="label-total category-${index}">0.00</span></nobr> </td>
     <td>[@customForm.textArea  name="${customName}.comments" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
 [/#macro]
