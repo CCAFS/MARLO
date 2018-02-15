@@ -109,6 +109,18 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
   }
 
 
+  public Double getTotalPlannedBudget() {
+    Double w1w2T;
+    Double w3BilateralT;
+    w1w2T = w1w2 == null ? 0.0 : w1w2;
+    w3BilateralT = w3Bilateral == null ? 0.0 : w3Bilateral;
+    if (w1w2T + w3BilateralT != 0) {
+      return Math.round(((w1w2T + w3BilateralT)) * 10.0) / 10.0;
+    } else {
+      return 0.0;
+    }
+  }
+
   public Double getW1w2() {
     return w1w2;
   }
