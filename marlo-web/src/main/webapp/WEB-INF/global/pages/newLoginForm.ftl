@@ -75,7 +75,7 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-input-container" id="login-email">
-              <input id="user.email" class="login-input user-email" type="text" name="user.email" value="" required/>
+              <input id="user.email" class="login-input user-email form-control" type="text" name="user.email" value="" required/>
               <label for="user.email">[@s.text name="login.email"/]</label>
             </div>
             [#-- CRP Session --]
@@ -99,7 +99,7 @@
         <div class="row" >
           <div class="col-sm-10">
             <div class="login-input-container hidden" id="login-password" >
-              <input id="user.password" class="login-input user-password" type="password" name="user.password" tabindex=1 required/>
+              <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=1 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
             </div>
             <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
