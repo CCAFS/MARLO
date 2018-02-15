@@ -889,7 +889,7 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null
           || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
-          projectOutcome.setExpectedUnit(new SrfTargetUnit());
+          projectOutcome.setExpectedUnit(null);
         } else {
           projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
         }

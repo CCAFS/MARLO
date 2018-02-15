@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 // import org.hibernate.Transaction;
@@ -186,6 +187,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return
    */
   protected T findSingleResult(Class<T> clazz, Query hibernateQuery) {
+    hibernateQuery.setFlushMode(FlushMode.COMMIT);
     T object = clazz.cast(hibernateQuery.uniqueResult());
     return object;
   }
@@ -215,6 +217,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected T findSingleResult(Class<T> clazz, String hibernateQuery) {
     Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    query.setFlushMode(FlushMode.COMMIT);
     return this.findSingleResult(clazz, query);
   }
 
