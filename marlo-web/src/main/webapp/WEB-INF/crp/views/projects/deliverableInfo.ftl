@@ -209,7 +209,7 @@
   <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
     [#if deliverable.genderLevels?has_content]
-      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
         <ul class="list">
           [#list deliverable.genderLevels as element]
