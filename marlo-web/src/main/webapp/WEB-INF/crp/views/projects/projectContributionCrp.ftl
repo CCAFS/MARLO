@@ -361,7 +361,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable && !reportingActive /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable && !reportingActive &&( projectMilestone.crpMilestone.year gte action.getActualPhase().year)!true /]
           </div>
           <div class="col-md-4">
             <div class="select">
