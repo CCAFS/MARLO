@@ -82,15 +82,14 @@
         
           <div class="form-group">      
             <div class="output panel tertiary">
-              [#-- <div class="panel-head" ><label for="">[@customForm.text name="projectDescription.outputs" readText=!editable /]<span class="red">*</span></label></div> --] 
               <div class="panel-body" listname="project.outputs"> 
                 <ul id="outputsBlock" class="list outputList">
                 [#if  output.outcomes?has_content]  
                   [#list output.outcomes as outcome]
-                     [@outcomesMacro element=outcome name="${outcome}.centerOutcome.composedName" index=outcome_index isTemplate=false/]
+                     [@outcomesMacro element=outcome name="output.outcomes" index=outcome_index isTemplate=false/]
                   [/#list] 
                 [#else]
-                  <p class="text-center outputInf"> [@s.text name="noOutcomestoshow" /] </p>  
+                  <p class="text-center outputInf"> [@s.text name="projectDescription.notOutputs" /] </p>  
                 [/#if]  
                 </ul>
                 [#if editable]
@@ -130,6 +129,7 @@
         [#if editable] 
         <div class="text-right">
           <div class="addNextUser button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="Add a new Next User"/]</div>
+          <hr />
         </div>
         [/#if]
         [#-- Section Buttons--]
