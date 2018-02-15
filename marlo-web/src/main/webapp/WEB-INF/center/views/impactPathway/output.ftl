@@ -85,20 +85,20 @@
               [#-- <div class="panel-head" ><label for="">[@customForm.text name="projectDescription.outputs" readText=!editable /]<span class="red">*</span></label></div> --] 
               <div class="panel-body" listname="project.outputs"> 
                 <ul id="outputsBlock" class="list outputList">
-                [#--  --if  project.outputs?has_content--]  
-                  [#list outcomeList as outcome]
-                     [@outcomesMacro element=outcome name="outcomes.name" index=outcome_index isTemplate=false/]
+                [#if  output.outcomes?has_content]  
+                  [#list output.outcomes as outcome]
+                     [@outcomesMacro element=outcome name="${outcome}.centerOutcome.composedName" index=outcome_index isTemplate=false/]
                   [/#list] 
-                [#--  --else--]
+                [#else]
                   <p class="text-center outputInf"> [@s.text name="noOutcomestoshow" /] </p>  
-                [#--  --if--]  
+                [/#if]  
                 </ul>
                 [#if editable]
                   <select name="" class="outputSelect">
                     <option value="-1">Select an option...</option>
-                    [#list outcomesSelectList as outcome]
-                      <optgroup  label="${(outcome.composedName)!}">
-                        [#list outcome.outputs as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
+                    [#list outcomes as outcome]
+                      <optgroup  label="${(outcome.researchTopic.researchTopic)!}">
+                        [#list outcome.outcomes as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
                       </optgroup>
                     [/#list]
                   </select>
@@ -173,23 +173,23 @@
 
 [#macro outcomesMacro element name index=-1 isTemplate=false]  
   [#assign outputCustomName = "${name}[${index}]" /]
-  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox expandableBlock row "  style="display:${isTemplate?string('none','block')}">
+  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox row "  style="display:${isTemplate?string('none','block')}">
   <input type="hidden" name="${outputCustomName}.id" value="${(element.id)!}"/>
-  <input type="hidden" class="outputId" name="${outputCustomName}.researchOutput.id" value="${(element.researchOutput.id)!}"/>
+  <input type="hidden" class="outputId" name="${outputCustomName}.researchOutput.id" value="${(element.centerOutcome.id)!}"/>
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="" class="removeOutput removeElement removeLink" title="[@s.text name='projectDecription.removeOutput' /]"></div>
       </div>
     [/#if]
     <div class="leftHead">
-      <span class="index">O${(element.researchOutput.id)!}</span>
+      <span class="index">OC${(element.centerOutcome.id)!}</span>
     </div>
     [#-- Output Title --]
     <div class="blockTitle closed form-group" style="margin-top:30px;">
       <label for="">Output statement:</label>
       <div class="oStatement">
-        [#if element.researchOutput?? && element.researchOutput.title?has_content]
-        ${(element.researchOutput.title)!'New output'}
+        [#if element.centerOutcome?? && element.centerOutcome.description?has_content]
+        ${(element.centerOutcome.description)!'New outcome'}
         [#else]
         No Output
         [/#if]
