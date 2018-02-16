@@ -82,9 +82,14 @@ public class ProjectLocationValidator extends BaseValidator {
     if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
       if (project.getRegionFS() == null || project.getRegionFS().isEmpty()) {
         if (project.getCountryFS() == null || project.getCountryFS().isEmpty()) {
-          action.getInvalidFields().put("list-project.locationsData",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-          action.addMessage(action.getText("project.locationsData"));
+          if (project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal() != null
+            && project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal().booleanValue() == false) {
+            action.getInvalidFields().put("list-project.locationsData",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+            action.addMessage(action.getText("project.locationsData"));
+          }
+
+
         }
 
       }
