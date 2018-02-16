@@ -70,29 +70,6 @@
               <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
             </div>
           [/#if]
-          [#if false]
-            <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>
-            [#--  STATUS LEGEND --]
-            <div class="form-group col-md-12 legendContent">
-              <div class="col-md-6 deliverableList">
-                <div class="col-md-12 form-group "><b>Status colors:</b></div>
-                <div class="form-group col-md-6"><div class="status-indicator Complete"></div> Achieved </div>
-                <div class="form-group col-md-6 fair"><span id="notAchieved" class="status-indicator On-going"></span> Not achieved</div>
-                <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
-              </div>
-              <div class="col-md-6 explanation">
-                <div class="col-md-12 form-group "><b>FAIR:</b></div>
-                <div class="form-group col-md-6 "><span>F</span> Findable </div>
-                <div class="form-group col-md-6 "><span>A</span> Accessible</div>
-                <div class="form-group col-md-6 "><span>I</span> Interoperable</div>
-                <div class="form-group col-md-6 "><span>R</span> Reusable</div>
-              </div>
-            [/#if]
-            </div>
-            <div id="diagramPopup" style="display:none; text-align:center;">
-              <img src="${baseUrl}/global/images/FAIR_Principles_in_MARLO_20170919.png" alt="" width="100%" />
-            </div>
-            
           <h3 class="subTitle headTitle">On going deliverables</h3>
           <span class="extended-simple-version" data-toggle="modal" data-target=".ongoing-modal">Extended version</span>
           <div class="deliverables-extended-version" data-toggle="modal" data-target=".ongoing-modal"><span class="glyphicon glyphicon-eye-open"></span></div>
