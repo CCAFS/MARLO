@@ -203,72 +203,72 @@ function checkNextUsersItems(block) {
 
 /** FUNCTIONS Outputs* */
 
-//Add a new funding source element
+// Add a new funding source element
 function addOutput() {
   var $select = $(this);
   var option = $select.find("option:selected");
   if(option.val() != "-1") {
-   $.ajax({
-       url: baseURL + "/outcomeInfo.do",
-       type: 'GET',
-       data: {
-         outputID: option.val()
-       },
-       success: function(m) {
-         console.log("data");
-         console.log(m);
-         var $list = $(".outputList");
-         var $item = $("#output-template").clone(true).removeAttr("id");
-         $item.find("span.index").text("OC" + m.outcomeInfo.id);
-         $item.find("div.oStatement").text(option.text());
-         $item.find(".outputId").val(m.outcomeInfo.id);
-         $list.append($item);
-         $item.show('slow');
-         updateOutputs();
-         checkOutputItems($list);
-         $select.find(option).remove();
-         $select.val("-1").trigger("change");
-       },
-       error: function(e) {
-         console.log(e);
-       }
-   });
+    $.ajax({
+        url: baseURL + "/outcomeInfo.do",
+        type: 'GET',
+        data: {
+          outcomeID: option.val()
+        },
+        success: function(m) {
+          console.log("data");
+          console.log(m);
+          var $list = $(".outputList");
+          var $item = $("#output-template").clone(true).removeAttr("id");
+          $item.find("span.index").text("OC" + m.outcomeInfo.id);
+          $item.find("div.oStatement").text(option.text());
+          $item.find(".outputId").val(m.outcomeInfo.id);
+          $list.append($item);
+          $item.show('slow');
+          updateOutputs();
+          checkOutputItems($list);
+          $select.find(option).remove();
+          $select.val("-1").trigger("change");
+        },
+        error: function(e) {
+          console.log(e);
+        }
+    });
   }
 }
 
-//Remove Funding source element
+// Remove Funding source element
 function removeOutput() {
   var $list = $(this).parents('.outputList');
   var $item = $(this).parents('.outputs');
   var $select = $(".outputSelect");
   $select.addOption($item.find("input.outputId").val(), $item.find("div.oStatement").text());
   $item.hide(1000, function() {
-   $item.remove();
-   checkOutputItems($list);
-   updateOutputs();
+    $item.remove();
+    checkOutputItems($list);
+    updateOutputs();
   });
 
 }
 
 function updateOutputs() {
   $(".outputList").find('.outputs').each(function(i,e) {
-   // Set indexes
-   $(e).setNameIndexes(1, i);
+    // Set indexes
+    $(e).setNameIndexes(1, i);
   });
 }
 
 function checkOutputItems(block) {
   var items = $(block).find('.outputs').length;
   if(items == 0) {
-   $(block).find('p.outputInf').fadeIn();
+    $(block).find('p.outputInf').fadeIn();
   } else {
-   $(block).find('p.outputInf').fadeOut();
+    $(block).find('p.outputInf').fadeOut();
   }
 }
 
 function checkOutputsToRemove() {
   $(".outputList").find(".outputs").each(function(i,e) {
-   var option = $(".outputSelect").find("option[value='" + $(e).find(".outputId").val() + "']");
-   option.remove();
+    var option = $(".outputSelect").find("option[value='" + $(e).find(".outputId").val() + "']");
+    option.remove();
   });
 }

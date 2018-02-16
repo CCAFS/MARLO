@@ -530,7 +530,7 @@ public class OutputsAction extends BaseAction {
 
       for (CenterOutputsOutcome outputOutcome : outputsOutcomesPrev) {
         if (!output.getOutcomes().contains(outputOutcome)) {
-          outputNextUserService.deleteResearchOutputsNextUser(outputOutcome.getId());
+          centerOutputsOutcomeManager.deleteCenterOutputsOutcome(outputOutcome.getId());
         }
       }
     }
