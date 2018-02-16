@@ -963,9 +963,13 @@ public class ProjectPartnerAction extends BaseAction {
             for (InstitutionLocation locElement : pp.getSelectedLocations()) {
               LocElement locElementDB =
                 locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-              InstitutionLocation institutionLocation = institutionLocationManager.findByLocation(locElementDB.getId(),
-                pp.getInstitution().getId().longValue());
-              locElements.add(institutionLocation);
+
+              if (locElementDB != null && pp.getInstitution() != null && pp.getInstitution().getId() != null) {
+                InstitutionLocation institutionLocation = institutionLocationManager
+                  .findByLocation(locElementDB.getId(), pp.getInstitution().getId().longValue());
+                locElements.add(institutionLocation);
+              }
+
             }
             pp.getSelectedLocations().clear();
             pp.getSelectedLocations().addAll(locElements);
