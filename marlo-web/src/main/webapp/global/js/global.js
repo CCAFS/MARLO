@@ -93,7 +93,7 @@ $(document).ready(function() {
   });
 
   // hash url animation
-  if(window.location.hash && window.location.hash !='_blank') {
+  if(window.location.hash) {
     if($(window.location.hash).exists() && hashScroll) {
       $('html, body').animate({
         scrollTop: $(window.location.hash).offset().top - 110
