@@ -99,7 +99,6 @@
       [/#if]
       [#if plannedBudgetAreas??]
         [#list plannedBudgetAreas  as area]
-          
           [#assign element = (action.getPowbFinancialPlanBudget(area.id, false))! /]
           [@powbExpenditureArea area=area element=element index=plannedBudgetIndex isLiaison=false/]
           [#assign plannedBudgetIndex = plannedBudgetIndex +1 /]
@@ -107,9 +106,9 @@
       [/#if]
       <tr>
         <th>CRP Total</th>
-        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
-        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
-        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w1w2">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w3bilateral">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-grandTotal">0.00</span></nobr> </th>
         <th></th>
       </tr>
       </tbody>
@@ -131,7 +130,7 @@
     </td>
     <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
     <td>[@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
-    <td> <nobr>US$ <span class="label-total category-${index}">0.00</span></nobr> </td>
+    <td> <nobr>US$ <span class="text-right label-total category-${index}">0.00</span></nobr> </td>
     <td>[@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
 [/#macro]
@@ -162,6 +161,12 @@
           </tr>
         [/#list]
       [/#if]
+      <tr>
+        <th>Total Funding (Amount)</th>
+        <th class="text-right"> <nobr>US$ <span class="label-expenditureTotal">0.00</span></nobr> </th>
+        <th class="text-right"> </th>
+        <th></th>
+      </tr>
       </tbody>
     </table>
   </div>
