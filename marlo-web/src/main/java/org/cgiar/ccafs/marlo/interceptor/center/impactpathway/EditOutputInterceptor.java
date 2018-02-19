@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -90,13 +89,8 @@ public class EditOutputInterceptor extends AbstractInterceptor implements Serial
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
     if (output != null) {
-
-
-      programID = output.getCenterOutputsOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
-        .get(0).getCenterOutcome().getResearchImpact().getResearchProgram().getId();
-
+      programID = output.getCenterProgram().getId();
       CenterProgram program = programService.getProgramById(programID);
-
       if (program != null) {
 
         areaID = program.getResearchArea().getId();
