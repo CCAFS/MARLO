@@ -144,7 +144,7 @@
 
 [#-- Macros --]
 [@nextUserMacro nextUser={} name="output.nextUsers" index=-1 template=true/]
-[@outcomesMacro element={} name="project.outcomes"  index=-1 isTemplate=true /]
+[@outcomesMacro element={} name="output.outcomes"  index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/center/pages/footer.ftl" /]
 
