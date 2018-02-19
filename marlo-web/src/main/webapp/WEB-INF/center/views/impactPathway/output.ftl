@@ -117,13 +117,13 @@
         </div>  
           
         <h3 class="headTitle"> Next Users </h3>
-        <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
+        <div class="borderBox nextUsers-list" listname="${outputCustomName!''}.nextUsers">
           [#if output.nextUsers?has_content]
             [#list output.nextUsers as nextUser]
-            [@nextUserMacro nextUser=nextUser name="${outputCustomName}.nextUsers" index=nextUser_index /]
+              [@nextUserMacro nextUser=nextUser name="output.nextUsers" index=nextUser_index /]
             [/#list]
-            [#else]
-            [@nextUserMacro nextUser={} name="${outputCustomName}.nextUsers" index=0 /]
+          [#else]
+              [@nextUserMacro nextUser={} name="output.nextUsers" index=0 /]
           [/#if] 
         </div>
         [#if editable] 
@@ -189,7 +189,7 @@
       <label for="">Output statement:</label>
       <div class="oStatement">
         [#if element.centerOutcome?? && element.centerOutcome.description?has_content]
-        ${(element.centerOutcome.description)!'New outcome'}
+        ${(element.centerOutcome.description)!'New Output'}
         [#else]
         No Output
         [/#if]

@@ -220,6 +220,7 @@ function addOutput() {
           var $list = $(".outputList");
           var $item = $("#output-template").clone(true).removeAttr("id");
           $item.find("span.index").text("OC" + m.outcomeInfo.id);
+          console.log('opttext'+option.text());
           $item.find("div.oStatement").text(option.text());
           $item.find(".outputId").val(m.outcomeInfo.id);
           $list.append($item);
