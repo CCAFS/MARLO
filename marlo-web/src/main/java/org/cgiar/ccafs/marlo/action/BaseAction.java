@@ -5182,42 +5182,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return false if has missing fields.
    */
   public boolean validateCenterOutput(CenterProgram program) {
-
     if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null && !topics.isEmpty()) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-          if (outcomes != null && !outcomes.isEmpty()) {
-            for (CenterOutcome researchOutcome : outcomes) {
-              researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-                .filter(rm -> rm.isActive()).collect(Collectors.toList())));
-
-              List<CenterOutput> outputs = new ArrayList<>();
-              List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(researchOutcome
-                .getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-              for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-                outputs.add(centerOutputsOutcome.getCenterOutput());
-              }
-              if (outputs != null && !outputs.isEmpty()) {
-                for (CenterOutput researchOutput : outputs) {
-                  CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
-                  if (sectionStatus == null) {
-                    return false;
-                  } else {
-                    if (sectionStatus.getMissingFields().length() != 0) {
-                      return false;
-                    }
-                  }
-                }
-              } else {
-                return false;
-              }
-            }
-          } else {
+      List<CenterOutput> outputs =
+        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
+      if (outputs != null && !outputs.isEmpty()) {
+        for (CenterOutput researchOutput : outputs) {
+          CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
+          if (sectionStatus == null) {
             return false;
+          } else {
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
           }
         }
       } else {
@@ -5226,7 +5202,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
-
     return true;
 
   }

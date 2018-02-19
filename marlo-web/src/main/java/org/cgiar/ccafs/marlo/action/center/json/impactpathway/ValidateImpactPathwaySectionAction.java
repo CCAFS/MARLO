@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterImpactObjective;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -293,33 +292,14 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     CenterProgram program = programServcie.getProgramById(programID);
 
     if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+      List<CenterOutput> outputs =
+        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
 
-          for (CenterOutcome researchOutcome : outcomes) {
-            researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-              .filter(rm -> rm.isActive()).collect(Collectors.toList())));
+      for (CenterOutput researchOutput : outputs) {
 
-            List<CenterOutput> outputs = new ArrayList<>();
-            List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(researchOutcome
-              .getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-            for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-              outputs.add(centerOutputsOutcome.getCenterOutput());
-            }
-
-            for (CenterOutput researchOutput : outputs) {
-
-              researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
-                .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-              outputValidator.validate(this, researchOutput, program, false);
-            }
-
-          }
-        }
+        researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList())));
+        outputValidator.validate(this, researchOutput, program, false);
       }
     }
 
