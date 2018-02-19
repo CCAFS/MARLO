@@ -869,6 +869,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     // ProjectOutcome projectOutcomeDB = new ProjectOutcome();
+    List<ProjectMilestone> milestones = projectOutcome.getMilestones();
+    List<ProjectNextuser> nextusers = projectOutcome.getNextUsers();
+    List<ProjectOutcomeIndicator> indicators = projectOutcome.getIndicators();
 
 
     Calendar startDate = Calendar.getInstance();
@@ -902,6 +905,9 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }
+    projectOutcome.setMilestones(milestones);
+    projectOutcome.setNextUsers(nextusers);
+    projectOutcome.setIndicators(indicators);
 
     return projectOutcome;
 
