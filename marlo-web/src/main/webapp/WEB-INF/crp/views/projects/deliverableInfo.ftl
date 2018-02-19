@@ -130,6 +130,9 @@
   
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne]
+    [#if !(keyOutputs?has_content) && editable]
+      <p class="note">The Key outputs list come from the Project Outcomes you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Key output.</p>
+    [/#if]
     <div class="form-group">
       [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
     </div>
@@ -209,7 +212,7 @@
   <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.deliverableInfo.crossCuttingGender)!false)?string('block','none')}">
   [#if !action.hasSpecificities('crp_one_gender')]
     [#if deliverable.genderLevels?has_content]
-      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+      <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:</label></div>
       <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
         <ul class="list">
           [#list deliverable.genderLevels as element]

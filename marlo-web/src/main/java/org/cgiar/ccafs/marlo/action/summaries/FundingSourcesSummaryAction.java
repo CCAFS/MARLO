@@ -535,8 +535,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // get CoAs related to the project sorted by acronym
           if (projectBudget.getProject().getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
-              .getProjectClusterActivities().stream()
-              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .getProjectClusterActivities().stream().filter(c -> c.isActive() && c.getPhase() != null
+                && c.getPhase().equals(this.getSelectedPhase()) && c.getCrpClusterOfActivity().isActive())
               .collect(Collectors.toList())) {
               if (coas == null || coas.isEmpty()) {
                 coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
