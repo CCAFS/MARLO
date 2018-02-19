@@ -300,8 +300,7 @@ public class OutputsAction extends BaseAction {
 
     if (researchAreas != null && output != null) {
 
-      programID = output.getCenterOutputsOutcomes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
-        .get(0).getCenterOutcome().getResearchImpact().getResearchProgram().getId();
+      programID = output.getCenterProgram().getId();
       selectedProgram = programService.getProgramById(programID);
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
@@ -397,6 +396,10 @@ public class OutputsAction extends BaseAction {
 
         if (output.getNextUsers() != null) {
           output.getNextUsers().clear();
+        }
+
+        if (output.getOutcomes() != null) {
+          output.getOutcomes().clear();
         }
       }
     }

@@ -175,7 +175,7 @@
   [#assign outputCustomName = "${name}[${index}]" /]
   <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox row "  style="display:${isTemplate?string('none','block')}">
   <input type="hidden" name="${outputCustomName}.id" value="${(element.id)!}"/>
-  <input type="hidden" class="outputId" name="${outputCustomName}.researchOutput.id" value="${(element.centerOutcome.id)!}"/>
+  <input type="hidden" class="outputId" name="${outputCustomName}.centerOutcome.id" value="${(element.centerOutcome.id)!}"/>
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="" class="removeOutput removeElement removeLink" title="[@s.text name='projectDecription.removeOutput' /]"></div>

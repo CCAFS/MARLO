@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -107,6 +106,7 @@ public class OutputsListAction extends BaseAction {
     output.setCreatedBy(this.getCurrentUser());
     output.setModifiedBy(this.getCurrentUser());
     output = outputService.saveResearchOutput(output);
+    output.setCenterProgram(selectedProgram);
     outputID = output.getId();
 
     if (outputID > 0) {
@@ -153,8 +153,7 @@ public class OutputsListAction extends BaseAction {
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
     if (output != null) {
-      output
-        .setModificationJustification(this.getJustification() == null ? "Outcome deleted" : this.getJustification());
+      output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
       output.setModifiedBy(this.getCurrentUser());
 
       CenterSectionStatus status =
@@ -328,19 +327,8 @@ public class OutputsListAction extends BaseAction {
       }
 
       outputs = new ArrayList<>();
-      if (centerOutputsOutcomeManager.findAll() != null) {
-
-        List<CenterOutputsOutcome> centerOutputsOutcomes =
-          new ArrayList<>(
-            centerOutputsOutcomeManager.findAll().stream()
-              .filter(co -> co.isActive()
-                && co.getCenterOutcome().getResearchTopic().getResearchProgram().getId() == programID)
-              .collect(Collectors.toList()));
-
-        for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-          outputs.add(centerOutputsOutcome.getCenterOutput());
-        }
-
+      if (selectedProgram.getCenterOutputs() != null) {
+        outputs = selectedProgram.getCenterOutputs().stream().filter(co -> co.isActive()).collect(Collectors.toList());
       }
 
       // if (selectedProgram.getResearchTopics() != null) {

@@ -52,9 +52,6 @@ public class CenterOutputsOutcome implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
     CenterOutputsOutcome other = (CenterOutputsOutcome) obj;
     if (id == null) {
       if (other.id != null) {

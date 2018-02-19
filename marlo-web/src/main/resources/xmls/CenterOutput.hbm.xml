@@ -67,6 +67,10 @@
       </key>
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome" />
-    </set>
+    </set>   
+    <many-to-one name="centerProgram" class="org.cgiar.ccafs.marlo.data.model.CenterProgram"
+      fetch="select">
+      <column name="center_program_id" not-null="false" />
+    </many-to-one> 
 	</class>
 </hibernate-mapping>
