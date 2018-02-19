@@ -814,6 +814,8 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setBudgetType(null);
       fundingSource.setFundingRegions(null);
       fundingSource.setFundingCountry(null);
+      fundingSource.getFundingSourceInfo().setPartnerDivision(null);
+
 
       return;
     }
