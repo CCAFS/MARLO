@@ -105,6 +105,13 @@
           [#assign plannedBudgetIndex = plannedBudgetIndex +1 /]
         [/#list]
       [/#if]
+      <tr>
+        <th>CRP Total</th>
+        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span>0.00</span></nobr> </th>
+        <th></th>
+      </tr>
       </tbody>
     </table>
   </div>
@@ -122,8 +129,8 @@
         <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
       [/#if]
     </td>
-    <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
-    <td>[@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-center type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
+    <td>[@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true editable=editable && PMU /]</td>
+    <td>[@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}" required=true editable=editable && PMU /]</td>
     <td> <nobr>US$ <span class="label-total category-${index}">0.00</span></nobr> </td>
     <td>[@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
