@@ -143,8 +143,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       if (!activities.isEmpty()) {
         if (CollectionUtils.isNotEmpty(project.getBudgetsCluserActvities())) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
-            List<ProjectBudgetsCluserActvity> w1w2List = project
-              .getBudgetsCluserActvities().stream().filter(c -> c != null
+            List<ProjectBudgetsCluserActvity> w1w2List = project.getBudgetsCluserActvities().stream()
+              .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
                 && (c.getBudgetType().getId().longValue() == 1) && (c.getYear() == action.getCurrentCycleYear()))
               .collect(Collectors.toList());
             this.validateBudgets(action, w1w2List, new Long(1),
@@ -152,21 +152,24 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           }
           if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId())) {
             List<ProjectBudgetsCluserActvity> w3List = project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
+              .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
+                && c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, w3List, new Long(2),
               this.calculateGender(new Long(2), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId())) {
             List<ProjectBudgetsCluserActvity> bilateralList = project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
+              .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
+                && c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, bilateralList, new Long(3),
               this.calculateGender(new Long(3), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId())) {
             List<ProjectBudgetsCluserActvity> centerFundsList = project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
+              .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
+                && c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear())
               .collect(Collectors.toList());
             this.validateBudgets(action, centerFundsList, new Long(4),
               this.calculateGender(new Long(4), action.getCurrentCycleYear(), project.getId()));

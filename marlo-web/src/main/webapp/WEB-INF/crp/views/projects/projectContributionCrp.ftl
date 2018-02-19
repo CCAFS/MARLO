@@ -133,8 +133,8 @@
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
                     <div class="selectList">   
-                        <input type="hidden" name="projectOutcome.achievedUnit.id" value="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}" class="">
-                        <p>${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</p>
+                        <input type="hidden" name="projectOutcome.achievedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
+                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Prefilled if available'}</p>
                     </div> 
                   </div>
                 </div>
@@ -466,11 +466,11 @@
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
     <div class="form-group row">
       <div class="col-md-3">
-        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
+        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
       </div>
       <div class="col-md-3">
         [#if reportingActive]
-          [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="" required=true editable=editable /]
+          [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
         [/#if]
       </div>
       <div class="col-md-3"></div>
