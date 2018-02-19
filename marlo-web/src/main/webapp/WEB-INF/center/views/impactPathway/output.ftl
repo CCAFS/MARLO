@@ -181,9 +181,9 @@
       <label for="">Outcome statement:</label>
       <div class="oStatement">
         [#if element.centerOutcome?? && element.centerOutcome.description?has_content]
-        ${(element.centerOutcome.description)!'New Output'}
+        ${(element.centerOutcome.description)!'New Outcome'}
         [#else]
-        No Output
+        No Outcomes
         [/#if]
       </div>
         
