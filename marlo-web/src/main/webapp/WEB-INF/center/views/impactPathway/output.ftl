@@ -102,15 +102,7 @@
                     [/#list]
                   </select>
                 [/#if] 
-              </div>
-              [#-- Note --]
-              [#if editable]
-              <hr />
-              <div class="note">
-                If you don't find the <strong>output</strong> you are looking for, request to have it added by
-                <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
-              </div>
-              [/#if]
+              </div>              
             </div>
           </div>
           
