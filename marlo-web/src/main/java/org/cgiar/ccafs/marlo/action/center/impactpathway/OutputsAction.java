@@ -344,11 +344,26 @@ public class OutputsAction extends BaseAction {
             output.setNextUsers(new ArrayList<>(autoSaveOutputNextrUsers));
           }
 
+          outputDb = outputService.getResearchOutputById(output.getId());
           if (output.getOutcomes() != null) {
             List<CenterOutputsOutcome> outputsOutcomes = new ArrayList<>(output.getOutcomes());
             List<CenterOutputsOutcome> autoSaveOutputsOutcomes = new ArrayList<>();
             for (CenterOutputsOutcome outputsOutcome : outputsOutcomes) {
               CenterOutputsOutcome autoSaveOutputsOutcome = new CenterOutputsOutcome();
+
+              autoSaveOutputsOutcome.setCenterOutput(outputDb);
+
+              CenterOutcome outcome = null;
+              if (outputsOutcome.getCenterOutcome() != null) {
+                if (outputsOutcome.getCenterOutcome().getId() != null) {
+                  if (outputsOutcome.getCenterOutcome().getId() != -1) {
+                    outcome = outcomeManager.getResearchOutcomeById(outputsOutcome.getCenterOutcome().getId());
+                  }
+                }
+              }
+
+              autoSaveOutputsOutcome.setCenterOutcome(outcome);
+
               if (outputsOutcome.getId() != null) {
                 autoSaveOutputsOutcome.setId(outputsOutcome.getId());
               }

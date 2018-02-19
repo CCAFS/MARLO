@@ -156,56 +156,29 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
         if (program != null) {
-          List<CenterTopic> topics = new ArrayList<>(
-            program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-          if (topics != null && !topics.isEmpty()) {
-            for (CenterTopic researchTopic : topics) {
-              List<CenterOutcome> outcomes = new ArrayList<>(
-                researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-              if (outcomes != null && !outcomes.isEmpty()) {
-                for (CenterOutcome researchOutcome : outcomes) {
-                  researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-                    .filter(rm -> rm.isActive()).collect(Collectors.toList())));
+          List<CenterOutput> outputs = new ArrayList<>(
+            program.getCenterOutputs().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
 
-                  List<CenterOutput> outputs = new ArrayList<>();
-                  List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(researchOutcome
-                    .getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-                  for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-                    outputs.add(centerOutputsOutcome.getCenterOutput());
-                  }
+          if (outputs != null && !outputs.isEmpty()) {
+            for (CenterOutput researchOutput : outputs) {
+              sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(), researchOutput.getId(),
+                sectionName, this.getCenterYear());
 
-                  if (outputs != null && !outputs.isEmpty()) {
-                    for (CenterOutput researchOutput : outputs) {
-                      sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(),
-                        researchOutput.getId(), sectionName, this.getCenterYear());
-
-                      if (sectionStatus == null) {
-                        sectionStatus = new CenterSectionStatus();
-                        sectionStatus.setMissingFields("No section");
-                      }
-                      if (sectionStatus.getMissingFields().length() > 0) {
-                        section.put("missingFields",
-                          section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-                      }
-                    }
-                  } else {
-                    sectionStatus = new CenterSectionStatus();
-                    sectionStatus.setMissingFields("No outputs");
-                    section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-                  }
-                }
-              } else {
+              if (sectionStatus == null) {
                 sectionStatus = new CenterSectionStatus();
-                sectionStatus.setMissingFields("No outcome");
+                sectionStatus.setMissingFields("No section");
+              }
+              if (sectionStatus.getMissingFields().length() > 0) {
                 section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
               }
             }
           } else {
             sectionStatus = new CenterSectionStatus();
-            sectionStatus.setMissingFields("No research topics");
+            sectionStatus.setMissingFields("No outputs");
             section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
           }
         }
+
         break;
       default:
         sectionStatus = sectionStatusService.getSectionStatusByProgram(programID, sectionName, this.getCenterYear());
