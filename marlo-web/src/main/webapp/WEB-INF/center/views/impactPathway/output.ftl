@@ -82,7 +82,7 @@
         
           <div class="form-group">      
             <div class="output panel tertiary">
-              <div class="panel-body" listname="project.outputs"> 
+              <div class="panel-body" listname="output.outcomeList"> 
                 <ul id="outputsBlock" class="list outputList">
                 [#if  output.outcomes?has_content]  
                   [#list output.outcomes as outcome]
@@ -178,7 +178,7 @@
     </div>
     [#-- Output Title --]
     <div class="blockTitle closed form-group" style="margin-top:30px;">
-      <label for="">Output statement:</label>
+      <label for="">Outcome statement:</label>
       <div class="oStatement">
         [#if element.centerOutcome?? && element.centerOutcome.description?has_content]
         ${(element.centerOutcome.description)!'New Output'}
