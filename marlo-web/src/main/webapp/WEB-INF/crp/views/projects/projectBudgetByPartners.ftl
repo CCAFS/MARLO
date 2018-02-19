@@ -328,7 +328,7 @@
           <div class="row col-md-7">
           [#-- TODO: Allow to add funding sources when there is no aggregate (problem with permissions)  --]
           [#-- Added action.canSearchFunding to allow to modify gender depending on institution  --]
-          [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)) || isTemplate]
+          [#if (editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)) || isTemplate ||action.canEditGender()]
             [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
           [#else]  
             <div class="${customForm.changedField(customName+'.genderPercentage')}">
