@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectNextuserDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectOutcomeIndicatorDAO;
+import org.cgiar.ccafs.marlo.data.dao.SrfTargetUnitDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -51,6 +52,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   private ProjectNextuserDAO projectNextuserDAO;
   private ProjectMilestoneDAO projectMilestoneDAO;
   private ProjectOutcomeIndicatorDAO projectOutcomeIndicatorDAO;
+  private SrfTargetUnitDAO srfTargetUnitDAO;
 
   private CrpProgramOutcomeDAO crpProgramOutcomeDAO;
   private CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO;
@@ -61,7 +63,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
   public ProjectOutcomeManagerImpl(ProjectOutcomeDAO projectOutcomeDAO, PhaseDAO phaseMySQLDAO,
     ProjectMilestoneDAO projectMilestoneDAO, ProjectNextuserDAO projectNextuserDAO, CrpMilestoneDAO crpMilestoneDAO,
     CrpProgramOutcomeDAO crpProgramOutcomeDAO, ProjectOutcomeIndicatorDAO projectOutcomeIndicatorDAO,
-    CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO) {
+    CrpProgramOutcomeIndicatorDAO crpProgramOutcomeIndicatorDAO, SrfTargetUnitDAO srfTargetUnitDAO) {
     this.projectOutcomeDAO = projectOutcomeDAO;
     this.crpProgramOutcomeDAO = crpProgramOutcomeDAO;
     this.phaseMySQLDAO = phaseMySQLDAO;
@@ -70,6 +72,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     this.projectOutcomeIndicatorDAO = projectOutcomeIndicatorDAO;
     this.crpProgramOutcomeIndicatorDAO = crpProgramOutcomeIndicatorDAO;
     this.crpMilestoneDAO = crpMilestoneDAO;
+    this.srfTargetUnitDAO = srfTargetUnitDAO;
   }
 
   /**
@@ -253,9 +256,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         projectOutcomeAdd.setYouthComponent(projectOutcome.getYouthComponent());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
 
+        projectOutcome.setCrpProgramOutcome(crpProgramOutcomeDAO.find(projectOutcome.getCrpProgramOutcome().getId()));
 
-        projectOutcomeAdd.setCrpProgramOutcome(
-          crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
+        // projectOutcomeAdd.setCrpProgramOutcome(
+        // crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
         this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
         this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);

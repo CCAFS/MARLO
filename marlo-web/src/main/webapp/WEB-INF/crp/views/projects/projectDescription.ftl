@@ -177,7 +177,7 @@
                       [/#if]
                        
                     [#else]
-                      [#if (project.projectInfo.isNoRegional())!false ]
+                      [#if (project.projectInfo.getNoRegional())!false ]
                         <input type="hidden" name="project.projectInfo.noRegional" value="true" />
                         <p class="checked"> [@s.text name="project.projectInfo.noRegional" /]</p>
                       [/#if]
