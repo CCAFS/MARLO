@@ -373,36 +373,6 @@
     </dependency>
   </dependencies>
 
-  <!-- Profile configuration -->
-  <profiles>
-    <!-- The configuration of the development profile -->
-    <profile>
-      <id>dev</id>
-      <!-- The development profile is active by default -->
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <build.profile.id>dev</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the production profile -->
-    <profile>
-      <id>pro</id>
-      <properties>
-        <build.profile.id>pro</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the testing profile -->
-    <profile>
-      <id>test</id>
-      <properties>
-        <build.profile.id>test</build.profile.id>
-      </properties>
-    </profile>
-  </profiles>
-
-
   <build>
     <finalName>${project.artifactId}</finalName>
     <defaultGoal>tomcat7:run</defaultGoal>
@@ -443,29 +413,6 @@
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
           <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
         </configuration>
-      </plugin>
-      <!-- Plugin to copy the resources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <!-- Copy properties to impactPathways module -->
-          <execution>
-            <id>copy-properties-to-module</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/classes</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- MINIFYING CSS AND JS - TEST -->

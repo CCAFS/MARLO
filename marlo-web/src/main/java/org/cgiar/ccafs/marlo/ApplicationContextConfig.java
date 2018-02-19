@@ -27,9 +27,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 /**
  * This configuration file is now for properties but can contain other base level beans as well. Note that these
  * beans get loaded first.
+ * Set the envTarget to be a different property by setting the java systemProperty for example -DenvTarget=test
  */
 @Configuration
-@PropertySource("classpath:marlo.properties")
+@PropertySource({"classpath:config/marlo-${envTarget:dev}.properties"})
 @ComponentScan({"org.cgiar.ccafs.marlo.utils", "org.cgiar.ccafs.marlo.config", "org.cgiar.ccafs.marlo.ocs",
   "org.cgiar.ccafs.marlo.security", "org.cgiar.ccafs.marlo.web", "org.cgiar.ccafs.marlo.data.dao",
   "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.validation"})
