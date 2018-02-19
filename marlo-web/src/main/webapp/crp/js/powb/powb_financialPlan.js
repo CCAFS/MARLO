@@ -44,6 +44,15 @@ $(document).ready(function() {
 
 });
 
+function getTotalExpenditureArea() {
+  var total = 0;
+  $('.percentageInput').each(function(i,e) {
+    var percentage = removePercentageFormat($(e).val() || "0");
+    total = total + ((grandTotal / 100) * percentage);
+  });
+  return total;
+}
+
 /**
  * Get total budget per category (All types included)
  * 
