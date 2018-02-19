@@ -130,6 +130,9 @@
   
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne]
+    [#if !(keyOutputs?has_content) && editable]
+      <p class="note">The Key outputs list come from the Project Outcomes you choose in ‘[@s.text name="projects.menu.contributionsCrpList" /]’, once the project is contributing, this deliverable can be mapped to a specific Key output.</p>
+    [/#if]
     <div class="form-group">
       [@customForm.select name="deliverable.deliverableInfo.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
     </div>
