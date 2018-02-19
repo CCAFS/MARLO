@@ -39,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterFundingSyncType;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
-import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectCrosscutingTheme;
@@ -290,12 +289,9 @@ public class ProjectDescriptionAction extends BaseAction {
         outcomeOutputs.setOutcome(researchOutcome);
         outcomeOutputs.setOutputs(new ArrayList<>());
 
-        List<CenterOutput> researchOutputs = new ArrayList<>();
-        List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
-          researchOutcome.getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-        for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
-          researchOutputs.add(centerOutputsOutcome.getCenterOutput());
-        }
+        List<CenterOutput> researchOutputs = new ArrayList<>(
+          selectedProgram.getCenterOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+
 
         for (CenterOutput researchOutput : researchOutputs) {
           outcomeOutputs.getOutputs().add(researchOutput);
