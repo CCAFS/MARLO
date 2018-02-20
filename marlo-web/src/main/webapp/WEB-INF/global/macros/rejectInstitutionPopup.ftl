@@ -16,7 +16,14 @@
         </div>
         <div class="form-group">
           [@customForm.textArea name="marloRequestInstitution.justification" required=true className="limitWords-30" /]
-        </div> 
+        </div>
+        <hr />
+        <ul>
+          <li><b>Already exists: </b><i>"InstitutionRequested"</i> already exists in MARLO as <i>"MARLO Institution"</i></li>
+          <li><b>Already exists as PPA: </b><i>"InstitutionRequested"</i> is available in MARLO as Managing/PPA Partner. Please contact your PMU or <i>"ManagementLiaison Role"</i> in order to add it to the list of project partners</li>
+          <li><b>Not legal: </b>This is a program, not an institution. We suggest to use <i>"MARLOInstitution"</i> instead.</li>
+          <li><b>It is part of: </b>The <i>"InstitutionRequested"</i> is a part of the <i>"MARLOInstitution"</i>. We suggest to use <i>"MARLOInstitution"</i> instead.</li>
+        </ul> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -45,6 +52,11 @@
         <div class="form-group">
           [@customForm.textArea name="marloRequestInstitution.justification" required=true className="modificationJustification limitWords-30" /]
         </div>
+        
+        <hr />
+        <ul>
+          <li><b>Message 1: </b><i>"CountryRequested"</i> is already part of <i>"InstitutionRequested"</i></li>
+        </ul> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> 

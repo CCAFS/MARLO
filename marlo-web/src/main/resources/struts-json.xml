@@ -491,6 +491,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="outcomeInfo"
+      class="org.cgiar.ccafs.marlo.action.center.json.impactpathway.OutcomeInfoAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="addMilestone"
 			class="org.cgiar.ccafs.marlo.action.center.json.monitoring.outcome.MilestoneAddAction">

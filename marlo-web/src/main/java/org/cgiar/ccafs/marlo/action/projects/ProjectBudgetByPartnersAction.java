@@ -200,6 +200,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+  public boolean canEditGender() {
+    return this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_GENDER_PROJECT_BASE_PERMISSION,
+      loggedCrp.getAcronym(), projectID + ""));
+  }
 
   public boolean canSearchFunding(long institutionID) {
 
@@ -618,7 +622,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
           .collect(Collectors.toList()));
 
 
-        System.out.println("Size budgets" + project.getBudgets().size());
       }
 
       // Pre-load Project Co-Funded Lists.

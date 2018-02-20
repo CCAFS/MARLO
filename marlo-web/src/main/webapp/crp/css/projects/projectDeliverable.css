@@ -66,28 +66,23 @@ ul.nav li a {
   text-decoration: initial;
 }
 
+span.legend-color{
+  padding: 0px 8px !important;
+  border-radius: 20px !important;
+  margin-right: 5px !important;
+  display: inline;
+}
+
 span#achieved {
   background-color: green;
-  padding: 0px 8px;
-  border-radius: 20px;
-  margin-right: 5px;
-  display: inline;
 }
 
 span#notAchieved {
   background-color: #ca1010;
-  padding: 0px 8px;
-  border-radius: 20px;
-  margin-right: 5px;
-  display: inline;
 }
 
 span#notDefined {
   background-color: #a3a3a3;
-  padding: 0px 8px;
-  border-radius: 20px;
-  margin-right: 5px;
-  display: inline;
 }
 
 .legendContent {
@@ -100,6 +95,7 @@ span#notDefined {
   border: 1px solid #EEE;
   background: #F8F8F8;
   margin-bottom: 25px;
+  height: 100%;
 }
 
 .legendContent span {
@@ -111,12 +107,30 @@ span#notDefined {
   opacity: 0.9;
   color: #444;
   margin-left: 1px;
+}
+
+.legendContent span:not(.required-fields) {
   border: 1px dashed #8e8e91;
 }
 
 .explanation {
   border: 1px dashed #d5d5d5;
   padding: 5px;
+}
+
+.required-explanation {
+  border: 1px dashed #d5d5d5;
+  padding: 5px;
+  height: 100%;
+  min-height: 132px;
+}
+
+.icon-check{
+  background-position-y: -23px;
+}
+
+.icon-uncheck, .icon-check{
+  background-repeat: no-repeat
 }
 
 .colors {
@@ -131,6 +145,12 @@ span#notDefined {
   float: left;
   margin-bottom: 0;
 }
+
+.required-explanation span {
+  min-width: 22px;
+  margin-bottom: 55%;
+}
+
 
 .personRead-content {
   padding: 0 2%;
@@ -581,7 +601,7 @@ form#CCAFS_deliverableList {
   margin-top: 3px;
 }
 
-.deliverableList .status-indicator {
+.deliverableList .status-indicator:not(.legend-color) {
   display: inline-block;
   border-radius: 50%;
   width: 15px;
@@ -589,23 +609,23 @@ form#CCAFS_deliverableList {
   text-align: center;
 }
 
-.deliverableList .status-indicator.Complete {
+.status-indicator.Complete {
   background-color: green;
 }
 
-.deliverableList .status-indicator.On-going {
+.status-indicator.On-going {
   background-color: orange;
 }
 
-.deliverableList .status-indicator.Extended {
+.status-indicator.Extended {
   background-color: rgb(139, 86, 74);
 }
 
-.deliverableList .status-indicator.Cancelled {
+.status-indicator.Cancelled {
   background-color: red;
 }
 
-.deliverableList .status-indicator.Ready.to.be.reported.on {
+.status-indicator.Ready.to.be.reported.on {
   background-color: rgb(45, 138, 238);
 }
 
