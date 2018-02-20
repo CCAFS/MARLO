@@ -26,7 +26,6 @@
     /* background-color: #f4f4f4; */
     margin-bottom: 6px;
     border-radius: 4px;
-    height: 26px;
     line-height: 26px;
 }
 
@@ -127,6 +126,7 @@
 span.lPos {
     color: darkgray;
     font-size: 0.8em;
+    line-height: 2px;
 }
 
 .locations.selected {
@@ -134,8 +134,9 @@ span.lPos {
     border: 1px dashed #777;
 }
 
-.locationName {
+.locations .locationName {
     cursor: pointer;
+    line-height: 20px;   
 }
 
 .selectWrapper-horizontal {
@@ -332,9 +333,58 @@ li.select2-search.select2-search--inline{
     border-radius: 3px;
     border: 1px solid #668fda;
     font-size: 12px;
-    margin-top:8px;
+    margin-bottom: 8px;
 }
 
 .addLoc-locLevel b{
   font-family: Roboto,Arial,sans-sefif;
+}
+
+table td {
+  list-style: none;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e7e7e7;
+  font-size: 0.95em;
+}
+
+th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+  padding: 9px;
+}
+
+td {
+  padding: 3px 10px;
+  vertical-align: middle !important;
+}
+
+table {
+  border: 1px solid #e6e6e6;
+  font-size: 0.95em;
+}
+
+/** MARLO Responsibe Tables */
+.table-responsive table {
+  min-width: 1500px;
+  margin-bottom: 0;
+}
+
+.table-responsive {
+  border: 1px solid #ddd;
+  max-height: 500px;
+}
+
+.table > thead > tr > th {
+  vertical-align:middle;
+}
+
+form .form-group.margin-panel {
+  margin-bottom: 40px;
+}
+
+td {
+  border: 1px solid rgb(224, 224, 224);
+}
+tr:nth-child(even) {
+  background-color: #fcfcfc;
 }
