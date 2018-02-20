@@ -13,12 +13,12 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.center.json.monitoring.project;
+package org.cgiar.ccafs.marlo.action.center.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
-import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
+import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
@@ -32,54 +32,57 @@ import org.apache.struts2.dispatcher.Parameter;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class OutputInfoAction extends BaseAction {
+public class OutcomeInfoAction extends BaseAction {
 
 
   private static final long serialVersionUID = 6056401366531194841L;
 
 
-  private ICenterOutputManager outputService;
+  private ICenterOutcomeManager outcomeService;
+
+  private long outcomeID;
 
 
-  private long outputID;
+  private Map<String, Object> outcomeInfo;
 
-  private Map<String, Object> outputInfo;
 
   @Inject
-  public OutputInfoAction(APConfig config, ICenterOutputManager outputService) {
+  public OutcomeInfoAction(APConfig config, ICenterOutcomeManager outcomeService) {
     super(config);
-    this.outputService = outputService;
+    this.outcomeService = outcomeService;
   }
 
   @Override
   public String execute() throws Exception {
 
-    outputInfo = new HashMap<>();
-    CenterOutput output = outputService.getResearchOutputById(outputID);
+    outcomeInfo = new HashMap<>();
+    CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
 
-    if (output != null) {
-      outputInfo.put("id", output.getId());
+    if (outcome != null) {
+      outcomeInfo.put("id", outcome.getId());
+      outcomeInfo.put("researchTopic", outcome.getResearchTopic().getResearchTopic());
     }
 
     return SUCCESS;
   }
 
+  public Map<String, Object> getOutcomeInfo() {
+    return outcomeInfo;
+  }
+
   public Map<String, Object> getOutputInfo() {
-    return outputInfo;
+    return outcomeInfo;
   }
 
   @Override
   public void prepare() throws Exception {
-    // Map<String, Object> parameters = this.getParameters();
-    // outputID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.OUTPUT_ID))[0]));
-
     Map<String, Parameter> parameters = this.getParameters();
-    outputID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.OUTPUT_ID).getMultipleValues()[0]));
+    outcomeID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.OUTCOME_ID).getMultipleValues()[0]));
   }
 
-
-  public void setOutputInfo(Map<String, Object> outputInfo) {
-    this.outputInfo = outputInfo;
+  public void setOutcomeInfo(Map<String, Object> outcomeInfo) {
+    this.outcomeInfo = outcomeInfo;
   }
+
 
 }
