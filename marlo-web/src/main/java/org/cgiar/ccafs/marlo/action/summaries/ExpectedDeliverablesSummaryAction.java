@@ -309,10 +309,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && !deliverableInfo.getDeliverableType().getName().isEmpty()) ? deliverableInfo.getDeliverableType().getName()
             : null;
       String deliverableType = (deliverableInfo.getDeliverableType() != null
-        && deliverableInfo.getDeliverableType().getDeliverableType() != null
-        && deliverableInfo.getDeliverableType().getDeliverableType().getName() != null
-        && !deliverableInfo.getDeliverableType().getDeliverableType().getName().isEmpty())
-          ? deliverableInfo.getDeliverableType().getDeliverableType().getName() : null;
+        && deliverableInfo.getDeliverableType().getDeliverableCategory() != null
+        && deliverableInfo.getDeliverableType().getDeliverableCategory().getName() != null
+        && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
+          ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
 
       // Get cross_cutting dimension
       String crossCutting = "";

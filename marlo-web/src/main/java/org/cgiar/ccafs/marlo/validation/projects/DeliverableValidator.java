@@ -145,8 +145,8 @@ public class DeliverableValidator extends BaseValidator {
 
           } else {
             if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
-              .getDeliverableType() != null) {
-              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+              .getDeliverableCategory() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
                 .getId() == -1) {
                 action.addMessage(action.getText("project.deliverable.generalInformation.type"));
                 action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
@@ -279,8 +279,8 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable Publication Meta-data
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
-          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
             .getId() == 49) {
             this.validatePublicationMetadata(deliverable, action);
           }

@@ -447,9 +447,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
               if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
                 if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-                  .getDeliverableType() != null) {
+                  .getDeliverableCategory() != null) {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable
-                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType().getName()
+                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableCategory().getName()
                     + "</font>";
                   devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
                     + deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName()

@@ -317,7 +317,7 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
       if (this.getDeliverableType().getFair()) {
         return true;
       }
-      if (this.getDeliverableType().getDeliverableType().getFair()) {
+      if (this.getDeliverableType().getDeliverableCategory().getFair()) {
         return true;
       }
     } catch (Exception e) {
