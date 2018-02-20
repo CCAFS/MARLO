@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -220,8 +221,7 @@ public class GraphByAreaAction extends BaseAction {
           dataEdgeOutcome.put("data", dataEdgeOutcomeDetail);
           dataEdges.add(dataEdgeOutcome);
 
-          List<CenterOutput> outputs = new ArrayList<>(
-            outcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          List<CenterOutput> outputs = new ArrayList<>();
 
           dataOutcomeDetail.put("Nouptus", outputs.size());
           dataOutcome.put("data", dataOutcomeDetail);
@@ -233,20 +233,20 @@ public class GraphByAreaAction extends BaseAction {
             HashMap<String, Object> dataOutput = new HashMap<>();
             HashMap<String, Object> dataOutputDetail = new HashMap<>();
             dataOutputDetail.put("id", "OP" + output.getId());
-            dataOutputDetail.put("parent", "T" + output.getResearchOutcome().getResearchTopic().getId());
+            // dataOutputDetail.put("parent", "T" + output.getResearchOutcome().getResearchTopic().getId());
             dataOutputDetail.put("label",
               this.isShortName(output.getShortName()) ? output.getShortName() : "Output - O" + output.getId());
             dataOutputDetail.put("title", this.isShortName(output.getShortName()) ? "Output - " + output.getShortName()
               : "Output - O" + output.getId());
             dataOutputDetail.put("description", output.getTitle());
-            dataOutputDetail.put("color", output.getResearchOutcome().getResearchImpact().getColor());
+            // dataOutputDetail.put("color", output.getResearchOutcome().getResearchImpact().getColor());
             dataOutputDetail.put("type", "OP");
             dataOutput.put("data", dataOutputDetail);
             dataNodes.add(dataOutput);
             // Relation Outcome - Output
             HashMap<String, Object> dataEdgeOutput = new HashMap<>();
             HashMap<String, Object> dataEdgeOutputDetail = new HashMap<>();
-            dataEdgeOutputDetail.put("source", "OC" + output.getResearchOutcome().getId());
+            // dataEdgeOutputDetail.put("source", "OC" + output.getResearchOutcome().getId());
             dataEdgeOutputDetail.put("target", "OP" + output.getId());
             dataEdgeOutput.put("data", dataEdgeOutputDetail);
             dataEdges.add(dataEdgeOutput);

@@ -83,11 +83,13 @@
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
+                   [#if (action.isReportingActive())]
                   <div class="fullBlock">
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
                     [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" editable=editable /]
+                  [/#if]
                   </div>
                 </div>
               [/#if]

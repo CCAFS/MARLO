@@ -80,7 +80,7 @@
 			</result>
 		</action>
 		
-		<action name="emails" class="org.cgiar.ccafs.marlo.action.BaseAction">
+		<action name="emails" class="org.cgiar.ccafs.marlo.action.superadmin.EmailsOnTrackAction">
       <interceptor-ref name="superAdminStack" />
       <result name="input">/WEB-INF/global/views/superadmin/marloEmails.ftl
       </result>

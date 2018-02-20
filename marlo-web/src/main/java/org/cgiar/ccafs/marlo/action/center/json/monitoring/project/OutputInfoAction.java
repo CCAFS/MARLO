@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -58,8 +59,6 @@ public class OutputInfoAction extends BaseAction {
 
     if (output != null) {
       outputInfo.put("id", output.getId());
-      outputInfo.put("outcomeName", output.getResearchOutcome().getDescription());
-      outputInfo.put("topicName", output.getResearchOutcome().getResearchTopic().getResearchTopic());
     }
 
     return SUCCESS;
