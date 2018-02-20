@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -66,8 +68,12 @@ public class OutcomeTreeAction extends BaseAction {
 
     CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
 
-    List<CenterOutput> outputs =
-      new ArrayList<>(outcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+    List<CenterOutput> outputs = new ArrayList<>();
+    List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+      outcome.getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+    for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+      outputs.add(centerOutputsOutcome.getCenterOutput());
+    }
 
     if (!outputs.isEmpty()) {
       for (CenterOutput researchOutput : outputs) {
