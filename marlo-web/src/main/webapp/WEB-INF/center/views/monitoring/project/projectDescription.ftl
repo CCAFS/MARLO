@@ -486,7 +486,7 @@
 
 [#macro outputMacro element name index=-1 isTemplate=false]  
   [#assign outputCustomName = "${name}[${index}]" /]
-  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox expandableBlock row "  style="display:${isTemplate?string('none','block')}">
+  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox row "  style="display:${isTemplate?string('none','block')}">
   <input type="hidden" name="${outputCustomName}.id" value="${(element.id)!}"/>
   <input type="hidden" class="outputId" name="${outputCustomName}.researchOutput.id" value="${(element.researchOutput.id)!}"/>
     [#if editable] [#--&& (isTemplate) --]
@@ -509,17 +509,6 @@
       </div>
         
       <div class="clearfix"></div>
-    </div>
-    
-    <div class="blockContent " style="display:none">
-      <div class="form-group">
-        <label for="">Research topic:</label>
-        <div class="rTopic">${(element.researchOutput.researchOutcome.researchTopic.researchTopic)!}</div>
-      </div>
-      <div class="form-group">
-        <label for="">Outcome:</label>
-        <div class="outcome">${(element.researchOutput.researchOutcome.description)!}</div>
-      </div>
     </div>
   </li>
 [/#macro]
