@@ -6,22 +6,22 @@
     { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': flagship || PMU   },
     { 'slug': 'expectedProgress',         'name': 'powb.menu.expectedProgress',       'action': 'expectedProgress',       'active': flagship || PMU  },
     { 'slug': 'evidenceRelevant',         'name': 'powb.menu.evidenceRelevant',       'action': 'evidenceRelevant',       'active': (flagship || PMU) && config.debug  },
-    { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': (flagship || PMU) && config.debug },
+    { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': (flagship || PMU) },
     { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': flagship || PMU  }
     ]
   },
   { 'title': '2.  Planning for CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': (flagship || PMU) && config.debug },
-    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': (flagship || PMU) && config.debug  },
+    { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': (flagship || PMU) },
+    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': (flagship || PMU) },
     { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false },
-    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': (flagship || PMU) && config.debug }
+    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': (flagship || PMU) }
     ]
   },
   { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': (flagship || PMU) && config.debug  },
-    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': (flagship || PMU) && config.debug  }
+    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': (flagship || PMU) },
+    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': (flagship || PMU) }
     ]
   }
 ]/]
