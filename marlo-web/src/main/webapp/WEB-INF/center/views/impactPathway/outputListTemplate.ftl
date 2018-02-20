@@ -7,8 +7,8 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="programImpact.outputList.idTable" /]</th>
         <th id="outputTitles" >[@s.text name="programImpact.outputList.title" /]</th>
-        <th id="outputDateAdded">[@s.text name="programImpact.outputList.date" /]</th>
         <th id="outputOutcomes">[@s.text name="programImpact.outputList.outcomes" /]</th>
+        <th id="outputDateAdded">[@s.text name="programImpact.outputList.date" /]</th>      
         <th id="outputRF">[@s.text name="programImpact.outputList.requiredFields" /]</th>
         <th id="outputDelete">[@s.text name="programImpact.outputList.delete" /]</th>
       </tr>
@@ -32,8 +32,8 @@
                 </a>
             [/#if]
           </td>
-          [#-- output Year --]
-          <td class=""> 
+           [#-- Outcomes Contribution --]
+          <td class="text-center"> 
             [#if output.centerOutputsOutcomes?has_content]
               [#list output.centerOutputsOutcomes as outcome]
                 [#if outcome.active]
@@ -43,13 +43,11 @@
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
-          </td>
-          
-          [#-- Outcomes Contribution --]
+          </td> 
+          [#-- output Year --]
           <td class="text-center">
           ${(output.dateAdded)!'none'}
-          </td>
-          
+          </td> 
           [#-- Output required fields --]
           <td class="text-center">
             [#if action.getCenterOutputStatus(output.id)??]
