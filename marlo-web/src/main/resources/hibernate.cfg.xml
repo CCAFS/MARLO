@@ -218,5 +218,6 @@
 		<mapping resource="xmls/ProjectOutcomeIndicators.hbm.xml" />
 		<mapping resource="xmls/EmailLogs.hbm.xml" />
 		<mapping resource="xmls/ExpectedStudyProjects.hbm.xml" />
+		<mapping resource="xmls/CenterOutputsOutcomes.hbm.xml" />		
 	</session-factory>
 </hibernate-configuration>
