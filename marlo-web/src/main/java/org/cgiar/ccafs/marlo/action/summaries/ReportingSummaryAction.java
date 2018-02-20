@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -183,6 +185,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
+  private CrossCuttingScoringManager crossCuttingScoringManager;
   private IpElementManager ipElementManager;
   private RepositoryChannelManager repositoryChannelManager;
   private SrfTargetUnitManager srfTargetUnitManager;
@@ -192,7 +195,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     GenderTypeManager genderTypeManager, CrpProgramManager programManager, InstitutionManager institutionManager,
     ProjectBudgetManager projectBudgetManager, LocElementManager locElementManager, IpElementManager ipElementManager,
     SrfTargetUnitManager srfTargetUnitManager, PhaseManager phaseManager,
-    RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider) {
+    RepositoryChannelManager repositoryChannelManager, LocalizedTextProvider localizedTextProvider,
+    CrossCuttingScoringManager crossCuttingScoringManager) {
     super(config, crpManager, phaseManager);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -204,6 +208,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.localizedTextProvider = localizedTextProvider;
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.repositoryChannelManager = repositoryChannelManager;
+    this.crossCuttingScoringManager = crossCuttingScoringManager;
+
   }
 
   /**
@@ -2378,7 +2384,23 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
         .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
-        .filter(c -> c.isActive() && c.getDeliverableInfo(this.getSelectedPhase()).getYear() >= this.getSelectedYear())
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
+          && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && d.getDeliverableInfo().getNewExpectedYear() != null
+              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+            || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            || (d.getDeliverableInfo().getStatus() != null
+              && d.getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Complete.getStatusId())
+              && ((d.getDeliverableInfo().getNewExpectedYear() != null
+                && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+                || (d.getDeliverableInfo().getNewExpectedYear() == null
+                  && d.getDeliverableInfo().getYear() == this.getSelectedYear())))))
         .collect(Collectors.toList())) {
         String delivType = null;
         String delivSubType = null;
@@ -2446,17 +2468,36 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreGender();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+            }
           }
         }
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() != null) {
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreYouth();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+            }
           }
         }
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() != null) {
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity() == true) {
-            crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+            Long scoring = deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity();
+            if (scoring != null) {
+              CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+              crossCutting +=
+                "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development (" + crossCuttingScoring.getDescription() + ")<br>";
+            } else {
+              crossCutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+            }
           }
         }
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender() != null) {
@@ -2655,9 +2696,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (expectedStudyProjectList != null && !expectedStudyProjectList.isEmpty()) {
           for (ExpectedStudyProject expectedStudyProject : expectedStudyProjectList) {
             if (expectedStudiesProjects.isEmpty()) {
-              expectedStudiesProjects = expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects = " ● " + expectedStudyProject.getMyProject().getComposedName();
             } else {
-              expectedStudiesProjects += "<br>" + expectedStudyProject.getMyProject().getComposedName();
+              expectedStudiesProjects += "<br> ● " + expectedStudyProject.getMyProject().getComposedName();
             }
           }
         } else {

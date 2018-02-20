@@ -73,8 +73,8 @@ public class RejectPartnerRequestAction extends BaseAction {
       partnerRequest.setRejectJustification(justification);
       partnerRequest.setRejectedBy(this.getCurrentUser());
       partnerRequest.setRejectedDate(new Date());
-      partnerRequestManager.savePartnerRequest(partnerRequest);
-      partnerRequestManager.deletePartnerRequest(partnerRequest.getId());
+      partnerRequest.setActive(false);
+      partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
       // inactive the parent partnerRequest
       PartnerRequest partnerRequestParent =
         partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
