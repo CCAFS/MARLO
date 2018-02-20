@@ -205,7 +205,7 @@
                   [#-- LOCATION LIST --]
                   <div class="col-md-12">
                     [#if editable]
-                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel"><b> [@s.text name="Add new location" /]</b></span>
+                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
                     [/#if]
                     <label for="">[@s.text name="projectLocations.locationsList" /]</label>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
