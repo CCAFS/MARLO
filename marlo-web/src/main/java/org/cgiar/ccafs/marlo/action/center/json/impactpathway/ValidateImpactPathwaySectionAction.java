@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.slf4j.Logger;
@@ -154,51 +155,29 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
         section.put("sectionName", sectionName);
         section.put("missingFields", "");
         if (program != null) {
-          List<CenterTopic> topics = new ArrayList<>(
-            program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-          if (topics != null && !topics.isEmpty()) {
-            for (CenterTopic researchTopic : topics) {
-              List<CenterOutcome> outcomes = new ArrayList<>(
-                researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-              if (outcomes != null && !outcomes.isEmpty()) {
-                for (CenterOutcome researchOutcome : outcomes) {
-                  researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-                    .filter(rm -> rm.isActive()).collect(Collectors.toList())));
+          List<CenterOutput> outputs = new ArrayList<>(
+            program.getCenterOutputs().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
 
-                  List<CenterOutput> outputs = new ArrayList<>(researchOutcome.getResearchOutputs().stream()
-                    .filter(ro -> ro.isActive()).collect(Collectors.toList()));
-                  if (outputs != null && !outputs.isEmpty()) {
-                    for (CenterOutput researchOutput : outputs) {
-                      sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(),
-                        researchOutput.getId(), sectionName, this.getCenterYear());
+          if (outputs != null && !outputs.isEmpty()) {
+            for (CenterOutput researchOutput : outputs) {
+              sectionStatus = sectionStatusService.getSectionStatusByOutput(program.getId(), researchOutput.getId(),
+                sectionName, this.getCenterYear());
 
-                      if (sectionStatus == null) {
-                        sectionStatus = new CenterSectionStatus();
-                        sectionStatus.setMissingFields("No section");
-                      }
-                      if (sectionStatus.getMissingFields().length() > 0) {
-                        section.put("missingFields",
-                          section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-                      }
-                    }
-                  } else {
-                    sectionStatus = new CenterSectionStatus();
-                    sectionStatus.setMissingFields("No outputs");
-                    section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-                  }
-                }
-              } else {
+              if (sectionStatus == null) {
                 sectionStatus = new CenterSectionStatus();
-                sectionStatus.setMissingFields("No outcome");
+                sectionStatus.setMissingFields("No section");
+              }
+              if (sectionStatus.getMissingFields().length() > 0) {
                 section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
               }
             }
           } else {
             sectionStatus = new CenterSectionStatus();
-            sectionStatus.setMissingFields("No research topics");
+            sectionStatus.setMissingFields("No outputs");
             section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
           }
         }
+
         break;
       default:
         sectionStatus = sectionStatusService.getSectionStatusByProgram(programID, sectionName, this.getCenterYear());
@@ -313,29 +292,18 @@ public class ValidateImpactPathwaySectionAction extends BaseAction {
     CenterProgram program = programServcie.getProgramById(programID);
 
     if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+      List<CenterOutput> outputs =
+        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
 
-          for (CenterOutcome researchOutcome : outcomes) {
-            researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-              .filter(rm -> rm.isActive()).collect(Collectors.toList())));
+      for (CenterOutput researchOutput : outputs) {
 
-            List<CenterOutput> outputs = new ArrayList<>(
-              researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+        researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
+          .filter(nu -> nu.isActive()).collect(Collectors.toList())));
 
-            for (CenterOutput researchOutput : outputs) {
+        researchOutput.setOutcomes(new ArrayList<>(
+          researchOutput.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
 
-              researchOutput.setNextUsers(new ArrayList<>(researchOutput.getResearchOutputsNextUsers().stream()
-                .filter(nu -> nu.isActive()).collect(Collectors.toList())));
-              outputValidator.validate(this, researchOutput, program, false);
-            }
-
-          }
-        }
+        outputValidator.validate(this, researchOutput, program, false);
       }
     }
 

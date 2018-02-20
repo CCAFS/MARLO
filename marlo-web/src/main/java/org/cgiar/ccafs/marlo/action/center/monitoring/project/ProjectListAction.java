@@ -212,7 +212,9 @@ public class ProjectListAction extends BaseAction {
     CenterProject centerProject = this.createCenterProject(project, true);
 
     // Add Project Leader
-    centerProject.setProjectLeader(project.getLeaderPerson(phase).getUser());
+    if (project.getLeaderPerson(phase).getUser() != null) {
+      centerProject.setProjectLeader(project.getLeaderPerson(phase).getUser());
+    }
 
     // Add Project Status
     centerProject.setProjectStatus(new CenterProjectStatus(project.getProjecInfoPhase(phase).getStatus(), true));
