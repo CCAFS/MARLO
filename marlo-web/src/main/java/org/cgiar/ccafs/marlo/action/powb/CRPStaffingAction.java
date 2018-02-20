@@ -25,13 +25,11 @@ import org.cgiar.ccafs.marlo.data.manager.PowbCrpStaffingCategoriesManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCrpStaffingManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisCrpStaffingCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffingCategories;
-import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -71,7 +69,6 @@ public class CRPStaffingAction extends BaseAction {
   private PowbSynthesisManager powbSynthesisManager;
   private CrpProgramManager crpProgramManager;
   private AuditLogManager auditLogManager;
-  private UserManager userManager;
   private PowbCrpStaffingManager powbCrpStaffingManager;
   private PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager;
   private PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager;
@@ -89,8 +86,8 @@ public class CRPStaffingAction extends BaseAction {
   @Inject
   public CRPStaffingAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
-    CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    CrpStaffingValidator validator, PowbCrpStaffingManager powbCrpStaffingManager,
+    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, CrpStaffingValidator validator,
+    PowbCrpStaffingManager powbCrpStaffingManager,
     PowbSynthesisCrpStaffingCategoryManager powbSynthesisCrpStaffingCategoryManager,
     PowbCrpStaffingCategoriesManager powbCrpStaffingCategoriesManager) {
     super(config);
@@ -98,7 +95,6 @@ public class CRPStaffingAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpProgramManager = crpProgramManager;
     this.auditLogManager = auditLogManager;
-    this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
     this.powbCrpStaffingManager = powbCrpStaffingManager;
@@ -125,14 +121,6 @@ public class CRPStaffingAction extends BaseAction {
     }
   }
 
-  private void deleteAllPowbSynthesisCategories() {
-    for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesis
-      .getPowbSynthesisCrpStaffingCategory().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      powbSynthesisCrpStaffingCategoryManager
-        .deletePowbSynthesisCrpStaffingCategory(powbSynthesisCrpStaffingCategory.getId());
-    }
-  }
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -149,20 +137,6 @@ public class CRPStaffingAction extends BaseAction {
     String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
-
-  public PowbFlagshipPlans getFlagshipPlansByliaisonInstitutionID(Long liaisonInstitutionID) {
-    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-    if (liaisonInstitution != null) {
-      List<PowbSynthesis> powbSynthesisList = liaisonInstitution.getPowbSynthesis().stream()
-        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
-      if (powbSynthesisList != null && !powbSynthesisList.isEmpty()
-        && powbSynthesisList.get(0).getPowbFlagshipPlans() != null) {
-        return powbSynthesisList.get(0).getPowbFlagshipPlans();
-      }
-    }
-    return null;
   }
 
   public List<LiaisonInstitution> getFlagships() {
@@ -347,8 +321,6 @@ public class CRPStaffingAction extends BaseAction {
             this.saveUpdateCategory(powbSynthesisCrpStaffingCategory);
           }
         }
-      } else {
-        this.deleteAllPowbSynthesisCategories();
       }
 
       List<String> relationsName = new ArrayList<>();

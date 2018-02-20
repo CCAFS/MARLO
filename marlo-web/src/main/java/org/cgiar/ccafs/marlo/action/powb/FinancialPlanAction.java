@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.data.manager.PowbFinancialExpenditureManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlanManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlannedBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -34,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
-import org.cgiar.ccafs.marlo.data.model.PowbFlagshipPlans;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -73,7 +71,6 @@ public class FinancialPlanAction extends BaseAction {
   private PowbSynthesisManager powbSynthesisManager;
   private CrpProgramManager crpProgramManager;
   private AuditLogManager auditLogManager;
-  private UserManager userManager;
   private PowbFinancialPlanManager powbFinancialPlanManager;
   private PowbFinancialExpenditureManager powbFinancialExpenditureManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
@@ -93,9 +90,8 @@ public class FinancialPlanAction extends BaseAction {
   @Inject
   public FinancialPlanAction(APConfig config, GlobalUnitManager crpManager,
     LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager,
-    CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    FinancialPlanValidator validator, PowbFinancialPlanManager powbFinancialPlanManager,
-    PowbFinancialExpenditureManager powbFinancialExpenditureManager,
+    CrpProgramManager crpProgramManager, PowbSynthesisManager powbSynthesisManager, FinancialPlanValidator validator,
+    PowbFinancialPlanManager powbFinancialPlanManager, PowbFinancialExpenditureManager powbFinancialExpenditureManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager,
     PowbFinancialPlannedBudgetManager powbFinancialPlannedBudgetManager) {
     super(config);
@@ -103,7 +99,6 @@ public class FinancialPlanAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpProgramManager = crpProgramManager;
     this.auditLogManager = auditLogManager;
-    this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
     this.powbFinancialPlanManager = powbFinancialPlanManager;
@@ -157,20 +152,6 @@ public class FinancialPlanAction extends BaseAction {
     } else {
       return new ArrayList<>();
     }
-  }
-
-  public PowbFlagshipPlans getFlagshipPlansByliaisonInstitutionID(Long liaisonInstitutionID) {
-    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
-    if (liaisonInstitution != null) {
-      List<PowbSynthesis> powbSynthesisList = liaisonInstitution.getPowbSynthesis().stream()
-        .filter(ps -> ps.isActive() && ps.getPhase() != null && ps.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
-      if (powbSynthesisList != null && !powbSynthesisList.isEmpty()
-        && powbSynthesisList.get(0).getPowbFlagshipPlans() != null) {
-        return powbSynthesisList.get(0).getPowbFlagshipPlans();
-      }
-    }
-    return null;
   }
 
   public List<LiaisonInstitution> getFlagships() {
@@ -243,9 +224,10 @@ public class FinancialPlanAction extends BaseAction {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
       if (liaisonInstitution != null) {
-        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesis.getPowbFinancialPlannedBudget()
-          .stream().filter(p -> p.isActive() && p.getLiaisonInstitution() != null
-            && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
+        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesis
+          .getPowbFinancialPlannedBudgetList().stream()
+          .filter(
+            p -> p.getLiaisonInstitution() != null && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
           .collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
           return powbFinancialPlannedBudgetList.get(0);
@@ -259,10 +241,9 @@ public class FinancialPlanAction extends BaseAction {
       PowbExpenditureAreas powbExpenditureArea =
         powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
       if (powbExpenditureArea != null) {
-        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesis.getPowbFinancialPlannedBudget()
-          .stream().filter(p -> p.isActive() && p.getPowbExpenditureArea() != null
-            && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID))
-          .collect(Collectors.toList());
+        List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
+          powbSynthesis.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
+            && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
           return powbFinancialPlannedBudgetList.get(0);
         } else {
@@ -422,6 +403,7 @@ public class FinancialPlanAction extends BaseAction {
       powbSynthesis.setActiveSince(new Date());
       powbSynthesis.setModifiedBy(this.getCurrentUser());
       relationsName.add(APConstants.SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION);
+      relationsName.add(APConstants.SYNTHESIS_FINANCIAL_PLANNED_BUDGET_RELATION);
       powbSynthesisManager.save(powbSynthesis, this.getActionName(), relationsName, this.getActualPhase());
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
