@@ -603,7 +603,8 @@ public class FinancialPlanAction extends BaseAction {
       if (powbSynthesis != null) {
         powbSynthesisID = powbSynthesis.getId();
       } else {
-        this.createPowbSynthesis(this.getCurrentCenterPhase().getId(), liaisonInstitutionID);
+        powbSynthesis = this.createPowbSynthesis(this.getActualPhase().getId(), liaisonInstitutionID);
+        powbSynthesisID = powbSynthesis.getId();
       }
     }
   }
