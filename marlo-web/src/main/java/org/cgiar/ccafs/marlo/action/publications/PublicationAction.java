@@ -525,7 +525,7 @@ public class PublicationAction extends BaseAction {
 
 
     deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
-      .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
+      .filter(dt -> dt.getDeliverableCategory() != null && dt.getDeliverableCategory().getId().intValue() == 49)
       .collect(Collectors.toList()));
     deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(55));
     deliverableSubTypes.add(deliverableTypeManager.getDeliverableTypeById(56));

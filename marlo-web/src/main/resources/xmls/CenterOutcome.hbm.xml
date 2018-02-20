@@ -61,13 +61,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterMilestone" />
 		</set>
-		<set name="researchOutputs" table="center_outputs" inverse="true"
-			lazy="true" fetch="select">
-			<key>
-				<column name="research_outcome_id" not-null="true" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterOutput" />
-		</set>
 		<set name="sectionStatuses" table="center_section_statuses" inverse="true"
       lazy="true" fetch="select">
       <key>
@@ -81,6 +74,14 @@
         <column name="outcome_id" not-null="true" />
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.CenterMonitoringOutcome" />
+    </set>
+    <set name="centerOutputsOutcomes" table="center_outputs_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="outcome_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome" />
     </set>
 	</class>
 </hibernate-mapping>

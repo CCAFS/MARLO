@@ -1875,11 +1875,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             showCompilance = true;
           }
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-            .getDeliverableType() != null) {
+            .getDeliverableCategory() != null) {
             delivType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-              .getDeliverableType().getName();
+              .getDeliverableCategory().getName();
             // FAIR and deliverable publication
-            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType()
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableCategory()
               .getId() == 49) {
               showFAIR = true;
               showPublication = true;
@@ -2414,9 +2414,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
           delivSubType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName();
           if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-            .getDeliverableType() != null) {
+            .getDeliverableCategory() != null) {
             delivType = deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-              .getDeliverableType().getName();
+              .getDeliverableCategory().getName();
           }
         }
         if (delivStatus.equals("")) {
