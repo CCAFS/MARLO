@@ -435,10 +435,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
             showCompilance = true;
           }
 
-          if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableType() != null) {
-            delivType = deliverable.getDeliverableInfo().getDeliverableType().getDeliverableType().getName();
+          if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableCategory() != null) {
+            delivType = deliverable.getDeliverableInfo().getDeliverableType().getDeliverableCategory().getName();
             // FAIR and deliverable publication
-            if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableType().getId() == 49) {
+            if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableCategory().getId() == 49) {
               showFAIR = true;
               showPublication = true;
             }
@@ -1171,9 +1171,9 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
           }
 
 
-          if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableCategory() != null) {
             // FAIR and deliverable publication
-            if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableType().getId() == 49) {
+            if (deliverable.getDeliverableInfo().getDeliverableType().getDeliverableCategory().getId() == 49) {
               showFAIR = true;
               showPublication = true;
             }
