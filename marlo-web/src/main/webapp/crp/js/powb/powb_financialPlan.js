@@ -11,6 +11,13 @@ $(document).ready(function() {
   // Setting Percentage Inputs
   $('form input.percentageInput').percentageInput();
 
+  $('.percentageInput').on('keyup', function() {
+    // Expenditure Grand Total
+    var $expenditureGrandTotalLabel = $('span.label-expenditureTotal');
+    var expenditureTotal = getTotalExpenditureArea();
+    $expenditureGrandTotalLabel.text(setCurrencyFormat(expenditureTotal)).animateCss('flipInX');
+  });
+
   $('.currencyInput').on('keyup', function() {
     var type = $(this).classParam('type');
     var category = $(this).classParam('category');
@@ -33,18 +40,20 @@ $(document).ready(function() {
     $grandTotalLabel.text(setCurrencyFormat(grandTotal));
     $grandTotalLabel.animateCss('flipInX');
 
-  });
+    // Trigger Expenditure percentages
+    $('.percentageInput').trigger('keyup');
 
-  $('.percentageInput').on('keyup', function() {
-    var grandTotal = getGrandTotal();
-    var percentage = removePercentageFormat($(this).val() || "0");
-
-    console.log((grandTotal / 100) * percentage);
-  });
+  }).trigger('keyup');
 
 });
 
+/**
+ * Get total amount of expenditure area
+ * 
+ * @returns {number} total
+ */
 function getTotalExpenditureArea() {
+  var grandTotal = getGrandTotal();
   var total = 0;
   $('.percentageInput').each(function(i,e) {
     var percentage = removePercentageFormat($(e).val() || "0");
