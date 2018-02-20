@@ -554,15 +554,10 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
-  public DeliverablePartnership getDeliverablePartnership(long projectPeronID) {
-
-    // List<DeliverablePartnership> deliverablePartnerships = deliverableManager.getDeliverableById(deliverableID)
-    // .getDeliverablePartnerships().stream().filter(c -> c.isActive()
-    // && c.getProjectPartnerPerson().getId().longValue() == projectPeronID && c.getPartnerType().equals("Other"))
-    // .collect(Collectors.toList());
-
-    List<DeliverablePartnership> deliverablePartnerships = deliverablePartnershipManager
-      .findForDeliverableIdAndProjectPersonIdPartnerTypeOther(deliverableID, projectPeronID);
+  public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
+    List<DeliverablePartnership> deliverablePartnerships = deliverable.getOtherPartners().stream()
+      .filter(d -> d.getProjectPartnerPerson() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
+      .collect(Collectors.toList());
 
     for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
       return deliverablePartnership;
@@ -733,14 +728,13 @@ public class DeliverableAction extends BaseAction {
   }
 
   public List<ProjectPartner> getSelectedPartners() {
+
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
-    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
-      .getDeliverablePartnerships().stream()
-      .filter(c -> c.isActive() && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
+    for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
       .collect(Collectors.toList())) {
-      if (deliverablePartnership.getProjectPartner() != null && deliverablePartnership.getProjectPartner().isActive()) {
+      if (deliverablePartnership.getProjectPartner() != null) {
         deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
       }
 
@@ -753,13 +747,11 @@ public class DeliverableAction extends BaseAction {
 
   public List<Long> getSelectedPersons(long partnerID) {
 
-    List<ProjectPartnerPerson> deliverablePartnerPersons =
-      projectPartnerPersonManager.findAllForOtherPartnerTypeWithDeliverableIdAndPartnerId(deliverableID, partnerID);
 
-    for (DeliverablePartnership deliverablePartnership : deliverableManager.getDeliverableById(deliverableID)
-      .getDeliverablePartnerships().stream()
-      .filter(c -> c.isActive() && c.getProjectPartner().getId().longValue() == partnerID
-        && c.getPartnerType().equals("Other") && c.getPhase().equals(this.getActualPhase()))
+    List<ProjectPartnerPerson> deliverablePartnerPersons = new ArrayList<ProjectPartnerPerson>();
+
+    for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
+      .filter(o -> o.getProjectPartner() != null && o.getProjectPartner().getId() == partnerID)
       .collect(Collectors.toList())) {
       if (deliverablePartnership.getProjectPartnerPerson() != null
         && deliverablePartnership.getProjectPartnerPerson().isActive()
@@ -812,11 +804,12 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+          .collect(Collectors.toList());
 
 
       return list;
@@ -833,8 +826,12 @@ public class DeliverableAction extends BaseAction {
       List<DeliverablePartnership> list = new ArrayList<>();
       for (DeliverablePartnership partnership : deliverable.getOtherPartners()) {
         if (partnership.getId() == null || partnership.getId() == -1) {
-          ProjectPartnerPerson partnerPersonDb =
-            projectPartnerPersonManager.getProjectPartnerPersonById(partnership.getProjectPartnerPerson().getId());
+          ProjectPartnerPerson partnerPersonDb = new ProjectPartnerPerson();
+          if (partnership.getProjectPartnerPerson() != null && partnership.getProjectPartnerPerson().getId() != null) {
+            partnerPersonDb =
+              projectPartnerPersonManager.getProjectPartnerPersonById(partnership.getProjectPartnerPerson().getId());
+          }
+
           ProjectPartner partnerDb =
             projectPartnerManager.getProjectPartnerById(partnership.getProjectPartner().getId());
           DeliverablePartnership partnershipOth = new DeliverablePartnership();
@@ -977,7 +974,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1379,10 +1376,10 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll()
-            .stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager
+            .findAll().stream().filter(dt -> dt.getDeliverableType() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableType() == null && dt.getCrp() != null
@@ -1627,7 +1624,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
