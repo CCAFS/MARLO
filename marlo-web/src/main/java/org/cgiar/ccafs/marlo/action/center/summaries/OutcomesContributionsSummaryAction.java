@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectOutput;
@@ -350,8 +351,15 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         List<CenterProject> projects = new ArrayList<>();
         // CenterProject Outputs
         String projectOutputs = "";
-        for (CenterOutput researchOutput : researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive())
-          .collect(Collectors.toList())) {
+
+        List<CenterOutput> outputs = new ArrayList<>();
+        List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+          researchOutcome.getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+        for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+          outputs.add(centerOutputsOutcome.getCenterOutput());
+        }
+
+        for (CenterOutput researchOutput : outputs) {
           for (CenterProjectOutput projectOutput : researchOutput.getProjectOutputs().stream()
             .filter(po -> po.isActive()).collect(Collectors.toList())) {
             if (projectOutputs.isEmpty()) {

@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named

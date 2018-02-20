@@ -377,9 +377,9 @@
                   [#assign personsIndex =  personsIndex + 1 /]
                 [/#list]
               [#else]
-               <div style="display:none">
-                [@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=0 checked=true isResponsable=false /]
-               </div>
+                [#-- Person Fake --]
+                <div style="display:none">[@deliverablePerson element={} name="${dp_name}" projectPartner=projectPartner index=personsIndex checked=true isResponsable=false /]</div>
+                [#assign personsIndex =  personsIndex + 1 /]
               [/#if]
               
             [/#if]
