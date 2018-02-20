@@ -2,7 +2,7 @@ $(document).ready(init);
 
 function init() {
 
-  setDatatables();
+  // setDatatables();
 
   /* Declaring Events */
   attachEvents();
