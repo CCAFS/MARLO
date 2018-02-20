@@ -4267,10 +4267,10 @@ li.fileUploaded span {
 }
 
 .icon-uncheck{
-  background: url('../../global/images/sprite-icons-activities.png') 0 -85px no-repeat;
+  background: url('../../global/images/sprite-icons-activities.png') 0 -85px;
 }
 .icon-check{
-  background: url('../../global/images/sprite-icons-activities.png') 0 -150px no-repeat;
+  background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
 /*** Project next users  ***/
