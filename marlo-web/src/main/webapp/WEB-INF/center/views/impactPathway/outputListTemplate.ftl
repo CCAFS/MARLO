@@ -37,7 +37,7 @@
             [#if output.centerOutputsOutcomes?has_content]
               [#list output.centerOutputsOutcomes as outcome]
                 [#if outcome.active]
-                  <span>OC${(outcome.centerOutcome.id)!''}</span>
+                  <span title="${(outcome.centerOutcome.description)!''}">[ OC${(outcome.centerOutcome.id)!''} ]</span>
                 [/#if]
               [/#list]
             [#else]
