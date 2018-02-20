@@ -16,8 +16,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrossCuttingDimensionsDAO;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+import org.cgiar.ccafs.marlo.data.dao.PowbCrossCuttingDimensionDAO;
+import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 import java.util.List;
@@ -29,31 +29,46 @@ import javax.inject.Named;
 import org.hibernate.SessionFactory;
 
 @Named
-public class CrossCuttingDimensionsMySQLDAO extends AbstractMarloDAO<CrossCuttingDimensions, Long>
-  implements CrossCuttingDimensionsDAO {
+public class PowbCrossCuttingDimensionMySQLDAO extends AbstractMarloDAO<PowbCrossCuttingDimension, Long>
+  implements PowbCrossCuttingDimensionDAO {
+
 
   @Inject
-  public CrossCuttingDimensionsMySQLDAO(SessionFactory sessionFactory) {
+  public PowbCrossCuttingDimensionMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public CrossCuttingDimensions find(Long id) {
-    // TODO Auto-generated method stub
-    return super.find(CrossCuttingDimensions.class, id);
+  public void deletePowbCrossCuttingDimension(long powbCrossCuttingDimensionId) {
+    PowbCrossCuttingDimension powbCrossCuttingDimension = this.find(powbCrossCuttingDimensionId);
+    powbCrossCuttingDimension.setActive(false);
+    this.save(powbCrossCuttingDimension);
   }
 
   @Override
-  public CrossCuttingDimensions findCrossCutting(Long liaisonInstitutionId, Long phaseId) {
-    // TODO Auto-generated method stub
-    String query = "from " + CrossCuttingDimensions.class.getName() + " where is_active=1 and id_phase= " + phaseId
-      + " and liaison_institution_id= " + liaisonInstitutionId;
-    List<CrossCuttingDimensions> list = super.findAll(query);
+  public boolean existPowbCrossCuttingDimension(long powbCrossCuttingDimensionID) {
+    PowbCrossCuttingDimension powbCrossCuttingDimension = this.find(powbCrossCuttingDimensionID);
+    if (powbCrossCuttingDimension == null) {
+      return false;
+    }
+    return true;
+
+  }
+
+  @Override
+  public PowbCrossCuttingDimension find(long id) {
+    return super.find(PowbCrossCuttingDimension.class, id);
+
+  }
+
+  @Override
+  public List<PowbCrossCuttingDimension> findAll() {
+    String query = "from " + PowbCrossCuttingDimension.class.getName() + " where is_active=1";
+    List<PowbCrossCuttingDimension> list = super.findAll(query);
     if (list.size() > 0) {
-      return list.get(0);
+      return list;
     }
     return null;
-
 
   }
 
@@ -132,14 +147,16 @@ public class CrossCuttingDimensionsMySQLDAO extends AbstractMarloDAO<CrossCuttin
   }
 
   @Override
-  public CrossCuttingDimensions save(CrossCuttingDimensions crossCutting) {
-    if (crossCutting.getId() == null) {
-      super.saveEntity(crossCutting);
+  public PowbCrossCuttingDimension save(PowbCrossCuttingDimension powbCrossCuttingDimension) {
+    if (powbCrossCuttingDimension.getId() == null) {
+      super.saveEntity(powbCrossCuttingDimension);
     } else {
-      crossCutting = super.update(crossCutting);
+      powbCrossCuttingDimension = super.update(powbCrossCuttingDimension);
     }
 
-    return crossCutting;
+
+    return powbCrossCuttingDimension;
   }
+
 
 }

@@ -12,37 +12,66 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
-
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import org.cgiar.ccafs.marlo.data.dao.CrossCuttingDimensionsDAO;
-import org.cgiar.ccafs.marlo.data.manager.CrossCuttingDimensionManager;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+
+import org.cgiar.ccafs.marlo.data.dao.PowbCrossCuttingDimensionDAO;
+import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
+import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+/**
+ * @author Christian Garcia
+ */
 @Named
-public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionManager {
+public class PowbCrossCuttingDimensionManagerImpl implements PowbCrossCuttingDimensionManager {
 
-  private CrossCuttingDimensionsDAO crossCuttingDAO;
+
+  private PowbCrossCuttingDimensionDAO powbCrossCuttingDimensionDAO;
+  // Managers
+
 
   @Inject
-  public CrossCuttingDimensionManagerImpl(CrossCuttingDimensionsDAO crossCuttingDAO) {
-    this.crossCuttingDAO = crossCuttingDAO;
+  public PowbCrossCuttingDimensionManagerImpl(PowbCrossCuttingDimensionDAO powbCrossCuttingDimensionDAO) {
+    this.powbCrossCuttingDimensionDAO = powbCrossCuttingDimensionDAO;
+
+
   }
 
   @Override
-  public CrossCuttingDimensions loadCrossCuttingDimensionByPMU(Long liaisonInstitution) {
-    return null;
+  public void deletePowbCrossCuttingDimension(long powbCrossCuttingDimensionId) {
+
+    powbCrossCuttingDimensionDAO.deletePowbCrossCuttingDimension(powbCrossCuttingDimensionId);
+  }
+
+  @Override
+  public boolean existPowbCrossCuttingDimension(long powbCrossCuttingDimensionID) {
+
+    return powbCrossCuttingDimensionDAO.existPowbCrossCuttingDimension(powbCrossCuttingDimensionID);
+  }
+
+  @Override
+  public List<PowbCrossCuttingDimension> findAll() {
+
+    return powbCrossCuttingDimensionDAO.findAll();
+
+  }
+
+  @Override
+  public PowbCrossCuttingDimension getPowbCrossCuttingDimensionById(long powbCrossCuttingDimensionID) {
+
+    return powbCrossCuttingDimensionDAO.find(powbCrossCuttingDimensionID);
   }
 
   @Override
   public CrossCuttingDimensionTableDTO loadTableByLiaisonAndPhase(Long liaisonInstitution, Long phaseId) {
 
-    CrossCuttingDimensionTableDTO tableC = crossCuttingDAO.getTableC(liaisonInstitution, phaseId);
+    CrossCuttingDimensionTableDTO tableC = powbCrossCuttingDimensionDAO.getTableC(liaisonInstitution, phaseId);
 
     // get the values of participation of every dimension
 
@@ -134,10 +163,10 @@ public class CrossCuttingDimensionManagerImpl implements CrossCuttingDimensionMa
   }
 
   @Override
-  public CrossCuttingDimensions saveCrossCuttingDimensions(CrossCuttingDimensions crossCuttingDimensions) {
+  public PowbCrossCuttingDimension savePowbCrossCuttingDimension(PowbCrossCuttingDimension powbCrossCuttingDimension) {
 
-    return crossCuttingDAO.save(crossCuttingDimensions);
-
+    return powbCrossCuttingDimensionDAO.save(powbCrossCuttingDimension);
   }
+
 
 }

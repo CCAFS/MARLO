@@ -15,12 +15,12 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
-import org.cgiar.ccafs.marlo.data.manager.CrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
+import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -69,7 +69,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private List<PowbSynthesis> powbSynthesisList;
 
   // Managers
-  private CrossCuttingDimensionManager crossCuttingManager;
+  private PowbCrossCuttingDimensionManager crossCuttingManager;
 
   // RTF bytes
   private byte[] bytesRTF;
@@ -78,7 +78,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   @Inject
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    CrossCuttingDimensionManager crossCuttingManager) {
+    PowbCrossCuttingDimensionManager crossCuttingManager) {
     super(config, crpManager, phaseManager);
     this.crossCuttingManager = crossCuttingManager;
   }
@@ -349,7 +349,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         if (institution != null && phase != null) {
           if (phase.equals(this.getSelectedPhase())) {
             if (institution.getId() == PMU.getId()) {
-              CrossCuttingDimensions crossCutting = powbSynthesis.getCrossCutting();
+              PowbCrossCuttingDimension crossCutting = powbSynthesis.getPowbCrossCuttingDimension();
               crossCuttingGenderDescription = crossCutting.getSummarize();
               crossCuttingOpenDataDescription = crossCutting.getAssets();
             }
@@ -456,11 +456,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
 
   private TypedTableModel getTableAContentTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment", "meansVerifications"},
-      new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
-        String.class},
-      0);
+    TypedTableModel model =
+      new TypedTableModel(
+        new String[] {"FP", "subIDO", "outcomes", "milestone", "w1w2", "w3Bilateral", "assessment",
+          "meansVerifications"},
+        new Class[] {String.class, String.class, String.class, String.class, Double.class, Double.class, String.class,
+          String.class},
+        0);
     for (int i = 0; i < 5; i++) {
       model.addRow(new Object[] {"Text", "Text", "Text", "Text", 0, 0, "Text", "Text"});
     }
