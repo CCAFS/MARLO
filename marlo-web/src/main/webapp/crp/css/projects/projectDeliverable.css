@@ -129,6 +129,10 @@ span#notDefined {
   background-position-y: -23px;
 }
 
+.icon-uncheck, .icon-check{
+  background-repeat: no-repeat
+}
+
 .colors {
   border: 1px dashed #d5d5d5;
   padding: 5px;
