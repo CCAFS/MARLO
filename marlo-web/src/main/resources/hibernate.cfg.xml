@@ -223,7 +223,7 @@
 		<mapping resource="xmls/PowbToc.hbm.xml" />
 		<mapping resource="xmls/PowbEvidencePlannedStudies.hbm.xml" />
 		<mapping resource="xmls/PowbEvidences.hbm.xml" />
-		<mapping resource="xmls/CrossCuttingDimensions.hbm.xml" />
+		<mapping resource="xmls/PowbCrossCuttingDimensions.hbm.xml" />
 		<mapping resource="xmls/PowbExpectedCrpProgress.hbm.xml"/>
     <mapping resource="xmls/PowbCrpStaffing.hbm.xml" />
     <mapping resource="xmls/PowbCrpStaffingCategories.hbm.xml" />

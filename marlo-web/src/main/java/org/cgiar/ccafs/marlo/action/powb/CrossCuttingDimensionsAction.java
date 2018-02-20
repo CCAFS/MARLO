@@ -19,18 +19,18 @@ package org.cgiar.ccafs.marlo.action.powb;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
-import org.cgiar.ccafs.marlo.data.manager.CrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensions;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -70,15 +70,14 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private CrpProgramManager crpProgramManager;
   private PowbSynthesisManager powbSynthesisManager;
-  private CrossCuttingDimensionManager crossCuttingManager;
   private CrossCuttingValidator validator;
+  private PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager;
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
   private UserManager userManager;
   private LiaisonInstitution liaisonInstitution;
   private String transaction;
-  private CrossCuttingDimensions crossCutting;
   private Long crossCuttingId;
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
@@ -92,7 +91,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, CrossCuttingValidator validator,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    CrossCuttingDimensionManager crossCuttingManager) {
+    PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -100,8 +99,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.userManager = userManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.crossCuttingManager = crossCuttingManager;
     this.validator = validator;
+    this.powbCrossCuttingDimensionManager = powbCrossCuttingDimensionManager;
 
   }
 
@@ -137,23 +136,11 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
 
   private Path getAutoSaveFilePath() {
-    /**
-     * String composedClassName = powbSynthesis.getClass().getSimpleName();
-     * String actionFile = this.getActionName().replace("/", "_");
-     * String autoSaveFile =
-     * powbSynthesis.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_powb_" + actionFile + ".json";
-     * return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-     */
-
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = powbSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getDescription()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
-
-  public CrossCuttingDimensions getCrossCutting() {
-    return crossCutting;
   }
 
   public Long getCrossCuttingId() {
@@ -366,17 +353,17 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       } else {
         this.setDraft(false);
         // Check if CrossCutting relation is null -create it
-        if (powbSynthesis.getCrossCutting() == null) {
+        if (powbSynthesis.getPowbCrossCuttingDimension() == null) {
 
-          CrossCuttingDimensions crossCutting = new CrossCuttingDimensions();
+          PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
           crossCutting.setActive(true);
           crossCutting.setActiveSince(new Date());
-          crossCutting.setCreatedBy(this.getCurrentUser().getId());
-          crossCutting.setModifiedBy(this.getCurrentUser().getId());
+          crossCutting.setCreatedBy(this.getCurrentUser());
+          crossCutting.setModifiedBy(this.getCurrentUser());
           crossCutting.setModificationJustification("");
 
           // create one to one relation
-          powbSynthesis.setCrossCutting(crossCutting);
+          powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
           crossCutting.setPowbSynthesis(powbSynthesis);
 
           // save the changes
@@ -399,7 +386,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.getAcronym().equals("PMU")).collect(Collectors.toList()));
 
 
-    this.tableC = crossCuttingManager.loadTableByLiaisonAndPhase(thePMU.getId(), phase.getId());
+    this.tableC = powbCrossCuttingDimensionManager.loadTableByLiaisonAndPhase(thePMU.getId(), phase.getId());
 
 
     // Base Permission
@@ -418,14 +405,14 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      CrossCuttingDimensions crossCuttingDB =
-        powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getCrossCutting();
+      PowbCrossCuttingDimension crossCuttingDB =
+        powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getPowbCrossCuttingDimension();
 
-      crossCuttingDB.setSummarize(powbSynthesis.getCrossCutting().getSummarize());
-      crossCuttingDB.setAssets(powbSynthesis.getCrossCutting().getAssets());
+      crossCuttingDB.setSummarize(powbSynthesis.getPowbCrossCuttingDimension().getSummarize());
+      crossCuttingDB.setAssets(powbSynthesis.getPowbCrossCuttingDimension().getAssets());
 
 
-      crossCuttingDB = crossCuttingManager.saveCrossCuttingDimensions(crossCuttingDB);
+      crossCuttingDB = powbCrossCuttingDimensionManager.savePowbCrossCuttingDimension(crossCuttingDB);
 
       List<String> relationsName = new ArrayList<>();
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -461,11 +448,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     }
 
 
-  }
-
-
-  public void setCrossCutting(CrossCuttingDimensions crossCutting) {
-    this.crossCutting = crossCutting;
   }
 
 
@@ -519,10 +501,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
-      validator.validate(this, powbSynthesis, powbSynthesis.getCrossCutting().getSummarize(),
-        powbSynthesis.getCrossCutting().getAssets(), true);
-
+      validator.validate(this, powbSynthesis, true);
     }
   }
 
