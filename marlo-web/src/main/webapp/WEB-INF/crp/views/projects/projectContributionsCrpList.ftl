@@ -44,7 +44,7 @@
       [#-- Project Section Content --]
       <div class="col-md-9">
       [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
+        [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
