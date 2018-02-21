@@ -54,7 +54,7 @@
           
             [#-- Modal Large --]
             <button type="button" class="pull-right btn btn-default btn-xs" data-toggle="modal" data-target="#tableA-bigger"> 
-              <span class="glyphicon glyphicon-fullscreen"></span>
+              <span class="glyphicon glyphicon-fullscreen"></span> See Full Table A
             </button>
             <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
               <div class="modal-dialog modal-lg bigger" role="document">
@@ -100,8 +100,8 @@
       <thead>
         <tr>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.fp" /]</th>
-          <th rowspan="2" >[@s.text name="expectedProgress.tableA.subIDO" /]</th>
-          <th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>
+          [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.subIDO" /]</th>[/#if]
+          [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
           <th rowspan="1" colspan="2" class="text-center"> Budget </th> 
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
@@ -125,12 +125,12 @@
                 [#-- Flagship --]
                 [#if isFlagshipRow]<th rowspan="${milestoneSize}" class="milestoneSize-${milestoneSize}" style="background:${(fp.color)!'#fff'}"><span class="programTag" style="border-color:${(fp.color)!'#fff'}">${fp.acronym}</span></th>[/#if]
                 [#-- Sub-IDO --]
-                [#if isOutcomeRow]<td rowspan="${outcomesSize}"> 
+                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}"> 
                   <ul>[#list outcome.subIdos as subIdo]<li> [#if subIdo.srfSubIdo.srfIdo.isCrossCutting] <strong title="Cross-Cutting IDO">CC</strong> [/#if]${subIdo.srfSubIdo.description}</li>[/#list]</ul>
                 </td>
                 [/#if]
                 [#-- Outcomes --]
-                [#if isOutcomeRow]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
+                [#if isOutcomeRow && !allowPopups]<td rowspan="${outcomesSize}" class="milestonesSize-${outcomesSize}"> ${outcome.composedName}</td>[/#if]
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- W1W2 --]

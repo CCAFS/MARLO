@@ -39,14 +39,25 @@
         <h3 class="headTitle">[@s.text name="collaborationIntegration.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h3>
         <div class="borderBox">
           
-          [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
+          [#-- 2.3.1  New Key External Partnerships  --] 
           <div class="form-group">
-          <input type="hidden" name="powbSynthesis.financialPlan.id" value="${(powbSynthesis.financialPlan.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.financialPlanIssues" i18nkey="powbSynthesis.collaborationIntegration.highlight" help="powbSynthesis.collaborationIntegration.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.partnerships" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
-          <br />
           
+          [#-- 2.3.2  New Contribution to and from Platforms --] 
+          <div class="form-group">
+            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.platformsContributions" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+          </div>
           
+          [#-- 2.3.3  New Cross-CRP Interactions --] 
+          <div class="form-group">
+            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.crpInteractions" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+          </div>
+          
+          [#-- 2.3.4  Expected Efforts on Country Coordination --] 
+          <div class="form-group">
+            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.expectedEfforts" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+          </div>
           
         </div>
         
