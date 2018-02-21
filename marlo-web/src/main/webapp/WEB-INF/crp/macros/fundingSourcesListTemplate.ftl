@@ -45,6 +45,10 @@
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]
+            [#-- Funding Source Dates --]
+            [#if ((project.fundingSourceInfo.startDate??)!false) && ((project.fundingSourceInfo.startDate??)!false) ]
+              <p><small class="text-gray">(${(project.fundingSourceInfo.startDate)!} - [#if (project.fundingSourceInfo.extensionDate??)!false] ${(project.fundingSourceInfo.extensionDate)!} [#else] ${(project.fundingSourceInfo.endDate)!}[/#if])</small></p>
+            [/#if]
           </td>
           [#-- Project Budget Type --]
           <td class=""> 
@@ -164,6 +168,10 @@
               <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
               </a>
+            [/#if]
+            [#-- Funding Source Dates --]
+            [#if ((project.fundingSourceInfo.startDate??)!false) && ((project.fundingSourceInfo.startDate??)!false) ]
+              <p><small class="text-gray">(${(project.fundingSourceInfo.startDate)!} - [#if (project.fundingSourceInfo.extensionDate??)!false] ${(project.fundingSourceInfo.extensionDate)!} [#else] ${(project.fundingSourceInfo.endDate)!}[/#if])</small></p>
             [/#if]
           </td>
           [#-- Project Budget Type --]
