@@ -545,28 +545,32 @@ public class CrossCuttingDimensionsAction extends BaseAction {
                 && deliverable.getDeliverableInfo().getCrossCuttingYouth()) {
                 if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null
                   && deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() == 1) {
-                  iGenderSignificant++;
+                  iYouthSignificatn++;
                 } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null
                   && deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() == 2) {
-                  iGenderPrincipal++;
+                  iYouthPrincipal++;
                 }
               }
 
               // CapDev
-              if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null
-                && deliverable.getDeliverableInfo().getCrossCuttingGender()) {
-                if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
-                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 1) {
-                  iGenderSignificant++;
-                } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
-                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 2) {
-                  iGenderPrincipal++;
+              if (deliverable.getDeliverableInfo().getCrossCuttingCapacity() != null
+                && deliverable.getDeliverableInfo().getCrossCuttingCapacity()) {
+                if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() == 1) {
+                  iCapDevSignificant++;
+                } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity() == 2) {
+                  iCapDevPrincipal++;
                 }
               }
             }
           }
         }
       }
+
+      int iDeliverableCount = deliverablesTotal.size();
+
+
     }
 
   }
