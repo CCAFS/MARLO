@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -47,6 +48,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final CrpMilestoneManager crpMilestoneManager;
 
 
   // GlobalUnit Manager
@@ -54,11 +56,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager) {
 
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpManager = crpManager;
+    this.crpMilestoneManager = crpMilestoneManager;
   }
 
   private Path getAutoSaveFilePath(ProjectOutcome project, long crpID, BaseAction action) {
@@ -118,7 +121,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
     int counter = i + 1;
     params.add(String.valueOf(counter));
     if (projectMilestone != null) {
-      if (projectMilestone.getYear() == action.getCurrentCycleYear()) {
+      projectMilestone
+        .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(projectMilestone.getCrpMilestone().getId()));
+      if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {

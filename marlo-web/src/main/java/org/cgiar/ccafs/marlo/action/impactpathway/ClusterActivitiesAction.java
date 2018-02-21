@@ -755,6 +755,9 @@ public class ClusterActivitiesAction extends BaseAction {
       /*
        * Removing outcomes
        */
+      if (clusterofActivities == null) {
+        clusterofActivities = new ArrayList<>();
+      }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       for (CrpClusterOfActivity crpClusterOfActivity : selectedProgram.getCrpClusterOfActivities().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
@@ -792,6 +795,7 @@ public class ClusterActivitiesAction extends BaseAction {
         db.setLeaders(crpClusterOfActivity.getLeaders());
 
         db = crpClusterOfActivityManager.saveCrpClusterOfActivity(db);
+        db = crpClusterOfActivityManager.getCrpClusterOfActivityById(db.getId());
 
         /*
          * Check leaders

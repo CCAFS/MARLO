@@ -321,6 +321,7 @@
               [#if editable]
                 [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
               [#else]
+                <p class="input">${(fundingSource.fundingSourceInfo.directDonor.composedName)!}</p>
                 <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
               [/#if]
             <span class="text-warning metadataSuggested"></span> 
@@ -335,6 +336,7 @@
               [#if editable]
                 [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
               [#else]
+                <p class="input">${(fundingSource.fundingSourceInfo.originalDonor.composedName)!}</p>
                 <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
               [/#if]
             <span class="text-warning metadataSuggested"></span> 
