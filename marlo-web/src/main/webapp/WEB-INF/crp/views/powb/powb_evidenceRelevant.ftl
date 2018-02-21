@@ -91,6 +91,8 @@
       </tr>
     </thead>
     <tbody>
+    [#-- Loading --]
+    [#-- <div class="loading clustersBlock" style="display:none"></div> --]
     [#if popUpProjects?has_content]
       [#list popUpProjects as popUp]
         <tr>
@@ -119,8 +121,8 @@
             [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=100 /]
           </td>
           [#-- Checkbox --]
-          <td class="checkbox text-center"> 
-            [@customForm.checkBoxFlat id="1" name="checkbox" /]
+          <td class="plannedStudiesCheckbox text-center">
+            [@customForm.checkBoxFlat id="PS-${(popUp.project.id)!''}" name="${(popUp.topicStudy)!''}" value="${(popUp.project.id)!''}" checked=false /]
           </td>
         </tr>
       [/#list]
