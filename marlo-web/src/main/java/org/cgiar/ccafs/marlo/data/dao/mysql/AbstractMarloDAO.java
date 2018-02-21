@@ -84,6 +84,8 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
     this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure).executeUpdate();
     Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+    query.setFlushMode(FlushMode.COMMIT);
+
     List<Map<String, Object>> result = query.list();
     return result;
 
@@ -113,6 +115,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   public void executeUpdateQuery(String sqlQuery) {
 
     Query query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+    query.setFlushMode(FlushMode.COMMIT);
     query.executeUpdate();
   }
 
@@ -134,6 +137,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   }
 
   protected List<T> findAll(Query hibernateQuery) {
+    hibernateQuery.setFlushMode(FlushMode.COMMIT);
     @SuppressWarnings("unchecked")
     List<T> list = hibernateQuery.list();
     return list;
@@ -153,6 +157,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   protected List<T> findAll(String hibernateQuery) {
     Query query = sessionFactory.getCurrentSession().createQuery(hibernateQuery);
+    query.setFlushMode(FlushMode.COMMIT);
     return this.findAll(query);
   }
 
@@ -164,6 +169,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
     Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
     query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+    query.setFlushMode(FlushMode.COMMIT);
     List<Map<String, Object>> result = query.list();
 
     return result;
@@ -172,6 +178,8 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   protected List<T> findEveryone(Class<T> clazz) {
     Query query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName());
+    query.setFlushMode(FlushMode.COMMIT);
+
     @SuppressWarnings("unchecked")
     List<T> list = query.list();
     return list;
