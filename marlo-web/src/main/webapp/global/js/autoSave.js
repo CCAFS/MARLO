@@ -31,7 +31,7 @@ $(window).on('keydown', function(e) {
 });
 
 function autoSave() {
-  if(isChanged()) {
+  if(isChanged() && editable) {
     $.ajax({
         dataType: 'json',
         method: 'POST',
@@ -158,7 +158,7 @@ function validateThisSection() {
     validateService = "/validateProject.do";
   }
 
-  //validate CapDev
+  // validate CapDev
   if(isCapDevSection()) {
     sectionData.capdevID = $('input[name="capdevID"]').val();
     sectionData.deliverableID = $('input[name="deliverableID"]').val();
