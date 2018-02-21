@@ -14,7 +14,7 @@
     'items': [
     { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': (flagship || PMU) },
     { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': (flagship || PMU) },
-    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': false },
+    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': (flagship || PMU) && config.debug },
     { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': (flagship || PMU) }
     ]
   },

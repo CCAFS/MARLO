@@ -2,7 +2,7 @@
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "blueimp-file-upload" ] /]
-[#assign customJS = [ "${baseUrlMedia}/js/powb/powb_financialPlan.js" ] /]
+[#assign customJS = [ "${baseUrlMedia}/js/powb/powb_collaborationIntegration.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/powb/powbGlobal.css" ] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "collaborationIntegration" /]
@@ -42,7 +42,7 @@
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
           <input type="hidden" name="powbSynthesis.financialPlan.id" value="${(powbSynthesis.financialPlan.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.financialPlanIssues" i18nkey="powbSynthesis.collaborationIntegration.highlight" help="powbSynthesis.collaborationIntegration.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.financialPlanIssues" i18nkey="powbSynthesis.collaborationIntegration.highlight" help="powbSynthesis.collaborationIntegration.highlight.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           <br />
           
@@ -51,9 +51,7 @@
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#if PMU]
-          [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
-        [/#if]
+        [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
         
       [/@s.form] 
     </div> 
