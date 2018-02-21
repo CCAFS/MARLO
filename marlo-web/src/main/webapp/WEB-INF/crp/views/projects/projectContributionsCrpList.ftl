@@ -10,7 +10,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectContributionsCrpList.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
-
+[#assign isListSection = true /]
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
   {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""}
