@@ -2686,8 +2686,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         title = projectExpectedStudy.getTopicStudy();
         expectedStudiesType = projectExpectedStudy.getTypeName();
         expectedStudiesScope = projectExpectedStudy.getScopeName();
-        expectedStudiesSubIdo = projectExpectedStudy.getSrfSubIdo().getDescription();
-        expectedStudiesSRF = projectExpectedStudy.getSrfSloIndicator().getTitle();
+        if (projectExpectedStudy.getSrfSubIdo() != null) {
+          expectedStudiesSubIdo = projectExpectedStudy.getSrfSubIdo().getDescription();
+        }
+        if (projectExpectedStudy.getSrfSloIndicator() != null) {
+          expectedStudiesSRF = projectExpectedStudy.getSrfSloIndicator().getTitle();
+        }
         expectedStudiesComments = projectExpectedStudy.getComments();
         List<ExpectedStudyProject> expectedStudyProjectList =
           projectExpectedStudy.getExpectedStudyProjects().stream().filter(sp -> sp.isActive())

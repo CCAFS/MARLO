@@ -1,0 +1,3 @@
+Update custom_parameters set `value` = '2018' where parameter_id = (select id from parameters where `key` = 'center_crp_phase_year' and global_unit_type_id = 2);
+Update custom_parameters set `value` = '2018' where parameter_id = (select id from parameters where `key` = 'center_year' and global_unit_type_id = 2);
+Update custom_parameters set `value` = 'Planning' where parameter_id = (select id from parameters where `key` = 'center_crp_phase_cycle' and global_unit_type_id = 2);
