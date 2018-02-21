@@ -387,7 +387,6 @@
           </div>
         [#else]
           <div class="form-group partnerName chosen">
-            <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].projectPartner.id" value="${(projectPartner.id)!}">
             <strong class="text-muted">${(projectPartner.composedName)!}</strong>
             <div class="partnerPersons">
             [#if (projectPartner.id??)!false]
@@ -395,12 +394,16 @@
               [#list action.getPersons(projectPartner.id) as person]
                 [#if selectedPersons?seq_contains(person.id)]
                   [#local deliverablePartnerShip =(action.getDeliverablePartnership((person.id)!-1))!{} /]
-                   <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].projectPartnerPerson.id" value="${(person.id)!}">
+                  [#local partnerShipIndex = "${dp_name}[${personsIndex}]"/]
+                  <input class="element" type="hidden" name="${partnerShipIndex}.id" value="${(deliverablePartnerShip.id)!}">
+                  <input class="element" type="hidden" name="${partnerShipIndex}.projectPartner.id" value="${(projectPartner.id)!}">
+                  <input class="element" type="hidden" name="${partnerShipIndex}.projectPartnerPerson.id" value="${(person.id)!}">
                   <p class="checked">${person.composedCompleteName}</p>
-                  [#if (deliverablePartnerShip.partnerDivision??) && (deliverablePartnerShip.partnerDivision.id??) &&(deliverablePartnerShip.partnerDivision.id != -1)]
-                    <input class="element" type="hidden" name="${dp_name}[${projectPartner_index}].partnerDivision.id" value="${(deliverablePartnerShip.partnerDivision.id)!}">
-                   <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(deliverablePartnerShip.partnerDivision.name)!}</p>
+                  [#if (deliverablePartnerShip.partnerDivision??) && (deliverablePartnerShip.partnerDivision.id??) && (deliverablePartnerShip.partnerDivision.id != -1)]
+                    <input class="element" type="hidden" name="${partnerShipIndex}.partnerDivision.id" value="${(deliverablePartnerShip.partnerDivision.id)!}">
+                    <p><strong>[@s.text name="projectCofunded.division" /]:</strong> ${(deliverablePartnerShip.partnerDivision.name)!}</p>
                   [/#if]
+                  [#assign personsIndex =  personsIndex + 1 /]
                 [/#if]
               [/#list]
             [/#if]
