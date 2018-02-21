@@ -31,7 +31,7 @@ $(window).on('keydown', function(e) {
 });
 
 function autoSave() {
-  if(isChanged()) {
+  if(isChanged() && editable) {
     $.ajax({
         dataType: 'json',
         method: 'POST',
