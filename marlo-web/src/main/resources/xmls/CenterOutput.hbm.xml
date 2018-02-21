@@ -31,19 +31,15 @@
 			<column name="title" length="65535" not-null="false" />
 		</property>
 		<property name="dateAdded" type="timestamp">
-			<column name="date_added" length="19" not-null="true" />
+			<column name="date_added" length="19"  />
 		</property>
 		<property name="shortName" type="string">
       <column name="short_name" />
-    </property>
-		<many-to-one name="researchOutcome"
-			class="org.cgiar.ccafs.marlo.data.model.CenterOutcome" fetch="select">
-			<column name="research_outcome_id" not-null="false" />
-		</many-to-one>		
+    </property>	
 		<set name="researchOutputsNextUsers" table="center_outputs_next_users"
 			inverse="true" lazy="true" fetch="select">
 			<key>
-				<column name="research_output_id" not-null="true" />
+				<column name="research_output_id" />
 			</key>
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser" />
@@ -64,5 +60,17 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.CenterProjectOutput" />
     </set>
+    <set name="centerOutputsOutcomes" table="center_outputs_outcomes"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="output_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome" />
+    </set>   
+    <many-to-one name="centerProgram" class="org.cgiar.ccafs.marlo.data.model.CenterProgram"
+      fetch="select">
+      <column name="center_program_id" not-null="false" />
+    </many-to-one> 
 	</class>
 </hibernate-mapping>

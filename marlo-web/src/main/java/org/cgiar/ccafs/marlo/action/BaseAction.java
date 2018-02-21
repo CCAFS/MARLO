@@ -68,6 +68,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverableOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterImpact;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterProject;
 import org.cgiar.ccafs.marlo.data.model.CenterProjectFundingSource;
@@ -851,9 +852,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()) && c.getPhase() != null)
           .collect(Collectors.toList());
         for (ProjectOutcome mProjectOutcome : projectOutcomes) {
-          crpProgramOutcomes.add(mProjectOutcome.getCrpProgramOutcome());
+          crpProgramOutcomes
+            .add(crpProgramOutcomeManager.getCrpProgramOutcomeById(mProjectOutcome.getCrpProgramOutcome().getId()));
         }
-        boolean canDelete = true;
+        boolean canDelete = false;
         List<Deliverable> projects =
           this.getDeliverableRelationsProject(id, className, projectOutcome.getProject().getId());
         if (!projects.isEmpty()) {
@@ -864,8 +866,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
             for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : clusterKeyOutputOutcomes) {
               if (!crpClusterKeyOutputOutcome.getCrpProgramOutcome().equals(projectOutcome.getCrpProgramOutcome())) {
-                if (!crpProgramOutcomes.contains(crpClusterKeyOutputOutcome.getCrpProgramOutcome())) {
-                  canDelete = false;
+                if (crpProgramOutcomes.contains(crpClusterKeyOutputOutcome.getCrpProgramOutcome())) {
+                  canDelete = true;
                 }
 
               }
@@ -874,6 +876,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
           return canDelete;
+        } else {
+          canDelete = true;
         }
       }
 
@@ -994,8 +998,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (clazz == CenterOutcome.class) {
         CenterOutcome outcome = outcomeService.getResearchOutcomeById(id);
 
-        List<CenterOutput> outputs = new ArrayList<>(
-          outcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+        List<CenterOutput> outputs = new ArrayList<>();
+        List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+          outcome.getCenterOutputsOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+        for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+          outputs.add(centerOutputsOutcome.getCenterOutput());
+        }
 
         if (outputs != null) {
           if (!outputs.isEmpty()) {
@@ -2181,7 +2189,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           deliverables.addAll(this.getDeliverableRelationsImpact(
             crpClusterKeyOutputOutcome.getCrpClusterKeyOutput().getId(), CrpClusterKeyOutput.class.getName()));
         }
-        List<Deliverable> deList = new ArrayList<>();
+        HashSet<Deliverable> deList = new HashSet<>();
 
         for (Deliverable deliverable : deliverables) {
           deliverable.setDeliverableInfo(deliverable.getDeliverableInfo(this.getActualPhase()));
@@ -5174,38 +5182,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return false if has missing fields.
    */
   public boolean validateCenterOutput(CenterProgram program) {
-
     if (program != null) {
-      List<CenterTopic> topics =
-        new ArrayList<>(program.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-      if (topics != null && !topics.isEmpty()) {
-        for (CenterTopic researchTopic : topics) {
-          List<CenterOutcome> outcomes = new ArrayList<>(
-            researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-          if (outcomes != null && !outcomes.isEmpty()) {
-            for (CenterOutcome researchOutcome : outcomes) {
-              researchOutcome.setMilestones(new ArrayList<>(researchOutcome.getResearchMilestones().stream()
-                .filter(rm -> rm.isActive()).collect(Collectors.toList())));
-
-              List<CenterOutput> outputs = new ArrayList<>(
-                researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-              if (outputs != null && !outputs.isEmpty()) {
-                for (CenterOutput researchOutput : outputs) {
-                  CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
-                  if (sectionStatus == null) {
-                    return false;
-                  } else {
-                    if (sectionStatus.getMissingFields().length() != 0) {
-                      return false;
-                    }
-                  }
-                }
-              } else {
-                return false;
-              }
-            }
-          } else {
+      List<CenterOutput> outputs =
+        new ArrayList<>(program.getCenterOutputs().stream().filter(op -> op.isActive()).collect(Collectors.toList()));
+      if (outputs != null && !outputs.isEmpty()) {
+        for (CenterOutput researchOutput : outputs) {
+          CenterSectionStatus sectionStatus = this.getCenterOutputStatus(researchOutput.getId());
+          if (sectionStatus == null) {
             return false;
+          } else {
+            if (sectionStatus.getMissingFields().length() != 0) {
+              return false;
+            }
           }
         }
       } else {
@@ -5214,7 +5202,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
-
     return true;
 
   }

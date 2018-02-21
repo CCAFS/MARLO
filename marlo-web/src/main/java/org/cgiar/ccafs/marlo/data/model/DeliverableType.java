@@ -35,7 +35,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   private Long id;
 
   @Expose
-  private DeliverableType deliverableType;
+  private DeliverableType deliverableCategory;
 
 
   @Expose
@@ -65,7 +65,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
     Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
-    this.deliverableType = deliverableType;
+    this.deliverableCategory = deliverableType;
     this.name = name;
     this.description = description;
     this.timeline = timeline;
@@ -89,8 +89,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   }
 
 
-  public DeliverableType getDeliverableType() {
-    return this.deliverableType;
+  public DeliverableType getDeliverableCategory() {
+    return this.deliverableCategory;
   }
 
   public Set<DeliverableType> getDeliverableTypes() {
@@ -160,8 +160,8 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-  public void setDeliverableType(DeliverableType deliverableType) {
-    this.deliverableType = deliverableType;
+  public void setDeliverableCategory(DeliverableType deliverableType) {
+    this.deliverableCategory = deliverableType;
   }
 
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
@@ -191,7 +191,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "DeliverableType [id=" + id + ", deliverableType=" + deliverableType + ", name=" + name + ", description="
+    return "DeliverableType [id=" + id + ", deliverableCategory=" + deliverableCategory + ", name=" + name + ", description="
       + description + ", timeline=" + timeline + ", fair=" + fair + ", crp=" + crp + "]";
   }
 

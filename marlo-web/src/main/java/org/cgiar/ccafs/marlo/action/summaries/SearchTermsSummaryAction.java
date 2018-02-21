@@ -447,9 +447,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
               if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
                 if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-                  .getDeliverableType() != null) {
+                  .getDeliverableCategory() != null) {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable
-                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType().getName()
+                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableCategory().getName()
                     + "</font>";
                   devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
                     + deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName()
@@ -856,8 +856,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     String crossCutting = "";
     if (scoring != null) {
       CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById((long) scoring);
-      crossCutting =
-        "<font size=2 face='Segoe UI' color='#000000'>" + crossCuttingScoring.getCompleteDescription() + "</font>";
+      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>" + crossCuttingScoring.getDescription() + "</font>";
       // Hash set list of matches, avoiding duplicates
       // Find keys in title
       Matcher matcher = pattern.matcher(stringCrossCutting);
@@ -870,7 +869,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       String match : matchesField) {
         if (field) {
           countMatches++;
-          crossCutting = crossCutting.replaceAll("\\b" + crossCuttingScoring.getCompleteDescription() + "\\b",
+          crossCutting = crossCutting.replaceAll("\\b" + crossCuttingScoring.getDescription() + "\\b",
             "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
         }
       }

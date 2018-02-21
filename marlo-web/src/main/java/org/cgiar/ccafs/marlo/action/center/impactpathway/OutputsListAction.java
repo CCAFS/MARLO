@@ -17,13 +17,12 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
-import org.cgiar.ccafs.marlo.data.manager.ICenterTopicManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CenterArea;
 import org.cgiar.ccafs.marlo.data.model.CenterLeader;
@@ -45,6 +44,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -61,27 +61,22 @@ public class OutputsListAction extends BaseAction {
   private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
-
+  private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
   private ICenterAreaManager researchAreaService;
-  private ICenterTopicManager researchTopicService;
-  private ICenterOutcomeManager outcomeService;
   private UserManager userService;
   private ICenterOutputManager outputService;
   private ICenterSectionStatusManager sectionStatusService;
   private List<CenterArea> researchAreas;
   private List<CenterProgram> researchPrograms;
 
+
   private List<CenterOutcome> outcomes;
   private List<CenterTopic> researchTopics;
   private List<CenterOutput> outputs;
   private CenterProgram selectedProgram;
   private CenterArea selectedResearchArea;
-  private CenterTopic selectedResearchTopic;
-  private CenterOutcome selectedResearchOutcome;
   private GlobalUnit loggedCenter;
-  private long topicID;
   private long programID;
-  private long outcomeID;
   private long areaID;
 
   private long outputID;
@@ -89,18 +84,16 @@ public class OutputsListAction extends BaseAction {
 
   @Inject
   public OutputsListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
-    ICenterAreaManager researchAreaService, ICenterTopicManager researchTopicService,
-    ICenterOutcomeManager outcomeService, UserManager userService, ICenterOutputManager outputService,
-    ICenterSectionStatusManager sectionStatusService) {
+    ICenterAreaManager researchAreaService, UserManager userService, ICenterOutputManager outputService,
+    ICenterSectionStatusManager sectionStatusService, CenterOutputsOutcomeManager centerOutputsOutcomeManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
     this.researchAreaService = researchAreaService;
-    this.researchTopicService = researchTopicService;
-    this.outcomeService = outcomeService;
     this.userService = userService;
     this.outputService = outputService;
     this.sectionStatusService = sectionStatusService;
+    this.centerOutputsOutcomeManager = centerOutputsOutcomeManager;
   }
 
   @Override
@@ -112,9 +105,8 @@ public class OutputsListAction extends BaseAction {
     output.setDateAdded(new Date());
     output.setCreatedBy(this.getCurrentUser());
     output.setModifiedBy(this.getCurrentUser());
-    output.setResearchOutcome(selectedResearchOutcome);
-
     output = outputService.saveResearchOutput(output);
+    output.setCenterProgram(selectedProgram);
     outputID = output.getId();
 
     if (outputID > 0) {
@@ -124,32 +116,32 @@ public class OutputsListAction extends BaseAction {
     }
   }
 
-  public List<CenterOutput> allProgramOutput() {
-
-    outcomes = new ArrayList<>();
-    List<CenterOutput> ouList = new ArrayList<>();
-
-    List<CenterTopic> researchTopics = new ArrayList<>(
-      selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
-
-    for (CenterTopic researchTopic : researchTopics) {
-      List<CenterOutcome> researchOutcomes = new ArrayList<>(
-        researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-
-      for (CenterOutcome researchOutcome : researchOutcomes) {
-        outcomes.add(researchOutcome);
-        List<CenterOutput> researchOutputs = new ArrayList<>(
-          researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
-
-        for (CenterOutput researchOutput : researchOutputs) {
-          ouList.add(researchOutput);
-        }
-      }
-    }
-
-    return ouList;
-
-  }
+  // public List<CenterOutput> allProgramOutput() {
+  //
+  // outcomes = new ArrayList<>();
+  // List<CenterOutput> ouList = new ArrayList<>();
+  //
+  // List<CenterTopic> researchTopics = new ArrayList<>(
+  // selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+  //
+  // for (CenterTopic researchTopic : researchTopics) {
+  // List<CenterOutcome> researchOutcomes = new ArrayList<>(
+  // researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+  //
+  // for (CenterOutcome researchOutcome : researchOutcomes) {
+  // outcomes.add(researchOutcome);
+  // List<CenterOutput> researchOutputs = new ArrayList<>(
+  // researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+  //
+  // for (CenterOutput researchOutput : researchOutputs) {
+  // ouList.add(researchOutput);
+  // }
+  // }
+  // }
+  //
+  // return ouList;
+  //
+  // }
 
   @Override
   public String delete() {
@@ -161,10 +153,7 @@ public class OutputsListAction extends BaseAction {
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
     if (output != null) {
-      programID = output.getResearchOutcome().getResearchTopic().getResearchProgram().getId();
-      outcomeID = output.getResearchOutcome().getId();
-      output
-        .setModificationJustification(this.getJustification() == null ? "Outcome deleted" : this.getJustification());
+      output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
       output.setModifiedBy(this.getCurrentUser());
 
       CenterSectionStatus status =
@@ -195,10 +184,6 @@ public class OutputsListAction extends BaseAction {
 
   public GlobalUnit getLoggedCenter() {
     return loggedCenter;
-  }
-
-  public long getOutcomeID() {
-    return outcomeID;
   }
 
 
@@ -244,24 +229,11 @@ public class OutputsListAction extends BaseAction {
   }
 
 
-  public CenterOutcome getSelectedResearchOutcome() {
-    return selectedResearchOutcome;
-  }
-
-  public CenterTopic getSelectedResearchTopic() {
-    return selectedResearchTopic;
-  }
-
-  public long getTopicID() {
-    return topicID;
-  }
-
   @Override
   public void prepare() throws Exception {
     areaID = -1;
     programID = -1;
-    topicID = -1;
-    outcomeID = -1;
+
 
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
@@ -354,72 +326,77 @@ public class OutputsListAction extends BaseAction {
         }
       }
 
-      if (selectedProgram.getResearchTopics() != null) {
-
-        researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
-          .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
-
-        Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
-        try {
-
-          topicID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.RESEARCH_TOPIC_ID)));
-
-          if (topicID == -1) {
-            outputs = this.allProgramOutput();
-          } else {
-            selectedResearchTopic = researchTopicService.getResearchTopicById(topicID);
-            if (selectedResearchTopic != null) {
-              if (selectedResearchTopic.getResearchOutcomes() != null) {
-                outcomes = selectedResearchTopic.getResearchOutcomes().stream()
-                  .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
-                  .collect(Collectors.toList());
-                if (!outcomes.isEmpty()) {
-                  selectedResearchOutcome = outcomes.get(0);
-                }
-              }
-            }
-          }
-
-
-        } catch (Exception e) {
-
-          try {
-            outcomeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTCOME_ID)));
-            selectedResearchOutcome = outcomeService.getResearchOutcomeById(outcomeID);
-            selectedResearchTopic = selectedResearchOutcome.getResearchTopic();
-            outcomes = selectedResearchTopic.getResearchOutcomes().stream()
-              .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
-              .collect(Collectors.toList());
-          } catch (Exception ex) {
-
-            if (!researchTopics.isEmpty()) {
-              outputs = this.allProgramOutput();
-            }
-
-            // if (selectedResearchTopic != null) {
-            // if (selectedResearchTopic.getResearchOutcomes() != null) {
-            // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
-            // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
-            // .collect(Collectors.toList());
-            //
-            // if (!outcomes.isEmpty()) {
-            // selectedResearchOutcome = outcomes.get(0);
-            // }
-            //
-            // }
-            // }
-          }
-        }
-
-        if (selectedResearchOutcome != null) {
-          if (selectedResearchOutcome.getResearchOutputs() != null) {
-            outputs = selectedResearchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive())
-              .collect(Collectors.toList());
-          }
-        }
-
-
+      outputs = new ArrayList<>();
+      if (selectedProgram.getCenterOutputs() != null) {
+        outputs = selectedProgram.getCenterOutputs().stream().filter(co -> co.isActive()).collect(Collectors.toList());
       }
+
+      // if (selectedProgram.getResearchTopics() != null) {
+      //
+      // researchTopics = new ArrayList<>(selectedProgram.getResearchTopics().stream()
+      // .filter(rt -> rt.isActive() && rt.getResearchTopic().trim().length() > 0).collect(Collectors.toList()));
+      //
+      // Collections.sort(researchTopics, (ra1, ra2) -> ra1.getOrder().compareTo(ra2.getOrder()));
+      // try {
+      //
+      // topicID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.RESEARCH_TOPIC_ID)));
+      //
+      // if (topicID == -1) {
+      // outputs = this.allProgramOutput();
+      // } else {
+      // selectedResearchTopic = researchTopicService.getResearchTopicById(topicID);
+      // if (selectedResearchTopic != null) {
+      // if (selectedResearchTopic.getResearchOutcomes() != null) {
+      // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
+      // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
+      // .collect(Collectors.toList());
+      // if (!outcomes.isEmpty()) {
+      // selectedResearchOutcome = outcomes.get(0);
+      // }
+      // }
+      // }
+      // }
+      //
+      //
+      // } catch (Exception e) {
+      //
+      // try {
+      // outcomeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTCOME_ID)));
+      // selectedResearchOutcome = outcomeService.getResearchOutcomeById(outcomeID);
+      // selectedResearchTopic = selectedResearchOutcome.getResearchTopic();
+      // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
+      // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
+      // .collect(Collectors.toList());
+      // } catch (Exception ex) {
+      //
+      // if (!researchTopics.isEmpty()) {
+      // outputs = this.allProgramOutput();
+      // }
+      //
+      // // if (selectedResearchTopic != null) {
+      // // if (selectedResearchTopic.getResearchOutcomes() != null) {
+      // // outcomes = selectedResearchTopic.getResearchOutcomes().stream()
+      // // .filter(ro -> ro.isActive() && ro.getDescription() != null && ro.getTargetYear() != -1)
+      // // .collect(Collectors.toList());
+      // //
+      // // if (!outcomes.isEmpty()) {
+      // // selectedResearchOutcome = outcomes.get(0);
+      // // }
+      // //
+      // // }
+      // // }
+      // }
+      // }
+      //
+      // if (selectedResearchOutcome != null) {
+      // if (selectedResearchOutcome.getResearchOutputs() != null) {
+      // outputs = selectedResearchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive())
+      // .collect(Collectors.toList());
+      // }
+      // }
+      //
+      //
+      // }
     }
   }
 
@@ -436,9 +413,6 @@ public class OutputsListAction extends BaseAction {
     this.loggedCenter = loggedCenter;
   }
 
-  public void setOutcomeID(long outcomeID) {
-    this.outcomeID = outcomeID;
-  }
 
   public void setOutcomes(List<CenterOutcome> outcomes) {
     this.outcomes = outcomes;
@@ -476,16 +450,5 @@ public class OutputsListAction extends BaseAction {
     this.selectedResearchArea = selectedResearchArea;
   }
 
-  public void setSelectedResearchOutcome(CenterOutcome selectedResearchOutcome) {
-    this.selectedResearchOutcome = selectedResearchOutcome;
-  }
-
-  public void setSelectedResearchTopic(CenterTopic selectedResearchTopic) {
-    this.selectedResearchTopic = selectedResearchTopic;
-  }
-
-  public void setTopicID(long topicID) {
-    this.topicID = topicID;
-  }
 
 }
