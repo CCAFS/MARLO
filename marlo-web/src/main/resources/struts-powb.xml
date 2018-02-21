@@ -5,7 +5,6 @@
   <!-- CRP Plan of Work and Budget (POWB) -->
   <package name="powb" namespace="/powb" extends="marlo-default">
     
-    
     <!--  1.1 Adjustments/ Changes to Your Theories of Change -->
     <action name="{crp}/adjustmentsChanges" class="org.cgiar.ccafs.marlo.action.powb.ToCAdjustmentsAction">
       <interceptor-ref name="editPowbStack" />
@@ -18,7 +17,6 @@
         <param name="edit">true</param>        
       </result>
     </action>
-    
     
     <!--  1.2 Expected CRP Progress Towards Intermediate Outcomes and SLOs -->
     <action name="{crp}/expectedProgress" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
@@ -59,7 +57,8 @@
       </result>
     </action>
     
-     <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.CrossCuttingDimensionsAction">
+    <!--  1.5 Cross Cutting Dimensions -->
+    <action name="{crp}/crossCuttingDimensions" class="org.cgiar.ccafs.marlo.action.powb.CrossCuttingDimensionsAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_crossCuttingDimensions.ftl</result>
       <result name="success" type="redirectAction">
@@ -99,7 +98,7 @@
     </action>
     
     <!--  2.3 Collaboration and Integration -->
-    <action name="{crp}/collaborationIntegration" class="org.cgiar.ccafs.marlo.action.powb.DefaultPOWBAction">
+    <action name="{crp}/collaborationIntegration" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_collaborationIntegration.ftl</result>
       <result name="success" type="redirectAction">
@@ -123,6 +122,7 @@
         <param name="phaseID">${phaseID}</param>
       </result>
     </action>
+    
     
     <!--  3.1 Management of Risks to Your CRP -->
     <action name="{crp}/managementRisks" class="org.cgiar.ccafs.marlo.action.powb.ManagementRiskAction">
