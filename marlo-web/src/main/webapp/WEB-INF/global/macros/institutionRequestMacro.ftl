@@ -28,6 +28,8 @@
               <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym?html)!'Not Available'}</i></p>
               [#-- Requested by --]
               <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+              [#-- Active since --]
+              <p><strong>[@s.text name="Active since" /]:</strong> <i>${(partner.activeSince?html)!'none'}</i></p>
             </div>
             
           </div>
@@ -120,8 +122,16 @@
           <div class="requestInfo">
             <div class="form-group">
                <h4 style="font-family: 'Open Sans';">${partner.institution.composedName}</h4><hr />
+               [#if partner.institution.institutionsLocations??]
+               [#list partner.institution.institutionsLocations as location]
+                 <span class="btn btn-default"> ${(location.locElement.name)!'null'} </span>
+               [/#list]
+               [/#if]
             </div>
             
+             [#if partner.institution.websiteLink?has_content]
+                <i>(<a href="${partner.institution.websiteLink}" target="_blank">${partner.institution.websiteLink}</a>)</i>
+             [/#if]            
             [#-- Action --]
             <div class="btn-group pull-right" role="group" aria-label="..."">
               [#-- Accept --]
@@ -148,8 +158,8 @@
                       [#-- Added Requested Source --]
                       <br><strong>[@s.text name="Requested Source" /]:</strong> <i>${(officeRequest.requestSource)}</i>                    
                       <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym?html)!''}</i>
-                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>
-                      
+                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>                      
+                      <br><strong>[@s.text name="Active since" /]:</strong> <i>${(officeRequest.activeSince?html)!'none'}</i>                      
                     </li>
                   [/#list]
                 </ul>
