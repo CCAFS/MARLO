@@ -20,12 +20,14 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -33,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -72,6 +75,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private PowbSynthesisManager powbSynthesisManager;
   private CrossCuttingValidator validator;
   private PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager;
+  private DeliverableManager deliverableManager;
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
@@ -91,7 +95,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, CrossCuttingValidator validator,
     CrpProgramManager crpProgramManager, UserManager userManager, PowbSynthesisManager powbSynthesisManager,
-    PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager) {
+    PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager, DeliverableManager deliverableManager) {
     super(config);
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
@@ -101,6 +105,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.powbSynthesisManager = powbSynthesisManager;
     this.validator = validator;
     this.powbCrossCuttingDimensionManager = powbCrossCuttingDimensionManager;
+    this.deliverableManager = deliverableManager;
 
   }
 
@@ -123,7 +128,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -143,10 +147,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Long getCrossCuttingId() {
     return crossCuttingId;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -157,10 +161,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -215,6 +219,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   }
 
+
   public boolean isPMU(LiaisonInstitution institution) {
     if (institution.getAcronym().equals("PMU")) {
       return true;
@@ -222,7 +227,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
     return false;
   }
-
 
   @Override
   public String next() {
@@ -460,10 +464,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.liaisonInstitution = liaisonInstitution;
   }
 
+
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -474,10 +478,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
   public void setTableC(CrossCuttingDimensionTableDTO tableC) {
     this.tableC = tableC;
@@ -496,6 +500,63 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   public void setUserManager(UserManager userManager) {
     this.userManager = userManager;
+  }
+
+
+  public void tableCInfo(Phase pashe) {
+    List<Deliverable> deliverables = new ArrayList<>();
+    List<Deliverable> deliverablesTotal = new ArrayList<>();
+
+    int iGenderPrincipal = 0;
+    int iGenderSignificant = 0;
+    int iYouthPrincipal = 0;
+    int iYouthSignificatn = 0;
+    int iCapDevPrincipal = 0;
+    int iCapDevSignificant = 0;
+    int iNa = 0;
+
+    if (deliverableManager.findAll() != null) {
+      deliverables = deliverableManager.findAll().stream().filter(d -> d.isActive() && d.getPhase().equals(pashe))
+        .collect(Collectors.toList());
+      for (Deliverable deliverable : deliverables) {
+        if (deliverable.getDeliverableInfo().isActive()) {
+          if (deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatus())
+            || deliverable.getDeliverableInfo().getStatus() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatus())) {
+            deliverablesTotal.add(deliverable);
+            if (deliverable.getDeliverableInfo().getCrossCuttingNa() != null
+              && deliverable.getDeliverableInfo().getCrossCuttingNa()) {
+              iNa++;
+            } else {
+              // Gender
+              if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null
+                && deliverable.getDeliverableInfo().getCrossCuttingGender()) {
+                if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 1) {
+                  iGenderSignificant++;
+                } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 2) {
+                  iGenderPrincipal++;
+                }
+              }
+
+              // Youth
+              if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null
+                && deliverable.getDeliverableInfo().getCrossCuttingGender()) {
+                if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 1) {
+                  iGenderSignificant++;
+                } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreGender() == 2) {
+                  iGenderPrincipal++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 
   @Override
