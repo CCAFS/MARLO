@@ -154,11 +154,11 @@ public class LoginAction extends BaseAction {
       GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(this.crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
-      User loggedUser = userManager.login(userEmail, user.getPassword());
+      user = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
-      if (loggedUser != null) {
+      if (user != null) {
 
-        return this.login(loggedUser, loggedCrp);
+        return this.login(loggedCrp);
       } else {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
           + this.getSession().get(APConstants.LOGIN_MESSAGE));
@@ -196,15 +196,14 @@ public class LoginAction extends BaseAction {
   }
 
 
-  public String login(User loggedUser, GlobalUnit loggedCrp) {
+  public String login(GlobalUnit loggedCrp) {
 
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
-      if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
-        loggedUser.setLastLogin(new Date());
-        userManager.saveLastLogin(loggedUser);
-        this.getSession().put(APConstants.SESSION_USER, loggedUser);
+      if (crpUserManager.existCrpUser(user.getId(), loggedCrp.getId())) {
+
+        this.getSession().put(APConstants.SESSION_USER, user);
         this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
         // put the crp parameters in the session
         for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
@@ -253,6 +252,9 @@ public class LoginAction extends BaseAction {
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
      */
+    user = userManager.getUser(user.getId());
+    user.setLastLogin(new Date());
+    userManager.saveLastLogin(user);
     if (urlAction.contains(".do") && !urlAction.contains("logout")) {
       this.url = urlAction;
       return LOGIN;
