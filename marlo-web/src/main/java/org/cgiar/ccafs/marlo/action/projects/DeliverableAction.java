@@ -735,13 +735,16 @@ public class DeliverableAction extends BaseAction {
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
-    for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
-      .collect(Collectors.toList())) {
-      if (deliverablePartnership.getProjectPartner() != null) {
-        deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
-      }
+    if (deliverable.getOtherPartners() != null) {
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
+        .collect(Collectors.toList())) {
+        if (deliverablePartnership.getProjectPartner() != null) {
+          deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
+        }
 
+      }
     }
+
 
     deliverablePartnerPersons.addAll(deliverablePartnerPersonsSet);
     return deliverablePartnerPersons;
@@ -976,7 +979,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1383,7 +1386,7 @@ public class DeliverableAction extends BaseAction {
           .addAll(deliverableTypeManager.findAll()
             .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-            .collect(Collectors.toList()));
+          .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() != null
@@ -1634,7 +1637,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-          .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
