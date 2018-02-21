@@ -982,7 +982,7 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
@@ -1389,7 +1389,7 @@ public class DeliverableAction extends BaseAction {
           .addAll(deliverableTypeManager.findAll()
             .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
           .filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() != null
@@ -1640,19 +1640,23 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.getDeliverablePartnerships().stream()
           .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
             && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       if (deliverable.getOtherPartners() == null) {
         deliverable.setOtherPartners(new ArrayList<>());
       }
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getProjectPartner() == null) {
-          deliverablePartnership.setId(null);
-        } else {
-          if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
+
+        if (deliverablePartnership != null) {
+          if (deliverablePartnership.getProjectPartner() == null) {
             deliverablePartnership.setId(null);
+          } else {
+            if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
+              deliverablePartnership.setId(null);
+            }
           }
         }
+
       }
       for (DeliverablePartnership deliverablePartnership : partnerShipsOtherPrew) {
         if (deliverable.getOtherPartners() != null) {
