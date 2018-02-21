@@ -788,10 +788,12 @@ public class ClusterActivitiesAction extends BaseAction {
         db.setCrpProgram(selectedProgram);
         db.setIdentifier(crpClusterOfActivity.getIdentifier());
         db.setDescription(crpClusterOfActivity.getDescription());
-        db.setKeyOutputs(crpClusterOfActivity.getKeyOutputs());
-        db.setLeaders(crpClusterOfActivity.getLeaders());
+        // db.setKeyOutputs(crpClusterOfActivity.getKeyOutputs());
+        // db.setLeaders(crpClusterOfActivity.getLeaders());
 
         db = crpClusterOfActivityManager.saveCrpClusterOfActivity(db);
+
+        db = crpClusterOfActivityManager.getCrpClusterOfActivityById(db.getId());
 
         /*
          * Check leaders
