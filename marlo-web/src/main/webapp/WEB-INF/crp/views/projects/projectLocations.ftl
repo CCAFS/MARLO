@@ -207,6 +207,52 @@
                     [#if editable]
                     <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
                     [/#if]
+                    [#-- Add new location (Modal) --]
+                    <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h3 class="subTitle headTitle">Adding a new location</h3>
+                          <hr />
+                          
+                          [#-- INFO WINDOW FORM - TEMPLATE --]
+                          <div id="infoWrapper" class="infoWrapper" style="display:none;">
+                          <h4 class="sectionSubTitle" style="text-align:center; width:450px;">Adding a new location</h4>
+                          <br />
+                          <div class="form-group">
+                          <label for="locLevelSelect" style="display:block;">Select a location level:</label>
+                            <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
+                              <option value="-1" >Select an option...</option>
+                              [#list locationsLevels as locLevels]
+                                [#list locLevels.locations as locations]
+                                  <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
+                                [/#list]
+                              [/#list]
+                            </select>
+                            </div>
+                            <div class="selectLocations" >
+                            <label for="">Select location(s)</label>
+                            <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
+                            </div>
+                            [#-- Form 2 --]
+                            <div id="inputFormWrapper" style="display:none; width: 450px;">
+                              <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
+                              <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
+                              <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
+                            </div>
+                            [#-- Button --]
+                            <div style="margin-left:10px; float:right;">
+                              <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">[@s.text name="Cancel" /]</span>
+                            </div>
+                            <div>
+                              <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">[@s.text name="Drop pin" /]</span>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    
                     <label for="">[@s.text name="projectLocations.locationsList" /]</label>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
