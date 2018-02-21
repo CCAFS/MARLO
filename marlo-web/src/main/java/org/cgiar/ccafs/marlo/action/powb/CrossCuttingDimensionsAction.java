@@ -541,6 +541,18 @@ public class CrossCuttingDimensionsAction extends BaseAction {
               }
 
               // Youth
+              if (deliverable.getDeliverableInfo().getCrossCuttingYouth() != null
+                && deliverable.getDeliverableInfo().getCrossCuttingYouth()) {
+                if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() == 1) {
+                  iGenderSignificant++;
+                } else if (deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() != null
+                  && deliverable.getDeliverableInfo().getCrossCuttingScoreYouth() == 2) {
+                  iGenderPrincipal++;
+                }
+              }
+
+              // CapDev
               if (deliverable.getDeliverableInfo().getCrossCuttingGender() != null
                 && deliverable.getDeliverableInfo().getCrossCuttingGender()) {
                 if (deliverable.getDeliverableInfo().getCrossCuttingScoreGender() != null
