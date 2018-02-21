@@ -697,7 +697,7 @@ function settingDate(start,end,extensionDate) {
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
         $(this).datepicker("hide");
-        if(selectedDate != "") {
+        if((selectedDate != "") && editable) {
           $(to).datepicker("option", "maxDate", selectedDate);
         }
         refreshYears();
