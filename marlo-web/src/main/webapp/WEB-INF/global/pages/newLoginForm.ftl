@@ -97,7 +97,7 @@
         </div>
         [#-- Password --]
         <div class="row" >
-          <div class="col-sm-10">
+          <div class="col-sm-12">
             <div class="login-input-container hidden" id="login-password" >
               <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" tabindex=1 required/>
               <label for="user.password">[@s.text name="login.password"/]</label>
