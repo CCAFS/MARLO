@@ -353,10 +353,10 @@ public class EvidencesAction extends BaseAction {
     return powbSynthesis;
   }
 
+
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
-
 
   public Map<Integer, String> getScopes() {
     return scopes;
@@ -410,6 +410,7 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
+
   public void plannedStudiesPreviousData(List<PowbEvidencePlannedStudy> plannedStudies) {
 
     PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -422,7 +423,6 @@ public class EvidencesAction extends BaseAction {
       }
     }
   }
-
 
   public void popUpProject(long phaseID) {
 
@@ -552,15 +552,18 @@ public class EvidencesAction extends BaseAction {
         powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
         powbSynthesisID = powbSynthesis.getId();
 
-        if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null) {
-          String[] studyValues = powbSynthesis.getPowbEvidence().getPlannedStudiesValue().split(",");
-          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+        if (this.isFlagship()) {
+          if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null) {
+            String[] studyValues = powbSynthesis.getPowbEvidence().getPlannedStudiesValue().split(",");
+            powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
 
-          for (int i = 0; i < studyValues.length; i++) {
 
-            ProjectExpectedStudy study =
-              projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
-            powbSynthesis.getPowbEvidence().getExpectedStudies().add(study);
+            for (int i = 0; i < studyValues.length; i++) {
+
+              ProjectExpectedStudy study =
+                projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyValues[i]));
+              powbSynthesis.getPowbEvidence().getExpectedStudies().add(study);
+            }
           }
         }
 
@@ -584,17 +587,20 @@ public class EvidencesAction extends BaseAction {
         }
 
         if (this.isFlagship()) {
-          // if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-          // powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>(powbSynthesis.getPowbEvidence()
-          // .getPowbEvidencePlannedStudies().stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
-          // }
-
-          this.popUpProject(phase.getId());
+          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+              .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+              powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
+            }
+          }
         }
       }
     }
 
-
+    if (this.isFlagship()) {
+      this.popUpProject(phase.getId());
+    }
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -602,9 +608,9 @@ public class EvidencesAction extends BaseAction {
       .collect(Collectors.toList());
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
 
-    // if (this.isPMU()) {
-    // this.getFpPlannedList(liaisonInstitutions, phase.getId());
-    // }
+    if (this.isPMU()) {
+      this.getFpPlannedList(liaisonInstitutions, phase.getId());
+    }
 
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
@@ -652,7 +658,7 @@ public class EvidencesAction extends BaseAction {
         }
 
 
-        this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
+        // this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
         this.expectedStudiesNewData(powbEvidenceDB);
       }
 
@@ -700,10 +706,10 @@ public class EvidencesAction extends BaseAction {
     this.flagshipPlannedList = flagshipPlannedList;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonInstitutionID(Long liaisonInstitutionID) {
     this.liaisonInstitutionID = liaisonInstitutionID;
@@ -721,10 +727,10 @@ public class EvidencesAction extends BaseAction {
     this.popUpProjects = popUpProjects;
   }
 
+
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
-
 
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
@@ -734,10 +740,10 @@ public class EvidencesAction extends BaseAction {
     this.scopes = scopes;
   }
 
+
   public void setSubIdos(Map<Long, String> subIdos) {
     this.subIdos = subIdos;
   }
-
 
   public void setTargets(Map<Long, String> targets) {
     this.targets = targets;

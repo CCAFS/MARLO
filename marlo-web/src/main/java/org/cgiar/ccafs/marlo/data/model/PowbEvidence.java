@@ -70,11 +70,11 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
     return expectedStudies;
   }
 
-
   @Override
   public Long getId() {
     return id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -82,7 +82,6 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -118,6 +117,23 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
+  }
+
+
+  /**
+   * @return an array of integers.
+   */
+  public long[] getStudiesIds() {
+
+    List<ProjectExpectedStudy> expectedStudies = this.getExpectedStudies();
+    if (expectedStudies != null) {
+      long[] ids = new long[expectedStudies.size()];
+      for (int i = 0; i < ids.length; i++) {
+        ids[i] = expectedStudies.get(i).getId();
+      }
+      return ids;
+    }
+    return null;
   }
 
 
