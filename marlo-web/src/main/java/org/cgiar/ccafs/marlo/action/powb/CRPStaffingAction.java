@@ -115,8 +115,8 @@ public class CRPStaffingAction extends BaseAction {
       newPowbCrpStaffing.setModifiedBy(this.getCurrentUser());
       newPowbCrpStaffing.setActiveSince(new Date());
       newPowbCrpStaffing.setStaffingIssues("");
-      newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
       powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
+      newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
       powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
     }
   }
@@ -287,7 +287,7 @@ public class CRPStaffingAction extends BaseAction {
 
     if (this.isHttpPost()) {
       if (powbSynthesis.getPowbSynthesisCrpStaffingCategoryList() != null) {
-        powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(null);
+        powbSynthesis.getPowbSynthesisCrpStaffingCategoryList().clear();
       }
     }
   }
@@ -395,6 +395,9 @@ public class CRPStaffingAction extends BaseAction {
 
   private void saveUpdateCrpStaffing() {
     PowbCrpStaffing PowbCrpStaffingDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getCrpStaffing();
+    if (PowbCrpStaffingDB.getId() == null) {
+      PowbCrpStaffingDB.setId(powbSynthesisID);
+    }
     PowbCrpStaffingDB.setActiveSince(new Date());
     PowbCrpStaffingDB.setModifiedBy(this.getCurrentUser());
     PowbCrpStaffingDB.setStaffingIssues(powbSynthesis.getCrpStaffing().getStaffingIssues());
