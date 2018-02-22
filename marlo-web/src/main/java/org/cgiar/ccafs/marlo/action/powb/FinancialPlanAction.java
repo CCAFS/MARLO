@@ -347,10 +347,10 @@ public class FinancialPlanAction extends BaseAction {
 
     if (this.isHttpPost()) {
       if (powbSynthesis.getPowbFinancialPlannedBudgetList() != null) {
-        powbSynthesis.setPowbFinancialPlannedBudgetList(null);
+        powbSynthesis.getPowbFinancialPlannedBudgetList().clear();
       }
       if (powbSynthesis.getPowbFinancialExpendituresList() != null) {
-        powbSynthesis.setPowbFinancialExpendituresList(null);
+        powbSynthesis.getPowbFinancialExpendituresList().clear();
       }
     }
   }
