@@ -154,11 +154,11 @@ public class LoginAction extends BaseAction {
       GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(this.crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
-      user = userManager.login(userEmail, user.getPassword());
+      User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
-      if (user != null) {
+      if (loggedUser != null) {
 
-        return this.login(loggedCrp);
+        return this.login(loggedUser, loggedCrp);
       } else {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
           + this.getSession().get(APConstants.LOGIN_MESSAGE));
@@ -196,14 +196,14 @@ public class LoginAction extends BaseAction {
   }
 
 
-  public String login(GlobalUnit loggedCrp) {
+  public String login(User loggedUser, GlobalUnit loggedCrp) {
 
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
-      if (crpUserManager.existCrpUser(user.getId(), loggedCrp.getId())) {
+      if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
 
-        this.getSession().put(APConstants.SESSION_USER, user);
+        this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
         // put the crp parameters in the session
         for (CustomParameter parameter : loggedCrp.getCustomParameters()) {
@@ -243,6 +243,8 @@ public class LoginAction extends BaseAction {
     }
 
     LOG.info("User " + user.getEmail() + " logged in successfully.");
+    loggedUser.setLastLogin(new Date());
+    userManager.saveLastLogin(loggedUser);
     /*
      * Save the user url with trying to enter the system to redirect after
      * loged.
@@ -252,9 +254,6 @@ public class LoginAction extends BaseAction {
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
      */
-    user = userManager.getUser(user.getId());
-    user.setLastLogin(new Date());
-    userManager.saveLastLogin(user);
     if (urlAction.contains(".do") && !urlAction.contains("logout")) {
       this.url = urlAction;
       return LOGIN;
