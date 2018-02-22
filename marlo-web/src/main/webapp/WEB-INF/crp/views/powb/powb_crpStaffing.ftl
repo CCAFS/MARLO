@@ -89,8 +89,8 @@
                 <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
                 <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="${(crpStaffingCategory.id)!}" />
               </td>
-              <td> [@customForm.input name="${customName}.female" value="${(element.female)!}" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]  </td>
-              <td> [@customForm.input name="${customName}.male" value="${(element.male)!}" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true editable=editable && PMU /] </td>
+              <td> [@customForm.input name="${customName}.female" value="${(element.female)!'0'}" i18nkey="" showTitle=false className="currencyInput text-center type-female category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]  </td>
+              <td> [@customForm.input name="${customName}.male" value="${(element.male)!'0'}" i18nkey="" showTitle=false className="currencyInput text-center type-male category-${crpStaffingCategory_index}" required=true editable=editable && PMU /] </td>
               <td class="text-center"> <span class="label-total category-${crpStaffingCategory_index}">${(element.totalFTE)!"0"}</span> </td>
               <td class="text-center"> <span class="label-percFemale category-${crpStaffingCategory_index}">${(element.femalePercentage)!"0"}</span>% </td>
             </tr>
