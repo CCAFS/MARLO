@@ -775,26 +775,28 @@ public class CrpAdminManagmentAction extends BaseAction {
       i++;
     }
     // Add new Users roles
-    for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-      if (userRole.getId() == null) {
-        if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-          .collect(Collectors.toList()).isEmpty()) {
-          userRoleManager.saveUserRole(userRole);
-          userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+    if ((loggedCrp.getProgramManagmenTeam() != null)) {
+      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
+        if (userRole.getId() == null) {
+          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
+            userRoleManager.saveUserRole(userRole);
+            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
 
-          this.addCrpUser(userRole.getUser());
-          this.notifyNewUserCreated(userRole.getUser());
-          // Notifiy user been assigned to Program Management
-          this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
+            this.addCrpUser(userRole.getUser());
+            this.notifyNewUserCreated(userRole.getUser());
+            // Notifiy user been assigned to Program Management
+            this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
 
-          LiaisonInstitution cuLiasonInstitution;
+            LiaisonInstitution cuLiasonInstitution;
 
-          cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser.setCrp(loggedCrp);
-          liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
-          liaisonUser.setUser(userRole.getUser());
-          liaisonUserManager.saveLiaisonUser(liaisonUser);
+            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
+            LiaisonUser liaisonUser = new LiaisonUser();
+            liaisonUser.setCrp(loggedCrp);
+            liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
+            liaisonUser.setUser(userRole.getUser());
+            liaisonUserManager.saveLiaisonUser(liaisonUser);
+          }
         }
       }
     }
