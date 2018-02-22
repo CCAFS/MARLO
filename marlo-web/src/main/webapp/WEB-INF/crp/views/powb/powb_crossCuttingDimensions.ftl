@@ -137,7 +137,7 @@
             <td>
               <nobr>
               [#if (dInfo.crossCuttingGender)!false]
-                [#if dInfo.crossCuttingScoreGender??]${(dInfo.crossCuttingScoreGender)!}[/#if]
+                [#if dInfo.genderScoreName??]${(dInfo.genderScoreName)!}[/#if]
               [#else]
                  0 - Not Targeted
               [/#if]
@@ -146,7 +146,7 @@
             <td>
               <nobr>
               [#if (dInfo.crossCuttingYouth)!false]
-                [#if dInfo.crossCuttingScoreYouth??]${(dInfo.crossCuttingScoreYouth)!}[/#if]
+                [#if dInfo.youthScoreName??]${(dInfo.youthScoreName)!}[/#if]
               [#else]
                  0 - Not Targeted
               [/#if]
@@ -155,7 +155,7 @@
             <td>
               <nobr>
               [#if (dInfo.crossCuttingCapacity)!false]
-                [#if dInfo.crossCuttingScoreCapacity??]${(dInfo.crossCuttingScoreCapacity)!}[/#if]
+                [#if dInfo.capDevScoreName??]${(dInfo.capDevScoreName)!}[/#if]
               [#else]
                  0 - Not Targeted
               [/#if]

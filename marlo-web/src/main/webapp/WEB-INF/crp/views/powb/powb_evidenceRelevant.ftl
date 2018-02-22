@@ -122,7 +122,7 @@
           </td>
           [#-- Checkbox --]
           <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkBoxFlat id="PS-${(popUp.project.id)!''}" name="${(popUp.topicStudy)!''}" value="${(popUp.project.id)!''}" checked=false /]
+            [@customForm.checkBoxFlat id="${(popUp.project.id)!''}" name="${(popUp.topicStudy)!''}" value="${(popUp.project.id)!''}" checked=false /]
           </td>
         </tr>
       [/#list]
