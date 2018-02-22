@@ -237,7 +237,7 @@
                 <th class="col-md-1"> Project ID </th>
                 <th class="col-md-4"> Project Title </th>
                 [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
-                <th class="col-md-6"> Narrative of the  expected target </th>
+                <th class="col-md-6"> [@s.text name="expectedProgress.contributionMilestoneTarget" /]  </th>
                 <th> </th>
               </tr>
             </thead>
