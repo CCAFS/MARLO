@@ -27,13 +27,18 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   private PowbSynthesis powbSynthesis;
+
 
   @Expose
   private User createdBy;
 
+
   @Expose
   private String narrative;
+
+
   @Expose
   private boolean active;
 
@@ -44,9 +49,11 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   private Set<PowbEvidencePlannedStudy> powbEvidencePlannedStudies = new HashSet<PowbEvidencePlannedStudy>(0);
-
   private List<PowbEvidencePlannedStudy> plannedStudies;
 
+  private List<ProjectExpectedStudy> expectedStudies;
+
+  private String plannedStudiesValue;
 
   public PowbEvidence() {
   }
@@ -55,9 +62,12 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
+  }
+
+  public List<ProjectExpectedStudy> getExpectedStudies() {
+    return expectedStudies;
   }
 
 
@@ -65,7 +75,6 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -97,13 +106,20 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getPlannedStudiesValue() {
+    return plannedStudiesValue;
+  }
+
+
   public Set<PowbEvidencePlannedStudy> getPowbEvidencePlannedStudies() {
     return powbEvidencePlannedStudies;
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   @Override
   public boolean isActive() {
@@ -120,6 +136,10 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setExpectedStudies(List<ProjectExpectedStudy> expectedStudies) {
+    this.expectedStudies = expectedStudies;
   }
 
   public void setId(Long id) {
@@ -140,6 +160,10 @@ public class PowbEvidence implements java.io.Serializable, IAuditLog {
 
   public void setPlannedStudies(List<PowbEvidencePlannedStudy> plannedStudies) {
     this.plannedStudies = plannedStudies;
+  }
+
+  public void setPlannedStudiesValue(String plannedStudiesValue) {
+    this.plannedStudiesValue = plannedStudiesValue;
   }
 
 

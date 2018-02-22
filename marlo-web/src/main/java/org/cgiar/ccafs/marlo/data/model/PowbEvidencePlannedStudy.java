@@ -13,7 +13,9 @@ import com.google.gson.annotations.Expose;
  */
 public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -6163736717151680012L;
+
 
   @Expose
   private Long id;
@@ -22,25 +24,13 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
   private User modifiedBy;
 
   @Expose
-  private SrfSloIndicator srfSloIndicator;
-
-  @Expose
   private User createdBy;
-
-  @Expose
-  private SrfSubIdo srfSubIdo;
 
   @Expose
   private PowbEvidence powbEvidence;
 
   @Expose
-  private String plannedTopic;
-
-  @Expose
-  private Integer geographicScope;
-
-  @Expose
-  private String comments;
+  private ProjectExpectedStudy projectExpectedStudy;
 
   @Expose
   private boolean active;
@@ -51,10 +41,8 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
   @Expose
   private String modificationJustification;
 
-
   public PowbEvidencePlannedStudy() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -68,34 +56,29 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
       return false;
     }
     PowbEvidencePlannedStudy other = (PowbEvidencePlannedStudy) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getProjectExpectedStudy() == null) {
+      if (other.getProjectExpectedStudy() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getProjectExpectedStudy().equals(other.getProjectExpectedStudy())) {
+      return false;
+    }
+    if (this.getPowbEvidence() == null) {
+      if (other.getPowbEvidence() != null) {
+        return false;
+      }
+    } else if (!this.getPowbEvidence().getId().equals(other.getPowbEvidence().getId())) {
       return false;
     }
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
-
-  public String getComments() {
-    return comments;
-  }
-
-
   public User getCreatedBy() {
     return createdBy;
-  }
-
-
-  public Integer getGeographicScope() {
-    return geographicScope;
   }
 
 
@@ -125,31 +108,13 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
   }
 
 
-  public String getPlannedTopic() {
-    return plannedTopic;
-  }
-
-
   public PowbEvidence getPowbEvidence() {
     return powbEvidence;
   }
 
 
-  public String getScopeName() {
-    if (geographicScope == null || geographicScope.intValue() == -1) {
-      return "";
-    }
-    return GlobalScopeEnum.getValue(geographicScope.intValue()).getType();
-
-  }
-
-
-  public SrfSloIndicator getSrfSloIndicator() {
-    return srfSloIndicator;
-  }
-
-  public SrfSubIdo getSrfSubIdo() {
-    return srfSubIdo;
+  public ProjectExpectedStudy getProjectExpectedStudy() {
+    return projectExpectedStudy;
   }
 
   @Override
@@ -173,16 +138,8 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
     this.activeSince = activeSince;
   }
 
-  public void setComments(String comments) {
-    this.comments = comments;
-  }
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
-  }
-
-  public void setGeographicScope(Integer geographicScope) {
-    this.geographicScope = geographicScope;
   }
 
   public void setId(Long id) {
@@ -197,23 +154,13 @@ public class PowbEvidencePlannedStudy implements java.io.Serializable, IAuditLog
     this.modifiedBy = modifiedBy;
   }
 
-  public void setPlannedTopic(String plannedTopic) {
-    this.plannedTopic = plannedTopic;
-  }
-
   public void setPowbEvidence(PowbEvidence powbEvidence) {
     this.powbEvidence = powbEvidence;
   }
 
-
-  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
-    this.srfSloIndicator = srfSloIndicator;
+  public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
+    this.projectExpectedStudy = projectExpectedStudy;
   }
-
-  public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
-    this.srfSubIdo = srfSubIdo;
-  }
-
 
 }
 
