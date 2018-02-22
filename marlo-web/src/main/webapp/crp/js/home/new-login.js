@@ -230,6 +230,7 @@ function loadAvailableItems(email){
     success: function(data) {
       if(data.user == null){
         wrongData("emailNotFound");
+        $("input#login_next").val("Next");
       }else{
         var crpCookie=verifyCrpCookie();
         $('.selection-bar-options ul #crp-'+data.crps[0].acronym).click();
@@ -255,13 +256,13 @@ function loadAvailableItems(email){
           secondForm(data);
         }else{
           wrongData("deniedAccess");
+          $("input#login_next").val("Next");
         }
       }
     },
     complete: function(data) {
       $("input#login_next").removeClass("login-loadingBlock");
       $("input#login_next").attr("disabled",false);
-      $("input#login_next").val("Next");
     },
     error: function(data) {}
   });
@@ -341,7 +342,7 @@ function checkPassword(email,password){
         }/*else if(crpSession!=""){
           wrongData("deniedAccess",data.messageEror);
         }*/else{
-          wrongData("deniedAccess",data.messageEror);
+          wrongData("incorrectPassword",data.messageEror);
         }
         $("input#login_next").removeClass("login-loadingBlock");
         $("input#login_next").attr("disabled",false);
@@ -394,11 +395,3 @@ $.fn.disableScroll = function() {
 $.fn.enableScroll = function() {
   $(window).off('scroll.scrolldisabler');
 };
-
-
-(function (window, document) {
-  'use strict';
-
-
-
-})(window, document);
