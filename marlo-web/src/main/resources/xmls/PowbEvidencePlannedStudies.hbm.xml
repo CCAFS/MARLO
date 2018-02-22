@@ -11,27 +11,15 @@
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" />
         </many-to-one>
-        <many-to-one name="srfSloIndicator" class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
-            <column name="slo_indicator_id" />
-        </many-to-one>
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" />
         </many-to-one>
-        <many-to-one name="srfSubIdo" class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" fetch="select">
-            <column name="sub_ido_id" />
-        </many-to-one>
         <many-to-one name="powbEvidence" class="org.cgiar.ccafs.marlo.data.model.PowbEvidence" fetch="select">
             <column name="powb_evidence_id" not-null="true" />
-        </many-to-one>
-        <property name="plannedTopic" type="string">
-            <column name="planned_topic" length="65535" />
-        </property>
-        <property name="geographicScope" type="java.lang.Integer">
-            <column name="geographic_scope" />
-        </property>
-        <property name="comments" type="string">
-            <column name="comments" length="65535" />
-        </property>
+        </many-to-one>   
+        <many-to-one name="projectExpectedStudy" class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
+            <column name="project_expected_studies_id" not-null="true" />
+        </many-to-one>      
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

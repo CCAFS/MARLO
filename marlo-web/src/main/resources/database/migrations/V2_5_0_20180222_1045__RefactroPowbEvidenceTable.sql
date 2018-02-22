@@ -1,3 +1,5 @@
+DELETE FROM powb_evidence_planned_studies;
+
 ALTER TABLE `powb_evidence_planned_studies` DROP FOREIGN KEY `powb_planned_studies_srf_indicators_id_fk`;
 
 ALTER TABLE `powb_evidence_planned_studies` DROP FOREIGN KEY `powb_planned_studies_sub_idos_id_fk`;
