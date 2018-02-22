@@ -122,7 +122,7 @@
           </td>
           [#-- Checkbox --]
           <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkBoxFlat id="${(popUp.project.id)!''}" name="${(popUp.topicStudy)!''}" value="${(popUp.project.id)!''}" checked=false /]
+            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!false) /]
           </td>
         </tr>
       [/#list]
@@ -160,25 +160,25 @@
           </td>
           [#-- Planned topic of study --]
           <td>
-            ${(flagshipPlanned.plannedTopic)!''}
+            ${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
-            ${flagshipPlanned.scopeName}
+            ${flagshipPlanned.projectExpectedStudy.scopeName}
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
             <ul>
-              [#if flagshipPlanned.srfSubIdo?has_content && flagshipPlanned.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
-              <li title="${(flagshipPlanned.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSubIdo.description)!''}" maxPos=maxPosition /]</li>
-              [#if flagshipPlanned.srfSloIndicator?has_content]
-              <li title="${(flagshipPlanned.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.srfSloIndicator.title)!''}" maxPos=maxPosition /]</li>
+              [#if flagshipPlanned.projectExpectedStudy.srfSubIdo?has_content && flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
+              <li title="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}" maxPos=maxPosition /]</li>
+              [#if flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content]
+              <li title="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}" maxPos=maxPosition /]</li>
               [/#if]
             </ul>
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(flagshipPlanned.comments)!''}"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.comments)!''}" maxPos=100 /]
+          <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}"> 
+            [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=100 /]
           </td>
         </tr>
       [/#list]
