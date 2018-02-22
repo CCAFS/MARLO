@@ -68,8 +68,9 @@
 }
 
 #map {
+    width: 350px;
+    height: 350px;
     padding: 0;
-    height: 100%;
     border: 2px solid #aaa;
 }
 
