@@ -584,13 +584,13 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
       tableC.setTotal(iDeliverableCount);
 
-      double dGenderPrincipal = (iGenderPrincipal * 100) / iDeliverableCount;
-      double dGenderSignificant = (iGenderSignificant * 100) / iDeliverableCount;
-      double dYouthPrincipal = (iYouthPrincipal * 100) / iDeliverableCount;
-      double dYouthSignificant = (iYouthSignificant * 100) / iDeliverableCount;
-      double dCapDevPrincipal = (iCapDevPrincipal * 100) / iDeliverableCount;
-      double dCapDevSignificant = (iCapDevSignificant * 100) / iDeliverableCount;
-      double dNa = (iNa * 100) / iDeliverableCount;
+      double dGenderPrincipal = (iGenderPrincipal * 100.0) / iDeliverableCount;
+      double dGenderSignificant = (iGenderSignificant * 100.0) / iDeliverableCount;
+      double dYouthPrincipal = (iYouthPrincipal * 100.0) / iDeliverableCount;
+      double dYouthSignificant = (iYouthSignificant * 100.0) / iDeliverableCount;
+      double dCapDevPrincipal = (iCapDevPrincipal * 100.0) / iDeliverableCount;
+      double dCapDevSignificant = (iCapDevSignificant * 100.0) / iDeliverableCount;
+      double dNa = (iNa * 100.0) / iDeliverableCount;
 
 
       // Gender

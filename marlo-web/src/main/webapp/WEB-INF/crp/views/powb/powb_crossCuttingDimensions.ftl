@@ -97,15 +97,15 @@
           </tr>
           <tr>
             <td class="row">Youth</td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthPrincipal}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthSignificant}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthNotScored}%</span> </td>            
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthNotScored?string(",##0.00")}%</span> </td>            
           </tr>
           <tr>
             <td class="row">CapDev</td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevPrincipal}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevSignificant}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevNotScored}%</span> </td>            
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevNotScored?string(",##0.00")}%</span> </td>            
           </tr>
       </tbody>
     </table>
