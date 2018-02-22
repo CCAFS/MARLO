@@ -67,7 +67,7 @@ function attachEvents() {
     var marker = markers[id].gElement;
     if(marker) {
       $(this).parent().addClass("selected");
-      openInfoWindow(marker);
+      //openInfoWindow(marker);
       map.setCenter(marker.getPosition());
     } else {
       infoWindow.close();
