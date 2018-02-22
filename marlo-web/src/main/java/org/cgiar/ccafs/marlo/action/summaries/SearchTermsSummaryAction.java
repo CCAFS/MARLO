@@ -16,10 +16,12 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -91,6 +93,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   // Managers
   private CrpProgramManager programManager;
+  private CrossCuttingScoringManager crossCuttingScoringManager;
   // XLSX bytes
   private byte[] bytesXLSX;
   // Streams
@@ -98,9 +101,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   @Inject
   public SearchTermsSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    PhaseManager phaseManager) {
+    PhaseManager phaseManager, CrossCuttingScoringManager crossCuttingScoringManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
+    this.crossCuttingScoringManager = crossCuttingScoringManager;
   }
 
   /**
@@ -411,17 +415,19 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
             // count occurrences
             countMatches = 0;
 
-            devTitle =
-              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern, "");
+            devTitle = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern,
+              "", null, false);
             String gender = "", youth = "", capacityDevelopment = "";
-            gender =
-              this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(),
-                pattern, this.getText("summaries.gender"));
+            gender = this.setFieldMatches(
+              deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingGender(), pattern,
+              this.getText("summaries.gender"), deliverable.getDeliverableInfo().getCrossCuttingScoreGender(), true);
             youth = this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingYouth(),
-              pattern, this.getText("summaries.youth"));
+              pattern, this.getText("summaries.youth"), deliverable.getDeliverableInfo().getCrossCuttingScoreYouth(),
+              true);
             capacityDevelopment =
               this.setFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getCrossCuttingCapacity(),
-                pattern, this.getText("summaries.capacityDevelopment"));
+                pattern, this.getText("summaries.capacityDevelopment"),
+                deliverable.getDeliverableInfo().getCrossCuttingScoreCapacity(), true);
             if (countMatches > 0) {
               String projectId =
                 "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
@@ -441,9 +447,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
               if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType() != null) {
                 if (deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType()
-                  .getDeliverableType() != null) {
+                  .getDeliverableCategory() != null) {
                   devType = "<font size=2 face='Segoe UI' color='#000000'>" + deliverable
-                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableType().getName()
+                    .getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getDeliverableCategory().getName()
                     + "</font>";
                   devSubType = "<font size=2 face='Segoe UI' color='#000000'>"
                     + deliverable.getDeliverableInfo(this.getSelectedPhase()).getDeliverableType().getName()
@@ -575,14 +581,16 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
           // count occurrences
           countMatches = 0;
 
-          title = this.setFieldMatches(projectInfo.getTitle(), pattern, "");
-          summary = this.setFieldMatches(projectInfo.getSummary(), pattern, "");
+          title = this.setFieldMatches(projectInfo.getTitle(), pattern, "", null, false);
+          summary = this.setFieldMatches(projectInfo.getSummary(), pattern, "", null, false);
 
           String gender = "", youth = "", capacityDevelopment = "";
-          gender = this.setFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"));
-          youth = this.setFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"));
+          gender = this.setFieldMatches(projectInfo.getCrossCuttingGender(), pattern, this.getText("summaries.gender"),
+            null, false);
+          youth = this.setFieldMatches(projectInfo.getCrossCuttingYouth(), pattern, this.getText("summaries.youth"),
+            null, false);
           capacityDevelopment = this.setFieldMatches(projectInfo.getCrossCuttingCapacity(), pattern,
-            this.getText("summaries.capacityDevelopment"));
+            this.getText("summaries.capacityDevelopment"), null, false);
 
           if (countMatches > 0) {
             // set dates
@@ -827,20 +835,49 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   }
 
 
-  private String setFieldMatches(Object field, Pattern pattern, String stringCrossCutting) {
+  private String setFieldMatches(Object field, Pattern pattern, String stringCrossCutting, Object scoring,
+    Boolean isScoring) {
     if (field != null) {
-      if (field instanceof Boolean) {
+      if (isScoring) {
+        return this.setScoringMatches((Boolean) field, pattern, stringCrossCutting, scoring);
+      } else if (field instanceof Boolean) {
         return this.setBooleanMatches((Boolean) field, pattern, stringCrossCutting);
       } else {
         return this.setStringMatches((String) field, pattern);
       }
     } else {
-      return "<font size=2 face='Segoe UI' color='#000000'></font>";
+      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
     }
-
-
   }
 
+
+  private String setScoringMatches(Boolean field, Pattern pattern, String stringCrossCutting, Object scoring) {
+    Set<String> matchesField = new HashSet<>();
+    String crossCutting = "";
+    if (scoring != null) {
+      CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById((long) scoring);
+      crossCutting = "<font size=2 face='Segoe UI' color='#000000'>" + crossCuttingScoring.getDescription() + "</font>";
+      // Hash set list of matches, avoiding duplicates
+      // Find keys in title
+      Matcher matcher = pattern.matcher(stringCrossCutting);
+      // while are occurrences
+      while (matcher.find()) {
+        // add elements to matches
+        matchesField.add(matcher.group(1));
+      }
+      for (@SuppressWarnings("unused")
+      String match : matchesField) {
+        if (field) {
+          countMatches++;
+          crossCutting = crossCutting.replaceAll("\\b" + crossCuttingScoring.getDescription() + "\\b",
+            "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+        }
+      }
+    } else {
+      return "<font size=2 face='Segoe UI' color='#000000'>&lt;Not Defined&gt;</font>";
+    }
+    return crossCutting;
+  }
 
   private String setStringMatches(String field, Pattern pattern) {
     Set<String> matchesField = new HashSet<>();

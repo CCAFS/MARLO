@@ -393,7 +393,7 @@ public class ResearchManagementAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
       this.checkDeleted();
       this.checkChanges();
 

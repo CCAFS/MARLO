@@ -1084,43 +1084,45 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     CrpProgram crpProgramDb = null;
     // Add crp flagship program type
-    for (CrpProgram crpProgram : flagshipsPrograms) {
-      if (crpProgram.getId() == null) {
-        crpProgram.setCrp(loggedCrp);
-        crpProgram.setActive(true);
-        crpProgram.setCreatedBy(this.getCurrentUser());
-        crpProgram.setModifiedBy(this.getCurrentUser());
-        crpProgram.setModificationJustification("");
-        crpProgram.setActiveSince(new Date());
-        crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
-        LiaisonInstitution liasonInstitution = new LiaisonInstitution();
-        liasonInstitution.setAcronym(crpProgram.getAcronym());
-        liasonInstitution.setCrp(loggedCrp);
-        liasonInstitution.setCrpProgram(crpProgram);
-        liasonInstitution.setName(crpProgram.getName());
-
-
-        liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
-
-      } else {
-        crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
-        crpProgram.setCrp(loggedCrp);
-        crpProgram.setActive(true);
-        crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
-        crpProgram.setModifiedBy(this.getCurrentUser());
-        crpProgram.setModificationJustification("");
-        crpProgram.setActiveSince(crpProgramDb.getActiveSince());
-        crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
-        for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
+    if (flagshipsPrograms != null) {
+      for (CrpProgram crpProgram : flagshipsPrograms) {
+        if (crpProgram.getId() == null) {
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgram.setCreatedBy(this.getCurrentUser());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(new Date());
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
+          LiaisonInstitution liasonInstitution = new LiaisonInstitution();
           liasonInstitution.setAcronym(crpProgram.getAcronym());
+          liasonInstitution.setCrp(loggedCrp);
+          liasonInstitution.setCrpProgram(crpProgram);
           liasonInstitution.setName(crpProgram.getName());
+
+
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
-        }
+        } else {
+          crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(crpProgramDb.getActiveSince());
+          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
+          for (LiaisonInstitution liasonInstitution : crpProgramDb.getLiaisonInstitutions()) {
+            liasonInstitution.setAcronym(crpProgram.getAcronym());
+            liasonInstitution.setName(crpProgram.getName());
+            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
+          }
+
+        }
+        this.programLeaderData(crpProgramDb, crpProgram);
+        this.programManagerData(crpProgramDb, crpProgram);
       }
-      this.programLeaderData(crpProgramDb, crpProgram);
-      this.programManagerData(crpProgramDb, crpProgram);
     }
   }
 

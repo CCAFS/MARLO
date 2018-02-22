@@ -73,7 +73,7 @@ public class CapDevSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
       if (this.isCompleteCapDev(capDevID)) {
         if (submissionService.findAll() != null) {
           CapacityDevelopment capDev = capdevService.getCapacityDevelopmentById(capDevID);

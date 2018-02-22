@@ -267,13 +267,12 @@ public class FundingSourceInfo implements java.io.Serializable, IAuditLog {
 
   public String getStatusName() {
     if (status != null && status.intValue() != -1) {
-      ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(status.intValue());
+      FundingStatusEnum statusEnum = FundingStatusEnum.getValue(status.intValue());
       if (statusEnum != null) {
         return statusEnum.getStatus();
       }
     }
     return "";
-
   }
 
 

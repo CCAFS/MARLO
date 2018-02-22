@@ -125,7 +125,7 @@
     
     <div class="form-group"> 
       [#-- Title --] 
-      [@customForm.input name="${customName}.topicStudy" i18nkey="expectedStudy.topicStudy"  placeholder="" className="" required=true editable=isEditable /]
+      [@customForm.input name="${customName}.topicStudy" i18nkey="expectedStudy.topicStudy"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
     
     <div class="form-group row"> 

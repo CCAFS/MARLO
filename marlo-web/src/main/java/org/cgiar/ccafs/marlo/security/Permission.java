@@ -105,6 +105,8 @@ public class Permission {
 
 
   public static final String PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:w3";
+  public static final String PROJECT_GENDER_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:gender";
+
   public static final String PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION =
     "crp:{0}:project:{1}:fundingSource:{2}:w3";
 

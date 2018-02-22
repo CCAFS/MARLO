@@ -70,12 +70,12 @@ public class ProjectPartnersValidator extends BaseValidator {
     this.institutionManager = institutionManager;
   }
 
-  private Path getAutoSaveFilePath(Project project, long crpID) {
+  private Path getAutoSaveFilePath(Project project, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.PARTNERS.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -104,7 +104,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
     if (project != null) {
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(project, action.getCrpID());
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");
@@ -131,15 +131,17 @@ public class ProjectPartnersValidator extends BaseValidator {
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
       if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-        if (!action.isProjectNew(project.getId())) {
-          this.validateLessonsLearn(action, project);
-          if (action.getValidationMessage().toString().contains("Lessons")) {
-            this.replaceAll(action.getValidationMessage(), "Lessons",
-              "Lessons regarding partnerships and possible implications for the coming planning cycle");
-            action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
+        /*
+         * if (!action.isProjectNew(project.getId())) {
+         * this.validateLessonsLearn(action, project);
+         * if (action.getValidationMessage().toString().contains("Lessons")) {
+         * this.replaceAll(action.getValidationMessage(), "Lessons",
+         * "Lessons regarding partnerships and possible implications for the coming planning cycle");
+         * action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         * }/
+         */
 
         if (project.getProjectInfo().getNewPartnershipsPlanned() == null
           || project.getProjectInfo().getNewPartnershipsPlanned().trim().isEmpty()) {
@@ -246,11 +248,11 @@ public class ProjectPartnersValidator extends BaseValidator {
         }
       }
     } catch (Exception e) {
-      LOG.error("unable to validate contact persons for project " + project, e);
-      /**
-       * Original code swallows the exception and didn't even log it. Now we at least log it,
-       * but we need to revisit to see if we should continue processing or re-throw the exception.
-       */
+      LOG.error("unable to validate contact persons for project " + project,
+        e);/**
+            * Original code swallows the exception and didn't even log it. Now we at least log it,
+            * but we need to revisit to see if we should continue processing or re-throw the exception.
+            */
     }
   }
 

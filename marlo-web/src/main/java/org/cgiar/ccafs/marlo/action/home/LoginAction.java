@@ -212,6 +212,8 @@ public class LoginAction extends BaseAction {
             this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
           }
         }
+
+        this.getSession().put(APConstants.CRP_VISIBLE_TOP_GULIST, new Boolean(this.isVisibleTopGUList()));
         this.getSession().put("color", this.randomColor());
         // Validate if the user already logged in other session.
         /*

@@ -163,7 +163,8 @@ public class ProjectOutcomeAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = projectOutcome.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = projectOutcome.getId() + "_" + composedClassName + "_"
+      + this.getActualPhase().getDescription() + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -217,7 +218,7 @@ public class ProjectOutcomeAction extends BaseAction {
     int i = 0;
     for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
 
-      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId && crpMilestone.getYear() == year) {
+      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId) {
         return i;
       }
       i++;
@@ -868,6 +869,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     // ProjectOutcome projectOutcomeDB = new ProjectOutcome();
+    List<ProjectMilestone> milestones = projectOutcome.getMilestones();
+    List<ProjectNextuser> nextusers = projectOutcome.getNextUsers();
+    List<ProjectOutcomeIndicator> indicators = projectOutcome.getIndicators();
 
 
     Calendar startDate = Calendar.getInstance();
@@ -888,7 +892,7 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getExpectedUnit() != null) {
         if (projectOutcome.getExpectedUnit().getId() == null
           || projectOutcome.getExpectedUnit().getId().longValue() == -1) {
-          projectOutcome.setExpectedUnit(new SrfTargetUnit());
+          projectOutcome.setExpectedUnit(null);
         } else {
           projectOutcome.setExpectedUnit(projectOutcome.getExpectedUnit());
         }
@@ -901,6 +905,9 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }
+    projectOutcome.setMilestones(milestones);
+    projectOutcome.setNextUsers(nextusers);
+    projectOutcome.setIndicators(indicators);
 
     return projectOutcome;
 

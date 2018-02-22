@@ -191,9 +191,22 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
       try {
-        Phase phase = this.getActualPhase();
-        String fileName =
-          fileId + "_" + fileClass + "_" + phase.getDescription() + "_" + phase.getYear() + "_" + fileAction + ".json";
+        /*
+         * TODO
+         * Fix When Centers Contains Phases*
+         */
+        Phase phase = null;
+        if (this.getCrpID() != 23) {
+          phase = this.getActualPhase();
+        }
+        String fileName = "";
+        if (phase != null) {
+          fileName = fileId + "_" + fileClass + "_" + phase.getDescription() + "_" + phase.getYear() + "_" + fileAction
+            + ".json";
+        } else {
+          fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
+        }
+
         String pathFile = config.getAutoSaveFolder();
         LOG.debug("PathFile: " + pathFile);
         Path path = Paths.get(pathFile);

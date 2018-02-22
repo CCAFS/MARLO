@@ -133,8 +133,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       this.getText("summaries.deliverable.deliverableTitle"));
     masterReport.getParameterValues().put("i8nKeyOutput",
       this.getText("project.deliverable.generalInformation.keyOutput"));
-    masterReport.getParameterValues().put("i8nExpectedYear",
-      this.getText("project.deliverable.generalInformation.year"));
+    masterReport.getParameterValues().put("i8nExpectedYear", this.getText("summaries.deliverable.expectedYear"));
     masterReport.getParameterValues().put("i8nType", this.getText("deliverable.type"));
     masterReport.getParameterValues().put("i8nSubType", this.getText("deliverable.subtype"));
     masterReport.getParameterValues().put("i8nCrossCutting", this.getText("project.crossCuttingDimensions.readText"));
@@ -263,7 +262,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
         "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS",
         "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, Integer.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Long.class, String.class},
       0);
@@ -310,10 +309,10 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           && !deliverableInfo.getDeliverableType().getName().isEmpty()) ? deliverableInfo.getDeliverableType().getName()
             : null;
       String deliverableType = (deliverableInfo.getDeliverableType() != null
-        && deliverableInfo.getDeliverableType().getDeliverableType() != null
-        && deliverableInfo.getDeliverableType().getDeliverableType().getName() != null
-        && !deliverableInfo.getDeliverableType().getDeliverableType().getName().isEmpty())
-          ? deliverableInfo.getDeliverableType().getDeliverableType().getName() : null;
+        && deliverableInfo.getDeliverableType().getDeliverableCategory() != null
+        && deliverableInfo.getDeliverableType().getDeliverableCategory().getName() != null
+        && !deliverableInfo.getDeliverableType().getDeliverableCategory().getName().isEmpty())
+          ? deliverableInfo.getDeliverableType().getDeliverableCategory().getName() : null;
 
       // Get cross_cutting dimension
       String crossCutting = "";
@@ -411,8 +410,15 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       String delivStatus = (deliverableInfo.getStatusName(this.getActualPhase()) != null
         && !deliverableInfo.getStatusName(this.getActualPhase()).isEmpty())
           ? deliverableInfo.getStatusName(this.getActualPhase()) : null;
-      Integer delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
-        ? deliverableInfo.getNewExpectedYear() : null;
+      String delivNewYear = null;
+      if (deliverableInfo.getStatus() != null
+        && deliverableInfo.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        delivNewYear = deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1
+          ? deliverableInfo.getNewExpectedYear().toString() : null;
+      } else {
+        delivNewYear = "&lt;Not Applicable&gt;";
+      }
+
       Long projectID = null;
       String projectTitle = null;
       String projectLeadPartner = null;

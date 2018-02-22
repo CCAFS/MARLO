@@ -963,9 +963,13 @@ public class ProjectPartnerAction extends BaseAction {
             for (InstitutionLocation locElement : pp.getSelectedLocations()) {
               LocElement locElementDB =
                 locationManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-              InstitutionLocation institutionLocation = institutionLocationManager.findByLocation(locElementDB.getId(),
-                pp.getInstitution().getId().longValue());
-              locElements.add(institutionLocation);
+
+              if (locElementDB != null && pp.getInstitution() != null && pp.getInstitution().getId() != null) {
+                InstitutionLocation institutionLocation = institutionLocationManager
+                  .findByLocation(locElementDB.getId(), pp.getInstitution().getId().longValue());
+                locElements.add(institutionLocation);
+              }
+
             }
             pp.getSelectedLocations().clear();
             pp.getSelectedLocations().addAll(locElements);
@@ -1259,12 +1263,10 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
           }
 
-
           // projectPartnerDB = projectPartnerManager.getProjectPartnerById(projectPartnerClient.getId());
 
           this.removeProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
           this.saveProjectPartnerPersons(projectPartnerClient, projectPartnerDB);
-
           this.saveProjectPartnerContributions(projectPartnerClient, projectPartnerDB);
           this.saveLocations(projectPartnerClient, projectPartnerDB);
 
@@ -1301,7 +1303,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
 
-      if (this.isLessonsActive()) {
+      if (this.isLessonsActive() && this.isReportingActive()) {
         this.saveLessons(loggedCrp, project);
       }
 
@@ -1366,7 +1368,7 @@ public class ProjectPartnerAction extends BaseAction {
     /**
      * This is a small optimization to return the locations pre-fetched rather than get them one by one.
      */
-    projectPartnerDB = projectPartnerManager.getProjectPartnerByIdAndEagerFetchLocations(projectPartnerDB.getId());
+
 
     List<ProjectPartnerLocation> projectPartnerLocationsDB =
       projectPartnerDB.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());

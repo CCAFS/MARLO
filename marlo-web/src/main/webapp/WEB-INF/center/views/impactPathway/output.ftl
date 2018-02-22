@@ -53,7 +53,7 @@
         
         [#-- Back --]
         <h5 class="pull-right">
-          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="programID" value=programID /][@s.param name="outcomeID" value=outcomeID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+          <a href="[@s.url action='${centerSession}/outputsList'][@s.param name="programID" value=programID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
             <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the outputs list
           </a>
         </h5>
@@ -76,38 +76,52 @@
             
           </div> 
           
-          [#-- Research topic --]
-          <div class="form-group">
-              <label for="">Research Topic:</label><p>${selectedResearchTopic.researchTopic}</p>
-          </div>
-          
-          [#-- Outcome --]
-          <div class="form-group">
-              <label for="">Outcome:</label><p>${selectedResearchOutcome.description}</p>
-          </div>
-          
-          [#-- Contact Person --]
-          [#if contacPersons?has_content]
-            <label for="">Contact Person(s):  </label>
-            [#list contacPersons as contacPerson]
-            <p> <span class="glyphicon glyphicon-user"></span> ${contacPerson.user.composedCompleteName}</p>
-            [/#list]
-          [/#if] 
-        </div>
-        
-        <h3 class="headTitle"> Next Users </h3>
+          [#-- Outcome Contributions--]
+        <h3 class="headTitle"> Outcome Contributions </h3>
         <div class="borderBox nextUsers-list" listname="${outputCustomName}.nextUsers">
+        
+          <div class="form-group">      
+            <div class="output panel tertiary">
+              <div class="panel-body" listname="output.outcomeList"> 
+                <ul id="outputsBlock" class="list outputList">
+                [#if  output.outcomes?has_content]  
+                  [#list output.outcomes as outcome]
+                     [@outcomesMacro element=outcome name="output.outcomes" index=outcome_index isTemplate=false/]
+                  [/#list] 
+                [#else]
+                  <p class="text-center outputInf"> [@s.text name="projectDescription.notOutputs" /] </p>  
+                [/#if]  
+                </ul>
+                [#if editable]
+                  <select name="" class="outputSelect">
+                    <option value="-1">Select an option...</option>
+                    [#list outcomes as outcome]
+                      <optgroup  label="${(outcome.researchTopic.researchTopic)!}">
+                        [#list outcome.outcomes as op]<option value="${(op.id)!}">${(op.composedName)!}</option>[/#list]
+                      </optgroup>
+                    [/#list]
+                  </select>
+                [/#if] 
+              </div>              
+            </div>
+          </div>
+          
+        </div>  
+          
+        <h3 class="headTitle"> Next Users </h3>
+        <div class="borderBox nextUsers-list" listname="${outputCustomName!''}.nextUsers">
           [#if output.nextUsers?has_content]
             [#list output.nextUsers as nextUser]
-            [@nextUserMacro nextUser=nextUser name="${outputCustomName}.nextUsers" index=nextUser_index /]
+              [@nextUserMacro nextUser=nextUser name="output.nextUsers" index=nextUser_index /]
             [/#list]
-            [#else]
-            [@nextUserMacro nextUser={} name="${outputCustomName}.nextUsers" index=0 /]
+          [#else]
+              [@nextUserMacro nextUser={} name="output.nextUsers" index=0 /]
           [/#if] 
         </div>
         [#if editable] 
         <div class="text-right">
           <div class="addNextUser button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="Add a new Next User"/]</div>
+          <hr />
         </div>
         [/#if]
         [#-- Section Buttons--]
@@ -122,6 +136,7 @@
 
 [#-- Macros --]
 [@nextUserMacro nextUser={} name="output.nextUsers" index=-1 template=true/]
+[@outcomesMacro element={} name="output.outcomes"  index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/center/pages/footer.ftl" /]
 
@@ -146,4 +161,33 @@
   
   <div class="clearfix"></div>
   </div>
+[/#macro]
+
+[#macro outcomesMacro element name index=-1 isTemplate=false]  
+  [#assign outputCustomName = "${name}[${index}]" /]
+  <li id="output-${isTemplate?string('template',(element.id)!)}" class="outputs  borderBox row "  style="display:${isTemplate?string('none','block')}">
+  <input type="hidden" name="${outputCustomName}.id" value="${(element.id)!}"/>
+  <input type="hidden" class="outputId" name="${outputCustomName}.centerOutcome.id" value="${(element.centerOutcome.id)!}"/>
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div id="" class="removeOutput removeElement removeLink" title="[@s.text name='projectDecription.removeOutput' /]"></div>
+      </div>
+    [/#if]
+    <div class="leftHead">
+      <span class="index">OC${(element.centerOutcome.id)!}</span>
+    </div>
+    [#-- Output Title --]
+    <div class="blockTitle closed form-group" style="margin-top:30px;">
+      <label for="">Outcome statement:</label>
+      <div class="oStatement">
+        [#if element.centerOutcome?? && element.centerOutcome.description?has_content]
+        ${(element.centerOutcome.description)!'New Outcome'}
+        [#else]
+        No Outcomes
+        [/#if]
+      </div>
+        
+      <div class="clearfix"></div>
+    </div>
+  </li>
 [/#macro]
