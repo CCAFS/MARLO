@@ -133,7 +133,7 @@
         [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true /]
       [#else]
         <input type="hidden" name="${customName}.w1w2" value="${(element.w1w2)!'0'}" class="currencyInput type-w1w2 category-${index}"/>
-        <nobr>US$ ${element.w1w2?number?string(",##0.00")}</nobr>
+        <nobr>US$ ${((element.w1w2)!'0')?number?string(",##0.00")}</nobr>
       [/#if]
     </td>
     <td class="text-right">
@@ -141,7 +141,7 @@
         [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}" required=true /]
       [#else]
         <input type="hidden" name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0'}" class="currencyInput type-w3bilateral category-${index}"/>
-        <nobr>US$ ${element.w3Bilateral?number?string(",##0.00")}</nobr>
+        <nobr>US$ ${((element.w3Bilateral)!'0')?number?string(",##0.00")}</nobr>
       [/#if]
     </td>
     <td class="text-right"> <nobr>US$ <span class="text-right label-total category-${index}">0.00</span></nobr> </td>
@@ -175,7 +175,7 @@
                 [@customForm.input name="${customName}.w1w2Percentage" value="${(element.w1w2Percentage)!'0'}" i18nkey="" showTitle=false className="percentageInput text-center type-percentage category-${expenditureArea_index}" required=true /]
               [#else]
                 <input type="hidden" name="${customName}.w1w2Percentage" value="${(element.w1w2Percentage)!'0'}" class="percentageInput type-percentage category-${expenditureArea_index}"/>
-                <nobr>${element.w1w2Percentage}%</nobr>
+                <nobr>${(element.w1w2Percentage)!0}%</nobr>
               [/#if]
             </td>
             <td class="col-md-7"> [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" showTitle=false className="" editable=editable && PMU/] </td>
