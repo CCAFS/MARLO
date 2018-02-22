@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -28,9 +27,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Named;
 
@@ -102,11 +99,6 @@ public class EvidencesValidator extends BaseValidator {
               action.getInvalidFields().put("list-powbSynthesis.powbEvidence.plannedStudies",
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"list-plannedStudies"}));
 
-            } else {
-              for (int i = 0; i < powbSynthesis.getPowbEvidence().getPlannedStudies().size(); i++) {
-                PowbEvidencePlannedStudy plannedStudy = powbSynthesis.getPowbEvidence().getPlannedStudies().get(i);
-                this.validatePlannedStudies(action, plannedStudy, i);
-              }
             }
 
           }
@@ -134,38 +126,6 @@ public class EvidencesValidator extends BaseValidator {
     }
   }
 
-  public void validatePlannedStudies(BaseAction action, PowbEvidencePlannedStudy plannedStudy, int i) {
-
-    List<String> params = new ArrayList<String>();
-    params.add(String.valueOf(i + 1));
-
-    if (!(this.isValidString(plannedStudy.getPlannedTopic())
-      && this.wordCount(plannedStudy.getPlannedTopic()) <= 100)) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.plannedTopic", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].plannedTopic",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (!(this.isValidString(plannedStudy.getComments()) && this.wordCount(plannedStudy.getComments()) <= 100)) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.comments", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].comments",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (plannedStudy.getGeographicScope() == -1) {
-      action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.geographicScope", params));
-      action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].geographicScope",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    if (plannedStudy.getSrfSubIdo() != null) {
-      if (plannedStudy.getSrfSubIdo().getId() == -1) {
-        action.addMessage(action.getText("evidenceRelevant.pannedStudies.validator.relevant", params));
-        action.getInvalidFields().put("input-powbSynthesis.powbEvidence.plannedStudies[" + i + "].srfSubIdo.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
-  }
 
 }
 
