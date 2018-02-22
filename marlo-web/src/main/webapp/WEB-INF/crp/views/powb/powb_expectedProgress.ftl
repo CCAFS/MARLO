@@ -189,6 +189,11 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
+    [#-- Means of verification --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+    </div>
+    
     [#-- Assessment of risk to achievement --]
     <div class="form-group">
       <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label><br />
@@ -198,11 +203,6 @@
       
       [#local assessmentSelected = ((powebElement.assessment == "1")!false) || ((powebElement.assessment == "2")!false) || ((powebElement.assessment == "3")!false)]
       [#if !editable && !assessmentSelected][@s.text name="form.values.fieldEmpty"/][/#if]
-    </div>
-    
-    [#-- Means of verification --]
-    <div class="form-group">
-      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
     </div>
     
   </div>
@@ -237,7 +237,7 @@
                 <th class="col-md-1"> Project ID </th>
                 <th class="col-md-4"> Project Title </th>
                 [#if hasTarget]<th class="col-md-1"> ${(element.srfTargetUnit.name!)} </th>[/#if]
-                <th class="col-md-6"> Narrative of the  expected target </th>
+                <th class="col-md-6"> [@s.text name="expectedProgress.contributionMilestoneTarget" /]  </th>
                 <th> </th>
               </tr>
             </thead>
