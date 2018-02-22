@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -29,17 +30,22 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ProjectLeaderEditAction extends BaseAction {
 
   private static final long serialVersionUID = -7458726524471438475L;
@@ -48,21 +54,30 @@ public class ProjectLeaderEditAction extends BaseAction {
   private ProjectInfoManager projectInfoManager;
   private long projectId;
   private boolean projectStatus;
+
   private Map<String, Object> status;
+
+
   private ProjectSectionValidator<ProjectLeaderEditAction> validateProject;
+
+  private final LocalizedTextProvider localizedTextProvider;
 
   @Inject
   public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager, ProjectInfoManager projectInfoManager,
-    SectionStatusManager sectionStatusManager, ProjectSectionValidator<ProjectLeaderEditAction> validateProject) {
+    SectionStatusManager sectionStatusManager, ProjectSectionValidator<ProjectLeaderEditAction> validateProject,
+    LocalizedTextProvider localizedTextProvider) {
     super(config);
     this.projectInfoManager = projectInfoManager;
     this.projectManager = projectManager;
     this.validateProject = validateProject;
+    this.localizedTextProvider = localizedTextProvider;
   }
 
   @Override
   public String execute() throws Exception {
+    this.loadProvider(this.getSession());
     Project project = projectManager.getProjectById(projectId);
+    project.setProjectInfo(null);
     ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
     status = new HashMap<String, Object>();
     status.put("ProjectId", projectId);
@@ -117,10 +132,81 @@ public class ProjectLeaderEditAction extends BaseAction {
   }
 
 
+  public long getProjectId() {
+    return projectId;
+  }
+
   public Map<String, Object> getStatus() {
     return status;
   }
 
+  @Override
+  public String getText(String aTextName) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(aTextName, locale);
+  }
+
+
+  @Override
+  public String getText(String key, String[] args) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+
+
+    Locale locale = new Locale(language);
+
+    return localizedTextProvider.findDefaultText(key, locale, args);
+
+  }
+
+
+  public boolean isProjectStatus() {
+    return projectStatus;
+  }
+
+  public void loadProvider(Map<String, Object> session) {
+    String language = APConstants.CUSTOM_LAGUAGE;
+    String pathFile = APConstants.PATH_CUSTOM_FILES;
+    if (session.containsKey(APConstants.CRP_LANGUAGE)) {
+      language = (String) session.get(APConstants.CRP_LANGUAGE);
+    }
+
+    Locale locale = new Locale(language);
+
+    /**
+     * This is yuck to have to cast the interface to a custom implementation but I can't see a nice way to remove custom
+     * properties bundles (the reason we are doing this is the scenario where a user navigates between CRPs. If we don't
+     * reset the properties bundles then the user will potentially get the properties loaded from another CRP if that
+     * property has not been defined by that CRP or Center.
+     */
+    ((MarloLocalizedTextProvider) this.localizedTextProvider).resetResourceBundles();
+
+    this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+
+
+    try {
+      ServletActionContext.getContext().setLocale(locale);
+    } catch (Exception e) {
+
+    }
+
+    if (session.containsKey(APConstants.SESSION_CRP)) {
+
+      if (session.containsKey(APConstants.CRP_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CRP_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else if (session.containsKey(APConstants.CENTER_CUSTOM_FILE)) {
+        pathFile = pathFile + session.get(APConstants.CENTER_CUSTOM_FILE);
+        this.localizedTextProvider.addDefaultResourceBundle(pathFile);
+      } else {
+
+        this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
+      }
+    }
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -132,6 +218,7 @@ public class ProjectLeaderEditAction extends BaseAction {
     projectId = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0]));
     projectStatus = Boolean.parseBoolean(StringUtils.trim(parameters.get("projectStatus").getMultipleValues()[0]));
   }
+
 
   private void saveMissingFields(Project project, String cycle, int year, String sectionName) {
     // Reporting missing fields into the database.
@@ -149,6 +236,15 @@ public class ProjectLeaderEditAction extends BaseAction {
     }
     status.setMissingFields("editLeader");
     sectionStatusManager.saveSectionStatus(status);
+  }
+
+
+  public void setProjectId(long projectId) {
+    this.projectId = projectId;
+  }
+
+  public void setProjectStatus(boolean projectStatus) {
+    this.projectStatus = projectStatus;
   }
 
   public void setStatus(Map<String, Object> status) {

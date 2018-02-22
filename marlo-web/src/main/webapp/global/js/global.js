@@ -1,3 +1,4 @@
+
 // Global Vars
 var yesnoEvent;
 var notyDefaultOptions = {
@@ -80,12 +81,12 @@ $(document).ready(function() {
     if(justification.exists() && justification.val().trim().length == 0) {
       e.preventDefault();
       return
-    } 
+    }
     // Turn save button in saving button
     turnSavingStateOn(this);
-     
+
   });
-  
+
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
     yesnoEvent($(this));
@@ -93,7 +94,7 @@ $(document).ready(function() {
 
   // hash url animation
   if(window.location.hash) {
-    if($(window.location.hash).exists && hashScroll) {
+    if($(window.location.hash).exists() && hashScroll) {
       $('html, body').animate({
         scrollTop: $(window.location.hash).offset().top - 110
       }, 1500);
@@ -111,15 +112,15 @@ $(document).ready(function() {
       }
     });
   }
-  
+
   // Phase tag visible
   if($('#phaseTag').exists()) {
     var phaseTagPos = $('#timelineScroll').parent().position().top + 20;
-    
+
     $('#phaseTag').find('span').css({
       right: $(document).width() - ($('.phaseTag').offset().left + $('.phaseTag').width())
     });
-    
+
     $(window).scroll(function() {
       if($(window).scrollTop() >= phaseTagPos) {
         $('#phaseTag span').fadeIn();

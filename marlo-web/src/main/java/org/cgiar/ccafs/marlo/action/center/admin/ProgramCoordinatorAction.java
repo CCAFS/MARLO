@@ -101,7 +101,7 @@ public class ProgramCoordinatorAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       long coorRoleId = Long.parseLong(this.getParameterValue(APConstants.CENTER_COORD_ROLE));
       Role role = roleService.getRoleById(coorRoleId);

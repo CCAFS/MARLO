@@ -91,6 +91,7 @@ public final class APConstants {
   public static final String CRP_REQUEST = "crp";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_RPM_ROLE = "crp_rpm_rol";
+  public static final String CRP_VISIBLE_TOP_GULIST = "VisibleTopGUList";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CUSTOM_FILE = "global";
   public static final String CRP_OTHER_LOCATIONS = "crp_other_locations";
@@ -500,7 +501,7 @@ public final class APConstants {
   public static final String SUMMARY_FORMAT_EXCEL = "Excel";
   public static final String SUMMARY_FORMAT_PDF = "PDF";
 
-	public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
+  public static final String CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES =
     "crp_has_specific_management_deliverable_type";
 
   // Cap-Dev Relations

@@ -690,7 +690,9 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getFundingSourceInfo() != null) {
         if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
           // if the funding source is type center funds -- institutions are ppa
-          if (fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 4) {
+          if (fundingSource.getFundingSourceInfo().getBudgetType() != null
+            && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null
+            && fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 4) {
             List<Institution> allInstitutions = null;
             institutionsDonors = new ArrayList<>();
             allInstitutions = institutionManager.findAll();
@@ -704,7 +706,9 @@ public class FundingSourceAction extends BaseAction {
 
           } else {
             // if the funding source is type w1 -- institutions are cgiar center
-            if (fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 1) {
+            if (fundingSource.getFundingSourceInfo().getBudgetType() != null
+              && fundingSource.getFundingSourceInfo().getBudgetType().getId() != null
+              && fundingSource.getFundingSourceInfo().getBudgetType().getId().longValue() == 1) {
               institutionsDonors = institutionManager.findAll().stream()
                 .filter(i -> i.isActive() && i.getInstitutionType().getId().intValue() == 3)
                 .collect(Collectors.toList());
@@ -810,6 +814,8 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo(this.getActualPhase()).setBudgetType(null);
       fundingSource.setFundingRegions(null);
       fundingSource.setFundingCountry(null);
+      fundingSource.getFundingSourceInfo().setPartnerDivision(null);
+
 
       return;
     }
@@ -827,6 +833,7 @@ public class FundingSourceAction extends BaseAction {
       // fundingSource.getFundingSourceInfo().setActiveSince(new Date());
       fundingSource.getFundingSourceInfo().setModifiedBy(this.getCurrentUser());
       fundingSource.getFundingSourceInfo().setModificationJustification("");
+
 
       // if donor has a select option, no option put donor null
       if (fundingSource.getFundingSourceInfo().getDirectDonor() != null
@@ -851,6 +858,7 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.getFundingSourceInfo().setGlobal(fundingSource.getFundingSourceInfo().isGlobal());
       fundingSource.getFundingSourceInfo()
         .setHasFileResearch(fundingSource.getFundingSourceInfo().getHasFileResearch());
+      fundingSource.getFundingSourceInfo().setGrantAmount(fundingSource.getFundingSourceInfo().getGrantAmount());
 
       fundingSource.getFundingSourceInfo().setFinanceCode(fundingSource.getFundingSourceInfo().getFinanceCode());
       fundingSource.getFundingSourceInfo()

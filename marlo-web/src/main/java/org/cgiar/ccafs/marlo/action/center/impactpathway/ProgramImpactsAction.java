@@ -66,10 +66,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -124,6 +125,7 @@ public class ProgramImpactsAction extends BaseAction {
   private long areaID;
   private String transaction;
   private ProgramImpactsValidator validator;
+  private CenterProgram programDb;
 
   @Inject
   public ProgramImpactsAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
@@ -527,6 +529,8 @@ public class ProgramImpactsAction extends BaseAction {
     String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
     this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
 
+    programDb = programService.getProgramById(selectedProgram.getId());
+
     if (this.isHttpPost()) {
       if (researchAreas != null) {
         researchAreas.clear();
@@ -547,9 +551,8 @@ public class ProgramImpactsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
-      CenterProgram programDb = programService.getProgramById(selectedProgram.getId());
 
       for (CenterImpact researchImpact : programDb.getResearchImpacts().stream().filter(ri -> ri.isActive())
         .collect(Collectors.toList())) {

@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo;
 
-import org.cgiar.ccafs.marlo.web.filter.RemoveSessionFromUrlFilter;
-
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -48,7 +46,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
 
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
-      servletContext.addFilter("removeSessionFromUrlFilter", new RemoveSessionFromUrlFilter());
+      servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
     removeSessionFromUrlFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
     /**
      * Need to use the DelegatingFilterProxy to allow the SessionFactory to be injected.

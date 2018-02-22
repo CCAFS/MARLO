@@ -177,15 +177,15 @@
                       [/#if]
                        
                     [#else]
-                      [#if (project.projectInfo.isNoRegional())!false ]
+                      [#if (project.projectInfo.getNoRegional())!false ]
                         <input type="hidden" name="project.projectInfo.noRegional" value="true" />
-                        <p class="checked"> [@s.text name="project.projectInfo.noRegional" /]</p>
+                        <p class="checked"> [@s.text name="project.noRegional" /]</p>
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                       [#if project.regions?has_content]
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
                       [#else]
-                        <p>[@s.text name="form.values.fieldEmpty" /]</p>
+                        
                         [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
                       [/#if]
                     [/#if]

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cgiar.ccafs</groupId>
 	<artifactId>marlo-parent</artifactId>
-	<version>4.2.3-SNAPSHOT</version>
+	<version>4.2.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>marlo-parent</name>
 	<description>Parent</description>
@@ -58,7 +58,6 @@
     <aspectj.version>1.8.10</aspectj.version>
     <springfox-swagger2.version>2.7.0</springfox-swagger2.version>
     <quartz.version>2.1.5</quartz.version>
-    <easyrules.version>2.4.0</easyrules.version>
 	</properties>
 	<developers>
 		<developer>
@@ -497,6 +496,11 @@
         <artifactId>jcommon</artifactId>
         <version>${jcommon.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.easyrules</groupId>
+        <artifactId>easyrules-core</artifactId>
+        <version>${easyrules-core.version}</version>
+      </dependency>
       <!-- library to ws client -->
       <dependency>
         <groupId>org.apache.axis</groupId>
@@ -556,11 +560,6 @@
         <groupId>net.gpedro.integrations.slack</groupId>
         <artifactId>slack-webhook</artifactId>
         <version>${slack.webhook.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.easyrules</groupId>
-        <artifactId>easyrules-core</artifactId>
-        <version>${easyrules.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

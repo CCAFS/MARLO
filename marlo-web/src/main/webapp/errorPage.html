@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Another OOPS page</title>
+  <meta name="description" content="Another OOPS Page">
+<script type="text/javascript">
+var getUrl = window.location;
+
+var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+
+console.log(baseUrl);
+console.log(getUrl);
+
+
+ window.location.href = baseUrl+'/unhandledExceptionAction.do'; //relative to domain
+</script>
+</head>
+
+<body>
+  <h1>Another OOPS page</h1>
+  
+</body>
+</html>

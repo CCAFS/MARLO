@@ -18,12 +18,9 @@ package org.cgiar.ccafs.marlo.web.filter;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
+import javax.inject.Named;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -31,6 +28,7 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Protects from exposing session ids in URLs for security reasons.
@@ -40,7 +38,8 @@ import org.slf4j.LoggerFactory;
  * <li>removes session id from URLs.</li>
  * </ul>
  */
-public class RemoveSessionFromUrlFilter implements Filter {
+@Named("RemoveSessionFromUrlFilter")
+public class RemoveSessionFromUrlFilter extends OncePerRequestFilter {
 
   private final Logger LOG = LoggerFactory.getLogger(RemoveSessionFromUrlFilter.class);
 
@@ -52,18 +51,20 @@ public class RemoveSessionFromUrlFilter implements Filter {
    * Filters requests to remove URL-based session identifiers.
    */
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+  public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
     throws IOException, ServletException {
 
 
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-    HttpServletResponse httpResponse = (HttpServletResponse) response;
+    HttpServletRequest httpRequest = request;
+    HttpServletResponse httpResponse = response;
 
     if (this.isRequestedSessionIdFromURL(httpRequest)) {
       HttpSession session = httpRequest.getSession(false);
 
       if (session != null) {
+        String sessionId = session.getId();
         session.invalidate(); // clear session if session id in URL
+        LOG.debug("Removed Session Id: " + sessionId + " from URL");
       }
     }
 
@@ -92,11 +93,6 @@ public class RemoveSessionFromUrlFilter implements Filter {
     };
 
     chain.doFilter(request, wrappedResponse);
-  }
-
-  @Override
-  public void init(FilterConfig config) throws ServletException {
-    LOG.debug("initializing RemoveSessionFromUrlFilter");
   }
 
   /**

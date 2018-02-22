@@ -22,9 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.CapdevSuppDocsDocuments;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
 
+@Named
 public class CapdevSuppDocsDocumentsMySQLDAO extends AbstractMarloDAO<CapdevSuppDocsDocuments, Long>
   implements CapdevSuppDocsDocumentsDAO {
 
