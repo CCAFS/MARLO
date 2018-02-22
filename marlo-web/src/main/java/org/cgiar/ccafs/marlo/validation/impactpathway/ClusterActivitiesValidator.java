@@ -58,17 +58,23 @@ public class ClusterActivitiesValidator extends BaseValidator {
       }
     }
 
+    if (activities != null) {
+      if (activities.size() == 0) {
+        action.addMissingField("program.activites");
+        action.getInvalidFields().put("list-clusterofActivities",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities"}));
+      }
 
-    if (activities.size() == 0) {
+
+      for (int i = 0; i < activities.size(); i++) {
+        CrpClusterOfActivity outcome = activities.get(i);
+
+        this.validateClusterOfActivity(action, outcome, i);
+      }
+    } else {
       action.addMissingField("program.activites");
       action.getInvalidFields().put("list-clusterofActivities",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities"}));
-    }
-
-    for (int i = 0; i < activities.size(); i++) {
-      CrpClusterOfActivity outcome = activities.get(i);
-
-      this.validateClusterOfActivity(action, outcome, i);
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
