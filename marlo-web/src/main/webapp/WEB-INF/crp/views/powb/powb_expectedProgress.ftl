@@ -189,6 +189,11 @@
       <p class="text-justify"><strong>Milestone for ${actualPhase.year}</strong> - ${(element.title)!} </p>
     </div>
     
+    [#-- Means of verification --]
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+    </div>
+    
     [#-- Assessment of risk to achievement --]
     <div class="form-group">
       <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label><br />
@@ -198,11 +203,6 @@
       
       [#local assessmentSelected = ((powebElement.assessment == "1")!false) || ((powebElement.assessment == "2")!false) || ((powebElement.assessment == "3")!false)]
       [#if !editable && !assessmentSelected][@s.text name="form.values.fieldEmpty"/][/#if]
-    </div>
-    
-    [#-- Means of verification --]
-    <div class="form-group">
-      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
     </div>
     
   </div>
