@@ -56,9 +56,6 @@
             [@tableHMacro /]
           </div>
           
-          <div class="form-group">
-            [@tableDeliverablesMacro /]
-          </div>
           
         </div>
         
@@ -91,11 +88,11 @@
       <tbody>
           <tr>
             <td class="row">Gender</td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant}%</span> </td>
-            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored}%</span> </td> 
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant?string(",##0.00")}%</span> </td>
+            <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored?string(",##0.00")}%</span> </td> 
             <td rowspan="3" class="text-center"> 
-              <h3 class="animated flipInX">${tableC.total}</span> </h3>
+              <h3 class="animated flipInX"><a class="btn btn-default btn-lg" data-toggle="modal" data-target="#overallOutputsMacro">${tableC.total}</a></span> </h3>
             </td> 
           </tr>
           <tr>
@@ -113,10 +110,25 @@
       </tbody>
     </table>
   </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="overallOutputsMacro" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="subTitle headTitle"> Deliverables </h4>
+        </div>
+        <div class="modal-body">
+          [@tableDeliverablesMacro dList=deliverableList/]
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+      </div>
+    </div>
+  </div>
 [/#macro]
 
-
-[#macro tableDeliverablesMacro ]
+[#macro tableDeliverablesMacro dList]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -129,8 +141,8 @@
         </tr>
       </thead>
       <tbody>
-        [#if deliverableList?has_content]
-          [#list deliverableList as dInfo]
+        [#if dList?has_content]
+          [#list dList as dInfo]
           <tr>
             <td class="row">
               <p> <strong>D${(dInfo.deliverable.id)!}</strong> ${(dInfo.title)!'Not Defined'}</p>
