@@ -483,7 +483,7 @@ p.login-description{
   visibility: visible;
 }
 
-.form-control {
+#loginFormContainer .form-control {
   display: block;
   width: 100%;
   padding: 8px 12px;
@@ -492,12 +492,12 @@ p.login-description{
   border: none;
   border-bottom: 2px solid #ccc;
 }
-.form-control:focus {
+#loginFormContainer .form-control:focus {
   border-color: #ccc;
   outline: none;
 }
 
-input[type=checkbox] {
+#loginFormContainer input[type=checkbox] {
   transform: scale(1.5);
 }
 
