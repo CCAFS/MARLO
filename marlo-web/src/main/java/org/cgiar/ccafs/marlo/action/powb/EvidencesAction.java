@@ -214,12 +214,8 @@ public class EvidencesAction extends BaseAction {
           projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyId.trim()));
 
         PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+
         evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-        evidencePlannedStudyNew.setActive(true);
-        evidencePlannedStudyNew.setActiveSince(new Date());
-        evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-        evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-        evidencePlannedStudyNew.setModificationJustification("");
 
         evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
         evidencePlannedStudyNew.setPowbEvidence(powbEvidenceDB);
@@ -233,6 +229,7 @@ public class EvidencesAction extends BaseAction {
           evidencePlannedStudyNew.setActiveSince(new Date());
           evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
           evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
+          evidencePlannedStudyNew.setModificationJustification("");
           evidencePlannedStudyNew =
             powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
         }
