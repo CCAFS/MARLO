@@ -94,7 +94,9 @@
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored}%</span> </td> 
-            <th rowspan="3" class="text-center"> <h3 class="animated flipInX">${tableC.total}</span> </h3>           
+            <td rowspan="3" class="text-center"> 
+              <h3 class="animated flipInX">${tableC.total}</span> </h3>
+            </td> 
           </tr>
           <tr>
             <td class="row">Youth</td>
