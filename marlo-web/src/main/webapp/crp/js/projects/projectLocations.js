@@ -535,7 +535,7 @@ function initMap() {
 function CenterControl(controlDiv,map) {
 
   // Set CSS for the control border.
-  var controlUI = document.createElement('div');
+/*  var controlUI = document.createElement('div');
   controlUI.style.backgroundColor = '#668fda';
   controlUI.style.border = '2px solid #668fda';
   controlUI.style.borderRadius = '3px';
@@ -545,10 +545,10 @@ function CenterControl(controlDiv,map) {
   controlUI.style.marginBottom = '22px';
   controlUI.style.textAlign = 'center';
   controlUI.title = 'Click to add location';
-  controlDiv.appendChild(controlUI);
+  controlDiv.appendChild(controlUI);*/
 
   // Set CSS for the control interior.
-  var controlText = document.createElement('div');
+/*  var controlText = document.createElement('div');
   controlText.style.color = 'white';
   controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
   controlText.style.fontSize = '12px';
@@ -556,13 +556,13 @@ function CenterControl(controlDiv,map) {
   controlText.style.paddingLeft = '5px';
   controlText.style.paddingRight = '5px';
   controlText.innerHTML = '<span class="glyphicon glyphicon-plus"></span> <b>Add new Location</b>';
-  controlUI.appendChild(controlText);
+  controlUI.appendChild(controlText);*/
 
   // Setup the click event listeners: simply set the map to Chicago.
-  controlUI.addEventListener('click', function() {
+/*  controlUI.addEventListener('click', function() {
     var latLng = new google.maps.LatLng(map.getCenter().lat(), map.getCenter().lng());
     openInfoWindowForm(latLng);
-  });
+  });*/
 
 }
 
@@ -678,7 +678,7 @@ function showMarkers() {
 // open info window with the form
 function openInfoWindowForm(e) {
 
-  resetInfoWindow();
+/*  resetInfoWindow();
   var content;
   content = $("#infoWrapper").html();
   infoWindow.setContent([
@@ -686,7 +686,7 @@ function openInfoWindowForm(e) {
   ].join(''));
   infoWindow.open(map);
   infoWindow.setPosition(e);
-  /** Type* */
+  *//** Type* *//*
   infoWindow.type = {
     "data": "form"
   };
@@ -707,7 +707,7 @@ function openInfoWindowForm(e) {
   $("#inputFormWrapper").find("input.longitude").val(e.lng());
 
   // Events
-  formWindowEvents();
+  formWindowEvents();*/
 
 }
 
