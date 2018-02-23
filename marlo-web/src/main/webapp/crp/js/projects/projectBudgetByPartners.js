@@ -125,15 +125,21 @@ function addFundingSource(fs) {
   $item.find('input.currencyInput').currencyInput();
   // Setting Percentage Inputs
   $item.find('input.percentageInput').percentageInput();
-  // Update Index
-  $item.setNameIndexes(1, countFundingSources);
-  countFundingSources++;
+
+  // $item.setNameIndexes(1, countFundingSources);
+  // countFundingSources++;
+
   // Add the W3bilateralFund to the list
   $list.append($item);
   // Remove emptyMessage
   $list.find('.emptyMessage').remove();
   // Show the W3bilateralFund
   $item.show('slow');
+
+  // Update Index
+  $('.projectW3bilateralFund').each(function(iFs,fs) {
+    $(fs).setNameIndexes(1, iFs);
+  })
 }
 
 function updateActiveYearCurrency(type,partner) {
