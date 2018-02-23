@@ -20,8 +20,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 
@@ -41,7 +42,7 @@ public class CrpPpaPartnerMySQLDAO extends AbstractMarloDAO<CrpPpaPartner, Long>
   public void deleteCrpPpaPartner(long crpPpaPartnerId) {
     CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
     crpPpaPartner.setActive(false);
-    this.save(crpPpaPartner);
+    super.update(crpPpaPartner);
   }
 
   @Override
