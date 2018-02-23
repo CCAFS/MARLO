@@ -132,3 +132,8 @@ form .form-group.margin-panel {
 .table-plannedStudies td.checkbox {
   display: table-cell;
 }
+
+.plannedStudiesCheckbox p.checked{
+  height: 20px;
+  margin-left: 10px;
+}
