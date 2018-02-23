@@ -19,6 +19,7 @@
   [#-- PROJECT REPORTS --]
   { "slug": "projects", "title":"summaries.board.options.projects", "reportsList": [
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.projectPortfolio", 
       "description": "summaries.board.report.projectPortfolio.description",
       "namespace": "/projects",
@@ -28,6 +29,7 @@
       "allowProjectID": true
     },
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.genderContributionSummary", 
       "description": "summaries.board.report.genderContributionSummary.description",
       "namespace": "/projects",
@@ -37,6 +39,7 @@
       "allowKeyWords": true
     },
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.impactPathwayContributionsSummary", 
       "description": "summaries.board.report.impactPathwayContributionsSummary.description",
       "namespace": "/projects",
@@ -45,6 +48,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
       "description": "summaries.board.report.outcomeCaseStudies.description",
       "namespace": "/projects",
@@ -53,6 +57,7 @@
       "cycles": [ "Reporting" ]
     },
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.projectHighlights", 
       "description": "summaries.board.report.projectHighlights.description",
       "namespace": "/projects",
@@ -61,6 +66,7 @@
       "cycles": [ "Reporting" ]
     },
     { "active": action.hasSpecificities("crp_leverages_module"),
+      "available": true,
       "title": "summaries.board.report.leverages", 
       "description": "summaries.board.report.leverages.description",
       "namespace": "/projects",
@@ -72,6 +78,7 @@
   [#-- PARTNERS REPORTS --]
   { "slug": "partners", "title":"summaries.board.options.partners", "reportsList": [
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.leadProjectInstitutionsSummary", 
       "description": "summaries.board.report.leadProjectInstitutionsSummary.description",
       "namespace": "/projects",
@@ -80,6 +87,7 @@
       "cycles": [ "Planning", "Reporting" ]
     },
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.partnersWorkingWithProjects", 
       "description": "summaries.board.report.partnersWorkingWithProjects.description",
       "namespace": "/projects",
@@ -91,6 +99,7 @@
   [#-- DELIVERABLES REPORTS --]
   { "slug": "deliverables", "title":"summaries.board.options.deliverables", "reportsList": [
     { "active": true,
+      "available": true,
       "title": "summaries.board.report.expectedDeliverables", 
       "description": "summaries.board.report.expectedDeliverables.description",
       "namespace": "/projects",
@@ -99,6 +108,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
+      "available": false,
       "title": "summaries.board.report.reportedDeliverables", 
       "description": "summaries.board.report.reportedDeliverables.description",
       "namespace": "/projects",
@@ -110,6 +120,7 @@
   [#-- BUDGET REPORTS --]
   { "slug": "budget", "title":"summaries.board.options.budget", "reportsList": [
     { "active": true,
+      "available": false,
       "title": "summaries.board.report.powb", 
       "description": "summaries.board.report.powb.description",
       "namespace": "/projects",
@@ -118,6 +129,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
+      "available": false,
       "title": "summaries.board.report.powbMOG", 
       "description": "summaries.board.report.powbMOG.description",
       "namespace": "/projects",
@@ -126,6 +138,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
+      "available": false,
       "title": "summaries.board.report.fundingSourceSummary", 
       "description": "summaries.board.report.fundingSourceSummary.description",
       "namespace": "/projects",
@@ -162,14 +175,10 @@
         <div class="summariesOptions">
           [#list reportsTypes as reportType]
             <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-              [#-- Temporal Validation --]
-              [#if action.canAcessSumaries()]
-                [#list reportType.reportsList as report]
-                  [#if report.active][@reportMacro report /][/#if]
-                [/#list]
-              [#else]
-                <div class="borderBox text-center"><p>This section is under maintenance and will be available soon.</p></div>
-              [/#if]
+              [#-- Temporal Validation (action.canAcessSumaries())--]
+              [#list reportType.reportsList as report]
+                [#if report.active][@reportMacro report /][/#if]
+              [/#list]
             </div>
           [/#list] 
         </div>
@@ -184,8 +193,9 @@
 [#macro reportMacro report]
 
 <div class="summariesFiles simpleBox ${(report.allowProjectID??)?string('allowProjectID','')}">
+  [#if !(report.available)]<p class="text-center note">This report is under maintenance and will be available soon.</p>[/#if]
   <div class="loading" style="display:none"></div>
-  <div class="form-group">
+  <div class="form-group" style="opacity:${report.available?string('1','0.5')}">
     [#-- Tags --]
     <div class="tags pull-right">
       [#list report.cycles as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
@@ -200,6 +210,7 @@
   </div>
   
   [#-- Options --]
+  [#if report.available]
   <div class="extraOptions" style="display: none;">
     <hr />
     [@s.form  target="_blank" action=report.action  method="GET" namespace=report.namespace cssClass=""]
@@ -273,5 +284,6 @@
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
     [/@s.form]
   </div>
+  [/#if]
 </div>
 [/#macro]
