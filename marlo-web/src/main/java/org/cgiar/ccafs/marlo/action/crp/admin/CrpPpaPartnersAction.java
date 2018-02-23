@@ -580,7 +580,7 @@ public class CrpPpaPartnersAction extends BaseAction {
       List<CrpPpaPartner> ppaPartnerReview =
         new ArrayList<>(crpPpaPartnerManager.findAll().stream().filter(ppa -> ppa.isActive()
           && ppa.getCrp().getId() == loggedCrp.getId() && ppa.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList()));
+        .collect(Collectors.toList()));
       if (ppaPartnerReview != null) {
 
 
@@ -696,25 +696,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
         }
       }
-      if (loggedCrp.getCrpPpaPartners() != null) {
-        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
-          .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-      }
-      ppaPartnerReview = crpPpaPartnerManager.findAll();
-      if (ppaPartnerReview != null) {
 
-        for (CrpPpaPartner partnerDB : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp)
-          && ppa.getPhase() != null && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
-          partnerDB = crpPpaPartnerManager.getCrpPpaPartnerById(partnerDB.getId());
-          // Check if the CrpPpaPartner was disabled
-
-          this.fillContactPoints(partnerDB);
-          this.checkChangesCrpPpaPartnerContactPoints(partnerDB);
-
-
-        }
-
-      }
       this.addUsers();
 
       Collection<String> messages = this.getActionMessages();
