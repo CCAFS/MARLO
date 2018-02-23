@@ -209,14 +209,20 @@
                     [/#if]
                     [#-- Add new location (Modal) --]
                     <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
-                      <div class="modal-dialog">
+                      <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                           [#-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --]
                           
                           <div class="newLocationForm-container">
+                            <div class="title"></div>
+                            <hr />
+                            <div class="col-md-6">
+                              [#-- This select below is still incomplete --]
+                              [@customForm.select name="projectLocations.selectLocationLevel" i18nkey="projectLocations.selectLocationLevel"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
+                            </div>
                           </div>
                           
-                          <div class="map-container">
+                          <div class="map-container col-md-6">
                             <div  class="col-md-12 map">
                               <div id="map" class="col-md-12"></div>
                             </div>
