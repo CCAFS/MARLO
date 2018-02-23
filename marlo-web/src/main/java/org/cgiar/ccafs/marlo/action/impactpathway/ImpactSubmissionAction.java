@@ -219,7 +219,7 @@ public class ImpactSubmissionAction extends BaseAction {
 
     StringBuilder message = new StringBuilder();
     String[] values = new String[4];
-    values[0] = this.getCurrentUser().getFirstName();
+    values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crpProgram.getAcronym();
     values[2] = crp;
     values[3] = crpProgram.getName();
