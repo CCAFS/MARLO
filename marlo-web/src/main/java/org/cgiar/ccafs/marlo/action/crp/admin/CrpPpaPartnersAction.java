@@ -566,7 +566,9 @@ public class CrpPpaPartnersAction extends BaseAction {
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      loggedCrp.getCrpInstitutionsPartners().clear();
+      if (loggedCrp.getCrpInstitutionsPartners() != null) {
+        loggedCrp.getCrpInstitutionsPartners().clear();
+      }
     }
   }
 
@@ -575,8 +577,10 @@ public class CrpPpaPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
       this.setUsersToActive(new ArrayList<>());
-      List<CrpPpaPartner> ppaPartnerReview;
-      ppaPartnerReview = crpPpaPartnerManager.findAll();
+      List<CrpPpaPartner> ppaPartnerReview =
+        new ArrayList<>(crpPpaPartnerManager.findAll().stream().filter(ppa -> ppa.isActive()
+          && ppa.getCrp().getId() == loggedCrp.getId() && ppa.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList()));
       if (ppaPartnerReview != null) {
 
 
