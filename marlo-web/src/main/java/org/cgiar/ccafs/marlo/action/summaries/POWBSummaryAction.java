@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -166,8 +167,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
       this.fillSubreport((SubReport) hm.get("TableCContent"), "TableCContent");
       // // Table D
-      // this.fillSubreport((SubReport) hm.get("CRPStaffing"), "CRPStaffing");
-      // this.fillSubreport((SubReport) hm.get("TableDContent"), "TableDContent");
+      this.fillSubreport((SubReport) hm.get("CRPStaffing"), "CRPStaffing");
+      this.fillSubreport((SubReport) hm.get("TableDContent"), "TableDContent");
       // // Table E
       // this.fillSubreport((SubReport) hm.get("CRPPlannedBudget"), "CRPPlannedBudget");
       // this.fillSubreport((SubReport) hm.get("TableEContent"), "TableEContent");
@@ -320,7 +321,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getCRPStaffingTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableDDescription"}, new Class[] {String.class}, 0);
 
-    model.addRow(new Object[] {"Text"});
+    model.addRow(new Object[] {""});
     return model;
   }
 
@@ -663,8 +664,21 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     TypedTableModel model =
       new TypedTableModel(new String[] {"category", "female", "totalFTE", "FemalePercentaje", "male"},
         new Class[] {String.class, Double.class, Double.class, Double.class, Double.class}, 0);
-    for (int i = 0; i < 5; i++) {
-      model.addRow(new Object[] {"Text", 0, 0, 0, 0});
+
+    List<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategoryList =
+      powbSynthesisPMU.getPowbSynthesisCrpStaffingCategory().stream().filter(c -> c.isActive())
+        .sorted((c1, c2) -> c1.getId().compareTo(c2.getId())).collect(Collectors.toList());
+    if (powbSynthesisCrpStaffingCategoryList != null && !powbSynthesisCrpStaffingCategoryList.isEmpty()) {
+      for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesisCrpStaffingCategoryList) {
+        String category = "";
+        Double female = 0.0, totalFTE = 0.0, femalePercentaje = 0.0, male = 0.0;
+        category = powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory().getCategory();
+        female = powbSynthesisCrpStaffingCategory.getFemale();
+        totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
+        femalePercentaje = powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100;
+        male = powbSynthesisCrpStaffingCategory.getMale();
+        model.addRow(new Object[] {category, female, totalFTE, femalePercentaje, male});
+      }
     }
     return model;
   }
