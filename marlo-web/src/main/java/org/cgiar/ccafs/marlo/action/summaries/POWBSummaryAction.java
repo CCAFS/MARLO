@@ -356,11 +356,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
         if (powbSynthesisPMU.getPowbToc().getFile() != null) {
           adjustmentsDescription +=
-            ".<br> " + this.getText("adjustmentsChanges.uploadFile.readText") + ":  <font color=\"blue\">"
+            ".<br> " + this.getText("adjustmentsChanges.uploadFile.readText") + ":  <font color=\"blue\"><u>"
               + this.getPowbPath(powbSynthesisPMU.getLiaisonInstitution(),
                 this.getLoggedCrp().getAcronym() + "_"
                   + PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().toString())
-              + powbSynthesisPMU.getPowbToc().getFile().getFileName() + "</font>";
+              + powbSynthesisPMU.getPowbToc().getFile().getFileName() + "</u></font>";
         }
       }
 
@@ -432,21 +432,21 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         && !powbSynthesis.getLiaisonInstitution().getAcronym().isEmpty()
           ? powbSynthesis.getLiaisonInstitution().getAcronym() : powbSynthesis.getLiaisonInstitution().getName();
       if (plansCRPFlagshipDescription.isEmpty()) {
-        plansCRPFlagshipDescription = "• " + liaisonName;
+        plansCRPFlagshipDescription = "• " + liaisonName + ": ";
       } else {
-        plansCRPFlagshipDescription += "<br> • " + liaisonName;
+        plansCRPFlagshipDescription += "<br> • " + liaisonName + ": ";
       }
 
       if (powbSynthesis.getPowbFlagshipPlans().getPlanSummary() != null) {
-        plansCRPFlagshipDescription += ": " + powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
+        plansCRPFlagshipDescription += powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
       }
       if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
         plansCRPFlagshipDescription +=
-          ".<br> " + this.getText("plansByFlagship.tableOverall.attached") + ":  <font color=\"blue\">"
+          "<br> " + this.getText("plansByFlagship.tableOverall.attached") + ":  <font color=\"blue\"><u>"
             + this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
               this.getLoggedCrp().getAcronym() + "_"
                 + PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus().toString())
-            + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() + "</font>";
+            + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName() + "</u></font>";
       }
     }
     return plansCRPFlagshipDescription;
@@ -602,9 +602,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           assessment =
             milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
               ? milestoneProgress.getAssesmentName() : " ";
-          meansVerifications =
-            milestoneProgress.getAssesmentName() != null && !milestoneProgress.getAssesmentName().trim().isEmpty()
-              ? milestoneProgress.getAssesmentName() : " ";
+          meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
+            ? milestoneProgress.getMeans() : " ";
 
           model
             .addRow(new Object[] {FP, subIDO, outcomes, milestone, w1w2, w3Bilateral, assessment, meansVerifications});
