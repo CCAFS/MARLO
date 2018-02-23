@@ -64,8 +64,10 @@ $(document).ready(
           });
 
       addJustificationPopUp();
-      // Event to open dialog to remove deliverable
-      $("a.removeOutput").on("click", removeOutput);
+
+      $deliverableList.on('draw.dt', function() {
+        $("a.removeOutput").on("click", removeOutput);
+      });
 
     });
 
@@ -96,6 +98,9 @@ function addJustificationPopUp() {
           }
       },
   });
+
+  // Event to open dialog to remove deliverable
+  $("a.removeOutput").on("click", removeOutput);
 
 }
 

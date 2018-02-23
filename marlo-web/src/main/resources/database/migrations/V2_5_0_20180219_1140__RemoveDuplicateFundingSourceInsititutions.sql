@@ -19,3 +19,4 @@ where   exists
 delete  
 from    funding_source_institutions
 where   ID in (select id from tmpTable);
+
