@@ -453,16 +453,22 @@
               <nosuffix>true</nosuffix>
               <skipMerge>true</skipMerge>
               <verbose>true</verbose>
-              <cssSourceDir>global/css</cssSourceDir>
+              <!-- CSS -->
+              <cssSourceDir>./</cssSourceDir>
               <cssSourceIncludes>
-                <cssSourceInclude>**/*.css</cssSourceInclude>
+                <cssSourceInclude>crp/css/**/*.css</cssSourceInclude>
+                <cssSourceInclude>center/css/**/*.css</cssSourceInclude>
+                <cssSourceInclude>global/css/**/*.css</cssSourceInclude>
               </cssSourceIncludes>
-              <cssTargetDir>global/css</cssTargetDir>
-              <jsSourceDir>global/js</jsSourceDir>
+               
+              <!-- Javascript -->
+              <jsSourceDir>./</jsSourceDir>
               <jsSourceIncludes>
-                <jsSourceInclude>**/*.js</jsSourceInclude>
+                <jsSourceInclude>crp/js/**/*.js</jsSourceInclude>
+                <jsSourceInclude>center/js/**/*.js</jsSourceInclude>
+                <jsSourceInclude>global/js/**/*.js</jsSourceInclude>
               </jsSourceIncludes>
-              <jsTargetDir>global/js</jsTargetDir>
+               
             </configuration>
             <goals>
               <goal>minify</goal>
@@ -471,7 +477,6 @@
         </executions>
       </plugin>
       <!-- END -->
-
 
     </plugins>
   </build>
