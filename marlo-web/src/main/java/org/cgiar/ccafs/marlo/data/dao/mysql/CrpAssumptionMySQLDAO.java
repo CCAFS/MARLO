@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -38,7 +39,7 @@ public class CrpAssumptionMySQLDAO extends AbstractMarloDAO<CrpAssumption, Long>
   public void deleteCrpAssumption(long crpAssumptionId) {
     CrpAssumption crpAssumption = this.find(crpAssumptionId);
     crpAssumption.setActive(false);
-    this.save(crpAssumption);
+    this.update(crpAssumption);
   }
 
   @Override
