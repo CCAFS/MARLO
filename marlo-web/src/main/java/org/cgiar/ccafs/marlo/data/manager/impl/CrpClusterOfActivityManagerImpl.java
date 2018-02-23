@@ -133,6 +133,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
         crpClusteKeyOutputAdd.setContribution(crpClusteKeyOutput.getContribution());
         crpClusteKeyOutputAdd.setKeyOutput(crpClusteKeyOutput.getKeyOutput());
         crpClusteKeyOutputAdd.setComposeID(crpClusteKeyOutput.getComposeID());
+        crpClusteKeyOutputAdd.setCrpClusterOfActivity(crpClusterOfActivityAdd);
         crpClusterKeyOutputDAO.save(crpClusteKeyOutputAdd);
         if (crpClusteKeyOutput.getComposeID() == null) {
           crpClusteKeyOutput.setComposeID(crpClusterOfActivity.getIdentifier() + "-" + crpClusteKeyOutputAdd.getId());

@@ -557,14 +557,17 @@ public class DeliverableAction extends BaseAction {
 
   public DeliverablePartnership getDeliverablePartnership(long projectPersonID) {
 
-    List<DeliverablePartnership> deliverablePartnerships = deliverable
-      .getOtherPartners().stream().filter(d -> d.getProjectPartnerPerson() != null
-        && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
-      .collect(Collectors.toList());
+    if (deliverable.getOtherPartners() != null) {
+      List<DeliverablePartnership> deliverablePartnerships = deliverable
+        .getOtherPartners().stream().filter(d -> d.getProjectPartnerPerson() != null
+          && d.getProjectPartnerPerson().getId() != null && d.getProjectPartnerPerson().getId() == projectPersonID)
+        .collect(Collectors.toList());
 
-    for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
-      return deliverablePartnership;
+      for (DeliverablePartnership deliverablePartnership : deliverablePartnerships) {
+        return deliverablePartnership;
+      }
     }
+
 
     return null;
 
@@ -735,13 +738,16 @@ public class DeliverableAction extends BaseAction {
     Set<ProjectPartner> deliverablePartnerPersonsSet = new HashSet<>();
     List<ProjectPartner> deliverablePartnerPersons = new ArrayList<>();
 
-    for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
-      .collect(Collectors.toList())) {
-      if (deliverablePartnership.getProjectPartner() != null) {
-        deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
-      }
+    if (deliverable.getOtherPartners() != null) {
+      for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners().stream()
+        .collect(Collectors.toList())) {
+        if (deliverablePartnership.getProjectPartner() != null) {
+          deliverablePartnerPersonsSet.add(deliverablePartnership.getProjectPartner());
+        }
 
+      }
     }
+
 
     deliverablePartnerPersons.addAll(deliverablePartnerPersonsSet);
     return deliverablePartnerPersons;
@@ -1640,13 +1646,17 @@ public class DeliverableAction extends BaseAction {
         deliverable.setOtherPartners(new ArrayList<>());
       }
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-        if (deliverablePartnership.getProjectPartner() == null) {
-          deliverablePartnership.setId(null);
-        } else {
-          if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
+
+        if (deliverablePartnership != null) {
+          if (deliverablePartnership.getProjectPartner() == null) {
             deliverablePartnership.setId(null);
+          } else {
+            if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
+              deliverablePartnership.setId(null);
+            }
           }
         }
+
       }
       for (DeliverablePartnership deliverablePartnership : partnerShipsOtherPrew) {
         if (deliverable.getOtherPartners() != null) {
