@@ -82,12 +82,12 @@
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
-        <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.tablePlannedStudies.plannedTopic" /]</th>
-        <th id="tb-projectId" width="11%">[@s.text name="evidenceRelevant.tablePlannedStudies.projectId" /]</th>
-        <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
-        <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
-        <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
-        <th id="tb-checkbox" width="0%">Checkbox</th>
+        <th id="tb-projectId" width="0%">[@s.text name="evidenceRelevant.tablePlannedStudies.projectId" /]</th>
+        <th id="tb-plannedTopic" width="20%">[@s.text name="evidenceRelevant.tablePlannedStudies.plannedTopic" /]</th>
+        <th id="tb-geographicScope" width="11%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
+        <th id="tb-relevant" width="24%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
+        <th id="tb-comments" width="34%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
+        <th id="tb-checkbox" width="0%">Included</th>
       </tr>
     </thead>
     <tbody>
@@ -95,36 +95,60 @@
     [#-- <div class="loading clustersBlock" style="display:none"></div> --]
     [#if popUpProjects?has_content]
       [#list popUpProjects as popUp]
+        [#if popUp.project.id?has_content]
         <tr>
-          [#-- Planned topic of study --]
-          <td>
-            ${(popUp.topicStudy)!''}
-          </td>
+          [#-- Project ID --]
           <td class="tb-projectId text-center">
             P${(popUp.project.id)!''}
           </td>
+          [#-- Planned topic of study --]
+          <td>
+          [#if popUp.topicStudy?has_content]
+            ${(popUp.topicStudy)!''}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
+          </td>
           [#-- Geographic scope --]
           <td class="text-center">
+          [#if popUp.scopeName?has_content]
             ${popUp.scopeName}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
+          [#if popUp.srfSubIdo?has_content]
             <ul>  
               <li title="${(popUp.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(popUp.srfSubIdo.description)!''}" maxPos=50 /]</li>
               [#if popUp.srfSloIndicator?has_content]
               <li title="${(popUp.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(popUp.srfSloIndicator.title)!''}" maxPos=50 /]</li>
               [/#if]
             </ul>
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(popUp.comments)!''}"> 
-            [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=100 /]
+          <td class="comments" title="${(popUp.comments)!''}">
+          [#if popUp.comments?has_content]
+            [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=180 /]
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
-          [#-- Checkbox --]
+          [#-- Include --]
           <td class="plannedStudiesCheckbox text-center">
-            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!false) /]
+          [#if editable]
+            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!false)/]
+          [#else]
+            [#-- If does no have permissions --]
+            [#if powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id)]<p class="checked"></p>[/#if]
+          [/#if]
           </td>
         </tr>
+        [/#if]
       [/#list]
     [#else]
       <tr>
@@ -141,11 +165,11 @@
   <table class="table-plannedStudies table-border-powb" id="table-plannedStudies">
     <thead>
       <tr class="subHeader">
-        <th id="tb-fp" width="11%">[@s.text name="evidenceRelevant.table.fp" /]</th>
-        <th id="tb-plannedTopic" width="27%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
-        <th id="tb-geographicScope" width="15%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
+        <th id="tb-fp" width="0%">[@s.text name="evidenceRelevant.table.fp" /]</th>
+        <th id="tb-plannedTopic" width="22%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
+        <th id="tb-geographicScope" width="12%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
-        <th id="tb-comments" width="19%">[@s.text name="evidenceRelevant.table.comments" /]</th>
+        <th id="tb-comments" width="38%">[@s.text name="evidenceRelevant.table.comments" /]</th>
       </tr>
     </thead>
     <tbody>
@@ -160,14 +184,23 @@
           </td>
           [#-- Planned topic of study --]
           <td>
+          [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
             ${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
           [#-- Geographic scope --]
           <td class="text-center">
+          [#if flagshipPlanned.projectExpectedStudy.scopeName?has_content]
             ${flagshipPlanned.projectExpectedStudy.scopeName}
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
+          [#if flagshipPlanned.projectExpectedStudy.srfSubIdo?has_content || flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content]
             <ul>
               [#if flagshipPlanned.projectExpectedStudy.srfSubIdo?has_content && flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
               <li title="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}" maxPos=maxPosition /]</li>
@@ -175,10 +208,17 @@
               <li title="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}" maxPos=maxPosition /]</li>
               [/#if]
             </ul>
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}"> 
-            [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=100 /]
+          <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
+          [#if flagshipPlanned.projectExpectedStudy.comments?has_content]
+            [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=180 /]
+          [#else]
+            <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+          [/#if]
           </td>
         </tr>
       [/#list]
