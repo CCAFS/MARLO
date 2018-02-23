@@ -199,7 +199,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
-    values[0] = this.getCurrentUser().getFirstName();
+    values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = program.getAcronym();
     values[2] = crp;
     values[3] = program.getName();
