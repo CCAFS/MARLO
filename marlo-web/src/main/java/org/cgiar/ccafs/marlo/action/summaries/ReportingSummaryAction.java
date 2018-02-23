@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -1189,9 +1190,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private TypedTableModel getActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
-        "status"},
+        "status", "deliverables"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
     if (!project.getActivities().isEmpty()) {
@@ -1204,6 +1205,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String status = null;
         String startDate = null;
         String endDate = null;
+        String deliverables = "";
         if (activity.getStartDate() != null) {
           startDate = formatter.format(activity.getStartDate());
         }
@@ -1215,9 +1217,28 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           activityLeader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
             + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
         }
+        List<DeliverableActivity> deliverableActivityList = activity.getDeliverableActivities().stream()
+          .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+        if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
+          for (DeliverableActivity deliverableActivity : deliverableActivityList) {
+            String deliverableTitle = "";
+            if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
+              deliverableTitle =
+                deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+            } else {
+              deliverableTitle = "&lt;Not Defined&gt;";
+            }
+            if (deliverables.isEmpty()) {
+              deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            } else {
+              deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+            }
+          }
+        }
         status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
         model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate, endDate,
-          institution, activityLeader, status});
+          institution, activityLeader, status, deliverables});
       }
     }
     return model;
