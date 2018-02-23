@@ -325,6 +325,9 @@ public class FlagshipPlansAction extends BaseAction {
 
   private void saveUpdatePowbSynthesis() {
     PowbFlagshipPlans powbFlagshipPlan = powbSynthesis.getPowbFlagshipPlans();
+    if (powbFlagshipPlan.getId() == null) {
+      powbFlagshipPlan.setId(powbSynthesisID);
+    }
     powbFlagshipPlan.setActiveSince(new Date());
     powbFlagshipPlan.setModifiedBy(this.getCurrentUser());
     if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
