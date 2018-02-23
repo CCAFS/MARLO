@@ -154,7 +154,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       this.getAllSubreports(hm, masteritemBand);
       // TODO: Complete POWB subreports
       this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
-      // this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
+      this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
       // this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
       // // Table A
       this.fillSubreport((SubReport) hm.get("PlannedMilestones"), "PlannedMilestones");
@@ -332,8 +332,23 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         "expectedEffortsCountryCoordinationDescription", "monitoringEvaluationLearningDescription"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
+    String staffingDescription = "", financialPlanDescription = "", newKeyExternalPartnershipsDescription = "",
+      newContributionPlatformsDescription = "", newCrossCRPInteractionsDescription = "",
+      expectedEffortsCountryCoordinationDescription = "", monitoringEvaluationLearningDescription = "";
 
-    model.addRow(new Object[] {"Text", "Text", "Text", "Text", "Text", "Text", "Text"});
+    if (powbSynthesisPMU != null) {
+      // TOC
+      if (powbSynthesisPMU.getCrpStaffing() != null) {
+        staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
+          && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
+            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "&lt;Not Defined&gt;";
+
+      }
+    }
+
+    model.addRow(new Object[] {staffingDescription, financialPlanDescription, newKeyExternalPartnershipsDescription,
+      newContributionPlatformsDescription, newCrossCRPInteractionsDescription,
+      expectedEffortsCountryCoordinationDescription, monitoringEvaluationLearningDescription});
     return model;
   }
 
@@ -359,7 +374,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       if (powbSynthesisPMU.getPowbToc() != null) {
         adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
           && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
-            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "<Not Defined>";
+            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "&lt;Not Defined&gt;";
 
         if (powbSynthesisPMU.getPowbToc().getFile() != null) {
           adjustmentsDescription +=
@@ -378,7 +393,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           .filter(e -> e.isActive()).collect(Collectors.toList()).get(0);
         expectedCrpDescription = powbExpectedCrpProgress.getExpectedHighlights() != null
           && !powbExpectedCrpProgress.getExpectedHighlights().trim().isEmpty()
-            ? powbExpectedCrpProgress.getExpectedHighlights() : "<Not Defined>";
+            ? powbExpectedCrpProgress.getExpectedHighlights() : "&lt;Not Defined&gt;";
       }
 
       // Cross Cutting Dimensions Info
