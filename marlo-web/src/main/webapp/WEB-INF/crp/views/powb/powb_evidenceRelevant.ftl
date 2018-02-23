@@ -96,15 +96,24 @@
     [#if popUpProjects?has_content]
       [#list popUpProjects as popUp]
         [#if popUp.project.id?has_content]
+            [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/description"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            [#local wordCutterMaxPos=180]
         <tr>
           [#-- Project ID --]
           <td class="tb-projectId text-center">
-            P${(popUp.project.id)!''}
+            <a href="${pURL}" target="_blank">P${(popUp.project.id)!''}</a>
           </td>
           [#-- Planned topic of study --]
           <td>
           [#if popUp.topicStudy?has_content]
-            ${(popUp.topicStudy)!''}
+            [#if popUp.topicStudy?length gt wordCutterMaxPos]
+              <div title="${(popUp.topicStudy)!''}">
+            [/#if]
+              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(popUp.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
+            [#if popUp.topicStudy?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -120,10 +129,15 @@
           [#-- Relevant to Sub-IDO, or SRF target if appropiate --]
           <td class="relevantSubIDO">
           [#if popUp.srfSubIdo?has_content]
+            [#if popUp.srfSubIdo?has_content && popUp.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
             <ul>  
-              <li title="${(popUp.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(popUp.srfSubIdo.description)!''}" maxPos=50 /]</li>
+              <li [#if popUp.srfSubIdo.description?length gt 50]title="${(popUp.srfSubIdo.description)!''}"[/#if]>
+                [@utilities.wordCutter string="${(popUp.srfSubIdo.description)!''}" maxPos=maxPosition /]
+              </li>
               [#if popUp.srfSloIndicator?has_content]
-              <li title="${(popUp.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(popUp.srfSloIndicator.title)!''}" maxPos=50 /]</li>
+              <li [#if popUp.srfSloIndicator.title?length gt 50]title="${(popUp.srfSloIndicator.title)!''}"[/#if]>
+                [@utilities.wordCutter string="${(popUp.srfSloIndicator.title)!''}" maxPos=maxPosition /]
+              </li>
               [/#if]
             </ul>
           [#else]
@@ -131,9 +145,15 @@
           [/#if]
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(popUp.comments)!''}">
+          <td class="comments">
           [#if popUp.comments?has_content]
-            [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=180 /]
+            [#if popUp.comments?length gt wordCutterMaxPos]
+              <div title="${(popUp.comments)!''}">
+            [/#if]
+              [@utilities.wordCutter string="${(popUp.comments)!''}" maxPos=wordCutterMaxPos /]
+            [#if popUp.comments?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -175,6 +195,8 @@
     <tbody>
     [#if flagshipPlannedList?has_content]
       [#list flagshipPlannedList as flagshipPlanned]
+        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#local wordCutterMaxPos=180]
         <tr>
           [#-- FP --]
           <td class="tb-fp text-center">
@@ -185,7 +207,13 @@
           [#-- Planned topic of study --]
           <td>
           [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-            ${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}
+            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
+              <div title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}">
+            [/#if]
+              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
+            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
@@ -203,9 +231,13 @@
           [#if flagshipPlanned.projectExpectedStudy.srfSubIdo?has_content || flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content]
             <ul>
               [#if flagshipPlanned.projectExpectedStudy.srfSubIdo?has_content && flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content][#assign maxPosition=50][#else][#assign maxPosition=100][/#if]
-              <li title="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}" maxPos=maxPosition /]</li>
+              <li [#if flagshipPlanned.projectExpectedStudy.srfSubIdo.description?length gt maxPosition]title="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}"[/#if]>
+                [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSubIdo.description)!''}" maxPos=maxPosition /]
+              </li>
               [#if flagshipPlanned.projectExpectedStudy.srfSloIndicator?has_content]
-              <li title="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}" maxPos=maxPosition /]</li>
+              <li [#if flagshipPlanned.projectExpectedStudy.srfSloIndicator.title?length gt maxPosition]title="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}"[/#if]>
+                [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.srfSloIndicator.title)!''}" maxPos=maxPosition /]
+              </li>
               [/#if]
             </ul>
           [#else]
@@ -215,7 +247,13 @@
           [#-- Comments --]
           <td class="comments" title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
           [#if flagshipPlanned.projectExpectedStudy.comments?has_content]
-            [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=180 /]
+            [#if flagshipPlanned.projectExpectedStudy.comments?length gt wordCutterMaxPos]
+              <div title="${(flagshipPlanned.projectExpectedStudy.comments)!''}">
+            [/#if]
+              [@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.comments)!''}" maxPos=wordCutterMaxPos /]
+            [#if flagshipPlanned.projectExpectedStudy.comments?length gt wordCutterMaxPos]
+              </div>
+            [/#if]
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
