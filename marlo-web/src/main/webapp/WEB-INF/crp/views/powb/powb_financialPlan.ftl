@@ -120,7 +120,7 @@
   [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]" /]
   <tr>
     <td>
-      <span> ${(area.composedName)!((area.expenditureArea)!'null')}</span>
+      <span> ${(area.crpProgram.composedName)!((area.expenditureArea)!'null')}</span>
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       [#if isLiaison]
         <input type="hidden" name="${customName}.liaisonInstitution.id" value="${(area.id)!}" />
