@@ -68,6 +68,8 @@ public class APCustomRealm extends AuthorizingRealm {
 
   // Variables
   final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
+
+  @Inject
   private APConfig config;
 
 
@@ -119,18 +121,17 @@ public class APCustomRealm extends AuthorizingRealm {
       user = userManager.getUserByUsername(username);
     }
 
+    /*
+     * Refactor LDAP user login
+     */
     if (user != null) {
       if (user.isActive()) {
         if (user.isCgiarUser()) {
-          if (user.getUsername() == null) {
-            if (this.getCgiarNickname(user)) {
-              authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
-            } else {
-              authenticated.put(APConstants.LOGIN_STATUS, false);
-              authenticated.put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_NO_SUCH_USER.getValue());
-            }
-          } else {
+          if (this.getCgiarNickname(user)) {
             authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
+          } else {
+            authenticated.put(APConstants.LOGIN_STATUS, false);
+            authenticated.put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_NO_SUCH_USER.getValue());
           }
         } else {
           authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
@@ -188,6 +189,13 @@ public class APCustomRealm extends AuthorizingRealm {
 
   }
 
+  /**
+   * Validate if the email entered beings a CGIAR Active directory.
+   * then check if the User object contains an Username.
+   * 
+   * @param user
+   * @return true if the email exist in the CGIAR Active directory
+   */
   boolean getCgiarNickname(User user) {
     // ldap createe instace
     LDAPService service = new LDAPService();
@@ -200,10 +208,12 @@ public class APCustomRealm extends AuthorizingRealm {
     // get info form LDAP User
     LDAPUser ldapUser = service.searchUserByEmail(user.getEmail());
     if (ldapUser != null) {
-      // get the username from LDAP
-      user.setUsername(ldapUser.getLogin().toLowerCase());
-      // Save user
-      userManager.saveUser(user, user);
+      if (user.getUsername() == null) {
+        // get the username from LDAP
+        user.setUsername(ldapUser.getLogin().toLowerCase());
+        // Save user
+        userManager.saveUser(user, user);
+      }
       return true;
     } else {
       return false;
