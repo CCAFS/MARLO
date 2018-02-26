@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `powb_crp_staffing`;
+
 CREATE TABLE `powb_crp_staffing` (
 `id`  bigint(20) NOT NULL ,
 `staffing_issues`  text NOT NULL ,
@@ -11,6 +13,7 @@ CONSTRAINT `fk_powb_crp_staffing_id_fk` FOREIGN KEY (`id`) REFERENCES `powb_synt
 CONSTRAINT `fk_powb_crp_staffing_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
 CONSTRAINT `fk_powb_crp_staffing_modified_by` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`)
 );
+DROP TABLE IF EXISTS `powb_crp_staffing_categories`;
 
 CREATE TABLE `powb_crp_staffing_categories` (
 `id`  bigint(20) NOT NULL ,
@@ -24,6 +27,7 @@ PRIMARY KEY (`id`),
 CONSTRAINT `fk_powb_crp_staffing_categories_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
 CONSTRAINT `fk_powb_crp_staffing_categories_modified_by` FOREIGN KEY (`modified_by`) REFERENCES `users` (`id`)
 );
+DROP TABLE IF EXISTS `powb_synthesis_crp_staffing_category`;
 
 CREATE TABLE `powb_synthesis_crp_staffing_category` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT,

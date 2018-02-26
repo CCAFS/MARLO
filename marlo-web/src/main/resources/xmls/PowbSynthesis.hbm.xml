@@ -75,6 +75,12 @@
 			cascade="save-update"></one-to-one>
 		<one-to-one name="financialPlan"
 			class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan" cascade="save-update"></one-to-one>
+			
+			
+			   <one-to-one name="collaboration"
+      class="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" cascade="save-update"></one-to-one>
+      
+      
 		<set name="powbFinancialExpenditures" table="powb_financial_expenditure"
 			inverse="true" lazy="true" fetch="select">
 			<key>
