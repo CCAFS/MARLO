@@ -1,0 +1,77 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning & 
+ * Outcomes Platform (MARLO). 
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+package org.cgiar.ccafs.marlo.data.manager.impl;
+
+
+import org.cgiar.ccafs.marlo.data.dao.PowbCollaborationGlobalUnitDAO;
+import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
+
+import java.util.List;
+
+import javax.inject.Named;
+import javax.inject.Inject;
+
+/**
+ * @author Christian Garcia
+ */
+@Named
+public class PowbCollaborationGlobalUnitManagerImpl implements PowbCollaborationGlobalUnitManager {
+
+
+  private PowbCollaborationGlobalUnitDAO powbCollaborationGlobalUnitDAO;
+  // Managers
+
+
+  @Inject
+  public PowbCollaborationGlobalUnitManagerImpl(PowbCollaborationGlobalUnitDAO powbCollaborationGlobalUnitDAO) {
+    this.powbCollaborationGlobalUnitDAO = powbCollaborationGlobalUnitDAO;
+
+
+  }
+
+  @Override
+  public void deletePowbCollaborationGlobalUnit(long powbCollaborationGlobalUnitId) {
+
+    powbCollaborationGlobalUnitDAO.deletePowbCollaborationGlobalUnit(powbCollaborationGlobalUnitId);
+  }
+
+  @Override
+  public boolean existPowbCollaborationGlobalUnit(long powbCollaborationGlobalUnitID) {
+
+    return powbCollaborationGlobalUnitDAO.existPowbCollaborationGlobalUnit(powbCollaborationGlobalUnitID);
+  }
+
+  @Override
+  public List<PowbCollaborationGlobalUnit> findAll() {
+
+    return powbCollaborationGlobalUnitDAO.findAll();
+
+  }
+
+  @Override
+  public PowbCollaborationGlobalUnit getPowbCollaborationGlobalUnitById(long powbCollaborationGlobalUnitID) {
+
+    return powbCollaborationGlobalUnitDAO.find(powbCollaborationGlobalUnitID);
+  }
+
+  @Override
+  public PowbCollaborationGlobalUnit savePowbCollaborationGlobalUnit(PowbCollaborationGlobalUnit powbCollaborationGlobalUnit) {
+
+    return powbCollaborationGlobalUnitDAO.save(powbCollaborationGlobalUnit);
+  }
+
+
+}
