@@ -56,7 +56,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -103,6 +105,8 @@ public class PowbCollaborationAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private LiaisonInstitution liaisonInstitution;
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
+  private Map<Long, String> globalUnits;
+
 
   @Inject
   public PowbCollaborationAction(APConfig config, GlobalUnitManager crpManager,
@@ -143,6 +147,7 @@ public class PowbCollaborationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -153,6 +158,7 @@ public class PowbCollaborationAction extends BaseAction {
     return liaisonInstitutionId;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = powbSynthesis.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -160,7 +166,6 @@ public class PowbCollaborationAction extends BaseAction {
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public List<CrpProgram> getCrpPrograms() {
     return crpPrograms;
@@ -170,14 +175,19 @@ public class PowbCollaborationAction extends BaseAction {
     return flagshipExercises;
   }
 
+
+  public Map<Long, String> getGlobalUnits() {
+    return globalUnits;
+  }
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
 
-
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -187,10 +197,10 @@ public class PowbCollaborationAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
@@ -448,6 +458,11 @@ public class PowbCollaborationAction extends BaseAction {
       crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     }
 
+    globalUnits = new HashMap<>();
+    for (GlobalUnit globalUnit : crpManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList())) {
+      globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
+    }
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -469,7 +484,6 @@ public class PowbCollaborationAction extends BaseAction {
 
     }
   }
-
 
   @Override
   public String save() {
@@ -524,8 +538,13 @@ public class PowbCollaborationAction extends BaseAction {
     this.crpPrograms = crpPrograms;
   }
 
+
   public void setFlagshipExercises(List<PowbMonitoringEvaluationLearningExercise> flagshipExercises) {
     this.flagshipExercises = flagshipExercises;
+  }
+
+  public void setGlobalUnits(Map<Long, String> globalUnits) {
+    this.globalUnits = globalUnits;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
