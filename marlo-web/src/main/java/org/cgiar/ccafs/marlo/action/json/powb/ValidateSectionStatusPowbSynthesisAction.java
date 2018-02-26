@@ -87,6 +87,27 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
         case FLAGSHIP_PLANS:
           powbSynthesisSectionValidator.validateFlagshipPlans(this, phase);
           break;
+        case CROSS_CUTTING_DIMENSIONS:
+          powbSynthesisSectionValidator.validateCrossCuttingDimensions(this, phase);
+          break;
+        case STAFFING:
+          powbSynthesisSectionValidator.validateCrpStaffing(this, phase);
+          break;
+        case FINANCIAL_PLAN:
+          powbSynthesisSectionValidator.validateFinancialPlan(this, phase);
+          break;
+        case COLABORATION_INTEGRATION:
+          powbSynthesisSectionValidator.validateColaborationIntegration(this, phase);
+          break;
+        case MEL:
+          powbSynthesisSectionValidator.validateMEL(this, phase);
+          break;
+        case MANAGEMENT_RISK:
+          powbSynthesisSectionValidator.validateManagementRisk(this, phase);
+          break;
+        case MANAGEMENT_GOVERNANCE:
+          powbSynthesisSectionValidator.validateManagementGovernance(this, phase);
+          break;
         default:
           break;
       }
