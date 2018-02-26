@@ -53,10 +53,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -130,11 +131,11 @@ public class ProjectActivitiesAction extends BaseAction {
         if (activity.getId() == null || activity.getId() == -1) {
 
           Activity activityNew = new Activity();
-          activityNew.setActive(true);
-          activityNew.setCreatedBy(this.getCurrentUser());
-          activityNew.setModifiedBy(this.getCurrentUser());
-          activityNew.setModificationJustification("");
-          activityNew.setActiveSince(new Date());
+          // activityNew.setActive(true);
+          // activityNew.setCreatedBy(this.getCurrentUser());
+          // activityNew.setModifiedBy(this.getCurrentUser());
+          // activityNew.setModificationJustification("");
+          // activityNew.setActiveSince(new Date());
 
 
           Project project = projectManager.getProjectById(this.project.getId());
@@ -189,11 +190,7 @@ public class ProjectActivitiesAction extends BaseAction {
         } else {
 
           Activity activityUpdate = activityManager.getActivityById(activity.getId());
-          activityUpdate.setActive(true);
-          activityUpdate.setCreatedBy(this.getCurrentUser());
-          activityUpdate.setModifiedBy(this.getCurrentUser());
           activityUpdate.setModificationJustification("");
-          activityUpdate.setActiveSince(new Date());
           activityUpdate.setPhase(this.getActualPhase());
           activityUpdate.setTitle(activity.getTitle());
           activityUpdate.setDescription(activity.getDescription());
@@ -217,7 +214,7 @@ public class ProjectActivitiesAction extends BaseAction {
           }
 
 
-          activityUpdate = activityManager.saveActivity(activityUpdate);
+          // activityUpdate = activityManager.saveActivity(activityUpdate);
 
           if (activity.getDeliverables() != null) {
 
