@@ -363,8 +363,9 @@ public class PowbCollaborationAction extends BaseAction {
         }
 
       }
+      crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     }
-    crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
