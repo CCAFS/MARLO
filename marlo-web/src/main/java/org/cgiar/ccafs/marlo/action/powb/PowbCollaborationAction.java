@@ -432,8 +432,6 @@ public class PowbCollaborationAction extends BaseAction {
         reader.close();
       } else {
         this.setDraft(false);
-        powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList()));
         // Check if ToC relation is null -create it
         if (powbSynthesis.getCollaboration() == null) {
           PowbCollaboration powbCollaboration = new PowbCollaboration();
@@ -448,6 +446,8 @@ public class PowbCollaborationAction extends BaseAction {
           // save the changes
           powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
         }
+        powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
       }
@@ -539,7 +539,12 @@ public class PowbCollaborationAction extends BaseAction {
     globalUnits = new HashMap<>();
     for (GlobalUnit globalUnit : crpManager.findAll().stream()
       .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList())) {
-      globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
+      if (globalUnit.getAcronym() != null && globalUnit.getAcronym().length() > 2) {
+        globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
+      } else {
+        globalUnits.put(globalUnit.getId(), globalUnit.getName());
+      }
+
     }
 
     // Get the list of liaison institutions Flagships and PMU.
