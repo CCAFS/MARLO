@@ -258,9 +258,10 @@ public class FlagshipPlansAction extends BaseAction {
         this.readJsonAndLoadPowbSynthesis(path);
       } else {
         this.setDraft(false);
+        this.createEmptyFlagshipPlan();
       }
     }
-    this.createEmptyFlagshipPlan();
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
