@@ -46,7 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.powb.MonitoringEvaluationLearningValidator;
+import org.cgiar.ccafs.marlo.validation.powb.PowbCollaborationValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,7 +85,7 @@ public class PowbCollaborationAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private PowbCollaborationManager powbCollaborationManager;
 
-  private MonitoringEvaluationLearningValidator validator;
+  private PowbCollaborationValidator validator;
 
 
   private List<CrpProgram> crpPrograms;
@@ -109,7 +108,7 @@ public class PowbCollaborationAction extends BaseAction {
   public PowbCollaborationAction(APConfig config, GlobalUnitManager crpManager,
     PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    PowbCollaborationManager powbCollaborationManager, MonitoringEvaluationLearningValidator validator,
+    PowbCollaborationManager powbCollaborationManager, PowbCollaborationValidator validator,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.crpManager = crpManager;
@@ -501,7 +500,7 @@ public class PowbCollaborationAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      this.setInvalidFields(new HashMap<>());
+      // this.setInvalidFields(new HashMap<>());
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -565,7 +564,7 @@ public class PowbCollaborationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      // validator.validate(this, powbSynthesis, true);
+      validator.validate(this, powbSynthesis, true);
     }
   }
 }
