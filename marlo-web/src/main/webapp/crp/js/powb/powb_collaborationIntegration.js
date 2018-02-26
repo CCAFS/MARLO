@@ -1,5 +1,37 @@
 $(document).ready(function() {
 
-  console.log('Init');
-
+  attachEvents();
 });
+
+function attachEvents() {
+
+  // Add a program collaboration
+  $('.addProgramCollaboration').on('click', addProgramCollaboration);
+
+  // Remove a program collaboration
+  $('.removeProgramCollaboration').on('click', removeProgramCollaboration);
+
+}
+
+function addExpectedStudy() {
+  var $list = $(this).parents("form").find('.listProgramCollaborations');
+  var $item = $('#flagshipCollaboration-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  updateIndexes();
+}
+
+function removeExpectedStudy() {
+  var $item = $(this).parents('.flagshipCollaboration');
+  $item.hide(function() {
+    $item.remove();
+    updateIndexes();
+  });
+}
+
+function updateIndexes() {
+  $(".listProgramCollaborations").find(".flagshipCollaboration").each(function(i,element) {
+    $(element).setNameIndexes(1, i);
+    $(element).find(".index").html(i + 1);
+  });
+}
