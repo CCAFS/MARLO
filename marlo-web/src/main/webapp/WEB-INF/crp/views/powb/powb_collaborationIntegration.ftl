@@ -83,8 +83,8 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             <div class="listProgramCollaborations">
-             [#if powbCollaborationGlobalUnitsList?has_content]
-              [#list powbCollaborationGlobalUnitsList as collaboration]
+             [#if powbSynthesis.powbCollaborationGlobalUnitsList?has_content]
+              [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
                 [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  /]
               [/#list]
              [/#if]
