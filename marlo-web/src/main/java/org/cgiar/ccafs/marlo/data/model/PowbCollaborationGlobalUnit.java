@@ -18,8 +18,12 @@ public class PowbCollaborationGlobalUnit implements java.io.Serializable, IAudit
    * 
    */
   private static final long serialVersionUID = 371262147439030983L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private GlobalUnit globalUnit;
   private PowbSynthesis powbSynthesis;
@@ -35,15 +39,32 @@ public class PowbCollaborationGlobalUnit implements java.io.Serializable, IAudit
   private String brief;
   @Expose
   private boolean active;
-
   @Expose
   private Date activeSince;
-
   @Expose
   private String modificationJustification;
 
-
   public PowbCollaborationGlobalUnit() {
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    PowbCollaborationGlobalUnit other = (PowbCollaborationGlobalUnit) obj;
+    if (this.getId() == null) {
+      if (other.getId() != null) {
+        return false;
+      }
+    } else if (!this.getId().equals(other.getId())) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -105,6 +126,15 @@ public class PowbCollaborationGlobalUnit implements java.io.Serializable, IAudit
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
