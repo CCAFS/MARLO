@@ -68,6 +68,10 @@ public class WebAppInitializer implements WebApplicationInitializer {
     shiroFilter.setInitParameter("targetFilterLifecycle", "true");
     shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
+    FilterRegistration.Dynamic addUserIdFilter =
+      servletContext.addFilter("AddUserIdFilter", new DelegatingFilterProxy("AddUserIdFilter"));
+    addUserIdFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "*.do", "*.json", "/", "/api/*");
+
 
     /** This should ignore the /api/* mapping **/
     FilterRegistration.Dynamic struts2Filter =

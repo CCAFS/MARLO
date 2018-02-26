@@ -42,6 +42,8 @@ public final class AuditLogContext {
 
   private List<String> relationsNames;
 
+  private Long currentUserId;
+
   public AuditLogContext() {
 
   }
@@ -114,6 +116,16 @@ public final class AuditLogContext {
 
   public void setUpdates(Set<Map<String, Object>> updates) {
     this.updates = updates;
+  }
+
+
+  public Long getCurrentUserId() {
+    return currentUserId;
+  }
+
+
+  public void setCurrentUserId(Long currentUserId) {
+    this.currentUserId = currentUserId;
   }
 
 
