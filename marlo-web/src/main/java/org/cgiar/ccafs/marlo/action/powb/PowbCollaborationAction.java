@@ -75,7 +75,7 @@ public class PowbCollaborationAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private PowbCollaborationManager powbCollaborationManager;
   private MonitoringEvaluationLearningValidator validator;
-
+  private List<CrpProgram> crpPrograms;
 
   // Variables
   private String transaction;
@@ -143,10 +143,14 @@ public class PowbCollaborationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public List<CrpProgram> getCrpPrograms() {
+    return crpPrograms;
+  }
+
+
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -156,10 +160,10 @@ public class PowbCollaborationAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -212,6 +216,7 @@ public class PowbCollaborationAction extends BaseAction {
       return result;
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -338,6 +343,28 @@ public class PowbCollaborationAction extends BaseAction {
       }
     }
 
+    if (this.isPMU()) {
+      crpPrograms = loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      for (CrpProgram crpProgram : crpPrograms) {
+        List<LiaisonInstitution> liaisonInstitutions =
+          crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (!liaisonInstitutions.isEmpty()) {
+          PowbSynthesis powbSynthesisProgram =
+            powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
+          if (powbSynthesisProgram != null) {
+            crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+          }
+        }
+        if (crpProgram.getCollaboration() == null) {
+          crpProgram.setCollaboration(new PowbCollaboration());
+
+        }
+
+      }
+    }
+    crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
 
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
@@ -359,6 +386,7 @@ public class PowbCollaborationAction extends BaseAction {
 
     }
   }
+
 
   @Override
   public String save() {
@@ -405,6 +433,10 @@ public class PowbCollaborationAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setCrpPrograms(List<CrpProgram> crpPrograms) {
+    this.crpPrograms = crpPrograms;
   }
 
   public void setFlagshipExercises(List<PowbMonitoringEvaluationLearningExercise> flagshipExercises) {
