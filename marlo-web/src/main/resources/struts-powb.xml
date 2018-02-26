@@ -98,7 +98,7 @@
     </action>
     
     <!--  2.3 Collaboration and Integration -->
-    <action name="{crp}/collaborationIntegration" class="org.cgiar.ccafs.marlo.action.powb.ExpectedCRPProgressAction">
+    <action name="{crp}/collaborationIntegration" class="org.cgiar.ccafs.marlo.action.powb.FlagshipPlansAction">
       <interceptor-ref name="editPowbStack" />
       <result name="input">/WEB-INF/crp/views/powb/powb_collaborationIntegration.ftl</result>
       <result name="success" type="redirectAction">
