@@ -172,12 +172,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       // TODO: Complete POWB subreports
       this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
       this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
-      // this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
+      this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
       // // Table A
       this.fillSubreport((SubReport) hm.get("PlannedMilestones"), "PlannedMilestones");
       this.fillSubreport((SubReport) hm.get("TableAContent"), "TableAContent");
       // // Table B
-      // this.fillSubreport((SubReport) hm.get("PlannedStudies"), "PlannedStudies");
+      this.fillSubreport((SubReport) hm.get("PlannedStudies"), "PlannedStudies");
       // this.fillSubreport((SubReport) hm.get("TableBContent"), "TableBContent");
       // // Table C
       this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
@@ -300,7 +300,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getCGIARCollaborationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableGDescription"}, new Class[] {String.class}, 0);
 
-    model.addRow(new Object[] {"Text", "Text"});
+    model.addRow(new Object[] {"&lt;Not Defined&gt;", "&lt;Not Defined&gt;"});
     return model;
   }
 
@@ -327,8 +327,23 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     TypedTableModel model =
       new TypedTableModel(new String[] {"managementRisksTitleDescription", "CRPManagementGovernanceDescription"},
         new Class[] {String.class, String.class}, 0);
-
-    model.addRow(new Object[] {"Text", "Text"});
+    String managementRisksTitleDescription = "&lt;Not Defined&gt;",
+      CRPManagementGovernanceDescription = "&lt;Not Defined&gt;";
+    if (powbSynthesisPMU != null) {
+      // management risk
+      if (powbSynthesisPMU.getPowbManagementRisk() != null) {
+        managementRisksTitleDescription = powbSynthesisPMU.getPowbManagementRisk().getHighlight() != null
+          && !powbSynthesisPMU.getPowbManagementRisk().getHighlight().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementRisk().getHighlight() : "&lt;Not Defined&gt;";
+      }
+      // Governance
+      if (powbSynthesisPMU.getPowbManagementGovernance() != null) {
+        CRPManagementGovernanceDescription = powbSynthesisPMU.getPowbManagementGovernance().getDescription() != null
+          && !powbSynthesisPMU.getPowbManagementGovernance().getDescription().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "&lt;Not Defined&gt;";
+      }
+    }
+    model.addRow(new Object[] {managementRisksTitleDescription, CRPManagementGovernanceDescription});
     return model;
   }
 
@@ -356,9 +371,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         "expectedEffortsCountryCoordinationDescription", "monitoringEvaluationLearningDescription"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
-    String staffingDescription = "", financialPlanDescription = "", newKeyExternalPartnershipsDescription = "",
-      newContributionPlatformsDescription = "", newCrossCRPInteractionsDescription = "",
-      expectedEffortsCountryCoordinationDescription = "", monitoringEvaluationLearningDescription = "";
+    String staffingDescription = "&lt;Not Defined&gt;", financialPlanDescription = "&lt;Not Defined&gt;",
+      newKeyExternalPartnershipsDescription = "&lt;Not Defined&gt;",
+      newContributionPlatformsDescription = "&lt;Not Defined&gt;",
+      newCrossCRPInteractionsDescription = "&lt;Not Defined&gt;",
+      expectedEffortsCountryCoordinationDescription = "&lt;Not Defined&gt;",
+      monitoringEvaluationLearningDescription = "&lt;Not Defined&gt;";
 
     if (powbSynthesisPMU != null) {
       // TOC
@@ -366,7 +384,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
           && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
             ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "&lt;Not Defined&gt;";
-
       }
       // Financial Plan
       if (powbSynthesisPMU.getFinancialPlan() != null) {
@@ -399,9 +416,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class},
       0);
-    String unitName = "", leadCenter = "", participantingCenters = "", adjustmentsDescription = "",
-      expectedCrpDescription = "", evidenceDescription = "", plansCRPFlagshipDescription = "",
-      crossCuttingGenderDescription = "", crossCuttingOpenDataDescription = "";
+    String unitName = "&lt;Not Defined&gt;", leadCenter = "&lt;Not Defined&gt;",
+      participantingCenters = "&lt;Not Defined&gt;", adjustmentsDescription = "&lt;Not Defined&gt;",
+      expectedCrpDescription = "&lt;Not Defined&gt;", evidenceDescription = "&lt;Not Defined&gt;",
+      plansCRPFlagshipDescription = "&lt;Not Defined&gt;", crossCuttingGenderDescription = "&lt;Not Defined&gt;",
+      crossCuttingOpenDataDescription = "&lt;Not Defined&gt;";
 
     unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
       ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
@@ -425,10 +444,11 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       }
 
       // CRP Progress
-      if (powbSynthesisPMU.getPowbExpectedCrpProgresses() != null && powbSynthesisPMU.getPowbExpectedCrpProgresses()
-        .stream().filter(e -> e.isActive()).collect(Collectors.toList()).get(0) != null) {
-        PowbExpectedCrpProgress powbExpectedCrpProgress = powbSynthesisPMU.getPowbExpectedCrpProgresses().stream()
-          .filter(e -> e.isActive()).collect(Collectors.toList()).get(0);
+      List<PowbExpectedCrpProgress> powbExpectedCrpProgressList =
+        powbSynthesisPMU.getPowbExpectedCrpProgresses().stream().filter(e -> e.isActive()).collect(Collectors.toList());
+
+      if (powbExpectedCrpProgressList != null && !powbExpectedCrpProgressList.isEmpty()) {
+        PowbExpectedCrpProgress powbExpectedCrpProgress = powbExpectedCrpProgressList.get(0);
         expectedCrpDescription = powbExpectedCrpProgress.getExpectedHighlights() != null
           && !powbExpectedCrpProgress.getExpectedHighlights().trim().isEmpty()
             ? powbExpectedCrpProgress.getExpectedHighlights() : "&lt;Not Defined&gt;";
@@ -632,7 +652,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getPlannedStudiesTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableBDescription"}, new Class[] {String.class}, 0);
 
-    model.addRow(new Object[] {"Text"});
+    model.addRow(new Object[] {""});
     return model;
   }
 
@@ -747,9 +767,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     TypedTableModel model =
       new TypedTableModel(new String[] {"plannedStudy", "geographicScope", "revelantSubIDO", "comments"},
         new Class[] {String.class, String.class, String.class, String.class}, 0);
-    for (int i = 0; i < 5; i++) {
-      model.addRow(new Object[] {"Text", "Text", "Text", "Text"});
-    }
+
+    String plannedStudy = "", geographicScope = "", revelantSubIDO = "", comments = "";
+
+    model.addRow(new Object[] {plannedStudy, geographicScope, revelantSubIDO, comments});
     return model;
   }
 
@@ -788,7 +809,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         category = powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory().getCategory();
         female = powbSynthesisCrpStaffingCategory.getFemale();
         totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
-        femalePercentaje = powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100;
+        femalePercentaje = powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0;
         male = powbSynthesisCrpStaffingCategory.getMale();
         model.addRow(new Object[] {category, female, totalFTE, femalePercentaje, male});
       }
@@ -860,9 +881,9 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getTableGContentTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"crpPlatform", "descriptionCollaboration", "relevantFP"},
       new Class[] {String.class, String.class, String.class}, 0);
-    for (int i = 0; i < 5; i++) {
-      model.addRow(new Object[] {"Text", "Text", "Text"});
-    }
+    String crpPlatform = "&lt;Not Defined&gt;", descriptionCollaboration = "&lt;Not Defined&gt;",
+      relevantFP = "&lt;Not Defined&gt;";
+    model.addRow(new Object[] {crpPlatform, descriptionCollaboration, relevantFP});
 
     return model;
   }
