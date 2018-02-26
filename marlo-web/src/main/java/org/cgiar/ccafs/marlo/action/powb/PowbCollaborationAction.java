@@ -525,6 +525,7 @@ public class PowbCollaborationAction extends BaseAction {
             powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
           if (powbSynthesisProgram != null) {
             crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+
           }
         }
         if (crpProgram.getCollaboration() == null) {
@@ -539,11 +540,14 @@ public class PowbCollaborationAction extends BaseAction {
     globalUnits = new HashMap<>();
     for (GlobalUnit globalUnit : crpManager.findAll().stream()
       .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList())) {
-      if (globalUnit.getAcronym() != null && globalUnit.getAcronym().length() > 2) {
-        globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
-      } else {
-        globalUnits.put(globalUnit.getId(), globalUnit.getName());
+      if (!globalUnit.equals(loggedCrp)) {
+        if (globalUnit.getAcronym() != null && globalUnit.getAcronym().length() > 2) {
+          globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
+        } else {
+          globalUnits.put(globalUnit.getId(), globalUnit.getName());
+        }
       }
+
 
     }
 
