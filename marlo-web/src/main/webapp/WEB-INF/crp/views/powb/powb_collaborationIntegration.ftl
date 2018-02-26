@@ -48,7 +48,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableKeyExternal.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms /]
           </div>
           [/#if]
           
@@ -61,7 +61,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableContributionOtherPlatforms.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms /]
           </div>
           [/#if]
           
@@ -74,7 +74,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCrossCRPInteractions.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms /]
           </div>
           [/#if]
            
@@ -104,7 +104,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableExpectedEfforts.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms /]
           </div>
           [/#if]
           
@@ -141,10 +141,9 @@
       <tbody>
         [#if list??]
           [#list list as li]
-            [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(li.id))!{}]
             <tr>
-              <td><span class="programTag" style="border-color:${(li.crpProgram.color)!'#fff'}" title="${li.crpProgram.composedName}">${li.crpProgram.acronym}</span></td>              
-              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td><span class="programTag" style="border-color:${(li.color)!'#fff'}" title="${li.composedName}">${li.acronym}</span></td>              
+              <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
             </tr>
           [/#list]
         [/#if]
