@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbFinancialPlannedBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
@@ -35,6 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -49,7 +54,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -230,9 +237,30 @@ public class FinancialPlanAction extends BaseAction {
             p -> p.getLiaisonInstitution() != null && p.getLiaisonInstitution().getId().equals(plannedBudgetRelationID))
           .collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
-          return powbFinancialPlannedBudgetList.get(0);
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
+
+          if (liaisonInstitution.getCrpProgram() != null) {
+            this.loadFlagShipBudgetInfo(liaisonInstitution.getCrpProgram());
+            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getCrpProgram().getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setEditBudgets(false);
+
+          }
+
+          return powbFinancialPlannedBudget;
         } else {
-          return null;
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
+          powbFinancialPlannedBudget.setLiaisonInstitution(liaisonInstitution);
+
+          if (liaisonInstitution.getCrpProgram() != null) {
+            this.loadFlagShipBudgetInfo(liaisonInstitution.getCrpProgram());
+            powbFinancialPlannedBudget.setW1w2(new Double(liaisonInstitution.getCrpProgram().getW1()));
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setEditBudgets(false);
+
+          }
+
+          return powbFinancialPlannedBudget;
         }
       } else {
         return null;
@@ -240,14 +268,33 @@ public class FinancialPlanAction extends BaseAction {
     } else {
       PowbExpenditureAreas powbExpenditureArea =
         powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
+
       if (powbExpenditureArea != null) {
         List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
           powbSynthesis.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
             && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
         if (powbFinancialPlannedBudgetList != null && !powbFinancialPlannedBudgetList.isEmpty()) {
-          return powbFinancialPlannedBudgetList.get(0);
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
+          if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+            this.loadPMU(powbExpenditureArea);
+            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getW3());
+            powbFinancialPlannedBudget.setEditBudgets(false);
+          }
+          return powbFinancialPlannedBudget;
         } else {
-          return null;
+
+          PowbFinancialPlannedBudget powbFinancialPlannedBudget = new PowbFinancialPlannedBudget();
+          powbFinancialPlannedBudget.setPowbExpenditureArea(powbExpenditureArea);
+          if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
+            this.loadPMU(powbExpenditureArea);
+            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getW3());
+            powbFinancialPlannedBudget.setEditBudgets(false);
+          }
+          return powbFinancialPlannedBudget;
+
+
         }
       } else {
         return null;
@@ -297,6 +344,123 @@ public class FinancialPlanAction extends BaseAction {
     return isFP;
   }
 
+  public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
+    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    Set<Project> myProjects = new HashSet();
+    for (ProjectFocus projectFocus : projects) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
+          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+        .collect(Collectors.toList());
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+      if (!this.getCountProjectFlagships(project.getId())) {
+        percentageW1 = 100;
+        percentageW3 = 100;
+        percentageB = 100;
+
+      }
+      for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+        switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+          case 1:
+            percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+            break;
+          case 2:
+            percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+            break;
+          case 3:
+            percentageB = percentageB + projectBudgetsFlagship.getAmount();
+            break;
+          default:
+            break;
+        }
+      }
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+      crpProgram.setW1(crpProgram.getW1() + w1);
+      crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
+
+
+    }
+  }
+
+  public void loadPMU(PowbExpenditureAreas liaisonInstitution) {
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+    Set<Project> myProjects = new HashSet();
+    for (GlobalUnitProject projectFocus : loggedCrp.getGlobalUnitProjects().stream()
+      .filter(c -> c.isActive() && c.isOrigin()).collect(Collectors.toList())) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+              && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
+              myProjects.add(project);
+            }
+
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+
+      percentageW1 = 100;
+      percentageW3 = 100;
+      percentageB = 100;
+
+
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+      liaisonInstitution.setW1(liaisonInstitution.getW1() + w1);
+      liaisonInstitution.setW3(liaisonInstitution.getW3() + w3 + bilateral);
+
+
+    }
+  }
+
   @Override
   public String next() {
     String result = this.save();
@@ -332,6 +496,8 @@ public class FinancialPlanAction extends BaseAction {
       }
     }
     this.createEmptyFinancialPlan();
+
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = this.getFlagships();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
