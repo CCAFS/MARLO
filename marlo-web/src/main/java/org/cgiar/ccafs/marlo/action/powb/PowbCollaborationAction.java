@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -86,6 +88,7 @@ public class PowbCollaborationAction extends BaseAction {
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
   private PowbCollaborationManager powbCollaborationManager;
+  private PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager;
 
   private PowbCollaborationValidator validator;
 
@@ -113,7 +116,8 @@ public class PowbCollaborationAction extends BaseAction {
     PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
     PowbCollaborationManager powbCollaborationManager, PowbCollaborationValidator validator,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager, GlobalUnitProjectManager globalUnitProjectManager) {
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, GlobalUnitProjectManager globalUnitProjectManager,
+    PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -125,6 +129,7 @@ public class PowbCollaborationAction extends BaseAction {
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.validator = validator;
+    this.powbCollaborationGlobalUnitManager = powbCollaborationGlobalUnitManager;
   }
 
 
@@ -212,6 +217,77 @@ public class PowbCollaborationAction extends BaseAction {
 
   public String getTransaction() {
     return transaction;
+  }
+
+  public void globalUnitNewData() {
+
+    for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbSynthesis
+      .getPowbCollaborationGlobalUnitsList()) {
+      PowbCollaborationGlobalUnit powbCollaborationGlobalUnitNew = null;
+      if (powbCollaborationGlobalUnit != null) {
+
+
+        if (powbCollaborationGlobalUnit.getGlobalUnit() != null
+          && powbCollaborationGlobalUnit.getGlobalUnit().getId() > 0) {
+          powbCollaborationGlobalUnit
+            .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
+        } else {
+          powbCollaborationGlobalUnit.setGlobalUnit(null);
+
+        }
+
+
+        if (powbCollaborationGlobalUnit.getId() == null) {
+
+          powbCollaborationGlobalUnitNew = new PowbCollaborationGlobalUnit();
+          powbCollaborationGlobalUnitNew.setActive(true);
+          powbCollaborationGlobalUnitNew.setCreatedBy(this.getCurrentUser());
+          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
+          powbCollaborationGlobalUnitNew.setModificationJustification("");
+          powbCollaborationGlobalUnitNew.setActiveSince(new Date());
+          powbCollaborationGlobalUnitNew.setPowbSynthesis(powbSynthesis);
+
+        } else {
+
+          powbCollaborationGlobalUnitNew =
+            powbCollaborationGlobalUnitManager.getPowbCollaborationGlobalUnitById(powbCollaborationGlobalUnit.getId());
+          powbCollaborationGlobalUnitNew.setModifiedBy(this.getCurrentUser());
+
+
+        }
+        powbCollaborationGlobalUnitNew.setFlagship(powbCollaborationGlobalUnit.getFlagship());
+        powbCollaborationGlobalUnitNew.setGlobalUnit(powbCollaborationGlobalUnit.getGlobalUnit());
+        powbCollaborationGlobalUnitNew.setCollaborationType(powbCollaborationGlobalUnit.getCollaborationType());
+        powbCollaborationGlobalUnitNew.setBrief(powbCollaborationGlobalUnit.getBrief());
+
+
+        powbCollaborationGlobalUnitNew =
+          powbCollaborationGlobalUnitManager.savePowbCollaborationGlobalUnit(powbCollaborationGlobalUnitNew);
+
+
+      }
+
+    }
+
+  }
+
+  public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
+
+    List<PowbCollaborationGlobalUnit> globlalUnitsPrev;
+    PowbSynthesis powbSynthesisBD = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
+
+    globlalUnitsPrev =
+      powbSynthesisBD.getPowbCollaborationGlobalUnits().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+
+
+    for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : globlalUnitsPrev) {
+      if (!powbCollaborationGlobalUnits.contains(powbCollaborationGlobalUnit)) {
+
+        powbCollaborationGlobalUnitManager.deletePowbCollaborationGlobalUnit(powbCollaborationGlobalUnit.getId());
+      }
+    }
+
   }
 
   public boolean isFlagship() {
@@ -356,6 +432,8 @@ public class PowbCollaborationAction extends BaseAction {
         reader.close();
       } else {
         this.setDraft(false);
+        powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList()));
         // Check if ToC relation is null -create it
         if (powbSynthesis.getCollaboration() == null) {
           PowbCollaboration powbCollaboration = new PowbCollaboration();
@@ -481,7 +559,9 @@ public class PowbCollaborationAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-
+      if (powbSynthesis.getPowbCollaborationGlobalUnitsList() != null) {
+        powbSynthesis.getPowbCollaborationGlobalUnitsList().clear();
+      }
     }
   }
 
@@ -498,8 +578,13 @@ public class PowbCollaborationAction extends BaseAction {
       powCollabrotionDB.setKeyExternalPartners(powbSynthesis.getCollaboration().getKeyExternalPartners());
 
       powCollabrotionDB = powbCollaborationManager.savePowbCollaboration(powCollabrotionDB);
-
+      if (powbSynthesis.getPowbCollaborationGlobalUnitsList() == null) {
+        powbSynthesis.setPowbCollaborationGlobalUnitsList(new ArrayList<>());
+      }
+      this.globaUnitsPreviousData(powbSynthesis.getPowbCollaborationGlobalUnitsList());
+      this.globalUnitNewData();
       List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.SYNTHESIS_GLOBAL_UNTIS_RELATION);
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setModifiedBy(this.getCurrentUser());
