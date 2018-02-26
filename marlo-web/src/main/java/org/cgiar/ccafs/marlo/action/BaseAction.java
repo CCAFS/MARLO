@@ -3728,7 +3728,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     Phase phase = this.getActualPhase();
+    phase = phaseManager.getPhaseById(phase.getId());
     GlobalUnit crp = phase.getCrp();
+    crp = crpManager.getGlobalUnitById(crp.getId());
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
     List<PowbSynthesis> synthesisList =
       new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
@@ -4527,7 +4529,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean isPowbSynthesisSubmitted() {
-    List<Submission> submissions = this.getCurrentCrp().getSubmissions()
+    GlobalUnit globalUnit = this.getCurrentCrp();
+    globalUnit = crpManager.getGlobalUnitById(globalUnit.getId());
+    List<Submission> submissions = globalUnit.getSubmissions()
       .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
         && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
