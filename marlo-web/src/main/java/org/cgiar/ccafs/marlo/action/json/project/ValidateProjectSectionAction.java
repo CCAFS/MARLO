@@ -220,7 +220,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           && ((a.getDeliverableInfo(this.getActualPhase()).getStatus() == null
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
+              && a.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear())
             || (a.getDeliverableInfo(this.getActualPhase()).getStatus() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())
               || a.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == 0))))
@@ -507,8 +507,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     // Validate if the section exists.
     validSection = ProjectSectionStatusEnum.value(sectionName) != null;
-
-
   }
 
   public void setExistProject(boolean existProject) {

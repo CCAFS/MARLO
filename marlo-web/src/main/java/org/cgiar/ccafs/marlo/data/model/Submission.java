@@ -24,18 +24,12 @@ import java.util.Date;
  */
 public class Submission implements java.io.Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 235989260663664812L;
 
 
   private Long id;
-
   private CrpProgram crpProgram;
   private User user;
-
   private Date dateTime;
   private String modificationJustification;
   private String cycle;
@@ -44,11 +38,10 @@ public class Submission implements java.io.Serializable {
   private User unSubmitUser;
   private Boolean unSubmit;
   private String unSubmitJustification;
-
+  private PowbSynthesis powbSynthesis;
 
   public Submission() {
   }
-
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime) {
     this.crpProgram = crpProgram;
@@ -83,22 +76,28 @@ public class Submission implements java.io.Serializable {
     return this.dateTime;
   }
 
+
   public Long getId() {
     return this.id;
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
+  }
+
+  public PowbSynthesis getPowbSynthesis() {
+    return powbSynthesis;
   }
 
   public Project getProject() {
     return project;
   }
 
-
   public String getUnSubmitJustification() {
     return unSubmitJustification;
   }
+
 
   public User getUnSubmitUser() {
     return unSubmitUser;
@@ -134,6 +133,10 @@ public class Submission implements java.io.Serializable {
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
   }
 
   public void setProject(Project project) {
