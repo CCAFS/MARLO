@@ -91,13 +91,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
+  private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+
 
   private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
 
   public LocElement() {
   }
-
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
@@ -113,10 +114,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
   }
 
+
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -138,38 +141,42 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public GlobalUnit getCrp() {
     return crp;
   }
+
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
 
-
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
   }
+
+  public Set<FundingSourceLocation> getFundingSourceLocations() {
+    return fundingSourceLocations;
+  }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
 
-
   public Set<InstitutionLocation> getInstitutionLocations() {
     return institutionLocations;
   }
+
 
   public Set<Institution> getInstitutions() {
     return institutions;
@@ -216,10 +223,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getName() {
     return this.name;
   }
+
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
@@ -232,7 +239,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -249,6 +255,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -257,13 +264,17 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
   }
 
+
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
+  }
+
+  public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
+    this.fundingSourceLocations = fundingSourceLocations;
   }
 
 
