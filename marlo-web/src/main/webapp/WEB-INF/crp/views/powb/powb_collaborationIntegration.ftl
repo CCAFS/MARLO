@@ -83,13 +83,17 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             <div class="listProgramCollaborations">
-              [#list [{}] as collaboration]
-                [@flagshipCollaborationMacro element=collaboration name="" index=collaboration_index  /]
+             [#if powbCollaborationGlobalUnitsList?has_content]
+              [#list powbCollaborationGlobalUnitsList as collaboration]
+                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  /]
               [/#list]
+             [#else]
+              [@flagshipCollaborationMacro element={} name="powbSynthesis.powbCollaborationGlobalUnitsList" index=0  /]
+             [/#if]
             </div>
             [#if canEdit && editable]
             <div class="text-right">
-              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaboration"/]</div>
+              <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaboration"/]</div>
             </div> 
             [/#if]
           </div>
@@ -125,6 +129,10 @@
     </div> 
   </div> 
 </section>
+
+[#--  Program collaboration Template --]
+[@flagshipCollaborationMacro element={} name="" index=-1 template=true /]
+
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
@@ -158,8 +166,7 @@
 
 [#macro tableCountryContributionsMacro ]
 
-  [#assign locElements = siteIntegrations
-  /]
+  [#assign locElements = siteIntegrations /]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -174,17 +181,20 @@
           [#list locElements as locElement]
             <tr>
               <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
-              <td>[#if (locElement.fundingSources?has_content)!false]
-               [#list locElement.fundingSources as fundingSource]
-                FS${fundingSource.id?replace('\n', '<br>')},
-               [/#list]
-              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-              <td>[#if (locElement.projects?has_content)!false]
-                [#list locElement.projects as project]
-                P${project.id?replace('\n', '<br>')},
-               [/#list]
-          
-              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>
+                [#if (locElement.fundingSources?has_content)!false]
+                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id},[/#list]
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
+              <td>
+                [#if (locElement.projects?has_content)!false]
+                  [#list locElement.projects as project]P${project.id},[/#list]
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
               
             </tr>
           [/#list]

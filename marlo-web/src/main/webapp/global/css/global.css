@@ -1814,7 +1814,7 @@ a.currentReportingSection li, a.currentSection li {
 #secondaryMenu ul li ul li {
   margin: 2px 0 5px 0;
   list-style: none;
-  font-size: 0.95em;
+  font-size: 0.9em;
   border: 1px solid #e8e7e7;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
   background: #fff;
@@ -1852,8 +1852,7 @@ a.currentReportingSection li, a.currentSection li {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
-  padding: 5px 0 9px 28px;
-  padding: 4px 9px;
+  padding: 5px 19px 5px 10px !important;
   /* border-left: 5px solid; */
 }
 
