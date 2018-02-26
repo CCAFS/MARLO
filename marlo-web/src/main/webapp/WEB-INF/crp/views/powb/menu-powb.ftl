@@ -27,9 +27,9 @@
 ]/]
 
 
-[#assign submission = false /]
-[#assign canSubmit = true /]
-[#assign completed = false /]
+[#assign submission = (action.isPowbSynthesisSubmitted())!false /]
+[#assign canSubmit = (action.hasPersmissionSubmitPowb())!false /]
+[#assign completed = (action.isCompletePowbSynthesis())!false /]
 [#assign canUnSubmit = true /]
 
 [#assign sectionsForChecking = [] /]

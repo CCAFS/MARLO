@@ -24,11 +24,15 @@ import java.util.Date;
  */
 public class Submission implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 235989260663664812L;
 
 
   private Long id;
+
   private CrpProgram crpProgram;
+
+
   private User user;
   private Date dateTime;
   private String modificationJustification;
@@ -38,7 +42,7 @@ public class Submission implements java.io.Serializable {
   private User unSubmitUser;
   private Boolean unSubmit;
   private String unSubmitJustification;
-  private PowbSynthesis powbSynthesis;
+  private GlobalUnit globalUnit;
 
   public Submission() {
   }
@@ -48,7 +52,6 @@ public class Submission implements java.io.Serializable {
     this.user = user;
     this.dateTime = dateTime;
   }
-
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime, String modificationJustification, String cycle,
     Short year, Project project) {
@@ -60,7 +63,6 @@ public class Submission implements java.io.Serializable {
     this.year = year;
     this.project = project;
   }
-
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -77,6 +79,11 @@ public class Submission implements java.io.Serializable {
   }
 
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
+
   public Long getId() {
     return this.id;
   }
@@ -86,9 +93,6 @@ public class Submission implements java.io.Serializable {
     return this.modificationJustification;
   }
 
-  public PowbSynthesis getPowbSynthesis() {
-    return powbSynthesis;
-  }
 
   public Project getProject() {
     return project;
@@ -98,10 +102,10 @@ public class Submission implements java.io.Serializable {
     return unSubmitJustification;
   }
 
-
   public User getUnSubmitUser() {
     return unSubmitUser;
   }
+
 
   public User getUser() {
     return this.user;
@@ -127,16 +131,16 @@ public class Submission implements java.io.Serializable {
     this.dateTime = dateTime;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
-  }
-
-  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
-    this.powbSynthesis = powbSynthesis;
   }
 
   public void setProject(Project project) {

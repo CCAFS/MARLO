@@ -109,12 +109,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget = new HashSet<PowbFinancialPlannedBudget>(0);
 
-
-
   private List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList;
-
-
-  private Set<Submission> submissions = new HashSet<Submission>(0);
 
   public PowbSynthesis() {
   }
@@ -285,7 +280,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
-
   public PowbToc getPowbToc() {
     return powbToc;
   }
@@ -293,10 +287,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
-  }
-
-  public Set<Submission> getSubmissions() {
-    return submissions;
   }
 
   @Override
@@ -320,7 +310,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
 
   public void setCollaboration(PowbCollaboration collaboration) {
@@ -429,12 +418,6 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
   }
-
-
-  public void setSubmissions(Set<Submission> submissions) {
-    this.submissions = submissions;
-  }
-
 
   @Override
   public String toString() {
