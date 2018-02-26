@@ -362,6 +362,9 @@ public final class APConstants {
   public static final String SYNTHESIS_EXPECTED_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbExpectedCrpProgresses)";
 
+  public static final String SYNTHESIS_GLOBAL_UNTIS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbCollaborationGlobalUnits)";
+
   public static final String SYNTHESIS_EVIDENCE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbEvidence.powbEvidencePlannedStudies)";
 
