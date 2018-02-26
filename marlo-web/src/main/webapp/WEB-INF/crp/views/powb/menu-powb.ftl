@@ -3,25 +3,25 @@
 [#assign menus= [
   { 'title': '1.  Expected Key Results', 'show': true,
     'items': [
-    { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': (flagship || PMU) },
-    { 'slug': 'expectedProgress',         'name': 'powb.menu.expectedProgress',       'action': 'expectedProgress',       'active': (flagship || PMU) },
-    { 'slug': 'evidenceRelevant',         'name': 'powb.menu.evidenceRelevant',       'action': 'evidenceRelevant',       'active': (flagship || PMU) },
-    { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': (flagship || PMU) },
-    { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': (flagship || PMU) }
+    { 'slug': 'adjustmentsChanges',       'name': 'powb.menu.adjustmentsChanges',     'action': 'adjustmentsChanges',     'active': true },
+    { 'slug': 'expectedProgress',         'name': 'powb.menu.expectedProgress',       'action': 'expectedProgress',       'active': true },
+    { 'slug': 'evidenceRelevant',         'name': 'powb.menu.evidenceRelevant',       'action': 'evidenceRelevant',       'active': true },
+    { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': true, 'onlyFlagship': !flagship },
+    { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': true, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '2.  Planning for CRP Effectiveness and Efficiency', 'show': true,
     'items': [
-    { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': (flagship || PMU) },
-    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': (flagship || PMU) },
-    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': (flagship || PMU) && config.debug },
-    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': (flagship || PMU) }
+    { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': true && config.debug },
+    { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'mel',                        'active': true }
     ]
   },
   { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': (flagship || PMU) },
-    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': (flagship || PMU) }
+    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': true },
+    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': true }
     ]
   }
 ]/]
@@ -33,6 +33,7 @@
 [#assign canUnSubmit = true /]
 
 [#assign sectionsForChecking = [] /]
+[#assign currentMenuItem = {} /]
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -55,9 +56,10 @@
                   --]
                 </a>
               </li>
-              [#if item.active]
-                [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
-              [/#if]
+              [#-- Set current Item --]
+              [#if item.slug == currentStage][#assign currentMenuItem = item /][/#if]
+              [#-- Set sections for checking --]
+              [#if item.active][#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /][/#if]
             [/#if]
           [/#list] 
         </ul>
