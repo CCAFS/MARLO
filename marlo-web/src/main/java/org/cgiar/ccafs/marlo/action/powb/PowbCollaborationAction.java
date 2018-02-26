@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -418,6 +419,7 @@ public class PowbCollaborationAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
+      this.setInvalidFields(new HashMap<>());
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -476,7 +478,7 @@ public class PowbCollaborationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, powbSynthesis, true);
+      // validator.validate(this, powbSynthesis, true);
     }
   }
 }
