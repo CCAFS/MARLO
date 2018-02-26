@@ -277,8 +277,8 @@ public class FinancialPlanAction extends BaseAction {
           PowbFinancialPlannedBudget powbFinancialPlannedBudget = powbFinancialPlannedBudgetList.get(0);
           if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
             this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getW1());
-            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getW3());
+            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
             powbFinancialPlannedBudget.setEditBudgets(false);
           }
           return powbFinancialPlannedBudget;
@@ -288,8 +288,8 @@ public class FinancialPlanAction extends BaseAction {
           powbFinancialPlannedBudget.setPowbExpenditureArea(powbExpenditureArea);
           if (powbExpenditureArea.getExpenditureArea().equals("CRP Management & Support Cost")) {
             this.loadPMU(powbExpenditureArea);
-            powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getW1());
-            powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getW3());
+            powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
+            powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
             powbFinancialPlannedBudget.setEditBudgets(false);
           }
           return powbFinancialPlannedBudget;
@@ -496,7 +496,6 @@ public class FinancialPlanAction extends BaseAction {
           .filter(fe -> fe.isActive()).collect(Collectors.toList()));
       }
     }
-
 
 
     // Get the list of liaison institutions Flagships and PMU.
