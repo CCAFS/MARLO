@@ -33,5 +33,10 @@ function updateIndexes() {
   $(".listProgramCollaborations").find(".flagshipCollaboration").each(function(i,element) {
     $(element).setNameIndexes(1, i);
     $(element).find(".index").html(i + 1);
+
+    if($(element).next().hasClass('radio-label')) {
+      console.log($(element).next().attr('for'));
+    }
+
   });
 }
