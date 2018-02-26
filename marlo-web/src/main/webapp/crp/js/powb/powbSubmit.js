@@ -144,10 +144,11 @@ function processTasks(tasks,id,button) {
       var $sectionMenu = $('#menu-' + sectionName + '');
       $
           .ajax({
-              url: baseURL + '/validateProjectSection.do',
+              url: baseURL + '/validatePowbSynthesisSection.do',
               data: {
-                  projectID: id,
+
                   sectionName: sectionName,
+                  phaseID: phaseID
               },
               beforeSend: function() {
                 $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');

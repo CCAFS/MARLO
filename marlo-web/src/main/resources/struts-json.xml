@@ -773,6 +773,14 @@
       </result>
     </action>
     
+    <action name="validatePowbSynthesisSection"
+      class="org.cgiar.ccafs.marlo.action.json.powb.ValidateSectionStatusPowbSynthesisAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
 	</package>
 
 	<package name="json-planning" namespace="/impactPathway"

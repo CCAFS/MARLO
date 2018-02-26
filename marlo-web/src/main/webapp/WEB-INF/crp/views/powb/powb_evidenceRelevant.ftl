@@ -62,6 +62,8 @@
               <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
             </div>
             [#-- Project planned studies (Table) --]
+            <hr />
+            <label>[@s.text name="evidenceRelevant.tablePlannedStudies.includeLabel" /]:</label>
             [@tablePlannedStudiesMacro/]
           </div>
           [/#if]
@@ -87,12 +89,11 @@
         <th id="tb-geographicScope" width="11%">[@s.text name="evidenceRelevant.tablePlannedStudies.geographicScope" /]</th>
         <th id="tb-relevant" width="24%">[@s.text name="evidenceRelevant.tablePlannedStudies.relevant" /]</th>
         <th id="tb-comments" width="34%">[@s.text name="evidenceRelevant.tablePlannedStudies.comments" /]</th>
-        <th id="tb-checkbox" width="0%">Included</th>
+        <th id="tb-checkbox" width="0%">[@s.text name="evidenceRelevant.tablePlannedStudies.include" /]</th>
       </tr>
     </thead>
     <tbody>
     [#-- Loading --]
-    [#-- <div class="loading clustersBlock" style="display:none"></div> --]
     [#if popUpProjects?has_content]
       [#list popUpProjects as popUp]
         [#if popUp.project.id?has_content]

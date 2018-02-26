@@ -169,7 +169,7 @@ function validateThisSection() {
   if(isPOWBSection()) {
     sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
     sectionData.powbSynthesisID = $('input[name="powbSynthesisID"]').val();
-    validateService = "/validatePOWB.do";
+    validateService = "/validatePowbSynthesisSection.do";
   }
 
   $.ajax({
@@ -184,7 +184,7 @@ function validateThisSection() {
           $sectionMenu.removeClass('submitted');
         } else {
           var missingFields = (data.section.missingFields) || "";
-          if(!(missingFields) ){
+          if(!(missingFields)) {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
           } else {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
