@@ -802,6 +802,11 @@ img.icon {
   cursor: pointer;
 }
 
+.removeIcon.disable{
+  opacity:0.4;
+  cursor: not-allowed;
+}
+
 .removeLink img, .removeLink a {
   vertical-align: middle;
   text-decoration: none;
@@ -6523,7 +6528,11 @@ p.dateLabel.fieldError {
 .elementRelations  {
   margin: 7px 0 0 15px;
 }
-/* END Radio Flat*/
+
+.elementRelations.ProjectBudget  {
+  padding: 0 7px 15px 0;
+}
+
 
 /* Select2 show and hide animation in dropdowns*/
 .select2-results__option.loading-results,
