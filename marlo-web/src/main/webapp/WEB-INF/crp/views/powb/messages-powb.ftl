@@ -1,12 +1,18 @@
 [#ftl]
 
-[#--  
-<p class="bg-primary" style="padding: 18px;">
+
+[#if (currentMenuItem.onlyFlagship)!false || (currentMenuItem.onlyPMU)!false]
+<p class="bg-success text-center" style="padding: 18px;">
   <span class="glyphicon glyphicon-flash"></span>
-  This section is currently being developed by the technical team.</br>
-  The idea here is that Flagship Leaders and Program Management Unit can be able to report the POWB.
+  [#if (currentMenuItem.onlyFlagship)!false ]
+    [@s.text name="powb.messages.infoOnly"][@s.param][@s.text name="global.pmu"/][/@s.param][/@s.text]
+  [/#if]
+  
+  [#if (currentMenuItem.onlyPMU)!false ]
+    [@s.text name="powb.messages.infoOnly"][@s.param][@s.text name="global.flagship"/][/@s.param][/@s.text]
+  [/#if]
 </p>
---]
+[/#if]
 
 [#-- History Message --]
 [#if transaction??]

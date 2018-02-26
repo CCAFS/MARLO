@@ -41,40 +41,40 @@
           
           [#-- 2.3.1  New Key External Partnerships  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.partnerships" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table: New Key External Partnerships --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableKeyExternal.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
           </div>
           [/#if]
           
           [#-- 2.3.2  New Contribution to and from Platforms --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.platformsContributions" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table: Flagships - Contribution to and from Platforms --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableContributionOtherPlatforms.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=2 /]
           </div>
           [/#if]
           
           [#-- 2.3.3  New Cross-CRP Interactions --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.crpInteractions" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table: Flagships - New Cross-CRP Interactions --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCrossCRPInteractions.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=3 /]
           </div>
           [/#if]
            
@@ -97,14 +97,14 @@
           
           [#-- 2.3.4  Expected Efforts on Country Coordination --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaborationIntegration.expectedEfforts" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
           [#-- Table: Flagships - Expected Efforts on Country Coordination --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableExpectedEfforts.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=flagships /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=4/]
           </div>
           [/#if]
           
@@ -129,7 +129,7 @@
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
-[#macro tableFlagshipsOverallMacro list ]
+[#macro tableFlagshipsOverallMacro list item ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -141,10 +141,13 @@
       <tbody>
         [#if list??]
           [#list list as li]
-            [#assign flagshipPlan = (action.getFlagshipPlansByliaisonInstitutionID(li.id))!{}]
             <tr>
-              <td><span class="programTag" style="border-color:${(li.crpProgram.color)!'#fff'}" title="${li.crpProgram.composedName}">${li.crpProgram.acronym}</span></td>              
-              <td>[#if (flagshipPlan.planSummary?has_content)!false]${flagshipPlan.planSummary?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td><span class="programTag" style="border-color:${(li.color)!'#fff'}" title="${li.composedName}">${li.acronym}</span></td>              
+              [#if item ==1]  <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==2]  <td>[#if (li.collaboration.cotributionsPlatafforms?has_content)!false]${li.collaboration.cotributionsPlatafforms?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==3]  <td>[#if (li.collaboration.crossCrp?has_content)!false]${li.collaboration.crossCrp?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==4]  <td>[#if (li.collaboration.effostornCountry?has_content)!false]${li.collaboration.effostornCountry?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+            
             </tr>
           [/#list]
         [/#if]
@@ -155,10 +158,7 @@
 
 [#macro tableCountryContributionsMacro ]
 
-  [#assign locElements = [ 
-    { "isoAlpha2": "VN", "name": "Vietnam"}, 
-    { "isoAlpha2": "NG", "name": "Niger"}
-    ] 
+  [#assign locElements = siteIntegrations
   /]
   <div class="">
     <table class="table table-bordered">
@@ -173,9 +173,19 @@
         [#if locElements??]
           [#list locElements as locElement]
             <tr>
-              <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>              
-              <td><i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i></td>
-              <td><i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i></td>
+              <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
+              <td>[#if (locElement.fundingSources?has_content)!false]
+               [#list locElement.fundingSources as fundingSource]
+                FS${fundingSource.id?replace('\n', '<br>')},
+               [/#list]
+              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (locElement.projects?has_content)!false]
+                [#list locElement.projects as project]
+                P${project.id?replace('\n', '<br>')},
+               [/#list]
+          
+              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              
             </tr>
           [/#list]
         [/#if]
