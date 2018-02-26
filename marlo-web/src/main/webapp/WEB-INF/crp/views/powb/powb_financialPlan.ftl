@@ -129,7 +129,7 @@
       [/#if]
     </td>
     <td class="text-right">
-      [#if editable && PMU ]
+      [#if editable && PMU && element.editBudgets  ]
         [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true /]
       [#else]
         <input type="hidden" name="${customName}.w1w2" value="${(element.w1w2)!'0'}" class="currencyInput type-w1w2 category-${index}"/>
@@ -137,8 +137,8 @@
       [/#if]
     </td>
     <td class="text-right">
-      [#if editable && PMU ]
-        [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}" required=true /]
+      [#if editable && PMU && element.editBudgets ]
+        [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}"  required=true /]
       [#else]
         <input type="hidden" name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0'}" class="currencyInput type-w3bilateral category-${index}"/>
         <nobr>US$ ${((element.w3Bilateral)!'0')?number?string(",##0.00")}</nobr>
