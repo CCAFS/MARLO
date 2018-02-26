@@ -33,6 +33,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
@@ -101,6 +103,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private CrossCuttingDimensionTableDTO tableC;
   private List<DeliverableInfo> deliverableList;
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
+  private List<PowbEvidencePlannedStudy> flagshipPlannedList;
 
   // Managers
   private PowbCrossCuttingDimensionManager crossCuttingManager;
@@ -178,7 +181,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       this.fillSubreport((SubReport) hm.get("TableAContent"), "TableAContent");
       // // Table B
       this.fillSubreport((SubReport) hm.get("PlannedStudies"), "PlannedStudies");
-      // this.fillSubreport((SubReport) hm.get("TableBContent"), "TableBContent");
+      this.fillSubreport((SubReport) hm.get("TableBContent"), "TableBContent");
       // // Table C
       this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
       this.fillSubreport((SubReport) hm.get("TableCContent"), "TableCContent");
@@ -419,7 +422,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     String unitName = "&lt;Not Defined&gt;", leadCenter = "&lt;Not Defined&gt;",
       participantingCenters = "&lt;Not Defined&gt;", adjustmentsDescription = "&lt;Not Defined&gt;",
       expectedCrpDescription = "&lt;Not Defined&gt;", evidenceDescription = "&lt;Not Defined&gt;",
-      plansCRPFlagshipDescription = "&lt;Not Defined&gt;", crossCuttingGenderDescription = "&lt;Not Defined&gt;",
+      plansCRPFlagshipDescription = "", crossCuttingGenderDescription = "&lt;Not Defined&gt;",
       crossCuttingOpenDataDescription = "&lt;Not Defined&gt;";
 
     unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
@@ -454,8 +457,17 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
             ? powbExpectedCrpProgress.getExpectedHighlights() : "&lt;Not Defined&gt;";
       }
 
+      // Evidence
+      if (powbSynthesisPMU.getPowbEvidence() != null) {
+        PowbEvidence powbEvidence = powbSynthesisPMU.getPowbEvidence();
+        if (powbEvidence != null) {
+          evidenceDescription = powbEvidence.getNarrative() != null && !powbEvidence.getNarrative().trim().isEmpty()
+            ? powbEvidence.getNarrative() : "&lt;Not Defined&gt;";
+        }
+      }
+
       // Cross Cutting Dimensions Info
-      if (powbSynthesisPMU != null) {
+      if (powbSynthesisPMU.getPowbCrossCuttingDimension() != null) {
         PowbCrossCuttingDimension crossCutting = powbSynthesisPMU.getPowbCrossCuttingDimension();
         if (crossCutting != null) {
           crossCuttingGenderDescription = crossCutting.getSummarize();
@@ -469,6 +481,9 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         // Flagship Plan
         plansCRPFlagshipDescription = this.getFlagshipDescription(powbSynthesis, plansCRPFlagshipDescription);
       }
+    }
+    if (plansCRPFlagshipDescription.isEmpty()) {
+      plansCRPFlagshipDescription = "&lt;Not Defined&gt;";
     }
 
     model.addRow(new Object[] {unitName, leadCenter, participantingCenters, adjustmentsDescription,
@@ -572,6 +587,26 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     }
   }
 
+  public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
+    flagshipPlannedList = new ArrayList<>();
+    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+      if (powbSynthesis != null) {
+        if (powbSynthesis.getPowbEvidence() != null) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+              .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+            if (studies != null || !studies.isEmpty()) {
+              for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                flagshipPlannedList.add(powbEvidencePlannedStudy);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -579,6 +614,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     }
     return inputStream;
   }
+
 
   private TypedTableModel getMainAreasTableModel() {
     TypedTableModel model =
@@ -647,7 +683,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     model.addRow(new Object[] {""});
     return model;
   }
-
 
   private TypedTableModel getPlannedStudiesTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableBDescription"}, new Class[] {String.class}, 0);
@@ -768,9 +803,44 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       new TypedTableModel(new String[] {"plannedStudy", "geographicScope", "revelantSubIDO", "comments"},
         new Class[] {String.class, String.class, String.class, String.class}, 0);
 
-    String plannedStudy = "", geographicScope = "", revelantSubIDO = "", comments = "";
 
-    model.addRow(new Object[] {plannedStudy, geographicScope, revelantSubIDO, comments});
+    this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
+    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : flagshipPlannedList) {
+      String plannedStudy = "", geographicScope = "", revelantSubIDO = "", comments = "";
+      plannedStudy = powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
+          ? powbEvidencePlannedStudy.getPowbEvidence().getPowbSynthesis().getLiaisonInstitution().getCrpProgram()
+            .getAcronym() + ": " + powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy()
+          : powbEvidencePlannedStudy.getPowbEvidence().getPowbSynthesis().getLiaisonInstitution().getCrpProgram()
+            .getAcronym();
+
+      geographicScope = powbEvidencePlannedStudy.getProjectExpectedStudy().getScopeName() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getScopeName().trim().isEmpty()
+          ? powbEvidencePlannedStudy.getProjectExpectedStudy().getScopeName() : " ";
+      if (powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSubIdo() != null
+        && powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSubIdo().getDescription() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSubIdo().getDescription().trim().isEmpty()) {
+        revelantSubIDO += "• " + powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSubIdo().getDescription();
+      }
+
+      if (powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSloIndicator() != null
+        && powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSloIndicator().getTitle() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSloIndicator().getTitle().trim().isEmpty()) {
+        if (revelantSubIDO.isEmpty()) {
+          revelantSubIDO += "• " + powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSloIndicator().getTitle();
+        } else {
+          revelantSubIDO += "\n• " + powbEvidencePlannedStudy.getProjectExpectedStudy().getSrfSloIndicator().getTitle();
+        }
+      }
+      if (revelantSubIDO.isEmpty()) {
+        revelantSubIDO = " ";
+      }
+      comments = powbEvidencePlannedStudy.getProjectExpectedStudy().getComments() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getComments().trim().isEmpty()
+          ? powbEvidencePlannedStudy.getProjectExpectedStudy().getComments() : " ";
+
+      model.addRow(new Object[] {plannedStudy, geographicScope, revelantSubIDO, comments});
+    }
     return model;
   }
 
