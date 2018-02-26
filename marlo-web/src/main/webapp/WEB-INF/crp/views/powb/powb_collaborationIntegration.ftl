@@ -82,11 +82,16 @@
           [#if flagship]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [#list 0..2 as collaboration]
-              <div class="simpleBox">
-                
-              </div>
-            [/#list]
+            <div class="listProgramCollaborations">
+              [#list [{}] as collaboration]
+                [@flagshipCollaborationMacro element=collaboration name="" index=collaboration_index  /]
+              [/#list]
+            </div>
+            [#if canEdit && editable]
+            <div class="text-right">
+              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaboration"/]</div>
+            </div> 
+            [/#if]
           </div>
           [/#if]
           
@@ -150,11 +155,11 @@
 
 [#macro tableCountryContributionsMacro ]
 
-[#assign locElements = [ 
-  { "isoAlpha2": "VN", "name": "Vietnam"}, 
-  { "isoAlpha2": "NG", "name": "Niger"}
-  ] 
-/]
+  [#assign locElements = [ 
+    { "isoAlpha2": "VN", "name": "Vietnam"}, 
+    { "isoAlpha2": "NG", "name": "Niger"}
+    ] 
+  /]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -176,5 +181,36 @@
         [/#if]
       </tbody>
     </table>
+  </div>
+[/#macro]
+
+[#macro flagshipCollaborationMacro element name index template=false isEditable=true]
+  [#local customName = "${name}[${index}]" /]
+  <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
+    
+    [#-- Index --]
+    <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
+    [#-- Remove Button --]
+    [#if isEditable]<div class="removeFlagshipCollaboration removeElement sm" title="Remove"></div>[/#if]
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
+    <br />
+
+    <div class="form-group row"> 
+      [#-- Type --] 
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.type" label="" i18nkey="expectedStudy.type" listName="types"  required=true  className="" editable=isEditable/]
+      </div>
+      [#-- Geographic Scope --]
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.scope" label=""  i18nkey="expectedStudy.scope" listName="scopes"  required=true  className="" editable=isEditable/]
+      </div>
+    </div>
+    
+    [#-- Comments --] 
+    <div class="form-group"> 
+      [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+    </div>
+    
   </div>
 [/#macro]
