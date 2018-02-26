@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -115,11 +116,60 @@ public class PowbCollaborationValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
+      this.validetGlobalUnit(action, powbSynthesis);
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus(), action);
     }
   }
 
+  public void validetGlobalUnit(BaseAction action, PowbSynthesis powbSynthesis) {
+    if (powbSynthesis.getPowbCollaborationGlobalUnitsList() != null) {
+      int i = 0;
+      for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbSynthesis
+        .getPowbCollaborationGlobalUnitsList()) {
+        if (powbCollaborationGlobalUnit.getGlobalUnit() != null
+          && powbCollaborationGlobalUnit.getGlobalUnit().getId() > 0) {
+          powbCollaborationGlobalUnit
+            .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
+        } else {
+          powbCollaborationGlobalUnit.setGlobalUnit(null);
+
+        }
+        if (!(this.isValidString(powbCollaborationGlobalUnit.getFlagship())
+          && this.wordCount(powbCollaborationGlobalUnit.getFlagship()) <= 10)) {
+          action.addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].flagship"));
+          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].flagship",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (!(this.isValidString(powbCollaborationGlobalUnit.getCollaborationType()))) {
+          action.addMissingField(
+            action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaborationType"));
+          action.getInvalidFields().put(
+            "input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].collaborationType",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (!(this.isValidString(powbCollaborationGlobalUnit.getBrief())
+          && this.wordCount(powbCollaborationGlobalUnit.getBrief()) <= 100)) {
+          action.addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].brief"));
+          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].brief",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (powbCollaborationGlobalUnit.getGlobalUnit() == null) {
+          action
+            .addMissingField(action.getText("powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id"));
+          action.getInvalidFields().put("input-powbSynthesis.powbCollaborationGlobalUnitsList[" + i + "].globalUnit.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        i++;
+
+      }
+
+    } else {
+
+    }
+  }
 
 }
