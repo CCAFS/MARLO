@@ -98,6 +98,9 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   @Expose
   private PowbFinancialPlan financialPlan;
 
+  @Expose
+  private PowbCollaboration collaboration;
+
 
   private Set<PowbFinancialExpenditure> powbFinancialExpenditures = new HashSet<PowbFinancialExpenditure>(0);
 
@@ -105,6 +108,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
 
   private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudget = new HashSet<PowbFinancialPlannedBudget>(0);
+
 
 
   private List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList;
@@ -162,6 +166,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  public PowbCollaboration getCollaboration() {
+    return collaboration;
   }
 
 
@@ -230,6 +239,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbExpectedCrpProgresses;
   }
 
+
   public Set<PowbFinancialExpenditure> getPowbFinancialExpenditures() {
     return powbFinancialExpenditures;
   }
@@ -275,6 +285,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
+
   public PowbToc getPowbToc() {
     return powbToc;
   }
@@ -310,6 +321,11 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
+
+  public void setCollaboration(PowbCollaboration collaboration) {
+    this.collaboration = collaboration;
+  }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
