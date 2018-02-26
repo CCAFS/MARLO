@@ -19,12 +19,18 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -33,6 +39,9 @@ import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
 import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -69,32 +78,39 @@ public class PowbCollaborationAction extends BaseAction {
 
   // Managers
   private GlobalUnitManager crpManager;
+  private GlobalUnitProjectManager globalUnitProjectManager;
   private PowbSynthesisManager powbSynthesisManager;
   private AuditLogManager auditLogManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
   private PowbCollaborationManager powbCollaborationManager;
+
   private MonitoringEvaluationLearningValidator validator;
+
+
   private List<CrpProgram> crpPrograms;
 
+  private List<CrpsSiteIntegration> siteIntegrations;
+  private CrpsSiteIntegrationManager crpsSiteIntegrationManager;
   // Variables
   private String transaction;
   private PowbSynthesis powbSynthesis;
+
+
   private Long liaisonInstitutionID;
   private Long powbSynthesisID;
   private GlobalUnit loggedCrp;
   private List<LiaisonInstitution> liaisonInstitutions;
   private LiaisonInstitution liaisonInstitution;
-
-
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
 
   @Inject
   public PowbCollaborationAction(APConfig config, GlobalUnitManager crpManager,
     PowbSynthesisManager powbSynthesisManager, AuditLogManager auditLogManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    PowbCollaborationManager powbCollaborationManager, MonitoringEvaluationLearningValidator validator) {
+    PowbCollaborationManager powbCollaborationManager, MonitoringEvaluationLearningValidator validator,
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, GlobalUnitProjectManager globalUnitProjectManager) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -103,8 +119,11 @@ public class PowbCollaborationAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.powbCollaborationManager = powbCollaborationManager;
+    this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
+    this.globalUnitProjectManager = globalUnitProjectManager;
     this.validator = validator;
   }
+
 
   @Override
   public String cancel() {
@@ -125,7 +144,6 @@ public class PowbCollaborationAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -144,10 +162,10 @@ public class PowbCollaborationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
-
 
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
@@ -157,10 +175,10 @@ public class PowbCollaborationAction extends BaseAction {
     return liaisonInstitution;
   }
 
+
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -170,12 +188,17 @@ public class PowbCollaborationAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
+  }
+
+  public List<CrpsSiteIntegration> getSiteIntegrations() {
+    return siteIntegrations;
   }
 
   public String getTransaction() {
@@ -217,7 +240,6 @@ public class PowbCollaborationAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -344,6 +366,66 @@ public class PowbCollaborationAction extends BaseAction {
       }
     }
 
+    if (this.isFlagship()) {
+      siteIntegrations =
+        loggedCrp.getCrpsSitesIntegrations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      siteIntegrations.sort((p1, p2) -> p1.getLocElement().getName().compareTo(p2.getLocElement().getName()));
+      for (CrpsSiteIntegration siteIntegration : siteIntegrations) {
+        List<Project> project = new ArrayList<>();
+        List<FundingSource> fundingSources = new ArrayList<>();
+
+        List<ProjectLocation> locations = siteIntegration.getLocElement().getProjectLocations().stream()
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
+            && c.getProject().isActive())
+          .collect(Collectors.toList());
+        locations.sort((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId()));
+        for (ProjectLocation projectLocation : locations) {
+          projectLocation.getProject()
+            .setProjectInfo(projectLocation.getProject().getProjecInfoPhase(this.getActualPhase()));
+          if (globalUnitProjectManager.findByProjectId(projectLocation.getProject().getId()).getGlobalUnit()
+            .equals(loggedCrp)) {
+            if (projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              project.add(projectLocation.getProject());
+
+            }
+          }
+
+        }
+
+
+        List<FundingSourceLocation> locationsFunding = siteIntegration.getLocElement().getFundingSourceLocations()
+          .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+            && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
+          .collect(Collectors.toList());
+        locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));
+
+        for (FundingSourceLocation fundingSourceLocation : locationsFunding) {
+          fundingSourceLocation.getFundingSource()
+            .setFundingSourceInfo(fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+          if (fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
+            .getStatus() == Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId())
+            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
+              .getStatus() == Integer.parseInt(FundingStatusEnum.Pipeline.getStatusId())
+            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
+              .getStatus() == Integer.parseInt(FundingStatusEnum.Informally.getStatusId())
+
+            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
+              .getStatus() == Integer.parseInt(FundingStatusEnum.Extended.getStatusId())) {
+            fundingSources.add(fundingSourceLocation.getFundingSource());
+
+          }
+        }
+
+        siteIntegration.setProjects(project);
+        siteIntegration.setFundingSources(fundingSources);
+
+
+      }
+
+    }
     if (this.isPMU()) {
       crpPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -438,6 +520,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
   }
 
+
   public void setCrpPrograms(List<CrpProgram> crpPrograms) {
     this.crpPrograms = crpPrograms;
   }
@@ -462,13 +545,17 @@ public class PowbCollaborationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
   }
 
+
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
+  }
+
+  public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
+    this.siteIntegrations = siteIntegrations;
   }
 
   public void setTransaction(String transaction) {

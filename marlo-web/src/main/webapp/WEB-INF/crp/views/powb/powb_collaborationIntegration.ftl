@@ -158,10 +158,7 @@
 
 [#macro tableCountryContributionsMacro ]
 
-  [#assign locElements = [ 
-    { "isoAlpha2": "VN", "name": "Vietnam"}, 
-    { "isoAlpha2": "NG", "name": "Niger"}
-    ] 
+  [#assign locElements = siteIntegrations
   /]
   <div class="">
     <table class="table table-bordered">
@@ -176,9 +173,19 @@
         [#if locElements??]
           [#list locElements as locElement]
             <tr>
-              <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>              
-              <td><i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i></td>
-              <td><i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i></td>
+              <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
+              <td>[#if (locElement.fundingSources?has_content)!false]
+               [#list locElement.fundingSources as fundingSource]
+                FS${fundingSource.id?replace('\n', '<br>')},
+               [/#list]
+              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              <td>[#if (locElement.projects?has_content)!false]
+                [#list locElement.projects as project]
+                P${project.id?replace('\n', '<br>')},
+               [/#list]
+          
+              [#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              
             </tr>
           [/#list]
         [/#if]
