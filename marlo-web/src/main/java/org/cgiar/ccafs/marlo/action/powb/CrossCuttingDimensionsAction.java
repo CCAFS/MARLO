@@ -537,42 +537,44 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       for (Deliverable deliverable : deliverables) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(pashe);
         if (deliverableInfo.isActive()) {
-          if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            deliverableList.add(deliverableInfo);
-            if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-              iNa++;
-            } else {
-              // Gender
-              if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-                if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                  iGenderSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                  iGenderPrincipal++;
+          if (deliverableInfo.getStatus() != null) {
+            if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              deliverableList.add(deliverableInfo);
+              if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
+                iNa++;
+              } else {
+                // Gender
+                if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
+                  if (deliverableInfo.getCrossCuttingScoreGender() != null
+                    && deliverableInfo.getCrossCuttingScoreGender() == 1) {
+                    iGenderSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreGender() != null
+                    && deliverableInfo.getCrossCuttingScoreGender() == 2) {
+                    iGenderPrincipal++;
+                  }
                 }
-              }
 
-              // Youth
-              if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-                if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                  iYouthSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                  iYouthPrincipal++;
+                // Youth
+                if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
+                  if (deliverableInfo.getCrossCuttingScoreYouth() != null
+                    && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
+                    iYouthSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
+                    && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
+                    iYouthPrincipal++;
+                  }
                 }
-              }
 
-              // CapDev
-              if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-                if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                  iCapDevSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                  iCapDevPrincipal++;
+                // CapDev
+                if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
+                  if (deliverableInfo.getCrossCuttingScoreCapacity() != null
+                    && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
+                    iCapDevSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
+                    && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
+                    iCapDevPrincipal++;
+                  }
                 }
               }
             }
