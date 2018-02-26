@@ -48,7 +48,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableKeyExternal.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
           </div>
           [/#if]
           
@@ -61,7 +61,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableContributionOtherPlatforms.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=2 /]
           </div>
           [/#if]
           
@@ -74,7 +74,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCrossCRPInteractions.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=3 /]
           </div>
           [/#if]
            
@@ -104,7 +104,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableExpectedEfforts.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms /]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=4/]
           </div>
           [/#if]
           
@@ -129,7 +129,7 @@
 
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
-[#macro tableFlagshipsOverallMacro list ]
+[#macro tableFlagshipsOverallMacro list item ]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -143,7 +143,11 @@
           [#list list as li]
             <tr>
               <td><span class="programTag" style="border-color:${(li.color)!'#fff'}" title="${li.composedName}">${li.acronym}</span></td>              
-              <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              [#if item ==1]  <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==2]  <td>[#if (li.collaboration.cotributionsPlatafforms?has_content)!false]${li.collaboration.cotributionsPlatafforms?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==3]  <td>[#if (li.collaboration.crossCrp?has_content)!false]${li.collaboration.crossCrp?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+              [#if item ==4]  <td>[#if (li.collaboration.effostornCountry?has_content)!false]${li.collaboration.effostornCountry?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
+            
             </tr>
           [/#list]
         [/#if]
