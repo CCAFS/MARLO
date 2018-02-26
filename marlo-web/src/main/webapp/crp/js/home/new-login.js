@@ -110,6 +110,15 @@ function init() {
     $(".loginForm .login-input-container.username").click();
   });
 
+  $('input#terms').on('change', function(){
+    if($('input#terms').is(':checked')){
+      $("input#login_next").attr("disabled",true);
+    }else{
+      $("input#login_next").attr("disabled",false);
+    }
+  });
+
+
 }
 
 function firstForm(){
