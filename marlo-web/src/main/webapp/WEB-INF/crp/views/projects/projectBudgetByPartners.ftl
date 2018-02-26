@@ -260,14 +260,14 @@
     [#-- Remove --]
  
     [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.fundingSourceInfo.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]
-     [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
-       <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
-     [/#if]  
-          [#if !isTemplate]
-      <div class="pull-right">
-        [@popUps.relationsMacro element=element /]
-      </div>
-    [/#if]
+      [#if action.canBeDeleted((element.id)!-1,(element.class.name)!"")]
+        <div class="removeIcon removeW3bilateralFund" title="Remove"></div>
+      [#else]
+        <div class="removeIcon disable text-right" title="Project Budget cannot be deleted"></div>
+      [/#if]  
+      [#if !isTemplate]
+      <div class="pull-right">[@popUps.relationsMacro element=element /] </div>
+      [/#if]
     [/#if]
     
     [#-- Project Title --]
