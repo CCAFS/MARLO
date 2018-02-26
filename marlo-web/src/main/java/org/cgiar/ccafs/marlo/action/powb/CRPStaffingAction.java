@@ -263,12 +263,11 @@ public class CRPStaffingAction extends BaseAction {
         this.readJsonAndLoadPowbSynthesis(path);
       } else {
         this.setDraft(false);
+        this.createEmptyCrpStaffing();
         powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesis.getPowbSynthesisCrpStaffingCategory()
           .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       }
     }
-
-    this.createEmptyCrpStaffing();
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null

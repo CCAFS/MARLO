@@ -325,13 +325,14 @@ public class FinancialPlanAction extends BaseAction {
         this.readJsonAndLoadPowbSynthesis(path);
       } else {
         this.setDraft(false);
+        this.createEmptyFinancialPlan();
         powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
           .filter(fp -> fp.isActive()).collect(Collectors.toList()));
         powbSynthesis.setPowbFinancialExpendituresList(powbSynthesis.getPowbFinancialExpenditures().stream()
           .filter(fe -> fe.isActive()).collect(Collectors.toList()));
       }
     }
-    this.createEmptyFinancialPlan();
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = this.getFlagships();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
