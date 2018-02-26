@@ -13,7 +13,7 @@ function attachEvents() {
 
 }
 
-function addExpectedStudy() {
+function addProgramCollaboration() {
   var $list = $(this).parents("form").find('.listProgramCollaborations');
   var $item = $('#flagshipCollaboration-template').clone(true).removeAttr("id");
   $list.append($item);
@@ -21,7 +21,7 @@ function addExpectedStudy() {
   updateIndexes();
 }
 
-function removeExpectedStudy() {
+function removeProgramCollaboration() {
   var $item = $(this).parents('.flagshipCollaboration');
   $item.hide(function() {
     $item.remove();
