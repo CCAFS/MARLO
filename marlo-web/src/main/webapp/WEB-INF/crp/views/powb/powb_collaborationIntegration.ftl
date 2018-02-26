@@ -181,14 +181,14 @@
               <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
               <td>
                 [#if (locElement.fundingSources?has_content)!false]
-                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id},[/#list]
+                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id}, [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
               <td>
                 [#if (locElement.projects?has_content)!false]
-                  [#list locElement.projects as project]P${project.id},[/#list]
+                  [#list locElement.projects as project]P${project.id}, [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
