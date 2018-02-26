@@ -152,6 +152,8 @@ public class OutputsListAction extends BaseAction {
 
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
+    programID = output.getCenterProgram().getId();
+
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
       output.setModifiedBy(this.getCurrentUser());
@@ -166,6 +168,7 @@ public class OutputsListAction extends BaseAction {
       outputService.saveResearchOutput(output);
 
       outputService.deleteResearchOutput(output.getId());
+
 
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }

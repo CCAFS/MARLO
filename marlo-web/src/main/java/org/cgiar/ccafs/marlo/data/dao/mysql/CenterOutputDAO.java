@@ -39,7 +39,7 @@ public class CenterOutputDAO extends AbstractMarloDAO<CenterOutput, Long> implem
   public void deleteResearchOutput(long researchOutputId) {
     CenterOutput researchOutput = this.find(researchOutputId);
     researchOutput.setActive(false);
-    this.save(researchOutput);
+    super.update(researchOutput);
   }
 
   @Override

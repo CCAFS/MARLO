@@ -88,7 +88,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
       clusterAdd.setCrpProgram(crpCluster.getCrpProgram());
       clusterAdd.setDescription(crpCluster.getDescription());
       clusterAdd.setIdentifier(crpCluster.getIdentifier());
-      crpClusterOfActivityDAO.save(clusterAdd);
+      clusterAdd = crpClusterOfActivityDAO.save(clusterAdd);
       this.addLeaders(crpCluster, clusterAdd);
       this.addCrpKeyOutputs(crpCluster, clusterAdd);
     } else {
@@ -96,7 +96,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
       for (CrpClusterOfActivity clusterPrev : clusters) {
         clusterPrev.setDescription(crpCluster.getDescription());
         clusterPrev.setIdentifier(crpCluster.getIdentifier());
-        crpClusterOfActivityDAO.save(clusterPrev);
+        clusterPrev = crpClusterOfActivityDAO.save(clusterPrev);
         this.updateClusterLeaders(clusterPrev, crpCluster);
         this.updateKeyOutputs(clusterPrev, crpCluster);
       }
