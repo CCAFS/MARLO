@@ -125,7 +125,7 @@
           <p>By accessing the website at <a target="_blank" href="marlo.cgiar.org">https://marlo.cgiar.org</a>, you are agreeing to be bound by these Terms and Conditions, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these Terms and Conditions, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
         </div>
         <div>
-          <strong>2. Copyright </strong> - <span>Copyright©2013-2018 International Center for Tropical Agriculture (CIAT)</span>
+          <strong>2. Copyright </strong>
           <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the International Center for Tropical Agriculture (CIAT) (<a targe="_blank" href="ciat.cgiar.org/">http://ciat.cgiar.org</a>).</p>
         </div>
         <div>

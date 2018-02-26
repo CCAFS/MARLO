@@ -25,8 +25,8 @@
 [#-- Copyright --]
 <div class="copyRight">
   <hr />
-  <span>  &#169; Copyright CIAT 2017 - Current version ${action.getVersion()}</span><br />
-  <span> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Some rights reserved</a></span>
+  <span> Copyright &#169; 2013-2018 International Center for Tropical Agriculture (CIAT)</span><br />
+  <span style="opacity:0.5;"> Some rights reserved</span>
 </div>
 
 [#-- MARLO Blog --]
