@@ -223,14 +223,20 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
         action.addMessage(action.getText("project.budget.coa.amount", params));
       }
+    } else {
+      action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
+      action.addMessage(action.getText("project.budget.coa.amount", params));
     }
 
-    if (genderTotal > 0) {
+    if (gender > 0) {
       if (gender != 100) {
 
         action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
         action.addMessage(action.getText("project.budget.coa.gender", params));
       }
+    } else {
+      action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
+      action.addMessage(action.getText("project.budget.coa.gender", params));
     }
 
 
