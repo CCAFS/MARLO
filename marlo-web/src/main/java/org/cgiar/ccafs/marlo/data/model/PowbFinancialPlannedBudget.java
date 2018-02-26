@@ -55,8 +55,12 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
   @Expose
   private String modificationJustification;
 
+  private boolean editBudgets = true;
+
+
   public PowbFinancialPlannedBudget() {
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -72,10 +76,12 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return createdBy;
   }
 
+
   @Override
   public Long getId() {
     return id;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -88,26 +94,25 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public PowbExpenditureAreas getPowbExpenditureArea() {
     return powbExpenditureArea;
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
-
 
   public Double getTotalPlannedBudget() {
     Double w1w2T;
@@ -130,20 +135,25 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return w3Bilateral;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+
+  public boolean isEditBudgets() {
+    return editBudgets;
+  }
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setComments(String comments) {
     this.comments = comments;
@@ -151,6 +161,10 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setEditBudgets(boolean editBudgets) {
+    this.editBudgets = editBudgets;
   }
 
   public void setId(Long id) {

@@ -486,7 +486,7 @@ public class ExpectedCRPProgressAction extends BaseAction {
       }
     }
     for (Project project : myProjects) {
-      System.out.println(project.getId());
+
       project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
