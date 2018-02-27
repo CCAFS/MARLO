@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
@@ -59,6 +60,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
   private MonitoringEvaluationLearningValidator monitoringEvaluationLearningValidator;
   private ManagementRiskValidator managementRiskValidator;
   private ManagementGovernanceValidator managementGovernanceValidator;
+  private PowbCollaborationValidator powbCollaborationValidator;
 
   @Inject
   public PowbSynthesisSectionValidator(PowbSynthesisManager powbSynthesisManager,
@@ -67,7 +69,8 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     FlagshipPlansValidator flagshipPlansValidator, CrossCuttingValidator crossCuttingValidator,
     CrpStaffingValidator crpStaffingValidator, FinancialPlanValidator financialPlanValidator,
     ManagementRiskValidator managementRiskValidator, ManagementGovernanceValidator managementGovernanceValidator,
-    MonitoringEvaluationLearningValidator monitoringEvaluationLearningValidator) {
+    MonitoringEvaluationLearningValidator monitoringEvaluationLearningValidator,
+    PowbCollaborationValidator powbCollaborationValidator) {
     this.powbSynthesisManager = powbSynthesisManager;
     this.toCAdjustmentsValidator = toCAdjustmentsValidator;
     this.fileDBManager = fileDBManager;
@@ -80,6 +83,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     this.managementRiskValidator = managementRiskValidator;
     this.managementGovernanceValidator = managementGovernanceValidator;
     this.monitoringEvaluationLearningValidator = monitoringEvaluationLearningValidator;
+    this.powbCollaborationValidator = powbCollaborationValidator;
   }
 
   /**
@@ -97,11 +101,33 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     return isFP;
   }
 
-  /**
-   * TODO
-   */
-  public void validateColaborationIntegration(BaseAction action, PowbSynthesis powbSynthesis) {
 
+  public void validateColaborationIntegration(BaseAction action, PowbSynthesis powbSynthesis) {
+    // Check if ToC relation is null -create it
+    if (powbSynthesis.getCollaboration() == null) {
+      PowbCollaboration powbCollaboration = new PowbCollaboration();
+      powbCollaboration.setActive(true);
+      powbCollaboration.setActiveSince(new Date());
+      powbCollaboration.setCreatedBy(action.getCurrentUser());
+      powbCollaboration.setModifiedBy(action.getCurrentUser());
+      powbCollaboration.setModificationJustification("");
+      // create one to one relation
+      powbSynthesis.setCollaboration(powbCollaboration);
+      powbCollaboration.setPowbSynthesis(powbSynthesis);
+
+      powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      powbCollaborationValidator.validate(action, powbSynthesis, false);
+
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      powbCollaborationValidator.validate(action, powbSynthesis, false);
+    }
   }
 
   public void validateCrossCuttingDimensions(BaseAction action, PowbSynthesis powbSynthesis) {
