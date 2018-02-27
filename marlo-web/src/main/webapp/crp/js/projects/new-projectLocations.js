@@ -23,6 +23,12 @@ function init() {
 
 function attachEvents() {
 
+  // REMOVE REGION
+  $(".removeRegion").on("click", removeRegion);
+
+  //Remove a location element-Event
+  $(".removeLocation").on("click", removeLocationItem);
+
   // REGIONAL QUESTION
   $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
@@ -102,6 +108,38 @@ function attachEvents() {
         $("#inputFormWrapper").slideDown();
       }
     }
+  });
+
+  // Clicking recommended location
+  $('.recommendedLocName, .iconSelected').on(
+      'click',
+      function() {
+        var parent = $(this).parent();
+        var selectedInput = parent.find("input.recommendedSelected");
+        var option =
+            $("#regionSelect").find(
+                "option[value='" + parent.find("input.elementID").val() + "-" + parent.find("input.locScope").val()
+                    + "']");
+        if(parent.find(".acceptLocation").exists()) {
+          parent.find(".iconSelected").removeClass("acceptLocation");
+          parent.find(".iconSelected").addClass("notAcceptLocation");
+          selectedInput.val("false");
+          option.prop('disabled', false);
+          $('#regionSelect').select2();
+        } else {
+          checkRecommendedLocation(parent);
+          parent.find(".iconSelected").removeClass("notAcceptLocation");
+          parent.find(".iconSelected").addClass("acceptLocation");
+          selectedInput.val("true");
+          option.prop('disabled', true);
+          $('#regionSelect').select2();
+
+        }
+        $(document).trigger('updateComponent');
+      });
+
+  $('input.recommendedSelected').on('change', function() {
+    $(this).next().val($(this).is(":checked"));
   });
 }
 
@@ -392,4 +430,36 @@ function mappingCountries() {
     });
   }
 
+}
+
+//Remove a location element-Function
+function removeLocationItem() {
+  var globalList = $(this).parents("#selectsContent");
+  var list = $(this).parents(".optionSelect-content");
+  var $item = $(this).parents('.locElement');
+  if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
+    var optionValue = $item.attr("id").split('-');
+    var id = optionValue[1];
+    if(markers[id] == undefined) {
+
+    } else {
+      removeMarker(id);
+    }
+  }
+  $item.hide(function() {
+    $item.remove();
+    if($(list).find(".locElement").length == 0) {
+      $(list).parents(".locationLevel").remove();
+    }
+    updateIndex();
+    checkItems(globalList);
+  });
+  layer.setMap(null);
+  /* Remove of countries array */
+
+  var index = countries.indexOf($item.find(".locElementCountry").val());
+  if(index > -1) {
+    countries.splice(index, 1);
+  }
+  mappingCountries();
 }
