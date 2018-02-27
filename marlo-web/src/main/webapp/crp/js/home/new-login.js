@@ -111,11 +111,11 @@ function init() {
   });
 
   $('input#terms').on('change', function(){
-    if($('input#terms').is(':checked')){
-      $("input#login_next").attr("disabled",true);
-    }else{
+/*    if($('input#terms').is(':checked')){
       $("input#login_next").attr("disabled",false);
-    }
+    }else{
+      $("input#login_next").attr("disabled",true);
+    }*/
   });
 
 
