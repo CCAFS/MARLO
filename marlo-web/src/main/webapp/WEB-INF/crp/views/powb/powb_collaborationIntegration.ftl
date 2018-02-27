@@ -44,6 +44,12 @@
             [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
+          [#-- Project Partnerships --]
+          [#if flagship]
+            <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableFlagshipPartnerships.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            [@tableFlagshipPartnershipsMacro list=(action.loadProjects(liaisonInstitution.crpProgram.id))![]  /]
+          [/#if]
+          
           [#-- Table: New Key External Partnerships --]
           [#if PMU]
           <div class="form-group">
@@ -51,7 +57,8 @@
             [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
           </div>
           [/#if]
-          
+        </div>
+        <div class="borderBox"> 
           [#-- 2.3.2  New Contribution to and from Platforms --] 
           <div class="form-group">
             [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
@@ -96,7 +103,8 @@
             [/#if]
           </div>
           [/#if]
-          
+        </div>
+        <div class="borderBox">
           [#-- 2.3.4  Expected Efforts on Country Coordination --] 
           <div class="form-group">
             [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
@@ -154,6 +162,36 @@
               [#if item ==3]  <td>[#if (li.collaboration.crossCrp?has_content)!false]${li.collaboration.crossCrp?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
               [#if item ==4]  <td>[#if (li.collaboration.effostornCountry?has_content)!false]${li.collaboration.effostornCountry?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
             
+            </tr>
+          [/#list]
+        [/#if]
+      </tbody>
+    </table>
+  </div>
+[/#macro]
+
+[#macro tableFlagshipPartnershipsMacro list ]
+  <div class="">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.project" /] </th>
+          <th> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.narrative" /] </th>
+        </tr>
+      </thead>
+      <tbody>
+        [#if list??]
+          [#list list as project]
+            [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <tr>
+              <td> <a href="${pURL}" target="_blank">P${project.id}</a> </td>              
+              <td>
+                [#if (project.projectInfo.newPartnershipsPlanned?has_content)!false]
+                  ${project.projectInfo.newPartnershipsPlanned?replace('\n', '<br>')}
+                [#else]
+                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+                [/#if]
+              </td>
             </tr>
           [/#list]
         [/#if]
