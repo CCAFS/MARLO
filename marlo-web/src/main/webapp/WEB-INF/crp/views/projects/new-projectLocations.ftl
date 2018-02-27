@@ -144,15 +144,13 @@
                 </div>
                 [#-- RECOMMENDED LOCATIONS --]
                 <div class="col-md-12">
+                  <h5 class="sectionSubTitle">Suggested Locations:</h5>
                   <label for="">[@s.text name="projectLocations.locationsBelow" /]:</label>
                   <div class="simpleBox col-md-12">
                     <div class="row recommendedList">
                       [#-- RECOMMENDED REGIONS LIST --]
                       [#if project.regionFS?has_content]
                       <div class="regionsContent" style="display:${(project.projectInfo.locationRegional?string("block","none"))!"none"};">
-                        <div class="col-md-12" >
-                          <h5 class="sectionSubTitle">Suggested Regions:</h5>
-                        </div>
                         [#list project.regionFS as location]
                           [@recommendedLocation element=location name="project.regionFS" index=location_index template=false /]
                         [/#list]
@@ -162,9 +160,6 @@
                       [/#if]
                       [#-- RECOMMENDED COUNTRIES LIST --]
                       [#if project.countryFS?has_content]
-                        <div class="col-md-12">
-                          <h5 class="sectionSubTitle">Suggested Countries:</h5>
-                        </div>
                         [#list project.countryFS as location]
                           [@recommendedLocation element=location name="project.countryFS" index=location_index template=false /]
                         [/#list]
@@ -177,28 +172,28 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              
                 [#-- OTHER LOCATIONS --]   
                 [#if action.hasSpecificities('crp_other_locations')]
                   <div class="col-md-12">
-                    <h5 class="sectionSubTitle">[@s.text name="projectLocations.otherLocations" /]</h5>
+                    [#if editable && action.hasSpecificities('crp_other_locations')]
+                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel loc-button" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
+                    [/#if]
+                    <h5 id="locations-list-title" class="sectionSubTitle">Locations list</h5>
                   </div>
                   
                   [#-- LOCATION LIST --]
                   <div class="col-md-12">
-                    [#if editable && action.hasSpecificities('crp_other_locations')]
-                    <span class="pull-right glyphicon glyphicon-plus addLoc-locLevel" data-toggle="modal" data-target=".addLocationModal"><b> [@s.text name="Add new location" /]</b></span>
-                    [/#if]
                     [#-- Add new location (Modal) --]
                     <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                           [#-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --]
                           
-                          <div class="newLocationForm-container">
+                          <div class="locationForm-container">
                             <div class="title"></div>
                             <hr />
-                            <div class="col-md-6">
+                              <div class="form-group col-md-7">
                               <label for="locLevelSelect" style="display:block;">Select a location level:</label>
                               <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
                                 <option value="-1" >Select an option...</option>
@@ -208,10 +203,21 @@
                                   [/#list]
                                 [/#list]
                               </select>
+                              [#-- Select location(s) Form --]
+                              <div class="selectLocations" style="display:none;">
+                                <label for="">Select location(s)</label>
+                                <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
+                              </div>
+                              [#-- Location name -Lat -Lon --]
+                              <div id="inputFormWrapper" style="display:none;">
+                                <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
+                                <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
+                                <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
+                              </div>
                             </div>
                           </div>
                           
-                          <div class="map-container col-md-6">
+                          <div class="map-container col-md-5">
                             <div  class="col-md-12 map">
                               <div id="map" class="col-md-12"></div>
                             </div>
@@ -220,8 +226,6 @@
                         </div>
                       </div>
                     </div>
-                    
-                    <label for="">[@s.text name="projectLocations.locationsList" /]</label>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
                         [#if project.locationsData?has_content]
@@ -235,6 +239,7 @@
                     </div>
                   </div>
                 [/#if]
+              </div>
               </div>
           </div> 
           
@@ -254,6 +259,18 @@
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
+
+[#-- Region element template --]
+<ul style="display:none">
+  <li id="regionTemplate" class="region clearfix col-md-3">
+      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
+      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
+      <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
+</ul>
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 

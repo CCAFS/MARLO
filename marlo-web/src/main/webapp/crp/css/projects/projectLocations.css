@@ -68,8 +68,8 @@
 }
 
 #map {
-    width: 400px;
-    height: 350px;
+    width: 300px;
+    height: 250px;
     padding: 0;
     border: 2px solid #aaa;
 }
@@ -229,7 +229,7 @@ span.allCountriesQuestion {
 }
 
 .selectLocations {
-    max-width: 450px;
+    /* max-width: 450px; */
 }
 
 li.select2-search.select2-search--inline{
@@ -317,11 +317,22 @@ li.select2-search.select2-search--inline{
     margin-bottom: 8px;
 }
 
+.addLoc-locLevel.loc-button{
+    position: absolute;
+    right: 0;
+    margin-right: 14px;
+    margin-top: 5px;
+}
+
 .addLoc-locLevel b{
   font-family: Roboto,Arial,sans-sefif;
 }
 
 /* Locations Table*/
+
+#locations-list-title{
+    margin-top: 24px;
+}
 
 table td {
   list-style: none;
@@ -376,5 +387,5 @@ tr:nth-child(even) {
 
 .addLocationModal .modal-content{
     padding: 20px;
-    height: 420px;
+    height: 320px;
 }
