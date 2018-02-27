@@ -30,7 +30,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder=""]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder=""]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -52,9 +52,9 @@
       <p>
         [#if value=="-NULL"] 
           [#assign customValue][@s.property value="${name?string}"/][/#assign] 
-          [#if !(customValue)?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${customValue?replace('\n', '<br>')}[/#if]
+          [#if !(customValue)?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${customValue?replace('\n', '<br>')}[/#if]
         [#else]
-          [#if !value?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${value?replace('\n', '<br>')}[/#if] 
+          [#if !value?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${value?replace('\n', '<br>')}[/#if] 
         [/#if]
       </p>
     [/#if] 

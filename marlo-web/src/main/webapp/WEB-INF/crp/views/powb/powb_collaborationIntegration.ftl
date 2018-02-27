@@ -85,7 +85,7 @@
             <div class="listProgramCollaborations">
              [#if powbSynthesis.powbCollaborationGlobalUnitsList?has_content]
               [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
-                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  /]
+                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  isEditable=editable/]
               [/#list]
              [/#if]
             </div>
@@ -228,9 +228,9 @@
     [#-- Collaboration type --]
     <div class="form-group">
       <label>[@s.text name="powbSynthesis.programCollaboration.collaborationType" /] [@customForm.req required=editable  /]</label><br />
-      [@customForm.radioFlat id="${customName}-type-1" name="${customName}.collaborationType" label="Contribution to"     value="1" checked=(element.collaborationType == "1")!false editable=editable cssClass="" cssClassLabel=""/]
-      [@customForm.radioFlat id="${customName}-type-2" name="${customName}.collaborationType" label="Service needed from" value="2" checked=(element.collaborationType == "2")!false editable=editable cssClass="" cssClassLabel=""/]
-      [@customForm.radioFlat id="${customName}-type-3" name="${customName}.collaborationType" label="Both"                value="3" checked=(element.collaborationType == "3")!false editable=editable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-type-1" name="${customName}.collaborationType" label="Contribution to"     value="1" checked=(element.collaborationType == "1")!false editable=isEditable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-type-2" name="${customName}.collaborationType" label="Service needed from" value="2" checked=(element.collaborationType == "2")!false editable=isEditable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-type-3" name="${customName}.collaborationType" label="Both"                value="3" checked=(element.collaborationType == "3")!false editable=isEditable cssClass="" cssClassLabel=""/]
       
       [#local collaborationTypeSelected = ((element.collaborationType == "1")!false) || ((element.collaborationType == "2")!false) || ((element.collaborationType == "3")!false)]
       [#if !editable && !collaborationTypeSelected][@s.text name="form.values.fieldEmpty"/][/#if]
