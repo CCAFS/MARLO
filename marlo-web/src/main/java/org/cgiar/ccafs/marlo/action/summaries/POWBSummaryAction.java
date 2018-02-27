@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
@@ -172,38 +173,37 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       HashMap<String, Element> hm = new HashMap<String, Element>();
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
-      // TODO: Complete POWB subreports
       this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
       this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
       this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
-      // // Table A
+      // Table A
       this.fillSubreport((SubReport) hm.get("PlannedMilestones"), "PlannedMilestones");
       this.fillSubreport((SubReport) hm.get("TableAContent"), "TableAContent");
-      // // Table B
+      // Table B
       this.fillSubreport((SubReport) hm.get("PlannedStudies"), "PlannedStudies");
       this.fillSubreport((SubReport) hm.get("TableBContent"), "TableBContent");
-      // // Table C
+      // Table C
       this.fillSubreport((SubReport) hm.get("Crosscutting"), "Crosscutting");
       this.fillSubreport((SubReport) hm.get("TableCContent"), "TableCContent");
-      // // Table D
+      // Table D
       this.fillSubreport((SubReport) hm.get("CRPStaffing"), "CRPStaffing");
       if (powbSynthesisPMU != null) {
         this.fillSubreport((SubReport) hm.get("TableDContent"), "TableDContent");
       }
-      // // Table E
+      // Table E
       this.fillSubreport((SubReport) hm.get("CRPPlannedBudget"), "CRPPlannedBudget");
       if (powbSynthesisPMU != null) {
         this.fillSubreport((SubReport) hm.get("TableEContent"), "TableEContent");
       }
-      // // Table F
+      // Table F
       if (powbSynthesisPMU != null) {
         this.fillSubreport((SubReport) hm.get("MainAreas"), "MainAreas");
       }
 
-      // // Table G
-      // this.fillSubreport((SubReport) hm.get("CGIARCollaborations"), "CGIARCollaborations");
-      // this.fillSubreport((SubReport) hm.get("TableGContent"), "TableGContent");
-      // // Table H
+      // Table G
+      this.fillSubreport((SubReport) hm.get("CGIARCollaborations"), "CGIARCollaborations");
+      this.fillSubreport((SubReport) hm.get("TableGContent"), "TableGContent");
+      // Table H
       this.fillSubreport((SubReport) hm.get("PlannedMonitoring"), "PlannedMonitoring");
       this.fillSubreport((SubReport) hm.get("TableHContent"), "TableHContent");
 
@@ -303,7 +303,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getCGIARCollaborationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableGDescription"}, new Class[] {String.class}, 0);
 
-    model.addRow(new Object[] {"&lt;Not Defined&gt;", "&lt;Not Defined&gt;"});
+    model.addRow(new Object[] {""});
     return model;
   }
 
@@ -393,6 +393,27 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
           && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
             ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "&lt;Not Defined&gt;";
+      }
+
+      // Collaboration and integration
+
+      if (powbSynthesisPMU.getCollaboration() != null) {
+        newKeyExternalPartnershipsDescription = powbSynthesisPMU.getCollaboration().getKeyExternalPartners() != null
+          && !powbSynthesisPMU.getCollaboration().getKeyExternalPartners().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getKeyExternalPartners() : "&lt;Not Defined&gt;";
+
+        newContributionPlatformsDescription = powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() != null
+          && !powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() : "&lt;Not Defined&gt;";
+
+        newCrossCRPInteractionsDescription = powbSynthesisPMU.getCollaboration().getCrossCrp() != null
+          && !powbSynthesisPMU.getCollaboration().getCrossCrp().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCrossCrp() : "&lt;Not Defined&gt;";
+
+        expectedEffortsCountryCoordinationDescription =
+          powbSynthesisPMU.getCollaboration().getEffostornCountry() != null
+            && !powbSynthesisPMU.getCollaboration().getEffostornCountry().trim().isEmpty()
+              ? powbSynthesisPMU.getCollaboration().getEffostornCountry() : "&lt;Not Defined&gt;";
       }
 
       // Monitoring, Evaluation, and Learning
@@ -951,9 +972,31 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getTableGContentTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"crpPlatform", "descriptionCollaboration", "relevantFP"},
       new Class[] {String.class, String.class, String.class}, 0);
-    String crpPlatform = "&lt;Not Defined&gt;", descriptionCollaboration = "&lt;Not Defined&gt;",
-      relevantFP = "&lt;Not Defined&gt;";
-    model.addRow(new Object[] {crpPlatform, descriptionCollaboration, relevantFP});
+
+    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+      List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnitList =
+        powbSynthesis.getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (powbCollaborationGlobalUnitList != null && !powbCollaborationGlobalUnitList.isEmpty()) {
+        for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbCollaborationGlobalUnitList) {
+          String crpPlatform = " ", descriptionCollaboration = " ", relevantFP = " ";
+          if (powbCollaborationGlobalUnit.getGlobalUnit() != null) {
+            crpPlatform = powbCollaborationGlobalUnit.getGlobalUnit().getAcronym() != null
+              && !powbCollaborationGlobalUnit.getGlobalUnit().getAcronym().isEmpty()
+                ? powbCollaborationGlobalUnit.getGlobalUnit().getAcronym()
+                : powbCollaborationGlobalUnit.getGlobalUnit().getName();
+          }
+
+          descriptionCollaboration =
+            powbCollaborationGlobalUnit.getBrief() != null && !powbCollaborationGlobalUnit.getBrief().isEmpty()
+              ? powbCollaborationGlobalUnit.getBrief() : " ";
+          relevantFP =
+            powbCollaborationGlobalUnit.getFlagship() != null && !powbCollaborationGlobalUnit.getFlagship().isEmpty()
+              ? powbCollaborationGlobalUnit.getFlagship() : " ";
+          model.addRow(new Object[] {crpPlatform, descriptionCollaboration, relevantFP});
+        }
+      }
+
+    }
 
     return model;
   }
