@@ -34,7 +34,10 @@ public class Submission implements java.io.Serializable {
 
 
   private User user;
+
   private Date dateTime;
+
+
   private String modificationJustification;
   private String cycle;
   private Short year;
@@ -42,7 +45,7 @@ public class Submission implements java.io.Serializable {
   private User unSubmitUser;
   private Boolean unSubmit;
   private String unSubmitJustification;
-  private GlobalUnit globalUnit;
+  private PowbSynthesis powbSynthesis;
 
   public Submission() {
   }
@@ -68,19 +71,12 @@ public class Submission implements java.io.Serializable {
     return this.crpProgram;
   }
 
-
   public String getCycle() {
     return this.cycle;
   }
 
-
   public Date getDateTime() {
     return this.dateTime;
-  }
-
-
-  public GlobalUnit getGlobalUnit() {
-    return globalUnit;
   }
 
 
@@ -94,9 +90,15 @@ public class Submission implements java.io.Serializable {
   }
 
 
+  public PowbSynthesis getPowbSynthesis() {
+    return powbSynthesis;
+  }
+
+
   public Project getProject() {
     return project;
   }
+
 
   public String getUnSubmitJustification() {
     return unSubmitJustification;
@@ -106,10 +108,10 @@ public class Submission implements java.io.Serializable {
     return unSubmitUser;
   }
 
-
   public User getUser() {
     return this.user;
   }
+
 
   public Short getYear() {
     return this.year;
@@ -131,16 +133,16 @@ public class Submission implements java.io.Serializable {
     this.dateTime = dateTime;
   }
 
-  public void setGlobalUnit(GlobalUnit globalUnit) {
-    this.globalUnit = globalUnit;
-  }
-
   public void setId(Long id) {
     this.id = id;
   }
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
   }
 
   public void setProject(Project project) {

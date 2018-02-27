@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo.action.powb;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,40 +57,55 @@ public class PowbSynthesisSubmitAction extends BaseAction {
 
 
   private GlobalUnitManager crpManager;
+
+
   private GlobalUnit loggedCrp;
+
+  private PowbSynthesisManager powbSynthesisManager;
+
+
   private boolean complete;
+  long powbSynthesisID;
 
   @Inject
   public PowbSynthesisSubmitAction(APConfig config, SubmissionManager submissionManager, UserManager userManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.userManager = userManager;
     this.crpManager = crpManager;
+    this.powbSynthesisManager = powbSynthesisManager;
   }
 
   @Override
   public String execute() throws Exception {
     complete = false;
-    if (this.hasPermission("canSubmmit")) {
-      if (this.isCompletePowbSynthesis()) {
-        List<Submission> submissions = loggedCrp.getSubmissions().stream()
-          .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
-            && c.getYear().intValue() == this.getActualPhase().getYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
-          .collect(Collectors.toList());
+    PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    if (powbSynthesis != null) {
+      if (this.hasPermission("canSubmmit")) {
+        if (this.isCompletePowbSynthesis(powbSynthesisID)) {
+          List<Submission> submissions = powbSynthesis.getSubmissions().stream()
+            .filter(c -> c.getCycle().equals(this.getActualPhase().getDescription())
+              && c.getYear().intValue() == this.getActualPhase().getYear()
+              && (c.isUnSubmit() == null || !c.isUnSubmit()))
+            .collect(Collectors.toList());
 
-        if (submissions.isEmpty()) {
-          this.submitPowbSynthesis();
-          complete = true;
-        } else {
-          Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
-          submission.setUser(userManager.getUser(submission.getUser().getId()));
-          this.setSubmission(submission);
-          complete = true;
+          if (submissions.isEmpty()) {
+            this.submitPowbSynthesis(powbSynthesis);
+            complete = true;
+          } else {
+            Submission submission = submissionManager.getSubmissionById(submissions.get(0).getId());
+            submission.setUser(userManager.getUser(submission.getUser().getId()));
+            this.setSubmission(submission);
+            complete = true;
+          }
         }
-      }
 
-      return INPUT;
+        return INPUT;
+      } else {
+
+        return NOT_AUTHORIZED;
+      }
     } else {
 
       return NOT_AUTHORIZED;
@@ -98,15 +116,29 @@ public class PowbSynthesisSubmitAction extends BaseAction {
     return loggedCrp;
   }
 
+  public long getPowbSynthesisID() {
+    return powbSynthesisID;
+  }
 
   public boolean isComplete() {
     return complete;
   }
 
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+
+
+    try {
+      powbSynthesisID =
+        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+    } catch (NumberFormatException e) {
+      powbSynthesisID = -1;
+      return; // Stop here and go to execute method.
+    }
+
 
     String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MANAGE_PERMISSION, params));
@@ -121,8 +153,12 @@ public class PowbSynthesisSubmitAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  public void setPowbSynthesisID(long powbSynthesisID) {
+    this.powbSynthesisID = powbSynthesisID;
+  }
 
-  private void submitPowbSynthesis() {
+
+  private void submitPowbSynthesis(PowbSynthesis powbSynthesis) {
     Submission submission = new Submission();
 
     submission.setCycle(this.getActualPhase().getDescription());
@@ -131,7 +167,7 @@ public class PowbSynthesisSubmitAction extends BaseAction {
 
     submission.setYear((short) this.getActualPhase().getYear());
     submission.setDateTime(new Date());
-    submission.setGlobalUnit(loggedCrp);
+    submission.setPowbSynthesis(powbSynthesis);
 
     submission = submissionManager.saveSubmission(submission);
     this.setSubmission(submission);

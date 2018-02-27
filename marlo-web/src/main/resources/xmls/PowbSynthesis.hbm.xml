@@ -75,12 +75,12 @@
 			cascade="save-update"></one-to-one>
 		<one-to-one name="financialPlan"
 			class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan" cascade="save-update"></one-to-one>
-			
-			
-			   <one-to-one name="collaboration"
-      class="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" cascade="save-update"></one-to-one>
-      
-      
+
+
+		<one-to-one name="collaboration"
+			class="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" cascade="save-update"></one-to-one>
+
+
 		<set name="powbFinancialExpenditures" table="powb_financial_expenditure"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -97,11 +97,20 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget" />
 		</set>
-     <set name="powbCollaborationGlobalUnits" table="powb_collaboration_global_units" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="powb_synthesis" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit" />
-        </set>
+		<set name="powbCollaborationGlobalUnits" table="powb_collaboration_global_units"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="powb_synthesis" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit" />
+		</set>
+		<set name="submissions" table="submissions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="powb_synthesis_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+		</set>
 	</class>
 </hibernate-mapping>

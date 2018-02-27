@@ -19,7 +19,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbCrpStaffing;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
@@ -35,7 +34,6 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -102,159 +100,188 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
   /**
    * TODO
    */
-  public void validateColaborationIntegration(BaseAction action, Phase phase) {
+  public void validateColaborationIntegration(BaseAction action, PowbSynthesis powbSynthesis) {
 
   }
 
-  public void validateCrossCuttingDimensions(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      // Check if CrossCutting relation is null -create it
-      if (powbSynthesis.getPowbCrossCuttingDimension() == null) {
+  public void validateCrossCuttingDimensions(BaseAction action, PowbSynthesis powbSynthesis) {
 
-        PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
-        crossCutting.setActive(true);
-        crossCutting.setActiveSince(new Date());
-        crossCutting.setCreatedBy(action.getCurrentUser());
-        crossCutting.setModifiedBy(action.getCurrentUser());
-        crossCutting.setModificationJustification("");
+    // Check if CrossCutting relation is null -create it
+    if (powbSynthesis.getPowbCrossCuttingDimension() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
 
-        // create one to one relation
-        powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
-        crossCutting.setPowbSynthesis(powbSynthesis);
+      PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
+      crossCutting.setActive(true);
+      crossCutting.setActiveSince(new Date());
+      crossCutting.setCreatedBy(action.getCurrentUser());
+      crossCutting.setModifiedBy(action.getCurrentUser());
+      crossCutting.setModificationJustification("");
 
+      // create one to one relation
+      powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
+      crossCutting.setPowbSynthesis(powbSynthesis);
+
+      crossCuttingValidator.validate(action, powbSynthesis, false);
+
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+
+    } else {
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         crossCuttingValidator.validate(action, powbSynthesis, false);
-
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-
       }
-
     }
+
+
   }
 
-  public void validateCrpProgress(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+  public void validateCrpProgress(BaseAction action, PowbSynthesis powbSynthesis) {
 
-      powbSynthesis.setExpectedCrpProgresses(
-        powbSynthesis.getPowbExpectedCrpProgresses().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      powbSynthesis.getExpectedCrpProgresses()
-        .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
 
-      expectedCRPProgressValidator.validate(action, powbSynthesis, false);
-    }
+    powbSynthesis.setExpectedCrpProgresses(
+      powbSynthesis.getPowbExpectedCrpProgresses().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    powbSynthesis.getExpectedCrpProgresses()
+      .sort((p1, p2) -> p1.getCrpMilestone().getId().compareTo(p2.getCrpMilestone().getId()));
+
+    expectedCRPProgressValidator.validate(action, powbSynthesis, false);
+
   }
 
-  public void validateCrpStaffing(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      if (powbSynthesis.getCrpStaffing() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
-        newPowbCrpStaffing.setActive(true);
-        newPowbCrpStaffing.setCreatedBy(action.getCurrentUser());
-        newPowbCrpStaffing.setModifiedBy(action.getCurrentUser());
-        newPowbCrpStaffing.setActiveSince(new Date());
-        newPowbCrpStaffing.setStaffingIssues("");
-        powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
-        newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
+  public void validateCrpStaffing(BaseAction action, PowbSynthesis powbSynthesis) {
 
+    if (powbSynthesis.getCrpStaffing() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+      PowbCrpStaffing newPowbCrpStaffing = new PowbCrpStaffing();
+      newPowbCrpStaffing.setActive(true);
+      newPowbCrpStaffing.setCreatedBy(action.getCurrentUser());
+      newPowbCrpStaffing.setModifiedBy(action.getCurrentUser());
+      newPowbCrpStaffing.setActiveSince(new Date());
+      newPowbCrpStaffing.setStaffingIssues("");
+      powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
+      newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
+
+      powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesis.getPowbSynthesisCrpStaffingCategory().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      crpStaffingValidator.validate(action, powbSynthesis, false);
+
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesis.getPowbSynthesisCrpStaffingCategory()
           .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
         crpStaffingValidator.validate(action, powbSynthesis, false);
-
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
-
-
     }
+
+
   }
 
-  public void validateEvidence(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      if (powbSynthesis.getPowbEvidence() == null) {
-        PowbEvidence evidence = new PowbEvidence();
-        evidence.setActive(true);
-        evidence.setActiveSince(new Date());
-        evidence.setCreatedBy(action.getCurrentUser());
-        evidence.setModifiedBy(action.getCurrentUser());
-        evidence.setModificationJustification("");
-        // create one to one relation
-        powbSynthesis.setPowbEvidence(evidence);
-        evidence.setPowbSynthesis(powbSynthesis);
+  public void validateEvidence(BaseAction action, PowbSynthesis powbSynthesis) {
 
-        if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-            for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
-              .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-              powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
-            }
+    if (powbSynthesis.getPowbEvidence() == null) {
+      PowbEvidence evidence = new PowbEvidence();
+      evidence.setActive(true);
+      evidence.setActiveSince(new Date());
+      evidence.setCreatedBy(action.getCurrentUser());
+      evidence.setModifiedBy(action.getCurrentUser());
+      evidence.setModificationJustification("");
+      // create one to one relation
+      powbSynthesis.setPowbEvidence(evidence);
+      evidence.setPowbSynthesis(powbSynthesis);
+
+      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+        if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+          for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+            .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
           }
         }
-
-        evidencesValidator.validate(action, powbSynthesis, false);
-
-
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
+      evidencesValidator.validate(action, powbSynthesis, false);
 
+
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+        if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+          for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+            .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+            powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
+          }
+        }
+      }
+
+      evidencesValidator.validate(action, powbSynthesis, false);
     }
+
+
   }
 
-  public void validateFinancialPlan(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      if (powbSynthesis.getFinancialPlan() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
-        newPowbFinancialPlan.setActive(true);
-        newPowbFinancialPlan.setCreatedBy(action.getCurrentUser());
-        newPowbFinancialPlan.setModifiedBy(action.getCurrentUser());
-        newPowbFinancialPlan.setActiveSince(new Date());
-        newPowbFinancialPlan.setFinancialPlanIssues("");
-        newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
-        powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
+  public void validateFinancialPlan(BaseAction action, PowbSynthesis powbSynthesis) {
 
+    if (powbSynthesis.getFinancialPlan() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+      PowbFinancialPlan newPowbFinancialPlan = new PowbFinancialPlan();
+      newPowbFinancialPlan.setActive(true);
+      newPowbFinancialPlan.setCreatedBy(action.getCurrentUser());
+      newPowbFinancialPlan.setModifiedBy(action.getCurrentUser());
+      newPowbFinancialPlan.setActiveSince(new Date());
+      newPowbFinancialPlan.setFinancialPlanIssues("");
+      newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
+      powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
+
+      powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
+        .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+      powbSynthesis.setPowbFinancialExpendituresList(
+        powbSynthesis.getPowbFinancialExpenditures().stream().filter(fe -> fe.isActive()).collect(Collectors.toList()));
+
+      financialPlanValidator.validate(action, powbSynthesis, false);
+
+
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
           .filter(fp -> fp.isActive()).collect(Collectors.toList()));
         powbSynthesis.setPowbFinancialExpendituresList(powbSynthesis.getPowbFinancialExpenditures().stream()
           .filter(fe -> fe.isActive()).collect(Collectors.toList()));
 
         financialPlanValidator.validate(action, powbSynthesis, false);
-
-
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
-
-
     }
+
+
   }
 
 
-  public void validateFlagshipPlans(BaseAction action, Phase phase) {
+  public void validateFlagshipPlans(BaseAction action, PowbSynthesis powbSynthesis) {
 
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
 
-      if (powbSynthesis.getPowbFlagshipPlans() == null && !this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
-        newPowbFlagshipPlans.setActive(true);
-        newPowbFlagshipPlans.setCreatedBy(action.getCurrentUser());
-        newPowbFlagshipPlans.setModifiedBy(action.getCurrentUser());
-        newPowbFlagshipPlans.setActiveSince(new Date());
-        newPowbFlagshipPlans.setPlanSummary("");
-        newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
-        powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
+    if (powbSynthesis.getPowbFlagshipPlans() == null && !this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+      PowbFlagshipPlans newPowbFlagshipPlans = new PowbFlagshipPlans();
+      newPowbFlagshipPlans.setActive(true);
+      newPowbFlagshipPlans.setCreatedBy(action.getCurrentUser());
+      newPowbFlagshipPlans.setModifiedBy(action.getCurrentUser());
+      newPowbFlagshipPlans.setActiveSince(new Date());
+      newPowbFlagshipPlans.setPlanSummary("");
+      newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
+      powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
+
+      if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
+        && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
+        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(
+          fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
+      }
+
+      flagshipPlansValidator.validate(action, powbSynthesis, false);
+
+
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
 
         if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
           && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
@@ -262,145 +289,165 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
             fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
         }
 
+
         flagshipPlansValidator.validate(action, powbSynthesis, false);
-
-
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
-
-
     }
+
+
   }
 
-  public void validateManagementGovernance(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      if (powbSynthesis.getPowbManagementGovernance() == null) {
-        PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
-        managementGovernance.setActive(true);
-        managementGovernance.setActiveSince(new Date());
-        managementGovernance.setCreatedBy(action.getCurrentUser());
-        managementGovernance.setModifiedBy(action.getCurrentUser());
-        managementGovernance.setModificationJustification("");
-        // create one to one relation
-        powbSynthesis.setPowbManagementGovernance(managementGovernance);
-        managementGovernance.setPowbSynthesis(powbSynthesis);
+  public void validateManagementGovernance(BaseAction action, PowbSynthesis powbSynthesis) {
 
-        managementGovernanceValidator.validate(action, powbSynthesis, false);
+    if (powbSynthesis.getPowbManagementGovernance() == null) {
+      PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
+      managementGovernance.setActive(true);
+      managementGovernance.setActiveSince(new Date());
+      managementGovernance.setCreatedBy(action.getCurrentUser());
+      managementGovernance.setModifiedBy(action.getCurrentUser());
+      managementGovernance.setModificationJustification("");
+      // create one to one relation
+      powbSynthesis.setPowbManagementGovernance(managementGovernance);
+      managementGovernance.setPowbSynthesis(powbSynthesis);
+
+      managementGovernanceValidator.validate(action, powbSynthesis, false);
 
 
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-      }
-
-
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      managementGovernanceValidator.validate(action, powbSynthesis, false);
     }
+
+
   }
 
-  public void validateManagementRisk(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      if (powbSynthesis.getPowbManagementRisk() == null) {
-        PowbManagementRisk managementRisk = new PowbManagementRisk();
-        managementRisk.setActive(true);
-        managementRisk.setActiveSince(new Date());
-        managementRisk.setCreatedBy(action.getCurrentUser());
-        managementRisk.setModifiedBy(action.getCurrentUser());
-        managementRisk.setModificationJustification("");
-        // create one to one relation
-        powbSynthesis.setPowbManagementRisk(managementRisk);
-        managementRisk.setPowbSynthesis(powbSynthesis);
+  public void validateManagementRisk(BaseAction action, PowbSynthesis powbSynthesis) {
 
-        managementRiskValidator.validate(action, powbSynthesis, false);
+    if (powbSynthesis.getPowbManagementRisk() == null) {
+      PowbManagementRisk managementRisk = new PowbManagementRisk();
+      managementRisk.setActive(true);
+      managementRisk.setActiveSince(new Date());
+      managementRisk.setCreatedBy(action.getCurrentUser());
+      managementRisk.setModifiedBy(action.getCurrentUser());
+      managementRisk.setModificationJustification("");
+      // create one to one relation
+      powbSynthesis.setPowbManagementRisk(managementRisk);
+      managementRisk.setPowbSynthesis(powbSynthesis);
 
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
-      }
+      managementRiskValidator.validate(action, powbSynthesis, false);
 
-
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      managementRiskValidator.validate(action, powbSynthesis, false);
     }
+
+
   }
 
-  public void validateMEL(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-      // Check if ToC relation is null -create it
-      if (powbSynthesis.getPowbMonitoringEvaluationLearning() == null) {
-        PowbMonitoringEvaluationLearning monitoringEvaluationLearning = new PowbMonitoringEvaluationLearning();
-        monitoringEvaluationLearning.setActive(true);
-        monitoringEvaluationLearning.setActiveSince(new Date());
-        monitoringEvaluationLearning.setCreatedBy(action.getCurrentUser());
-        monitoringEvaluationLearning.setModifiedBy(action.getCurrentUser());
-        monitoringEvaluationLearning.setModificationJustification("");
+  public void validateMEL(BaseAction action, PowbSynthesis powbSynthesis) {
 
-        // create one to one relation
-        powbSynthesis.setPowbMonitoringEvaluationLearning(monitoringEvaluationLearning);
-        monitoringEvaluationLearning.setPowbSynthesis(powbSynthesis);
+    // Check if ToC relation is null -create it
+    if (powbSynthesis.getPowbMonitoringEvaluationLearning() == null) {
+      PowbMonitoringEvaluationLearning monitoringEvaluationLearning = new PowbMonitoringEvaluationLearning();
+      monitoringEvaluationLearning.setActive(true);
+      monitoringEvaluationLearning.setActiveSince(new Date());
+      monitoringEvaluationLearning.setCreatedBy(action.getCurrentUser());
+      monitoringEvaluationLearning.setModifiedBy(action.getCurrentUser());
+      monitoringEvaluationLearning.setModificationJustification("");
 
-        if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-          if (powbSynthesis.getPowbMonitoringEvaluationLearning()
-            .getPowbMonitoringEvaluationLearningExercises() != null) {
-            powbSynthesis.getPowbMonitoringEvaluationLearning()
-              .setExercises(new ArrayList<>(
-                powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
-                  .stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+      // create one to one relation
+      powbSynthesis.setPowbMonitoringEvaluationLearning(monitoringEvaluationLearning);
+      monitoringEvaluationLearning.setPowbSynthesis(powbSynthesis);
+
+      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (powbSynthesis.getPowbMonitoringEvaluationLearning()
+          .getPowbMonitoringEvaluationLearningExercises() != null) {
+          powbSynthesis.getPowbMonitoringEvaluationLearning()
+            .setExercises(new ArrayList<>(
+              powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
+                .stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+        }
+      }
+
+      monitoringEvaluationLearningValidator.validate(action, powbSynthesis, false);
+
+
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
+      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (powbSynthesis.getPowbMonitoringEvaluationLearning()
+          .getPowbMonitoringEvaluationLearningExercises() != null) {
+          powbSynthesis.getPowbMonitoringEvaluationLearning()
+            .setExercises(new ArrayList<>(
+              powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
+                .stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+        }
+      }
+
+      monitoringEvaluationLearningValidator.validate(action, powbSynthesis, false);
+
+    }
+
+
+  }
+
+  public void validateTocAdjustments(BaseAction action, PowbSynthesis powbSynthesis) {
+
+
+    // Check if ToC relation is null -create it
+    if (powbSynthesis.getPowbToc() == null) {
+      PowbToc toc = new PowbToc();
+      toc.setActive(true);
+      toc.setActiveSince(new Date());
+      toc.setCreatedBy(action.getCurrentUser());
+      toc.setModifiedBy(action.getCurrentUser());
+      toc.setModificationJustification("");
+      // create one to one relation
+      powbSynthesis.setPowbToc(toc);
+      toc.setPowbSynthesis(powbSynthesis);
+
+      // Check if the pow toc has file
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (powbSynthesis.getPowbToc().getFile() != null) {
+          if (powbSynthesis.getPowbToc().getFile().getId() != null) {
+            powbSynthesis.getPowbToc()
+              .setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
+          } else {
+            powbSynthesis.getPowbToc().setFile(null);
           }
         }
-
-        monitoringEvaluationLearningValidator.validate(action, powbSynthesis, false);
-
-
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+      } else {
+        powbSynthesis.getPowbToc().setFile(null);
       }
 
+      toCAdjustmentsValidator.validate(action, powbSynthesis, false);
 
-    }
-  }
 
-  public void validateTocAdjustments(BaseAction action, Phase phase) {
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
-    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+      // save the changes
+      powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+    } else {
 
-      // Check if ToC relation is null -create it
-      if (powbSynthesis.getPowbToc() == null) {
-        PowbToc toc = new PowbToc();
-        toc.setActive(true);
-        toc.setActiveSince(new Date());
-        toc.setCreatedBy(action.getCurrentUser());
-        toc.setModifiedBy(action.getCurrentUser());
-        toc.setModificationJustification("");
-        // create one to one relation
-        powbSynthesis.setPowbToc(toc);
-        toc.setPowbSynthesis(powbSynthesis);
-
-        // Check if the pow toc has file
-        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-          if (powbSynthesis.getPowbToc().getFile() != null) {
-            if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-              powbSynthesis.getPowbToc()
-                .setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-            } else {
-              powbSynthesis.getPowbToc().setFile(null);
-            }
+      // Check if the pow toc has file
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (powbSynthesis.getPowbToc().getFile() != null) {
+          if (powbSynthesis.getPowbToc().getFile().getId() != null) {
+            powbSynthesis.getPowbToc()
+              .setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
+          } else {
+            powbSynthesis.getPowbToc().setFile(null);
           }
-        } else {
-          powbSynthesis.getPowbToc().setFile(null);
         }
-
-        toCAdjustmentsValidator.validate(action, powbSynthesis, false);
-
-
-        // save the changes
-        powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
+      } else {
+        powbSynthesis.getPowbToc().setFile(null);
       }
 
-
+      toCAdjustmentsValidator.validate(action, powbSynthesis, false);
     }
+
+
   }
 
 }

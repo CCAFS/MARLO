@@ -156,7 +156,7 @@
       </result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/submitPowb</param>
-        <param name="phaseID">${phaseID}</param>
+        <param name="powbSynthesisID">${powbSynthesisID}</param>
       </result>
     </action>
 

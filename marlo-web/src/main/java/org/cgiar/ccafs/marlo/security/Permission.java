@@ -65,8 +65,8 @@ public class Permission {
     "crp:{0}:powbSynthesis:{1}:managementRisk";
   public static final String POWB_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION =
     "crp:{0}:powbSynthesis:{1}:managementGovernance";
-  public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:manage";
-  public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:manage:canSubmmit";
+  public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage";
+  public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage:canSubmmit";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
