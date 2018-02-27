@@ -104,7 +104,7 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
         CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           if (powbSynthesis.getExpectedCrpProgresses() != null) {
-            if (powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
+            if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
               for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
                 int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
                 if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
@@ -127,16 +127,24 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
           }
         }
       } else {
-        int i = 0;
-        for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-          if (!(this.isValidString(powbExpectedCrpProgress.getExpectedHighlights())
-            && this.wordCount(powbExpectedCrpProgress.getExpectedHighlights()) <= 100)) {
-            action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.expectedHighlights"));
-            action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].expectedHighlights",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+        if (powbSynthesis.getExpectedCrpProgresses() != null) {
+          if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
+            int i = 0;
+            for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
+              if (!(this.isValidString(powbExpectedCrpProgress.getExpectedHighlights())
+                && this.wordCount(powbExpectedCrpProgress.getExpectedHighlights()) <= 100)) {
+                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.expectedHighlights"));
+                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].expectedHighlights",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
 
-          i++;
+              i++;
+            }
+          } else {
+            action.addMissingField(action.getText("Not Expected Crp Progress"));
+          }
+        } else {
+          action.addMissingField(action.getText("Not Expected Crp Progress"));
         }
       }
 
