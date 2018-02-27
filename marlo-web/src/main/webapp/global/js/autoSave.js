@@ -184,9 +184,9 @@ function validateThisSection() {
           $sectionMenu.removeClass('submitted');
         } else {
           if(data.section.missingFields == "") {
-            $sectionMenu.removeClass('submitted').addClass('toSubmit');
-          } else {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
+          } else {
+            $sectionMenu.removeClass('submitted').addClass('toSubmit');
           }
         }
         $sectionMenu.removeClass('loadingSection');
