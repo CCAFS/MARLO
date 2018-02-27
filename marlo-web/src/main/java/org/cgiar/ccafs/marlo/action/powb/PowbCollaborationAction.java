@@ -566,7 +566,12 @@ public class PowbCollaborationAction extends BaseAction {
           PowbSynthesis powbSynthesisProgram =
             powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutions.get(0).getId());
           if (powbSynthesisProgram != null) {
+            powbSynthesisProgram.setPowbCollaborationGlobalUnitsList(powbSynthesisProgram
+              .getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
             crpProgram.setCollaboration(powbSynthesisProgram.getCollaboration());
+            crpProgram.setSynthesis(powbSynthesisProgram);
+
 
           }
         }
