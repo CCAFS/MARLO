@@ -135,8 +135,58 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
     // masterReport.getParameterValues().put("i8nParameterName", "i8nText"));
+    masterReport.getParameterValues().put("i8nMainTitle", this.getText("summaries.powb.mainTitle"));
+    masterReport.getParameterValues().put("i8nMainTitle2", this.getText("summaries.powb.mainTitle2"));
+    masterReport.getParameterValues().put("i8ncoverPage", this.getText("summaries.powb.cover"));
+    masterReport.getParameterValues().put("i8nHeaderTitle", this.getText("summaries.powb.header"));
+    masterReport.getParameterValues().put("i8nExpectedKeyResult", this.getText("summaries.powb.expectedKeyResults"));
+    masterReport.getParameterValues().put("i8nAdjustmentsTitle", this.getText("summaries.powb.expectedKeyResults.toc"));
+    masterReport.getParameterValues().put("i8nExpectedCrpTitle",
+      this.getText("summaries.powb.expectedKeyResults.expectedCrp"));
+    masterReport.getParameterValues().put("i8nEvidenceTitle",
+      this.getText("summaries.powb.expectedKeyResults.evidence"));
     masterReport.getParameterValues().put("i8nPlansCRPFlagshipTitle",
-      this.getText("summaries.powb.synthesis.flagshipPlans.title"));
+      this.getText("summaries.powb.expectedKeyResults.flagshipPlans"));
+    masterReport.getParameterValues().put("i8nCrossCuttingTitle",
+      this.getText("summaries.powb.expectedKeyResults.crossCutting"));
+    masterReport.getParameterValues().put("i8nCrossCuttingGenderTitle",
+      this.getText("summaries.powb.expectedKeyResults.crossCutting.gender"));
+    masterReport.getParameterValues().put("i8nCrossCuttingOpenDataTitle",
+      this.getText("summaries.powb.expectedKeyResults.crossCutting.openData"));
+    masterReport.getParameterValues().put("i8nEffectivenessandEfficiency",
+      this.getText("summaries.powb.effectiveness"));
+    masterReport.getParameterValues().put("i8nStaffingTitle", this.getText("summaries.powb.effectiveness.staffing"));
+    masterReport.getParameterValues().put("i8nFinancialPlanTitle",
+      this.getText("summaries.powb.effectiveness.financial"));
+    masterReport.getParameterValues().put("i8nCollaborationandIntegrationTitle",
+      this.getText("summaries.powb.effectiveness.collaboration"));
+    masterReport.getParameterValues().put("i8nNewKeyExternalPartnershipsTitle",
+      this.getText("summaries.powb.effectiveness.collaboration.external"));
+    masterReport.getParameterValues().put("i8nNewContributionPlatformsTitle",
+      this.getText("summaries.powb.effectiveness.collaboration.contributions"));
+    masterReport.getParameterValues().put("i8nNewCrossCRPInteractionsTitle",
+      this.getText("summaries.powb.effectiveness.collaboration.newCrossCrp"));
+    masterReport.getParameterValues().put("i8nExpectedEffortsCountryCoordinationTitle",
+      this.getText("summaries.powb.effectiveness.collaboration.expectedEfforts"));
+    masterReport.getParameterValues().put("i8nMonitoringEvaluationLearningTitle",
+      this.getText("summaries.powb.effectiveness.mel"));
+    masterReport.getParameterValues().put("i8nCRPManagement", this.getText("summaries.powb.management"));
+    masterReport.getParameterValues().put("i8nManagementRisksTitle", this.getText("summaries.powb.management.risk"));
+    masterReport.getParameterValues().put("i8nCRPManagementGovernanceTitle",
+      this.getText("summaries.powb.management.governance"));
+    masterReport.getParameterValues().put("i8nTableATitle", this.getText("expectedProgress.tableA.title"));
+    masterReport.getParameterValues().put("i8nTableAFPTitle", this.getText("expectedProgress.tableA.fp"));
+    masterReport.getParameterValues().put("i8nTableASubIDOTitle", this.getText("expectedProgress.tableA.subIDO"));
+    masterReport.getParameterValues().put("i8nTableAOutcomesTitle", this.getText("expectedProgress.tableA.outcomes"));
+    masterReport.getParameterValues().put("i8nTableAMilestoneTitle", this.getText("expectedProgress.tableA.milestone"));
+    masterReport.getParameterValues().put("i8nTableABudgetTitle", this.getText("summaries.powb.tableA.budget"));
+    masterReport.getParameterValues().put("i8nTableAW1W2Title", this.getText("expectedProgress.tableA.w1w2"));
+    masterReport.getParameterValues().put("i8nTableAW3BiTitle", this.getText("expectedProgress.tableA.w3bilateral"));
+    masterReport.getParameterValues().put("i8nTableAAssessmentTitle",
+      this.getText("expectedProgress.tableA.assessment"));
+    masterReport.getParameterValues().put("i8nTableAVerificationTitle",
+      this.getText("expectedProgress.tableA.meansVerification"));
+
 
     return masterReport;
   }
