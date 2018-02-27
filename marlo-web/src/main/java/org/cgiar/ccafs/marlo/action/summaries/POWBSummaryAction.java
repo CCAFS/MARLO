@@ -18,9 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
@@ -107,12 +105,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private List<PowbEvidencePlannedStudy> flagshipPlannedList;
 
   // Managers
-  private PowbCrossCuttingDimensionManager crossCuttingManager;
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
   private DeliverableManager deliverableManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
   private PowbSynthesisManager powbSynthesisManager;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
 
   // RTF bytes
   private byte[] bytesRTF;
@@ -121,16 +117,13 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
   @Inject
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    PowbCrossCuttingDimensionManager crossCuttingManager, PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
-    DeliverableManager deliverableManager, PowbExpenditureAreasManager powbExpenditureAreasManager,
-    PowbSynthesisManager powbSynthesisManager, LiaisonInstitutionManager liaisonInstitutionManager) {
+    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager, DeliverableManager deliverableManager,
+    PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager) {
     super(config, crpManager, phaseManager);
-    this.crossCuttingManager = crossCuttingManager;
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
     this.deliverableManager = deliverableManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
 
@@ -1174,42 +1167,44 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       for (Deliverable deliverable : deliverables) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(pashe);
         if (deliverableInfo.isActive()) {
-          if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            deliverableList.add(deliverableInfo);
-            if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
-              iNa++;
-            } else {
-              // Gender
-              if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
-                if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 1) {
-                  iGenderSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreGender() != null
-                  && deliverableInfo.getCrossCuttingScoreGender() == 2) {
-                  iGenderPrincipal++;
+          if (deliverableInfo.getStatus() != null) {
+            if (deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || deliverableInfo.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              deliverableList.add(deliverableInfo);
+              if (deliverableInfo.getCrossCuttingNa() != null && deliverableInfo.getCrossCuttingNa()) {
+                iNa++;
+              } else {
+                // Gender
+                if (deliverableInfo.getCrossCuttingGender() != null && deliverableInfo.getCrossCuttingGender()) {
+                  if (deliverableInfo.getCrossCuttingScoreGender() != null
+                    && deliverableInfo.getCrossCuttingScoreGender() == 1) {
+                    iGenderSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreGender() != null
+                    && deliverableInfo.getCrossCuttingScoreGender() == 2) {
+                    iGenderPrincipal++;
+                  }
                 }
-              }
 
-              // Youth
-              if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
-                if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
-                  iYouthSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
-                  && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
-                  iYouthPrincipal++;
+                // Youth
+                if (deliverableInfo.getCrossCuttingYouth() != null && deliverableInfo.getCrossCuttingYouth()) {
+                  if (deliverableInfo.getCrossCuttingScoreYouth() != null
+                    && deliverableInfo.getCrossCuttingScoreYouth() == 1) {
+                    iYouthSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreYouth() != null
+                    && deliverableInfo.getCrossCuttingScoreYouth() == 2) {
+                    iYouthPrincipal++;
+                  }
                 }
-              }
 
-              // CapDev
-              if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
-                if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
-                  iCapDevSignificant++;
-                } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
-                  && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
-                  iCapDevPrincipal++;
+                // CapDev
+                if (deliverableInfo.getCrossCuttingCapacity() != null && deliverableInfo.getCrossCuttingCapacity()) {
+                  if (deliverableInfo.getCrossCuttingScoreCapacity() != null
+                    && deliverableInfo.getCrossCuttingScoreCapacity() == 1) {
+                    iCapDevSignificant++;
+                  } else if (deliverableInfo.getCrossCuttingScoreCapacity() != null
+                    && deliverableInfo.getCrossCuttingScoreCapacity() == 2) {
+                    iCapDevPrincipal++;
+                  }
                 }
               }
             }
