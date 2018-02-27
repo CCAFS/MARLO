@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "POWB Synthesis" /]
 [#assign currentSectionString = "powb-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
-[#assign pageLibs = [ "select2", "flat-flags" ] /]
+[#assign pageLibs = [ "select2", "flat-flags", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/powb/powb_collaborationIntegration.js" ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/powb/powbGlobal.css" ] /]
 [#assign currentSection = "synthesis" /]
@@ -47,6 +47,7 @@
           [#-- Project Partnerships --]
           [#if flagship]
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableFlagshipPartnerships.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <hr />
             [@tableFlagshipPartnershipsMacro list=(action.loadProjects(liaisonInstitution.crpProgram.id))![]  /]
           [/#if]
           
@@ -172,7 +173,7 @@
 
 [#macro tableFlagshipPartnershipsMacro list ]
   <div class="">
-    <table class="table table-bordered">
+    <table class="table table-bordered partnershipsTable">
       <thead>
         <tr>
           <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.project" /] </th>
@@ -217,16 +218,22 @@
           [#list locElements as locElement]
             <tr>
               <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
-              <td>
+              <td class="col-md-5">
                 [#if (locElement.fundingSources?has_content)!false]
-                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id}, [/#list]
+                  [#list locElement.fundingSources as fundingSource]
+                    [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>, 
+                  [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
-              <td>
+              <td class="col-md-5">
                 [#if (locElement.projects?has_content)!false]
-                  [#list locElement.projects as project]P${project.id}, [/#list]
+                  [#list locElement.projects as project]
+                    [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    <a href="${pURL}" target="_blank">P${project.id}</a>,
+                  [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
@@ -255,7 +262,7 @@
     <div class="form-group row"> 
       [#-- CRP/Platform --] 
       <div class="col-md-4">
-        [@customForm.select name="${customName}.globalUnit.id" label="" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-8">
