@@ -104,23 +104,26 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
         CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           if (powbSynthesis.getExpectedCrpProgresses() != null) {
-
-            for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-              int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
-              if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
-                && this.wordCount(powbExpectedCrpProgress.getMeans()) <= 100)) {
-                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
-                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
-                  InvalidFieldsMessages.EMPTYFIELD);
+            if (powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
+              for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
+                int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
+                if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
+                  && this.wordCount(powbExpectedCrpProgress.getMeans()) <= 100)) {
+                  action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
+                  action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
+                if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
+                  action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
+                  action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
+                    InvalidFieldsMessages.EMPTYFIELD);
+                }
               }
-              if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
-                action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
-                action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-
+            } else {
+              action.addMissingField(action.getText("Not Expected Crp Progress"));
             }
-
+          } else {
+            action.addMissingField(action.getText("Not Expected Crp Progress"));
           }
         }
       } else {

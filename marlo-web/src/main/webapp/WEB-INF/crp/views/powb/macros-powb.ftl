@@ -59,7 +59,7 @@
                   
                   [#local totalProjectsBilateral = 0 /]
                   [#local totalContributionBilateral = 0 /]
-                  
+     
                   [#list projects as project]
                     [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/budgetByPartners"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
                     <tr>
@@ -89,19 +89,25 @@
                   <tr>
                     <td class="col-md-6"> <strong>Total</strong> </td>
                     [#if type == "W1W2"]
+                      [#if totalProjectsW1W2 != 0]
                       [#local percentageContributionW1W2 = (totalContributionW1W2/ totalProjectsW1W2) * 100 ]
                       <td class="text-right"> <nobr>US$ ${(totalProjectsW1W2?number?string(",##0.00"))!}</nobr></td>
                       <td class="text-right"> <nobr> <span class="text-primary">${percentageContributionW1W2?number?string(",##0.00")}%</span> (US$ ${(totalContributionW1W2?number?string(",##0.00"))!}) </nobr></td>
+                      [/#if]
                     [/#if]
                     [#if type == "W3BILATERAL"]
+                      [#if totalProjectsW3 != 0]
                       [#local percentageContributionW3 = (totalContributionW3/ totalProjectsW3) * 100 ]
                       <td class="text-right"> <nobr>US$ ${(totalProjectsW3?number?string(",##0.00"))!}</nobr></td>
                       <td class="text-right"> <nobr> <span class="text-primary">${percentageContributionW3?number?string(",##0.00")}%</span> (US$ ${(totalContributionW3?number?string(",##0.00"))!}) </nobr> </td>
+                      [/#if]
                     [/#if]
                     [#if type == "W3BILATERAL"]
+                      [#if totalProjectsBilateral != 0]
                       [#local percentageContributionBilateral = (totalContributionBilateral/ totalProjectsBilateral) * 100 ]
                       <td class="text-right"> <nobr>US$ ${(totalProjectsBilateral?number?string(",##0.00"))!} </nobr> </td>
                       <td class="text-right"> <nobr> <span class="text-primary"> ${percentageContributionBilateral?number?string(",##0.00")}% </span> (US$ ${(totalContributionBilateral?number?string(",##0.00"))!}) </nobr> </td>
+                      [/#if]
                     [/#if]
                   </tr>
                 </tfoot>

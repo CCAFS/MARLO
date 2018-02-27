@@ -76,17 +76,20 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
   private CrpProgramManager crpProgramManager;
+
+
   private PowbSynthesisManager powbSynthesisManager;
   private CrossCuttingValidator validator;
   private PowbCrossCuttingDimensionManager powbCrossCuttingDimensionManager;
   private DeliverableManager deliverableManager;
   private List<LiaisonInstitution> liaisonInstitutions;
   private UserManager userManager;
-
-
   private LiaisonInstitution liaisonInstitution;
   private String transaction;
+
+
   private Long crossCuttingId;
   private Long liaisonInstitutionID;
   private GlobalUnit loggedCrp;
@@ -94,7 +97,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   private CrossCuttingDimensionTableDTO tableC;
   private LiaisonInstitution thePMU;
   private List<DeliverableInfo> deliverableList;
-  private Long powbSynthesisID;
+  private long powbSynthesisID;
 
   @Inject
   public CrossCuttingDimensionsAction(APConfig config, GlobalUnitManager crpManager, AuditLogManager auditLogManager,
@@ -155,15 +158,14 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return crossCuttingId;
   }
 
-
   public List<DeliverableInfo> getDeliverableList() {
     return deliverableList;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -174,15 +176,19 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
+
+  public long getPowbSynthesisID() {
+    return powbSynthesisID;
+  }
 
   public CrossCuttingDimensionTableDTO getTableC() {
     return tableC;
@@ -206,11 +212,13 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   public boolean isFlagship() {
     boolean isFP = false;
-    if (liaisonInstitution.getCrpProgram() != null) {
-      CrpProgram crpProgram =
-        crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
-      if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-        isFP = true;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() != null) {
+        CrpProgram crpProgram =
+          crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
+        if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+          isFP = true;
+        }
       }
     }
     return isFP;
@@ -220,22 +228,14 @@ public class CrossCuttingDimensionsAction extends BaseAction {
   @Override
   public boolean isPMU() {
     boolean isFP = false;
-    if (liaisonInstitution.getCrpProgram() == null) {
-      isFP = true;
+    if (liaisonInstitution != null) {
+      if (liaisonInstitution.getCrpProgram() == null) {
+        isFP = true;
+      }
     }
     return isFP;
 
   }
-
-
-  public boolean isPMU(LiaisonInstitution institution) {
-    if (institution.getAcronym().equals("PMU")) {
-      return true;
-    }
-
-    return false;
-  }
-
 
   @Override
   public String next() {
@@ -247,6 +247,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -254,14 +255,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     Phase phase = this.getActualPhase();
-
-    for (LiaisonInstitution institution : this.getLoggedCrp().getLiaisonInstitutions()) {
-      if (this.isPMU(institution)) {
-        thePMU = institution;
-        break;
-      }
-    }
-
 
     // If there is a history version being loaded
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -275,79 +268,76 @@ public class CrossCuttingDimensionsAction extends BaseAction {
         this.setTransaction("-1");
       }
     } else {
+      // Get Liaison institution ID Parameter
+      try {
+        liaisonInstitutionID =
+          Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+      } catch (NumberFormatException e) {
+        User user = userManager.getUser(this.getCurrentUser().getId());
+        if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
+          List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
+            .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
+            .collect(Collectors.toList()));
+          if (!liaisonUsers.isEmpty()) {
+            boolean isLeader = false;
+            for (LiaisonUser liaisonUser : liaisonUsers) {
+              LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
+              if (institution.isActive()) {
+                if (institution.getCrpProgram() != null) {
+                  if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                } else {
+                  if (institution.getAcronym().equals("PMU")) {
+                    liaisonInstitutionID = institution.getId();
+                    isLeader = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!isLeader) {
+              liaisonInstitutionID = this.firstFlagship();
+            }
+          } else {
+            liaisonInstitutionID = this.firstFlagship();
+          }
+        } else {
+          liaisonInstitutionID = this.firstFlagship();
+        }
+      }
+
       try {
         powbSynthesisID =
           Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
         powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
 
         if (!powbSynthesis.getPhase().equals(phase)) {
-          powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), thePMU.getId());
+          powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
           if (powbSynthesis == null) {
-            powbSynthesis = this.createPowbSynthesis(phase.getId(), thePMU.getId());
+            powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
           }
           powbSynthesisID = powbSynthesis.getId();
         }
       } catch (Exception e) {
 
-        powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), thePMU.getId());
+        powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
         if (powbSynthesis == null) {
-          powbSynthesis = this.createPowbSynthesis(phase.getId(), thePMU.getId());
+          powbSynthesis = this.createPowbSynthesis(phase.getId(), liaisonInstitutionID);
         }
         powbSynthesisID = powbSynthesis.getId();
 
       }
     }
-    // Get Liaison institution ID Parameter
-    try {
-      liaisonInstitutionID =
-        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
-    } catch (NumberFormatException e) {
-      User user = userManager.getUser(this.getCurrentUser().getId());
-      if (user.getLiasonsUsers() != null || !user.getLiasonsUsers().isEmpty()) {
-        List<LiaisonUser> liaisonUsers = new ArrayList<>(user.getLiasonsUsers().stream()
-          .filter(lu -> lu.isActive() && lu.getLiaisonInstitution().getCrp().getId() == loggedCrp.getId())
-          .collect(Collectors.toList()));
-        if (!liaisonUsers.isEmpty()) {
-          boolean isLeader = false;
-
-          for (LiaisonUser liaisonUser : liaisonUsers) {
-            LiaisonInstitution institution = liaisonUser.getLiaisonInstitution();
-            if (institution.isActive()) {
-              if (institution.getCrpProgram() != null) {
-                if (institution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              } else {
-                if (institution.getAcronym().equals("PMU")) {
-                  liaisonInstitutionID = institution.getId();
-                  isLeader = true;
-                  break;
-                }
-              }
-            }
-
-            if (!isLeader) {
-              liaisonInstitutionID = this.firstFlagship();
-            }
-          }
-        } else {
-          liaisonInstitutionID = this.firstFlagship();
-        }
-      } else {
-        liaisonInstitutionID = this.firstFlagship();
-      }
-    }
-
-    liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
 
     if (powbSynthesis != null) {
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
-      // liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
-      // liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+      liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
+      liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -365,7 +355,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       } else {
         this.setDraft(false);
         // Check if CrossCutting relation is null -create it
-        if (powbSynthesis.getPowbCrossCuttingDimension() == null) {
+        if (powbSynthesis.getPowbCrossCuttingDimension() == null && this.isPMU()) {
 
           PowbCrossCuttingDimension crossCutting = new PowbCrossCuttingDimension();
           crossCutting.setActive(true);
@@ -411,7 +401,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -482,10 +471,10 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -494,6 +483,11 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
     this.powbSynthesis = powbSynthesis;
+  }
+
+
+  public void setPowbSynthesisID(long powbSynthesisID) {
+    this.powbSynthesisID = powbSynthesisID;
   }
 
   public void setTableC(CrossCuttingDimensionTableDTO tableC) {
