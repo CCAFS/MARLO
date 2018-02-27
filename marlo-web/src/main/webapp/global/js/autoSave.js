@@ -183,8 +183,7 @@ function validateThisSection() {
         if(jQuery.isEmptyObject(data)) {
           $sectionMenu.removeClass('submitted');
         } else {
-          var missingFields = (data.section.missingFields) || "";
-          if(!(missingFields)) {
+          if(data.section.missingFields == "") {
             $sectionMenu.removeClass('submitted').addClass('toSubmit');
           } else {
             $sectionMenu.addClass('submitted').removeClass('toSubmit');
