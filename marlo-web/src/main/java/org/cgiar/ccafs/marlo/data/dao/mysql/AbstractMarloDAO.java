@@ -129,10 +129,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   public T find(Class<T> clazz, ID id) {
     T obj = (T) sessionFactory.getCurrentSession().get(clazz, id);
-    if (obj != null) {
-      this.getSessionFactory().getCurrentSession().refresh(obj);
 
-    }
     return obj;
   }
 
@@ -237,17 +234,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    */
   SessionFactory getSessionFactory() {
     return this.sessionFactory;
-  }
-
-  /**
-   * This method saves or update a record into the database.
-   * 
-   * @param obj is the Object to be saved/updated.
-   * @return
-   */
-  protected T refreshEntity(T entity) {
-    sessionFactory.getCurrentSession().refresh(entity);
-    return entity;
   }
 
 
