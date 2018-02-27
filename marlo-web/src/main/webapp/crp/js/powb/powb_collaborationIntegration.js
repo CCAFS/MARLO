@@ -1,5 +1,34 @@
 $(document).ready(function() {
 
+  var $partnershipsTable = $('table.partnershipsTable');
+
+  var table = $partnershipsTable.DataTable({
+      "bPaginate": true, // This option enable the table pagination
+      "bLengthChange": false, // This option disables the select table size option
+      "bFilter": false, // This option enable the search
+      "bSort": true, // this option enable the sort of contents by columns
+      "bAutoWidth": false, // This option enables the auto adjust columns width
+      "iDisplayLength": 5, // Number of rows to show on the table
+      "order": [
+        [
+            0, 'desc'
+        ]
+      ],
+      aoColumnDefs: [
+          {
+              bSortable: true,
+              aTargets: [
+                -1
+              ]
+          }, {
+              sType: "natural",
+              aTargets: [
+                0
+              ]
+          }
+      ]
+  });
+
   attachEvents();
 });
 
