@@ -16,6 +16,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
 [#include "/WEB-INF/crp/pages/header.ftl" /]
 [#include "/WEB-INF/crp/pages/main-menu.ftl" /]
+[#import "/WEB-INF/crp/views/powb/macros-powb.ftl" as powbMacros /]
 
 [#-- Helptext --]
 [@utilities.helpBox name="expectedProgress.help" /]
@@ -103,13 +104,15 @@
           [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.subIDO" /]</th>[/#if]
           [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
-          <th rowspan="1" colspan="2" class="text-center"> Budget </th> 
+          [#if !allowPopups]<th rowspan="1" colspan="2" class="text-center"> Budget </th> [/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
         </tr>
         <tr>
+          [#if !allowPopups]
           <th class="text-center">[@s.text name="expectedProgress.tableA.w1w2" /]</th>
           <th class="text-center">[@s.text name="expectedProgress.tableA.w3bilateral" /]</th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
@@ -134,9 +137,9 @@
                 [#-- Milestone --]
                 <td> ${milestone.composedName} [#if allowPopups] <div class="pull-right">[@milestoneContributions element=milestone tiny=true /] [/#if]</div></td>
                 [#-- W1W2 --]
-                [#if isFlagshipRow]<td rowspan="${milestoneSize}">[@projectBudgetsByFlagshipMacro element=fp type="W1W2" popupEnabled=allowPopups/] </td>[/#if]
+                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W1W2" popupEnabled=allowPopups/] </td>[/#if]
                 [#-- W3/Bilateral --]
-                [#if isFlagshipRow]<td rowspan="${milestoneSize}">[@projectBudgetsByFlagshipMacro element=fp type="W3BILATERAL" popupEnabled=allowPopups/]  </td>[/#if]
+                [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W3BILATERAL" popupEnabled=allowPopups/]  </td>[/#if]
                 [#-- Assessment --]
                 <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Means Verification --]

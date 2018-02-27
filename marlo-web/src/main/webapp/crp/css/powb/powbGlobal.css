@@ -137,3 +137,7 @@ form .form-group.margin-panel {
   height: 20px;
   margin-left: 15px;
 }
+
+tfoot {
+  font-weight: bold;
+}
