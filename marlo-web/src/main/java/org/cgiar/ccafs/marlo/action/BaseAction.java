@@ -114,6 +114,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -4983,6 +4984,89 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public List<Project> loadFlagShipBudgetInfoProgram(long crpProgramID) {
+    List<Project> projectsToRet = new ArrayList<>();
+    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
+      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    Set<Project> myProjects = new HashSet();
+    for (ProjectFocus projectFocus : projects) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
+          && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+        .collect(Collectors.toList());
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+
+      if (!this.getCountProjectFlagships(project.getId())) {
+        if (w1 > 0) {
+          percentageW1 = 100;
+        }
+        if (w3 > 0) {
+          percentageW3 = 100;
+        }
+        if (bilateral > 0) {
+          percentageB = 100;
+        }
+
+      }
+      for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
+        switch (projectBudgetsFlagship.getBudgetType().getId().intValue()) {
+          case 1:
+            percentageW1 = percentageW1 + projectBudgetsFlagship.getAmount();
+            break;
+          case 2:
+            percentageW3 = percentageW3 + projectBudgetsFlagship.getAmount();
+            break;
+          case 3:
+            percentageB = percentageB + projectBudgetsFlagship.getAmount();
+            break;
+          default:
+            break;
+        }
+      }
+      project.setW3Budget(w3);
+      project.setCoreBudget(w1);
+      project.setBilateralBudget(bilateral);
+
+      project.setPercentageW3(percentageW3);
+      project.setPercentageW1(percentageW1);
+      project.setPercentageBilateral(percentageB);
+
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+
+      project.setTotalW3(w3);
+      project.setTotalW1(w1);
+      project.setTotalBilateral(bilateral);
+      projectsToRet.add(project);
+    }
+    return projectsToRet;
+  }
+
   public void loadLessons(GlobalUnit crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
@@ -5036,6 +5120,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
@@ -5069,7 +5154,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
-
 
   public void loadLessonsSynthesis(GlobalUnit crp, IpProgram program) {
 
@@ -5121,11 +5205,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
+
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
-
 
   /* Override this method depending of the save action. */
   public String save() {

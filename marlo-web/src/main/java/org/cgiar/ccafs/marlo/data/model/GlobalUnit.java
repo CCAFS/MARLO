@@ -2,6 +2,8 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Oct 30, 2017 10:01:51 AM by Hibernate Tools 3.4.0.CR1
 
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +14,7 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jimenez
  */
-public class GlobalUnit implements java.io.Serializable {
+public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -3398924354219701873L;
@@ -286,6 +288,7 @@ public class GlobalUnit implements java.io.Serializable {
     return globalUnitType;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -315,10 +318,19 @@ public class GlobalUnit implements java.io.Serializable {
   }
 
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
@@ -343,10 +355,10 @@ public class GlobalUnit implements java.io.Serializable {
     return roles;
   }
 
+
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
   }
-
 
   public Set<Submission> getSubmissions() {
     return submissions;
@@ -364,6 +376,7 @@ public class GlobalUnit implements java.io.Serializable {
     return result;
   }
 
+  @Override
   public boolean isActive() {
     return active;
   }
@@ -396,10 +409,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.centerAreas = centerAreas;
   }
 
+
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
   }
-
 
   public void setCenterObjectives(Set<CenterObjective> centerObjectives) {
     this.centerObjectives = centerObjectives;
@@ -409,10 +422,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.centerProjectFundingSources = centerProjectFundingSources;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
@@ -462,10 +475,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.deliverablesList = deliverablesList;
   }
 
+
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
   }
-
 
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
@@ -495,10 +508,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.liasonUsers = liasonUsers;
   }
 
+
   public void setLocationCustomElementTypes(List<LocElementType> locationCustomElementTypes) {
     this.locationCustomElementTypes = locationCustomElementTypes;
   }
-
 
   public void setLocationElementTypes(List<LocElementType> locationElementTypes) {
     this.locationElementTypes = locationElementTypes;
@@ -544,10 +557,10 @@ public class GlobalUnit implements java.io.Serializable {
     this.programManagmenTeam = programManagmenTeam;
   }
 
+
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
-
 
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;

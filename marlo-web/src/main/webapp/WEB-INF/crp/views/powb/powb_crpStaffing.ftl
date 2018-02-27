@@ -42,7 +42,7 @@
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
           <div class="form-group">
             <input type="hidden" name="powbSynthesis.crpStaffing.id" value="${(powbSynthesis.crpStaffing.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
           </div>
           
           [#-- Table D: CRP Staffing (OPTIONAL IN POWB 2018)  --]
@@ -72,7 +72,7 @@
       <thead>
         <tr>
           <th>[@s.text name="crpStaffing.tableD.category" /]</th>
-          <th class="col-md-2">[@s.text name="crpStaffing.tableD.female" /]</th>
+          <th class="col-md-2">[@s.text name="crpStaffing.tableD.female" /] </th>
           <th class="col-md-2">[@s.text name="crpStaffing.tableD.male" /]</th>
           <th>[@s.text name="crpStaffing.tableD.total" /]</th>
           <th>[@s.text name="crpStaffing.tableD.percFemale" /]</th>
@@ -98,5 +98,6 @@
         [/#if]
       </tbody>
     </table>
+    <i>[@s.text name="crpStaffing.tableD.help" /]</i>
   </div>
 [/#macro]

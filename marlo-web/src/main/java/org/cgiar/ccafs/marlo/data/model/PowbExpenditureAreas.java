@@ -46,6 +46,9 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
 
   private Set<PowbFinancialExpenditure> powbFinancialExpenditures = new HashSet<PowbFinancialExpenditure>(0);
   private Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets = new HashSet<PowbFinancialPlannedBudget>(0);
+  private double w1;
+
+  private double w3;
 
 
   public PowbExpenditureAreas() {
@@ -108,6 +111,16 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
   }
 
 
+  public double getW1() {
+    return w1;
+  }
+
+
+  public double getW3() {
+    return w3;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
@@ -118,9 +131,11 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -130,19 +145,19 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
     this.expenditureArea = expenditureArea;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setIsExpenditure(boolean isExpenditure) {
     this.isExpenditure = isExpenditure;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -154,6 +169,14 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
 
   public void setPowbFinancialPlannedBudgets(Set<PowbFinancialPlannedBudget> powbFinancialPlannedBudgets) {
     this.powbFinancialPlannedBudgets = powbFinancialPlannedBudgets;
+  }
+
+  public void setW1(double w1) {
+    this.w1 = w1;
+  }
+
+  public void setW3(double w3) {
+    this.w3 = w3;
   }
 
 
