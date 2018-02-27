@@ -3765,31 +3765,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param liaisonInstitutionID
    * @return
    */
-  public boolean isCompleteLiaisonSection(String sectionName, long liaisonInstitutionID) {
+  public boolean isCompleteLiaisonSection(long liaisonInstitutionID) {
     Phase phase = this.getActualPhase();
 
     PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phase.getId(), liaisonInstitutionID);
 
     if (powbSynthesis != null) {
-      if (powbSynthesis.getSectionStatuses() != null) {
-
-        SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-          this.getCurrentCycle(), phase.getYear(), sectionName);
-
-        if (sectionStatus != null) {
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
+      return this.isCompletePowbSynthesis(powbSynthesis.getId());
     } else {
       return false;
     }
-    return true;
+
   }
 
   /**
