@@ -152,11 +152,11 @@
     
     <action name="{crp}/submitPowb"
       class="org.cgiar.ccafs.marlo.action.powb.PowbSynthesisSubmitAction">
-      <result name="input">/WEB-INF/crp/views/projects/projectSubmission.ftl
-      </result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/submitPowb</param>
+        <param name="actionName">${crpSession}/adjustmentsChanges</param>
         <param name="powbSynthesisID">${powbSynthesisID}</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="phaseID">${phaseID}</param>
       </result>
     </action>
 
