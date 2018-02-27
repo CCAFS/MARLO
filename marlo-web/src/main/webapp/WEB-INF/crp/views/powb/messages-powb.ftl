@@ -9,7 +9,7 @@
   [/#if]
   
   [#if (currentMenuItem.onlyPMU)!false ]
-    [@s.text name="powb.messages.infoOnly"][@s.param][@s.text name="global.flagship"/][/@s.param][/@s.text]
+    [@s.text name="powb.messages.infoOnly"][@s.param][@s.text name="CrpProgram.leaders"/][/@s.param][/@s.text]
   [/#if]
 </p>
 [/#if]

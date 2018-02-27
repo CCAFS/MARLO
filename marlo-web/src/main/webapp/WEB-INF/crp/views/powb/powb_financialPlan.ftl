@@ -193,7 +193,6 @@
               [/#if]
             </td>
             <td class="col-md-6">
-            
               [@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" fieldEmptyText="global.prefilledByPmu" placeholder="" i18nkey="" showTitle=false className="" editable=editable && PMU/] 
             </td>
           </tr>
