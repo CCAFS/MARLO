@@ -104,7 +104,7 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
         CrpProgram crpProgram = liaisonInstitution.getCrpProgram();
         if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
           if (powbSynthesis.getExpectedCrpProgresses() != null) {
-            if (powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
+            if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
               for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
                 int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
                 if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
