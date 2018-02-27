@@ -59,11 +59,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,7 +109,7 @@ public class PowbCollaborationAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private LiaisonInstitution liaisonInstitution;
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
-  private Map<Long, String> globalUnits;
+  private List<GlobalUnit> globalUnits;
 
 
   @Inject
@@ -185,7 +182,7 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
-  public Map<Long, String> getGlobalUnits() {
+  public List<GlobalUnit> getGlobalUnits() {
     return globalUnits;
   }
 
@@ -582,26 +579,23 @@ public class PowbCollaborationAction extends BaseAction {
       crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     }
 
-    globalUnits = new HashMap<>();
+    globalUnits = new ArrayList<>();
     List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
       .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList());
 
     for (GlobalUnit globalUnit : globalUnitsList) {
-      if (!globalUnit.equals(loggedCrp)) {
-        if (globalUnit.getAcronym() != null && globalUnit.getAcronym().length() > 2) {
-          globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
+      if (!globalUnit.getId().equals(loggedCrp.getId())) {
+        if (globalUnit.getAcronym() != null && globalUnit.getAcronym().trim().length() == 0) {
+          globalUnit.setAcronymValid(globalUnit.getName());
         } else {
-          globalUnits.put(globalUnit.getId(), globalUnit.getName());
+          globalUnit.setAcronymValid(globalUnit.getAcronym());
+
         }
+        globalUnits.add(globalUnit);
       }
 
-
     }
-    Map<Long, String> sortedMap =
-      globalUnits.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.naturalOrder())).collect(
-        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
-    globalUnits = sortedMap;
+    globalUnits.sort((p1, p2) -> p1.getAcronymValid().compareTo(p2.getAcronymValid()));
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -688,7 +682,7 @@ public class PowbCollaborationAction extends BaseAction {
     this.flagshipExercises = flagshipExercises;
   }
 
-  public void setGlobalUnits(Map<Long, String> globalUnits) {
+  public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
 
