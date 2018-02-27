@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.PowbExpenditureAreasManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -134,11 +135,15 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
    * @return masterReport with i8n parameters added
    */
   private MasterReport addi8nParameters(MasterReport masterReport) {
-    // masterReport.getParameterValues().put("i8nParameterName", "i8nText"));
     masterReport.getParameterValues().put("i8nMainTitle", this.getText("summaries.powb.mainTitle"));
     masterReport.getParameterValues().put("i8nMainTitle2", this.getText("summaries.powb.mainTitle2"));
     masterReport.getParameterValues().put("i8ncoverPage", this.getText("summaries.powb.cover"));
     masterReport.getParameterValues().put("i8nHeaderTitle", this.getText("summaries.powb.header"));
+    masterReport.getParameterValues().put("i8nUnitName", this.getText("summaries.powb.unitName"));
+    masterReport.getParameterValues().put("i8nParticipantingCenters",
+      this.getText("summaries.powb.participantingCenters"));
+
+
     masterReport.getParameterValues().put("i8nExpectedKeyResult", this.getText("summaries.powb.expectedKeyResults"));
     masterReport.getParameterValues().put("i8nAdjustmentsTitle", this.getText("summaries.powb.expectedKeyResults.toc"));
     masterReport.getParameterValues().put("i8nExpectedCrpTitle",
@@ -483,14 +488,39 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class},
       0);
-    String unitName = "&lt;Not Defined&gt;", leadCenter = "&lt;Not Defined&gt;",
-      participantingCenters = "&lt;Not Defined&gt;", adjustmentsDescription = "&lt;Not Defined&gt;",
-      expectedCrpDescription = "&lt;Not Defined&gt;", evidenceDescription = "&lt;Not Defined&gt;",
-      plansCRPFlagshipDescription = "", crossCuttingGenderDescription = "&lt;Not Defined&gt;",
-      crossCuttingOpenDataDescription = "&lt;Not Defined&gt;";
+    String unitName = "&lt;Not Defined&gt;", leadCenter = " ", participantingCenters = "",
+      adjustmentsDescription = "&lt;Not Defined&gt;", expectedCrpDescription = "&lt;Not Defined&gt;",
+      evidenceDescription = "&lt;Not Defined&gt;", plansCRPFlagshipDescription = "",
+      crossCuttingGenderDescription = "&lt;Not Defined&gt;", crossCuttingOpenDataDescription = "&lt;Not Defined&gt;";
 
     unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
       ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+
+    List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+    if (crpPpaPartnerList != null && !crpPpaPartnerList.isEmpty()) {
+      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerList) {
+        if (participantingCenters.isEmpty()) {
+          if (crpPpaPartner.getInstitution().getAcronym() != null
+            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
+            participantingCenters = crpPpaPartner.getInstitution().getAcronym();
+          } else {
+            participantingCenters = crpPpaPartner.getInstitution().getName();
+          }
+        } else {
+          if (crpPpaPartner.getInstitution().getAcronym() != null
+            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
+            participantingCenters += ", " + crpPpaPartner.getInstitution().getAcronym();
+          } else {
+            participantingCenters += ", " + crpPpaPartner.getInstitution().getName();
+          }
+        }
+      }
+    }
+    if (participantingCenters.isEmpty()) {
+      participantingCenters = "&lt;Not Defined&gt;";
+    }
 
 
     if (powbSynthesisPMU != null) {
