@@ -2645,7 +2645,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   /**
-   * TODO
+   * Check the powb Synthesis Section Status
    * 
    * @param section
    * @return
@@ -2736,6 +2736,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public List<Submission> getPowbSynthesisSubmissions(long powbSynthesisID) {
+    PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    List<Submission> submissions = powbSynthesis.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return submissions;
+  }
+
   public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
     ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
 
@@ -2748,6 +2760,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
+
 
   public List<Project> getProjectRelationsImpact(Long id, String className) {
     Class<?> clazz;
@@ -2888,7 +2901,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return projects;
 
   }
-
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
@@ -3759,7 +3771,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * TODO
+   * Check if all the powb Synthesis Sections by Liaison Institution is completed
    * 
    * @param sectionName
    * @param liaisonInstitutionID
@@ -3779,7 +3791,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * TODO
+   * Check if the powb synthesis is complete by the flagships or the PMU.
    * 
    * @param phaseID
    * @return

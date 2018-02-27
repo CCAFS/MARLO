@@ -61,11 +61,16 @@ public class PowbSynthesisSubmitAction extends BaseAction {
 
   private GlobalUnit loggedCrp;
 
+
   private PowbSynthesisManager powbSynthesisManager;
 
 
   private boolean complete;
+
   long powbSynthesisID;
+
+
+  long liaisonInstitutionID;
 
   @Inject
   public PowbSynthesisSubmitAction(APConfig config, SubmissionManager submissionManager, UserManager userManager,
@@ -81,6 +86,8 @@ public class PowbSynthesisSubmitAction extends BaseAction {
   public String execute() throws Exception {
     complete = false;
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    liaisonInstitutionID = powbSynthesis.getLiaisonInstitution().getId();
+    this.setPhaseID(powbSynthesis.getPhase().getId());
     if (powbSynthesis != null) {
       if (this.hasPermission("canSubmmit")) {
         if (this.isCompletePowbSynthesis(powbSynthesisID)) {
@@ -99,17 +106,24 @@ public class PowbSynthesisSubmitAction extends BaseAction {
             this.setSubmission(submission);
             complete = true;
           }
+
+          return SUCCESS;
+        } else {
+          return NOT_AUTHORIZED;
         }
 
-        return INPUT;
       } else {
-
         return NOT_AUTHORIZED;
       }
     } else {
-
       return NOT_AUTHORIZED;
     }
+
+
+  }
+
+  public long getLiaisonInstitutionID() {
+    return liaisonInstitutionID;
   }
 
   public GlobalUnit getLoggedCrp() {
@@ -123,7 +137,6 @@ public class PowbSynthesisSubmitAction extends BaseAction {
   public boolean isComplete() {
     return complete;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -145,8 +158,13 @@ public class PowbSynthesisSubmitAction extends BaseAction {
 
   }
 
+
   public void setComplete(boolean complete) {
     this.complete = complete;
+  }
+
+  public void setLiaisonInstitutionID(long liaisonInstitutionID) {
+    this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
