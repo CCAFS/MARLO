@@ -124,8 +124,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   private List<CustomParameter> parameters; // Used by CrpParametersAction
 
-  private Set<Submission> submissions = new HashSet<Submission>(0);
-
   public GlobalUnit() {
     // Default Constructor
   }
@@ -360,10 +358,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return siteIntegrations;
   }
 
-  public Set<Submission> getSubmissions() {
-    return submissions;
-  }
-
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
   }
@@ -564,10 +558,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;
-  }
-
-  public void setSubmissions(Set<Submission> submissions) {
-    this.submissions = submissions;
   }
 
   public void setTargetUnits(List<TargetUnitSelect> targetUnits) {

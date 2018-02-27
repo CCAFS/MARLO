@@ -33,11 +33,8 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.powb.PowbSynthesisSectionValidator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,6 +70,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
   private Map<String, Object> section;
   private final PowbSynthesisSectionValidator<ValidateSectionStatusPowbSynthesisAction> powbSynthesisSectionValidator;
   private long phaseID;
+  private long powbSynthesisID;
 
   @Inject
   public ValidateSectionStatusPowbSynthesisAction(APConfig config, SectionStatusManager sectionStatusManager,
@@ -91,41 +89,42 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     Phase phase = phaseManager.getPhaseById(phaseID);
-    if (validSection) {
+    PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    if (validSection && existPowbSynthesis) {
 
       switch (PowbSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
         case TOC_ADJUSTMENTS:
-          powbSynthesisSectionValidator.validateTocAdjustments(this, phase);
+          powbSynthesisSectionValidator.validateTocAdjustments(this, powbSynthesis);
           break;
         case CRP_PROGRESS:
-          powbSynthesisSectionValidator.validateCrpProgress(this, phase);
+          powbSynthesisSectionValidator.validateCrpProgress(this, powbSynthesis);
           break;
         case EVIDENCES:
-          powbSynthesisSectionValidator.validateEvidence(this, phase);
+          powbSynthesisSectionValidator.validateEvidence(this, powbSynthesis);
           break;
         case FLAGSHIP_PLANS:
-          powbSynthesisSectionValidator.validateFlagshipPlans(this, phase);
+          powbSynthesisSectionValidator.validateFlagshipPlans(this, powbSynthesis);
           break;
         case CROSS_CUTTING_DIMENSIONS:
-          powbSynthesisSectionValidator.validateCrossCuttingDimensions(this, phase);
+          powbSynthesisSectionValidator.validateCrossCuttingDimensions(this, powbSynthesis);
           break;
         case STAFFING:
-          powbSynthesisSectionValidator.validateCrpStaffing(this, phase);
+          powbSynthesisSectionValidator.validateCrpStaffing(this, powbSynthesis);
           break;
         case FINANCIAL_PLAN:
-          powbSynthesisSectionValidator.validateFinancialPlan(this, phase);
+          powbSynthesisSectionValidator.validateFinancialPlan(this, powbSynthesis);
           break;
         case COLABORATION_INTEGRATION:
-          powbSynthesisSectionValidator.validateColaborationIntegration(this, phase);
+          powbSynthesisSectionValidator.validateColaborationIntegration(this, powbSynthesis);
           break;
         case MEL:
-          powbSynthesisSectionValidator.validateMEL(this, phase);
+          powbSynthesisSectionValidator.validateMEL(this, powbSynthesis);
           break;
         case MANAGEMENT_RISK:
-          powbSynthesisSectionValidator.validateManagementRisk(this, phase);
+          powbSynthesisSectionValidator.validateManagementRisk(this, powbSynthesis);
           break;
         case MANAGEMENT_GOVERNANCE:
-          powbSynthesisSectionValidator.validateManagementGovernance(this, phase);
+          powbSynthesisSectionValidator.validateManagementGovernance(this, powbSynthesis);
           break;
         default:
           break;
@@ -145,78 +144,10 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
     section.put("sectionName", sectionName);
     section.put("missingFields", "");
 
-    List<PowbSynthesis> powbSynthesisList =
-      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
 
     switch (PowbSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
       case FLAGSHIP_PLANS:
-        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-          if (this.isFlagship(powbSynthesis.getLiaisonInstitution())) {
-            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-              phase.getYear(), sectionName);
-
-            if (sectionStatus == null) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("No section");
-            }
-            if (sectionStatus.getMissingFields().length() > 0) {
-              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-            }
-          }
-        }
-        break;
-      case CROSS_CUTTING_DIMENSIONS:
-        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-              phase.getYear(), sectionName);
-
-            if (sectionStatus == null) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("No section");
-            }
-            if (sectionStatus.getMissingFields().length() > 0) {
-              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-            }
-          }
-        }
-        break;
-      case STAFFING:
-        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-              phase.getYear(), sectionName);
-
-            if (sectionStatus == null) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("No section");
-            }
-            if (sectionStatus.getMissingFields().length() > 0) {
-              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-            }
-          }
-        }
-        break;
-      case FINANCIAL_PLAN:
-        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-              phase.getYear(), sectionName);
-
-            if (sectionStatus == null) {
-              sectionStatus = new SectionStatus();
-              sectionStatus.setMissingFields("No section");
-            }
-            if (sectionStatus.getMissingFields().length() > 0) {
-              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-            }
-          }
-        }
-        break;
-      default:
-
-        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-
+        if (this.isFlagship(powbSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
             phase.getYear(), sectionName);
 
@@ -226,10 +157,64 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
           }
           if (sectionStatus.getMissingFields().length() > 0) {
             section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-
           }
         }
+        break;
+      case CROSS_CUTTING_DIMENSIONS:
 
+        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+            phase.getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          }
+        }
+        break;
+      case STAFFING:
+
+        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+            phase.getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          }
+        }
+        break;
+      case FINANCIAL_PLAN:
+
+        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+            phase.getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          }
+        }
+        break;
+      default:
+        sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+          phase.getYear(), sectionName);
+        if (sectionStatus == null) {
+          sectionStatus = new SectionStatus();
+          sectionStatus.setMissingFields("No section");
+        }
+        if (sectionStatus.getMissingFields().length() > 0) {
+          section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+        }
         break;
     }
 
@@ -279,8 +264,12 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 
     phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+    powbSynthesisID =
+      Long.parseLong(StringUtils.trim(parameters.get(APConstants.POWB_SYNTHESIS_ID).getMultipleValues()[0]));
     // Validate if the section exists.
     validSection = PowbSynthesisSectionStatusEnum.value(sectionName) != null;
+
+    existPowbSynthesis = powbSynthesisManager.existPowbSynthesis(powbSynthesisID);
 
   }
 
