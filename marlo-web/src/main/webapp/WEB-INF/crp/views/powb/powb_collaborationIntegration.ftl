@@ -104,12 +104,40 @@
             [/#if]
           </div>
           [/#if]
+          
+          [#-- if PMU]
+            <div class="">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
+                    <th> Collaboration Program </th>
+                    <th> Brief description </th>
+                  </tr>
+                </thead>
+                <tbody>
+                [#list crpPrograms as crpProgram]
+                  [#if crpProgram.synthesis.powbCollaborationGlobalUnitsList??]
+                    [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as collaboration]
+                      <tr>
+                        <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
+                        <td> ${(collaboration.globalUnit.composedName)!collaboration.globalUnit.acronym}</td>
+                        <td> ${(collaboration.brief)!} </td>
+                      </tr>
+                    [/#list]
+                  [/#if]
+                [/#list]
+                </tbody>
+              </table>
+            </div>
+          [/#if--]
         </div>
         <div class="borderBox">
           [#-- 2.3.4  Expected Efforts on Country Coordination --] 
           <div class="form-group">
             [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
+          <br />
           
           [#-- Table: Flagships - Expected Efforts on Country Coordination --]
           [#if PMU]
@@ -119,7 +147,7 @@
           </div>
           [/#if]
           
-          [#-- Table: Flagships - Expected Efforts on Country Coordination --]
+          [#-- Table: CGIAR Country Coordination--]
           [#if flagship]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>

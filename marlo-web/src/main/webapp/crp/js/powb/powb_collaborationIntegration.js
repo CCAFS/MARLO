@@ -29,6 +29,11 @@ $(document).ready(function() {
       ]
   });
 
+  // Add Select2
+  $('form select').select2({
+    width: '100%'
+  });
+
   attachEvents();
 });
 
@@ -46,6 +51,12 @@ function addProgramCollaboration() {
   var $list = $(this).parents("form").find('.listProgramCollaborations');
   var $item = $('#flagshipCollaboration-template').clone(true).removeAttr("id");
   $list.append($item);
+
+  // Add select
+  $item.find('select').select2({
+    width: '100%'
+  });
+
   $item.show('slow');
   updateIndexes();
 }
