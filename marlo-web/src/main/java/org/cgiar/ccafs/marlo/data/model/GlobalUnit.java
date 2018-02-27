@@ -226,6 +226,14 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getComposedName() {
+    if (this.acronym != null || !this.acronym.trim().equals("")) {
+      return this.acronym + " - " + this.name;
+    } else {
+      return this.name;
+    }
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -234,10 +242,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return crpInstitutionsPartners;
   }
 
+
   public Set<CrpLocElementType> getCrpLocElementTypes() {
     return crpLocElementTypes;
   }
-
 
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
@@ -324,13 +332,13 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return locElementTypes;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -362,10 +370,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return roles;
   }
 
+
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
   }
-
 
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
@@ -412,10 +420,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCenterAreas(Set<CenterArea> centerAreas) {
     this.centerAreas = centerAreas;
   }
-
 
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
@@ -425,10 +433,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.centerObjectives = centerObjectives;
   }
 
+
   public void setCenterProjectFundingSources(Set<CenterProjectFundingSource> centerProjectFundingSources) {
     this.centerProjectFundingSources = centerProjectFundingSources;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -478,10 +486,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
+
   public void setDeliverablesList(List<Deliverable> deliverablesList) {
     this.deliverablesList = deliverablesList;
   }
-
 
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
