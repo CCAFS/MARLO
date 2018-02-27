@@ -2,7 +2,7 @@
 <ul id="liaisonInstitutions" class="horizontalSubMenu text-center">
   [#list liaisonInstitutions as institution]
     [#assign isActive = (institution.id == liaisonInstitutionID)/]
-    [#assign isCompleted = false /]
+    [#assign isCompleted = (action.isCompleteLiaisonSection(liaisonInstitutionID))!false /]
     [#assign hasPermission = false/]
     <li class="${isActive?string('active','')} ${hasPermission?string('canEdit','')}">
       <a href="[@s.url][@s.param name ="liaisonInstitutionID"]${institution.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
