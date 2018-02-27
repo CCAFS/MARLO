@@ -146,7 +146,7 @@ function processTasks(tasks,id,button) {
           .ajax({
               url: baseURL + '/validatePowbSynthesisSection.do',
               data: {
-
+                  powbSynthesisID: id,
                   sectionName: sectionName,
                   phaseID: phaseID
               },
