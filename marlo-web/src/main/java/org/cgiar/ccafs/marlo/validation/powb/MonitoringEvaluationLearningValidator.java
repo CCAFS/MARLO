@@ -148,11 +148,17 @@ public class MonitoringEvaluationLearningValidator extends BaseValidator {
   }
 
   public void validateMEL(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight())
-      && this.wordCount(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight()) <= 100)) {
-      action.addMessage(action.getText("monitoringLearning.areasOfInterest"));
-      action.getInvalidFields().put("input-powbSynthesis.powbMonitoringEvaluationLearning.highlight",
-        InvalidFieldsMessages.EMPTYFIELD);
+    if (powbSynthesis.getPowbMonitoringEvaluationLearning() != null) {
+      if (!(this.isValidString(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight())
+        && this.wordCount(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight()) <= 100)) {
+        action.addMessage(action.getText("monitoringLearning.areasOfInterest"));
+        action.getInvalidFields().put("input-powbSynthesis.powbMonitoringEvaluationLearning.highlight",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        action.addMessage(action.getText("monitoringLearning.areasOfInterest"));
+        action.getInvalidFields().put("input-powbSynthesis.powbMonitoringEvaluationLearning.highlight",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
   }
 

@@ -44,8 +44,8 @@
       <li>
         <ul><p class="menuTitle">${menu.title}</p>
           [#list menu.items as item]
-            [#assign submitStatus = false /]
-            [#assign hasDraft = false /]
+            [#assign submitStatus = (action.getPowbSynthesisSectionStatus(item.action))!false /]
+            [#assign hasDraft = (action.getAutoSavePowbFilePath(powbSynthesis.class.simpleName, item.action))!false /]
             [#if (item.show)!true ]
               <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${submitStatus?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">

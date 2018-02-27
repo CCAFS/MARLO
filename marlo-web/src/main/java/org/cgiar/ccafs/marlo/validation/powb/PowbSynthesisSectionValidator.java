@@ -39,10 +39,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseValidator {
 
   private PowbSynthesisManager powbSynthesisManager;
@@ -66,7 +68,8 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     ExpectedCRPProgressValidator expectedCRPProgressValidator, EvidencesValidator evidencesValidator,
     FlagshipPlansValidator flagshipPlansValidator, CrossCuttingValidator crossCuttingValidator,
     CrpStaffingValidator crpStaffingValidator, FinancialPlanValidator financialPlanValidator,
-    ManagementRiskValidator managementRiskValidator, ManagementGovernanceValidator managementGovernanceValidator) {
+    ManagementRiskValidator managementRiskValidator, ManagementGovernanceValidator managementGovernanceValidator,
+    MonitoringEvaluationLearningValidator monitoringEvaluationLearningValidator) {
     this.powbSynthesisManager = powbSynthesisManager;
     this.toCAdjustmentsValidator = toCAdjustmentsValidator;
     this.fileDBManager = fileDBManager;
@@ -78,6 +81,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
     this.financialPlanValidator = financialPlanValidator;
     this.managementRiskValidator = managementRiskValidator;
     this.managementGovernanceValidator = managementGovernanceValidator;
+    this.monitoringEvaluationLearningValidator = monitoringEvaluationLearningValidator;
   }
 
   /**
@@ -120,11 +124,13 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         powbSynthesis.setPowbCrossCuttingDimension(crossCutting);
         crossCutting.setPowbSynthesis(powbSynthesis);
 
+        crossCuttingValidator.validate(action, powbSynthesis, false);
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
 
       }
-      crossCuttingValidator.validate(action, powbSynthesis, false);
+
     }
   }
 
@@ -155,13 +161,16 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         newPowbCrpStaffing.setStaffingIssues("");
         powbSynthesis.setCrpStaffing(newPowbCrpStaffing);
         newPowbCrpStaffing.setPowbSynthesis(powbSynthesis);
+
+        powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesis.getPowbSynthesisCrpStaffingCategory()
+          .stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        crpStaffingValidator.validate(action, powbSynthesis, false);
+
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      powbSynthesis.setPowbSynthesisCrpStaffingCategoryList(powbSynthesis.getPowbSynthesisCrpStaffingCategory().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      crpStaffingValidator.validate(action, powbSynthesis, false);
     }
   }
 
@@ -179,21 +188,25 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         // create one to one relation
         powbSynthesis.setPowbEvidence(evidence);
         evidence.setPowbSynthesis(powbSynthesis);
+
+        if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+            for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
+              .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
+              powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
+            }
+          }
+        }
+
+        evidencesValidator.validate(action, powbSynthesis, false);
+
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
-        if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-          for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
-            .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
-            powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
-          }
-        }
-      }
 
-      evidencesValidator.validate(action, powbSynthesis, false);
     }
   }
 
@@ -210,15 +223,19 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         newPowbFinancialPlan.setFinancialPlanIssues("");
         newPowbFinancialPlan.setPowbSynthesis(powbSynthesis);
         powbSynthesis.setFinancialPlan(newPowbFinancialPlan);
+
+        powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
+          .filter(fp -> fp.isActive()).collect(Collectors.toList()));
+        powbSynthesis.setPowbFinancialExpendituresList(powbSynthesis.getPowbFinancialExpenditures().stream()
+          .filter(fe -> fe.isActive()).collect(Collectors.toList()));
+
+        financialPlanValidator.validate(action, powbSynthesis, false);
+
+
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      powbSynthesis.setPowbFinancialPlannedBudgetList(powbSynthesis.getPowbFinancialPlannedBudget().stream()
-        .filter(fp -> fp.isActive()).collect(Collectors.toList()));
-      powbSynthesis.setPowbFinancialExpendituresList(
-        powbSynthesis.getPowbFinancialExpenditures().stream().filter(fe -> fe.isActive()).collect(Collectors.toList()));
 
-      financialPlanValidator.validate(action, powbSynthesis, false);
     }
   }
 
@@ -238,16 +255,20 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         newPowbFlagshipPlans.setPlanSummary("");
         newPowbFlagshipPlans.setPowbSynthesis(powbSynthesis);
         powbSynthesis.setPowbFlagshipPlans(newPowbFlagshipPlans);
+
+        if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
+          && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
+          powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(
+            fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
+        }
+
+        flagshipPlansValidator.validate(action, powbSynthesis, false);
+
+
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null
-        && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId() != null) {
-        powbSynthesis.getPowbFlagshipPlans().setFlagshipProgramFile(
-          fileDBManager.getFileDBById(powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getId()));
-      }
 
-      flagshipPlansValidator.validate(action, powbSynthesis, false);
     }
   }
 
@@ -265,11 +286,15 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         // create one to one relation
         powbSynthesis.setPowbManagementGovernance(managementGovernance);
         managementGovernance.setPowbSynthesis(powbSynthesis);
+
+        managementGovernanceValidator.validate(action, powbSynthesis, false);
+
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      managementGovernanceValidator.validate(action, powbSynthesis, false);
+
     }
   }
 
@@ -287,11 +312,14 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         // create one to one relation
         powbSynthesis.setPowbManagementRisk(managementRisk);
         managementRisk.setPowbSynthesis(powbSynthesis);
+
+        managementRiskValidator.validate(action, powbSynthesis, false);
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      managementRiskValidator.validate(action, powbSynthesis, false);
+
     }
   }
 
@@ -307,24 +335,29 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         monitoringEvaluationLearning.setCreatedBy(action.getCurrentUser());
         monitoringEvaluationLearning.setModifiedBy(action.getCurrentUser());
         monitoringEvaluationLearning.setModificationJustification("");
+
         // create one to one relation
         powbSynthesis.setPowbMonitoringEvaluationLearning(monitoringEvaluationLearning);
         monitoringEvaluationLearning.setPowbSynthesis(powbSynthesis);
+
+        if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          if (powbSynthesis.getPowbMonitoringEvaluationLearning()
+            .getPowbMonitoringEvaluationLearningExercises() != null) {
+            powbSynthesis.getPowbMonitoringEvaluationLearning()
+              .setExercises(new ArrayList<>(
+                powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
+                  .stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
+          }
+        }
+
+        monitoringEvaluationLearningValidator.validate(action, powbSynthesis, false);
+
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        if (powbSynthesis.getPowbMonitoringEvaluationLearning()
-          .getPowbMonitoringEvaluationLearningExercises() != null) {
-          powbSynthesis.getPowbMonitoringEvaluationLearning()
-            .setExercises(new ArrayList<>(
-              powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
-                .stream().filter(ps -> ps.isActive()).collect(Collectors.toList())));
-        }
-      }
 
-      monitoringEvaluationLearningValidator.validate(action, powbSynthesis, false);
     }
   }
 
@@ -344,25 +377,29 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
         // create one to one relation
         powbSynthesis.setPowbToc(toc);
         toc.setPowbSynthesis(powbSynthesis);
+
+        // Check if the pow toc has file
+        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+          if (powbSynthesis.getPowbToc().getFile() != null) {
+            if (powbSynthesis.getPowbToc().getFile().getId() != null) {
+              powbSynthesis.getPowbToc()
+                .setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
+            } else {
+              powbSynthesis.getPowbToc().setFile(null);
+            }
+          }
+        } else {
+          powbSynthesis.getPowbToc().setFile(null);
+        }
+
+        toCAdjustmentsValidator.validate(action, powbSynthesis, false);
+
+
         // save the changes
         powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
       }
 
-      // Check if the pow toc has file
-      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        if (powbSynthesis.getPowbToc().getFile() != null) {
-          if (powbSynthesis.getPowbToc().getFile().getId() != null) {
-            powbSynthesis.getPowbToc()
-              .setFile(fileDBManager.getFileDBById(powbSynthesis.getPowbToc().getFile().getId()));
-          } else {
-            powbSynthesis.getPowbToc().setFile(null);
-          }
-        }
-      } else {
-        powbSynthesis.getPowbToc().setFile(null);
-      }
 
-      toCAdjustmentsValidator.validate(action, powbSynthesis, false);
     }
   }
 

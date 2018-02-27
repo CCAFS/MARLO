@@ -17,19 +17,30 @@ package org.cgiar.ccafs.marlo.action.json.powb;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.powb.PowbSynthesisSectionValidator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -39,6 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Named
 public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
 
 
@@ -50,6 +62,8 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
   private SectionStatusManager sectionStatusManager;
   private PowbSynthesisManager powbSynthesisManager;
   private GlobalUnitManager crpManager;
+  private PhaseManager phaseManager;
+  private CrpProgramManager crpProgramManager;
 
   private SectionStatus sectionStatus;
   private GlobalUnit loggedCrp;
@@ -58,22 +72,27 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
   private boolean existPowbSynthesis;
   private Map<String, Object> section;
   private final PowbSynthesisSectionValidator<ValidateSectionStatusPowbSynthesisAction> powbSynthesisSectionValidator;
+  private long phaseID;
 
   @Inject
   public ValidateSectionStatusPowbSynthesisAction(APConfig config, SectionStatusManager sectionStatusManager,
     PowbSynthesisManager powbSynthesisManager, GlobalUnitManager crpManager,
-    PowbSynthesisSectionValidator<ValidateSectionStatusPowbSynthesisAction> powbSynthesisSectionValidator) {
+    PowbSynthesisSectionValidator<ValidateSectionStatusPowbSynthesisAction> powbSynthesisSectionValidator,
+    PhaseManager phaseManager, CrpProgramManager crpProgramManager) {
     super(config);
     this.crpManager = crpManager;
     this.sectionStatusManager = sectionStatusManager;
     this.powbSynthesisManager = powbSynthesisManager;
     this.powbSynthesisSectionValidator = powbSynthesisSectionValidator;
+    this.phaseManager = phaseManager;
+    this.crpProgramManager = crpProgramManager;
   }
 
   @Override
   public String execute() throws Exception {
+    Phase phase = phaseManager.getPhaseById(phaseID);
     if (validSection) {
-      Phase phase = this.getActualPhase();
+
       switch (PowbSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
         case TOC_ADJUSTMENTS:
           powbSynthesisSectionValidator.validateTocAdjustments(this, phase);
@@ -112,15 +131,111 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
           break;
       }
 
+
     }
+
+    String cycle = "";
+    if (this.isPlanningActive()) {
+      cycle = APConstants.PLANNING;
+    } else {
+      cycle = APConstants.REPORTING;
+    }
+
+    section = new HashMap<String, Object>();
+    section.put("sectionName", sectionName);
+    section.put("missingFields", "");
+
+    List<PowbSynthesis> powbSynthesisList =
+      new ArrayList<>(phase.getPowbSynthesis().stream().filter(powb -> powb.isActive()).collect(Collectors.toList()));
+
+    switch (PowbSynthesisSectionStatusEnum.value(sectionName.toUpperCase())) {
+      case FLAGSHIP_PLANS:
+        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+          if (this.isFlagship(powbSynthesis.getLiaisonInstitution())) {
+            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+              phase.getYear(), sectionName);
+
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+        }
+        break;
+      case CROSS_CUTTING_DIMENSIONS:
+        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+              phase.getYear(), sectionName);
+
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+        }
+        break;
+      case STAFFING:
+        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+              phase.getYear(), sectionName);
+
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+        }
+        break;
+      case FINANCIAL_PLAN:
+        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+          if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+            sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+              phase.getYear(), sectionName);
+
+            if (sectionStatus == null) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+            }
+          }
+        }
+        break;
+      default:
+
+        for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
+            phase.getYear(), sectionName);
+
+          if (sectionStatus == null) {
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+          }
+        }
+
+        break;
+    }
+
 
     return SUCCESS;
   }
-
-  public GlobalUnit getLoggedCrp() {
-    return loggedCrp;
-  }
-
 
   public Map<String, Object> getSection() {
     return section;
@@ -130,43 +245,44 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
     return sectionName;
   }
 
-  public SectionStatus getSectionStatus() {
-    return sectionStatus;
+
+  public boolean isFlagship(LiaisonInstitution liaisonInstitution) {
+    boolean isFP = false;
+    if (liaisonInstitution.getCrpProgram() != null) {
+      CrpProgram crpProgram =
+        crpProgramManager.getCrpProgramById(liaisonInstitution.getCrpProgram().getId().longValue());
+      if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+        isFP = true;
+      }
+    }
+    return isFP;
   }
 
-  public boolean isExistPowbSynthesis() {
-    return existPowbSynthesis;
+
+  public boolean isPMU(LiaisonInstitution liaisonInstitution) {
+    boolean isFP = false;
+    if (liaisonInstitution.getCrpProgram() == null) {
+      isFP = true;
+    }
+    return isFP;
   }
 
-  // Validators
-
-
-  public boolean isValidSection() {
-    return validSection;
-  }
 
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
 
+
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
 
+    phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
     // Validate if the section exists.
     validSection = PowbSynthesisSectionStatusEnum.value(sectionName) != null;
 
   }
-
-  public void setExistPowbSynthesis(boolean existPowbSynthesis) {
-    this.existPowbSynthesis = existPowbSynthesis;
-  }
-
-
-  public void setLoggedCrp(GlobalUnit loggedCrp) {
-    this.loggedCrp = loggedCrp;
-  }
-
 
   public void setSection(Map<String, Object> section) {
     this.section = section;
@@ -176,13 +292,5 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
     this.sectionName = sectionName;
   }
 
-  public void setSectionStatus(SectionStatus sectionStatus) {
-    this.sectionStatus = sectionStatus;
-  }
-
-
-  public void setValidSection(boolean validSection) {
-    this.validSection = validSection;
-  }
 
 }
