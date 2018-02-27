@@ -262,7 +262,7 @@
     <div class="form-group row"> 
       [#-- CRP/Platform --] 
       <div class="col-md-4">
-        [@customForm.select name="${customName}.globalUnit.id" label="" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-8">
