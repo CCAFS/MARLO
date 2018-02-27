@@ -73,7 +73,7 @@
             
             [#if canEdit && editable]
             <div class="text-right">
-              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedTopicStudy"/]</div>
+              <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addPlannedStudyExercise"/]</div>
             </div> 
             [/#if]
           </div>
@@ -110,7 +110,7 @@
     <div class="form-group row"> 
       [#-- Study/Learning exercise --] 
       <div class="col-xs-12">
-        [@customForm.input name="${customName}.exercise" i18nkey="monitoringLearning.plannedStudies.studyLearningExercise" placeholder="" className="" required=true editable=isEditable/]
+        [@customForm.input name="${customName}.exercise" i18nkey="monitoringLearning.plannedStudies.studyLearningExercise" placeholder="" className="limitWords-100" required=true editable=isEditable/]
       </div>
     </div>
     [#-- Comments --] 
@@ -146,8 +146,8 @@
             [#if flagshipExercise.exercise?has_content]${(flagshipExercise.exercise)!''}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
           </td>
           [#-- Comments --]
-          <td class="comments" title="${(flagshipExercise.comments)!''}"> 
-            [#if flagshipExercise.comments?has_content][@utilities.wordCutter string="${(flagshipExercise.comments)!''}" maxPos=100 /][#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
+          <td class="comments"> 
+            [#if flagshipExercise.comments?has_content]${(flagshipExercise.comments)!''}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]
           </td>
         </tr>
       [/#list]

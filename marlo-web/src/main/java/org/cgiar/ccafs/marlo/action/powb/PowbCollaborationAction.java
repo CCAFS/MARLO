@@ -61,6 +61,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -462,6 +463,16 @@ public class PowbCollaborationAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
         powbSynthesis = (PowbSynthesis) autoSaveReader.readFromJson(jReader);
         powbSynthesisID = powbSynthesis.getId();
+        if (powbSynthesis.getPowbCollaborationGlobalUnitsList() != null) {
+          for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbSynthesis
+            .getPowbCollaborationGlobalUnitsList()) {
+            if (powbCollaborationGlobalUnit.getGlobalUnit() != null
+              && powbCollaborationGlobalUnit.getGlobalUnit().getId() != -1) {
+              powbCollaborationGlobalUnit
+                .setGlobalUnit(crpManager.getGlobalUnitById(powbCollaborationGlobalUnit.getGlobalUnit().getId()));
+            }
+          }
+        }
         this.setDraft(true);
         reader.close();
       } else {
@@ -572,8 +583,10 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
     globalUnits = new HashMap<>();
-    for (GlobalUnit globalUnit : crpManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList())) {
+    List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList());
+
+    for (GlobalUnit globalUnit : globalUnitsList) {
       if (!globalUnit.equals(loggedCrp)) {
         if (globalUnit.getAcronym() != null && globalUnit.getAcronym().length() > 2) {
           globalUnits.put(globalUnit.getId(), globalUnit.getAcronym());
@@ -584,7 +597,11 @@ public class PowbCollaborationAction extends BaseAction {
 
 
     }
+    Map<Long, String> sortedMap =
+      globalUnits.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.naturalOrder())).collect(
+        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
+    globalUnits = sortedMap;
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
