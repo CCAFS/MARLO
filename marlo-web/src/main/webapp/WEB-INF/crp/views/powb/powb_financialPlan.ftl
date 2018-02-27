@@ -164,9 +164,15 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th>[@s.text name="financialPlan.tableF.expenditureArea" /]*</th>
-          <th>[@s.text name="financialPlan.tableF.estimatedPercentage"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]**</th>
-          <th>[@s.text name="financialPlan.tableF.comments" /][@customForm.req required=editable && PMU /]</th>
+          <th>[@s.text name="financialPlan.tableF.expenditureArea" /]</th>
+          <th>
+            [@s.text name="financialPlan.tableF.estimatedPercentage"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]**
+            <img title="[@s.text name="financialPlan.tableF.estimatedPercentage.help" /]" src="${baseUrl}/global/images/icon-help2.png" alt="" />
+          </th>
+          <th>
+            [@s.text name="financialPlan.tableF.comments" /][@customForm.req required=editable && PMU /] <br />
+            <small>([@s.text name="financialPlan.tableF.notApplicable" /])</small>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -205,7 +211,7 @@
       </tr>
       </tbody>
     </table>
-    <i>[@s.text name="financialPlan.tableF.expenditureArea.help" /] </i> <br />
+    <i class="hidden">[@s.text name="financialPlan.tableF.expenditureArea.help" /] </i> <br />
     <i>[@s.text name="financialPlan.tableF.estimatedPercentage.help" /] </i>
   </div>
 [/#macro]
