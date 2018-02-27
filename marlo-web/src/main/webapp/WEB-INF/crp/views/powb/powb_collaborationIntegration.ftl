@@ -83,12 +83,10 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             <div class="listProgramCollaborations">
-             [#if powbCollaborationGlobalUnitsList?has_content]
-              [#list powbCollaborationGlobalUnitsList as collaboration]
-                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  /]
+             [#if powbSynthesis.powbCollaborationGlobalUnitsList?has_content]
+              [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
+                [@flagshipCollaborationMacro element=collaboration name="powbSynthesis.powbCollaborationGlobalUnitsList" index=collaboration_index  isEditable=editable/]
               [/#list]
-             [#else]
-              [@flagshipCollaborationMacro element={} name="powbSynthesis.powbCollaborationGlobalUnitsList" index=0  /]
              [/#if]
             </div>
             [#if canEdit && editable]
@@ -131,7 +129,7 @@
 </section>
 
 [#--  Program collaboration Template --]
-[@flagshipCollaborationMacro element={} name="" index=-1 template=true /]
+[@flagshipCollaborationMacro element={} name="powbSynthesis.powbCollaborationGlobalUnitsList" index=-1 template=true /]
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
 
@@ -183,14 +181,14 @@
               <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
               <td>
                 [#if (locElement.fundingSources?has_content)!false]
-                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id},[/#list]
+                 [#list locElement.fundingSources as fundingSource]FS${fundingSource.id}, [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
               </td>
               <td>
                 [#if (locElement.projects?has_content)!false]
-                  [#list locElement.projects as project]P${project.id},[/#list]
+                  [#list locElement.projects as project]P${project.id}, [/#list]
                 [#else]
                   <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
                 [/#if]
@@ -207,29 +205,40 @@
 [#macro flagshipCollaborationMacro element name index template=false isEditable=true]
   [#local customName = "${name}[${index}]" /]
   <div id="flagshipCollaboration-${template?string('template', index)}" class="flagshipCollaboration borderBox form-group" style="position:relative; display:${template?string('none','block')}">
-    
+
     [#-- Index --]
     <div class="leftHead blue sm"><span class="index">${index+1}</span></div>
     [#-- Remove Button --]
-    [#if isEditable]<div class="removeFlagshipCollaboration removeElement sm" title="Remove"></div>[/#if]
+    [#if isEditable]<div class="removeProgramCollaboration removeElement sm" title="Remove"></div>[/#if]
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/> 
     <br />
 
     <div class="form-group row"> 
-      [#-- Type --] 
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.type" label="" i18nkey="expectedStudy.type" listName="types"  required=true  className="" editable=isEditable/]
+      [#-- CRP/Platform --] 
+      <div class="col-md-4">
+        [@customForm.select name="${customName}.globalUnit.id" label="" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
       </div>
-      [#-- Geographic Scope --]
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.scope" label=""  i18nkey="expectedStudy.scope" listName="scopes"  required=true  className="" editable=isEditable/]
+      [#-- Flagship/Module --]
+      <div class="col-md-8">
+        [@customForm.input name="${customName}.flagship" i18nkey="powbSynthesis.programCollaboration.program" required=true className="" editable=isEditable /]
       </div>
     </div>
     
-    [#-- Comments --] 
+    [#-- Collaboration type --]
+    <div class="form-group">
+      <label>[@s.text name="powbSynthesis.programCollaboration.collaborationType" /] [@customForm.req required=editable  /]</label><br />
+      [@customForm.radioFlat id="${customName}-type-1" name="${customName}.collaborationType" label="Contribution to"     value="1" checked=(element.collaborationType == "1")!false editable=isEditable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-type-2" name="${customName}.collaborationType" label="Service needed from" value="2" checked=(element.collaborationType == "2")!false editable=isEditable cssClass="" cssClassLabel=""/]
+      [@customForm.radioFlat id="${customName}-type-3" name="${customName}.collaborationType" label="Both"                value="3" checked=(element.collaborationType == "3")!false editable=isEditable cssClass="" cssClassLabel=""/]
+      
+      [#local collaborationTypeSelected = ((element.collaborationType == "1")!false) || ((element.collaborationType == "2")!false) || ((element.collaborationType == "3")!false)]
+      [#if !editable && !collaborationTypeSelected][@s.text name="form.values.fieldEmpty"/][/#if]
+    </div>
+    
+    [#-- Brief Description --] 
     <div class="form-group"> 
-      [@customForm.textArea name="${customName}.comments" i18nkey="expectedStudy.comments"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
+      [@customForm.textArea name="${customName}.brief" i18nkey="powbSynthesis.programCollaboration.brief"  placeholder="" className="limitWords-100" required=true editable=isEditable /]
     </div>
     
   </div>

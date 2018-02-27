@@ -83,9 +83,7 @@ public class CrpProgramOutcomeIndicatorMySQLDAO extends AbstractMarloDAO<CrpProg
     createQuery.setParameter("crpProgramOutcomeID", crpProgramOutcome.getId());
     Object findSingleResult = super.findSingleResult(CrpProgramOutcomeIndicator.class, createQuery);
     CrpProgramOutcomeIndicator crpProgramOutcomeIndicator = (CrpProgramOutcomeIndicator) findSingleResult;
-    if (crpProgramOutcomeIndicator != null) {
-      crpProgramOutcomeIndicator = super.refreshEntity(crpProgramOutcomeIndicator);
-    }
+
 
     // projectPartner.getProjectPartnerLocations().size();
 

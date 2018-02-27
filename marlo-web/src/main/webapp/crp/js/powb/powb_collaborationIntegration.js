@@ -33,5 +33,12 @@ function updateIndexes() {
   $(".listProgramCollaborations").find(".flagshipCollaboration").each(function(i,element) {
     $(element).setNameIndexes(1, i);
     $(element).find(".index").html(i + 1);
+
+    // Update labels
+    $(element).find('.radio-input').each(function(j,input) {
+      $(input).next().attr('for', "raioLabel-" + i + "-" + j);
+      $(input).attr('id', "raioLabel-" + i + "-" + j);
+    });
+
   });
 }
