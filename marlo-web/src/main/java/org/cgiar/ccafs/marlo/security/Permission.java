@@ -50,6 +50,8 @@ public class Permission {
   public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
   public static final String SYNTHESIS_BY_MOG_BASE_PERMISSION = "crp:{0}:synthesisProgram:{1}";
   public static final String SYNTHESIS_BY_MOG_PERMISSION = "crp:{0}:synthesisProgram:{1}:*";
+  public static final String POWB_SYNTHESIS_CAN_VIEW = "crp:{0}:powbSynthesis:manage:canAcess";
+
   public static final String PROJECT_BUDGET_FLAGSHIP_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByFlagship";
   public static final String POWB_SYNTHESIS_TOC_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:tocAdjustments";
   public static final String POWB_SYNTHESIS_FLAGSHIPPLANS_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:flagshipPlans";
