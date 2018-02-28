@@ -42,6 +42,9 @@
 		<property name="login" type="boolean">
 			<column name="login" not-null="true" />
 		</property>
+		<property name="smoCode" type="string">
+      <column name="smo_code" length="65535" />
+    </property>
 		<set name="centerLeaders" table="center_leaders" inverse="true"
 			lazy="true" fetch="select">
 			<key>

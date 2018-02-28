@@ -50,19 +50,21 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   private boolean login;
 
   private String acronymValid;
+  
+  @Expose
+  private String smoCode;
 
 
   private Set<CenterLeader> centerLeaders = new HashSet<CenterLeader>(0);
-
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
+
   private Set<CenterArea> centerAreas = new HashSet<CenterArea>(0);
 
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
-
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
@@ -88,6 +90,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
+
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
 
@@ -103,6 +106,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
@@ -221,10 +225,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return centerObjectives;
   }
 
+
   public Set<CenterProjectFundingSource> getCenterProjectFundingSources() {
     return centerProjectFundingSources;
   }
-
 
   public String getComposedName() {
     if (this.acronym != null || !this.acronym.trim().equals("")) {
@@ -375,6 +379,11 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return siteIntegrations;
   }
 
+
+  public String getSmoCode() {
+    return smoCode;
+  }
+
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
   }
@@ -429,6 +438,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.centerLeaders = centerLeaders;
   }
 
+
   public void setCenterObjectives(Set<CenterObjective> centerObjectives) {
     this.centerObjectives = centerObjectives;
   }
@@ -441,6 +451,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
@@ -495,6 +506,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.deliverableTypes = deliverableTypes;
   }
 
+
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
@@ -523,10 +535,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.liasonUsers = liasonUsers;
   }
 
-
   public void setLocationCustomElementTypes(List<LocElementType> locationCustomElementTypes) {
     this.locationCustomElementTypes = locationCustomElementTypes;
   }
+
 
   public void setLocationElementTypes(List<LocElementType> locationElementTypes) {
     this.locationElementTypes = locationElementTypes;
@@ -572,13 +584,17 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.programManagmenTeam = programManagmenTeam;
   }
 
-
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
 
+
   public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
     this.siteIntegrations = siteIntegrations;
+  }
+
+  public void setSmoCode(String smoCode) {
+    this.smoCode = smoCode;
   }
 
   public void setTargetUnits(List<TargetUnitSelect> targetUnits) {
