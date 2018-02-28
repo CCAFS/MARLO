@@ -1,5 +1,6 @@
 [#ftl]
 
+<span id="powbSynthesisID" class="hidden">${(powbSynthesis.id)!}</span>
 
 [#if (currentMenuItem.onlyFlagship)!false || (currentMenuItem.onlyPMU)!false]
 <p class="bg-success text-center" style="padding: 18px;">
