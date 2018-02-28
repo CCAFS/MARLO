@@ -765,15 +765,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
               if (!deliverablesLeads.contains(deliverable)) {
                 if (deliverable.getDeliverableInfo().getYear() >= this.getActualPhase().getYear()) {
+                  if (deliverable.isActive()) {
+                    deliverablesLeads.add(deliverable);
+                  }
 
-                  deliverablesLeads.add(deliverable);
                 } else {
                   if (deliverable.getDeliverableInfo().getStatus().intValue() == Integer
                     .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                     if (deliverable.getDeliverableInfo().getNewExpectedYear() != null
                       && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()) {
 
-                      deliverablesLeads.add(deliverable);
+                      if (deliverable.isActive()) {
+                        deliverablesLeads.add(deliverable);
+                      }
                     }
                   }
                 }
