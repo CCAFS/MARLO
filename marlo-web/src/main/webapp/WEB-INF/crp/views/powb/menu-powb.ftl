@@ -7,7 +7,7 @@
     { 'slug': 'expectedProgress',         'name': 'powb.menu.expectedProgress',       'action': 'expectedProgress',       'active': true },
     { 'slug': 'evidenceRelevant',         'name': 'powb.menu.evidenceRelevant',       'action': 'evidenceRelevant',       'active': true },
     { 'slug': 'plansByFlagship',          'name': 'powb.menu.plansByFlagship',        'action': 'plansByFlagship',        'active': true, 'onlyFlagship': !flagship },
-    { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': true, 'onlyPMU': !PMU }
+    { 'slug': 'crossCuttingDimensions',   'name': 'powb.menu.crossCuttingDimensions', 'action': 'crossCuttingDimensions', 'active': true && config.debug, 'onlyPMU': !PMU }
     ]
   },
   { 'title': '2.  Planning for CRP Effectiveness and Efficiency', 'show': true,
