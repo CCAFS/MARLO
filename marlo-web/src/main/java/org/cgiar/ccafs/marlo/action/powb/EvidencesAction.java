@@ -238,10 +238,7 @@ public class EvidencesAction extends BaseAction {
     } else {
       for (PowbEvidencePlannedStudy powbStudy : powbEvidenceDB.getPowbEvidencePlannedStudies().stream()
         .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-        if (!powbSynthesis.getPowbEvidence().getPlannedStudiesValue()
-          .contains(powbStudy.getProjectExpectedStudy().getId().toString())) {
-          powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbStudy.getId());
-        }
+        powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbStudy.getId());
       }
     }
 
