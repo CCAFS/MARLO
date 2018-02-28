@@ -191,18 +191,21 @@
                           [#-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --]
                           
                           <div class="locationForm-container">
-                            <div class="title"></div>
+                            [#-- <div class="title">Adding a new location</div> --]
+                            [#-- <h3 class="title">Adding a new location</h3> --]
                             <hr />
                               <div class="form-group col-md-7">
-                              <label for="locLevelSelect" style="display:block;">Select a location level:</label>
-                              <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
-                                <option value="-1" >Select an option...</option>
-                                [#list locationsLevels as locLevels]
-                                  [#list locLevels.locations as locations]
-                                    <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
+                              <div class="locLevelSelect-container">
+                                <label for="locLevelSelect" style="display:block;">Select a location level:</label>
+                                <select name="" id="locLevelSelect"  class="selectLocationLevel select " >
+                                  <option value="-1" >Select an option...</option>
+                                  [#list locationsLevels as locLevels]
+                                    [#list locLevels.locations as locations]
+                                      <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
+                                    [/#list]
                                   [/#list]
-                                [/#list]
-                              </select>
+                                </select>
+                              </div>
                               [#-- Select location(s) Form --]
                               <div class="selectLocations" style="display:none;">
                                 <label for="">Select location(s)</label>
@@ -213,6 +216,13 @@
                                 <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
                                 <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
                                 <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
+                              </div>
+                              [#-- Button --]
+                              <div style="margin-left:10px; float:right;">
+                                <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">Cancel</span>
+                              </div>
+                              <div>
+                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location</span>
                               </div>
                             </div>
                           </div>

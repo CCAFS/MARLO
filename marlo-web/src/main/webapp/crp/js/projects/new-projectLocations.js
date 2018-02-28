@@ -50,6 +50,25 @@ function attachEvents() {
     }
   });
 
+
+  /** Remove region option from region select */
+  var regionSelect = $("#regionSelect");
+  $(".regionsContent").find(".recommended.locElement").each(function(i,e) {
+    if($(e).find(".recommendedSelected").val() == "true") {
+      var id = $(e).find(".elementID");
+      var scope = $(e).find(".locScope");
+      var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
+      option.prop('disabled', true);
+    }
+  });
+
+  $("#regionList").find(".region").each(function(i,e) {
+    var id = $(e).find("input.rId");
+    var scope = $(e).find("input.regionScope");
+    var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
+    option.prop('disabled', true);
+  });
+
   // Region Select
   $("#regionSelect").on("change", function() {
     var option = $(this).find("option:selected");
@@ -74,9 +93,9 @@ function attachEvents() {
       if(option.val().split("-")[1] == "true") {
         // If is a country change button text
         if(option.val().split("-")[2] === "Country") {
-          $("#addLocationButton").text("Add country(ies)");
+          $("#addLocationButton").text("Add location");
         } else {
-          $("#addLocationButton").text("Drop pin");
+          $("#addLocationButton").text("Add location");
         }
         // LocElements options using ajax
         var select = $("#countriesCmvs");
@@ -350,6 +369,14 @@ function initMap() {
       mapTypeId: 'roadmap',
       styles: style
   });
+  $('<div/>').addClass('centerMarker').appendTo(map.getDiv()).click(function(){
+    var that=$(this);
+    if(!that.data('win')){
+     that.data('win',new google.maps.InfoWindow({content:'this is the center'}));
+     that.data('win').bindTo('position',map,'center');
+    }
+    that.data('win').open(map);
+ });
   var centerControlDiv = document.createElement('div');
   if(editable && $("span.has_otherLoc").text() == "true") {
     var centerControl = new CenterControl(centerControlDiv, map);
