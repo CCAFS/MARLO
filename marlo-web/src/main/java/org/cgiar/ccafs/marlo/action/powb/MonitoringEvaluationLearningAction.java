@@ -137,7 +137,7 @@ public class MonitoringEvaluationLearningAction extends BaseAction {
         .filter(ps -> ps.isActive()).collect(Collectors.toList()));
 
     for (PowbMonitoringEvaluationLearningExercise evaluationLearningExercise : exercisesPrev) {
-      if (!exercises.contains(exercisesPrev)) {
+      if (!exercises.contains(evaluationLearningExercise)) {
         powbMonitoringEvaluationLearningExerciseManager
           .deletePowbMonitoringEvaluationLearningExercise(evaluationLearningExercise.getId());
       }
