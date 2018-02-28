@@ -29,7 +29,7 @@
             <column name="collaboration_type" length="100" />
         </property>
         <property name="brief" type="string">
-            <column name="brief" />
+            <column name="brief"  length="65535" />
         </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
