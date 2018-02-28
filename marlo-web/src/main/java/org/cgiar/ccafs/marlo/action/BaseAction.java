@@ -2677,6 +2677,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         returnValue = true;
         break;
+      case EVIDENCES:
+        if (this.isPowbFlagship(powbSynthesis.getLiaisonInstitution())) {
+          returnValue = true;
+        }
+        break;
       case CROSS_CUTTING_DIMENSIONS:
 
         if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
