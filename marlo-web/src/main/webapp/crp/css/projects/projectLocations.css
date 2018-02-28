@@ -68,15 +68,15 @@
 }
 
 #map {
-    width: 300px;
+    width: 330px;
     height: 250px;
     padding: 0;
     border: 2px solid #aaa;
 }
 
 .map {
-    margin-bottom: 30px;
-    margin-top: 15px;
+    /* margin-bottom: 30px;
+    margin-top: 15px; */
 }
 
 .selectLocationLevel {
@@ -226,6 +226,28 @@ span.allCountriesQuestion {
 
 .allCountriesQuestion span {
     display: inline-block;
+}
+
+.locLevelSelect-container{
+    margin-bottom: 15px;
+}
+
+.centerMarker{
+    position:absolute;
+    /*url of the marker*/
+    background:url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
+    /*center the marker*/
+    top:50%;left:50%;
+
+    z-index:1;
+    /*fix offset when needed*/
+    margin-left:-10px;
+    margin-top:-34px;
+    /*size of the image*/
+    height:34px;
+    width:20px;
+
+    cursor:pointer;
 }
 
 .selectLocations {
