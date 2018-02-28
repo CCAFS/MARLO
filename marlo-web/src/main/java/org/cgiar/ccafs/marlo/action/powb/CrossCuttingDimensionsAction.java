@@ -527,10 +527,9 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     int iCapDevPrincipal = 0;
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
-    int iNa = 0;
 
-    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
-      .filter(p -> p.isActive() && p.getProject() != null
+    for (GlobalUnitProject globalUnitProject : this
+      .getLoggedCrp().getGlobalUnitProjects().stream().filter(p -> p.isActive() && p.getProject() != null
         && p.getProject().isActive() && p.getProject().getProjecInfoPhase(phase) != null && p.getProject()
           .getProjectInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
       .collect(Collectors.toList())) {
@@ -642,7 +641,6 @@ public class CrossCuttingDimensionsAction extends BaseAction {
       double dCapDevPrincipal = (iCapDevPrincipal * 100.0) / iDeliverableCount;
       double dCapDevSignificant = (iCapDevSignificant * 100.0) / iDeliverableCount;
       double dCapDevNa = (iCapDevNa * 100.0) / iDeliverableCount;
-      double dNa = (iNa * 100.0) / iDeliverableCount;
 
 
       // Gender
