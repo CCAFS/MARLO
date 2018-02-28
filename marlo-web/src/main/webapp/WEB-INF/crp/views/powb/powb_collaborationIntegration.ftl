@@ -65,27 +65,22 @@
             [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
-          [#-- Table: Flagships - Contribution to and from Platforms --]
-          [#if PMU]
-          <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableContributionOtherPlatforms.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms item=2 /]
-          </div>
-          [/#if]
           
           [#-- 2.3.3  New Cross-CRP Interactions --] 
           <div class="form-group">
             [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
           </div>
           
-          [#-- Table: Flagships - New Cross-CRP Interactions --]
+          [#-- Table: Flagships - Contribution to and from Platforms & Flagships - New Cross-CRP Interactions--]
           [#if PMU]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCrossCRPInteractions.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms item=3 /]
+            <h4 class="subTitle headTitle">
+              Flagships - [@s.text name="collaborationIntegration.tableContributionOtherPlatforms.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text] & [@s.text name="collaborationIntegration.tableCrossCRPInteractions.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]
+            </h4>
+            [@tableFlagshipsOverallMacro list=crpPrograms item=2 /]
           </div>
           [/#if]
-           
+          
           [#-- Collaborations among Programs and between the Program and Platforms --]
           [#if flagship]
           <div class="form-group">
@@ -102,35 +97,19 @@
               <div class="addProgramCollaboration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addProgramCollaboration"/]</div>
             </div> 
             [/#if]
+            
+            <ul style="display:none">
+              [#list globalUnits as globalUnit]
+                <li id="globalUnit-${globalUnit.id}">${globalUnit.composedName} <span><i>(${globalUnit.globalUnitType.name})</i> </span></li>
+              [/#list]
+            </ul>
           </div>
           [/#if]
           
-          [#-- if PMU]
-            <div class="">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
-                    <th> Collaboration Program </th>
-                    <th> Brief description </th>
-                  </tr>
-                </thead>
-                <tbody>
-                [#list crpPrograms as crpProgram]
-                  [#if crpProgram.synthesis.powbCollaborationGlobalUnitsList??]
-                    [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as collaboration]
-                      <tr>
-                        <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
-                        <td> ${(collaboration.globalUnit.composedName)!collaboration.globalUnit.acronym}</td>
-                        <td> ${(collaboration.brief)!} </td>
-                      </tr>
-                    [/#list]
-                  [/#if]
-                [/#list]
-                </tbody>
-              </table>
-            </div>
-          [/#if--]
+          [#if PMU]
+            [@tableOverallCRPCollaborationsMacro crpPrograms=crpPrograms /]
+          [/#if]
+          
         </div>
         <div class="borderBox">
           [#-- 2.3.4  Expected Efforts on Country Coordination --] 
@@ -143,7 +122,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableExpectedEfforts.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms item=4/]
+            [@tableFlagshipsOverallMacro list=crpPrograms item=3/]
           </div>
           [/#if]
           
@@ -178,7 +157,12 @@
       <thead>
         <tr>
           <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
-          <th> [@s.text name="collaborationIntegration.tableFlagshipsOverall.narrative" /] </th>
+          [#if item ==2 ]
+            <th> [@s.text name="collaborationIntegration.tableFlagshipsOverall.narrative" /] </th>
+            <th> [@s.text name="collaborationIntegration.tableFlagshipsOverall.narrative" /] </th>
+          [#else]
+            <th> [@s.text name="collaborationIntegration.tableFlagshipsOverall.narrative" /] </th>
+          [/#if]
         </tr>
       </thead>
       <tbody>
@@ -186,11 +170,16 @@
           [#list list as li]
             <tr>
               <td><span class="programTag" style="border-color:${(li.color)!'#fff'}" title="${li.composedName}">${li.acronym}</span></td>              
-              [#if item ==1]  <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
-              [#if item ==2]  <td>[#if (li.collaboration.cotributionsPlatafforms?has_content)!false]${li.collaboration.cotributionsPlatafforms?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
-              [#if item ==3]  <td>[#if (li.collaboration.crossCrp?has_content)!false]${li.collaboration.crossCrp?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
-              [#if item ==4]  <td>[#if (li.collaboration.effostornCountry?has_content)!false]${li.collaboration.effostornCountry?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>[/#if]
-            
+              [#if item ==1]  
+                <td>[#if (li.collaboration.keyExternalPartners?has_content)!false]${li.collaboration.keyExternalPartners?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              [/#if]
+              [#if item ==2 ]  
+                <td>[#if (li.collaboration.cotributionsPlatafforms?has_content)!false]${li.collaboration.cotributionsPlatafforms?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+                <td>[#if (li.collaboration.crossCrp?has_content)!false]${li.collaboration.crossCrp?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              [/#if]
+              [#if item ==3]  
+                <td>[#if (li.collaboration.effostornCountry?has_content)!false]${li.collaboration.effostornCountry?replace('\n', '<br>')}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
+              [/#if]
             </tr>
           [/#list]
         [/#if]
@@ -213,7 +202,7 @@
           [#list list as project]
             [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
             <tr>
-              <td> <a href="${pURL}" target="_blank">P${project.id}</a> </td>              
+              <td> <a href="${pURL}" target="_blank" title="${(project.composedName)!}">P${project.id}</a> </td>              
               <td>
                 [#if (project.projectInfo.newPartnershipsPlanned?has_content)!false]
                   ${project.projectInfo.newPartnershipsPlanned?replace('\n', '<br>')}
@@ -315,4 +304,31 @@
     </div>
     
   </div>
+[/#macro]
+
+[#macro tableOverallCRPCollaborationsMacro crpPrograms]
+<div class="">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
+        <th> Collaboration Program </th>
+        <th> Brief description </th>
+      </tr>
+    </thead>
+    <tbody>
+    [#list crpPrograms as crpProgram]
+      [#if crpProgram.synthesis.powbCollaborationGlobalUnitsList??]
+        [#list crpProgram.synthesis.powbCollaborationGlobalUnitsList as collaboration]
+          <tr>
+            <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
+            <td> ${(collaboration.globalUnit.composedName)!collaboration.globalUnit.acronym}</td>
+            <td> ${(collaboration.brief)!} </td>
+          </tr>
+        [/#list]
+      [/#if]
+    [/#list]
+    </tbody>
+  </table>
+</div>
 [/#macro]
