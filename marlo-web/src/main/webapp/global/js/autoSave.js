@@ -168,7 +168,7 @@ function validateThisSection() {
   // Validate POWB Synthesis section
   if(isPOWBSection()) {
     sectionData.liaisonInstitutionID = $('input[name="liaisonInstitutionID"]').val();
-    sectionData.powbSynthesisID = $('input[name="powbSynthesisID"]').val();
+    sectionData.powbSynthesisID = $('input[name="powbSynthesisID"]').val() || $('#powbSynthesisID').text();
     validateService = "/validatePowbSynthesisSection.do";
   }
 
