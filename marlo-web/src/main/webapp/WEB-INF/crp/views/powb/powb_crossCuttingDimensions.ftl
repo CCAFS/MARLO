@@ -86,8 +86,9 @@
         </tr>
       </thead>
       <tbody>
+        [#if tableC??]
           <tr>
-            <td class="row">Gender</td>
+            <td class="row"><strong>Gender</strong></td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderPrincipal?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored?string(",##0.00")}%</span> </td> 
@@ -96,17 +97,22 @@
             </td> 
           </tr>
           <tr>
-            <td class="row">Youth</td>
+            <td class="row"><strong>Youth</strong></td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthPrincipal?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthSignificant?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageYouthNotScored?string(",##0.00")}%</span> </td>            
           </tr>
           <tr>
-            <td class="row">CapDev</td>
+            <td class="row"><strong>CapDev</strong></td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevPrincipal?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevSignificant?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageCapDevNotScored?string(",##0.00")}%</span> </td>            
           </tr>
+        [#else]
+          <tr>
+            <td colspan="4"><i class="text-center">No deliverables found.</i></td>
+          </tr>
+        [/#if]
       </tbody>
     </table>
   </div>
