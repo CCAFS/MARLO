@@ -318,7 +318,17 @@ public class EvidencesAction extends BaseAction {
               .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
             if (studies != null || !studies.isEmpty()) {
               for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
-                flagshipPlannedList.add(powbEvidencePlannedStudy);
+                boolean bStudy = true;
+                for (PowbEvidencePlannedStudy checkStudies : flagshipPlannedList) {
+                  if (checkStudies.getProjectExpectedStudy()
+                    .equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
+                    bStudy = false;
+                    break;
+                  }
+                }
+                if (bStudy) {
+                  flagshipPlannedList.add(powbEvidencePlannedStudy);
+                }
               }
             }
           }
@@ -536,10 +546,15 @@ public class EvidencesAction extends BaseAction {
 
     if (powbSynthesis != null) {
 
+
       PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesisID = powbSynthesisDB.getId();
       liaisonInstitutionID = powbSynthesisDB.getLiaisonInstitution().getId();
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
+
+      if (this.isFlagship()) {
+        this.popUpProject(phase.getId());
+      }
 
       Path path = this.getAutoSaveFilePath();
       // Verify if there is a Draft file
@@ -588,19 +603,35 @@ public class EvidencesAction extends BaseAction {
 
         if (this.isFlagship()) {
           powbSynthesis.getPowbEvidence().setExpectedStudies(new ArrayList<>());
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null
+            && !powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies().isEmpty()) {
             for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
               .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
               powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
+            }
+          } else {
+            if (popUpProjects != null && !popUpProjects.isEmpty()) {
+              for (ProjectExpectedStudy expectedStudy : popUpProjects) {
+                PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+                evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
+                evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
+                evidencePlannedStudyNew.setActive(true);
+                evidencePlannedStudyNew.setActiveSince(new Date());
+                evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
+                evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
+                evidencePlannedStudyNew.setModificationJustification("");
+                evidencePlannedStudyNew =
+                  powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
+
+                powbSynthesis.getPowbEvidence().getExpectedStudies()
+                  .add(evidencePlannedStudyNew.getProjectExpectedStudy());
+              }
             }
           }
         }
       }
     }
 
-    if (this.isFlagship()) {
-      this.popUpProject(phase.getId());
-    }
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -615,7 +646,6 @@ public class EvidencesAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
-
 
     // Setup Geo Scope List
     scopes = new HashMap<>();
