@@ -484,6 +484,7 @@ public class FinancialPlanAction extends BaseAction {
     }
     // Validate draft version
     if (powbSynthesis != null) {
+
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
         this.readJsonAndLoadPowbSynthesis(path);
@@ -507,6 +508,14 @@ public class FinancialPlanAction extends BaseAction {
     powbExpenditureAreas = new ArrayList<>();
     powbExpenditureAreas =
       powbExpenditureAreasManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+
+    if (this.isFlagship()) {
+      PowbSynthesis powbSynthesisDB =
+        powbSynthesisManager.findSynthesis(this.getActualPhase().getId(), liaisonInstitution.getId());
+      powbSynthesisID = powbSynthesisDB.getId();
+    }
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_FINANCIAL_PLAN_BASE_PERMISSION, params));
