@@ -138,7 +138,7 @@
         [#if (area.crpProgram??)!false]
           [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram type="W1W2" popupEnabled=true/]
         [#else]
-          <nobr>US$ ${((element.w3Bilateral)!'0')?number?string(",##0.00")}</nobr>
+          <nobr>US$ ${((element.w1w2)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
       [/#if]
     </td>
