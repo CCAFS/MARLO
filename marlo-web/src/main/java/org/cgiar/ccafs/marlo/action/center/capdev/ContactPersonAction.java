@@ -100,14 +100,16 @@ public class ContactPersonAction extends BaseAction {
 
     this.users = new ArrayList<>();
     int idUser = 0;
-    for (AdUser user : ad_users) {
-      idUser++;
-      Map<String, Object> userMap = new HashMap<>();
-      userMap.put("idUser", idUser);
-      userMap.put("firstName", user.getFirstName());
-      userMap.put("lastName", user.getLastName());
-      userMap.put("email", user.getEmail());
-      this.users.add(userMap);
+    if (ad_users != null) {
+      for (AdUser user : ad_users) {
+        idUser++;
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("idUser", idUser);
+        userMap.put("firstName", user.getFirstName());
+        userMap.put("lastName", user.getLastName());
+        userMap.put("email", user.getEmail());
+        this.users.add(userMap);
+      }
     }
 
 

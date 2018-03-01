@@ -55,6 +55,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -485,6 +486,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
+    milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
     if (projectOutcome != null)
 
@@ -496,6 +498,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
         .collect(Collectors.toList());
+      milestones.sort(Comparator.comparing(CrpMilestone::getYear));
     }
     /*
      * Loading basic List
