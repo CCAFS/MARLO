@@ -61,6 +61,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -171,7 +172,7 @@ public class PowbCollaborationAction extends BaseAction {
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
@@ -424,7 +425,7 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
-  public void loadLocations() {
+  public List<LocElement> loadLocations() {
     List<LocElement> locElements = locElementManager.findAll().stream()
       .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     locElements.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
@@ -432,13 +433,18 @@ public class PowbCollaborationAction extends BaseAction {
       this.loadLocElementsRelations(locElement);
     }
 
-    this.locElements = new ArrayList<>();
+    List<LocElement> locElementsToRet = new ArrayList<>();
 
     for (LocElement locElement : locElements) {
       if (!locElement.getProjects().isEmpty()) {
-        this.locElements.add(locElement);
+        if (locElement.getName().equals("Bangladesh")) {
+          System.out.println("holi");
+          System.out.println(Arrays.asList(locElement.getProjects()));
+        }
+        locElementsToRet.add(locElement);
       }
     }
+    return locElementsToRet;
   }
 
   public void loadLocElementsRelations(LocElement locElement) {
@@ -500,7 +506,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
 
-    List<FundingSourceLocation> locationsFunding = locElement.getLocElement().getFundingSourceLocations()
+    List<FundingSourceLocation> locationsFunding = locElement.getFundingSourceLocations()
       .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
         && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
@@ -725,7 +731,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
     if (this.isPMU()) {
-      this.loadLocations();
+      // this.loadLocations();
       crpPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
