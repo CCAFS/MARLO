@@ -705,7 +705,7 @@ public class PowbCollaborationAction extends BaseAction {
     } else {
       regions = new ArrayList<>();
     }
-
+    globalUnits = new ArrayList<>();
     List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
       .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList());
 
