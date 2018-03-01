@@ -495,7 +495,7 @@ public class PowbCollaborationAction extends BaseAction {
       }
     }
 
-    if (this.isFlagship()) {
+    if (this.isPMU()) {
       siteIntegrations =
         loggedCrp.getCrpsSitesIntegrations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       siteIntegrations.sort((p1, p2) -> p1.getLocElement().getName().compareTo(p2.getLocElement().getName()));
@@ -521,7 +521,6 @@ public class PowbCollaborationAction extends BaseAction {
 
             }
           }
-
         }
 
 
