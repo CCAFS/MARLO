@@ -136,6 +136,11 @@
                   <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
                 </div>
                 
+                [#--  Regional Table --]
+                <div class="form-group">
+                  [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
+                </div>
+                
                 [#assign pmuValue]
                   ${pmuValue}
                   
@@ -158,7 +163,7 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             <div class="viewMoreSyntesis-block">
-              [@tableCountryContributionsMacro /]
+              [@tableCountryContributionsMacro locElements=locElements/]
               <div class="viewMoreSyntesis closed"></div>
             </div>
           </div>
@@ -245,8 +250,7 @@
   </table>
 [/#macro]
 
-[#macro tableCountryContributionsMacro ]
-  [#assign locElements = locElements /]
+[#macro tableCountryContributionsMacro locElements]
   <table class="table table-bordered">
     <thead>
       <tr>
