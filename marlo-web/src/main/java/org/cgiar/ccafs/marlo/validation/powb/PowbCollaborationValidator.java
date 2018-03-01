@@ -86,29 +86,44 @@ public class PowbCollaborationValidator extends BaseValidator {
           action.addMissingField("draft");
         }
       }
+
+
       if (!(this.isValidString(powbSynthesis.getCollaboration().getKeyExternalPartners())
         && this.wordCount(powbSynthesis.getCollaboration().getKeyExternalPartners()) <= 100)) {
         action.addMissingField(action.getText("powbSynthesis.collaboration.keyExternalPartners"));
         action.getInvalidFields().put("input-powbSynthesis.collaboration.keyExternalPartners",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-      if (!(this.isValidString(powbSynthesis.getCollaboration().getCotributionsPlatafforms())
-        && this.wordCount(powbSynthesis.getCollaboration().getCotributionsPlatafforms()) <= 100)) {
-        action.addMissingField(action.getText("powbSynthesis.collaboration.cotributionsPlatafforms"));
-        action.getInvalidFields().put("input-powbSynthesis.collaboration.cotributionsPlatafforms",
-          InvalidFieldsMessages.EMPTYFIELD);
+
+      // Validate only for PMU
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (!(this.isValidString(powbSynthesis.getCollaboration().getCotributionsPlatafforms())
+          && this.wordCount(powbSynthesis.getCollaboration().getCotributionsPlatafforms()) <= 100)) {
+          action.addMissingField(action.getText("powbSynthesis.collaboration.cotributionsPlatafforms"));
+          action.getInvalidFields().put("input-powbSynthesis.collaboration.cotributionsPlatafforms",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
-      if (!(this.isValidString(powbSynthesis.getCollaboration().getEffostornCountry())
-        && this.wordCount(powbSynthesis.getCollaboration().getEffostornCountry()) <= 100)) {
-        action.addMissingField(action.getText("powbSynthesis.collaboration.effostornCountry"));
-        action.getInvalidFields().put("input-powbSynthesis.collaboration.effostornCountry",
-          InvalidFieldsMessages.EMPTYFIELD);
+
+      // Validate only for PMU
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (!(this.isValidString(powbSynthesis.getCollaboration().getCrossCrp())
+          && this.wordCount(powbSynthesis.getCollaboration().getCrossCrp()) <= 100)) {
+          action.addMissingField(action.getText("powbSynthesis.collaboration.crossCrp"));
+          action.getInvalidFields().put("input-powbSynthesis.collaboration.crossCrp", InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
-      if (!(this.isValidString(powbSynthesis.getCollaboration().getCrossCrp())
-        && this.wordCount(powbSynthesis.getCollaboration().getCrossCrp()) <= 100)) {
-        action.addMissingField(action.getText("powbSynthesis.collaboration.crossCrp"));
-        action.getInvalidFields().put("input-powbSynthesis.collaboration.crossCrp", InvalidFieldsMessages.EMPTYFIELD);
+
+      // Validate only for PMU
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (!(this.isValidString(powbSynthesis.getCollaboration().getEffostornCountry())
+          && this.wordCount(powbSynthesis.getCollaboration().getEffostornCountry()) <= 100)) {
+          action.addMissingField(action.getText("powbSynthesis.collaboration.effostornCountry"));
+          action.getInvalidFields().put("input-powbSynthesis.collaboration.effostornCountry",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
       }
+
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
