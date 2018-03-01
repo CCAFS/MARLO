@@ -744,6 +744,14 @@ public class PowbCollaborationAction extends BaseAction {
 
     }
     globalUnits.sort((p1, p2) -> p1.getAcronymValid().compareTo(p2.getAcronymValid()));
+    globalUnits.sort((p1, p2) -> {
+      if (p1.getName().compareTo(p2.getName()) == 0) {
+        return p1.getGlobalUnitType().getId().compareTo(p2.getGlobalUnitType().getId());
+      } else {
+        return p1.getAcronymValid().compareTo(p2.getAcronymValid());
+      }
+    });
+
     // Get the list of liaison institutions Flagships and PMU.
     liaisonInstitutions = loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
