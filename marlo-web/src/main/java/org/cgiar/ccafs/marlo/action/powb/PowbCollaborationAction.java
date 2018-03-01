@@ -279,8 +279,8 @@ public class PowbCollaborationAction extends BaseAction {
       }
       locElement.getProjects().clear();
       locElement.getFundingSourceLocations().clear();
-      locElement.getProjects().addAll(liaisonProjects);
-      locElement.getFundingSources().addAll(liasionsFundings);
+      locElement.getProjects().addAll(liaisonProjects.stream().distinct().collect(Collectors.toList()));
+      locElement.getFundingSources().addAll(liasionsFundings.stream().distinct().collect(Collectors.toList()));
       locElement.getProjects().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
       locElement.getFundingSources().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
