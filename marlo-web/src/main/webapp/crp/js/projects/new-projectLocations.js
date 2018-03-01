@@ -6,7 +6,7 @@ var markers = [];
 var countID;
 var countries = [];
 var layer;
-var arLocations = [];
+var arSelectedLocations = [];
 
 function init() {
 // Init select2
@@ -121,7 +121,6 @@ function attachEvents() {
             });
         $("#inputFormWrapper").slideUp();
         $(".selectLocations").slideDown();
-        console.log(option.val());
 
       } else {
         $(".selectLocations").slideUp();
@@ -160,6 +159,51 @@ function attachEvents() {
 
   $('input.recommendedSelected').on('change', function() {
     $(this).next().val($(this).is(":checked"));
+  });
+
+  // Add location button
+  $("#addLocationButton").on("click", function(e) {
+
+    var $locationLevelSelect = $("#locLevelSelect");
+    var locationId = $locationLevelSelect.val().split("-")[0];
+    var locationIsList = $locationLevelSelect.val().split("-")[1];
+    var locationName = $locationLevelSelect.val().split("-")[2];
+    var $locationSelect = $("#countriesCmvs");
+    // checking if is list
+    if(locationIsList == "true") {
+      // Checking if locations select is empty
+      if($locationSelect.val() != null) {
+        // Checking if the location level exist in the bottom wrapper
+        if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+          addCountryIntoLocLevel(locationId, $locationSelect, locationName);
+        } else {
+          addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
+        }
+      }
+    } else {
+      if($("#inputFormWrapper").find(".name").val().trim() == "") {
+        $("#inputFormWrapper").find(".name").addClass("fieldError");
+      } else {
+        $("#inputFormWrapper").find(".name").removeClass("fieldError");
+        if($("#inputFormWrapper").find(".fieldError").exists()) {
+
+        } else {
+          // Checking if the location level exist in the bottom wrapper
+          if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+            addLocByCoordinates(locationId, $locationSelect, locationName)
+          } else {
+            addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
+          }
+        }
+      }
+
+    }
+
+  });
+
+  // Cancel button
+  $("#cancelButton").on("click", function(e) {
+    console.log('close');
   });
 }
 
@@ -214,7 +258,6 @@ function removeRegion() {
     updateRegionList($list);
   });
   var option = $select.find("option[value='" + value + "-" + scope + "']");
-  console.log(option);
   option.prop('disabled', false);
   $('#regionSelect').select2();
 }
@@ -435,7 +478,6 @@ function mappingCountries() {
         query = query + "'" + c + "',";
       }
     });
-    console.log(query);
     var FT_Options = {
         suppressInfoWindows: true,
         query: {
@@ -505,12 +547,10 @@ function setCountryDefault() {
       },
       success: function(data) {
         if(data.status == 'OK') {
-          console.log(getResultByType(data.results[0], 'country'));
           var country = getResultByType(data.results[0], 'country').short_name;
           var $countrySelect = $("#countriesCmvs");
-          options.push($countrySelect.find("option." + country).val());
-          console.log(options);
-          $countrySelect.val(options);
+          arSelectedLocations.push($countrySelect.find("option." + country).val());
+          $countrySelect.val(arSelectedLocations);
           $countrySelect.select2().trigger("change");
         } else {
           console.log(data.status);
@@ -541,5 +581,116 @@ function getResultByType(results,type) {
 function addLocationFromMap(){
   if($("#locLevelSelect").val().split("-")[2] == "Country") {
     setCountryDefault();
+  }
+}
+
+//Adding location level with locElements
+function addLocLevel(locationName,locationId,locationIsList,$locationSelect,locationIsList) {
+  console.log('loclevel');
+  var $locationItem = $("#locationLevel-template");
+  //$locationItem.find(".locLevelName").html(locationName);
+  $("input.locationLevelId").val(locationId);
+  $("input.locationLevelName").val(locationName);
+  $("input.isList").val(locationIsList);
+
+  console.log(
+      $("input.locationLevelId").val(locationId)
+  );
+
+  $(".selectWrapper").append($locationItem);
+  $locationItem.show("slow");
+  updateIndex();
+  if(locationIsList == "true") {
+    if(locationName == "Country") {
+    } else {
+// $locationItem.find(".allCountriesQuestion").show();
+// $locationItem.find("span.question").html($("span.qCmvSites").text());
+    }
+    addCountryIntoLocLevel(locationId, $locationSelect, locationName);
+  } else {
+    addLocByCoordinates(locationId, $locationSelect, locationName);
+  }
+}
+
+function updateIndex() {
+  $('.selectWrapper ').find('.locationLevel').each(function(i,e) {
+    $(e).setNameIndexes(1, i);
+    $.each($(e).find(".locElement"), function(index,element) {
+      $(element).setNameIndexes(2, index);
+    });
+  });
+  // Update component event
+  $(document).trigger('updateComponent');
+}
+
+//Adding locElement into location level(Country and CSVS)
+function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
+  var locationContent =
+      $(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").parent().find(
+          ".optionSelect-content");
+  $.each($locationSelect.val(), function(i,e) {
+    var $item = $("#location-template").clone(true).removeAttr("id");
+    var locId = e.split("-")[0];
+    var locIso = e.split("-")[1];
+    var locName = e.split("-")[2];
+    // Check if the item doesn't exists into the list
+    if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
+      notify(locName + " already exists into the " + locationContent.parent().parent().find(".locationLevelName").val()
+          + " list")
+    } else {
+      /* GET COORDINATES */
+      var url = baseURL + "/geopositionByElement.do";
+      var data = {
+          "locElementID": locId,
+          phaseID: phaseID
+      };
+      countID++;
+      $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).done(function(m) {
+
+        if(m.geopositions.length != 0) {
+          latitude = m.geopositions[0].latitude;
+          longitude = m.geopositions[0].longitude;
+          $item.find('.geoLatitude').val(latitude);
+          $item.find('.geoLongitude').val(longitude);
+          //addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+          var latLng = new google.maps.LatLng(latitude, longitude);
+          map.setCenter(latLng);
+        }
+      });
+      $item.attr("id", "location-" + (countID));
+      $item.find(".lName").html(locName);
+      $item.find(".locElementName").val(locName);
+      $item.find(".locElementId").val(locId);
+
+      // If is a country
+      if(locationName == "Country") {
+        countries.push(locIso);
+        $item.find(".locElementCountry").val(locIso);
+      }
+      locationContent.append($item);
+      $item.show("slow");
+    }
+  });
+  updateIndex();
+  checkItems(locationContent.parents("#selectsContent"));
+  //infoWindow.close();
+  if(locationName == "Country") {
+    layer.setMap(null);
+    mappingCountries();
+  }
+
+}
+
+function checkItems(block) {
+  var items = $(block).find('.locElement').length;
+  if(items == 0) {
+    $(block).find('p.inf').fadeIn();
+  } else {
+    $(block).find('p.inf').fadeOut();
   }
 }
