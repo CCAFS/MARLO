@@ -129,24 +129,27 @@
               [#list regions as liaisonInstitution]
                 [#assign regionIndex = action.getIndexRegion(liaisonInstitution.id) ]
                 [#assign regionElement = action.getElemnentRegion(liaisonInstitution.id) ]
-                [#-- Efforts Country by region--]
-                <h4 class="sectionSubTitle">${liaisonInstitution.crpProgram.composedName}</h4>
-                <div class="form-group">
-                  [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry " i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
-                  <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
-                </div>
-                
-                [#--  Regional Table --]
-                <div class="form-group">
-                  [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
-                </div>
-                
-                [#assign pmuValue]
-                  ${pmuValue}
+                <div class="simpleBox">
+                  [#-- Efforts Country by region--]
+                  <h4 class="sectionSubTitle">${liaisonInstitution.crpProgram.composedName}</h4>
+                  <div class="form-group">
+                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].expectedEfforts" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="limitWords-100" editable=editable /]
+                    <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
+                  </div>
                   
-                  ${liaisonInstitution.crpProgram.composedName}
-                  ${(regionElement.effostornCountry)!}
-                [/#assign]
+                  [#--  Regional Table --]
+                  <div class="form-group">
+                    [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
+                  </div>
+                  
+                  [#if regionElement.effostornCountry?has_content]
+                    [#assign pmuValue]
+                      ${pmuValue}
+                      ${liaisonInstitution.crpProgram.composedName}
+                      ${(regionElement.effostornCountry)!}
+                    [/#assign]
+                  [/#if]
+                </div>
               [/#list]
             [/#if]
             
@@ -255,38 +258,41 @@
     <thead>
       <tr>
         <th class="col-md-2"> [@s.text name="collaborationIntegration.tableCountryContribution.cgiarCountry" /] </th>
-        <th> [@s.text name="collaborationIntegration.tableCountryContribution.fundingSources" /] </th>
         <th> [@s.text name="collaborationIntegration.tableCountryContribution.projects" /] </th>
+        <th> [@s.text name="collaborationIntegration.tableCountryContribution.fundingSources" /] </th>
       </tr>
     </thead>
     <tbody>
-      [#if locElements??]
+      [#if locElements?has_content]
         [#list locElements as locElement]
           <tr>
             <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>
             <td class="col-md-5">
-              [#if (locElement.fundingSources?has_content)!false]
-                [#list locElement.fundingSources as fundingSource]
-                  [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                  <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>[#if fundingSource_has_next],[/#if]
+              [#if (locElement.projects?has_content)!false]
+                [#list locElement.projects as project]
+                  [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  <a href="${pURL}" target="_blank" title="${(project.composedName)!}">P${project.id}</a>[#if project_has_next],[/#if]
                 [/#list]
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
             </td>
             <td class="col-md-5">
-              [#if (locElement.projects?has_content)!false]
-                [#list locElement.projects as project]
-                  [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                  <a href="${pURL}" target="_blank">P${project.id}</a>[#if project_has_next],[/#if]
+              [#if (locElement.fundingSources?has_content)!false]
+                [#list locElement.fundingSources as fundingSource]
+                  [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  <a href="${fURL}" target="_blanck" title="${(fundingSource.composedName)!}">FS${fundingSource.id}</a>[#if fundingSource_has_next],[/#if]
                 [/#list]
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
             </td>
-            
           </tr>
         [/#list]
+      [#else]
+        <tr>
+          <td colspan="3" class="text-center"><i>No countries found.</i></td>
+        </tr>
       [/#if]
     </tbody>
   </table>
@@ -341,7 +347,8 @@
       <tr>
         <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
         <th> Collaboration Program</th>
-        <th> Type </th>
+        <th> Flagship/Module</th>
+      
         <th> Brief description </th>
       </tr>
     </thead>
@@ -353,10 +360,11 @@
             <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
             <td> 
               <strong>${(collaboration.globalUnit.acronym)!}</strong><br />
+              ${(collaboration.collaborationType)!'<nobr>Not defined</nobr>'} <br />
               <i>${collaboration.globalUnit.globalUnitType.name}</i>
             </td>
-            <td> ${(collaboration.collaborationType)!'<nobr>Not defined</nobr>'} </td>
-            <td> ${(collaboration.brief?replace('\n', '<br>'))!} </td>
+            <td> ${(collaboration.flagship)!'<nobr>Not defined</nobr>'} </td>
+            <td class="col-md-6"> ${(collaboration.brief?replace('\n', '<br>'))!} </td>
           </tr>
         [/#list]
       [/#if]
