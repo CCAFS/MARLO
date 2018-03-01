@@ -121,7 +121,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private Set<PowbCollaborationRegion> powbCollaborationRegions = new HashSet<PowbCollaborationRegion>(0);
 
-  private List<PowbCollaborationGlobalUnit> regions;
+  private List<PowbCollaborationRegion> regions;
 
 
   private String flagshipSummarize;
@@ -325,7 +325,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
     return powbToc;
   }
 
-  public List<PowbCollaborationGlobalUnit> getRegions() {
+  public List<PowbCollaborationRegion> getRegions() {
     return regions;
   }
 
@@ -487,7 +487,7 @@ public class PowbSynthesis implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setRegions(List<PowbCollaborationGlobalUnit> regions) {
+  public void setRegions(List<PowbCollaborationRegion> regions) {
     this.regions = regions;
   }
 

@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationGlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaboration;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationRegion;
 import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -94,6 +96,8 @@ public class PowbCollaborationAction extends BaseAction {
 
   private PowbCollaborationManager powbCollaborationManager;
   private PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager;
+  private PowbCollaborationRegionManager powbCollaborationRegionManager;
+
   private LocElementManager locElementManager;
   private PowbCollaborationValidator validator;
   private List<LocElement> locElements;
@@ -121,7 +125,8 @@ public class PowbCollaborationAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager, CrpProgramManager crpProgramManager,
     PowbCollaborationManager powbCollaborationManager, PowbCollaborationValidator validator,
     GlobalUnitProjectManager globalUnitProjectManager,
-    PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager, LocElementManager locElementManager) {
+    PowbCollaborationGlobalUnitManager powbCollaborationGlobalUnitManager, LocElementManager locElementManager,
+    PowbCollaborationRegionManager powbCollaborationRegionManager) {
     super(config);
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
@@ -134,6 +139,7 @@ public class PowbCollaborationAction extends BaseAction {
     this.validator = validator;
     this.powbCollaborationGlobalUnitManager = powbCollaborationGlobalUnitManager;
     this.locElementManager = locElementManager;
+    this.powbCollaborationRegionManager = powbCollaborationRegionManager;
   }
 
   @Override
@@ -276,6 +282,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
   }
+
 
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
@@ -570,6 +577,15 @@ public class PowbCollaborationAction extends BaseAction {
             }
           }
         }
+        if (powbSynthesis.getRegions() != null) {
+          for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
+            if (powbCollaborationRegion.getLiaisonInstitution() != null
+              && powbCollaborationRegion.getLiaisonInstitution().getId() != -1) {
+              powbCollaborationRegion.setLiaisonInstitution(liaisonInstitutionManager
+                .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
+            }
+          }
+        }
         this.setDraft(true);
         reader.close();
       } else {
@@ -590,6 +606,9 @@ public class PowbCollaborationAction extends BaseAction {
         }
         powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        powbSynthesis.setRegions(
+          powbSynthesis.getPowbCollaborationRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
       }
@@ -666,6 +685,55 @@ public class PowbCollaborationAction extends BaseAction {
         powbSynthesis.getPowbCollaborationGlobalUnitsList().clear();
       }
     }
+  }
+
+  public void regionsNewData() {
+
+    for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
+      PowbCollaborationRegion powbCollaborationRegionNew = null;
+      if (powbCollaborationRegion != null) {
+
+
+        if (powbCollaborationRegion.getLiaisonInstitution() != null
+          && powbCollaborationRegion.getLiaisonInstitution().getId() > 0) {
+          powbCollaborationRegion.setLiaisonInstitution(liaisonInstitutionManager
+            .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
+        } else {
+          powbCollaborationRegion.setLiaisonInstitution(null);
+
+        }
+
+
+        if (powbCollaborationRegion.getId() == null) {
+
+          powbCollaborationRegionNew = new PowbCollaborationRegion();
+          powbCollaborationRegionNew.setActive(true);
+          powbCollaborationRegionNew.setCreatedBy(this.getCurrentUser());
+          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
+          powbCollaborationRegionNew.setModificationJustification("");
+          powbCollaborationRegionNew.setActiveSince(new Date());
+          powbCollaborationRegionNew.setPowbSynthesis(powbSynthesis);
+
+        } else {
+
+          powbCollaborationRegionNew =
+            powbCollaborationRegionManager.getPowbCollaborationRegionById(powbCollaborationRegion.getId());
+          powbCollaborationRegionNew.setModifiedBy(this.getCurrentUser());
+
+
+        }
+        powbCollaborationRegionNew.setLiaisonInstitution(powbCollaborationRegion.getLiaisonInstitution());
+        powbCollaborationRegionNew.setEffostornCountry(powbCollaborationRegion.getEffostornCountry());
+
+
+        powbCollaborationRegionNew =
+          powbCollaborationRegionManager.savePowbCollaborationRegion(powbCollaborationRegionNew);
+
+
+      }
+
+    }
+
   }
 
   @Override
