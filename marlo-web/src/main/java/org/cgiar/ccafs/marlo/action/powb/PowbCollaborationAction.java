@@ -255,12 +255,20 @@ public class PowbCollaborationAction extends BaseAction {
 
       for (Project project : crpProgramCountry.getLocElement().getProjects()) {
         if (projects.contains(project)) {
-          liaisonProjects.add(project);
+          if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+            liaisonProjects.add(project);
+          }
+
+
           List<ProjectBudget> projectBudgets =
             project.getProjectBudgets().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
               && c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
           for (ProjectBudget projectBudget : projectBudgets) {
-            liasionsFundings.add(projectBudget.getFundingSource());
+            projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
+            if (projectBudget.getFundingSource().getFundingSourceInfo() != null) {
+              liasionsFundings.add(projectBudget.getFundingSource());
+            }
+
           }
         }
       }
@@ -431,7 +439,10 @@ public class PowbCollaborationAction extends BaseAction {
           .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
           || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-          project.add(projectLocation.getProject());
+          if (projectLocation.getProject().isActive()) {
+            project.add(projectLocation.getProject());
+          }
+
 
         }
       }
@@ -457,7 +468,9 @@ public class PowbCollaborationAction extends BaseAction {
             .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            project.add(projectLocation.getProject());
+            if (projectLocation.getProject().isActive()) {
+              project.add(projectLocation.getProject());
+            }
 
           }
         }
@@ -484,7 +497,11 @@ public class PowbCollaborationAction extends BaseAction {
 
         || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(FundingStatusEnum.Extended.getStatusId())) {
-        fundingSources.add(fundingSourceLocation.getFundingSource());
+        if (fundingSourceLocation.getFundingSource().getFundingSourceInfo() != null
+          && fundingSourceLocation.getFundingSource().isActive()) {
+          fundingSources.add(fundingSourceLocation.getFundingSource());
+        }
+
 
       }
     }
