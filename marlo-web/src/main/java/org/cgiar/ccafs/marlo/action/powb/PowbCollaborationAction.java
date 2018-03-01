@@ -101,6 +101,7 @@ public class PowbCollaborationAction extends BaseAction {
   private LocElementManager locElementManager;
   private PowbCollaborationValidator validator;
   private List<LocElement> locElements;
+  private List<LiaisonInstitution> regions;
 
   private List<CrpProgram> crpPrograms;
 
@@ -187,6 +188,11 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
+  public PowbCollaborationRegion getElemnentRegion(long regionId) {
+    int index = this.getIndexRegion(regionId);
+    return powbSynthesis.getRegions().get(index);
+  }
+
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
   }
@@ -195,10 +201,30 @@ public class PowbCollaborationAction extends BaseAction {
     return globalUnits;
   }
 
+
+  public int getIndexRegion(long regionId) {
+    if (powbSynthesis.getRegions() == null) {
+      powbSynthesis.setRegions(new ArrayList<>());
+    }
+    int i = 0;
+    for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
+      if (powbCollaborationRegion.getLiaisonInstitution().getId().longValue() == regionId) {
+        return i;
+      }
+
+      i++;
+    }
+
+    PowbCollaborationRegion powbCollaborationRegion = new PowbCollaborationRegion();
+    powbCollaborationRegion.setLiaisonInstitution(liaisonInstitutionManager.getLiaisonInstitutionById(regionId));
+    powbSynthesis.getRegions().add(powbCollaborationRegion);
+    return this.getIndexRegion(regionId);
+  }
+
+
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
-
 
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -208,10 +234,10 @@ public class PowbCollaborationAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public List<LocElement> getLocElements() {
     return locElements;
   }
-
 
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
@@ -220,6 +246,7 @@ public class PowbCollaborationAction extends BaseAction {
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
+
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
@@ -282,7 +309,6 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
   }
-
 
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
@@ -465,6 +491,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
   }
 
+
   @Override
   public void prepare() throws Exception {
     // Get current CRP
@@ -646,8 +673,16 @@ public class PowbCollaborationAction extends BaseAction {
       }
       crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     }
+    if (this.hasSpecificities(APConstants.CRP_HAS_REGIONS)) {
+      regions = liaisonInstitutionManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram() != null
+          && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      regions.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+    } else {
+      regions = new ArrayList<>();
+    }
 
-    globalUnits = new ArrayList<>();
     List<GlobalUnit> globalUnitsList = crpManager.findAll().stream()
       .filter(c -> c.isActive() && c.getGlobalUnitType().getId() != 2).collect(Collectors.toList());
 
@@ -754,8 +789,11 @@ public class PowbCollaborationAction extends BaseAction {
       }
       this.globaUnitsPreviousData(powbSynthesis.getPowbCollaborationGlobalUnitsList());
       this.globalUnitNewData();
+      this.regionsNewData();
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.SYNTHESIS_GLOBAL_UNTIS_RELATION);
+      relationsName.add(APConstants.SYNTHESIS_REGIONS_RELATION);
+
 
       powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
       powbSynthesis.setModifiedBy(this.getCurrentUser());
