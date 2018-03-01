@@ -248,12 +248,13 @@ public class PowbCollaborationAction extends BaseAction {
     List<Project> projects = this.loadProjects(liaisonInstitution.getCrpProgram().getId());
     List<CrpProgramCountry> countries = liaisonInstitution.getCrpProgram().getCrpProgramCountries().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList());
-    for (CrpProgramCountry crpProgramCountry : countries) {
-      this.loadLocElementsRelations(crpProgramCountry.getLocElement());
+    for (LocElement locElement : locElementManager.findAll().stream()
+      .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList())) {
+      this.loadLocElementsRelations(locElement);
       Set<Project> liaisonProjects = new HashSet();
       Set<FundingSource> liasionsFundings = new HashSet();
 
-      for (Project project : crpProgramCountry.getLocElement().getProjects()) {
+      for (Project project : locElement.getProjects()) {
         if (projects.contains(project)) {
           if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
             liaisonProjects.add(project);
@@ -266,16 +267,28 @@ public class PowbCollaborationAction extends BaseAction {
           for (ProjectBudget projectBudget : projectBudgets) {
             projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
             if (projectBudget.getFundingSource().getFundingSourceInfo() != null) {
-              liasionsFundings.add(projectBudget.getFundingSource());
+              if (locElement.getFundingSources().contains(projectBudget.getFundingSource())
+                && !liasionsFundings.contains(projectBudget.getFundingSource())) {
+                liasionsFundings.add(projectBudget.getFundingSource());
+              }
+
             }
 
           }
         }
       }
-      crpProgramCountry.getLocElement().getProjects().clear();
-      crpProgramCountry.getLocElement().getFundingSourceLocations().clear();
-      crpProgramCountry.getLocElement().getProjects().addAll(liaisonProjects);
-      crpProgramCountry.getLocElement().getFundingSources().addAll(liasionsFundings);
+      locElement.getProjects().clear();
+      locElement.getFundingSourceLocations().clear();
+      locElement.getProjects().addAll(liaisonProjects);
+      locElement.getFundingSources().addAll(liasionsFundings);
+      locElement.getProjects().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      locElement.getFundingSources().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+
+      if (!locElement.getProjects().isEmpty()) {
+        locElements.add(locElement);
+      }
+
     }
 
     return locElements;
