@@ -95,13 +95,22 @@ public class PowbCollaborationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      // Validate Only for Flagships
-      if (!this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+      // Validate only for PMU
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
         if (!(this.isValidString(powbSynthesis.getCollaboration().getCotributionsPlatafforms())
           && this.wordCount(powbSynthesis.getCollaboration().getCotributionsPlatafforms()) <= 100)) {
           action.addMissingField(action.getText("powbSynthesis.collaboration.cotributionsPlatafforms"));
           action.getInvalidFields().put("input-powbSynthesis.collaboration.cotributionsPlatafforms",
             InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+      // Validate only for PMU
+      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
+        if (!(this.isValidString(powbSynthesis.getCollaboration().getCrossCrp())
+          && this.wordCount(powbSynthesis.getCollaboration().getCrossCrp()) <= 100)) {
+          action.addMissingField(action.getText("powbSynthesis.collaboration.crossCrp"));
+          action.getInvalidFields().put("input-powbSynthesis.collaboration.crossCrp", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
 
@@ -115,14 +124,6 @@ public class PowbCollaborationValidator extends BaseValidator {
         }
       }
 
-      // Validate only for PMU
-      if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-        if (!(this.isValidString(powbSynthesis.getCollaboration().getCrossCrp())
-          && this.wordCount(powbSynthesis.getCollaboration().getCrossCrp()) <= 100)) {
-          action.addMissingField(action.getText("powbSynthesis.collaboration.crossCrp"));
-          action.getInvalidFields().put("input-powbSynthesis.collaboration.crossCrp", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      }
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
