@@ -322,6 +322,101 @@ public class PowbCollaborationAction extends BaseAction {
 
   }
 
+  public void loadLocations() {
+    List<LocElement> locElements = locElementManager.findAll().stream()
+      .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
+    locElements.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    for (LocElement locElement : locElements) {
+      HashSet<Project> project = new HashSet<>();
+      HashSet<FundingSource> fundingSources = new HashSet<>();
+
+      List<ProjectLocation> locations =
+        locElement.getProjectLocations().stream().filter(c -> c.isActive() && c.getPhase() != null
+          && c.getPhase().equals(this.getActualPhase()) && c.getProject().isActive()).collect(Collectors.toList());
+      locations.sort((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId()));
+      for (ProjectLocation projectLocation : locations) {
+        projectLocation.getProject()
+          .setProjectInfo(projectLocation.getProject().getProjecInfoPhase(this.getActualPhase()));
+        if (globalUnitProjectManager.findByProjectId(projectLocation.getProject().getId()).getGlobalUnit()
+          .equals(loggedCrp)) {
+          if (projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            project.add(projectLocation.getProject());
+
+          }
+        }
+
+      }
+
+
+      List<LocElement> locElementsParent = locElementManager.findAll().stream()
+        .filter(c -> c.getLocElement() != null && c.getLocElement().getId().equals(locElement.getLocElement()))
+        .collect(Collectors.toList());
+
+      for (LocElement locElementParent : locElementsParent) {
+
+        locations = locElementParent.getProjectLocations().stream().filter(c -> c.isActive() && c.getPhase() != null
+          && c.getPhase().equals(this.getActualPhase()) && c.getProject().isActive()).collect(Collectors.toList());
+        locations.sort((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId()));
+        for (ProjectLocation projectLocation : locations) {
+          projectLocation.getProject()
+            .setProjectInfo(projectLocation.getProject().getProjecInfoPhase(this.getActualPhase()));
+          if (globalUnitProjectManager.findByProjectId(projectLocation.getProject().getId()).getGlobalUnit()
+            .equals(loggedCrp)) {
+            if (projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+              project.add(projectLocation.getProject());
+
+            }
+          }
+
+        }
+      }
+
+
+      List<FundingSourceLocation> locationsFunding = locElement.getLocElement().getFundingSourceLocations()
+        .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+          && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+      locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));
+
+      for (FundingSourceLocation fundingSourceLocation : locationsFunding) {
+        fundingSourceLocation.getFundingSource()
+          .setFundingSourceInfo(fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
+        if (fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+          .parseInt(FundingStatusEnum.Ongoing.getStatusId())
+          || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+          || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Informally.getStatusId())
+
+          || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Extended.getStatusId())) {
+          fundingSources.add(fundingSourceLocation.getFundingSource());
+
+        }
+      }
+
+      locElement.setProjects(new ArrayList<>());
+      locElement.setFundingSources(new ArrayList<>());
+      locElement.getProjects().addAll(project);
+      locElement.getFundingSources().addAll(fundingSources);
+
+    }
+
+    this.locElements = new ArrayList<>();
+
+    for (LocElement locElement : locElements) {
+      if (!locElement.getProjects().isEmpty() || !locElement.getFundingSources().isEmpty()) {
+        this.locElements.add(locElement);
+      }
+    }
+  }
+
   public List<Project> loadProjects(long crpProgramID) {
     List<Project> projectsToRet = new ArrayList<>();
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
@@ -501,102 +596,7 @@ public class PowbCollaborationAction extends BaseAction {
     }
 
     if (this.isPMU()) {
-      List<LocElement> locElements = locElementManager.findAll().stream()
-        .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-      locElements.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
-      for (LocElement locElement : locElements) {
-        HashSet<Project> project = new HashSet<>();
-        HashSet<FundingSource> fundingSources = new HashSet<>();
-
-        List<ProjectLocation> locations =
-          locElement.getProjectLocations().stream().filter(c -> c.isActive() && c.getPhase() != null
-            && c.getPhase().equals(this.getActualPhase()) && c.getProject().isActive()).collect(Collectors.toList());
-        locations.sort((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId()));
-        for (ProjectLocation projectLocation : locations) {
-          projectLocation.getProject()
-            .setProjectInfo(projectLocation.getProject().getProjecInfoPhase(this.getActualPhase()));
-          if (globalUnitProjectManager.findByProjectId(projectLocation.getProject().getId()).getGlobalUnit()
-            .equals(loggedCrp)) {
-            if (projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-              project.add(projectLocation.getProject());
-
-            }
-          }
-
-        }
-
-
-        List<LocElement> locElementsParent = locElementManager.findAll().stream()
-          .filter(c -> c.getLocElement().getId().equals(locElement.getLocElement())).collect(Collectors.toList());
-
-        for (LocElement locElementParent : locElementsParent) {
-
-          locations =
-            locElementParent
-              .getProjectLocations().stream().filter(c -> c.isActive() && c.getPhase() != null
-                && c.getPhase().equals(this.getActualPhase()) && c.getProject().isActive())
-              .collect(Collectors.toList());
-          locations.sort((p1, p2) -> p1.getProject().getId().compareTo(p2.getProject().getId()));
-          for (ProjectLocation projectLocation : locations) {
-            projectLocation.getProject()
-              .setProjectInfo(projectLocation.getProject().getProjecInfoPhase(this.getActualPhase()));
-            if (globalUnitProjectManager.findByProjectId(projectLocation.getProject().getId()).getGlobalUnit()
-              .equals(loggedCrp)) {
-              if (projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
-                .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectLocation.getProject().getProjectInfo().getStatus().intValue() == Integer
-                  .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                project.add(projectLocation.getProject());
-
-              }
-            }
-
-          }
-        }
-
-
-        List<FundingSourceLocation> locationsFunding = locElement.getLocElement().getFundingSourceLocations()
-          .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
-            && c.getFundingSource().isActive() && c.getFundingSource().getCrp().equals(loggedCrp))
-          .collect(Collectors.toList());
-        locationsFunding.sort((p1, p2) -> p1.getFundingSource().getId().compareTo(p2.getFundingSource().getId()));
-
-        for (FundingSourceLocation fundingSourceLocation : locationsFunding) {
-          fundingSourceLocation.getFundingSource()
-            .setFundingSourceInfo(fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase()));
-          if (fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
-            .getStatus() == Integer.parseInt(FundingStatusEnum.Ongoing.getStatusId())
-            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
-              .getStatus() == Integer.parseInt(FundingStatusEnum.Pipeline.getStatusId())
-            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
-              .getStatus() == Integer.parseInt(FundingStatusEnum.Informally.getStatusId())
-
-            || fundingSourceLocation.getFundingSource().getFundingSourceInfo(this.getActualPhase())
-              .getStatus() == Integer.parseInt(FundingStatusEnum.Extended.getStatusId())) {
-            fundingSources.add(fundingSourceLocation.getFundingSource());
-
-          }
-        }
-
-        locElement.setProjects(new ArrayList<>());
-        locElement.setFundingSources(new ArrayList<>());
-        locElement.getProjects().addAll(project);
-        locElement.getFundingSources().addAll(fundingSources);
-
-      }
-
-      this.locElements = new ArrayList<>();
-
-      for (LocElement locElement : locElements) {
-        if (!locElement.getProjects().isEmpty() || !locElement.getFundingSources().isEmpty()) {
-          this.locElements.add(locElement);
-        }
-      }
-    }
-    if (this.isPMU()) {
+      this.loadLocations();
       crpPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
