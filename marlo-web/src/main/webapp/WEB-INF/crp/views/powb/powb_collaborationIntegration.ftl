@@ -128,6 +128,22 @@
           </div>
           <br />
           
+          [#if action.hasSpecificities("crp_has_regions")]
+          
+            [#if regions?has_content]
+              [#list regions as liaisonInstitution]
+                [#assign regionIndex = action.getIndexRegion(liaisonInstitution.id) ]
+                [#assign regionElement = action.getElemnentRegion(liaisonInstitution.id) ]
+                [#-- Efforts Country by region--]
+                <div class="form-group">
+                  ${(regionElement.effostornCountry)!}
+                  
+                  [@customForm.textArea  name="powbSynthesis.collaboration.powbCollaborationRegion.effostornCountry " i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+                </div>
+              [/#list]
+            [/#if]
+          [/#if]
+          
           [#-- Table: CGIAR Country Coordination--]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
@@ -220,7 +236,7 @@
 [/#macro]
 
 [#macro tableCountryContributionsMacro ]
-  [#assign locElements = siteIntegrations /]
+  [#assign locElements = locElements /]
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -238,7 +254,7 @@
               [#if (locElement.fundingSources?has_content)!false]
                 [#list locElement.fundingSources as fundingSource]
                   [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                  <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>, 
+                  <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>[#if fundingSource_has_next],[/#if]
                 [/#list]
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
@@ -248,7 +264,7 @@
               [#if (locElement.projects?has_content)!false]
                 [#list locElement.projects as project]
                   [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                  <a href="${pURL}" target="_blank">P${project.id}</a>, 
+                  <a href="${pURL}" target="_blank">P${project.id}</a>[#if project_has_next],[/#if]
                 [/#list]
               [#else]
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
