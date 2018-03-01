@@ -48,12 +48,12 @@ $(document).ready(function() {
 });
 
 /**
- * Get total amount of expenditure area
+ * Get total amount of expenditure area (W1W2)
  * 
  * @returns {number} total
  */
 function getTotalExpenditureArea() {
-  var grandTotal = getGrandTotal();
+  var grandTotal = getTotalByType('w1w2');
   var total = 0;
   $('.percentageInput').each(function(i,e) {
     var percentage = removePercentageFormat($(e).val() || "0");
