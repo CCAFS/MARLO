@@ -616,6 +616,9 @@ public class PowbCollaborationAction extends BaseAction {
 
           }
         }
+        if (crpProgram.getSynthesis() == null) {
+          crpProgram.setSynthesis(new PowbSynthesis());
+        }
         if (crpProgram.getCollaboration() == null) {
           crpProgram.setCollaboration(new PowbCollaboration());
 
