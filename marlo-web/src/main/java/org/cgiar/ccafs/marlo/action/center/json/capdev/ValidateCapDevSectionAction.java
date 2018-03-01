@@ -155,8 +155,11 @@ public class ValidateCapDevSectionAction extends BaseAction {
           sectionStatusService.getSectionStatusByCapdev(capdev.getId(), sectionName, this.getCenterYear());
 
         section = new HashMap<String, Object>();
-        section.put("sectionName", sectionStatus.getSectionName());
-        section.put("missingFields", sectionStatus.getMissingFields());
+        if (sectionStatus != null) {
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        }
+
 
         break;
     }
