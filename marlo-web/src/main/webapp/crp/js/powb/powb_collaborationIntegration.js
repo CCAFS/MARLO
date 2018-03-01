@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var $partnershipsTable = $('table.partnershipsTable');
+  var $partnershipsTable = $('table.partnershipsTable_');
 
   var table = $partnershipsTable.DataTable({
       "bPaginate": true, // This option enable the table pagination
@@ -39,6 +39,9 @@ $(document).ready(function() {
 });
 
 function attachEvents() {
+
+  setViewMore();
+  $('.viewMoreSyntesis').on('click', expandViewMoreSyntesisBlock);
 
   // Add a program collaboration
   $('.addProgramCollaboration').on('click', addProgramCollaboration);
@@ -92,4 +95,41 @@ function formatSelect2Result(item) {
   }
   var $item = $('#globalUnit-' + item.id).clone();
   return $item;
+}
+
+/** viewMoreSyntesis functions * */
+
+function expandViewMoreSyntesisBlock() {
+
+  var blockHeight = $(this).parent().find('table').height() + $(this).height();
+  var defaultHeigth = 400;
+
+  if($(this).hasClass("closed")) {
+    $(this).parent().css({
+      height: blockHeight + 8
+    });
+    $(this).html('View less');
+    $(this).addClass("opened").removeClass("closed");
+  } else if($(this).hasClass("opened")) {
+    $(this).parent().css({
+      height: defaultHeigth
+    });
+    $(this).html('View More');
+    $(this).addClass("closed").removeClass("opened");
+  }
+}
+
+function setViewMore() {
+  var defaultHeigth = 400;
+  $('.viewMoreSyntesis-block').each(function(i,element) {
+    if($(element).height() < defaultHeigth) {
+      $(element).find('.viewMoreSyntesis').remove();
+    } else {
+      $(element).css({
+        "height": defaultHeigth
+      })
+      $(element).find('.viewMoreSyntesis').addClass("closed");
+      $(element).find('.viewMoreSyntesis').html('View More');
+    }
+  });
 }
