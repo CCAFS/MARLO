@@ -289,10 +289,14 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
+  public List<LiaisonInstitution> getRegions() {
+    return regions;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public void globalUnitNewData() {
 
@@ -905,7 +909,6 @@ public class PowbCollaborationAction extends BaseAction {
     this.crpPrograms = crpPrograms;
   }
 
-
   public void setFlagshipExercises(List<PowbMonitoringEvaluationLearningExercise> flagshipExercises) {
     this.flagshipExercises = flagshipExercises;
   }
@@ -914,6 +917,7 @@ public class PowbCollaborationAction extends BaseAction {
   public void setGlobalUnits(List<GlobalUnit> globalUnits) {
     this.globalUnits = globalUnits;
   }
+
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
@@ -939,9 +943,13 @@ public class PowbCollaborationAction extends BaseAction {
     this.powbSynthesis = powbSynthesis;
   }
 
-
   public void setPowbSynthesisID(Long powbSynthesisID) {
     this.powbSynthesisID = powbSynthesisID;
+  }
+
+
+  public void setRegions(List<LiaisonInstitution> regions) {
+    this.regions = regions;
   }
 
 
