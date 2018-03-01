@@ -46,16 +46,23 @@
           
           [#-- Project Partnerships --]
           [#if flagship]
+          <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableFlagshipPartnerships.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <hr />
-            [@tableFlagshipPartnershipsMacro list=(action.loadProjects(liaisonInstitution.crpProgram.id))![]  /]
+            <div class="viewMoreSyntesis-block">
+              [@tableFlagshipPartnershipsMacro list=(action.loadProjects(liaisonInstitution.crpProgram.id))![]  /]
+              <div class="viewMoreSyntesis closed"></div>
+            </div>
+          </div>
           [/#if]
           
           [#-- Table: New Key External Partnerships --]
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableKeyExternal.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
+            <div class="viewMoreSyntesis-block">
+              [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
+              <div class="viewMoreSyntesis closed"></div>
+            </div>
           </div>
           [/#if]
         </div>
@@ -66,13 +73,18 @@
               [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
             </div>
             
-            
             [#-- 2.3.3  New Cross-CRP Interactions --] 
             <div class="form-group">
               [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
             </div>
-  
-            [@tableOverallCRPCollaborationsMacro crpPrograms=crpPrograms /]
+            
+            <div class="form-group">
+              <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              <div class="viewMoreSyntesis-block">
+                [@tableOverallCRPCollaborationsMacro crpPrograms=crpPrograms /]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
+            </div>
           [/#if]
           
           [#-- Collaborations among Programs and between the Program and Platforms --]
@@ -119,7 +131,10 @@
           [#-- Table: CGIAR Country Coordination--]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            [@tableCountryContributionsMacro /]
+            <div class="viewMoreSyntesis-block">
+              [@tableCountryContributionsMacro /]
+              <div class="viewMoreSyntesis closed"></div>
+            </div>
           </div>
         </div>
         [/#if]
@@ -177,79 +192,74 @@
 [/#macro]
 
 [#macro tableFlagshipPartnershipsMacro list ]
-  <div class="">
-    <table class="table table-bordered partnershipsTable">
-      <thead>
-        <tr>
-          <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.project" /] </th>
-          <th> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.narrative" /] </th>
-        </tr>
-      </thead>
-      <tbody>
-        [#if list??]
-          [#list list as project]
-            [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-            <tr>
-              <td> <a href="${pURL}" target="_blank" title="${(project.composedName)!}">P${project.id}</a> </td>              
-              <td>
-                [#if (project.projectInfo.newPartnershipsPlanned?has_content)!false]
-                  ${project.projectInfo.newPartnershipsPlanned?replace('\n', '<br>')}
-                [#else]
-                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-                [/#if]
-              </td>
-            </tr>
-          [/#list]
-        [/#if]
-      </tbody>
-    </table>
-  </div>
+  <table class="table table-bordered partnershipsTable">
+    <thead>
+      <tr>
+        <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.project" /] </th>
+        <th> [@s.text name="collaborationIntegration.tableFlagshipPartnerships.narrative" /] </th>
+      </tr>
+    </thead>
+    <tbody>
+      [#if list??]
+        [#list list as project]
+          [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/partners"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+          <tr>
+            <td> <a href="${pURL}" target="_blank" title="${(project.composedName)!}">P${project.id}</a> </td>              
+            <td>
+              [#if (project.projectInfo.newPartnershipsPlanned?has_content)!false]
+                ${project.projectInfo.newPartnershipsPlanned?replace('\n', '<br>')}
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+            </td>
+          </tr>
+        [/#list]
+      [/#if]
+    </tbody>
+  </table>
 [/#macro]
 
 [#macro tableCountryContributionsMacro ]
-
   [#assign locElements = siteIntegrations /]
-  <div class="">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th class="col-md-2"> [@s.text name="collaborationIntegration.tableCountryContribution.cgiarCountry" /] </th>
-          <th> [@s.text name="collaborationIntegration.tableCountryContribution.fundingSources" /] </th>
-          <th> [@s.text name="collaborationIntegration.tableCountryContribution.projects" /] </th>
-        </tr>
-      </thead>
-      <tbody>
-        [#if locElements??]
-          [#list locElements as locElement]
-            <tr>
-              <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
-              <td class="col-md-5">
-                [#if (locElement.fundingSources?has_content)!false]
-                  [#list locElement.fundingSources as fundingSource]
-                    [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>, 
-                  [/#list]
-                [#else]
-                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-                [/#if]
-              </td>
-              <td class="col-md-5">
-                [#if (locElement.projects?has_content)!false]
-                  [#list locElement.projects as project]
-                    [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                    <a href="${pURL}" target="_blank">P${project.id}</a>,
-                  [/#list]
-                [#else]
-                  <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-                [/#if]
-              </td>
-              
-            </tr>
-          [/#list]
-        [/#if]
-      </tbody>
-    </table>
-  </div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th class="col-md-2"> [@s.text name="collaborationIntegration.tableCountryContribution.cgiarCountry" /] </th>
+        <th> [@s.text name="collaborationIntegration.tableCountryContribution.fundingSources" /] </th>
+        <th> [@s.text name="collaborationIntegration.tableCountryContribution.projects" /] </th>
+      </tr>
+    </thead>
+    <tbody>
+      [#if locElements??]
+        [#list locElements as locElement]
+          <tr>
+            <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
+            <td class="col-md-5">
+              [#if (locElement.fundingSources?has_content)!false]
+                [#list locElement.fundingSources as fundingSource]
+                  [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  <a href="${fURL}" target="_blanck">FS${fundingSource.id}</a>, 
+                [/#list]
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+            </td>
+            <td class="col-md-5">
+              [#if (locElement.projects?has_content)!false]
+                [#list locElement.projects as project]
+                  [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                  <a href="${pURL}" target="_blank">P${project.id}</a>, 
+                [/#list]
+              [#else]
+                <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
+              [/#if]
+            </td>
+            
+          </tr>
+        [/#list]
+      [/#if]
+    </tbody>
+  </table>
 [/#macro]
 
 [#macro flagshipCollaborationMacro element name index template=false isEditable=true]

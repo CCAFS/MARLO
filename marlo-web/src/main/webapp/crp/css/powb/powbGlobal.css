@@ -141,3 +141,39 @@ form .form-group.margin-panel {
 tfoot {
   font-weight: bold;
 }
+
+
+/* View more */
+
+.viewMoreSyntesis-block {
+  overflow: hidden;
+  -webkit-transition: height 1s;
+  -moz-transition: height 1s;
+  transition: height 1s;
+}
+
+.viewMoreSyntesis {
+  color: #6b6b6b;
+  /* border-bottom: 1px solid #dddddd; */
+  position:absolute;
+  bottom: 0;
+  width: 94%;
+  margin: 0 0.5%;
+  cursor: pointer;
+  padding: 23px 0 0px 0;
+  height: 50px;
+  font-weight: 900;
+  text-align: center;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0)), color-stop(50%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#ffffff 70%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+}
+
+.viewMoreSyntesis:hover{
+  color:#999;
+  text-decoration:underline;
+}
