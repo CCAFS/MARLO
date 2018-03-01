@@ -117,6 +117,8 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
       powbSynthesis.setPowbCollaborationGlobalUnitsList(powbSynthesis.getPowbCollaborationGlobalUnits().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList()));
+      powbSynthesis.setRegions(
+        powbSynthesis.getPowbCollaborationRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
       powbCollaborationValidator.validate(action, powbSynthesis, false);
 
