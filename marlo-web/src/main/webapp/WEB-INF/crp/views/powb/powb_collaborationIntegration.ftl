@@ -122,26 +122,36 @@
         </div>
         [#if PMU]
         <div class="borderBox">
-          [#-- 2.3.4  Expected Efforts on Country Coordination --] 
-          <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
-          </div>
-          <br />
           
           [#if action.hasSpecificities("crp_has_regions")]
-          
+            [#assign pmuValue = ""]
             [#if regions?has_content]
               [#list regions as liaisonInstitution]
                 [#assign regionIndex = action.getIndexRegion(liaisonInstitution.id) ]
                 [#assign regionElement = action.getElemnentRegion(liaisonInstitution.id) ]
                 [#-- Efforts Country by region--]
+                <h4 class="sectionSubTitle">${liaisonInstitution.crpProgram.composedName}</h4>
                 <div class="form-group">
-                  ${(regionElement.effostornCountry)!}
-                  
-                  [@customForm.textArea  name="powbSynthesis.collaboration.powbCollaborationRegion.effostornCountry " i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+                  [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry " i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+                  <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
                 </div>
+                
+                [#assign pmuValue]
+                  ${pmuValue}
+                  
+                  ${liaisonInstitution.crpProgram.composedName}
+                  ${(regionElement.effostornCountry)!}
+                [/#assign]
               [/#list]
             [/#if]
+            
+            <p>${(pmuValue?replace('\n', '<br>'))!}</p>
+            <input type="hidden" name="powbSynthesis.collaboration.effostornCountry" value="${(pmuValue)!}"/>
+          [#else]
+            [#-- 2.3.4  Expected Efforts on Country Coordination --] 
+            <div class="form-group">
+              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            </div>
           [/#if]
           
           [#-- Table: CGIAR Country Coordination--]
