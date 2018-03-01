@@ -4030,14 +4030,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
             Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
-            if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-              && !project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
-              if (openA.contains(a)) {
-                if (sectionStatus.getMissingFields().length() > 0) {
-                  return false;
-                }
+
+            if (openA.contains(a)) {
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
               }
             }
+
 
           } else {
             if (sectionStatus.getMissingFields().length() > 0) {
