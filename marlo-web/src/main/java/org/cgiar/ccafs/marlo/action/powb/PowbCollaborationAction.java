@@ -451,10 +451,11 @@ public class PowbCollaborationAction extends BaseAction {
 
 
     List<LocElement> locElementsParent = locElementManager.findAll().stream()
-      .filter(c -> c.getLocElement() != null && c.getLocElement().getId().equals(locElement.getLocElement()))
+      .filter(c -> c.getLocElement() != null && c.getLocElement().getId().equals(locElement.getId()))
       .collect(Collectors.toList());
 
     for (LocElement locElementParent : locElementsParent) {
+
 
       locations = locElementParent.getProjectLocations().stream().filter(c -> c.isActive() && c.getPhase() != null
         && c.getPhase().equals(this.getActualPhase()) && c.getProject().isActive()).collect(Collectors.toList());
