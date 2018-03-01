@@ -320,7 +320,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
     partnerRequestModifications.setPartnerRequest(partnerRequest);
     partnerRequestModifications.setModified(false);
-    partnerRequestManager.savePartnerRequest(partnerRequestModifications);
+    partnerRequestModifications = partnerRequestManager.savePartnerRequest(partnerRequestModifications);
 
     message.append(".</br>");
     message.append("</br>");
