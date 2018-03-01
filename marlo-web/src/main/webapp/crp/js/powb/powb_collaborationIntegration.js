@@ -102,7 +102,7 @@ function formatSelect2Result(item) {
 function expandViewMoreSyntesisBlock() {
 
   var blockHeight = $(this).parent().find('table').height() + $(this).height();
-  var defaultHeigth = 400;
+  var defaultHeigth = 300;
 
   if($(this).hasClass("closed")) {
     $(this).parent().css({
@@ -120,7 +120,7 @@ function expandViewMoreSyntesisBlock() {
 }
 
 function setViewMore() {
-  var defaultHeigth = 400;
+  var defaultHeigth = 300;
   $('.viewMoreSyntesis-block').each(function(i,element) {
     if($(element).height() < defaultHeigth) {
       $(element).find('.viewMoreSyntesis').remove();
