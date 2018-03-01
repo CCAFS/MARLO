@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -249,7 +250,24 @@ public class PowbCollaborationAction extends BaseAction {
       .filter(c -> c.isActive()).collect(Collectors.toList());
     for (CrpProgramCountry crpProgramCountry : countries) {
       this.loadLocElementsRelations(crpProgramCountry.getLocElement());
+      Set<Project> liaisonProjects = new HashSet();
+      Set<FundingSource> liasionsFundings = new HashSet();
 
+      for (Project project : crpProgramCountry.getLocElement().getProjects()) {
+        if (projects.contains(project)) {
+          liaisonProjects.add(project);
+          List<ProjectBudget> projectBudgets =
+            project.getProjectBudgets().stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())
+              && c.getYear() == this.getActualPhase().getYear()).collect(Collectors.toList());
+          for (ProjectBudget projectBudget : projectBudgets) {
+            liasionsFundings.add(projectBudget.getFundingSource());
+          }
+        }
+      }
+      crpProgramCountry.getLocElement().getProjects().clear();
+      crpProgramCountry.getLocElement().getFundingSourceLocations().clear();
+      crpProgramCountry.getLocElement().getProjects().addAll(liaisonProjects);
+      crpProgramCountry.getLocElement().getFundingSources().addAll(liasionsFundings);
     }
 
     return locElements;
