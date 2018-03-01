@@ -208,7 +208,7 @@
 
 [#macro tableCountryContributionsMacro ]
 
-  [#assign locElements = siteIntegrations /]
+  [#assign locElements = locElements /]
   <div class="">
     <table class="table table-bordered">
       <thead>
@@ -222,7 +222,7 @@
         [#if locElements??]
           [#list locElements as locElement]
             <tr>
-              <td> <i class="flag-sm flag-sm-${(locElement.locElement.isoAlpha2?upper_case)!}"></i> ${locElement.locElement.name} </td>              
+              <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>              
               <td class="col-md-5">
                 [#if (locElement.fundingSources?has_content)!false]
                   [#list locElement.fundingSources as fundingSource]

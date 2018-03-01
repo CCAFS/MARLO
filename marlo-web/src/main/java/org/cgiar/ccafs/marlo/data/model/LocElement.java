@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -96,9 +97,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
 
+  private List<Project> projects;
+
+  private List<FundingSource> fundingSources;
+
 
   public LocElement() {
   }
+
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
@@ -168,6 +174,11 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
+
   @Override
   public Long getId() {
     return this.id;
@@ -177,10 +188,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return institutionLocations;
   }
 
-
   public Set<Institution> getInstitutions() {
     return institutions;
   }
+
 
   public String getIsoAlpha2() {
     return isoAlpha2;
@@ -189,6 +200,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public Long getIsoNumeric() {
     return isoNumeric;
   }
+
 
   public Boolean getIsSiteIntegration() {
     return this.isSiteIntegration;
@@ -227,9 +239,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
+  }
+
+  public List<Project> getProjects() {
+    return projects;
   }
 
   @Override
@@ -240,16 +255,15 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -260,14 +274,15 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
   }
 
+
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
   }
-
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
@@ -278,9 +293,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setFundingSources(List<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setInstitutionLocations(Set<InstitutionLocation> institutionLocations) {
     this.institutionLocations = institutionLocations;
@@ -328,6 +348,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
+  }
+
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
   }
 
   @Override
