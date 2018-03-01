@@ -250,19 +250,22 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
         }
-        if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
-          sectionStatus = new SectionStatus();
-          sectionStatus.setMissingFields("");
-          section.put("missingFields", "");
-        } else {
-          if (openA.isEmpty()) {
+
+
+        if (openA.isEmpty()) {
+          if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
             sectionStatus = new SectionStatus();
             sectionStatus.setMissingFields("");
-            section.put("missingFields", "Empty Deliverables");
+            section.put("missingFields", "");
+          } else {
+            if (openA.isEmpty()) {
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("");
+              section.put("missingFields", "Empty Deliverables");
+            }
           }
         }
-
 
         break;
 
