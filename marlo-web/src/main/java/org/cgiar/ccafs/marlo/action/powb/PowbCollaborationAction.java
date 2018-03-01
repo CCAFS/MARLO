@@ -760,6 +760,9 @@ public class PowbCollaborationAction extends BaseAction {
       if (powbSynthesis.getPowbCollaborationGlobalUnitsList() != null) {
         powbSynthesis.getPowbCollaborationGlobalUnitsList().clear();
       }
+      if (powbSynthesis.getRegions() != null) {
+        powbSynthesis.getRegions().clear();
+      }
     }
   }
 
