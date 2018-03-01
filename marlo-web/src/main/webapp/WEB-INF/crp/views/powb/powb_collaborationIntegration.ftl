@@ -166,7 +166,7 @@
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             <div class="viewMoreSyntesis-block">
-              [@tableCountryContributionsMacro locElements=locElements/]
+              [@tableCountryContributionsMacro locElements=action.loadLocations()/]
               <div class="viewMoreSyntesis closed"></div>
             </div>
           </div>
