@@ -410,5 +410,5 @@ tr:nth-child(even) {
 
 .addLocationModal .modal-content{
     padding: 20px;
-    height: 320px;
+    min-height: 320px;
 }

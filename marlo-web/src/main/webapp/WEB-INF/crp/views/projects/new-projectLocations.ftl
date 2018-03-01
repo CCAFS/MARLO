@@ -222,7 +222,7 @@
                                 <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">Cancel</span>
                               </div>
                               <div>
-                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location</span>
+                                <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location(s)</span>
                               </div>
                             </div>
                           </div>
