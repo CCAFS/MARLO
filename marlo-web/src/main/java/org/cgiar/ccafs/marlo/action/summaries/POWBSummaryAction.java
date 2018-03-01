@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
@@ -56,6 +55,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -94,6 +95,16 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private static final long serialVersionUID = 1L;
   private static Logger LOG = LoggerFactory.getLogger(POWBSummaryAction.class);
 
+  public static double round(double value, int places) {
+    if (places < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    BigDecimal bd = new BigDecimal(value);
+    bd = bd.setScale(places, RoundingMode.HALF_UP);
+    return bd.doubleValue();
+  }
+
   // Parameters
   private int year;
   private long startTime;
@@ -106,28 +117,29 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
   private List<PowbEvidencePlannedStudy> flagshipPlannedList;
 
+  // Parameter for tables E and F
+  Double totalw1w2 = 0.0, totalw3Bilateral = 0.0, grandTotal = 0.0;
   // Managers
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
-  private DeliverableManager deliverableManager;
   private PowbExpenditureAreasManager powbExpenditureAreasManager;
-  private PowbSynthesisManager powbSynthesisManager;
 
+  private PowbSynthesisManager powbSynthesisManager;
   // RTF bytes
   private byte[] bytesRTF;
+
   // Streams
   InputStream inputStream;
 
+
   @Inject
   public POWBSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager, DeliverableManager deliverableManager,
+    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
     PowbExpenditureAreasManager powbExpenditureAreasManager, PowbSynthesisManager powbSynthesisManager) {
     super(config, crpManager, phaseManager);
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
-    this.deliverableManager = deliverableManager;
     this.powbExpenditureAreasManager = powbExpenditureAreasManager;
     this.powbSynthesisManager = powbSynthesisManager;
   }
-
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -223,8 +235,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       // method to get all the subreports in the prpt and store in the HashMap
       this.getAllSubreports(hm, masteritemBand);
       this.fillSubreport((SubReport) hm.get("ExpectedKeyResults"), "ExpectedKeyResults");
-      this.fillSubreport((SubReport) hm.get("EffectivenessandEfficiency"), "EffectivenessandEfficiency");
-      this.fillSubreport((SubReport) hm.get("CRPManagement"), "CRPManagement");
       // Table A
       this.fillSubreport((SubReport) hm.get("PlannedMilestones"), "PlannedMilestones");
       this.fillSubreport((SubReport) hm.get("TableAContent"), "TableAContent");
@@ -272,6 +282,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     return SUCCESS;
   }
 
+
   /**
    * @param subReport Subreport to fill
    * @param query Name of the query in Pentaho Report Data Set
@@ -283,12 +294,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     switch (query) {
       case "ExpectedKeyResults":
         model = this.getExpectedKeyResultsTableModel();
-        break;
-      case "EffectivenessandEfficiency":
-        model = this.getEffectivenessandEfficiencyTableModel();
-        break;
-      case "CRPManagement":
-        model = this.getCRPManagementTableModel();
         break;
       // Table A
       case "PlannedMilestones":
@@ -348,7 +353,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     subReport.setDataFactory(cdf);
   }
 
-
   private TypedTableModel getCGIARCollaborationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"tableGDescription"}, new Class[] {String.class}, 0);
 
@@ -361,6 +365,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     return bytesRTF.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/rtf";
@@ -371,31 +376,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     TypedTableModel model = new TypedTableModel(new String[] {"tableCDescription"}, new Class[] {String.class}, 0);
 
     model.addRow(new Object[] {""});
-    return model;
-  }
-
-
-  private TypedTableModel getCRPManagementTableModel() {
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"managementRisksTitleDescription", "CRPManagementGovernanceDescription"},
-        new Class[] {String.class, String.class}, 0);
-    String managementRisksTitleDescription = "&lt;Not Defined&gt;",
-      CRPManagementGovernanceDescription = "&lt;Not Defined&gt;";
-    if (powbSynthesisPMU != null) {
-      // management risk
-      if (powbSynthesisPMU.getPowbManagementRisk() != null) {
-        managementRisksTitleDescription = powbSynthesisPMU.getPowbManagementRisk().getHighlight() != null
-          && !powbSynthesisPMU.getPowbManagementRisk().getHighlight().trim().isEmpty()
-            ? powbSynthesisPMU.getPowbManagementRisk().getHighlight() : "&lt;Not Defined&gt;";
-      }
-      // Governance
-      if (powbSynthesisPMU.getPowbManagementGovernance() != null) {
-        CRPManagementGovernanceDescription = powbSynthesisPMU.getPowbManagementGovernance().getDescription() != null
-          && !powbSynthesisPMU.getPowbManagementGovernance().getDescription().trim().isEmpty()
-            ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "&lt;Not Defined&gt;";
-      }
-    }
-    model.addRow(new Object[] {managementRisksTitleDescription, CRPManagementGovernanceDescription});
     return model;
   }
 
@@ -416,78 +396,18 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
 
-  private TypedTableModel getEffectivenessandEfficiencyTableModel() {
-    TypedTableModel model = new TypedTableModel(
-      new String[] {"staffingDescription", "financialPlanDescription", "newKeyExternalPartnershipsDescription",
-        "newContributionPlatformsDescription", "newCrossCRPInteractionsDescription",
-        "expectedEffortsCountryCoordinationDescription", "monitoringEvaluationLearningDescription"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class},
-      0);
-    String staffingDescription = "&lt;Not Defined&gt;", financialPlanDescription = "&lt;Not Defined&gt;",
-      newKeyExternalPartnershipsDescription = "&lt;Not Defined&gt;",
-      newContributionPlatformsDescription = "&lt;Not Defined&gt;",
-      newCrossCRPInteractionsDescription = "&lt;Not Defined&gt;",
-      expectedEffortsCountryCoordinationDescription = "&lt;Not Defined&gt;",
-      monitoringEvaluationLearningDescription = "&lt;Not Defined&gt;";
-
-    if (powbSynthesisPMU != null) {
-      // TOC
-      if (powbSynthesisPMU.getCrpStaffing() != null) {
-        staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
-          && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
-            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "&lt;Not Defined&gt;";
-      }
-      // Financial Plan
-      if (powbSynthesisPMU.getFinancialPlan() != null) {
-        financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
-          && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
-            ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "&lt;Not Defined&gt;";
-      }
-
-      // Collaboration and integration
-
-      if (powbSynthesisPMU.getCollaboration() != null) {
-        newKeyExternalPartnershipsDescription = powbSynthesisPMU.getCollaboration().getKeyExternalPartners() != null
-          && !powbSynthesisPMU.getCollaboration().getKeyExternalPartners().trim().isEmpty()
-            ? powbSynthesisPMU.getCollaboration().getKeyExternalPartners() : "&lt;Not Defined&gt;";
-
-        newContributionPlatformsDescription = powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() != null
-          && !powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms().trim().isEmpty()
-            ? powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() : "&lt;Not Defined&gt;";
-
-        newCrossCRPInteractionsDescription = powbSynthesisPMU.getCollaboration().getCrossCrp() != null
-          && !powbSynthesisPMU.getCollaboration().getCrossCrp().trim().isEmpty()
-            ? powbSynthesisPMU.getCollaboration().getCrossCrp() : "&lt;Not Defined&gt;";
-
-        expectedEffortsCountryCoordinationDescription =
-          powbSynthesisPMU.getCollaboration().getEffostornCountry() != null
-            && !powbSynthesisPMU.getCollaboration().getEffostornCountry().trim().isEmpty()
-              ? powbSynthesisPMU.getCollaboration().getEffostornCountry() : "&lt;Not Defined&gt;";
-      }
-
-      // Monitoring, Evaluation, and Learning
-      if (powbSynthesisPMU.getPowbMonitoringEvaluationLearning() != null) {
-        monitoringEvaluationLearningDescription =
-          powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() != null
-            && !powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight().trim().isEmpty()
-              ? powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() : "&lt;Not Defined&gt;";
-      }
-    }
-
-    model.addRow(new Object[] {staffingDescription, financialPlanDescription, newKeyExternalPartnershipsDescription,
-      newContributionPlatformsDescription, newCrossCRPInteractionsDescription,
-      expectedEffortsCountryCoordinationDescription, monitoringEvaluationLearningDescription});
-    return model;
-  }
-
-
   private TypedTableModel getExpectedKeyResultsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"unitName", "leadCenter", "participantingCenters", "adjustmentsDescription",
         "expectedCrpDescription", "evidenceDescription", "plansCRPFlagshipDescription", "crossCuttingGenderDescription",
-        "crossCuttingOpenDataDescription"},
+        "crossCuttingOpenDataDescription", "staffingDescription", "financialPlanDescription",
+        "newKeyExternalPartnershipsDescription", "newContributionPlatformsDescription",
+        "newCrossCRPInteractionsDescription", "expectedEffortsCountryCoordinationDescription",
+        "monitoringEvaluationLearningDescription", "managementRisksTitleDescription",
+        "CRPManagementGovernanceDescription"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class},
       0);
     String unitName = "&lt;Not Defined&gt;", leadCenter = " ", participantingCenters = "",
       adjustmentsDescription = "&lt;Not Defined&gt;", expectedCrpDescription = "&lt;Not Defined&gt;",
@@ -581,9 +501,80 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       plansCRPFlagshipDescription = "&lt;Not Defined&gt;";
     }
 
+    // Effectiveness
+    String staffingDescription = "&lt;Not Defined&gt;", financialPlanDescription = "&lt;Not Defined&gt;",
+      newKeyExternalPartnershipsDescription = "&lt;Not Defined&gt;",
+      newContributionPlatformsDescription = "&lt;Not Defined&gt;",
+      newCrossCRPInteractionsDescription = "&lt;Not Defined&gt;",
+      expectedEffortsCountryCoordinationDescription = "&lt;Not Defined&gt;",
+      monitoringEvaluationLearningDescription = "&lt;Not Defined&gt;";
+
+    if (powbSynthesisPMU != null) {
+      // TOC
+      if (powbSynthesisPMU.getCrpStaffing() != null) {
+        staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
+          && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
+            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "&lt;Not Defined&gt;";
+      }
+      // Financial Plan
+      if (powbSynthesisPMU.getFinancialPlan() != null) {
+        financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
+          && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
+            ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "&lt;Not Defined&gt;";
+      }
+
+      // Collaboration and integration
+
+      if (powbSynthesisPMU.getCollaboration() != null) {
+        newKeyExternalPartnershipsDescription = powbSynthesisPMU.getCollaboration().getKeyExternalPartners() != null
+          && !powbSynthesisPMU.getCollaboration().getKeyExternalPartners().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getKeyExternalPartners() : "&lt;Not Defined&gt;";
+
+        newContributionPlatformsDescription = powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() != null
+          && !powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() : "&lt;Not Defined&gt;";
+
+        newCrossCRPInteractionsDescription = powbSynthesisPMU.getCollaboration().getCrossCrp() != null
+          && !powbSynthesisPMU.getCollaboration().getCrossCrp().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCrossCrp() : "&lt;Not Defined&gt;";
+
+        expectedEffortsCountryCoordinationDescription =
+          powbSynthesisPMU.getCollaboration().getEffostornCountry() != null
+            && !powbSynthesisPMU.getCollaboration().getEffostornCountry().trim().isEmpty()
+              ? powbSynthesisPMU.getCollaboration().getEffostornCountry() : "&lt;Not Defined&gt;";
+      }
+
+      // Monitoring, Evaluation, and Learning
+      if (powbSynthesisPMU.getPowbMonitoringEvaluationLearning() != null) {
+        monitoringEvaluationLearningDescription =
+          powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() != null
+            && !powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight().trim().isEmpty()
+              ? powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() : "&lt;Not Defined&gt;";
+      }
+    }
+    // Crp Management
+    String managementRisksTitleDescription = "&lt;Not Defined&gt;",
+      CRPManagementGovernanceDescription = "&lt;Not Defined&gt;";
+    if (powbSynthesisPMU != null) {
+      // management risk
+      if (powbSynthesisPMU.getPowbManagementRisk() != null) {
+        managementRisksTitleDescription = powbSynthesisPMU.getPowbManagementRisk().getHighlight() != null
+          && !powbSynthesisPMU.getPowbManagementRisk().getHighlight().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementRisk().getHighlight() : "&lt;Not Defined&gt;";
+      }
+      // Governance
+      if (powbSynthesisPMU.getPowbManagementGovernance() != null) {
+        CRPManagementGovernanceDescription = powbSynthesisPMU.getPowbManagementGovernance().getDescription() != null
+          && !powbSynthesisPMU.getPowbManagementGovernance().getDescription().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "&lt;Not Defined&gt;";
+      }
+    }
     model.addRow(new Object[] {unitName, leadCenter, participantingCenters, adjustmentsDescription,
       expectedCrpDescription, evidenceDescription, plansCRPFlagshipDescription, crossCuttingGenderDescription,
-      crossCuttingOpenDataDescription});
+      crossCuttingOpenDataDescription, staffingDescription, financialPlanDescription,
+      newKeyExternalPartnershipsDescription, newContributionPlatformsDescription, newCrossCRPInteractionsDescription,
+      expectedEffortsCountryCoordinationDescription, monitoringEvaluationLearningDescription,
+      managementRisksTitleDescription, CRPManagementGovernanceDescription});
     return model;
   }
 
@@ -625,7 +616,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         && !powbSynthesis.getLiaisonInstitution().getAcronym().isEmpty()
           ? powbSynthesis.getLiaisonInstitution().getAcronym() : powbSynthesis.getLiaisonInstitution().getName();
       if (plansCRPFlagshipDescription.isEmpty()) {
-        plansCRPFlagshipDescription = "• " + liaisonName + ": ";
+        plansCRPFlagshipDescription = "<br> • " + liaisonName + ": ";
       } else {
         plansCRPFlagshipDescription += "<br> • " + liaisonName + ": ";
       }
@@ -658,7 +649,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       return new ArrayList<>();
     }
   }
-
 
   public void getfpExercises(List<LiaisonInstitution> lInstitutions, long phaseID) {
     flagshipExercises = new ArrayList<>();
@@ -702,6 +692,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     }
   }
 
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -715,6 +706,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     TypedTableModel model =
       new TypedTableModel(new String[] {"expenditureArea", "estimatedPercentajeFS", "commentsSpace"},
         new Class[] {String.class, Double.class, String.class}, 0);
+    Double totalEstimatedPercentajeFS = 0.0;
     List<PowbFinancialExpenditure> powbFinancialExpenditureList =
       powbSynthesisPMU.getPowbFinancialExpenditures().stream().filter(p -> p.isActive()).collect(Collectors.toList());
     // Expenditure areas
@@ -736,13 +728,17 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
               powbFinancialExpenditure.getComments() == null || powbFinancialExpenditure.getComments().trim().isEmpty()
                 ? " " : powbFinancialExpenditure.getComments();
           }
-          model.addRow(new Object[] {expenditureArea, estimatedPercentajeFS, commentsSpace});
+          totalEstimatedPercentajeFS += estimatedPercentajeFS;
+          model.addRow(new Object[] {expenditureArea, estimatedPercentajeFS / 100, commentsSpace});
         }
       }
     }
+    if (model.getRowCount() > 0) {
+      model
+        .addRow(new Object[] {"Total Funding (Amount)", round((totalw1w2 * totalEstimatedPercentajeFS) / 100, 2), " "});
+    }
     return model;
   }
-
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model
@@ -751,7 +747,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     model.addRow(new Object[] {this.getLoggedCrp().getAcronym(), this.getSelectedYear()});
     return model;
   }
-
 
   public List<PowbExpenditureAreas> getPlannedBudgetAreas() {
     List<PowbExpenditureAreas> plannedBudgetAreasList = powbExpenditureAreasManager.findAll().stream()
@@ -883,8 +878,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
             ? milestoneProgress.getMeans() : " ";
 
-          model
-            .addRow(new Object[] {FP, subIDO, outcomes, milestone, w1w2, w3Bilateral, assessment, meansVerifications});
+          model.addRow(new Object[] {FP, subIDO, outcomes, milestone, round(w1w2, 2), round(w3Bilateral, 2), assessment,
+            meansVerifications});
           milestone_index++;
         }
         outcome_index++;
@@ -985,6 +980,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getTableEContentTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"category", "w1w2", "w3Bilateral", "total", "comments"},
       new Class[] {String.class, Double.class, Double.class, Double.class, String.class}, 0);
+
     List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
       powbSynthesisPMU.getPowbFinancialPlannedBudget().stream().filter(p -> p.isActive()).collect(Collectors.toList());
     // Flagships
@@ -1009,7 +1005,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
                 : powbFinancialPlannedBudget.getComments();
           }
         }
-        model.addRow(new Object[] {category, w1w2, w3Bilateral, total, comments});
+        totalw1w2 += w1w2;
+        totalw3Bilateral += w3Bilateral;
+        grandTotal += total;
+        model.addRow(new Object[] {category, round(w1w2, 2), round(w3Bilateral, 2), round(total, 2), comments});
       }
     }
     // Expenditure areas
@@ -1035,11 +1034,17 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
               || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
                 : powbFinancialPlannedBudget.getComments();
           }
-          model.addRow(new Object[] {category, w1w2, w3Bilateral, total, comments});
+          totalw1w2 += w1w2;
+          totalw3Bilateral += w3Bilateral;
+          grandTotal += total;
+          model.addRow(new Object[] {category, round(w1w2, 2), round(w3Bilateral, 2), round(total, 2), comments});
         }
       }
     }
-
+    if (model.getRowCount() > 0) {
+      model
+        .addRow(new Object[] {"CRP Total", round(totalw1w2, 2), round(totalw3Bilateral, 2), round(grandTotal, 2), " "});
+    }
     return model;
   }
 
@@ -1094,8 +1099,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
           for (PowbMonitoringEvaluationLearningExercise powbMonitoringEvaluationLearningExercise : PowbMonitoringEvaluationLearningFlagshipExercise) {
             plannedStudiesLearning = powbMonitoringEvaluationLearningExercise.getExercise() == null
-              || powbMonitoringEvaluationLearningExercise.getExercise().trim().isEmpty() ? flagship.getAcronym()
-                : flagship.getAcronym() + ": " + powbMonitoringEvaluationLearningExercise.getExercise();
+              || powbMonitoringEvaluationLearningExercise.getExercise().trim().isEmpty() ? " "
+                : powbMonitoringEvaluationLearningExercise.getExercise();
             comments = powbMonitoringEvaluationLearningExercise.getComments() == null
               || powbMonitoringEvaluationLearningExercise.getComments().trim().isEmpty() ? " "
                 : powbMonitoringEvaluationLearningExercise.getComments();
