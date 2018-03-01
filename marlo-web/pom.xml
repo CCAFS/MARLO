@@ -333,11 +333,6 @@
       <artifactId>catalina</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Quartz framework -->
-    <dependency>
-      <groupId>org.quartz-scheduler</groupId>
-      <artifactId>quartz</artifactId>
-    </dependency>
     <!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
     <dependency>
       <groupId>net.gpedro.integrations.slack</groupId>
