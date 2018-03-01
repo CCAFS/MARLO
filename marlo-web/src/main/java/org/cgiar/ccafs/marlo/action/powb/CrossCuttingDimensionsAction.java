@@ -139,7 +139,7 @@ public class CrossCuttingDimensionsAction extends BaseAction {
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
-      .filter(c -> c.getCrpProgram() != null
+      .filter(c -> c.getCrpProgram() != null && c.isActive()
         && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
     liaisonInstitutions.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
@@ -535,8 +535,8 @@ public class CrossCuttingDimensionsAction extends BaseAction {
     int iCapDevSignificant = 0;
     int iCapDevNa = 0;
 
-    for (GlobalUnitProject globalUnitProject : this
-      .getLoggedCrp().getGlobalUnitProjects().stream().filter(p -> p.isActive() && p.getProject() != null
+    for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
+      .filter(p -> p.isActive() && p.getProject() != null
         && p.getProject().isActive() && p.getProject().getProjecInfoPhase(phase) != null && p.getProject()
           .getProjectInfo().getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
       .collect(Collectors.toList())) {
