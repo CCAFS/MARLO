@@ -31,7 +31,8 @@ $(document).ready(function() {
 
   // Add Select2
   $('form select').select2({
-    width: '100%'
+      width: '100%',
+      templateResult: formatSelect2Result
   });
 
   attachEvents();
@@ -54,7 +55,8 @@ function addProgramCollaboration() {
 
   // Add select
   $item.find('select').select2({
-    width: '100%'
+      width: '100%',
+      templateResult: formatSelect2Result
   });
 
   $item.show('slow');
@@ -81,4 +83,13 @@ function updateIndexes() {
     });
 
   });
+}
+
+function formatSelect2Result(item) {
+  console.log(item);
+  if(item.loading) {
+    return item.text;
+  }
+  var $item = $('#globalUnit-' + item.id).clone();
+  return $item;
 }
