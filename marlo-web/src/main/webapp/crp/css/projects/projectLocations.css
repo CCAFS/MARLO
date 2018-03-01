@@ -235,17 +235,18 @@ span.allCountriesQuestion {
 .centerMarker{
     position:absolute;
     /*url of the marker*/
-    background:url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
+    background:url('../../../global/images/red-plus.png') no-repeat;
+    /* background:url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat; */
     /*center the marker*/
     top:50%;left:50%;
 
     z-index:1;
     /*fix offset when needed*/
-    margin-left:-10px;
-    margin-top:-34px;
+    margin-left:-13px;
+    margin-top:-26px;
     /*size of the image*/
-    height:34px;
-    width:20px;
+    height:26px;
+    width:26px;
 
     cursor:pointer;
 }

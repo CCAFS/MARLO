@@ -6,6 +6,7 @@ var markers = [];
 var countID;
 var countries = [];
 var layer;
+var arLocations = [];
 
 function init() {
 // Init select2
@@ -370,12 +371,13 @@ function initMap() {
       styles: style
   });
   $('<div/>').addClass('centerMarker').appendTo(map.getDiv()).click(function(){
-    var that=$(this);
+    addLocationFromMap();
+    /*var that=$(this);
     if(!that.data('win')){
      that.data('win',new google.maps.InfoWindow({content:'this is the center'}));
      that.data('win').bindTo('position',map,'center');
     }
-    that.data('win').open(map);
+    that.data('win').open(map);*/
  });
   var centerControlDiv = document.createElement('div');
   if(editable && $("span.has_otherLoc").text() == "true") {
@@ -489,4 +491,55 @@ function removeLocationItem() {
     countries.splice(index, 1);
   }
   mappingCountries();
+}
+
+//Set default country to countries select
+function setCountryDefault() {
+
+// Ajax for country name
+  $.ajax({
+      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+      'data': {
+          key: GOOGLE_API_KEY,
+          latlng: (map.getCenter().lat() + "," + map.getCenter().lng())
+      },
+      success: function(data) {
+        if(data.status == 'OK') {
+          console.log(getResultByType(data.results[0], 'country'));
+          var country = getResultByType(data.results[0], 'country').short_name;
+          var $countrySelect = $("#countriesCmvs");
+          options.push($countrySelect.find("option." + country).val());
+          console.log(options);
+          $countrySelect.val(options);
+          $countrySelect.select2().trigger("change");
+        } else {
+          console.log(data.status);
+        }
+      },
+  });
+}
+
+//Get short and long country name
+function getResultByType(results,type) {
+  if(results) {
+    for(var i = 0; i < results.address_components.length; i++) {
+      var types = results.address_components[i].types;
+      for(var typeIdx = 0; typeIdx < types.length; typeIdx++) {
+        if(types[typeIdx] == type) {
+          return {
+              short_name: results.address_components[i].short_name,
+              long_name: results.address_components[i].long_name
+          };
+        }
+      }
+    }
+  } else {
+    return undefined;
+  }
+}
+
+function addLocationFromMap(){
+  if($("#locLevelSelect").val().split("-")[2] == "Country") {
+    setCountryDefault();
+  }
 }
