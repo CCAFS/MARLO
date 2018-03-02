@@ -442,8 +442,12 @@ public class ProjectDescriptionAction extends BaseAction {
       // We load the differences of this version with the previous version
 
       this.setDifferences(new ArrayList<>());
-      this.getDifferences().addAll(historyComparator.getDifferencesList(
-        history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "project.projectInfo", "", 1));
+      try {
+        this.getDifferences().addAll(historyComparator.getDifferencesList(
+          history.getProjecInfoPhase(this.getActualPhase()), transaction, specialList, "project.projectInfo", "", 1));
+      } catch (Exception e) {
+
+      }
 
       if (history != null) {
         project = history;
