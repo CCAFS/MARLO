@@ -66,6 +66,7 @@ public class Permission {
   public static final String POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION =
     "crp:{0}:powbSynthesis:{1}:collaboration:canEdit";
 
+
   public static final String POWB_SYNTHESIS_CRPSTAFFING_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:crpStaffing";
   public static final String POWB_SYNTHESIS_FINANCIAL_PLAN_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:financialPlan";
   public static final String POWB_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION =
