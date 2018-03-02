@@ -19,13 +19,25 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.Band;
@@ -37,6 +49,11 @@ import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract class for summaries
+ * 
+ * @author AVALENCIA
+ */
 public class BaseSummariesAction extends BaseAction {
 
 
@@ -58,6 +75,78 @@ public class BaseSummariesAction extends BaseAction {
     super(config);
     this.crpManager = crpManager;
     this.phaseManager = phaseManager;
+  }
+
+  /**
+   * Method to return a set of FS filtered by active with status On-Going/Extended/Pipeline/informally into the
+   * selectedYear()
+   * 
+   * @return set of active funding sources
+   */
+  protected Set<FundingSource> getActiveFundingSourcesOnPhase() {
+    Set<FundingSource> activeFundingSources = new HashSet<>();
+    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream()
+      .filter(fs -> fs.isActive() && fs.getFundingSourceInfo(this.getSelectedPhase()) != null
+        && fs.getFundingSourceInfo().isActive() && fs.getFundingSourceInfo().getEndDate() != null
+        && fs.getFundingSourceInfo().getStartDate() != null)
+      .collect(Collectors.toList())) {
+      Date endDate = fundingSource.getFundingSourceInfo().getEndDate();
+      Date startDate = fundingSource.getFundingSourceInfo().getStartDate();
+      Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
+      int endYear = this.getIntYearFromDate(endDate);
+      int startYear = this.getIntYearFromDate(startDate);
+      int extentionYear = 0;
+      if (extentionDate != null) {
+        extentionYear = this.getIntYearFromDate(extentionDate);
+      }
+      if (startYear <= this.getSelectedYear()
+        && (endYear >= this.getSelectedYear() && (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(FundingStatusEnum.Ongoing.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+          || fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+            .parseInt(FundingStatusEnum.Informally.getStatusId())))
+        || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
+          .parseInt(FundingStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
+        activeFundingSources.add((fundingSource));
+      }
+    }
+    return activeFundingSources;
+  }
+
+  /**
+   * Method to return a set of Projects filtered by active with status On-Going/Extended into the
+   * selectedYear()
+   * 
+   * @return set of active projects
+   */
+  protected Set<Project> getActiveProjectsOnPhase() {
+    Set<Project> activeProjects = new HashSet<>();
+    List<GlobalUnitProject> globalUnitProjectList = this.getLoggedCrp().getGlobalUnitProjects().stream()
+      .filter(g -> g.getProject() != null && g.getProject().isActive() && g.getProject().getProjectPhases() != null
+        && g.getProject().getProjectPhases().size() > 0
+        && g.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && g.getProject().getProjectInfo().isActive() && g.getProject().getProjectInfo().getStatus() != null
+        && g.getProject().getProjectInfo().getStartDate() != null
+        && g.getProject().getProjectInfo().getEndDate() != null
+        && (g.getProject().getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || g.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
+      .collect(Collectors.toList());
+    if (globalUnitProjectList != null && globalUnitProjectList.size() > 0) {
+      for (GlobalUnitProject globalUnitProject : globalUnitProjectList) {
+        ProjectInfo projectInfo = globalUnitProject.getProject().getProjectInfo();
+        Date endDate = projectInfo.getEndDate();
+        Date startDate = projectInfo.getStartDate();
+        int endYear = this.getIntYearFromDate(endDate);
+        int startYear = this.getIntYearFromDate(startDate);
+        if (startYear <= this.getSelectedYear() && endYear >= this.getSelectedYear()) {
+          activeProjects.add((globalUnitProject.getProject()));
+        }
+      }
+    }
+    return activeProjects;
   }
 
   /**
@@ -153,9 +242,26 @@ public class BaseSummariesAction extends BaseAction {
   }
 
 
+  /**
+   * Method to get a Year from Date
+   * 
+   * @param date
+   * @return int year
+   */
+  private int getIntYearFromDate(Date date) {
+    try {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      return cal.get(Calendar.YEAR);
+    } catch (NullPointerException e) {
+      return 0;
+    }
+  }
+
   public GlobalUnit getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public String getSelectedCycle() {
     return selectedCycle;
@@ -166,11 +272,9 @@ public class BaseSummariesAction extends BaseAction {
     return selectedPhase;
   }
 
-
   public int getSelectedYear() {
     return selectedYear;
   }
-
 
   public void setGeneralParameters() {
     try {
