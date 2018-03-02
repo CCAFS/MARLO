@@ -138,7 +138,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.fundingSourceSummary", 
       "description": "summaries.board.report.fundingSourceSummary.description",
       "namespace": "/projects",
