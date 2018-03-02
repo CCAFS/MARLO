@@ -239,11 +239,9 @@
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
                         [#if project.locationsData?has_content]
-                          [#list project.locationsData as locationLevels]
-                            [@locationLevelTable element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
-                          [/#list]
+                          [@locationsTableMacro /]
                         [#else]
-                          <p class="text-center borderBox inf">No locations has been added, please use the map to add new locations.</p>
+                          <p class="text-center borderBox inf">No locations has been added, please add locations.</p>
                         [/#if]
                       </div>
                     </div>
@@ -260,6 +258,32 @@
     </div>  
 </section>
 [/#if]
+
+[#macro locationsTableMacro ]
+  <table>
+    [#list project.locationsData as locationLevels]
+      [#local customName = "${locationLevelName}[${locationLevels_index}]" /]
+      <tr>
+        <th width="20%">${(locationLevels.name)!''}</th>
+        <td width="80%">
+          <div class=" locationLevel-optionContent " listname="${customName}.locElements">
+            [#-- Content of locations--]
+            <div class="optionSelect-content row">
+              [#if locationLevels.locElements?has_content]
+                [#list locationLevels.locElements as location]
+                  [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=locationLevels.allCountries /]
+                [/#list]
+              [/#if]
+            </div>
+          </div>
+        </td>
+      </tr>
+      <input class="locationLevelId" type="hidden" name="${customName}.id" value="${(locationLevels.id)!}"/>
+      <input class="locationLevelName" type="hidden" name="${customName}.name" value="${(locationLevels.name)!}"/>
+      <input type="hidden" class="isList" name="${customName}.isList"  value="${(locationLevels.list)?string}"/>
+    [/#list]
+  </table>
+[/#macro]
 
 [#-- Section hidden inputs--]
 
