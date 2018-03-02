@@ -288,7 +288,6 @@
   [#local customName = "${name}[${index}]" /]
   [#local countryQuestion = '[@s.text name="projectLocations.selectAllCountries" /]'/]
   [#local cmvsQuestion = '[@s.text name="projectLocations.selectAllCmvs" /]'/]
-  
   <table>
     <tr>
       <th width="20%">${(element.name)!}:</th>
