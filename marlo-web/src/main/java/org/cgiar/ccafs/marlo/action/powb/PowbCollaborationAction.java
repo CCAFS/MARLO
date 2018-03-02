@@ -751,6 +751,8 @@ public class PowbCollaborationAction extends BaseAction {
                 .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
             }
           }
+          powbSynthesis.getRegions().sort(
+            (p1, p2) -> p1.getLiaisonInstitution().getAcronym().compareTo(p2.getLiaisonInstitution().getAcronym()));
         }
         this.setDraft(true);
         reader.close();
@@ -776,7 +778,8 @@ public class PowbCollaborationAction extends BaseAction {
         powbSynthesis.setRegions(
           powbSynthesis.getPowbCollaborationRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
+        powbSynthesis.getRegions()
+          .sort((p1, p2) -> p1.getLiaisonInstitution().getAcronym().compareTo(p2.getLiaisonInstitution().getAcronym()));
       }
     }
 
