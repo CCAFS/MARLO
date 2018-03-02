@@ -23,12 +23,15 @@ import org.cgiar.ccafs.marlo.ocs.model.DonorOCS;
 import org.cgiar.ccafs.marlo.ocs.model.PartnerOCS;
 import org.cgiar.ccafs.marlo.ocs.model.PlaOCS;
 import org.cgiar.ccafs.marlo.ocs.model.ResearcherOCS;
+import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
 import org.cgiar.ccafs.marlo.ocs.ws.client.MarloService;
 import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgree;
 import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCountry;
 import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloAgreeCrp;
 import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPla;
 import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloPlaCountry;
+import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloResStudies;
+import org.cgiar.ccafs.marlo.ocs.ws.client.TWsMarloResourceInfo;
 import org.cgiar.ccafs.marlo.ocs.ws.client.WSMarlo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -58,6 +61,7 @@ public class WsThread implements Runnable {
   private int type;
   private String agreementID;
   private AgreementOCS agreementOCS;
+  private ResourceInfoOCS resourceInfoOCS;
 
   public WsThread(APConfig apConfig, int type, String agreementID, AgreementOCS agreementOCS) {
     this.apConfig = apConfig;
@@ -65,6 +69,50 @@ public class WsThread implements Runnable {
     this.type = type;
     this.agreementOCS = agreementOCS;
     this.agreementID = agreementID;
+
+  }
+
+  public WsThread(APConfig apConfig, int type, String agreementID, ResourceInfoOCS resourceInfoOCS) {
+    this.apConfig = apConfig;
+    formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+    this.type = type;
+    this.resourceInfoOCS = resourceInfoOCS;
+    this.agreementID = agreementID;
+
+  }
+
+
+  public ResourceInfoOCS getHRInformation(String resourceID, ResourceInfoOCS resourceInfoOCS) {
+    try {
+      List<TWsMarloResourceInfo> resource = this.getWSClient().getMarloResourceInformation(resourceID);
+      List<TWsMarloResStudies> rEstudies = this.getWSClient().getMarloResStudies(resourceID);
+
+      if ((resource != null) && (resource.size() > 0)) {
+        TWsMarloResourceInfo myResource = resource.get(0);
+        resourceInfoOCS.setId(myResource.getResourceId());
+        resourceInfoOCS.setFirstName(myResource.getFirstName());
+        resourceInfoOCS.setLastName(myResource.getSurname());
+        resourceInfoOCS.setGender(myResource.getGenderFx());
+        resourceInfoOCS.setCityOfBirth(myResource.getCityOfBirth());
+        resourceInfoOCS.setCityOfBirthISO(myResource.getCouOfBirthId());
+        resourceInfoOCS.setEmail(myResource.getEMail());
+        resourceInfoOCS.setProfession(myResource.getProfession());
+        resourceInfoOCS.setSupervisor1(myResource.getSupervisor1());
+        resourceInfoOCS.setSupervisor2(myResource.getSupervisor2());
+        resourceInfoOCS.setSupervisor3(myResource.getSupervisor3());
+      }
+
+      if ((rEstudies != null) && (rEstudies.size() > 0)) {
+        resourceInfoOCS.setInstitucion(rEstudies.get(0).getId().getInstitution());
+        resourceInfoOCS.setCountryofIntitution(rEstudies.get(0).getId().getCountry());
+        resourceInfoOCS.setCountryofIntitutionISO(rEstudies.get(0).getId().getCountryId());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      LOG.error(e.getMessage());
+    }
+
+    return resourceInfoOCS;
 
   }
 
@@ -227,6 +275,9 @@ public class WsThread implements Runnable {
         break;
       case 4:
         this.loadPlas(agreementID, agreementOCS);
+        break;
+      case 5:
+        this.getHRInformation(agreementID, resourceInfoOCS);
         break;
 
       default:

@@ -41,6 +41,17 @@ function getListElement(fieldName,message) {
   if($(elementQuery).exists()) {
     var offset = $(elementQuery).offset();
 
+    // Find Bootstrap tabs
+    var tabPane = $(elementQuery).parents('.tab-pane');
+    if(tabPane) {
+      var tabID = $(tabPane).attr('id');
+      var $tab = $('a[href="#' + tabID + '"]');
+      // Add Field error to the text
+      $tab.addClass('fieldError');
+      // Add Filed error to the badge
+      $tab.find('.badge').addClass('fieldError');
+    }
+
     // Tag with message
     var tagElement = $("#test").clone(true).removeAttr("id");
     tagElement.attr("title", message);
@@ -120,6 +131,12 @@ function getInputElement(fieldName,message) {
   var $dateLabel = $(elementQuery).parent().find('.dateLabel');
   if($dateLabel) {
     $dateLabel.addClass('fieldError');
+  }
+
+  // Find radio button
+  var $radioFlatLabel = $(elementQuery).parents('.radioFlat').find('label');
+  if($radioFlatLabel) {
+    $radioFlatLabel.addClass('fieldError');
   }
 
   $(elementQuery).addClass("fieldError");

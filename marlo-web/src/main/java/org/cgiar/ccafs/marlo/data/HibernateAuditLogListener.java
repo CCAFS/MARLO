@@ -61,6 +61,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.type.ManyToOneType;
+import org.hibernate.type.OneToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
@@ -576,6 +577,43 @@ public class HibernateAuditLogListener
 
     for (Type type : types) {
       HashMap<String, Object> objects = new HashMap<>();
+
+      if (type instanceof OneToOneType) {
+
+        IAuditLog audit = (IAuditLog) state[i];
+        if (audit != null) {
+          String name = audit.getClass().getName();
+          Class<?> className;
+          try {
+            className = Class.forName(name);
+
+            Object obj = session.get(className, (Serializable) audit.getId());
+
+            Set<IAuditLog> listRelation = new HashSet<>();
+            listRelation.add((IAuditLog) obj);
+            IAuditLog auditlog = (IAuditLog) obj;
+            auditlog = (IAuditLog) session.get(auditlog.getClass(), (Serializable) auditlog.getId());
+            // session.refresh(auditlog);
+            Set<HashMap<String, Object>> loadList = this.loadListOfRelations(auditlog, session);
+            for (HashMap<String, Object> hashMap : loadList) {
+              HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(IAuditLog.ENTITY);
+              for (IAuditLog iAuditLog2 : relationAudit) {
+                Set<HashMap<String, Object>> loadListRelations = this.loadListOfRelations(iAuditLog2, session);
+
+                relations.addAll(loadListRelations);
+              }
+            }
+
+
+            relations.addAll(loadList);
+
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+
+        }
+      }
 
       if (type instanceof OrderedSetType || type instanceof SetType) {
 

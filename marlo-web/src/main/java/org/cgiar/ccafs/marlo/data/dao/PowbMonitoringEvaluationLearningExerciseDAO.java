@@ -1,0 +1,67 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+
+
+package org.cgiar.ccafs.marlo.data.dao;
+
+import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
+
+import java.util.List;
+
+
+public interface PowbMonitoringEvaluationLearningExerciseDAO {
+
+  /**
+   * This method removes a specific powbMonitoringEvaluationLearningExercise value from the database.
+   * 
+   * @param powbMonitoringEvaluationLearningExerciseId is the powbMonitoringEvaluationLearningExercise identifier.
+   * @return true if the powbMonitoringEvaluationLearningExercise was successfully deleted, false otherwise.
+   */
+  public void deletePowbMonitoringEvaluationLearningExercise(long powbMonitoringEvaluationLearningExerciseId);
+
+  /**
+   * This method validate if the powbMonitoringEvaluationLearningExercise identify with the given id exists in the system.
+   * 
+   * @param powbMonitoringEvaluationLearningExerciseID is a powbMonitoringEvaluationLearningExercise identifier.
+   * @return true if the powbMonitoringEvaluationLearningExercise exists, false otherwise.
+   */
+  public boolean existPowbMonitoringEvaluationLearningExercise(long powbMonitoringEvaluationLearningExerciseID);
+
+  /**
+   * This method gets a powbMonitoringEvaluationLearningExercise object by a given powbMonitoringEvaluationLearningExercise identifier.
+   * 
+   * @param powbMonitoringEvaluationLearningExerciseID is the powbMonitoringEvaluationLearningExercise identifier.
+   * @return a PowbMonitoringEvaluationLearningExercise object.
+   */
+  public PowbMonitoringEvaluationLearningExercise find(long id);
+
+  /**
+   * This method gets a list of powbMonitoringEvaluationLearningExercise that are active
+   * 
+   * @return a list from PowbMonitoringEvaluationLearningExercise null if no exist records
+   */
+  public List<PowbMonitoringEvaluationLearningExercise> findAll();
+
+
+  /**
+   * This method saves the information of the given powbMonitoringEvaluationLearningExercise
+   * 
+   * @param powbMonitoringEvaluationLearningExercise - is the powbMonitoringEvaluationLearningExercise object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the powbMonitoringEvaluationLearningExercise was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public PowbMonitoringEvaluationLearningExercise save(PowbMonitoringEvaluationLearningExercise powbMonitoringEvaluationLearningExercise);
+}

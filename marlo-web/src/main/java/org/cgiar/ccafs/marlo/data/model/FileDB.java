@@ -10,10 +10,6 @@ import com.google.gson.annotations.Expose;
  */
 public class FileDB implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 3977258629212295440L;
   @Expose
   private Long id;

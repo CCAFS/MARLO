@@ -89,5 +89,13 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" />
         </set>
+         <set name="fundingSourceLocations" table="funding_source_locations"
+      inverse="true" lazy="false" fetch="select">
+      <key>
+        <column name="loc_element_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.FundingSourceLocation" />
+    </set>
 	</class>
 </hibernate-mapping>

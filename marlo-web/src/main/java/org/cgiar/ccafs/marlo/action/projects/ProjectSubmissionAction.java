@@ -268,9 +268,9 @@ public class ProjectSubmissionAction extends BaseAction {
       ccEmails.append(userRole.getUser().getEmail());
       ccEmails.append(", ");
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
       }
     }
 
@@ -293,7 +293,7 @@ public class ProjectSubmissionAction extends BaseAction {
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[6];
-    values[0] = this.getCurrentUser().getFirstName();
+    values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crp;
     values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
@@ -308,7 +308,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
     message.append(this.getText("submit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
+    // message.append(this.getText("email.getStarted"));
     message.append(this.getText("email.bye"));
 
     // Send pdf
