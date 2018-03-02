@@ -587,7 +587,7 @@ function addLocationFromMap(){
 //Adding location level with locElements
 function addLocLevel(locationName,locationId,locationIsList,$locationSelect,locationIsList) {
   console.log('loclevel');
-  var $locationItem = $("#locationLevel-template");
+  //var $locationItem = $("#locationLevel-template");
   //$locationItem.find(".locLevelName").html(locationName);
   $("input.locationLevelId").val(locationId);
   $("input.locationLevelName").val(locationName);
@@ -597,8 +597,8 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
       $("input.locationLevelId").val(locationId)
   );
 
-  $(".selectWrapper").append($locationItem);
-  $locationItem.show("slow");
+  //$(".selectWrapper").append($locationItem);
+  //$locationItem.show("slow");
   updateIndex();
   if(locationIsList == "true") {
     if(locationName == "Country") {
@@ -606,6 +606,7 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
 // $locationItem.find(".allCountriesQuestion").show();
 // $locationItem.find("span.question").html($("span.qCmvSites").text());
     }
+    console.log('this');
     addCountryIntoLocLevel(locationId, $locationSelect, locationName);
   } else {
     addLocByCoordinates(locationId, $locationSelect, locationName);
