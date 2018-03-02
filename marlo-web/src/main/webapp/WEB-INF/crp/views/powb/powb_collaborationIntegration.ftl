@@ -157,8 +157,16 @@
               [/#list]
             [/#if]
             
-            <p>${(pmuValue?replace('\n', '<br>'))!}</p>
-            <input type="hidden" name="powbSynthesis.collaboration.effostornCountry" value="${(pmuValue)!}"/>
+            <textarea name="powbSynthesis.collaboration.effostornCountry" id="" cols="30" rows="10">${(pmuValue)!}</textarea>
+            
+            [#-- Table: CGIAR Country Coordination--]
+            <div class="form-group">
+              <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              <div class="viewMoreSyntesis-block">
+                [@tableCountryContributionsMacro locElements=action.loadLocations()/]
+                <div class="viewMoreSyntesis closed"></div>
+              </div>
+            </div>
           [#else]
             [#-- 2.3.4  Expected Efforts on Country Coordination --] 
             <div class="form-group">
@@ -166,14 +174,6 @@
             </div>
           [/#if]
           
-          [#-- Table: CGIAR Country Coordination--]
-          <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <div class="viewMoreSyntesis-block">
-              [@tableCountryContributionsMacro locElements=action.loadLocations()/]
-              <div class="viewMoreSyntesis closed"></div>
-            </div>
-          </div>
         </div>
         [/#if]
         
