@@ -51,6 +51,8 @@ public class Permission {
   public static final String SYNTHESIS_BY_MOG_BASE_PERMISSION = "crp:{0}:synthesisProgram:{1}";
   public static final String SYNTHESIS_BY_MOG_PERMISSION = "crp:{0}:synthesisProgram:{1}:*";
   public static final String POWB_SYNTHESIS_CAN_VIEW = "crp:{0}:powbSynthesis:manage:canAcess";
+  public static final String POWB_SYNTHESIS_RPL_EFFORT = "crp:{0}:powbSynthesis:{1}:collaboration{2}:effort";
+
 
   public static final String PROJECT_BUDGET_FLAGSHIP_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByFlagship";
   public static final String POWB_SYNTHESIS_TOC_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:tocAdjustments";
@@ -61,6 +63,10 @@ public class Permission {
   public static final String POWB_SYNTHESIS_MEL_BASE_PERMISSION =
     "crp:{0}:powbSynthesis:{1}:monitoringEvaluationLearning";
   public static final String POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:collaboration";
+  public static final String POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION =
+    "crp:{0}:powbSynthesis:{1}:collaboration:canEdit";
+
+
   public static final String POWB_SYNTHESIS_CRPSTAFFING_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:crpStaffing";
   public static final String POWB_SYNTHESIS_FINANCIAL_PLAN_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:financialPlan";
   public static final String POWB_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION =

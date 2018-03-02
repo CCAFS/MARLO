@@ -129,7 +129,8 @@ public class PowbCollaborationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
-
+      this.validetGlobalUnit(action, powbSynthesis);
+      this.validateRegions(action, powbSynthesis);
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -137,8 +138,7 @@ public class PowbCollaborationValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-      this.validetGlobalUnit(action, powbSynthesis);
-      this.validateRegions(action, powbSynthesis);
+
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus(), action);
     }
