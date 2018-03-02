@@ -170,6 +170,13 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
+  public boolean canEditRegion(long regionId) {
+    String permission = this.generatePermission(Permission.POWB_SYNTHESIS_RPL_EFFORT, this.getCrpSession(),
+      powbSynthesis.getId().toString(), regionId + "");
+    return this.hasPermissionNoBase(permission);
+  }
+
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -194,7 +201,6 @@ public class PowbCollaborationAction extends BaseAction {
     return crpPrograms;
   }
 
-
   public PowbCollaborationRegion getElemnentRegion(long regionId) {
     int index = this.getIndexRegion(regionId);
     return powbSynthesis.getRegions().get(index);
@@ -203,6 +209,7 @@ public class PowbCollaborationAction extends BaseAction {
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
   }
+
 
   public List<GlobalUnit> getGlobalUnits() {
     return globalUnits;
@@ -228,7 +235,6 @@ public class PowbCollaborationAction extends BaseAction {
     return this.getIndexRegion(regionId);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -236,6 +242,7 @@ public class PowbCollaborationAction extends BaseAction {
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -245,7 +252,6 @@ public class PowbCollaborationAction extends BaseAction {
   public List<LocElement> getLocElements() {
     return locElements;
   }
-
 
   public List<LocElement> getLocElementsByPMU() {
     List<LocElement> locElements = new ArrayList<>();
