@@ -61,7 +61,6 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -222,7 +221,8 @@ public class PowbCollaborationAction extends BaseAction {
     }
     int i = 0;
     for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
-      if (powbCollaborationRegion.getLiaisonInstitution().getId().longValue() == regionId) {
+      if (powbCollaborationRegion.getLiaisonInstitution() != null
+        && powbCollaborationRegion.getLiaisonInstitution().getId().longValue() == regionId) {
         return i;
       }
 
@@ -402,10 +402,6 @@ public class PowbCollaborationAction extends BaseAction {
 
     for (LocElement locElement : locElements) {
       if (!locElement.getProjects().isEmpty()) {
-        if (locElement.getName().equals("Bangladesh")) {
-          System.out.println("holi");
-          System.out.println(Arrays.asList(locElement.getProjects()));
-        }
         locElementsToRet.add(locElement);
       }
     }
