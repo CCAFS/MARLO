@@ -41,7 +41,7 @@
           
           [#-- 2.3.1  New Key External Partnerships  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && action.hasPermission("external")  /]
           </div>
           
           [#-- Project Partnerships --]
@@ -70,12 +70,12 @@
           [#if PMU]
             [#-- 2.3.2  New Contribution to and from Platforms --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && action.hasPermission("contributions")  /]
             </div>
             
             [#-- 2.3.3  New Cross-CRP Interactions --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && action.hasPermission("crossCrp")  /]
             </div>
             
             <div class="form-group">
@@ -133,8 +133,10 @@
                   [#-- Efforts Country by region--]
                   <h4 class="sectionSubTitle">${liaisonInstitution.crpProgram.composedName}</h4>
                   <div class="form-group">
-                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].expectedEfforts" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="limitWords-100" editable=editable /]
+                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="limitWords-100" editable=editable && action.canEditRegion(liaisonInstitution.id) /]
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
+                    <input type="hidden" name="powbSynthesis.regions[${regionIndex}].id" value="${(regionElement.id)!}" />
+                    
                     <div class="clearfix"></div>
                   </div>
                   
@@ -147,11 +149,7 @@
                   </div>
                   
                   [#if regionElement.effostornCountry?has_content]
-                    [#assign pmuValue]
-                      ${pmuValue}
-                      ${liaisonInstitution.crpProgram.composedName}
-                      ${(regionElement.effostornCountry)!}
-                    [/#assign]
+                    [#assign pmuValue]${pmuValue}\n${liaisonInstitution.crpProgram.composedName}\n${(regionElement.effostornCountry)!}\n\n[/#assign]
                   [/#if]
                 </div>
               [/#list]
@@ -170,7 +168,7 @@
           [#else]
             [#-- 2.3.4  Expected Efforts on Country Coordination --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && action.hasPermission("effostornCountry") /]
             </div>
           [/#if]
           
