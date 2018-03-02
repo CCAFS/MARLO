@@ -270,10 +270,11 @@ public class FilterListsAction extends BaseAction {
 
     List<CenterProject> projects = new ArrayList<>();
     if (researchProgramID > 0) {
-      projects = projectService.findAll().stream()
-        .filter(p -> p.isActive() && (p.getResearchProgram().getId() == researchProgramID))
-        .collect(Collectors.toList());
-      // Collections.sort(projects, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+      if (projectService.findAll() != null) {
+        projects = projectService.findAll().stream()
+          .filter(p -> p.isActive() && (p.getResearchProgram().getId() == researchProgramID))
+          .collect(Collectors.toList());
+      }
     } else {
       projects = projectService.findAll();
     }
