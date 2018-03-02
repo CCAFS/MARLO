@@ -149,11 +149,7 @@
                   </div>
                   
                   [#if regionElement.effostornCountry?has_content]
-                    [#assign pmuValue]
-                      ${pmuValue}
-                      ${liaisonInstitution.crpProgram.composedName}
-                      ${(regionElement.effostornCountry)!}
-                    [/#assign]
+                    [#assign pmuValue]${pmuValue}\n${liaisonInstitution.crpProgram.composedName}\n${(regionElement.effostornCountry)!}\n\n[/#assign]
                   [/#if]
                 </div>
               [/#list]
