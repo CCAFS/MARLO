@@ -269,8 +269,11 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
       .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
-        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
-          .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        && (p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && p.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && p.getProject().getProjectInfo()
+            .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))
       .collect(Collectors.toList())) {
       for (Deliverable deliverable : globalUnitProject.getProject().getDeliverables().stream().filter(d -> d.isActive()
         && d.getDeliverableInfo(this.getSelectedPhase()) != null
