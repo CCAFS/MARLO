@@ -2566,7 +2566,7 @@ and p.id=501
                                                               `cp`.`global_unit_type_id` = 1
                                                             )
                                                           )
-                                                        AND p.permission  in ('crp:{0}:powbSynthesis:{1}:collaboration:canEdit','crp:{0}:powbSynthesis:manage:canAcess','crp:{0}:powbSynthesis:{1}:canEdit')
+                                                        AND p.permission  in ('crp:{0}:powbSynthesis:{1}:collaboration:canEdit','crp:{0}:powbSynthesis:manage:canAcess')
   AND u.id = v_user_id 
 
 UNION
