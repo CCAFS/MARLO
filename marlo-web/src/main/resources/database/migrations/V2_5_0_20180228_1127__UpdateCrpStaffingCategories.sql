@@ -1,0 +1,1 @@
+DELETE FROM powb_crp_staffing_categories WHERE category = 'TOTAL CRP';

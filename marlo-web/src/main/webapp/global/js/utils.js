@@ -24,6 +24,8 @@ jQuery.fn.numericInput = function() {
       if((inputVal % 1) == 0) {
         $(input).val(parseInt(inputVal));
       }
+    } else {
+      $(input).val(0);
     }
     $(input).on("keydown", function(e) {
       isNumber(e);
@@ -278,9 +280,14 @@ function isMonitoringSection() {
   return url.includes("/monitoring/");
 }
 
-function isCapDevSection(){
+function isCapDevSection() {
   var url = window.location.href;
   return url.includes("/capdev/");
+}
+
+function isPOWBSection() {
+  var url = window.location.href;
+  return url.includes("/powb/");
 }
 
 /**

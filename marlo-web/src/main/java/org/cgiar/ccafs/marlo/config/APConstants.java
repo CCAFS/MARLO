@@ -189,6 +189,7 @@ public final class APConstants {
   public static final String LIAISON_INSTITUTION_REQUEST_ID = "liaisonInstitutionID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String PHASE_ID = "phaseID";
+  public static final String POWB_SYNTHESIS_ID = "powbSynthesisID";
 
   public static final String LOC_ELEMENT_ID = "locElementID";
   public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
@@ -358,6 +359,24 @@ public final class APConstants {
   public static final String PROJECT_INFO_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectInfos)";
 
+  public static final String SYNTHESIS_EXPECTED_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbExpectedCrpProgresses)";
+
+  public static final String SYNTHESIS_GLOBAL_UNTIS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbCollaborationGlobalUnits)";
+
+  public static final String SYNTHESIS_REGIONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbCollaborationRegions)";
+  public static final String SYNTHESIS_EVIDENCE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbEvidence.powbEvidencePlannedStudies)";
+
+  public static final String SYNTHESIS_CRP_STAFFING_CATEGORIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbSynthesisCrpStaffingCategory)";
+
+  public static final String SYNTHESIS_FINANCIAL_EXPENDITURE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbFinancialExpenditures)";
+  public static final String SYNTHESIS_FINANCIAL_PLANNED_BUDGET_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.PowbSynthesis.powbFinancialPlannedBudget)";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
@@ -453,6 +472,9 @@ public final class APConstants {
   public static final String GENERICPASSWORD_AD = "ldap2005";
   public static final String HOSTNAME_AD = "ciatroot1.ciat.cgiarad.org";
   public static final String PORT_AD = "3268";
+
+  // POWB Synthesis
+  public static final String POWB_FOLDER = "powbSynthesis";
 
 
   // Relations Name

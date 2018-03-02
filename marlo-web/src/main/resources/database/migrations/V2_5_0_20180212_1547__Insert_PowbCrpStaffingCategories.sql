@@ -1,0 +1,7 @@
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (1,'Program director & flagship leaders', '1', NULL, '3', '3', ' ');
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (2,'Principal Investigators', '1', NULL, '3', '3', ' ');
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (3,'Other Senior Scientists (not PIs)', '1', NULL, '3', '3', NULL);
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (4,'Post-docs / junior scientists', '1', NULL, '3', '3', NULL);
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (5,'Research fellows', '1', NULL, '3', '3', NULL);
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (6,'Other science support staff', '1', NULL, '3', '3', NULL);
+INSERT INTO `powb_crp_staffing_categories` (  `id`,`category`, `is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) VALUES (7,'TOTAL CRP', '1', NULL, '3', '3', NULL);
