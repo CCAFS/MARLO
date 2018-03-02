@@ -17,10 +17,12 @@ package org.cgiar.ccafs.marlo.validation.powb;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationRegion;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -39,13 +41,17 @@ import javax.inject.Named;
 public class PowbCollaborationValidator extends BaseValidator {
 
   private final GlobalUnitManager crpManager;
+  private final LiaisonInstitutionManager liaisonInstitutionManager;
+
   private final PowbSynthesisManager powbSynthesisManager;
 
 
-  public PowbCollaborationValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager) {
+  public PowbCollaborationValidator(GlobalUnitManager crpManager, PowbSynthesisManager powbSynthesisManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super();
     this.crpManager = crpManager;
     this.powbSynthesisManager = powbSynthesisManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   private Path getAutoSaveFilePath(PowbSynthesis powbSynthesis, long crpID, BaseAction baseAction) {
@@ -123,7 +129,8 @@ public class PowbCollaborationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
-
+      this.validetGlobalUnit(action, powbSynthesis);
+      this.validateRegions(action, powbSynthesis);
 
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
@@ -131,10 +138,42 @@ public class PowbCollaborationValidator extends BaseValidator {
         action.addActionMessage(
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
-      this.validetGlobalUnit(action, powbSynthesis);
 
       this.saveMissingFields(powbSynthesis, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
         PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus(), action);
+    }
+  }
+
+  public void validateRegions(BaseAction action, PowbSynthesis powbSynthesis) {
+    if (powbSynthesis.getRegions() != null) {
+      int i = 0;
+      for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
+        if (powbCollaborationRegion != null) {
+          if (powbCollaborationRegion.getLiaisonInstitution() != null
+            && powbCollaborationRegion.getLiaisonInstitution().getId() > 0) {
+            powbCollaborationRegion.setLiaisonInstitution(liaisonInstitutionManager
+              .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
+          } else {
+            powbCollaborationRegion.setLiaisonInstitution(null);
+
+          }
+
+
+          if (!(this.isValidString(powbCollaborationRegion.getEffostornCountry())
+            && this.wordCount(powbCollaborationRegion.getEffostornCountry()) <= 100)) {
+            action.addMissingField(action.getText("powbSynthesis.regions[" + i + "].effostornCountry"));
+            action.getInvalidFields().put("input-powbSynthesis.regions[" + i + "].effostornCountry",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
+
+        i++;
+
+      }
+
+    } else {
+
     }
   }
 
