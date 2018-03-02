@@ -48,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -650,27 +651,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
     }
   }
 
-  public void getfpExercises(List<LiaisonInstitution> lInstitutions, long phaseID) {
-    flagshipExercises = new ArrayList<>();
-    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbMonitoringEvaluationLearning() != null) {
-          if (powbSynthesis.getPowbMonitoringEvaluationLearning()
-            .getPowbMonitoringEvaluationLearningExercises() != null) {
-            List<PowbMonitoringEvaluationLearningExercise> exercises = new ArrayList<>(
-              powbSynthesis.getPowbMonitoringEvaluationLearning().getPowbMonitoringEvaluationLearningExercises()
-                .stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-            if (exercises != null || !exercises.isEmpty()) {
-              for (PowbMonitoringEvaluationLearningExercise powbMonitoringEvaluationLearningExercise : exercises) {
-                flagshipExercises.add(powbMonitoringEvaluationLearningExercise);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
     flagshipPlannedList = new ArrayList<>();
@@ -895,7 +875,12 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
 
 
     this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
-    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : flagshipPlannedList) {
+    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : flagshipPlannedList.stream()
+      .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
+        && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.ADOPTIONSTUDY.getId()))
+      .collect(Collectors.toList())) {
       String plannedStudy = "", geographicScope = "", revelantSubIDO = "", comments = "";
       plannedStudy = powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy() != null
         && !powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
@@ -1083,33 +1068,29 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private TypedTableModel getTableHContentTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"plannedStudiesLearning", "comments"},
       new Class[] {String.class, String.class}, 0);
-    // Flagships
-    List<LiaisonInstitution> flagships = this.getFlagships();
+    this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
+    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : flagshipPlannedList.stream()
+      .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
+        && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.EVAULATION.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.LEARNING.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTCASESTUDY.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.CRP_PTF.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.REVIEW.getId()))
+      .collect(Collectors.toList())) {
+      String plannedStudy = "", comments = "";
+      plannedStudy = powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
+          ? powbEvidencePlannedStudy.getPowbEvidence().getPowbSynthesis().getLiaisonInstitution().getCrpProgram()
+            .getAcronym() + ": " + powbEvidencePlannedStudy.getProjectExpectedStudy().getTopicStudy()
+          : powbEvidencePlannedStudy.getPowbEvidence().getPowbSynthesis().getLiaisonInstitution().getCrpProgram()
+            .getAcronym();
+      comments = powbEvidencePlannedStudy.getProjectExpectedStudy().getComments() != null
+        && !powbEvidencePlannedStudy.getProjectExpectedStudy().getComments().trim().isEmpty()
+          ? powbEvidencePlannedStudy.getProjectExpectedStudy().getComments() : " ";
 
-    this.getfpExercises(flagships, this.getSelectedPhase().getId());
-    if (flagships != null && !flagships.isEmpty()) {
-      for (LiaisonInstitution flagship : flagships) {
-        String plannedStudiesLearning = "", comments = "";
-        if (flagshipExercises != null && !flagshipExercises.isEmpty()) {
-          List<PowbMonitoringEvaluationLearningExercise> PowbMonitoringEvaluationLearningFlagshipExercise =
-            flagshipExercises.stream()
-              .filter(fe -> fe.isActive()
-                && fe.getPowbMonitoringEvaluationLearning().getPowbSynthesis().getLiaisonInstitution().equals(flagship))
-              .collect(Collectors.toList());
-
-          for (PowbMonitoringEvaluationLearningExercise powbMonitoringEvaluationLearningExercise : PowbMonitoringEvaluationLearningFlagshipExercise) {
-            plannedStudiesLearning = powbMonitoringEvaluationLearningExercise.getExercise() == null
-              || powbMonitoringEvaluationLearningExercise.getExercise().trim().isEmpty() ? " "
-                : powbMonitoringEvaluationLearningExercise.getExercise();
-            comments = powbMonitoringEvaluationLearningExercise.getComments() == null
-              || powbMonitoringEvaluationLearningExercise.getComments().trim().isEmpty() ? " "
-                : powbMonitoringEvaluationLearningExercise.getComments();
-            model.addRow(new Object[] {plannedStudiesLearning, comments});
-          }
-        }
-      }
+      model.addRow(new Object[] {plannedStudy, comments});
     }
-
     return model;
   }
 
