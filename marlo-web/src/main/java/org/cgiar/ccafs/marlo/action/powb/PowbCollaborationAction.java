@@ -30,11 +30,11 @@ import org.cgiar.ccafs.marlo.data.manager.PowbCollaborationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -247,60 +247,20 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
+  public List<LocElement> getLocElementsByPMU() {
+    List<LocElement> locElements = new ArrayList<>();
+    List<Project> projects = this.loadProjectsPMU();
+    this.loadLocationsProjectRelated(locElements, projects);
+    return locElements;
+
+  }
+
   public List<LocElement> getLocElementsByRegion(long regionId) {
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(regionId);
     List<LocElement> locElements = new ArrayList<>();
     List<Project> projects = this.loadProjects(liaisonInstitution.getCrpProgram().getId());
-    List<CrpProgramCountry> countries = liaisonInstitution.getCrpProgram().getCrpProgramCountries().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList());
-    for (LocElement locElement : locElementManager.findAll().stream()
-      .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList())) {
-      this.loadLocElementsRelations(locElement);
-      Set<Project> liaisonProjects = new HashSet();
-      Set<FundingSource> liasionsFundings = new HashSet();
-
-      for (Project project : locElement.getProjects()) {
-        if (projects.contains(project)) {
-          if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
-            liaisonProjects.add(project);
-
-            List<ProjectBudget> projectBudgets = project.getProjectBudgets().stream().filter(c -> c.isActive()
-              && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
-              .collect(Collectors.toList());
-            for (ProjectBudget projectBudget : projectBudgets) {
-              projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
-              if (projectBudget.getFundingSource().getFundingSourceInfo() != null) {
-                FundingSource fs = fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-
-                if (locElement.getFundingSources().contains(fs) && !liasionsFundings.contains(fs)) {
-                  liasionsFundings.add(fs);
-
-                }
-
-              }
-
-            }
-          }
-
-
-        }
-      }
-      locElement.getProjects().clear();
-      locElement.getFundingSources().clear();
-      locElement.getProjects().addAll(liaisonProjects.stream().distinct().collect(Collectors.toList()));
-      locElement.getFundingSources().addAll(liasionsFundings.stream().distinct().collect(Collectors.toList()));
-      locElement.getProjects().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-      locElement.getFundingSources().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
-
-
-      if (!locElement.getProjects().isEmpty()) {
-        locElements.add(locElement);
-      }
-
-    }
-
+    this.loadLocationsProjectRelated(locElements, projects);
     return locElements;
-
 
   }
 
@@ -311,7 +271,6 @@ public class PowbCollaborationAction extends BaseAction {
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
-
 
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
@@ -326,6 +285,7 @@ public class PowbCollaborationAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   public void globalUnitNewData() {
 
@@ -424,7 +384,6 @@ public class PowbCollaborationAction extends BaseAction {
 
   }
 
-
   public List<LocElement> loadLocations() {
     List<LocElement> locElements = locElementManager.findAll().stream()
       .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
@@ -445,6 +404,55 @@ public class PowbCollaborationAction extends BaseAction {
       }
     }
     return locElementsToRet;
+  }
+
+
+  public void loadLocationsProjectRelated(List<LocElement> locElements, List<Project> projects) {
+    for (LocElement locElement : locElementManager.findAll().stream()
+      .filter(c -> c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList())) {
+      this.loadLocElementsRelations(locElement);
+      Set<Project> liaisonProjects = new HashSet();
+      Set<FundingSource> liasionsFundings = new HashSet();
+
+      for (Project project : locElement.getProjects()) {
+        if (projects.contains(project)) {
+          if (project.getProjecInfoPhase(this.getActualPhase()) != null) {
+            liaisonProjects.add(project);
+
+            List<ProjectBudget> projectBudgets = project.getProjectBudgets().stream().filter(c -> c.isActive()
+              && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
+              .collect(Collectors.toList());
+            for (ProjectBudget projectBudget : projectBudgets) {
+              projectBudget.getFundingSource().getFundingSourceInfo(this.getActualPhase());
+              if (projectBudget.getFundingSource().getFundingSourceInfo() != null) {
+                FundingSource fs = fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
+
+                if (locElement.getFundingSources().contains(fs) && !liasionsFundings.contains(fs)) {
+                  liasionsFundings.add(fs);
+
+                }
+
+              }
+
+            }
+          }
+
+
+        }
+      }
+      locElement.getProjects().clear();
+      locElement.getFundingSources().clear();
+      locElement.getProjects().addAll(liaisonProjects.stream().distinct().collect(Collectors.toList()));
+      locElement.getFundingSources().addAll(liasionsFundings.stream().distinct().collect(Collectors.toList()));
+      locElement.getProjects().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+      locElement.getFundingSources().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+
+      if (!locElement.getProjects().isEmpty()) {
+        locElements.add(locElement);
+      }
+
+    }
   }
 
   public void loadLocElementsRelations(LocElement locElement) {
@@ -555,6 +563,46 @@ public class PowbCollaborationAction extends BaseAction {
             || project.getProjectInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
             myProjects.add(project);
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+      projectsToRet.add(project);
+    }
+    return projectsToRet;
+
+  }
+
+
+  public List<Project> loadProjectsPMU() {
+    List<Project> projectsToRet = new ArrayList<>();
+    GlobalUnit globalUnit = crpManager.getGlobalUnitById(loggedCrp.getId());
+    List<GlobalUnitProject> globalUnitProjects = globalUnit.getGlobalUnitProjects().stream()
+      .filter(c -> c.isActive() && c.isOrigin()).collect(Collectors.toList());
+    Set<Project> myProjects = new HashSet();
+    for (GlobalUnitProject globalUnitProject : globalUnitProjects) {
+      Project project = globalUnitProject.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+
+            if ((project.getProjectInfo().getAdministrative() != null
+              && project.getProjectInfo().getAdministrative().booleanValue())
+              || (project.getProjectInfo().getNoRegional() != null
+                && project.getProjectInfo().getNoRegional().booleanValue())) {
+              myProjects.add(project);
+            }
+
           }
         }
 
