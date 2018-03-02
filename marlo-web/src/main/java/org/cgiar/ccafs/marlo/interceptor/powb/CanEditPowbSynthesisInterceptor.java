@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -159,7 +160,16 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
       hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin())) ? true
         : baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params));
     }
+    String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+    if (actionName.equals(PowbSynthesisSectionStatusEnum.COLLABORATION.getStatus())) {
+      String permission =
+        baseAction.generatePermission(Permission.POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION, params);
+      if (baseAction.hasPermissionNoBase(permission)) {
 
+        hasPermissionToEdit = true;
+        canEdit = true;
+      }
+    }
 
     if (parameters.get(APConstants.EDITABLE_REQUEST).isDefined()) {
       // String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
