@@ -135,11 +135,15 @@
                   <div class="form-group">
                     [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].expectedEfforts" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="limitWords-100" editable=editable /]
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
+                    <div class="clearfix"></div>
                   </div>
                   
                   [#--  Regional Table --]
                   <div class="form-group">
-                    [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
+                    <div class="viewMoreSyntesis-block">
+                      [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
+                      <div class="viewMoreSyntesis closed"></div>
+                    </div>
                   </div>
                   
                   [#if regionElement.effostornCountry?has_content]
@@ -267,7 +271,7 @@
         [#list locElements as locElement]
           <tr>
             <td> <i class="flag-sm flag-sm-${(locElement.isoAlpha2?upper_case)!}"></i> ${locElement.name} </td>
-            <td class="col-md-5">
+            <td class="col-md-4">
               [#if (locElement.projects?has_content)!false]
                 [#list locElement.projects as project]
                   [#local pURL][@s.url namespace="/projects" action="${(crpSession)!}/locations"][@s.param name='projectID']${project.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
@@ -277,7 +281,7 @@
                 <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
               [/#if]
             </td>
-            <td class="col-md-5">
+            <td class="col-md-6">
               [#if (locElement.fundingSources?has_content)!false]
                 [#list locElement.fundingSources as fundingSource]
                   [#local fURL][@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"][@s.param name='fundingSourceID']${fundingSource.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
@@ -348,7 +352,6 @@
         <th class="col-md-1"> [@s.text name="collaborationIntegration.tableFlagshipsOverall.fp" /] </th>
         <th> Collaboration Program</th>
         <th> Flagship/Module</th>
-      
         <th> Brief description </th>
       </tr>
     </thead>
