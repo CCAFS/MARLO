@@ -1337,9 +1337,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       Map<String, Parameter> parameters = this.getParameters();
       if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-        Phase phase = allPhases.get(new Long(phaseID));
-        return phase;
+        Phase phase;
+        try {
+          long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+          phase = allPhases.get(new Long(phaseID));
+          return phase;
+        } catch (Exception e) {
+          phase = phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+
+          if (phase != null) {
+            this.getSession().put(APConstants.CURRENT_PHASE, phase);
+            return phase;
+          } else {
+            return new Phase(null, "", -1);
+          }
+
+        }
+
       }
       if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
         Phase phase = (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
