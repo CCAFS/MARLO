@@ -68,16 +68,17 @@ public class CrpProgramsGlobalUnitAction extends BaseAction {
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId.longValue());
     if (globalUnit != null) {
-
-      for (CrpProgram crpProgram : globalUnit.getCrpPrograms().stream()
+      List<CrpProgram> crpPrograms = globalUnit.getCrpPrograms().stream()
         .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+      crpPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+      for (CrpProgram crpProgram : crpPrograms) {
         crpProgramMap = new HashMap<String, Object>();
         crpProgramMap.put("id", crpProgram.getId());
         crpProgramMap.put("description", crpProgram.getName());
         crpProgramMap.put("acronym", crpProgram.getAcronym());
 
-        crpPrograms.add(crpProgramMap);
+        this.crpPrograms.add(crpProgramMap);
       }
 
     }
