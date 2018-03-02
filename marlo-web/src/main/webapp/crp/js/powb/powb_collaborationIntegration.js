@@ -42,6 +42,8 @@ function attachEvents() {
 
   setViewMores();
 
+  addFlagshipAutoComplete();
+
   // Add a program collaboration
   $('.addProgramCollaboration').on('click', addProgramCollaboration);
 
@@ -103,7 +105,6 @@ function updateIndexes() {
 }
 
 function formatSelect2Result(item) {
-  console.log(item);
   if(item.loading) {
     return item.text;
   }
@@ -152,4 +153,52 @@ function setViewMores() {
     // Add Event
     $viewMoreButton.on('click', expandViewMoreSyntesisBlock);
   });
+}
+
+/**
+ * This function initialize the Flagships auto complete
+ * 
+ * @returns
+ */
+function addFlagshipAutoComplete() {
+  $('select.globalUnitSelect').on('change', function() {
+    var gUnitID = this.value;
+    var $select = $(this);
+    var $autoCompleteInput = $select.parents('.flagshipCollaboration').find('.globalUnitPrograms');
+
+    // Clear Program
+    $autoCompleteInput.val('');
+
+    $autoCompleteInput.autocomplete({
+        source: searchFlagships,
+        select: selectFlagship,
+        minLength: 0
+    }).autocomplete("instance")._renderItem = renderItem;
+
+  }).trigger('change');
+
+  function searchFlagships(request,response) {
+    var unitID = $(this.element).parents('.flagshipCollaboration').find('select.globalUnitSelect').val();
+    $.ajax({
+        url: baseURL + '/crpProgramsGlobalUnit.do',
+        data: {
+            q: request.term,
+            phaseID: phaseID,
+            crpID: unitID
+        },
+        success: function(data) {
+          response(data.crpPrograms);
+        }
+    });
+  }
+
+  function selectFlagship(event,ui) {
+    $(this).val(ui.item.acronym + " - " + ui.item.description);
+    return false;
+  }
+
+  function renderItem(ul,item) {
+    return $("<li>").append("<div>" + item.acronym + " - " + item.description + "</div>").appendTo(ul);
+  }
+
 }

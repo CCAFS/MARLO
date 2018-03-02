@@ -328,11 +328,11 @@ ${(regionElement.effostornCountry)!}
     <div class="form-group row"> 
       [#-- CRP/Platform --] 
       <div class="col-md-5">
-        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="" editable=isEditable/]
+        [@customForm.select name="${customName}.globalUnit.id" label="" keyFieldName="id"  displayFieldName="acronymValid" i18nkey="powbSynthesis.programCollaboration.globalUnit" listName="globalUnits"  required=true  className="globalUnitSelect" editable=isEditable/]
       </div>
       [#-- Flagship/Module --]
       <div class="col-md-7">
-        [@customForm.input name="${customName}.flagship" i18nkey="powbSynthesis.programCollaboration.program" required=true className="" editable=isEditable /]
+        [@customForm.input name="${customName}.flagship" i18nkey="powbSynthesis.programCollaboration.program" required=true className="globalUnitPrograms" editable=isEditable /]
       </div>
     </div>
     
@@ -374,6 +374,7 @@ ${(regionElement.effostornCountry)!}
             <td><span class="programTag" style="border-color:${(crpProgram.color)!'#fff'}" title="${crpProgram.composedName}">${crpProgram.acronym}</span></td>
             <td> 
               <strong>${(collaboration.globalUnit.acronym)!}</strong><br />
+              ${(collaboration.collaborationTypeName)!'<nobr>Not defined</nobr>'} <br />
               <i>${collaboration.globalUnit.globalUnitType.name}</i>
             </td>
             <td> ${(collaboration.flagship)!'<nobr>Not defined</nobr>'} </td>
