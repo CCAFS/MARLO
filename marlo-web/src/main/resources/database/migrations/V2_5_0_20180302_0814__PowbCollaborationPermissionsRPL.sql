@@ -10,7 +10,6 @@ p.permission = 'crp:{0}:powbSynthesis:{1}:collaboration:canEdit';
 
 
 
-
 INSERT INTO permissions (permission, description, type)
 VALUES ('crp:{0}:powbSynthesis:{1}:collaboration{2}:effort', 'Region Can Edit ', 3);
 
