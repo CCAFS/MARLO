@@ -150,6 +150,7 @@ tfoot {
   -webkit-transition: height 1s;
   -moz-transition: height 1s;
   transition: height 1s;
+  position: relative;
 }
 
 .viewMoreSyntesis {
