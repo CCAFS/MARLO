@@ -1668,9 +1668,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the CapDev is complete
    */
   public boolean getCenterSectionStatusCapDev(String section, long capDevID) {
-    final CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
 
-    if (ImpactPathwaySectionsEnum.getValue(section) == null) {
+    if (CapDevSectionEnum.getValue(section) == null) {
       return false;
     }
 
@@ -5466,7 +5466,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (sectionStatus == null) {
       return false;
     }
-    if (sectionStatus.getMissingFields().length() != 0) {
+    if (sectionStatus.getMissingFields().length() > 0) {
       return false;
     }
 
@@ -5491,7 +5491,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus == null) {
             return false;
           } else {
-            if (sectionStatus.getMissingFields().length() != 0) {
+            if (sectionStatus.getMissingFields().length() > 0) {
               return false;
             }
           }
