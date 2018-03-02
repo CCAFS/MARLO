@@ -10,10 +10,6 @@ import com.google.gson.annotations.Expose;
  */
 public class DeliverableInfo implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -8647145762226231826L;
   @Expose
   private Long id;
@@ -119,19 +115,32 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return allowModifications;
   }
 
+  public String getCapDevScoreName() {
+    if (this.crossCuttingScoreCapacity != null) {
+      if (this.crossCuttingScoreCapacity == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
+        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
+      }
+
+      if (this.crossCuttingScoreCapacity == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
+        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
+      }
+    }
+    return null;
+  }
+
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
-
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
 
+
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Long getCrossCuttingScoreCapacity() {
     return crossCuttingScoreCapacity;
@@ -140,6 +149,7 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   public Long getCrossCuttingScoreGender() {
     return crossCuttingScoreGender;
   }
+
 
   public Long getCrossCuttingScoreYouth() {
     return crossCuttingScoreYouth;
@@ -175,6 +185,18 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
     return description;
   }
 
+  public String getGenderScoreName() {
+    if (this.crossCuttingScoreGender != null) {
+      if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
+        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
+      }
+
+      if (this.crossCuttingScoreGender == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
+        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
+      }
+    }
+    return null;
+  }
 
   @Override
   public Long getId() {
@@ -279,6 +301,20 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+
+  public String getYouthScoreName() {
+    if (this.crossCuttingScoreYouth != null) {
+      if (this.crossCuttingScoreYouth == Long.valueOf(CrossCuttingScoreEnum.SIGNIFICANT.getScoreId())) {
+        return CrossCuttingScoreEnum.SIGNIFICANT.getScore();
+      }
+
+      if (this.crossCuttingScoreYouth == Long.valueOf(CrossCuttingScoreEnum.PRINCIPAL.getScoreId())) {
+        return CrossCuttingScoreEnum.PRINCIPAL.getScore();
+      }
+    }
+    return null;
   }
 
 
@@ -435,7 +471,6 @@ public class DeliverableInfo implements java.io.Serializable, IAuditLog {
   public void setStatus(Integer status) {
     this.status = status;
   }
-
 
   public void setStatusDescription(String statusDescription) {
     this.statusDescription = statusDescription;

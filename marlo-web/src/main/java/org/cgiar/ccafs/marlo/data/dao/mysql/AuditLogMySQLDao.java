@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.utils.FloatTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,15 +36,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import javax.inject.Named;
-import javax.inject.Inject;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.OneToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
@@ -130,7 +133,21 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
       Auditlog log = auditLogs.get(0);
       IAuditLog iAuditLog = this.loadFromAuditLog(log);
-      this.loadRelationsForIAuditLog(iAuditLog, transactionID);
+      try {
+        this.loadRelationsForIAuditLog(iAuditLog, transactionID);
+      } catch (NoSuchFieldException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (SecurityException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IllegalArgumentException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       return iAuditLog;
 
     }
@@ -216,7 +233,8 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
     return null;
   }
 
-  public void loadRelationsForIAuditLog(IAuditLog iAuditLog, String transactionID) {
+  public void loadRelationsForIAuditLog(IAuditLog iAuditLog, String transactionID)
+    throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     try {
 
       Session session = super.getSessionFactory().getCurrentSession();
@@ -224,6 +242,14 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
       String[] propertyNames = classMetadata.getPropertyNames();
       for (String name : propertyNames) {
         Type propertyType = classMetadata.getPropertyType(name);
+        Field privateField = iAuditLog.getClass().getDeclaredField(name);
+        privateField.setAccessible(true);
+        if (propertyType instanceof OneToOneType) {
+          Object obj = privateField.get(iAuditLog);
+          if (obj != null && obj instanceof IAuditLog) {
+            this.loadRelationsForIAuditLog((IAuditLog) obj, transactionID);
+          }
+        }
         if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
 
           String classNameRelation = propertyType.getName();

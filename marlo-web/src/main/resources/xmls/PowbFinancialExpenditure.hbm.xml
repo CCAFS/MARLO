@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 6, 2017 8:46:55 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure"
+		table="powb_financial_expenditure" optimistic-lock="version">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="powbSynthesis"
+			class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
+			<column name="powb_synthesis_id" not-null="true" />
+		</many-to-one>
+		<many-to-one name="powbExpenditureArea"
+			class="org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas" fetch="select">
+			<column name="powb_expenditure_area_id" not-null="true" />
+		</many-to-one>
+		<property name="w1w2Percentage" type="java.lang.Double">
+			<column name="w1w2_percentage" precision="22" scale="0" />
+		</property>
+		<property name="comments" type="string">
+			<column name="comments" length="65535" not-null="true" />
+		</property>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="created_by" not-null="false" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+			fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535" />
+		</property>
+	</class>
+</hibernate-mapping>
