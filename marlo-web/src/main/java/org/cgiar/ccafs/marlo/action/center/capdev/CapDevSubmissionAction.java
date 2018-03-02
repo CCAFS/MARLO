@@ -62,6 +62,7 @@ public class CapDevSubmissionAction extends BaseAction {
   private long capDevID;
   private boolean isSubmited = false;
 
+
   @Inject
   public CapDevSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
     GlobalUnitManager centerService, ICapacityDevelopmentService capdevService) {
@@ -114,11 +115,6 @@ public class CapDevSubmissionAction extends BaseAction {
     return capDevID;
   }
 
-  public GlobalUnit getLoggedCenter() {
-    return loggedCenter;
-  }
-
-
   @Override
   public void prepare() throws Exception {
     loggedCenter = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -140,10 +136,5 @@ public class CapDevSubmissionAction extends BaseAction {
   public void setCapDevID(long capDevID) {
     this.capDevID = capDevID;
   }
-
-  public void setLoggedCenter(GlobalUnit loggedCenter) {
-    this.loggedCenter = loggedCenter;
-  }
-
 
 }

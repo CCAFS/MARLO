@@ -444,7 +444,6 @@ public class EvidencesAction extends BaseAction {
 
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
-        System.out.println("Project : " + project.getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
           .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
@@ -605,24 +604,6 @@ public class EvidencesAction extends BaseAction {
             for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
               .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
               powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
-            }
-          } else {
-            if (popUpProjects != null && !popUpProjects.isEmpty()) {
-              for (ProjectExpectedStudy expectedStudy : popUpProjects) {
-                PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-                evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
-                evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
-                evidencePlannedStudyNew.setActive(true);
-                evidencePlannedStudyNew.setActiveSince(new Date());
-                evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-                evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-                evidencePlannedStudyNew.setModificationJustification("");
-                evidencePlannedStudyNew =
-                  powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
-
-                powbSynthesis.getPowbEvidence().getExpectedStudies()
-                  .add(evidencePlannedStudyNew.getProjectExpectedStudy());
-              }
             }
           }
         }

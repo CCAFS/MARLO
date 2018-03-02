@@ -47,9 +47,12 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbEvidenceManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbEvidencePlannedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -285,6 +288,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
 
+  @Inject
+  private PowbEvidenceManager powbEvidenceManager;
+
+  @Inject
+  private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
   // Variables
   private String crpSession;
@@ -353,6 +361,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
+  @Inject
+  private ProjectFocusManager projectFocusManager;
 
   private boolean reportingActive;
 
@@ -1203,7 +1214,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     synthesis.setLiaisonInstitution(liaisonInstitution);
 
     synthesis = powbSynthesisManager.savePowbSynthesis(synthesis);
+
     this.clearPermissionsCache();
+
     return synthesis;
 
   }
@@ -1337,9 +1350,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       Map<String, Parameter> parameters = this.getParameters();
       if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-        Phase phase = allPhases.get(new Long(phaseID));
-        return phase;
+        Phase phase;
+        try {
+          long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+          phase = allPhases.get(new Long(phaseID));
+          return phase;
+        } catch (Exception e) {
+          phase = phaseManager.findCycle(this.getCurrentCycleParam(), this.getCurrentCycleYearParam(), this.getCrpID());
+
+          if (phase != null) {
+            this.getSession().put(APConstants.CURRENT_PHASE, phase);
+            return phase;
+          } else {
+            return new Phase(null, "", -1);
+          }
+
+        }
+
       }
       if (this.getSession().containsKey(APConstants.CURRENT_PHASE)) {
         Phase phase = (Phase) this.getSession().get(APConstants.CURRENT_PHASE);
@@ -1668,9 +1695,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the CapDev is complete
    */
   public boolean getCenterSectionStatusCapDev(String section, long capDevID) {
-    final CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
+    CapacityDevelopment capacityDevelopment = capacityDevelopmentService.getCapacityDevelopmentById(capDevID);
 
-    if (ImpactPathwaySectionsEnum.getValue(section) == null) {
+    if (CapDevSectionEnum.getValue(section) == null) {
       return false;
     }
 
@@ -5466,7 +5493,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (sectionStatus == null) {
       return false;
     }
-    if (sectionStatus.getMissingFields().length() != 0) {
+    if (sectionStatus.getMissingFields().length() > 0) {
       return false;
     }
 
@@ -5491,7 +5518,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           if (sectionStatus == null) {
             return false;
           } else {
-            if (sectionStatus.getMissingFields().length() != 0) {
+            if (sectionStatus.getMissingFields().length() > 0) {
               return false;
             }
           }
@@ -5669,6 +5696,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
+
     return true;
   }
 
@@ -5686,4 +5714,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
+
 }

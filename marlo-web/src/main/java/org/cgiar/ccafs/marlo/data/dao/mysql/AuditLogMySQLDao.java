@@ -241,30 +241,34 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
       ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(iAuditLog.getClass());
       String[] propertyNames = classMetadata.getPropertyNames();
       for (String name : propertyNames) {
-        Type propertyType = classMetadata.getPropertyType(name);
-        Field privateField = iAuditLog.getClass().getDeclaredField(name);
-        privateField.setAccessible(true);
-        if (propertyType instanceof OneToOneType) {
-          Object obj = privateField.get(iAuditLog);
-          if (obj != null && obj instanceof IAuditLog) {
-            this.loadRelationsForIAuditLog((IAuditLog) obj, transactionID);
+        try {
+          Type propertyType = classMetadata.getPropertyType(name);
+          Field privateField = iAuditLog.getClass().getDeclaredField(name);
+          privateField.setAccessible(true);
+          if (propertyType instanceof OneToOneType) {
+            Object obj = privateField.get(iAuditLog);
+            if (obj != null && obj instanceof IAuditLog) {
+              this.loadRelationsForIAuditLog((IAuditLog) obj, transactionID);
+            }
           }
-        }
-        if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
+          if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
 
-          String classNameRelation = propertyType.getName();
-          String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
-            + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId()
-            + "'order by ABS(ENTITY_ID) asc";
-          List<Auditlog> auditLogsRelations = super.findAll(sql);
+            String classNameRelation = propertyType.getName();
+            String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
+              + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId()
+              + "'order by ABS(ENTITY_ID) asc";
+            List<Auditlog> auditLogsRelations = super.findAll(sql);
 
-          Set<IAuditLog> relation = new HashSet<IAuditLog>();
-          for (Auditlog auditlog : auditLogsRelations) {
-            IAuditLog relationObject = this.loadFromAuditLog(auditlog);
-            this.loadRelationsForIAuditLog(relationObject, transactionID);
-            relation.add(relationObject);
+            Set<IAuditLog> relation = new HashSet<IAuditLog>();
+            for (Auditlog auditlog : auditLogsRelations) {
+              IAuditLog relationObject = this.loadFromAuditLog(auditlog);
+              this.loadRelationsForIAuditLog(relationObject, transactionID);
+              relation.add(relationObject);
+            }
+            classMetadata.setPropertyValue(iAuditLog, name, relation);
           }
-          classMetadata.setPropertyValue(iAuditLog, name, relation);
+        } catch (Exception e) {
+
         }
       }
     } catch (JsonSyntaxException e) {
