@@ -133,6 +133,12 @@ function getInputElement(fieldName,message) {
     $dateLabel.addClass('fieldError');
   }
 
+  // Find radio button
+  var $radioFlatLabel = $(elementQuery).parents('.radioFlat').find('label');
+  if($radioFlatLabel) {
+    $radioFlatLabel.addClass('fieldError');
+  }
+
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 

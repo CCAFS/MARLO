@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Feb 26, 2018 9:41:01 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" table="powb_collaboration" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
+            <column name="powb_synthesis" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="created_by">
+                <comment>foreign key to the table users</comment>
+            </column>
+        </many-to-one>
+        <property name="keyExternalPartners" type="string">
+            <column name="key_external_partners" length="65535" />
+        </property>
+        <property name="cotributionsPlatafforms" type="string">
+            <column name="cotributions_platafforms" length="65535" />
+        </property>
+        <property name="crossCrp" type="string">
+            <column name="cross_crp" length="65535" />
+        </property>
+        <property name="effostornCountry" type="string">
+            <column name="effostorn_country" length="65535" />
+        </property>
+        <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp">
+            <column name="active_since" length="19" not-null="true" />
+        </property>
+        <property name="modificationJustification" type="string">
+            <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

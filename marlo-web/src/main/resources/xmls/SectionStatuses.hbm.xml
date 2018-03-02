@@ -34,17 +34,21 @@
 			<column name="highlight_id" />
 		</many-to-one>
 		<many-to-one name="ipProgram"
-      class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
-      <column name="ip_program_id" />
-    </many-to-one>
-    
-      <many-to-one name="fundingSource"
-      class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
-      <column name="funding_source_id" />
-    </many-to-one>
-    <many-to-one name="ipLiaisonInstitution"
-      class="org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution" fetch="select">      
-      <column name="ip_liaison_id" />
+			class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
+			<column name="ip_program_id" />
+		</many-to-one>
+
+		<many-to-one name="fundingSource"
+			class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
+			<column name="funding_source_id" />
+		</many-to-one>
+		<many-to-one name="ipLiaisonInstitution"
+			class="org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution" fetch="select">
+			<column name="ip_liaison_id" />
+		</many-to-one>
+		<many-to-one name="powbSynthesis"
+      class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
+      <column name="powb_synthesis_id" />
     </many-to-one>
 		<property name="sectionName" type="string">
 			<column name="section_name" not-null="true">

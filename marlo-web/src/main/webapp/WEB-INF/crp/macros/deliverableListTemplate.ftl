@@ -116,9 +116,9 @@
             [#else]
               <span class="icon-20 icon-uncheck" title="Required fields still incompleted"></span> 
             [/#if]
-            
+            [#-- Remove icon --]
             [#if isDeliverableNew]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="Remove deliverable">
                 <div class="icon-container"><span class="trash-icon glyphicon glyphicon-trash"></span><div>
               </a>
             [/#if]

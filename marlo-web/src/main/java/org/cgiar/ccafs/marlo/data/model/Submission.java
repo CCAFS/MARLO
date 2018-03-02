@@ -25,18 +25,19 @@ import java.util.Date;
 public class Submission implements java.io.Serializable {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 235989260663664812L;
 
 
   private Long id;
 
   private CrpProgram crpProgram;
+
+
   private User user;
 
   private Date dateTime;
+
+
   private String modificationJustification;
   private String cycle;
   private Short year;
@@ -44,18 +45,16 @@ public class Submission implements java.io.Serializable {
   private User unSubmitUser;
   private Boolean unSubmit;
   private String unSubmitJustification;
-
+  private PowbSynthesis powbSynthesis;
 
   public Submission() {
   }
-
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime) {
     this.crpProgram = crpProgram;
     this.user = user;
     this.dateTime = dateTime;
   }
-
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime, String modificationJustification, String cycle,
     Short year, Project project) {
@@ -68,28 +67,33 @@ public class Submission implements java.io.Serializable {
     this.project = project;
   }
 
-
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
-
 
   public String getCycle() {
     return this.cycle;
   }
 
-
   public Date getDateTime() {
     return this.dateTime;
   }
+
 
   public Long getId() {
     return this.id;
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
+
+  public PowbSynthesis getPowbSynthesis() {
+    return powbSynthesis;
+  }
+
 
   public Project getProject() {
     return project;
@@ -107,6 +111,7 @@ public class Submission implements java.io.Serializable {
   public User getUser() {
     return this.user;
   }
+
 
   public Short getYear() {
     return this.year;
@@ -134,6 +139,10 @@ public class Submission implements java.io.Serializable {
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
   }
 
   public void setProject(Project project) {
