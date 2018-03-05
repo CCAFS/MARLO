@@ -285,14 +285,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
             && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == this.getSelectedYear()
             && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Complete.getStatusId())
-            && ((d.getDeliverableInfo().getNewExpectedYear() != null
-              && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
-              || (d.getDeliverableInfo().getNewExpectedYear() == null
-                && d.getDeliverableInfo().getYear() == this.getSelectedYear())))))
+              .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .collect(Collectors.toList())) {
         currentPhaseDeliverables.add(deliverable);
       }
