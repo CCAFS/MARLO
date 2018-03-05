@@ -196,14 +196,18 @@
     <tbody>
     [#if flagshipPlannedList?has_content]
       [#list flagshipPlannedList as flagshipPlanned]
-        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(flagshipPlanned.projectExpectedStudy.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         [#local wordCutterMaxPos=180]
         <tr>
           [#-- FP --]
           <td class="tb-fp text-center">
-            <span class="programTag" style="border-color:${(flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.acronym}
-            </span>
+            [#if flagshipPlanned.liaisonInstitutions?has_content]
+            [#list flagshipPlanned.liaisonInstitutions as institution]
+              <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">
+                ${institution.crpProgram.acronym}
+              </span>
+            [/#list]       
+            [/#if]
           </td>
           [#-- Planned topic of study --]
           <td>
