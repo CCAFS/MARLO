@@ -41,7 +41,7 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="" editable=editable /]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 
