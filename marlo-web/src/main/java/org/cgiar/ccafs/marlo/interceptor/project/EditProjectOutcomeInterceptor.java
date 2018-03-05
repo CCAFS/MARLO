@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -125,8 +124,8 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
         canEdit = true;
       } else {
-        List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(project.getProject()) && baseAction
+        // List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+        if (baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params))) {
 
 

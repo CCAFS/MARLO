@@ -59,7 +59,7 @@ function updateEffostornCountry() {
   var pmuValue = ""
   $('textarea.updateEffostornCountry').each(function(i,input) {
     if(input.value) {
-      pmuValue += $(input).parents('.regionBox').find('h4').text() + "\n";
+      pmuValue += $(input).parents('.regionBox').find('.regionTitle').text() + "\n";
       pmuValue += input.value + "\n \n";
     }
   });
@@ -77,6 +77,18 @@ function addProgramCollaboration() {
       width: '100%',
       templateResult: formatSelect2Result
   });
+
+  // Add auto complete
+  var $autoCompleteInput = $item.find('.globalUnitPrograms');
+
+  // Clear Program
+  $autoCompleteInput.val('');
+
+  $autoCompleteInput.autocomplete({
+      source: searchFlagships,
+      select: selectFlagship,
+      minLength: 0
+  }).autocomplete("instance")._renderItem = renderItem;
 
   $item.show('slow');
   updateIndexes();
@@ -161,10 +173,9 @@ function setViewMores() {
  * @returns
  */
 function addFlagshipAutoComplete() {
+
   $('select.globalUnitSelect').on('change', function() {
-    var gUnitID = this.value;
-    var $select = $(this);
-    var $autoCompleteInput = $select.parents('.flagshipCollaboration').find('.globalUnitPrograms');
+    var $autoCompleteInput = $(this).parents('.flagshipCollaboration').find('.globalUnitPrograms');
 
     // Clear Program
     $autoCompleteInput.val('');
@@ -175,30 +186,28 @@ function addFlagshipAutoComplete() {
         minLength: 0
     }).autocomplete("instance")._renderItem = renderItem;
 
-  }).trigger('change');
+  });
+}
 
-  function searchFlagships(request,response) {
-    var unitID = $(this.element).parents('.flagshipCollaboration').find('select.globalUnitSelect').val();
-    $.ajax({
-        url: baseURL + '/crpProgramsGlobalUnit.do',
-        data: {
-            q: request.term,
-            phaseID: phaseID,
-            crpID: unitID
-        },
-        success: function(data) {
-          response(data.crpPrograms);
-        }
-    });
-  }
+function searchFlagships(request,response) {
+  var selectedUnit = $(this.element).parents('.flagshipCollaboration').find('select.globalUnitSelect').val();
+  $.ajax({
+      url: baseURL + '/crpProgramsGlobalUnit.do',
+      data: {
+          phaseID: phaseID,
+          crpID: selectedUnit
+      },
+      success: function(data) {
+        response(data.crpPrograms);
+      }
+  });
+}
 
-  function selectFlagship(event,ui) {
-    $(this).val(ui.item.acronym + " - " + ui.item.description);
-    return false;
-  }
+function selectFlagship(event,ui) {
+  $(this).val(ui.item.acronym + " - " + ui.item.description);
+  return false;
+}
 
-  function renderItem(ul,item) {
-    return $("<li>").append("<div>" + item.acronym + " - " + item.description + "</div>").appendTo(ul);
-  }
-
+function renderItem(ul,item) {
+  return $("<li>").append("<div>" + item.acronym + " - " + item.description + "</div>").appendTo(ul);
 }
