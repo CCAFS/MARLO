@@ -203,9 +203,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_country = capdevLocationService.getCapdevLocationsById(capDevCountryID);
     if (capdev_country != null) {
-      capdev_country.setActive(false);
-      capdev_country.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_country);
+
+      capdevLocationService.deleteCapdevLocations(capdev_country.getId());
     }
     return SUCCESS;
   }
@@ -214,9 +213,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     capdev = capdevService.getCapacityDevelopmentById(capdevID);
     List<CapdevParticipant> listOfParticipants = new ArrayList<>(capdev.getCapdevParticipant());
     for (CapdevParticipant obj : listOfParticipants) {
-      obj.setActive(false);
-      obj.setModifiedBy(this.getCurrentUser());
-      capdevParicipantService.saveCapdevParticipant(obj);
+      capdevParicipantService.deleteCapdevParticipant(obj.getId());
       Participant participant = obj.getParticipant();
       participant.setActive(false);
       participant.setModifiedBy(this.getCurrentUser());
@@ -241,9 +238,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     CapdevLocations capdev_region = capdevLocationService.getCapdevLocationsById(capDevRegionID);
     if (capdev_region != null) {
-      capdev_region.setActive(false);
-      capdev_region.setModifiedBy(this.getCurrentUser());
-      capdevLocationService.saveCapdevLocations(capdev_region);
+      capdevLocationService.deleteCapdevLocations(capdev_region.getId());
     }
     return SUCCESS;
   }
@@ -858,9 +853,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
     relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
-    capdev.setActiveSince(new Date());
-    capdev.setModifiedBy(this.getCurrentUser());
-
 
     capdevService.saveCapacityDevelopment(capdev, this.getActionName(), relationsName);
 
@@ -894,10 +886,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -910,10 +898,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     CapdevParticipant capdevParticipant = new CapdevParticipant();
     capdevParticipant.setCapacityDevelopment(capdev);
     capdevParticipant.setParticipant(participant);
-    capdevParticipant.setActive(true);
-    capdevParticipant.setActiveSince(new Date());
-    capdevParticipant.setCreatedBy(this.getCurrentUser());
-    capdevParticipant.setModifiedBy(this.getCurrentUser());
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
@@ -928,10 +912,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations = new CapdevLocations();
           capdevLocations.setCapacityDevelopment(capdev);
           capdevLocations.setLocElement(iterator.getLocElement());
-          capdevLocations.setActive(true);
-          capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(this.getCurrentUser());
-          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
       }

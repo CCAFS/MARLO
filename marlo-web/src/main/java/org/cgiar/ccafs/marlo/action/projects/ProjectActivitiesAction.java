@@ -440,8 +440,6 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         for (Activity activity : project.getProjectActivities()) {
-
-          activity.setActive(true);
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
               if (deliverableActivity.getId() == -1) {
@@ -453,20 +451,6 @@ public class ProjectActivitiesAction extends BaseAction {
             }
           }
         }
-
-        /*
-         * for (Activity activity : project.getClosedProjectActivities()) {
-         * if (activity.getDeliverables() != null) {
-         * for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-         * if (deliverableActivity.getId() == -1) {
-         * Deliverable deliverable =
-         * deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-         * deliverableActivity.setDeliverable(deliverable);
-         * }
-         * }
-         * }
-         * }
-         */
 
         this.setDraft(true);
       } else {
@@ -482,21 +466,7 @@ public class ProjectActivitiesAction extends BaseAction {
                 .collect(Collectors.toList())));
           }
         }
-        /*
-         * project
-         * .setClosedProjectActivities(
-         * new ArrayList<Activity>(project.getActivities().stream()
-         * .filter(a -> a.isActive()
-         * && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-         * || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-         * .collect(Collectors.toList())));
-         * if (project.getClosedProjectActivities() != null) {
-         * for (Activity closedActivity : project.getClosedProjectActivities()) {
-         * closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
-         * .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
-         * }
-         * }
-         */
+
       }
 
       status = new HashMap<>();
