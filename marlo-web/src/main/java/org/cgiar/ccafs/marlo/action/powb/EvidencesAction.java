@@ -198,20 +198,39 @@ public class EvidencesAction extends BaseAction {
 
   public void expectedStudiesNewData(PowbEvidence powbEvidenceDB) {
 
+    List<Long> selectedPs = new ArrayList<>();
+    List<Long> studiesIds = new ArrayList<>();
+
+    for (ProjectExpectedStudy std : popUpProjects) {
+      studiesIds.add(std.getId());
+    }
 
     if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null
       && powbSynthesis.getPowbEvidence().getPlannedStudiesValue().length() > 0) {
+      List<Long> stList = new ArrayList<>();
+      for (String string : powbSynthesis.getPowbEvidence().getPlannedStudiesValue().trim().split(",")) {
+        stList.add(Long.parseLong(string.trim()));
+      }
+
+
+      for (Long studyId : studiesIds) {
+        int index = stList.indexOf(studyId);
+        if (index < 0) {
+          selectedPs.add(studyId);
+        }
+
+
+      }
+
       for (PowbEvidencePlannedStudy powbStudy : powbEvidenceDB.getPowbEvidencePlannedStudies().stream()
         .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-        if (!powbSynthesis.getPowbEvidence().getPlannedStudiesValue()
-          .contains(powbStudy.getProjectExpectedStudy().getId().toString())) {
+        if (!selectedPs.contains(powbStudy.getProjectExpectedStudy().getId())) {
           powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbStudy.getId());
         }
       }
 
-      for (String studyId : powbSynthesis.getPowbEvidence().getPlannedStudiesValue().trim().split(",")) {
-        ProjectExpectedStudy expectedStudy =
-          projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyId.trim()));
+      for (Long studyId : selectedPs) {
+        ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyId);
 
         PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
 
@@ -236,47 +255,14 @@ public class EvidencesAction extends BaseAction {
 
       }
     } else {
+
       for (PowbEvidencePlannedStudy powbStudy : powbEvidenceDB.getPowbEvidencePlannedStudies().stream()
         .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
         powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbStudy.getId());
       }
     }
-
-
-    for (PowbEvidencePlannedStudy evidencePlannedStudy : powbSynthesis.getPowbEvidence().getPlannedStudies()) {
-      if (evidencePlannedStudy != null) {
-
-        PowbEvidencePlannedStudy evidencePlannedStudyNew;
-        if (evidencePlannedStudy.getId() == null) {
-          evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-          evidencePlannedStudyNew.setActive(true);
-          evidencePlannedStudyNew.setActiveSince(new Date());
-          evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-          evidencePlannedStudyNew.setModificationJustification("");
-        } else {
-          evidencePlannedStudyNew =
-            powbEvidencePlannedStudyManager.getPowbEvidencePlannedStudyById(evidencePlannedStudy.getId());
-          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-        }
-
-
-        if (powbSynthesis.getPowbEvidence().getPlannedStudiesValue() != null
-          && powbSynthesis.getPowbEvidence().getPlannedStudiesValue().length() > 0) {
-          for (String studyId : powbSynthesis.getPowbEvidence().getPlannedStudiesValue().trim().split(",")) {
-            ProjectExpectedStudy expectedStudy =
-              projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(studyId.trim()));
-            evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
-          }
-        }
-
-        evidencePlannedStudyNew.setPowbEvidence(powbEvidenceDB);
-        evidencePlannedStudyNew = powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
-      }
-    }
-
-
   }
+
 
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
@@ -431,7 +417,7 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
-  public void popUpProject(long phaseID) {
+  public void popUpProject(long phaseID, LiaisonInstitution liaisonInstitution) {
 
     popUpProjects = new ArrayList<>();
 
@@ -444,7 +430,6 @@ public class EvidencesAction extends BaseAction {
 
       for (ProjectFocus focus : projectFocus) {
         Project project = projectManager.getProjectById(focus.getProject().getId());
-        System.out.println("Project : " + project.getId());
         List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(project.getProjectExpectedStudies().stream()
           .filter(es -> es.isActive() && es.getPhase().getId() == phaseID).collect(Collectors.toList()));
         for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
@@ -550,7 +535,7 @@ public class EvidencesAction extends BaseAction {
       liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liaisonInstitutionID);
 
       if (this.isFlagship()) {
-        this.popUpProject(phase.getId());
+        this.popUpProject(phase.getId(), liaisonInstitution);
       }
 
       Path path = this.getAutoSaveFilePath();
@@ -605,24 +590,6 @@ public class EvidencesAction extends BaseAction {
             for (PowbEvidencePlannedStudy plannedStudy : powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies()
               .stream().filter(ro -> ro.isActive()).collect(Collectors.toList())) {
               powbSynthesis.getPowbEvidence().getExpectedStudies().add(plannedStudy.getProjectExpectedStudy());
-            }
-          } else {
-            if (popUpProjects != null && !popUpProjects.isEmpty()) {
-              for (ProjectExpectedStudy expectedStudy : popUpProjects) {
-                PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
-                evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
-                evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
-                evidencePlannedStudyNew.setActive(true);
-                evidencePlannedStudyNew.setActiveSince(new Date());
-                evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
-                evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
-                evidencePlannedStudyNew.setModificationJustification("");
-                evidencePlannedStudyNew =
-                  powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
-
-                powbSynthesis.getPowbEvidence().getExpectedStudies()
-                  .add(evidencePlannedStudyNew.getProjectExpectedStudy());
-              }
             }
           }
         }

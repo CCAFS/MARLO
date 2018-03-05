@@ -7,7 +7,7 @@
 ]/]
 
 [#attempt]
-  [#assign submission = (action.isSubmitCapDev(capdevID))! /]
+  [#assign submission = (action.isSubmitCapDev(capdevID))!false /]
   [#assign canSubmit = (action. hasPersmissionSubmitCapDev(capdevID))!false /]
   [#assign completed = (action.isCompleteCapDev(capdevID))!false /]
 [#recover]
