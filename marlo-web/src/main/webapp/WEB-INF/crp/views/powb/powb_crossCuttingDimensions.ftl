@@ -131,7 +131,7 @@
   
   <!-- Modal -->
   <div class="modal fade" id="overallOutputsMacro" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" style="" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -163,7 +163,7 @@
           [#list dList as dInfo]
           <tr>
             <td class="row">
-              <p> <strong>D${(dInfo.deliverable.id)!}</strong> ${(dInfo.title)!'Not Defined'}</p>
+              <span title="${(dInfo.title)!}"><strong>D${(dInfo.deliverable.id)!}</strong> [@utilities.wordCutter string="${(dInfo.title)!'Not Defined'}" maxPos=70 /] </span> <br />
               <small>(${(dInfo.deliverableType.name)!'Not Defined'})</small>
             </td>
             <td>
