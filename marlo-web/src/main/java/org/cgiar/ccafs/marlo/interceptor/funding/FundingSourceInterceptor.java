@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -102,8 +101,8 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
       if (baseAction.canAccessSuperAdmin() || baseAction.canEditCrpAdmin()) {
         canEdit = true;
       } else {
-        List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
-        if (fundingSources.contains(fundingSource) && (baseAction
+        // List<FundingSource> fundingSources = fundingSourceManager.getFundingSource(user.getId(), crp.getAcronym());
+        if ((baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))
           || baseAction
             .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, params)))) {
