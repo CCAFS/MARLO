@@ -54,7 +54,7 @@
             <hr />
           
             [#-- Modal Large --]
-            <button type="button" class="pull-right btn btn-default btn-xs" data-toggle="modal" data-target="#tableA-bigger"> 
+            <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
               <span class="glyphicon glyphicon-fullscreen"></span> See Full Table A
             </button>
             <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">

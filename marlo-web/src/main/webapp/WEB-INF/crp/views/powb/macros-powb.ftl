@@ -7,7 +7,7 @@
     [#local projects = (action.loadFlagShipBudgetInfoProgram(element.id))![] ]
     [#if projects?size > 0]
     <a class=" btn btn-default btn-xs" data-toggle="modal" data-target="#projectBudgets-${type}-${element.id}">
-       US$ <span >[#if type == "W1W2"]${element.w1?number?string(",##0.00")}[#elseif type == "W3BILATERAL"]${element.w3?number?string(",##0.00")}[/#if]</span>
+       <span class="glyphicon glyphicon-fullscreen" style="color:#b3b3b3"></span> US$ <span >[#if type == "W1W2"]${element.w1?number?string(",##0.00")}[#elseif type == "W3BILATERAL"]${element.w3?number?string(",##0.00")}[/#if]</span>
     </a>
     
     <!-- Modal -->
