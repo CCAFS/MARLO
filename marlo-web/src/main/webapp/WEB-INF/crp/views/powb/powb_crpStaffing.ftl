@@ -42,7 +42,7 @@
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
           <div class="form-group">
             <input type="hidden" name="powbSynthesis.crpStaffing.id" value="${(powbSynthesis.crpStaffing.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="" editable=editable && PMU /]
           </div>
           
           [#-- Table D: CRP Staffing (OPTIONAL IN POWB 2018)  --]
