@@ -20,8 +20,8 @@
   },
   { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': true },
-    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': true }
+    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
