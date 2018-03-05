@@ -101,7 +101,11 @@
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderSignificant?string(",##0.00")}%</span> </td>
             <td class="text-center"> <span class="animated flipInX">${tableC.percentageGenderNotScored?string(",##0.00")}%</span> </td> 
             <td rowspan="3" class="text-center"> 
-              <h3 class="animated flipInX"><a class="btn btn-default btn-lg" data-toggle="modal" data-target="#overallOutputsMacro">${tableC.total}</a></span> </h3>
+              <h3 class="animated flipInX">
+                <a class="btn btn-default btn-lg" data-toggle="modal" data-target="#overallOutputsMacro">
+                  <span class="glyphicon glyphicon-fullscreen" style="color:#b3b3b3"></span> ${tableC.total}
+                </a>
+              </h3>
             </td> 
           </tr>
           <tr>
