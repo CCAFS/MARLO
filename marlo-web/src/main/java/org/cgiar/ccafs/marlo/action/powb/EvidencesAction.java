@@ -292,69 +292,68 @@ public class EvidencesAction extends BaseAction {
   public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
     flagshipPlannedList = new ArrayList<>();
 
-
-    List<ProjectExpectedStudy> expectedStudies =
-      new ArrayList<>(
-        projectExpectedStudyManager.findAll().stream()
-          .filter(
-            ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+    if (projectExpectedStudyManager.findAll() != null) {
+      List<ProjectExpectedStudy> expectedStudies =
+        new ArrayList<>(
+          projectExpectedStudyManager.findAll().stream()
+            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
               && ps.getProject().getGlobalUnitProjects().stream()
                 .filter(
                   gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
                 .collect(Collectors.toList()).size() > 0)
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
-    for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
 
-      PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
-      dto.setProjectExpectedStudy(projectExpectedStudy);
-      List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses().stream()
-        .filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
-      List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
-      for (ProjectFocus projectFocus : projectFocuses) {
-        liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
-          .filter(li -> li.isActive() && li.getCrpProgram() != null
-            && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList()));
+        PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+          .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+        for (ProjectFocus projectFocus : projectFocuses) {
+          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+            .filter(li -> li.isActive() && li.getCrpProgram() != null
+              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList()));
+        }
+        dto.setLiaisonInstitutions(liaisonInstitutions);
+        flagshipPlannedList.add(dto);
       }
-      dto.setLiaisonInstitutions(liaisonInstitutions);
-      flagshipPlannedList.add(dto);
-    }
 
-    List<PowbEvidencePlannedStudy> evidencePlannedStudies = new ArrayList<>();
-    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbEvidence() != null) {
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-            List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
-              .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-            if (studies != null || !studies.isEmpty()) {
-              for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
-                evidencePlannedStudies.add(powbEvidencePlannedStudy);
+      List<PowbEvidencePlannedStudy> evidencePlannedStudies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (powbSynthesis != null) {
+          if (powbSynthesis.getPowbEvidence() != null) {
+            if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+              List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+                .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                  evidencePlannedStudies.add(powbEvidencePlannedStudy);
+                }
               }
             }
           }
         }
       }
-    }
 
-    List<Integer> removeList = new ArrayList<>();
-    for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
-      for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
-        int index = flagshipPlannedList.indexOf(dto);
-        if (dto.getProjectExpectedStudy().equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
-          removeList.add(index);
+      List<Integer> removeList = new ArrayList<>();
+      for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
+        for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
+          int index = flagshipPlannedList.indexOf(dto);
+          if (dto.getProjectExpectedStudy().equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
+            removeList.add(index);
+          }
         }
       }
-    }
 
-    for (Integer i : removeList) {
-      flagshipPlannedList.remove(i);
-    }
+      for (Integer i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
 
+    }
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
