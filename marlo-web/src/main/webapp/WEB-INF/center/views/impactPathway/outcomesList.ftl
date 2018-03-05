@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrl}/global/js/usersManagement.js", 
   "${baseUrl}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/impactPathway/outcomeList.js"
+  "${baseUrlMedia}/js/impactPathway/outcomeList.js?20180305"
   ] 
 /]
 [#assign customCSS = [
