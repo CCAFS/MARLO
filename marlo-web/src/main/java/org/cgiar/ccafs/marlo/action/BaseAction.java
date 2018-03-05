@@ -2719,35 +2719,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         break;
       case CROSS_CUTTING_DIMENSIONS:
-
-        if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
-          if (sectionStatus == null) {
-            return false;
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-        }
-        returnValue = true;
-        break;
       case STAFFING:
-
-        if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
-            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
-          if (sectionStatus == null) {
-            return false;
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-        }
-        returnValue = true;
-        break;
       case FINANCIAL_PLAN:
-
+      case MANAGEMENT_GOVERNANCE:
+      case MANAGEMENT_RISK:
         if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
             this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
@@ -2760,6 +2735,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         returnValue = true;
         break;
+
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
           this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
@@ -3927,7 +3903,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     if (this.isPowbFlagship(powbSynthesis.getLiaisonInstitution())) {
-      if (secctions != 8) {
+      if (secctions != 6) {
         return false;
       }
     }
