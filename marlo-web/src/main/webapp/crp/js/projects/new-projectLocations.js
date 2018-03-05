@@ -174,7 +174,7 @@ function attachEvents() {
       // Checking if locations select is empty
       if($locationSelect.val() != null) {
         // Checking if the location level exist in the bottom wrapper
-        if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+        if($(".locationsData").find("input.locationLevelId[value='" + locationId + "']").exists()) {
           addCountryIntoLocLevel(locationId, $locationSelect, locationName);
         } else {
           addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
@@ -189,7 +189,7 @@ function attachEvents() {
 
         } else {
           // Checking if the location level exist in the bottom wrapper
-          if($(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").exists()) {
+          if($(".locationsData").find("input.locationLevelId[value='" + locationId + "']").exists()) {
             addLocByCoordinates(locationId, $locationSelect, locationName)
           } else {
             addLocLevel(locationName, locationId, locationIsList, $locationSelect, locationIsList);
@@ -286,7 +286,7 @@ function loadScript() {
   // function after load script
   script.onload = script.onreadystatechange = function() {
 
-    $(".selectWrapper").find(".locationLevel").each(function(index,item) {
+    $(".locationsData").find(".locationLevel").each(function(index,item) {
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
@@ -591,7 +591,7 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
   $locationItem.find("input.locationLevelId").val(locationId);
   $locationItem.find("input.locationLevelName").val(locationName);
   $locationItem.find("input.isList").val(locationIsList);
-  $(".selectWrapper").append($locationItem);
+  $(".locationsData").append($locationItem);
   $locationItem.show("slow");
   updateIndex();
   if(locationIsList == "true") {
@@ -607,7 +607,7 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect,loca
 }
 
 function updateIndex() {
-  $('.selectWrapper ').find('.locationLevel').each(function(i,e) {
+  $('.locationsData ').find('.locationLevel').each(function(i,e) {
     $(e).setNameIndexes(1, i);
     $.each($(e).find(".locElement"), function(index,element) {
       $(element).setNameIndexes(2, index);
@@ -620,7 +620,7 @@ function updateIndex() {
 //Adding locElement into location level(Country and CSVS)
 function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
-      $(".selectWrapper").find("input.locationLevelId[value='" + locationId + "']").parent().find(
+      $(".locationsData").find("input.locationLevelId[value='" + locationId + "']").parent().find(
           ".optionSelect-content");
   $.each($locationSelect.val(), function(i,e) {
     var $item = $("#location-template").clone(true).removeAttr("id");
