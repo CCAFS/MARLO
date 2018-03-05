@@ -30,7 +30,7 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder=""]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
@@ -42,6 +42,9 @@
           <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>
         [/#if]
       </label>
+      [#if powbInclude]
+        <span class="badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+      [/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
