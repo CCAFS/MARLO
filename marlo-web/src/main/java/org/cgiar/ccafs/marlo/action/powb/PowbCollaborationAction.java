@@ -61,7 +61,6 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -170,6 +169,13 @@ public class PowbCollaborationAction extends BaseAction {
   }
 
 
+  public boolean canEditRegion(long regionId) {
+    String permission = this.generatePermission(Permission.POWB_SYNTHESIS_RPL_EFFORT, this.getCrpSession(),
+      powbSynthesis.getId().toString(), regionId + "");
+    return this.hasPermissionNoBase(permission);
+  }
+
+
   public Long firstFlagship() {
     List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null && c.isActive()
@@ -194,7 +200,6 @@ public class PowbCollaborationAction extends BaseAction {
     return crpPrograms;
   }
 
-
   public PowbCollaborationRegion getElemnentRegion(long regionId) {
     int index = this.getIndexRegion(regionId);
     return powbSynthesis.getRegions().get(index);
@@ -203,6 +208,7 @@ public class PowbCollaborationAction extends BaseAction {
   public List<PowbMonitoringEvaluationLearningExercise> getFlagshipExercises() {
     return flagshipExercises;
   }
+
 
   public List<GlobalUnit> getGlobalUnits() {
     return globalUnits;
@@ -215,7 +221,8 @@ public class PowbCollaborationAction extends BaseAction {
     }
     int i = 0;
     for (PowbCollaborationRegion powbCollaborationRegion : powbSynthesis.getRegions()) {
-      if (powbCollaborationRegion.getLiaisonInstitution().getId().longValue() == regionId) {
+      if (powbCollaborationRegion.getLiaisonInstitution() != null
+        && powbCollaborationRegion.getLiaisonInstitution().getId().longValue() == regionId) {
         return i;
       }
 
@@ -228,7 +235,6 @@ public class PowbCollaborationAction extends BaseAction {
     return this.getIndexRegion(regionId);
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
@@ -236,6 +242,7 @@ public class PowbCollaborationAction extends BaseAction {
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -245,7 +252,6 @@ public class PowbCollaborationAction extends BaseAction {
   public List<LocElement> getLocElements() {
     return locElements;
   }
-
 
   public List<LocElement> getLocElementsByPMU() {
     List<LocElement> locElements = new ArrayList<>();
@@ -396,10 +402,6 @@ public class PowbCollaborationAction extends BaseAction {
 
     for (LocElement locElement : locElements) {
       if (!locElement.getProjects().isEmpty()) {
-        if (locElement.getName().equals("Bangladesh")) {
-          System.out.println("holi");
-          System.out.println(Arrays.asList(locElement.getProjects()));
-        }
         locElementsToRet.add(locElement);
       }
     }
@@ -749,6 +751,8 @@ public class PowbCollaborationAction extends BaseAction {
                 .getLiaisonInstitutionById(powbCollaborationRegion.getLiaisonInstitution().getId()));
             }
           }
+          powbSynthesis.getRegions().sort(
+            (p1, p2) -> p1.getLiaisonInstitution().getAcronym().compareTo(p2.getLiaisonInstitution().getAcronym()));
         }
         this.setDraft(true);
         reader.close();
@@ -774,7 +778,8 @@ public class PowbCollaborationAction extends BaseAction {
         powbSynthesis.setRegions(
           powbSynthesis.getPowbCollaborationRegions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
+        powbSynthesis.getRegions()
+          .sort((p1, p2) -> p1.getLiaisonInstitution().getAcronym().compareTo(p2.getLiaisonInstitution().getAcronym()));
       }
     }
 
@@ -837,10 +842,11 @@ public class PowbCollaborationAction extends BaseAction {
     }
     globalUnits.sort((p1, p2) -> p1.getAcronymValid().compareTo(p2.getAcronymValid()));
     globalUnits.sort((p1, p2) -> {
-      if (p1.getName().compareTo(p2.getName()) == 0) {
-        return p1.getGlobalUnitType().getId().compareTo(p2.getGlobalUnitType().getId());
-      } else {
+      if (p1.getGlobalUnitType().getId().compareTo(p2.getGlobalUnitType().getId()) == 0) {
         return p1.getAcronymValid().compareTo(p2.getAcronymValid());
+
+      } else {
+        return p1.getGlobalUnitType().getId().compareTo(p2.getGlobalUnitType().getId());
       }
     });
 

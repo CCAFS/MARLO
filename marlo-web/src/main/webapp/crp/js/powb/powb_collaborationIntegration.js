@@ -40,8 +40,9 @@ $(document).ready(function() {
 
 function attachEvents() {
 
-  setViewMore();
-  $('.viewMoreSyntesis').on('click', expandViewMoreSyntesisBlock);
+  setViewMores();
+
+  addFlagshipAutoComplete();
 
   // Add a program collaboration
   $('.addProgramCollaboration').on('click', addProgramCollaboration);
@@ -49,6 +50,21 @@ function attachEvents() {
   // Remove a program collaboration
   $('.removeProgramCollaboration').on('click', removeProgramCollaboration);
 
+  // Update Efforts Country Question
+  $('.updateEffostornCountry').on('keyup', updateEffostornCountry);
+
+}
+
+function updateEffostornCountry() {
+  var pmuValue = ""
+  $('textarea.updateEffostornCountry').each(function(i,input) {
+    if(input.value) {
+      pmuValue += $(input).parents('.regionBox').find('.regionTitle').text() + "\n";
+      pmuValue += input.value + "\n \n";
+    }
+  });
+
+  $('#pmuValue').val(pmuValue);
 }
 
 function addProgramCollaboration() {
@@ -61,6 +77,18 @@ function addProgramCollaboration() {
       width: '100%',
       templateResult: formatSelect2Result
   });
+
+  // Add auto complete
+  var $autoCompleteInput = $item.find('.globalUnitPrograms');
+
+  // Clear Program
+  $autoCompleteInput.val('');
+
+  $autoCompleteInput.autocomplete({
+      source: searchFlagships,
+      select: selectFlagship,
+      minLength: 0
+  }).autocomplete("instance")._renderItem = renderItem;
 
   $item.show('slow');
   updateIndexes();
@@ -89,7 +117,6 @@ function updateIndexes() {
 }
 
 function formatSelect2Result(item) {
-  console.log(item);
   if(item.loading) {
     return item.text;
   }
@@ -102,7 +129,7 @@ function formatSelect2Result(item) {
 function expandViewMoreSyntesisBlock() {
 
   var blockHeight = $(this).parent().find('table').height() + $(this).height();
-  var defaultHeigth = 300;
+  var defaultHeigth = 250;
 
   if($(this).hasClass("closed")) {
     $(this).parent().css({
@@ -119,17 +146,68 @@ function expandViewMoreSyntesisBlock() {
   }
 }
 
-function setViewMore() {
-  var defaultHeigth = 300;
+function setViewMores() {
+  var defaultHeigth = 250;
   $('.viewMoreSyntesis-block').each(function(i,element) {
+    var $viewMoreButton = $(element).find('.viewMoreSyntesis');
+
     if($(element).height() < defaultHeigth) {
-      $(element).find('.viewMoreSyntesis').remove();
+      $viewMoreButton.remove();
     } else {
       $(element).css({
         "height": defaultHeigth
       })
-      $(element).find('.viewMoreSyntesis').addClass("closed");
-      $(element).find('.viewMoreSyntesis').html('View More');
+      $viewMoreButton.addClass("closed");
+      $viewMoreButton.html('View More');
     }
+    // Show the block if is hidden
+    $(element).show();
+    // Add Event
+    $viewMoreButton.on('click', expandViewMoreSyntesisBlock);
   });
+}
+
+/**
+ * This function initialize the Flagships auto complete
+ * 
+ * @returns
+ */
+function addFlagshipAutoComplete() {
+
+  $('select.globalUnitSelect').on('change', function() {
+    var $autoCompleteInput = $(this).parents('.flagshipCollaboration').find('.globalUnitPrograms');
+
+    // Clear Program
+    $autoCompleteInput.val('');
+
+    $autoCompleteInput.autocomplete({
+        source: searchFlagships,
+        select: selectFlagship,
+        minLength: 0
+    }).autocomplete("instance")._renderItem = renderItem;
+
+  });
+}
+
+function searchFlagships(request,response) {
+  var selectedUnit = $(this.element).parents('.flagshipCollaboration').find('select.globalUnitSelect').val();
+  $.ajax({
+      url: baseURL + '/crpProgramsGlobalUnit.do',
+      data: {
+          phaseID: phaseID,
+          crpID: selectedUnit
+      },
+      success: function(data) {
+        response(data.crpPrograms);
+      }
+  });
+}
+
+function selectFlagship(event,ui) {
+  $(this).val(ui.item.acronym + " - " + ui.item.description);
+  return false;
+}
+
+function renderItem(ul,item) {
+  return $("<li>").append("<div>" + item.acronym + " - " + item.description + "</div>").appendTo(ul);
 }

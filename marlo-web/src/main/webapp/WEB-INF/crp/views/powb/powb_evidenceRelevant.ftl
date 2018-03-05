@@ -162,7 +162,7 @@
           [#-- Include --]
           <td class="plannedStudiesCheckbox text-center">
           [#if editable]
-            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!false)/]
+            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!true)/]
           [#else]
             [#-- If does no have permissions --]
             [#if powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id)]<p class="checked"></p>[/#if]
