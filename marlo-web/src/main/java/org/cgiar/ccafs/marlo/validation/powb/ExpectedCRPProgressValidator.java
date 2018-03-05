@@ -107,12 +107,12 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
             if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
               for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
                 int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
-                if (!(this.isValidString(powbExpectedCrpProgress.getMeans())
-                  && this.wordCount(powbExpectedCrpProgress.getMeans()) <= 100)) {
+                if (!(this.isValidString(powbExpectedCrpProgress.getMeans()))) {
                   action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
                   action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
+
                 if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
                   action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
                   action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
@@ -131,8 +131,7 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
           if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
             int i = 0;
             for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-              if (!(this.isValidString(powbExpectedCrpProgress.getExpectedHighlights())
-                && this.wordCount(powbExpectedCrpProgress.getExpectedHighlights()) <= 100)) {
+              if (!(this.isValidString(powbExpectedCrpProgress.getExpectedHighlights()))) {
                 action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses.expectedHighlights"));
                 action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].expectedHighlights",
                   InvalidFieldsMessages.EMPTYFIELD);

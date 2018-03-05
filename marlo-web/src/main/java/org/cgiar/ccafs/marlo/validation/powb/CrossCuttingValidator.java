@@ -63,15 +63,13 @@ public class CrossCuttingValidator extends BaseValidator {
         }
       }
 
-      if (!(this.isValidString(powbSynthesis.getPowbCrossCuttingDimension().getSummarize())
-        && this.wordCount(powbSynthesis.getPowbCrossCuttingDimension().getSummarize()) <= 100)) {
+      if (!(this.isValidString(powbSynthesis.getPowbCrossCuttingDimension().getSummarize()))) {
         action.addMessage(action.getText("liaisonInstitution.powb.summarizeCorssCutting"));
         action.getInvalidFields().put("input-powbSynthesis.crossCutting.summarize", InvalidFieldsMessages.EMPTYFIELD);
       }
 
 
-      if (!(this.isValidString(powbSynthesis.getPowbCrossCuttingDimension().getAssets())
-        && this.wordCount(powbSynthesis.getPowbCrossCuttingDimension().getAssets()) <= 100)) {
+      if (!(this.isValidString(powbSynthesis.getPowbCrossCuttingDimension().getAssets()))) {
         action.addMessage(action.getText("liaisonInstitution.powb.openDataIntellectualAssests"));
         action.getInvalidFields().put("input-powbSynthesis.crossCutting.assets", InvalidFieldsMessages.EMPTYFIELD);
       }
