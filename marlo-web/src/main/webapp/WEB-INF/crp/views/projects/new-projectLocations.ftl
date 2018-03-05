@@ -237,9 +237,13 @@
                       </div>
                     </div>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
-                      <div class="row">
+                      <div class="row locationsDataTable">
                         [#if project.locationsData?has_content]
-                          [@locationsTableMacro /]
+                          <table>
+                            [#list project.locationsData as locationLevels]
+                              [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
+                            [/#list]
+                          </table>
                         [#else]
                           <p class="text-center borderBox inf">No locations has been added, please add locations.</p>
                         [/#if]
@@ -259,33 +263,9 @@
 </section>
 [/#if]
 
-[#macro locationsTableMacro ]
-  <table>
-    [#list project.locationsData as locationLevels]
-      [#local customName = "${locationLevelName}[${locationLevels_index}]" /]
-      <tr>
-        <th width="20%">${(locationLevels.name)!''}</th>
-        <td width="80%">
-          <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-            [#-- Content of locations--]
-            <div class="optionSelect-content row">
-              [#if locationLevels.locElements?has_content]
-                [#list locationLevels.locElements as location]
-                  [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=locationLevels.allCountries /]
-                [/#list]
-              [/#if]
-            </div>
-          </div>
-        </td>
-      </tr>
-      <input class="locationLevelId" type="hidden" name="${customName}.id" value="${(locationLevels.id)!}"/>
-      <input class="locationLevelName" type="hidden" name="${customName}.name" value="${(locationLevels.name)!}"/>
-      <input type="hidden" class="isList" name="${customName}.isList"  value="${(locationLevels.list)?string}"/>
-    [/#list]
-  </table>
-[/#macro]
 
 [#-- Section hidden inputs--]
+[@locationsTableMacro element={} name="${locationLevelName}" index=-1 template=true /]
 
 [@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
 
@@ -293,6 +273,28 @@
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
+
+[#macro locationsTableMacro element name index template=false list=false]
+      [#local customName = "${name}[${index}]" /]
+      <tr id="locationLevel-${template?string('template',index)}">
+        <th class="locLevelName" width="20%">${(element.name)!''}</th>
+        <td width="80%">
+          <div class=" locationLevel-optionContent " listname="${customName}.locElements">
+            [#-- Content of locations--]
+            <div class="optionSelect-content row">
+              [#if element.locElements?has_content]
+                [#list element.locElements as location]
+                  [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
+                [/#list]
+              [/#if]
+            </div>
+          </div>
+        </td>
+        <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
+        <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
+        <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
+      </tr>
+[/#macro]
 
 [#-- Region element template --]
 <ul style="display:none">
