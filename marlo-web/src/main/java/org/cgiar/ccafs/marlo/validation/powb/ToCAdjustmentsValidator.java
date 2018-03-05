@@ -101,8 +101,7 @@ public class ToCAdjustmentsValidator extends BaseValidator {
 
   public void validateToC(BaseAction action, PowbSynthesis powbSynthesis) {
 
-    if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall())
-      && this.wordCount(powbSynthesis.getPowbToc().getTocOverall()) <= 100)) {
+    if (!(this.isValidString(powbSynthesis.getPowbToc().getTocOverall()))) {
       action.addMessage(action.getText("liaisonInstitution.powb.adjustmentsChanges"));
       action.getInvalidFields().put("input-powbSynthesis.powbToc.tocOverall", InvalidFieldsMessages.EMPTYFIELD);
     }

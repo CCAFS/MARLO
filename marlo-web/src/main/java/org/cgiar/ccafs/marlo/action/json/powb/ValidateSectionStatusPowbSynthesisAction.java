@@ -161,36 +161,11 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
         }
         break;
       case CROSS_CUTTING_DIMENSIONS:
-
-        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
-
-          if (sectionStatus == null) {
-            sectionStatus = new SectionStatus();
-            sectionStatus.setMissingFields("No section");
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-          }
-        }
-        break;
       case STAFFING:
-
-        if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
-          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
-            phase.getYear(), sectionName);
-
-          if (sectionStatus == null) {
-            sectionStatus = new SectionStatus();
-            sectionStatus.setMissingFields("No section");
-          }
-          if (sectionStatus.getMissingFields().length() > 0) {
-            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
-          }
-        }
-        break;
       case FINANCIAL_PLAN:
+      case MANAGEMENT_GOVERNANCE:
+      case MANAGEMENT_RISK:
+
 
         if (this.isPMU(powbSynthesis.getLiaisonInstitution())) {
           sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
@@ -205,6 +180,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
           }
         }
         break;
+
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(), cycle,
           phase.getYear(), sectionName);

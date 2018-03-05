@@ -51,7 +51,9 @@ $(document).ready(
 
       addJustificationPopUp();
       // Event to open dialog to remove deliverable
-      $("a.removeOutcome").on("click", removeOutcome);
+      $deliverableList.on('draw.dt', function() {
+        $("a.removeOutcome").on("click", removeOutcome);
+      });
 
     });
 

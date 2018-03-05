@@ -64,8 +64,7 @@ public class FinancialPlanValidator extends BaseValidator {
       }
     }
     if (powbSynthesis != null) {
-      if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues())
-        && this.wordCount(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()) <= 100)) {
+      if (!(this.isValidString(powbSynthesis.getFinancialPlan().getFinancialPlanIssues()))) {
         action.addMessage(action.getText("powbSynthesis.financialPlan.highlight.readText"));
         action.getInvalidFields().put("input-powbSynthesis.financialPlan.financialPlanIssues",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -103,8 +102,7 @@ public class FinancialPlanValidator extends BaseValidator {
       action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].w1w2Percentage",
         InvalidFieldsMessages.INVALID_NUMBER);
     }
-    if (!(this.isValidString(powbFinancialExpenditure.getComments())
-      && this.wordCount(powbFinancialExpenditure.getComments()) <= 100)) {
+    if (!(this.isValidString(powbFinancialExpenditure.getComments()))) {
       action.addMessage(action.getText("financialPlan.tableF.comments"));
       action.getInvalidFields().put("input-powbSynthesis.powbFinancialExpendituresList[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);
@@ -123,8 +121,7 @@ public class FinancialPlanValidator extends BaseValidator {
       action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].w3Bilateral",
         InvalidFieldsMessages.INVALID_NUMBER);
     }
-    if (!(this.isValidString(powbFinancialPlannedBudget.getComments())
-      && this.wordCount(powbFinancialPlannedBudget.getComments()) <= 100)) {
+    if (!(this.isValidString(powbFinancialPlannedBudget.getComments()))) {
       action.addMessage(action.getText("financialPlan.tableE.comments"));
       action.getInvalidFields().put("input-powbSynthesis.powbFinancialPlannedBudgetList[" + i + "].comments",
         InvalidFieldsMessages.EMPTYFIELD);

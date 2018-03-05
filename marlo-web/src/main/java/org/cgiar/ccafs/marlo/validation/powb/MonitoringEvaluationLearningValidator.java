@@ -132,14 +132,14 @@ public class MonitoringEvaluationLearningValidator extends BaseValidator {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
-    if (!(this.isValidString(exercise.getExercise()) && this.wordCount(exercise.getExercise()) <= 100)) {
+    if (!(this.isValidString(exercise.getExercise()))) {
       action.addMessage(action.getText("monitoringLearning.plannedStudies.studyLearningExercise", params));
       action.getInvalidFields().put(
         "input-powbSynthesis.powbMonitoringEvaluationLearning.exercises[" + i + "].exercise",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (!(this.isValidString(exercise.getComments()) && this.wordCount(exercise.getComments()) <= 100)) {
+    if (!(this.isValidString(exercise.getComments()))) {
       action.addMessage(action.getText("monitoringLearning.plannedStudies.comments", params));
       action.getInvalidFields().put(
         "input-powbSynthesis.powbMonitoringEvaluationLearning.exercises[" + i + "].comments",
@@ -149,8 +149,7 @@ public class MonitoringEvaluationLearningValidator extends BaseValidator {
 
   public void validateMEL(BaseAction action, PowbSynthesis powbSynthesis) {
     if (powbSynthesis.getPowbMonitoringEvaluationLearning() != null) {
-      if (!(this.isValidString(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight())
-        && this.wordCount(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight()) <= 100)) {
+      if (!(this.isValidString(powbSynthesis.getPowbMonitoringEvaluationLearning().getHighlight()))) {
         action.addMessage(action.getText("monitoringLearning.areasOfInterest"));
         action.getInvalidFields().put("input-powbSynthesis.powbMonitoringEvaluationLearning.highlight",
           InvalidFieldsMessages.EMPTYFIELD);

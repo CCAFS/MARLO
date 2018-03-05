@@ -23,7 +23,7 @@ public enum TypeExpectedStudiesEnum {
   OUTCOMECASESTUDY(1, "Outcome Case study"), IMPACTCASESTUDY(2, "Impact Case study"),
   IMPACTASSESMENT(3, "Impact assessment"), ADOPTIONSTUDY(4, "Adoption Study"),
   CRP_PTF(5, "CRP/PTF Commissioned -Evaluation"), EVAULATION(6, "Evaluation"), REVIEW(7, "Review"),
-  LEARNING(8, "Learning");
+  LEARNING(8, "Learning"), OTHER(9, "Other");
 
   /**
    * Look for the ProjectStatusEnum with id
