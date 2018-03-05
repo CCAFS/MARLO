@@ -23,6 +23,8 @@ import java.util.List;
 public class PowbEvidencePlannedStudyDTO implements java.io.Serializable {
 
 
+  private static final long serialVersionUID = -5003332052812981764L;
+
   private List<LiaisonInstitution> liaisonInstitutions;
 
   private ProjectExpectedStudy projectExpectedStudy;
