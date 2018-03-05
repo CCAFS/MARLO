@@ -75,9 +75,19 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 
+[#-- Generate RTF --]
+[#if ((PMU)!false) && completed]
+<div class="text-center">
+  [#assign rtfLink][@s.url namespace="/projects" action="${crpSession}/POWBSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
+  <a class="btn btn-default" href="${rtfLink}" target="_blank">
+   <img src="${baseUrl}/global/images/icons/file-rtf.png" alt="" /> Generate RTF file
+  </a>
+</div>
+[/#if]
+
 [#-- Submition message --]
 [#if !submission && completed && !canSubmit]
-  <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
+  <p class="text-center" style="display:block">The synthesis can be submitted now by the Flagship leader.</p>
 [/#if]
 
 [#-- Check button --] 
