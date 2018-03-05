@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -144,8 +143,8 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
         canEdit = true;
       } else {
-        List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(deliverable.getProject()) && baseAction
+        // List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+        if (baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
