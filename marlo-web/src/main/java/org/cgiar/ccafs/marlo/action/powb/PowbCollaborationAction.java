@@ -959,6 +959,18 @@ public class PowbCollaborationAction extends BaseAction {
       PowbCollaboration powCollabrotionDB =
         powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getCollaboration();
 
+      if (powCollabrotionDB == null) {
+        powCollabrotionDB = new PowbCollaboration();
+        powCollabrotionDB.setActive(true);
+        powCollabrotionDB.setActiveSince(new Date());
+        powCollabrotionDB.setCreatedBy(this.getCurrentUser());
+        powCollabrotionDB.setModifiedBy(this.getCurrentUser());
+        powCollabrotionDB.setModificationJustification("");
+        // create one to one relation
+        powCollabrotionDB.setPowbSynthesis(powbSynthesis);
+        // save the changes
+
+      }
       powCollabrotionDB.setCotributionsPlatafforms(powbSynthesis.getCollaboration().getCotributionsPlatafforms());
       powCollabrotionDB.setCrossCrp(powbSynthesis.getCollaboration().getCrossCrp());
       powCollabrotionDB.setEffostornCountry(powbSynthesis.getCollaboration().getEffostornCountry());
