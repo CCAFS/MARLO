@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -94,7 +95,6 @@ public class EvidencesAction extends BaseAction {
 
   private UserManager userManager;
 
-
   private CrpProgramManager crpProgramManager;
 
 
@@ -106,28 +106,29 @@ public class EvidencesAction extends BaseAction {
 
   private PowbEvidencePlannedStudyManager powbEvidencePlannedStudyManager;
 
+
   private PowbEvidenceManager powbEvidenceManager;
 
-  private EvidencesValidator validator;
 
+  private EvidencesValidator validator;
 
   private ProjectFocusManager projectFocusManager;
 
   private ProjectManager projectManager;
 
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   // Variables
   private String transaction;
 
-
   private PowbSynthesis powbSynthesis;
+
 
   private Long liaisonInstitutionID;
 
-  private Long powbSynthesisID;
 
+  private Long powbSynthesisID;
 
   private GlobalUnit loggedCrp;
 
@@ -138,13 +139,12 @@ public class EvidencesAction extends BaseAction {
 
   private Map<Long, String> targets;
 
-  private Map<Integer, String> scopes;
 
+  private Map<Integer, String> scopes;
 
   private LiaisonInstitution liaisonInstitution;
 
-
-  private List<PowbEvidencePlannedStudy> flagshipPlannedList;
+  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
 
 
   private List<ProjectExpectedStudy> popUpProjects;
@@ -283,43 +283,77 @@ public class EvidencesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public List<PowbEvidencePlannedStudy> getFlagshipPlannedList() {
+
+  public List<PowbEvidencePlannedStudyDTO> getFlagshipPlannedList() {
     return flagshipPlannedList;
   }
 
-  /**
-   * 
-   */
+
   public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
     flagshipPlannedList = new ArrayList<>();
-    for (LiaisonInstitution liaisonInstitution : lInstitutions) {
-      PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
-      if (powbSynthesis != null) {
-        if (powbSynthesis.getPowbEvidence() != null) {
-          if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
-            List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
-              .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
-            if (studies != null || !studies.isEmpty()) {
-              for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
-                boolean bStudy = true;
-                for (PowbEvidencePlannedStudy checkStudies : flagshipPlannedList) {
-                  if (checkStudies.getProjectExpectedStudy()
-                    .equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
-                    bStudy = false;
-                    break;
-                  }
-                }
-                if (bStudy) {
-                  flagshipPlannedList.add(powbEvidencePlannedStudy);
+
+    if (projectExpectedStudyManager.findAll() != null) {
+      List<ProjectExpectedStudy> expectedStudies =
+        new ArrayList<>(
+          projectExpectedStudyManager.findAll().stream()
+            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+              && ps.getProject().getGlobalUnitProjects().stream()
+                .filter(
+                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+                .collect(Collectors.toList()).size() > 0)
+            .collect(Collectors.toList()));
+
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+
+        PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+          .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+        for (ProjectFocus projectFocus : projectFocuses) {
+          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+            .filter(li -> li.isActive() && li.getCrpProgram() != null
+              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList()));
+        }
+        dto.setLiaisonInstitutions(liaisonInstitutions);
+        flagshipPlannedList.add(dto);
+      }
+
+      List<PowbEvidencePlannedStudy> evidencePlannedStudies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (powbSynthesis != null) {
+          if (powbSynthesis.getPowbEvidence() != null) {
+            if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+              List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+                .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                  evidencePlannedStudies.add(powbEvidencePlannedStudy);
                 }
               }
             }
           }
         }
       }
+
+      List<Integer> removeList = new ArrayList<>();
+      for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
+        for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
+          int index = flagshipPlannedList.indexOf(dto);
+          if (dto.getProjectExpectedStudy().equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
+            removeList.add(index);
+          }
+        }
+      }
+
+      for (Integer i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
     }
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -329,6 +363,7 @@ public class EvidencesAction extends BaseAction {
   public Long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -346,10 +381,10 @@ public class EvidencesAction extends BaseAction {
     return powbSynthesis;
   }
 
-
   public Long getPowbSynthesisID() {
     return powbSynthesisID;
   }
+
 
   public Map<Integer, String> getScopes() {
     return scopes;
@@ -403,7 +438,6 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
-
   public void plannedStudiesPreviousData(List<PowbEvidencePlannedStudy> plannedStudies) {
 
     PowbSynthesis powbSynthesisDB = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
@@ -416,6 +450,7 @@ public class EvidencesAction extends BaseAction {
       }
     }
   }
+
 
   public void popUpProject(long phaseID, LiaisonInstitution liaisonInstitution) {
 
@@ -437,8 +472,6 @@ public class EvidencesAction extends BaseAction {
         }
       }
     }
-
-
   }
 
   @Override
@@ -696,7 +729,7 @@ public class EvidencesAction extends BaseAction {
     }
   }
 
-  public void setFlagshipPlannedList(List<PowbEvidencePlannedStudy> flagshipPlannedList) {
+  public void setFlagshipPlannedList(List<PowbEvidencePlannedStudyDTO> flagshipPlannedList) {
     this.flagshipPlannedList = flagshipPlannedList;
   }
 
