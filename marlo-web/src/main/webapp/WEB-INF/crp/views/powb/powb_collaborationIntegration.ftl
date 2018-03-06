@@ -41,7 +41,7 @@
           
           [#-- 2.3.1  New Key External Partnerships  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("external")  /]
+            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("external") powbInclude=true/]
           </div>
           
           [#-- Project Partnerships --]
@@ -70,12 +70,12 @@
           [#if PMU]
             [#-- 2.3.2  New Contribution to and from Platforms --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("contributions")  /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("contributions") powbInclude=true /]
             </div>
             
             [#-- 2.3.3  New Cross-CRP Interactions --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("crossCrp")  /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("crossCrp") powbInclude=true /]
             </div>
             
             <div class="form-group">
@@ -90,7 +90,8 @@
           [#-- Collaborations among Programs and between the Program and Platforms --]
           [#if flagship]
             <div class="form-group">
-              <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              <h4 class="subTitle headTitle powb-table">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+              <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
               <div class="listProgramCollaborations">
                [#if powbSynthesis.powbCollaborationGlobalUnitsList?has_content]
                 [#list powbSynthesis.powbCollaborationGlobalUnitsList as collaboration]
@@ -151,10 +152,10 @@
                   </div>
                   
                   [#if regionElement.effostornCountry?has_content]
-[#assign pmuValue]${pmuValue} 
-${liaisonInstitution.crpProgram.composedName} 
-${(regionElement.effostornCountry)!}
-[/#assign]
+                    [#assign pmuValue]${pmuValue} 
+                    ${liaisonInstitution.crpProgram.composedName} 
+                    ${(regionElement.effostornCountry)!}
+                    [/#assign]
                   [/#if]
                 </div>
               [/#list]
@@ -174,7 +175,7 @@ ${(regionElement.effostornCountry)!}
           [#else]
             [#-- 2.3.4  Expected Efforts on Country Coordination --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("effostornCountry") /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("effostornCountry") powbInclude=true /]
             </div>
             
             [#-- Table: CGIAR Country Coordination--]
