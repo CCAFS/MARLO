@@ -30,13 +30,13 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#if help != ""]
           <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"][@s.param]${paramText}[/@s.param][/@s.text]" style="display:inline-block" />
           <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>

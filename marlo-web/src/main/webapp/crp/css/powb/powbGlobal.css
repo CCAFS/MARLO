@@ -105,10 +105,6 @@ form .form-group.margin-panel {
   background-color: #41b9dd;
 }
 
-.label-min-width{
-  max-width: 85% !important;
-}
-
 #table-plannedStudies .subHeader th {
   text-align: center;
 }
