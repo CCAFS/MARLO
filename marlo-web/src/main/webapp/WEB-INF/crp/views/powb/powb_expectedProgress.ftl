@@ -42,7 +42,7 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="" editable=editable powbInclude=true /]
             [#assign powebElement= action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
@@ -54,7 +54,7 @@
             <hr />
           
             [#-- Modal Large --]
-            <button type="button" class="pull-right btn btn-default btn-xs" data-toggle="modal" data-target="#tableA-bigger"> 
+            <button type="button" class="pull-right btn btn-default " data-toggle="modal" data-target="#tableA-bigger"> 
               <span class="glyphicon glyphicon-fullscreen"></span> See Full Table A
             </button>
             <div id="tableA-bigger" class="modal fade bs-example-modal-lg " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
@@ -68,7 +68,8 @@
               </div>
             </div>
             
-            <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableAMacro  /]
           </div>
           [/#if]
@@ -194,12 +195,12 @@
     
     [#-- Means of verification --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="limitWords-100" editable=editable /]
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="" editable=editable /]
     </div>
     
     [#-- Assessment of risk to achievement --]
     <div class="form-group">
-      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label><br />
+      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /]:[@customForm.req required=editable  /]</label><br />
       [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
