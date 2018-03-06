@@ -357,7 +357,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
-      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive() && cs.isCreated())
+      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive() && cs.isActive())
         .collect(Collectors.toList()).get(0).getProject().getId();
     }
 
@@ -428,9 +428,11 @@ public class ProjectCaseStudyAction extends BaseAction {
         }
       }
       for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
+        // This logic seems wrong. Shouldn't objects with null id be persisted to the database as new objects?
         if (caseStudyProject.getId() == null || caseStudyProject.getId().longValue() == -1) {
-          caseStudyProject.setCreated(false);
+          caseStudyProject.setActive(false);
           caseStudyProject.setCaseStudy(caseStudy);
+          // Setting the id to null will create a new instance. -- not sure if the developer knows what they are doing.
           caseStudyProject.setId(null);
           caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
         }
@@ -455,9 +457,6 @@ public class ProjectCaseStudyAction extends BaseAction {
           }
         }
       }
-
-      caseStudy.setActive(true);
-
       caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
 
       if (path.toFile().exists()) {

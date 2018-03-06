@@ -299,7 +299,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
         for (CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isCreated()
+          if (caseStudyProject.isActive()
             && caseStudyProject.getCaseStudy().getYear() == this.getActualPhase().getYear()) {
             projectCaseStudies.add(caseStudyProject.getCaseStudy());
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),

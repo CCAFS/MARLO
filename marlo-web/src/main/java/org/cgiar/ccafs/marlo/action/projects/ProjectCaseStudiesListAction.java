@@ -26,11 +26,11 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 
 /***
@@ -77,16 +77,13 @@ public class ProjectCaseStudiesListAction extends BaseAction {
       CaseStudy caseStudy = new CaseStudy();
       // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
 
-      caseStudy.setActive(true);
-      caseStudy.setActiveSince(new Date());
       caseStudy.setActivities("");
       caseStudy.setComment("");
-      caseStudy.setCreatedBy(this.getCurrentUser());
+
       caseStudy.setEvidenceOutcome("");
       caseStudy.setExplainIndicatorRelation("");
       caseStudy.setFile(null);
       caseStudy.setModificationJustification("");
-      caseStudy.setModifiedBy(this.getCurrentUser());
       caseStudy.setNonResearchPartneres("");
       caseStudy.setOutcomeStatement("");
       caseStudy.setOutputUsed("");
@@ -105,7 +102,6 @@ public class ProjectCaseStudiesListAction extends BaseAction {
         CaseStudyProject caseStudyProject = new CaseStudyProject();
         caseStudyProject.setCaseStudy(caseStudy);
         caseStudyProject.setProject(project);
-        caseStudyProject.setCreated(true);
         caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
         return SUCCESS;
       }
