@@ -50,7 +50,7 @@
           [#-- If major changes have been made to your flagship since the CRP proposal was published, please annex a brief summary of the current flagship program with the updated theory of change. --]
           [#if flagship]
           <div class="form-group" style="position:relative" listname="">
-            <span class="badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+            <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@customForm.fileUploadAjax 
               fileDB=(powbSynthesis.powbFlagshipPlans.flagshipProgramFile)!{} 
               name="powbSynthesis.powbFlagshipPlans.flagshipProgramFile.id" 
