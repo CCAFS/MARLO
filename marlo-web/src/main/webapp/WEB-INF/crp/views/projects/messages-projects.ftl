@@ -29,7 +29,7 @@
       <p>[@s.text name="project.message.submittedOn" ][@s.param]${(lastSubmission.dateTime?string["MMMM dd, yyyy"])!}[/@s.param][@s.param]${(lastSubmission.user.composedCompleteName)!}[/@s.param][/@s.text]</p>
     </div>
   [/#if]
-  
+ 
   [#-- Privileges Message --]
   [#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
     [#if crpClosed]
@@ -43,7 +43,9 @@
         <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
         [/#if]
       [#else]
+      [#if !editStatus]
         <p class="readPrivileges">[@s.text name="project.preset.messagge" /]</p>
+        [/#if]    
       [/#if]    
     [/#if]
   [/#if]
