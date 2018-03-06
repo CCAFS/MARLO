@@ -61,7 +61,7 @@ public class EditCapacityDevInterceptor extends AbstractInterceptor implements S
     try {
       capdevID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.CAPDEV_ID).getMultipleValues()[0]));
     } catch (final Exception e) {
-
+      return BaseAction.NOT_FOUND;
     }
 
     try {

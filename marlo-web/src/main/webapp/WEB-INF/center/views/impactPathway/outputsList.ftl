@@ -76,13 +76,13 @@
           <br>
           [#-- Add Outcome button --]
           [#if canEdit]
-            [#if outputs?has_content]
+
               <div class="text-right">
                 <div class="addOutcome button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(centerSession)!}/addNewOutput'] [@s.param name="programID"]${selectedProgram.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addOutput" /]
                 </a></div>
               </div>
-            [/#if]
+
           [/#if]
           [/@s.form]
 

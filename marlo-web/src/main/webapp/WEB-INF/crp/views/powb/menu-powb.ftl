@@ -14,14 +14,14 @@
     'items': [
     { 'slug': 'crpStaffing',              'name': 'powb.menu.crpStaffing',                'action': 'crpStaffing',                'active': true, 'onlyPMU': !PMU },
     { 'slug': 'financialPlan',            'name': 'powb.menu.financialPlan',              'action': 'financialPlan',              'active': true, 'onlyPMU': !PMU },
-    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': true && config.debug },
+    { 'slug': 'collaborationIntegration', 'name': 'powb.menu.collaborationIntegration',   'action': 'collaborationIntegration',   'active': true },
     { 'slug': 'monitoringLearning',       'name': 'powb.menu.monitoringLearning',         'action': 'evidenceRelevant',           'active': false }
     ]
   },
   { 'title': '3.  CRP Management', 'show': true,
     'items': [
-    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': true },
-    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': true }
+    { 'slug': 'managementRisks',        'name': 'powb.menu.managementRisks',        'action': 'managementRisks',        'active': true, 'onlyPMU': !PMU },
+    { 'slug': 'managementGovernance',   'name': 'powb.menu.managementGovernance',   'action': 'managementGovernance',   'active': true, 'onlyPMU': !PMU }
     ]
   }
 ]/]
@@ -74,10 +74,9 @@
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
-
 [#-- Submition message --]
 [#if !submission && completed && !canSubmit]
-  <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
+  <p class="text-center" style="display:block">The synthesis can be submitted now by the Flagship leader.</p>
 [/#if]
 
 [#-- Check button --] 
@@ -101,6 +100,18 @@
   <a id="submitProject-${liaisonInstitutionID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='liaisonInstitutionID']${liaisonInstitutionID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
+[/#if]
+
+
+[#-- Generate RTF --]
+[#if ((PMU)!false) && completed]
+<br />
+<div class="text-center">
+  [#assign rtfLink][@s.url namespace="/projects" action="${crpSession}/POWBSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
+  <a class="btn btn-default" href="${rtfLink}" target="_blank">
+   <img  src="${baseUrl}/global/images/icons/file-rtf.png" alt="" /> Generate RTF file
+  </a>
+</div>
 [/#if]
 
 [#-- Justification --]

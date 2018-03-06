@@ -42,12 +42,13 @@
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
           <div class="form-group">
             <input type="hidden" name="powbSynthesis.crpStaffing.id" value="${(powbSynthesis.crpStaffing.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="" editable=editable && PMU powbInclude=true /]
           </div>
           
           [#-- Table D: CRP Staffing (OPTIONAL IN POWB 2018)  --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="crpStaffing.tableD.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="crpStaffing.tableD.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableD /]
           </div>
         

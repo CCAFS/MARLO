@@ -551,7 +551,7 @@
                     ${(projectBudget.project.projectInfo.title)!}
                   </a>
                 </td>
-                <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
+                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
                 <td>${(projectBudget.budgetType.name)!}
                    [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
          

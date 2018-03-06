@@ -117,6 +117,7 @@ public class PowbCollaborationAction extends BaseAction {
 
   private Long liaisonInstitutionID;
   private Long powbSynthesisID;
+  private PowbSynthesis powbSynthesisBD;
 
 
   private GlobalUnit loggedCrp;
@@ -348,7 +349,6 @@ public class PowbCollaborationAction extends BaseAction {
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
     List<PowbCollaborationGlobalUnit> globlalUnitsPrev;
-    PowbSynthesis powbSynthesisBD = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
 
 
     globlalUnitsPrev =
@@ -862,6 +862,8 @@ public class PowbCollaborationAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
+    powbSynthesisBD = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION, params));
@@ -959,6 +961,18 @@ public class PowbCollaborationAction extends BaseAction {
       PowbCollaboration powCollabrotionDB =
         powbSynthesisManager.getPowbSynthesisById(powbSynthesisID).getCollaboration();
 
+      if (powCollabrotionDB == null) {
+        powCollabrotionDB = new PowbCollaboration();
+        powCollabrotionDB.setActive(true);
+        powCollabrotionDB.setActiveSince(new Date());
+        powCollabrotionDB.setCreatedBy(this.getCurrentUser());
+        powCollabrotionDB.setModifiedBy(this.getCurrentUser());
+        powCollabrotionDB.setModificationJustification("");
+        // create one to one relation
+        powCollabrotionDB.setPowbSynthesis(powbSynthesis);
+        // save the changes
+
+      }
       powCollabrotionDB.setCotributionsPlatafforms(powbSynthesis.getCollaboration().getCotributionsPlatafforms());
       powCollabrotionDB.setCrossCrp(powbSynthesis.getCollaboration().getCrossCrp());
       powCollabrotionDB.setEffostornCountry(powbSynthesis.getCollaboration().getEffostornCountry());
