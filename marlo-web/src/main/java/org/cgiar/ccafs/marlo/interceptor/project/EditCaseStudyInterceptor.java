@@ -104,7 +104,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       projectIDParameter = parameters.get(APConstants.PROJECT_REQUEST_ID).getMultipleValues()[0];
     } catch (Exception e) {
       projectIDParameter = String.valueOf(caseStudy.getCaseStudyProjects().stream()
-        .filter(cs -> cs.isActive() && cs.isCreated()).collect(Collectors.toList()).get(0).getProject().getId());
+        .filter(cs -> cs.isActive() && cs.isActive()).collect(Collectors.toList()).get(0).getProject().getId());
     }
 
     Project project = projectManager.getProjectById(Long.parseLong(projectIDParameter));
@@ -163,12 +163,10 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
         System.out.println(studyProject.getProject().getId());
       }
 
-      List<CaseStudyProject> caseStudyProjects =
-        new ArrayList<>(
-          caseStudy
-            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
-              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-            .collect(Collectors.toList()));
+      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+        .filter(
+          cs -> cs.isActive() && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isActive())
+        .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

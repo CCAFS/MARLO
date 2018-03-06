@@ -392,7 +392,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
 
     for (CaseStudyProject caseStudyProject : caseStudies) {
-      if (caseStudyProject.isCreated()
+      if (caseStudyProject.isActive()
         && caseStudyProject.getCaseStudy().getYear() == action.getActualPhase().getYear()) {
 
         caseStudyProject.getCaseStudy().setIndicators(
@@ -595,13 +595,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action
-            .getCurrentCycleYear()
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
-          && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
-            .parseInt(ProjectStatusEnum.Complete.getStatusId()))
+      openA.addAll(deliverables.stream().filter(d -> d.isActive()
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getNewExpectedYear().intValue() == action.getCurrentCycleYear()
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && d.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
     }
 

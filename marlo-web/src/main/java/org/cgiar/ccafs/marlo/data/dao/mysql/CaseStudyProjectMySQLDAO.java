@@ -37,7 +37,7 @@ public class CaseStudyProjectMySQLDAO extends AbstractMarloDAO<CaseStudyProject,
   @Override
   public void deleteCaseStudyProject(long caseStudyProjectId) {
     CaseStudyProject caseStudyProject = this.find(caseStudyProjectId);
-
+    caseStudyProject.setActive(false);
     super.delete(caseStudyProject);
   }
 
