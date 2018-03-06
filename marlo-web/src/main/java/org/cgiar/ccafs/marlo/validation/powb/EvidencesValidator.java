@@ -119,8 +119,7 @@ public class EvidencesValidator extends BaseValidator {
 
 
   public void validateEvidence(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbEvidence().getNarrative())
-      && this.wordCount(powbSynthesis.getPowbEvidence().getNarrative()) <= 100)) {
+    if (!(this.isValidString(powbSynthesis.getPowbEvidence().getNarrative()))) {
       action.addMessage(action.getText("evidenceRelevant.narrative"));
       action.getInvalidFields().put("input-powbSynthesis.powbEvidence.narrative", InvalidFieldsMessages.EMPTYFIELD);
     }
