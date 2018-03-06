@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -157,6 +158,13 @@ public class OutputsListAction extends BaseAction {
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
       output.setModifiedBy(this.getCurrentUser());
+
+      List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+        output.getCenterOutputsOutcomes().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
+
+      for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+        centerOutputsOutcomeManager.deleteCenterOutputsOutcome(centerOutputsOutcome.getId());
+      }
 
       CenterSectionStatus status =
         sectionStatusService.getSectionStatusByOutput(programID, output.getId(), "outputsList", this.getCenterYear());
