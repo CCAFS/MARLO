@@ -1,6 +1,15 @@
 table {
 }
 
+.powb-table{
+  display: inline-block;
+}
+
+.label-powb-table{
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
 table tr {
   list-style: none;
   padding-bottom: 9px;
