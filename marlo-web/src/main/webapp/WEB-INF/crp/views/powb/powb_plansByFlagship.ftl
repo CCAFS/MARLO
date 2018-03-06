@@ -58,6 +58,7 @@
               dataUrl="${baseUrl}/uploadPowbSynthesis.do" 
               path="${action.getPath(liaisonInstitutionID)}"
               isEditable=editable
+              labelClass="label-min-width"
             /]
           </div>
           [/#if]

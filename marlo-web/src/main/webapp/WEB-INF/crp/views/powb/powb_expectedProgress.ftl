@@ -68,7 +68,8 @@
               </div>
             </div>
             
-            <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <span class="badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
             [@tableAMacro  /]
           </div>
           [/#if]

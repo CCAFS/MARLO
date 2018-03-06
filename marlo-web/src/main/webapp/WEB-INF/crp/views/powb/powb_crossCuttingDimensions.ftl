@@ -42,7 +42,7 @@
           [#-- Briefly summarize the main areas of work in 2018 relevant to cross-cutting dimensions --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
               [@customForm.textArea name="powbSynthesis.flagshipSummarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
@@ -51,7 +51,7 @@
           [#-- Open Data and Intellectual Assets --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
               [@customForm.textArea name="powbSynthesis.flagshipAssets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
@@ -59,7 +59,8 @@
           
           [#-- Table C: Cross-cutting Aspect of Expected Deliverables (OPTIONAL) --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="crossCuttingDimensions.tableC.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="crossCuttingDimensions.tableC.title" /]</h4>
+            <span class="badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
             <hr />
             [@tableHMacro /]
           </div>
