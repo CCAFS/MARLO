@@ -41,7 +41,7 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="" editable=editable powbInclude=PMU /]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 
@@ -49,6 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
+                <span class="badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
                 [@customForm.fileUploadAjax
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
