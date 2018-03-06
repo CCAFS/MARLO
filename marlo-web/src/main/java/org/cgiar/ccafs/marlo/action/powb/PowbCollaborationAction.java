@@ -117,6 +117,7 @@ public class PowbCollaborationAction extends BaseAction {
 
   private Long liaisonInstitutionID;
   private Long powbSynthesisID;
+  private PowbSynthesis powbSynthesisBD;
 
 
   private GlobalUnit loggedCrp;
@@ -348,7 +349,6 @@ public class PowbCollaborationAction extends BaseAction {
   public void globaUnitsPreviousData(List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnits) {
 
     List<PowbCollaborationGlobalUnit> globlalUnitsPrev;
-    PowbSynthesis powbSynthesisBD = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
 
 
     globlalUnitsPrev =
@@ -861,6 +861,8 @@ public class PowbCollaborationAction extends BaseAction {
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
+
+    powbSynthesisBD = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
 
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), powbSynthesis.getId() + ""};

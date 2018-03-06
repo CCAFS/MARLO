@@ -683,9 +683,6 @@ public class EvidencesAction extends BaseAction {
         if (powbSynthesis.getPowbEvidence().getPlannedStudies() == null) {
           powbSynthesis.getPowbEvidence().setPlannedStudies(new ArrayList<>());
         }
-
-
-        // this.plannedStudiesPreviousData(powbSynthesis.getPowbEvidence().getPlannedStudies());
         this.expectedStudiesNewData(powbEvidenceDB);
       }
 
