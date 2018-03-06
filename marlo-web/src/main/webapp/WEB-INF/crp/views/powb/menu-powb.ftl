@@ -109,7 +109,7 @@
 <div class="text-center">
   [#assign rtfLink][@s.url namespace="/projects" action="${crpSession}/POWBSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]
   <a class="btn btn-default" href="${rtfLink}" target="_blank">
-   <img src="${baseUrl}/global/images/icons/file-rtf.png" alt="" /> Generate RTF file
+   <img  src="${baseUrl}/global/images/icons/file-rtf.png" alt="" /> Generate RTF file
   </a>
 </div>
 [/#if]
