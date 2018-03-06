@@ -5,9 +5,9 @@
   { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': '${(crpSession)!}/crpDashboard',                      'icon': 'home',     'visible': logged, 'active': true },
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',                          'visible': logged, 'active': true },
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
-  { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
+  { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': (logged && (globalUnitType == 1)), 'active': true },
   { 'slug': 'publications', 'name': 'menu.publications',      'namespace': '/publications',       'action': '${(crpSession)!}/publicationsList',    'visible': logged && reportingActive, 'active': action.canAcessPublications() , 'help': true },
-  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/${reportingActive?string("crpIndicators","adjustmentsChanges")}',    'visible': logged && action.canAcessPOWB(), 'active': true,    
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/${reportingActive?string("synthesis","powb")}',       'action': '${(crpSession)!}/${reportingActive?string("crpIndicators","adjustmentsChanges")}',    'visible': logged && action.canAcessPOWB() && (globalUnitType == 1), 'active': true,    
     'subItems' : [
       [#-- PLANNING --]
       { 'slug': 'powbReport', 'name': 'menu.synthesis.powbReport', 'namespace': '/powb',  'action': '${(crpSession)!}/adjustmentsChanges',  'visible': logged && !reportingActive, 'active':  action.canAcessPOWB() },
@@ -22,7 +22,7 @@
       { 'slug': 'projectsEvaluation', 'name': 'menu.synthesis.projectsEvaluation', 'namespace': '/synthesis',  'action': '${(crpSession)!}/projectsEvaluation',  'visible': logged && reportingActive, 'active': false }
     ]
   },
-  { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': true }
+  { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': (logged && (globalUnitType == 1)), 'active': true }
 
 ]/]
 
