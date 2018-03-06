@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
-import org.cgiar.ccafs.marlo.data.model.PowbMonitoringEvaluationLearningExercise;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
@@ -118,7 +117,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   private List<CrpProgram> flagships;
   private CrossCuttingDimensionTableDTO tableC;
   private List<DeliverableInfo> deliverableList;
-  private List<PowbMonitoringEvaluationLearningExercise> flagshipExercises;
   private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
 
   // Parameter for tables E and F
@@ -192,8 +190,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       this.getText("summaries.powb.effectiveness.collaboration.newCrossCrp"));
     masterReport.getParameterValues().put("i8nExpectedEffortsCountryCoordinationTitle",
       this.getText("summaries.powb.effectiveness.collaboration.expectedEfforts"));
-    masterReport.getParameterValues().put("i8nMonitoringEvaluationLearningTitle",
-      this.getText("summaries.powb.effectiveness.mel"));
     masterReport.getParameterValues().put("i8nCRPManagement", this.getText("summaries.powb.management"));
     masterReport.getParameterValues().put("i8nManagementRisksTitle", this.getText("summaries.powb.management.risk"));
     masterReport.getParameterValues().put("i8nCRPManagementGovernanceTitle",
@@ -264,7 +260,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       if (powbSynthesisPMU != null) {
         this.fillSubreport((SubReport) hm.get("MainAreas"), "MainAreas");
       }
-
       // Table G
       this.fillSubreport((SubReport) hm.get("CGIARCollaborations"), "CGIARCollaborations");
       this.fillSubreport((SubReport) hm.get("TableGContent"), "TableGContent");
@@ -409,11 +404,10 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
         "crossCuttingOpenDataDescription", "staffingDescription", "financialPlanDescription",
         "newKeyExternalPartnershipsDescription", "newContributionPlatformsDescription",
         "newCrossCRPInteractionsDescription", "expectedEffortsCountryCoordinationDescription",
-        "monitoringEvaluationLearningDescription", "managementRisksTitleDescription",
-        "CRPManagementGovernanceDescription"},
+        "managementRisksTitleDescription", "CRPManagementGovernanceDescription"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class},
       0);
     String unitName = "&lt;Not Defined&gt;", leadCenter = " ", participantingCenters = "",
       adjustmentsDescription = "&lt;Not Defined&gt;", expectedCrpDescription = "&lt;Not Defined&gt;",
@@ -497,12 +491,18 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       }
     }
 
-    if (powbSynthesisList != null && !powbSynthesisList.isEmpty()) {
-      for (PowbSynthesis powbSynthesis : powbSynthesisList) {
-        // Flagship Plan
-        plansCRPFlagshipDescription = this.getFlagshipDescription(powbSynthesis, plansCRPFlagshipDescription);
+    for (LiaisonInstitution liaisonInstitution : this.getFlagships()) {
+      List<PowbSynthesis> powbSynthesisFL = powbSynthesisList.stream()
+        .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(liaisonInstitution)).collect(Collectors.toList());
+      PowbSynthesis powbSynthesis = null;
+      if (powbSynthesisFL != null && powbSynthesisFL.size() > 0) {
+        powbSynthesis = powbSynthesisFL.get(0);
       }
+      // Flagship Plan
+      plansCRPFlagshipDescription =
+        this.getFlagshipDescription(powbSynthesis, plansCRPFlagshipDescription, liaisonInstitution);
     }
+
     if (plansCRPFlagshipDescription.isEmpty()) {
       plansCRPFlagshipDescription = "&lt;Not Defined&gt;";
     }
@@ -512,8 +512,7 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       newKeyExternalPartnershipsDescription = "&lt;Not Defined&gt;",
       newContributionPlatformsDescription = "&lt;Not Defined&gt;",
       newCrossCRPInteractionsDescription = "&lt;Not Defined&gt;",
-      expectedEffortsCountryCoordinationDescription = "&lt;Not Defined&gt;",
-      monitoringEvaluationLearningDescription = "&lt;Not Defined&gt;";
+      expectedEffortsCountryCoordinationDescription = "&lt;Not Defined&gt;";
 
     if (powbSynthesisPMU != null) {
       // TOC
@@ -530,7 +529,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       }
 
       // Collaboration and integration
-
       if (powbSynthesisPMU.getCollaboration() != null) {
         newKeyExternalPartnershipsDescription = powbSynthesisPMU.getCollaboration().getKeyExternalPartners() != null
           && !powbSynthesisPMU.getCollaboration().getKeyExternalPartners().trim().isEmpty()
@@ -548,14 +546,6 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
           powbSynthesisPMU.getCollaboration().getEffostornCountry() != null
             && !powbSynthesisPMU.getCollaboration().getEffostornCountry().trim().isEmpty()
               ? powbSynthesisPMU.getCollaboration().getEffostornCountry() : "&lt;Not Defined&gt;";
-      }
-
-      // Monitoring, Evaluation, and Learning
-      if (powbSynthesisPMU.getPowbMonitoringEvaluationLearning() != null) {
-        monitoringEvaluationLearningDescription =
-          powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() != null
-            && !powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight().trim().isEmpty()
-              ? powbSynthesisPMU.getPowbMonitoringEvaluationLearning().getHighlight() : "&lt;Not Defined&gt;";
       }
     }
     // Crp Management
@@ -579,8 +569,8 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
       expectedCrpDescription, evidenceDescription, plansCRPFlagshipDescription, crossCuttingGenderDescription,
       crossCuttingOpenDataDescription, staffingDescription, financialPlanDescription,
       newKeyExternalPartnershipsDescription, newContributionPlatformsDescription, newCrossCRPInteractionsDescription,
-      expectedEffortsCountryCoordinationDescription, monitoringEvaluationLearningDescription,
-      managementRisksTitleDescription, CRPManagementGovernanceDescription});
+      expectedEffortsCountryCoordinationDescription, managementRisksTitleDescription,
+      CRPManagementGovernanceDescription});
     return model;
   }
 
@@ -616,24 +606,24 @@ public class POWBSummaryAction extends BaseSummariesAction implements Summary {
   }
 
 
-  private String getFlagshipDescription(PowbSynthesis powbSynthesis, String plansCRPFlagshipDescription) {
-    if (powbSynthesis.getPowbFlagshipPlans() != null) {
-      String liaisonName = powbSynthesis.getLiaisonInstitution().getAcronym() != null
-        && !powbSynthesis.getLiaisonInstitution().getAcronym().isEmpty()
-          ? powbSynthesis.getLiaisonInstitution().getAcronym() : powbSynthesis.getLiaisonInstitution().getName();
-      if (plansCRPFlagshipDescription.isEmpty()) {
-        plansCRPFlagshipDescription = "<br> • " + liaisonName + ": ";
-      } else {
-        plansCRPFlagshipDescription += "<br> • " + liaisonName + ": ";
-      }
+  private String getFlagshipDescription(PowbSynthesis powbSynthesis, String plansCRPFlagshipDescription,
+    LiaisonInstitution liaisonInstitution) {
+    String liaisonName = liaisonInstitution.getAcronym() != null && !liaisonInstitution.getAcronym().isEmpty()
+      ? liaisonInstitution.getAcronym() : liaisonInstitution.getName();
+    if (plansCRPFlagshipDescription.isEmpty()) {
+      plansCRPFlagshipDescription = "<br> • " + liaisonName + ": ";
+    } else {
+      plansCRPFlagshipDescription += "<br> • " + liaisonName + ": ";
+    }
 
+    if (powbSynthesis != null && powbSynthesis.getPowbFlagshipPlans() != null) {
       if (powbSynthesis.getPowbFlagshipPlans().getPlanSummary() != null) {
         plansCRPFlagshipDescription += powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
       }
       if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
         plansCRPFlagshipDescription +=
           "<br> " + this.getText("plansByFlagship.tableOverall.attached") + ":  <font color=\"blue\"><u>"
-            + this.getPowbPath(powbSynthesis.getLiaisonInstitution(),
+            + this.getPowbPath(liaisonInstitution,
               this.getLoggedCrp().getAcronym() + "_"
                 + PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus().toString())
             + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName() + "</u></font>";
