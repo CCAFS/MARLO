@@ -199,7 +199,7 @@
     
     [#-- Assessment of risk to achievement --]
     <div class="form-group">
-      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /] [@customForm.req required=editable  /]</label><br />
+      <label>[@s.text name="liaisonInstitution.powb.milestone.assessment" /]:[@customForm.req required=editable  /]</label><br />
       [@customForm.radioFlat id="${customName}-risk-1" name="${customName}.assessment" label="Low"    value="1" checked=(powebElement.assessment == "1")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-2" name="${customName}.assessment" label="Medium" value="2" checked=(powebElement.assessment == "2")!false editable=editable cssClass="" cssClassLabel=""/]
       [@customForm.radioFlat id="${customName}-risk-3" name="${customName}.assessment" label="High"   value="3" checked=(powebElement.assessment == "3")!false editable=editable cssClass="" cssClassLabel=""/]
