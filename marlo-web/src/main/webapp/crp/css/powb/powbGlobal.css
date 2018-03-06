@@ -5,6 +5,10 @@ table {
   display: inline-block;
 }
 
+span.powb-doc.badge{
+  background-color: #0d8dc0;
+}
+
 .label-powb-table{
   margin-bottom: 5px;
   margin-left: 5px;

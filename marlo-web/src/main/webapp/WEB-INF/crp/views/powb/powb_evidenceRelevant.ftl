@@ -50,7 +50,7 @@
           [#if PMU]
           <div class="form-group margin-panel">
             <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]</h4>
-            <span class="badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span></span>
             <hr />
             [@tableBMacro /]
           </div>

@@ -43,7 +43,7 @@
         [/#if]
       </label>
       [#if powbInclude]
-        <span class="badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+        <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
       [/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]

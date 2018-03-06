@@ -51,14 +51,14 @@
           [#-- Table E: CRP Planned Budget   --]
           <div class="form-group">
             <h4 class="subTitle headTitle powb-table">[@s.text name="financialPlan.tableE.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <span class="badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableE /]
           </div>
           
           [#-- Table F: Main Areas of W1/2 Expenditure   --]
           <div class="form-group">
             <h4 class="subTitle headTitle powb-table">[@s.text name="financialPlan.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <span class="badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableF /]
           </div>
           

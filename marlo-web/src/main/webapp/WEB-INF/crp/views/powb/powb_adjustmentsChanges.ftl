@@ -49,7 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
-                <span class="badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]</span>
+                <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
                 [@customForm.fileUploadAjax
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
