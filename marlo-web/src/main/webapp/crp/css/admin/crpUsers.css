@@ -42,12 +42,6 @@ ul.nav.nav-tabs>li>a:hover {
     font-size: 0.95em;
 }
 
-a.dt-button {
-    padding: 0px 10px;
-    border: 1px solid #ccc;
-    border-radius: 2px;
-    margin-right: 3px;
-}
 
 td i {
     color: #ccc;
