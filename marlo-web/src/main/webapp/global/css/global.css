@@ -6561,3 +6561,13 @@ p.dateLabel.fieldError {
     opacity: 0;
   }
 }
+
+/* Datatables button*/
+
+a.dt-button {
+    padding: 0px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 3px;
+    background: #fff;
+}
