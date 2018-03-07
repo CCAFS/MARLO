@@ -28,8 +28,10 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +56,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -408,7 +411,6 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     subReport.setDataFactory(cdf);
   }
 
-
   private TypedTableModel getBudgetPerPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"projectId", "projectTitle", "ppaPartner", "flagships", "coas", "regions", "budgetW1W2",
@@ -422,13 +424,31 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
 
     List<Project> projects = new ArrayList<>();
 
-    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases()) {
-      projects.add((projectPhase.getProject()));
+    for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
+      .filter(p -> p.isActive() && p.getProject() != null && p.getProject().isActive()
+        && p.getProject().getProjectPhases() != null && p.getProject().getProjectPhases().size() > 0
+        && p.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+        && p.getProject().getProjectInfo().isActive() && p.getProject().getProjectInfo().getStatus() != null
+        && p.getProject().getProjectInfo().getStartDate() != null
+        && p.getProject().getProjectInfo().getEndDate() != null
+        && (p.getProject().getProjectInfo().getStatus().intValue() == Integer
+          .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || p.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Extended.getStatusId())))
+      .collect(Collectors.toList())) {
+      ProjectInfo projectInfo = projectPhase.getProject().getProjectInfo();
+      Date endDate = projectInfo.getEndDate();
+      Date startDate = projectInfo.getStartDate();
+      int endYear = this.getIntYearFromDate(endDate);
+      int startYear = this.getIntYearFromDate(startDate);
+      if (startYear <= this.getSelectedYear() && endYear >= this.getSelectedYear()) {
+        projects.add((projectPhase.getProject()));
+      }
     }
+
     // sort projects by id
     projects.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     for (Project project : projects) {
-      // System.out.println(project.getId());
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 
@@ -706,11 +726,11 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
+
 
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
@@ -719,7 +739,6 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
-
 
   @Override
   public String getFileName() {
@@ -737,12 +756,29 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     return hasGender;
   }
 
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
       inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
+  }
+
+  /**
+   * Method to get a Year from Date
+   * 
+   * @param date
+   * @return int year
+   */
+  private int getIntYearFromDate(Date date) {
+    try {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(date);
+      return cal.get(Calendar.YEAR);
+    } catch (NullPointerException e) {
+      return 0;
+    }
   }
 
   private TypedTableModel getMasterTableModel() {
