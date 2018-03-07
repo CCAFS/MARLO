@@ -327,7 +327,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
   public void validateManagementGovernance(BaseAction action, PowbSynthesis powbSynthesis) {
 
-    if (powbSynthesis.getPowbManagementGovernance() == null) {
+    if (powbSynthesis.getPowbManagementGovernance() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementGovernance managementGovernance = new PowbManagementGovernance();
       managementGovernance.setActive(true);
       managementGovernance.setActiveSince(new Date());
@@ -344,7 +344,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
       // save the changes
       powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
     } else {
-      managementGovernanceValidator.validate(action, powbSynthesis, false);
+      // managementGovernanceValidator.validate(action, powbSynthesis, false);
     }
 
 
@@ -352,7 +352,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
 
   public void validateManagementRisk(BaseAction action, PowbSynthesis powbSynthesis) {
 
-    if (powbSynthesis.getPowbManagementRisk() == null) {
+    if (powbSynthesis.getPowbManagementRisk() == null && this.isPMU(powbSynthesis.getLiaisonInstitution())) {
       PowbManagementRisk managementRisk = new PowbManagementRisk();
       managementRisk.setActive(true);
       managementRisk.setActiveSince(new Date());
@@ -368,7 +368,7 @@ public class PowbSynthesisSectionValidator<T extends BaseAction> extends BaseVal
       // save the changes
       powbSynthesis = powbSynthesisManager.savePowbSynthesis(powbSynthesis);
     } else {
-      managementRiskValidator.validate(action, powbSynthesis, false);
+      // managementRiskValidator.validate(action, powbSynthesis, false);
     }
 
 

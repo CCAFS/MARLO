@@ -80,8 +80,7 @@ public class ManagementGovernanceValidator extends BaseValidator {
   }
 
   public void validateManagementGovernance(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbManagementGovernance().getDescription())
-      && this.wordCount(powbSynthesis.getPowbManagementGovernance().getDescription()) <= 100)) {
+    if (!(this.isValidString(powbSynthesis.getPowbManagementGovernance().getDescription()))) {
       action.addMessage(action.getText("Governance Description"));
       action.getInvalidFields().put("input-powbSynthesis.powbManagementGovernance.description",
         InvalidFieldsMessages.EMPTYFIELD);

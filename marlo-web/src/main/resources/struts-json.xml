@@ -145,6 +145,16 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="crpProgramsGlobalUnit"
+      class="org.cgiar.ccafs.marlo.action.json.global.CrpProgramsGlobalUnitAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    
 		<action name="ocsService"
       class="org.cgiar.ccafs.marlo.action.json.global.OcsServiceAction">
       <result type="json">

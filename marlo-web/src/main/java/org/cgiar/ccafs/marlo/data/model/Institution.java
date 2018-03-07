@@ -128,10 +128,23 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getAcronymName() {
+    if (this.getAcronym() != null) {
+      if (this.getAcronym().trim().length() != 0) {
+        try {
+          return this.getAcronym();
+        } catch (Exception e) {
+          return this.getName();
+        }
+      }
+    }
+    return this.getName();
+  }
+
+
   public Date getAdded() {
     return this.added;
   }
-
 
   public Set<Institution> getBranches() {
     return branches;
@@ -174,12 +187,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Set<FundingSource> getFundingSourcesOriginalDonor() {
-    return fundingSourcesOriginalDonor;
-  }
-
   public Set<FundingSource> getFundingSourcesDirectDonor() {
     return fundingSourcesDirectDonor;
+  }
+
+  public Set<FundingSource> getFundingSourcesOriginalDonor() {
+    return fundingSourcesOriginalDonor;
   }
 
   @Override
@@ -318,12 +331,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
   }
 
-  public void setFundingSourcesOriginalDonor(Set<FundingSource> fundingSourcesOriginalDonor) {
-    this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
-  }
-
   public void setFundingSourcesDirectDonor(Set<FundingSource> fundingSourcesDirectDonor) {
     this.fundingSourcesDirectDonor = fundingSourcesDirectDonor;
+  }
+
+  public void setFundingSourcesOriginalDonor(Set<FundingSource> fundingSourcesOriginalDonor) {
+    this.fundingSourcesOriginalDonor = fundingSourcesOriginalDonor;
   }
 
 

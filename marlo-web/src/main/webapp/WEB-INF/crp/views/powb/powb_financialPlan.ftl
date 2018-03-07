@@ -43,19 +43,22 @@
           [#-- Briefly highlight any important issues regarding the financial plan and highlight  --] 
           <div class="form-group">
           <input type="hidden" name="powbSynthesis.financialPlan.id" value="${(powbSynthesis.financialPlan.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.financialPlan.financialPlanIssues" i18nkey="powbSynthesis.financialPlan.highlight" help="powbSynthesis.financialPlan.highlight.help" 
+             paramText="${actualPhase.year}" required=true className="" editable=editable && PMU powbInclude=true/]
           </div>
           <br />
           
           [#-- Table E: CRP Planned Budget   --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="financialPlan.tableE.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="financialPlan.tableE.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableE /]
           </div>
           
           [#-- Table F: Main Areas of W1/2 Expenditure   --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="financialPlan.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="financialPlan.tableF.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableF /]
           </div>
           

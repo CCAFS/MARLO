@@ -13,55 +13,14 @@ $(document).ready(function() {
     max: tasksLength
   });
 
-  // Event for validate button inside each project
+  // Event for validate button inside each synthesis
   $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
-
-  // Refresh event when table is reloaded in project list section
-  $('table.projectsList').on('draw.dt', function() {
-    $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
-    $(".progressbar").progressbar({
-      max: tasksLength
-    });
-  });
 
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
   // Click on submit button
   $('.projectUnSubmitButton').on('click', unSubmitButtonEvent);
-
-  /**
-   * Validate justification for old projects
-   */
-  var $justification = $('#justification');
-  var $parent = $justification.parent().parent();
-  var errorClass = 'fieldError';
-  $parent.prepend('<div class="loading" style="display:none"></div>');
-  $('[name=save]').on('click', function(e) {
-
-    // Cancel Auto Save
-    autoSaveActive = false;
-
-    $justification.removeClass(errorClass);
-
-    if(!validateField($('#justification'))) {
-      // If field is not valid
-      e.preventDefault();
-      $justification.addClass(errorClass);
-      // Go to justification field
-      if($justification.exists) {
-        $('html, body').animate({
-          scrollTop: $justification.offset().top - 110
-        }, 1500);
-      }
-      // Notify justification needs to be filled
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'The justification field needs to be filled';
-      noty(notyOptions);
-
-    }
-
-  });
 
   // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
   $('#secondaryMenu a').on('click', function(e) {
@@ -95,7 +54,7 @@ function cancel() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Are you sure you want to submit the project now?';
+  var message = 'Are you sure you want to submit the synthesis now?';
   message += 'Once submitted, you will no longer have editing rights.';
   noty({
       text: message,
@@ -177,7 +136,7 @@ function processTasks(tasks,id,button) {
                 if(index == tasksLength) {
                   if(completed == tasksLength) {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
-                    notyOptions.text = 'The project can be submmited now';
+                    notyOptions.text = 'The synthesis can be submmited now';
                     notyOptions.type = 'success';
                     notyOptions.layout = 'center';
                     noty(notyOptions);
@@ -187,7 +146,7 @@ function processTasks(tasks,id,button) {
                   } else {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
                     notyOptions.text =
-                        "The project is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your project.";
+                        "The synthesis is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your synthesis.";
                     notyOptions.type = 'confirm';
                     notyOptions.layout = 'center';
                     notyOptions.modal = true;
@@ -206,7 +165,9 @@ function processTasks(tasks,id,button) {
                     });
                   }
                 }
-                nextTask();
+                setTimeout(function() {
+                  nextTask();
+                }, 100);
               },
               error: function(error) {
                 console.log(error)
@@ -232,10 +193,11 @@ function unSubmitButtonEvent(e) {
           unSubmit: function() {
             var $justification = $dialogContent.find("#justification-unSubmit");
             if($justification.val().length > 0 && $justification.val().trim().length != 0) {
+              // TODO: Create and change the un-submit synthesis
               var url = baseURL + "/unsubmitProject.do";
-              var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
+              var liaisonInstitutionID = $(".projectUnSubmitButton").attr("id").split("-")[1];
               var data = {
-                  projectID: projectId,
+                  projectID: liaisonInstitutionID,
                   justification: $justification.val()
               }
               console.log(data);
@@ -248,8 +210,8 @@ function unSubmitButtonEvent(e) {
               }).done(
                   function(m) {
                     window.location.href =
-                        baseURL + "/projects/" + currentCrpSession + "/description.do?projectID=" + projectId
-                            + "&edit=true";
+                        baseURL + "/powb/" + currentCrpSession + "/adjustmentsChanges.do?liaisonInstitutionID="
+                            + liaisonInstitutionID + "&edit=true";
                   });
             } else {
               $justification.addClass('fieldError');

@@ -120,7 +120,7 @@
   [#-- BUDGET REPORTS --]
   { "slug": "budget", "title":"summaries.board.options.budget", "reportsList": [
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.powb", 
       "description": "summaries.board.report.powb.description",
       "namespace": "/projects",
@@ -129,7 +129,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.powbMOG", 
       "description": "summaries.board.report.powbMOG.description",
       "namespace": "/projects",
