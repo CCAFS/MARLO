@@ -192,6 +192,7 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-fp" width="0%">[@s.text name="evidenceRelevant.table.fp" /]</th>
+        <th id="tb-pID" width="0%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
         <th id="tb-plannedTopic" width="22%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
         <th id="tb-geographicScope" width="12%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
@@ -207,23 +208,21 @@
           [#-- FP --]
           <td class="tb-fp text-center">
             [#if flagshipPlanned.liaisonInstitutions?has_content]
-            [#list flagshipPlanned.liaisonInstitutions as institution]
-              <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">
-                ${institution.crpProgram.acronym}
-              </span>
-            [/#list]       
+              [#list flagshipPlanned.liaisonInstitutions as institution]
+                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">${institution.crpProgram.acronym}</span>
+              [/#list]
+            [#elseif flagshipPlanned.projectExpectedStudy.project.projectInfo.administrative]
+              <span class="programTag" style="border-color:#444">PMU</span>
             [/#if]
+          </td>
+          [#-- Project ID --]
+          <td class="tb-projectId text-center">
+            <a href="${tsURL}" target="_blank">P${(flagshipPlanned.projectExpectedStudy.project.id)!}</a>
           </td>
           [#-- Planned topic of study --]
           <td>
           [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
-              <div title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}">
-            [/#if]
-              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
-            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
-              </div>
-            [/#if]
+            <a title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]
