@@ -188,7 +188,7 @@
                     <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                          [#-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> --]
+                          <button id="close-modal-button" type="button" class="close hidden" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                           
                           <div class="locationForm-container">
                             [#-- <div class="title">Adding a new location</div> --]
@@ -420,7 +420,10 @@
       [#if element.fundingSources?has_content]
         [#list element.fundingSources as fs]
           [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fs.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
-          <span style="font-size:0.7em;">${fs.composedName}</span><br />
+          <a target="_blank" href="[@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"] [@s.param name='fundingSourceID']${fs.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span style="font-size:0.7em;">${fs.composedName}</span>
+          </a>
+          <br />
         [/#list]
       [/#if]
     </div>
