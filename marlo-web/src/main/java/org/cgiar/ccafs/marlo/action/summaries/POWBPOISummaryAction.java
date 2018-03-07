@@ -15,16 +15,21 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
+import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
@@ -35,12 +40,14 @@ import org.cgiar.ccafs.marlo.utils.POISummary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +82,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   private LiaisonInstitution pmuInstitution;
   private PowbSynthesis powbSynthesisPMU;
   private long startTime;
+  private XWPFDocument document = new XWPFDocument();
 
   private List<CrpProgram> flagships;
   // Streams
@@ -88,6 +96,159 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     super(config, crpManager, phaseManager);
     poiSummary = new POISummary();
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
+  }
+
+  private void addAdjustmentDescription() {
+    if (powbSynthesisPMU != null) {
+
+      String adjustmentsDescription = "";
+      if (powbSynthesisPMU.getPowbToc() != null) {
+        adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
+          && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "<Not Defined>";
+      }
+      poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
+      if (powbSynthesisPMU.getPowbToc().getFile() != null) {
+        poiSummary.textHyperlink(
+          this.getPowbPath(powbSynthesisPMU.getLiaisonInstitution(),
+            this.getLoggedCrp().getAcronym() + "_"
+              + PowbSynthesisSectionStatusEnum.TOC_ADJUSTMENTS.getStatus().toString())
+            + powbSynthesisPMU.getPowbToc().getFile().getFileName(),
+          "URL: " + powbSynthesisPMU.getPowbToc().getFile().getFileName(), document.createParagraph());
+      }
+    }
+  }
+
+  private void addCrossCutting() {
+    poiSummary.textHead2Title(document.createParagraph(),
+      this.getText("summaries.powb.expectedKeyResults.crossCutting"));
+    String crossCuttingGenderDescription = "";
+    String crossCuttingOpenDataDescription = "";
+    // Cross Cutting Dimensions Info
+    if (powbSynthesisPMU.getPowbCrossCuttingDimension() != null) {
+      PowbCrossCuttingDimension crossCutting = powbSynthesisPMU.getPowbCrossCuttingDimension();
+      if (crossCutting != null) {
+        crossCuttingGenderDescription = crossCutting.getSummarize();
+        crossCuttingOpenDataDescription = crossCutting.getAssets();
+      }
+    }
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.expectedKeyResults.crossCutting.gender"));
+    if (crossCuttingGenderDescription != null && !crossCuttingGenderDescription.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingGenderDescription);
+    }
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.expectedKeyResults.crossCutting.openData"));
+    if (crossCuttingOpenDataDescription != null && !crossCuttingOpenDataDescription.isEmpty()) {
+      poiSummary.textParagraph(document.createParagraph(), crossCuttingOpenDataDescription);
+    }
+  }
+
+  private void addCrpStaffing() {
+    String staffingDescription = "";
+    if (powbSynthesisPMU != null) {
+      // TOC
+      if (powbSynthesisPMU.getCrpStaffing() != null) {
+        staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
+          && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
+            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "<Not Defined>";
+      }
+      poiSummary.textParagraph(document.createParagraph(), staffingDescription);
+    }
+  }
+
+  private void addEvidence() {
+    String evidenceDescription = "";
+    if (powbSynthesisPMU != null) {
+      // Evidence
+      if (powbSynthesisPMU.getPowbEvidence() != null) {
+        PowbEvidence powbEvidence = powbSynthesisPMU.getPowbEvidence();
+        if (powbEvidence != null) {
+          evidenceDescription = powbEvidence.getNarrative() != null && !powbEvidence.getNarrative().trim().isEmpty()
+            ? powbEvidence.getNarrative() : "<Not Defined>";
+        }
+      }
+      poiSummary.textParagraph(document.createParagraph(), evidenceDescription);
+    }
+  }
+
+  private void addExpectedCrp() {
+    if (powbSynthesisPMU != null) {
+      String expectedCrpDescription = "";
+      // CRP Progress
+      List<PowbExpectedCrpProgress> powbExpectedCrpProgressList =
+        powbSynthesisPMU.getPowbExpectedCrpProgresses().stream().filter(e -> e.isActive()).collect(Collectors.toList());
+
+      if (powbExpectedCrpProgressList != null && !powbExpectedCrpProgressList.isEmpty()) {
+        PowbExpectedCrpProgress powbExpectedCrpProgress = powbExpectedCrpProgressList.get(0);
+        expectedCrpDescription = powbExpectedCrpProgress.getExpectedHighlights() != null
+          && !powbExpectedCrpProgress.getExpectedHighlights().trim().isEmpty()
+            ? powbExpectedCrpProgress.getExpectedHighlights() : "<Not Defined>";
+      }
+      poiSummary.textParagraph(document.createParagraph(), expectedCrpDescription);
+    }
+  }
+
+  private void addFlagshipPlans() {
+    for (LiaisonInstitution liaisonInstitution : this.getFlagships()) {
+      String plansCRPFlagshipDescription = "";
+      List<PowbSynthesis> powbSynthesisFL = powbSynthesisList.stream()
+        .filter(p -> p.isActive() && p.getLiaisonInstitution().equals(liaisonInstitution)).collect(Collectors.toList());
+      PowbSynthesis powbSynthesis = null;
+      if (powbSynthesisFL != null && powbSynthesisFL.size() > 0) {
+        powbSynthesis = powbSynthesisFL.get(0);
+      }
+      String liaisonName = liaisonInstitution.getAcronym() != null && !liaisonInstitution.getAcronym().isEmpty()
+        ? liaisonInstitution.getAcronym() : liaisonInstitution.getName();
+      plansCRPFlagshipDescription += liaisonName + ": ";
+
+      if (powbSynthesis != null && powbSynthesis.getPowbFlagshipPlans() != null) {
+        if (powbSynthesis.getPowbFlagshipPlans().getPlanSummary() != null) {
+          plansCRPFlagshipDescription += powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
+        }
+        poiSummary.textParagraph(document.createParagraph(), plansCRPFlagshipDescription);
+        if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
+          poiSummary.textHyperlink(
+            this.getPowbPath(liaisonInstitution,
+              this.getLoggedCrp().getAcronym() + "_"
+                + PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus().toString())
+              + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName(),
+            "URL: " + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName(),
+            document.createParagraph());
+        }
+      }
+    }
+  }
+
+  private void addParticipatingCenters() {
+    String participantingCenters = "";
+    List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+    if (crpPpaPartnerList != null && !crpPpaPartnerList.isEmpty()) {
+      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerList) {
+        if (participantingCenters.isEmpty()) {
+          if (crpPpaPartner.getInstitution().getAcronym() != null
+            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
+            participantingCenters = crpPpaPartner.getInstitution().getAcronym();
+          } else {
+            participantingCenters = crpPpaPartner.getInstitution().getName();
+          }
+        } else {
+          if (crpPpaPartner.getInstitution().getAcronym() != null
+            && !crpPpaPartner.getInstitution().getAcronym().trim().isEmpty()) {
+            participantingCenters += ", " + crpPpaPartner.getInstitution().getAcronym();
+          } else {
+            participantingCenters += ", " + crpPpaPartner.getInstitution().getName();
+          }
+        }
+      }
+    }
+    if (participantingCenters.isEmpty()) {
+      participantingCenters = "<Not Defined>";
+    }
+    poiSummary.textParagraph(document.createParagraph(),
+      this.getText("summaries.powb.participantingCenters") + ": " + participantingCenters);
   }
 
   public void createTableA(XWPFDocument document) {
@@ -176,13 +337,31 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String execute() throws Exception {
     try {
-      XWPFDocument document = new XWPFDocument();
 
-      poiSummary.textHead1Title(document.createParagraph(), "CGIAR CRP Plan of Work and Budget (POWB) Template");
-
-      poiSummary.textLineBreak(document, 2);
-
-      poiSummary.textHead1Title(document.createParagraph(), "COVER PAGE");
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.mainTitle2"));
+      poiSummary.textLineBreak(document, 1);
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.cover"));
+      poiSummary.textLineBreak(document, 1);
+      String unitName = this.getLoggedCrp().getAcronym() != null && !this.getLoggedCrp().getAcronym().isEmpty()
+        ? this.getLoggedCrp().getAcronym() : this.getLoggedCrp().getName();
+      poiSummary.textParagraph(document.createParagraph(), this.getText("summaries.powb.unitName") + ": " + unitName);
+      this.addParticipatingCenters();
+      poiSummary.textLineBreak(document, 1);
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults"));
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults.toc"));
+      this.addAdjustmentDescription();
+      poiSummary.textHead2Title(document.createParagraph(),
+        this.getText("summaries.powb.expectedKeyResults.expectedCrp"));
+      this.addExpectedCrp();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.expectedKeyResults.evidence"));
+      this.addEvidence();
+      poiSummary.textHead2Title(document.createParagraph(),
+        this.getText("summaries.powb.expectedKeyResults.flagshipPlans"));
+      this.addFlagshipPlans();
+      this.addCrossCutting();
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.effectiveness"));
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.staffing"));
+      this.addCrpStaffing();
 
       this.createTableA(document);
 
@@ -210,7 +389,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     return bytesDOC.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/docx";
@@ -225,6 +403,21 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     fileName.append(".docx");
     return fileName.toString();
   }
+
+
+  public List<LiaisonInstitution> getFlagships() {
+    List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
+      .filter(c -> c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
+    if (flagshipsList != null) {
+      flagshipsList.sort(Comparator.comparing(LiaisonInstitution::getAcronym));
+      return flagshipsList;
+    } else {
+      return new ArrayList<>();
+    }
+  }
+
 
   @Override
   public InputStream getInputStream() {
@@ -258,6 +451,18 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       return powbExpectedCrpProgressMilestone.get(0);
     }
     return new PowbExpectedCrpProgress();
+  }
+
+  // Method to download link file
+  public String getPowbPath(LiaisonInstitution liaisonInstitution, String actionName) {
+    return config.getDownloadURL() + "/" + this.getPowbSourceFolder(liaisonInstitution, actionName).replace('\\', '/');
+  }
+
+  // Method to get the download folder
+  private String getPowbSourceFolder(LiaisonInstitution liaisonInstitution, String actionName) {
+    return APConstants.POWB_FOLDER.concat(File.separator).concat(this.getCrpSession()).concat(File.separator)
+      .concat(liaisonInstitution.getAcronym()).concat(File.separator).concat(actionName.replace("/", "_"))
+      .concat(File.separator);
   }
 
   public boolean isPMU(LiaisonInstitution institution) {
