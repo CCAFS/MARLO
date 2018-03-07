@@ -82,6 +82,27 @@ public class PowbCollaborationGlobalUnit implements java.io.Serializable, IAudit
     return collaborationType;
   }
 
+  public String getCollaborationTypeName() {
+    if (collaborationType == null) {
+      return "";
+    }
+    switch (collaborationType) {
+      case "1":
+        return "Contribution to";
+
+      case "2":
+
+        return "Service needed from";
+      case "3":
+
+        return "Both";
+
+      default:
+        return "";
+
+    }
+
+  }
 
   public User getCreatedBy() {
     return createdBy;

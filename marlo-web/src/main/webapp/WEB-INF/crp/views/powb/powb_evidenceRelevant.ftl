@@ -42,24 +42,29 @@
           [#if PMU]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="limitWords-100" paramText="${(actualPhase.year)!}" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="" labelClass="label-min-width" paramText="${(actualPhase.year)!}" editable=editable powbInclude=true /]
           </div>
           [/#if]
           
-          [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
+          [#-- Table B & H: Planned Studies for Relevant Outcomes and Impacts and planned monitoring, evaluation, and learning exercises --]
           [#if PMU]
           <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.table.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]
+              <span class="powb-doc badge label-powb-table pull-right" title="[@s.text name="powb.includedField.title" /]">
+                [@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span>
+              </span>
+            </h4>
+            
             <hr />
             [@tableBMacro /]
           </div>
           [/#if]
           
           [#-- Planned Studies for Relevant Outcomes and Impacts --]
-          [#if Flagship]
+          [#if flagship]
           <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header row">
-              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
+            <div class="evidence-plannedStudies-header">
+              <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
             </div>
             [#-- Project planned studies (Table) --]
             <hr />
@@ -162,7 +167,7 @@
           [#-- Include --]
           <td class="plannedStudiesCheckbox text-center">
           [#if editable]
-            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!false)/]
+            [@customForm.checkBoxFlat id="${(popUp.id)!''}" name="powbSynthesis.powbEvidence.plannedStudiesValue" value="${(popUp.id)!''}" checked=((!powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id))!true)/]
           [#else]
             [#-- If does no have permissions --]
             [#if powbSynthesis.powbEvidence.studiesIds?seq_contains(popUp.id)]<p class="checked"></p>[/#if]
@@ -187,6 +192,7 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-fp" width="0%">[@s.text name="evidenceRelevant.table.fp" /]</th>
+        <th id="tb-pID" width="0%">[@s.text name="evidenceRelevant.table.projectId" /]</th>
         <th id="tb-plannedTopic" width="22%">[@s.text name="evidenceRelevant.table.plannedTopic" /]</th>
         <th id="tb-geographicScope" width="12%">[@s.text name="evidenceRelevant.table.geographicScope" /]</th>
         <th id="tb-relevant" width="28%">[@s.text name="evidenceRelevant.table.relevant" /]</th>
@@ -196,25 +202,27 @@
     <tbody>
     [#if flagshipPlannedList?has_content]
       [#list flagshipPlannedList as flagshipPlanned]
-        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(popUp.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+        [#local tsURL][@s.url namespace="/projects" action="${(crpSession)!}/expectedStudies"][@s.param name='projectID']${(flagshipPlanned.projectExpectedStudy.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         [#local wordCutterMaxPos=180]
         <tr>
           [#-- FP --]
           <td class="tb-fp text-center">
-            <span class="programTag" style="border-color:${(flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.color)!'#fff'}">
-              ${flagshipPlanned.powbEvidence.powbSynthesis.liaisonInstitution.crpProgram.acronym}
-            </span>
+            [#if flagshipPlanned.liaisonInstitutions?has_content]
+              [#list flagshipPlanned.liaisonInstitutions as institution]
+                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">${institution.crpProgram.acronym}</span>
+              [/#list]
+            [#elseif flagshipPlanned.projectExpectedStudy.project.projectInfo.administrative]
+              <span class="programTag" style="border-color:#444">PMU</span>
+            [/#if]
+          </td>
+          [#-- Project ID --]
+          <td class="tb-projectId text-center">
+            <a href="${tsURL}" target="_blank">P${(flagshipPlanned.projectExpectedStudy.project.id)!}</a>
           </td>
           [#-- Planned topic of study --]
           <td>
           [#if flagshipPlanned.projectExpectedStudy.topicStudy?has_content]
-            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
-              <div title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}">
-            [/#if]
-              <a href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
-            [#if flagshipPlanned.projectExpectedStudy.topicStudy?length gt wordCutterMaxPos]
-              </div>
-            [/#if]
+            <a title="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" href="${tsURL}" target="_blank">[@utilities.wordCutter string="${(flagshipPlanned.projectExpectedStudy.topicStudy)!''}" maxPos=wordCutterMaxPos /]</a>
           [#else]
             <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
           [/#if]

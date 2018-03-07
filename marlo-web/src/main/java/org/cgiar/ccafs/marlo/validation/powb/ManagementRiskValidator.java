@@ -80,8 +80,7 @@ public class ManagementRiskValidator extends BaseValidator {
   }
 
   public void validateManagementRisk(BaseAction action, PowbSynthesis powbSynthesis) {
-    if (!(this.isValidString(powbSynthesis.getPowbManagementRisk().getHighlight())
-      && this.wordCount(powbSynthesis.getPowbManagementRisk().getHighlight()) <= 100)) {
+    if (!(this.isValidString(powbSynthesis.getPowbManagementRisk().getHighlight()))) {
       action.addMessage(action.getText("Risk Highlight"));
       action.getInvalidFields().put("input-powbSynthesis.powbManagementRisk.highlight",
         InvalidFieldsMessages.EMPTYFIELD);

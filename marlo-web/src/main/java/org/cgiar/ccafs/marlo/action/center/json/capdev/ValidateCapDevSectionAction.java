@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.model.CenterDeliverable;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableDocument;
 import org.cgiar.ccafs.marlo.data.model.CenterDeliverableType;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
-import org.cgiar.ccafs.marlo.data.model.Participant;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapDevDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.center.capdev.CapacityDevelopmentValidator;
@@ -43,8 +42,10 @@ import org.cgiar.ccafs.marlo.validation.center.capdev.CapdevSupportingDocsValida
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -132,8 +133,16 @@ public class ValidateCapDevSectionAction extends BaseAction {
           if ((deliverables != null) && !deliverables.isEmpty()) {
             for (CenterDeliverable deliverable : deliverables) {
 
-              sectionStatus = sectionStatusService.getSectionStatusByDeliverable(deliverable.getId(), capdevID,
-                sectionName, this.getCenterYear());
+              List<CenterSectionStatus> sectionStatuses;
+              sectionStatuses = new ArrayList<>(deliverable.getSectionStatuses().stream()
+                .filter(c -> c.getYear() == this.getCenterYear()).collect(Collectors.toList()));
+
+
+              if (!sectionStatuses.isEmpty()) {
+                sectionStatus = sectionStatuses.get(0);
+              }
+              // sectionStatus = sectionStatusService.getSectionStatusByDeliverable(deliverable.getId(), capdevID,
+              // sectionName, this.getCenterYear());
 
               if (sectionStatus == null) {
                 sectionStatus = new CenterSectionStatus();
@@ -282,10 +291,14 @@ public class ValidateCapDevSectionAction extends BaseAction {
         if (!participants.isEmpty()) {
           capdev.setParticipant(participants.get(0).getParticipant());
         }
-
       }
 
-      if (!capdev.getCapdevLocations().isEmpty()) {
+      if (capdev.getCategory() == 2) {
+        Set<CapdevParticipant> capdevParticipants = new HashSet<CapdevParticipant>(participants);
+        capdev.setCapdevParticipant(capdevParticipants);
+      }
+
+      if (capdev.getCapdevLocations() != null) {
         List<CapdevLocations> regions = new ArrayList<>(capdev.getCapdevLocations().stream()
           .filter(fl -> fl.isActive() && (fl.getLocElement().getLocElementType().getId() == 1))
           .collect(Collectors.toList()));
@@ -299,10 +312,16 @@ public class ValidateCapDevSectionAction extends BaseAction {
         capdev.setCapDevCountries(countries);
 
       }
-      Participant participant = new Participant();
-      participant = capdev.getParticipant();
 
-      interventionValidator.validate(this, capdev, participant, null, null);
+      if (capdev.getGlobal() != null) {
+        capdev.setsGlobal(String.valueOf(capdev.getGlobal()));
+      }
+      if (capdev.getRegional() != null) {
+        capdev.setsRegional(String.valueOf(capdev.getRegional()));
+      }
+
+
+      interventionValidator.validate(this, capdev, capdev.getParticipant(), null, null);
 
 
     }
@@ -317,7 +336,9 @@ public class ValidateCapDevSectionAction extends BaseAction {
     List<CenterDeliverable> centerDeliverables =
       new ArrayList<>(capdev.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
 
+
     for (CenterDeliverable deliverable : centerDeliverables) {
+
 
       if (deliverable != null) {
         if (deliverable.getDeliverableType() != null) {

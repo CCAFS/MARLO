@@ -813,11 +813,12 @@ public class DeliverableAction extends BaseAction {
 
   public List<DeliverablePartnership> otherPartners() {
     try {
-      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
-        .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
+      List<DeliverablePartnership> list =
+        deliverable.getDeliverablePartnerships().stream()
+          .filter(dp -> dp.isActive() && dp.getPhase() != null && dp.getPhase().equals(this.getActualPhase())
 
-          && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-        .collect(Collectors.toList());
+            && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+          .collect(Collectors.toList());
 
 
       return list;
@@ -1386,8 +1387,8 @@ public class DeliverableAction extends BaseAction {
         && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll()
-            .stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
+          .addAll(deliverableTypeManager
+            .findAll().stream().filter(dt -> dt.getDeliverableCategory() == null && dt.getCrp() == null
               && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
             .collect(Collectors.toList()));
 
@@ -1646,17 +1647,15 @@ public class DeliverableAction extends BaseAction {
         deliverable.setOtherPartners(new ArrayList<>());
       }
       for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-
-        if (deliverablePartnership != null) {
+        if (deliverablePartnership != null && deliverablePartnership.getId() != null) {
           if (deliverablePartnership.getProjectPartner() == null) {
-            deliverablePartnership.setId(null);
+            deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
           } else {
             if (isManagingPartnerPersonRequerid && deliverablePartnership.getProjectPartnerPerson() == null) {
-              deliverablePartnership.setId(null);
+              deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
             }
           }
         }
-
       }
       for (DeliverablePartnership deliverablePartnership : partnerShipsOtherPrew) {
         if (deliverable.getOtherPartners() != null) {
@@ -2633,8 +2632,15 @@ public class DeliverableAction extends BaseAction {
       for (DeliverablePartnership deliverablePartnershipOther : deliverable.getOtherPartners()) {
         if (deliverablePartnershipOther.getProjectPartner() != null) {
           if (deliverablePartnershipOther.getId() == null) {
-            this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
-              DeliverablePartnershipTypeEnum.OTHER.getValue());
+            if (isManagingPartnerPersonRequerid) {
+              if (deliverablePartnershipOther.getProjectPartnerPerson() != null) {
+                this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
+                  DeliverablePartnershipTypeEnum.OTHER.getValue());
+              }
+            } else {
+              this.createAndSaveNewDeliverablePartnership(deliverablePartnershipOther,
+                DeliverablePartnershipTypeEnum.OTHER.getValue());
+            }
           } else {
             DeliverablePartnership partnershipResponsibleDB =
               deliverablePartnershipManager.getDeliverablePartnershipById(deliverablePartnershipOther.getId());

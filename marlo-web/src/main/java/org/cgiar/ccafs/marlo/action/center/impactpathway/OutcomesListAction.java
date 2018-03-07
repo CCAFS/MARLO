@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -152,8 +153,6 @@ public class OutcomesListAction extends BaseAction {
         .setModificationJustification(this.getJustification() == null ? "Outcome deleted" : this.getJustification());
       outcome.setModifiedBy(this.getCurrentUser());
 
-      outcomeService.saveResearchOutcome(outcome);
-
       CenterSectionStatus status = sectionStatusService.getSectionStatusByOutcome(programID, outcome.getId(),
         "outcomesList", this.getCenterYear());
 
@@ -161,8 +160,10 @@ public class OutcomesListAction extends BaseAction {
         sectionStatusService.deleteSectionStatus(status.getId());
       }
 
+      outcomeService.saveResearchOutcome(outcome);
 
       outcomeService.deleteResearchOutcome(outcome.getId());
+
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }
 

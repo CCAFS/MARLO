@@ -41,21 +41,24 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --] 
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbManagementGovernance.description"  help="powbSynthesis.powbManagementGovernance.description.help" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbManagementGovernance.description"  help="powbSynthesis.powbManagementGovernance.description.help" paramText="${(actualPhase.year)!}" fieldEmptyText="global.prefilledByPmu" required=true className="" editable=editable && PMU powbInclude=true /]
           </div>
           
-          
+          [#-- 
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="managementGovernance.tableOverall.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
             [@tableOverallMacro /]
           </div>
           [/#if]
+           --]
           
         </div>
         
         [#-- Section Buttons & hidden inputs--]
-        [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [#if PMU]
+          [#include "/WEB-INF/crp/views/powb/buttons-powb.ftl" /]
+        [/#if]
         
       [/@s.form] 
     </div> 

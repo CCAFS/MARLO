@@ -39,9 +39,9 @@
         <h3 class="headTitle">[@s.text name="adjustmentsChanges.title" /]</h3>
         <div class="borderBox">
         
-          [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --] 
+          [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --]
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="limitWords-100" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbToc.tocOverall" i18nkey="liaisonInstitution.powb.adjustmentsChanges" help="liaisonInstitution.powb.adjustmentsChanges.help" required=true className="" editable=editable powbInclude=PMU /]
           </div>
           
           [#-- Annex a brief updated summary of the crp --] 
@@ -49,6 +49,7 @@
           <div class="form-group margin-panel">
             <div class="row">
               <div class="col-sm-7">
+                <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
                 [@customForm.fileUploadAjax
                   fileDB=(powbSynthesis.powbToc.file)!{} 
                   name="powbSynthesis.powbToc.file.id" 
