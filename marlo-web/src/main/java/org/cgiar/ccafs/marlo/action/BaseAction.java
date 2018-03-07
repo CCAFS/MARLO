@@ -2712,9 +2712,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         returnValue = true;
         break;
       case EVIDENCES:
-        if (this.isPowbFlagship(powbSynthesis.getLiaisonInstitution())) {
-          returnValue = true;
+        if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
+            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+          if (sectionStatus == null) {
+            return false;
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
         }
+        returnValue = true;
         break;
       case CROSS_CUTTING_DIMENSIONS:
       case STAFFING:
@@ -4113,10 +4121,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
         if (expecetedSection == 0) {
-          if (!(project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-            && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue() == true)) {
-            totalSections++;
-          }
+
+          totalSections++;
+
 
         }
         if (this.getCountProjectFlagships(project.getId())) {
@@ -4163,9 +4170,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           } else {
             if (this.hasSpecificities(APConstants.CRP_ACTIVITES_MODULE)) {
-              return totalSections == 6;
+              return totalSections == 7;
             } else {
-              return totalSections == 5;
+              return totalSections == 6;
             }
 
           }
