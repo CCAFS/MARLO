@@ -23,8 +23,3 @@ function init() {
 function attachEvents() {
 
 }
-
-function getDateString() {
-  var today = new Date();
-  return today.toISOString().split('T')[0];
-}

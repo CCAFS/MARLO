@@ -2,11 +2,18 @@
 [#assign title = "MARLO Projects" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","font-awesome"] /]
-[#assign customJS = ["${baseUrlMedia}/js/projects/projectsList.js" ] /]
+[#assign customJS = [
+  "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
+  "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
+  "${baseUrlMedia}/js/projects/projectsList.js" 
+  ] 
+/]
 [#assign customCSS = [
   "${baseUrl}/global/css/customDataTable.css", 
   "${baseUrlMedia}/css/projects/projectsList.css"] 
 /]
+
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 
