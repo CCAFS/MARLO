@@ -33,8 +33,8 @@ $(document).ready(function() {
       dom: 'Bfrtip',
       buttons: [
         {
-            text: 'Export CSV',
-            extend: 'csv',
+            text: 'Copy',
+            extend: 'copy',
             title: currentCrpSession + '_Projects_list_Data_export_' + getDateString()
         }
       ]
