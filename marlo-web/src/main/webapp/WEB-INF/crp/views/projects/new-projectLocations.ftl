@@ -237,11 +237,13 @@
                       </div>
                     </div>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
-                      <div class="row locationsDataTable">
+                      <div class="row">
                         [#if project.locationsData?has_content]
-                          <table>
+                          <table class="locationsDataTable">
                             [#list project.locationsData as locationLevels]
                               [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
+                              [#-- Hiden template into table tag --]
+                              [@locationsTableMacro element={} name="${locationLevelName}" index=-1 template=true /]
                             [/#list]
                           </table>
                         [#else]
@@ -265,7 +267,6 @@
 
 
 [#-- Section hidden inputs--]
-[@locationsTableMacro element={} name="${locationLevelName}" index=-1 template=true /]
 
 [@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
 
@@ -276,7 +277,7 @@
 
 [#macro locationsTableMacro element name index template=false list=false]
       [#local customName = "${name}[${index}]" /]
-      <tr id="locationLevel-${template?string('template',index)}">
+      <tr id="locationLevel-${template?string('template',index)}" class="locationLevel" style="display:${template?string('none','')}">
         <th class="locLevelName" width="20%">${(element.name)!''}</th>
         <td width="80%">
           <div class=" locationLevel-optionContent " listname="${customName}.locElements">
@@ -294,51 +295,6 @@
         <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
         <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
       </tr>
-[/#macro]
-
-[#-- Region element template --]
-<ul style="display:none">
-  <li id="regionTemplate" class="region clearfix col-md-3">
-      <div class="removeRegion removeIcon" title="Remove region"></div>
-      <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
-      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
-      <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
-      <span class="name"></span>
-      <div class="clearfix"></div>
-    </li>
-</ul>
-
-[#include "/WEB-INF/crp/pages/footer.ftl"]
-
-[#macro locationLevelTable element  name index template=false list=false]
-  [#local customName = "${name}[${index}]" /]
-  [#local countryQuestion = '[@s.text name="projectLocations.selectAllCountries" /]'/]
-  [#local cmvsQuestion = '[@s.text name="projectLocations.selectAllCmvs" /]'/]
-  <table>
-    <tr>
-      <th width="20%">${(element.name)!}:</th>
-      <td width="80%">
-        <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-          <span class="allCountriesQuestion" style="display:none">
-            <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
-            [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
-            <hr />
-          </span>
-          [#-- Content of locations--]
-          <div class="optionSelect-content row">
-            [#if element.locElements?has_content]
-              [#list element.locElements as location]
-                [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
-              [/#list]
-            [/#if]
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
-  <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
-  <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
-  <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
 [/#macro]
 
 [#macro locationMacro element  name index template=false isList=false ]
@@ -367,6 +323,51 @@
     <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.latitude!=0)?string((element.locGeoposition.latitude?c)!,'')}" /> 
     <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition?? && element.locGeoposition.longitude?? && element.locGeoposition.longitude!=0)?string((element.locGeoposition.longitude?c)!,'')}" />
   </div>
+[/#macro]
+
+[#-- Region element template --]
+<ul style="display:none">
+  <li id="regionTemplate" class="region clearfix col-md-3">
+      <div class="removeRegion removeIcon" title="Remove region"></div>
+      <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
+      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
+      <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
+      <span class="name"></span>
+      <div class="clearfix"></div>
+    </li>
+</ul>
+
+[#include "/WEB-INF/crp/pages/footer.ftl"]
+
+[#macro locationLevelTableDisabled element  name index template=false list=false]
+  [#local customName = "${name}[${index}]" /]
+  [#local countryQuestion = '[@s.text name="projectLocations.selectAllCountries" /]'/]
+  [#local cmvsQuestion = '[@s.text name="projectLocations.selectAllCmvs" /]'/]
+  <table>
+    <tr>
+      <th width="20%">${(element.name)!}:</th>
+      <td width="80%">
+        <div class=" locationLevel-optionContent " listname="${customName}.locElements">
+          <span class="allCountriesQuestion" style="display:none">
+            <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
+            [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
+            <hr />
+          </span>
+          [#-- Content of locations--]
+          <div class="optionSelect-content row">
+            [#if element.locElements?has_content]
+              [#list element.locElements as location]
+                [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
+              [/#list]
+            [/#if]
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
+  <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
+  <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
 [/#macro]
 
 [#macro recommendedLocation element  name index template=false ]
