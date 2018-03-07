@@ -42,7 +42,7 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="" editable=editable powbInclude=true /]
             [#assign powebElement= action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
@@ -68,7 +68,8 @@
               </div>
             </div>
             
-            <h4 class="subTitle headTitle">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="expectedProgress.tableA.title" /]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableAMacro  /]
           </div>
           [/#if]
