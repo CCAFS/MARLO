@@ -73,7 +73,8 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
 
     User user = this.getUser();
     Date now = new Date();
-    String modificationJustification = new String();
+    String modificationJustification =
+      entity.getModificationJustification() != null ? entity.getModificationJustification() : new String();
     Boolean active = new Boolean(true);
 
     this.setValue(state, propertyNames, "createdBy", user, entity);

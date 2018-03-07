@@ -387,10 +387,6 @@ public class ProjectListAction extends BaseAction {
 
   public CenterProject createCenterProject(Project project, boolean autofill) {
     CenterProject centerProject = new CenterProject();
-    centerProject.setActive(true);
-    centerProject.setActiveSince(new Date());
-    centerProject.setCreatedBy(this.getCurrentUser());
-    centerProject.setModifiedBy(this.getCurrentUser());
     centerProject.setStartDate(new Date());
     centerProject.setDateCreated(new Date());
     centerProject.setResearchProgram(selectedProgram);
@@ -401,13 +397,6 @@ public class ProjectListAction extends BaseAction {
 
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
-
-
-    projectCrosscutingTheme.setActive(true);
-    projectCrosscutingTheme.setActiveSince(new Date());
-    projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModificationJustification("");
 
     projectCrosscutingTheme.setClimateChange(false);
     projectCrosscutingTheme.setGender(false);
@@ -443,10 +432,6 @@ public class ProjectListAction extends BaseAction {
     project.setActiveSince(new Date());
 
     CenterProject centerProject = new CenterProject();
-    centerProject.setActive(true);
-    centerProject.setActiveSince(new Date());
-    centerProject.setCreatedBy(this.getCurrentUser());
-    centerProject.setModifiedBy(this.getCurrentUser());
     centerProject.setStartDate(new Date());
     centerProject.setDateCreated(new Date());
     centerProject.setResearchProgram(selectedProgram);
@@ -454,13 +439,6 @@ public class ProjectListAction extends BaseAction {
     centerProject.setAutoFill(false);
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
-
-
-    projectCrosscutingTheme.setActive(true);
-    projectCrosscutingTheme.setActiveSince(new Date());
-    projectCrosscutingTheme.setCreatedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModifiedBy(this.getCurrentUser());
-    projectCrosscutingTheme.setModificationJustification("");
 
     projectCrosscutingTheme.setClimateChange(false);
     projectCrosscutingTheme.setGender(false);
@@ -575,12 +553,6 @@ public class ProjectListAction extends BaseAction {
 
       CenterProjectLocation centerProjectLocation = new CenterProjectLocation();
 
-
-      centerProjectLocation.setActive(true);
-      centerProjectLocation.setActiveSince(new Date());
-      centerProjectLocation.setCreatedBy(this.getCurrentUser());
-      centerProjectLocation.setModifiedBy(this.getCurrentUser());
-      centerProjectLocation.setModificationJustification("");
       centerProjectLocation.setProject(centerProject);
 
       centerProjectLocation.setLocElement(projectLocation.getLocElement());
@@ -625,11 +597,6 @@ public class ProjectListAction extends BaseAction {
 
 
         CenterProjectPartner partnerNew = new CenterProjectPartner();
-        partnerNew.setActive(true);
-        partnerNew.setActiveSince(new Date());
-        partnerNew.setCreatedBy(this.getCurrentUser());
-        partnerNew.setModifiedBy(this.getCurrentUser());
-        partnerNew.setModificationJustification("");
         partnerNew.setProject(centerProject);
 
         Institution institution = new Institution();
@@ -645,11 +612,6 @@ public class ProjectListAction extends BaseAction {
         for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
 
           CenterProjectPartnerPerson partnerPersonNew = new CenterProjectPartnerPerson();
-          partnerPersonNew.setActive(true);
-          partnerPersonNew.setActiveSince(new Date());
-          partnerPersonNew.setCreatedBy(this.getCurrentUser());
-          partnerPersonNew.setModifiedBy(this.getCurrentUser());
-          partnerPersonNew.setModificationJustification("");
 
           partnerPersonNew.setProjectPartner(partnerNew);
 
@@ -681,7 +643,6 @@ public class ProjectListAction extends BaseAction {
       programID = project.getResearchProgram().getId();
       project.setModificationJustification(
         this.getJustification() == null ? "CenterProject deleted" : this.getJustification());
-      project.setModifiedBy(this.getCurrentUser());
 
       projectService.saveCenterProject(project);
 

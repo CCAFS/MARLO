@@ -51,7 +51,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -435,8 +434,6 @@ public class OutputsAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
-      outputDb.setActiveSince(new Date());
-      outputDb.setModifiedBy(this.getCurrentUser());
       outputService.saveResearchOutput(outputDb, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
@@ -491,11 +488,6 @@ public class OutputsAction extends BaseAction {
       for (CenterOutputsNextUser outputNextUser : output.getNextUsers()) {
         if (outputNextUser.getId() == null) {
           CenterOutputsNextUser nextUserNew = new CenterOutputsNextUser();
-          nextUserNew.setActive(true);
-          nextUserNew.setActiveSince(new Date());
-          nextUserNew.setCreatedBy(this.getCurrentUser());
-          nextUserNew.setModifiedBy(this.getCurrentUser());
-          nextUserNew.setModificationJustification("");
 
           nextUserNew.setResearchOutput(outputSave);
           CenterNextuserType nextuserType = null;
@@ -527,8 +519,6 @@ public class OutputsAction extends BaseAction {
           }
 
           if (hasChanges) {
-            nextUserPrev.setModifiedBy(this.getCurrentUser());
-            nextUserPrev.setActiveSince(new Date());
             outputNextUserService.saveResearchOutputsNextUser(nextUserPrev);
           }
 
@@ -557,11 +547,6 @@ public class OutputsAction extends BaseAction {
       for (CenterOutputsOutcome outputOutcome : output.getOutcomes()) {
         if (outputOutcome.getId() == null) {
           CenterOutputsOutcome outputOutcomeNew = new CenterOutputsOutcome();
-          outputOutcomeNew.setActive(true);
-          outputOutcomeNew.setActiveSince(new Date());
-          outputOutcomeNew.setCreatedBy(this.getCurrentUser());
-          outputOutcomeNew.setModifiedBy(this.getCurrentUser());
-          outputOutcomeNew.setModificationJustification("");
 
           outputOutcomeNew
             .setCenterOutcome(outcomeManager.getResearchOutcomeById(outputOutcome.getCenterOutcome().getId()));

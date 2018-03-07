@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -79,11 +80,6 @@ public class DeliverableListAction extends BaseAction {
 
     CenterDeliverable deliverable = new CenterDeliverable();
 
-
-    deliverable.setActive(true);
-    deliverable.setActiveSince(new Date());
-    deliverable.setCreatedBy(this.getCurrentUser());
-    deliverable.setModifiedBy(this.getCurrentUser());
     deliverable.setStartDate(new Date());
     deliverable.setDateCreated(new Date());
     deliverable.setProject(project);
@@ -91,12 +87,6 @@ public class DeliverableListAction extends BaseAction {
 
 
     CenterDeliverableCrosscutingTheme deliverableCrosscutingTheme = new CenterDeliverableCrosscutingTheme();
-
-    deliverableCrosscutingTheme.setActive(true);
-    deliverableCrosscutingTheme.setActiveSince(new Date());
-    deliverableCrosscutingTheme.setCreatedBy(this.getCurrentUser());
-    deliverableCrosscutingTheme.setModifiedBy(this.getCurrentUser());
-    deliverableCrosscutingTheme.setModificationJustification("");
 
     deliverableCrosscutingTheme.setClimateChange(false);
     deliverableCrosscutingTheme.setGender(false);
@@ -135,7 +125,6 @@ public class DeliverableListAction extends BaseAction {
       programID = project.getResearchProgram().getId();
       deliverable.setModificationJustification(
         this.getJustification() == null ? "CenterDeliverable deleted" : this.getJustification());
-      deliverable.setModifiedBy(this.getCurrentUser());
 
       deliverableService.saveDeliverable(deliverable);
 

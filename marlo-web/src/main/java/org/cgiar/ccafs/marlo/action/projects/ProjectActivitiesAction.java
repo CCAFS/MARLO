@@ -190,7 +190,6 @@ public class ProjectActivitiesAction extends BaseAction {
         } else {
 
           Activity activityUpdate = activityManager.getActivityById(activity.getId());
-          activityUpdate.setModificationJustification("");
           activityUpdate.setPhase(this.getActualPhase());
           activityUpdate.setTitle(activity.getTitle());
           activityUpdate.setDescription(activity.getDescription());
