@@ -378,7 +378,7 @@
             <td> 
               <strong>${(collaboration.globalUnit.acronym)!}</strong><br />
               ${(collaboration.collaborationTypeName)!'<nobr>Not defined</nobr>'} <br />
-              <i>${collaboration.globalUnit.globalUnitType.name}</i>
+              <i>${(collaboration.globalUnit.globalUnitType.name)!}</i>
             </td>
             <td> ${(collaboration.flagship)!'<nobr>Not defined</nobr>'} </td>
             <td class="col-md-6"> ${(collaboration.brief?replace('\n', '<br>'))!} </td>

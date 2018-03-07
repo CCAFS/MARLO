@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +101,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   private void addAdjustmentDescription() {
     if (powbSynthesisPMU != null) {
-
       String adjustmentsDescription = "";
       if (powbSynthesisPMU.getPowbToc() != null) {
         adjustmentsDescription = powbSynthesisPMU.getPowbToc().getTocOverall() != null
           && !powbSynthesisPMU.getPowbToc().getTocOverall().trim().isEmpty()
-            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "<Not Defined>";
+            ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
       if (powbSynthesisPMU.getPowbToc().getFile() != null) {
@@ -117,6 +117,46 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           "URL: " + powbSynthesisPMU.getPowbToc().getFile().getFileName(), document.createParagraph());
       }
     }
+  }
+
+  private void addCollaboration() {
+    String newKeyExternalPartnershipsDescription = "";
+    String newContributionPlatformsDescription = "";
+    String newCrossCRPInteractionsDescription = "";
+    String expectedEffortsCountryCoordinationDescription = "";
+    if (powbSynthesisPMU != null) {
+      // Collaboration and integration
+      if (powbSynthesisPMU.getCollaboration() != null) {
+        newKeyExternalPartnershipsDescription = powbSynthesisPMU.getCollaboration().getKeyExternalPartners() != null
+          && !powbSynthesisPMU.getCollaboration().getKeyExternalPartners().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getKeyExternalPartners() : "";
+
+        newContributionPlatformsDescription = powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() != null
+          && !powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCotributionsPlatafforms() : "";
+
+        newCrossCRPInteractionsDescription = powbSynthesisPMU.getCollaboration().getCrossCrp() != null
+          && !powbSynthesisPMU.getCollaboration().getCrossCrp().trim().isEmpty()
+            ? powbSynthesisPMU.getCollaboration().getCrossCrp() : "";
+
+        expectedEffortsCountryCoordinationDescription =
+          powbSynthesisPMU.getCollaboration().getEffostornCountry() != null
+            && !powbSynthesisPMU.getCollaboration().getEffostornCountry().trim().isEmpty()
+              ? powbSynthesisPMU.getCollaboration().getEffostornCountry() : "";
+      }
+    }
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.effectiveness.collaboration.external"));
+    poiSummary.textParagraph(document.createParagraph(), newKeyExternalPartnershipsDescription);
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.effectiveness.collaboration.contributions"));
+    poiSummary.textParagraph(document.createParagraph(), newContributionPlatformsDescription);
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.effectiveness.collaboration.newCrossCrp"));
+    poiSummary.textParagraph(document.createParagraph(), newCrossCRPInteractionsDescription);
+    poiSummary.textHead3Title(document.createParagraph(),
+      this.getText("summaries.powb.effectiveness.collaboration.expectedEfforts"));
+    poiSummary.textParagraph(document.createParagraph(), expectedEffortsCountryCoordinationDescription);
   }
 
   private void addCrossCutting() {
@@ -151,7 +191,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       if (powbSynthesisPMU.getCrpStaffing() != null) {
         staffingDescription = powbSynthesisPMU.getCrpStaffing().getStaffingIssues() != null
           && !powbSynthesisPMU.getCrpStaffing().getStaffingIssues().trim().isEmpty()
-            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "<Not Defined>";
+            ? powbSynthesisPMU.getCrpStaffing().getStaffingIssues() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), staffingDescription);
     }
@@ -165,7 +205,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         PowbEvidence powbEvidence = powbSynthesisPMU.getPowbEvidence();
         if (powbEvidence != null) {
           evidenceDescription = powbEvidence.getNarrative() != null && !powbEvidence.getNarrative().trim().isEmpty()
-            ? powbEvidence.getNarrative() : "<Not Defined>";
+            ? powbEvidence.getNarrative() : "";
         }
       }
       poiSummary.textParagraph(document.createParagraph(), evidenceDescription);
@@ -183,10 +223,24 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         PowbExpectedCrpProgress powbExpectedCrpProgress = powbExpectedCrpProgressList.get(0);
         expectedCrpDescription = powbExpectedCrpProgress.getExpectedHighlights() != null
           && !powbExpectedCrpProgress.getExpectedHighlights().trim().isEmpty()
-            ? powbExpectedCrpProgress.getExpectedHighlights() : "<Not Defined>";
+            ? powbExpectedCrpProgress.getExpectedHighlights() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), expectedCrpDescription);
     }
+  }
+
+  private void addFinancialPlan() {
+    String financialPlanDescription = "";
+    if (powbSynthesisPMU != null) {
+      // Financial Plan
+      if (powbSynthesisPMU.getFinancialPlan() != null) {
+        financialPlanDescription = powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() != null
+          && !powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues().trim().isEmpty()
+            ? powbSynthesisPMU.getFinancialPlan().getFinancialPlanIssues() : "";
+      }
+    }
+    poiSummary.textParagraph(document.createParagraph(), financialPlanDescription);
+
   }
 
   private void addFlagshipPlans() {
@@ -220,6 +274,31 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     }
   }
 
+  private void addManagement() {
+    // Crp Management
+    String managementRisksTitleDescription = "", CRPManagementGovernanceDescription = "";
+    if (powbSynthesisPMU != null) {
+      // management risk
+      if (powbSynthesisPMU.getPowbManagementRisk() != null) {
+        managementRisksTitleDescription = powbSynthesisPMU.getPowbManagementRisk().getHighlight() != null
+          && !powbSynthesisPMU.getPowbManagementRisk().getHighlight().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementRisk().getHighlight() : "";
+      }
+      // Governance
+      if (powbSynthesisPMU.getPowbManagementGovernance() != null) {
+        CRPManagementGovernanceDescription = powbSynthesisPMU.getPowbManagementGovernance().getDescription() != null
+          && !powbSynthesisPMU.getPowbManagementGovernance().getDescription().trim().isEmpty()
+            ? powbSynthesisPMU.getPowbManagementGovernance().getDescription() : "";
+      }
+    }
+    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.risk"));
+    poiSummary.textParagraph(document.createParagraph(), managementRisksTitleDescription);
+    poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.management.governance"));
+    poiSummary.textParagraph(document.createParagraph(), CRPManagementGovernanceDescription);
+
+
+  }
+
   private void addParticipatingCenters() {
     String participantingCenters = "";
     List<CrpPpaPartner> crpPpaPartnerList = this.getLoggedCrp().getCrpPpaPartners().stream()
@@ -243,9 +322,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           }
         }
       }
-    }
-    if (participantingCenters.isEmpty()) {
-      participantingCenters = "<Not Defined>";
     }
     poiSummary.textParagraph(document.createParagraph(),
       this.getText("summaries.powb.participantingCenters") + ": " + participantingCenters);
@@ -337,7 +413,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String execute() throws Exception {
     try {
-
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.mainTitle2"));
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.cover"));
@@ -362,9 +437,18 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.effectiveness"));
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.staffing"));
       this.addCrpStaffing();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.financial"));
+      this.addFinancialPlan();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.effectiveness.collaboration"));
+      this.addCollaboration();
+      poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.management"));
+      this.addManagement();
 
+      XWPFParagraph paragraph = document.createParagraph();
+      paragraph.setPageBreak(true);
+      poiSummary.textHead1Title(paragraph, "TABLES");
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableA.title"));
       this.createTableA(document);
-
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
