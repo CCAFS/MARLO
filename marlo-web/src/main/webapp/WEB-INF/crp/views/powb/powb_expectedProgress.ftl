@@ -42,7 +42,7 @@
           [#-- Provide a short narrative of expected highlights of the CRP for 2018 --] 
           [#if PMU]
           <div class="form-group">
-            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" paramText="${(actualPhase.year)!}" required=true className="" editable=editable powbInclude=true /]
+            [@customForm.textArea name="powbSynthesis.expectedCrpProgresses[0].expectedHighlights" i18nkey="liaisonInstitution.powb.expectedHighlights" help="liaisonInstitution.powb.expectedHighlights.help" helpIcon=false paramText="${(actualPhase.year)!}" required=true className="" editable=editable powbInclude=true /]
             [#assign powebElement= action.getPMUPowbExpectedCrpProgress()]
             <input type="hidden" name="powbSynthesis.expectedCrpProgresses[0].id" value="${(powebElement.id)!}" />
           </div>
@@ -195,7 +195,7 @@
     
     [#-- Means of verification --]
     <div class="form-group">
-      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" display=true required=true className="" editable=editable /]
+      [@customForm.textArea name="${customName}.means" i18nkey="liaisonInstitution.powb.milestone.meansVerifications" help="" helpIcon=false display=true required=true className="" editable=editable /]
     </div>
     
     [#-- Assessment of risk to achievement --]
