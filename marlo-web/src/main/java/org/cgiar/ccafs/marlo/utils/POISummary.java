@@ -38,6 +38,8 @@ public class POISummary {
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
 
 
+  private final String FONT_TYPE = "Calibri Light";
+
   /**
    * Head 1 Title
    * 
@@ -133,10 +135,31 @@ public class POISummary {
     for (String header : sHeaders) {
       if (record == 0) {
 
-        tableRowHeader.getCell(0).setText(header);
+        XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
+        paragraph.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun paragraphRun = paragraph.createRun();
+        paragraphRun.setText(header);
+        paragraphRun.setColor("000000");
+        paragraphRun.setBold(true);
+        paragraphRun.setFontFamily("Calibri Light");
+        paragraphRun.setFontSize(10);
+
+        tableRowHeader.getCell(record).setColor("FFFFCC");
 
       } else {
-        tableRowHeader.createCell().setText(header);
+
+        XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
+        paragraph.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun paragraphRun = paragraph.createRun();
+        paragraphRun.setText(header);
+        paragraphRun.setColor("000000");
+        paragraphRun.setBold(true);
+        paragraphRun.setFontFamily("Calibri Light");
+        paragraphRun.setFontSize(10);
+
+        tableRowHeader.getCell(record).setColor("FFFFCC");
+
+
       }
       record++;
     }
@@ -146,7 +169,16 @@ public class POISummary {
       record = 0;
       XWPFTableRow dataRow = table.createRow();
       for (String row : rows) {
-        dataRow.getCell(record).setText(row);
+
+        XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
+        paragraph.setAlignment(ParagraphAlignment.LEFT);
+        XWPFRun paragraphRun = paragraph.createRun();
+        paragraphRun.setText(row);
+        paragraphRun.setColor("000000");
+        paragraphRun.setBold(false);
+        paragraphRun.setFontFamily("Calibri Light");
+        paragraphRun.setFontSize(10);
+
         record++;
       }
     }
