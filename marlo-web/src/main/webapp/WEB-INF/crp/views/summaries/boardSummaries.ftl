@@ -129,7 +129,7 @@
       "cycles": [ "Planning" ]
     },
     { "active": true,
-      "available": false,
+      "available": true,
       "title": "summaries.board.report.powbMOG", 
       "description": "summaries.board.report.powbMOG.description",
       "namespace": "/projects",
