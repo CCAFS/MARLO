@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -765,21 +764,6 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
     return inputStream;
   }
 
-  /**
-   * Method to get a Year from Date
-   * 
-   * @param date
-   * @return int year
-   */
-  private int getIntYearFromDate(Date date) {
-    try {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(date);
-      return cal.get(Calendar.YEAR);
-    } catch (NullPointerException e) {
-      return 0;
-    }
-  }
 
   private TypedTableModel getMasterTableModel() {
     // Initialization of Model

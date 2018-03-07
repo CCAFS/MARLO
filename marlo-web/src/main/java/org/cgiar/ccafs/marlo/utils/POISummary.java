@@ -15,6 +15,20 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.math.BigInteger;
+import java.util.List;
+
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,5 +36,121 @@ public class POISummary {
 
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
+
+
+  /**
+   * Head 1 Title
+   * 
+   * @param h1
+   * @param text
+   */
+  public void textHead1Title(XWPFParagraph h1, String text) {
+
+    h1.setAlignment(ParagraphAlignment.BOTH);
+
+    XWPFRun h1Run = h1.createRun();
+    h1Run.setText(text);
+    h1Run.setColor("3366CC");
+    h1Run.setBold(true);
+    h1Run.setFontFamily("Calibri Light");
+    h1Run.setFontSize(16);
+  }
+
+  public void textHead2Title(XWPFParagraph h2, String text) {
+
+    h2.setAlignment(ParagraphAlignment.BOTH);
+
+    XWPFRun h2Run = h2.createRun();
+    h2Run.setText(text);
+    h2Run.setColor("3366CC");
+    h2Run.setBold(true);
+    h2Run.setFontFamily("Calibri Light");
+    h2Run.setFontSize(14);
+  }
+
+  public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
+
+    // Add the link as External relationship
+    String id = paragraph.getDocument().getPackagePart()
+      .addExternalRelationship(url, XWPFRelation.HYPERLINK.getRelation()).getId();
+
+
+    // Append the link and bind it to the relationship
+    CTHyperlink cLink = paragraph.getCTP().addNewHyperlink();
+    cLink.setId(id);
+
+    // // Create the linked text
+    CTText ctText = CTText.Factory.newInstance();
+    ctText.setStringValue(text);
+
+    CTR ctr = CTR.Factory.newInstance();
+    ctr.setTArray(new CTText[] {ctText});
+
+    // Insert the linked text into the link
+    cLink.setRArray(new CTR[] {ctr});
+
+
+  }
+
+  public void textLineBreak(XWPFDocument document, int breakNumber) {
+
+    for (int i = 0; i < breakNumber; i++) {
+      document.createParagraph();
+    }
+
+  }
+
+  public void textParagraph(XWPFParagraph paragraph, String text) {
+
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+
+    XWPFRun paragraphRun = paragraph.createRun();
+    paragraphRun.setText(text);
+    paragraphRun.setColor("000000");
+    paragraphRun.setBold(false);
+    paragraphRun.setFontFamily("Calibri Light");
+    paragraphRun.setFontSize(11);
+  }
+
+  public void textTable(XWPFDocument document, List<String> sHeaders, List<List<String>> sData) {
+
+    XWPFTable table = document.createTable();
+    int record = 0;
+    // Setting the Header
+    XWPFTableRow tableRowHeader = table.getRow(0);
+    for (String header : sHeaders) {
+      if (record == 0) {
+
+        tableRowHeader.getCell(0).setText(header);
+
+      } else {
+        tableRowHeader.createCell().setText(header);
+      }
+      record++;
+    }
+
+
+    for (List<String> rows : sData) {
+      record = 0;
+      XWPFTableRow dataRow = table.createRow();
+      for (String row : rows) {
+        dataRow.getCell(record).setText(row);
+        record++;
+      }
+    }
+
+    table.getRow(0).getCell(0).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      int numberOfCell = row.getTableCells().size();
+      for (int y = 0; y < numberOfCell; y++) {
+        XWPFTableCell cell = row.getCell(y);
+
+        cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+      }
+    }
+
+  }
 
 }
