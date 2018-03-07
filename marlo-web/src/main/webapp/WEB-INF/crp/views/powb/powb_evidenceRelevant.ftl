@@ -57,10 +57,10 @@
           [/#if]
           
           [#-- Planned Studies for Relevant Outcomes and Impacts --]
-          [#if Flagship]
+          [#if flagship]
           <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header row">
-              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
+            <div class="evidence-plannedStudies-header">
+              <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
             </div>
             [#-- Project planned studies (Table) --]
             <hr />
