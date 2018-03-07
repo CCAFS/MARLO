@@ -562,8 +562,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
-      capdevID = -1;
-      projectID = 0;
+      if (capdevID <= 0) {
+        capdevID = -1;
+      }
+      projectID = -1;
     }
 
 
@@ -1138,11 +1140,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void validate() {
     this.setInvalidFields(new HashMap<>());
     if (save) {
-
       validator.validate(this, capdev, capdev.getParticipant(), uploadFile, uploadFileContentType);
     }
-
-
   }
 
 
