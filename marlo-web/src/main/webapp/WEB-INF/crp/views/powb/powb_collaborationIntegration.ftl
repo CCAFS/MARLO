@@ -135,7 +135,7 @@
                   [#-- Efforts Country by region--]
                   <h5 class="subTitle headTitle regionTitle"><strong>${liaisonInstitution.crpProgram.composedName}</strong></h5>
                   <div class="form-group">
-                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="updateEffostornCountry " editable=editable && action.canEditRegion(liaisonInstitution.id) /]
+                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="updateEffostornCountry " editable=editable && action.canEditRegion(liaisonInstitution.id) powbInclude=true/]
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].id" value="${(regionElement.id)!}" />
                     

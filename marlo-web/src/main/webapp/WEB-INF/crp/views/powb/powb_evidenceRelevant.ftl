@@ -46,11 +46,15 @@
           </div>
           [/#if]
           
-          [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
+          [#-- Table B & H: Planned Studies for Relevant Outcomes and Impacts and planned monitoring, evaluation, and learning exercises --]
           [#if PMU]
           <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]</h4>
-            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span></span>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]
+              <span class="powb-doc badge label-powb-table pull-right" title="[@s.text name="powb.includedField.title" /]">
+                [@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span>
+              </span>
+            </h4>
+            
             <hr />
             [@tableBMacro /]
           </div>
