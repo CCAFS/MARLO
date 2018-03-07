@@ -338,6 +338,10 @@ public class EvidencesAction extends BaseAction {
             .filter(li -> li.isActive() && li.getCrpProgram() != null
               && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList()));
+
+          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+            .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym().equals("PMU"))
+            .collect(Collectors.toList()));
         }
         dto.setLiaisonInstitutions(liaisonInstitutions);
         flagshipPlannedList.add(dto);
