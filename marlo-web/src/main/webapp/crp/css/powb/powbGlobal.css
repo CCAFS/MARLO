@@ -127,11 +127,11 @@ form .form-group.margin-panel {
 }
 
 #table-plannedStudies .relevantSubIDO ul {
-  padding-left: 20px;
+  padding-left: 12px;
 }
 
 #table-plannedStudies .relevantSubIDO ul li{
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 }
 
 .modal-content {

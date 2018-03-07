@@ -314,19 +314,18 @@ public class EvidencesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies =
-        new ArrayList<>(
-          projectExpectedStudyManager.findAll().stream()
-            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-              && ps.getProject().getGlobalUnitProjects().stream()
-                .filter(
-                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-                .collect(Collectors.toList()).size() > 0)
-            .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
 
         PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
+        projectExpectedStudy.getProject()
+          .setProjectInfo(projectExpectedStudy.getProject().getProjecInfoPhase(this.getActualPhase()));
         dto.setProjectExpectedStudy(projectExpectedStudy);
         List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
           .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
