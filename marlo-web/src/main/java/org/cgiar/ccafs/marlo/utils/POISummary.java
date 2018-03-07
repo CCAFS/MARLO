@@ -68,6 +68,18 @@ public class POISummary {
     h2Run.setFontSize(14);
   }
 
+  public void textHead3Title(XWPFParagraph h2, String text) {
+
+    h2.setAlignment(ParagraphAlignment.BOTH);
+
+    XWPFRun h2Run = h2.createRun();
+    h2Run.setText(text);
+    h2Run.setColor("3366CC");
+    h2Run.setBold(true);
+    h2Run.setFontFamily("Calibri Light");
+    h2Run.setFontSize(12);
+  }
+
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
 
     // Add the link as External relationship
