@@ -21,7 +21,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,14 +31,10 @@ import com.google.gson.annotations.Expose;
 /**
  * Modified by @author nmatovu last on Oct 9, 2016
  */
-public class CenterImpact implements Serializable, IAuditLog {
+public class CenterImpact extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -5150082139088832748L;
-
-
-  @Expose
-  private Long id;
 
   @Expose
   private String description;
@@ -47,25 +42,6 @@ public class CenterImpact implements Serializable, IAuditLog {
 
   @Expose
   private Integer targetYear;
-
-  @Expose
-  private boolean active;
-
-
-  @Expose
-  private Date activeSince;
-
-
-  @Expose
-  private User createdBy;
-
-
-  @Expose
-  private User modifiedBy;
-
-
-  @Expose
-  private String modificationJustification;
 
 
   @Expose
@@ -106,21 +82,8 @@ public class CenterImpact implements Serializable, IAuditLog {
    * 
    */
   public CenterImpact() {
-    super();
-    // TODO Auto-generated constructor stub
   }
 
-  /**
-   * @param impact
-   * @param targetYear
-   * @param researchProgram
-   */
-  public CenterImpact(String description, Integer targetYear, CenterProgram researchProgram) {
-    super();
-    this.description = description;
-    this.targetYear = targetYear;
-    this.researchProgram = researchProgram;
-  }
 
   @Override
   public boolean equals(Object obj) {
@@ -134,20 +97,16 @@ public class CenterImpact implements Serializable, IAuditLog {
       return false;
     }
     CenterImpact other = (CenterImpact) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
   }
 
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
 
   public List<CenterImpactBeneficiary> getBeneficiaries() {
     return beneficiaries;
@@ -158,21 +117,9 @@ public class CenterImpact implements Serializable, IAuditLog {
     return color;
   }
 
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
 
   public String getDescription() {
     return description;
-  }
-
-  /**
-   * @return the id
-   */
-  @Override
-  public Long getId() {
-    return id;
   }
 
 
@@ -181,19 +128,6 @@ public class CenterImpact implements Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-
-
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   public List<CenterObjective> getObjectives() {
@@ -268,24 +202,10 @@ public class CenterImpact implements Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
   }
 
-
-  @Override
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
 
   public void setBeneficiaries(List<CenterImpactBeneficiary> beneficiaries) {
     this.beneficiaries = beneficiaries;
@@ -295,29 +215,9 @@ public class CenterImpact implements Serializable, IAuditLog {
     this.color = color;
   }
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
   public void setObjectives(List<CenterObjective> objectives) {
@@ -368,11 +268,5 @@ public class CenterImpact implements Serializable, IAuditLog {
   public void setTargetYear(Integer targetYear) {
     this.targetYear = targetYear;
   }
-
-  @Override
-  public String toString() {
-    return id.toString();
-  }
-
 
 }

@@ -50,7 +50,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -185,16 +184,8 @@ public class MonitoringOutcomeAction extends BaseAction {
 
     while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
       CenterMonitoringOutcome monitoringOutcome = new CenterMonitoringOutcome();
-
-      monitoringOutcome.setActive(true);
       monitoringOutcome.setYear(calendarStart.get(Calendar.YEAR));
       monitoringOutcome.setResearchOutcome(outcome);
-
-      monitoringOutcome.setCreatedBy(this.getCurrentUser());
-      monitoringOutcome.setModifiedBy(this.getCurrentUser());
-      monitoringOutcome.setActiveSince(new Date());
-      monitoringOutcome.setModificationJustification("");
-
 
       monitoringOutcome = monitoringOutcomeService.saveMonitoringOutcome(monitoringOutcome);
 
@@ -207,14 +198,8 @@ public class MonitoringOutcomeAction extends BaseAction {
 
         CenterMonitoringMilestone monitoringMilestone = new CenterMonitoringMilestone();
 
-        monitoringMilestone.setActive(true);
         monitoringMilestone.setResearchMilestone(researchMilestone);
         monitoringMilestone.setMonitoringOutcome(monitoringOutcome);
-
-        monitoringMilestone.setCreatedBy(this.getCurrentUser());
-        monitoringMilestone.setModifiedBy(this.getCurrentUser());
-        monitoringMilestone.setActiveSince(new Date());
-        monitoringMilestone.setModificationJustification("");
 
         monitoringMilestoneService.saveMonitoringMilestone(monitoringMilestone);
 
@@ -492,8 +477,6 @@ public class MonitoringOutcomeAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.OUTCOME_MONITORING_RELATION);
       outcome = outcomeService.getResearchOutcomeById(outcomeID);
-      outcome.setActiveSince(new Date());
-      outcome.setModifiedBy(this.getCurrentUser());
       outcomeService.saveResearchOutcome(outcome, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
@@ -541,12 +524,6 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
           CenterMonitoringOutcomeEvidence evidenceSave = new CenterMonitoringOutcomeEvidence();
-
-          evidenceSave.setActive(true);
-          evidenceSave.setCreatedBy(this.getCurrentUser());
-          evidenceSave.setModifiedBy(this.getCurrentUser());
-          evidenceSave.setActiveSince(new Date());
-          evidenceSave.setModificationJustification("");
           evidenceSave.setEvidenceLink(monitorignOutcomeEvidence.getEvidenceLink());
 
           evidenceSave.setMonitoringOutcome(monitoringOutcomeDB);
@@ -565,8 +542,6 @@ public class MonitoringOutcomeAction extends BaseAction {
           }
 
           if (hasChanges) {
-            evidencePrew.setModifiedBy(this.getCurrentUser());
-            evidencePrew.setActiveSince(new Date());
             evidenceService.saveMonitorignOutcomeEvidence(evidencePrew);
           }
         }

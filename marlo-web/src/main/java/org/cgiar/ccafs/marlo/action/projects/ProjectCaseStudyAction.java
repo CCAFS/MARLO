@@ -50,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,10 +400,7 @@ public class ProjectCaseStudyAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_PROJECTS_RELATION);
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_INDICATORS_RELATION);
       CaseStudy caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
-      caseStudy.setActiveSince(new Date());
-      caseStudy.setModifiedBy(this.getCurrentUser());
       caseStudy.setModificationJustification(this.getJustification());
-      caseStudy.setCreatedBy(caseStudyDB.getCreatedBy());
       if (file != null) {
         caseStudy.setFile(this.getFileDB(caseStudyDB.getFile(), file, fileFileName, this.getCaseStudyPath()));
 

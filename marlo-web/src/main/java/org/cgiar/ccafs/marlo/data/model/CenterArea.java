@@ -21,7 +21,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,14 +32,11 @@ import com.google.gson.annotations.Expose;
  * This class represents the Research Area (such as DAPA, AgBio, Soils, etc) in the application
  * Modified by @author nmatovu last on Oct 6, 2016
  */
-public class CenterArea implements Serializable, IAuditLog {
+public class CenterArea extends MarloAuditableEntity implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -2457377813686256015L;
 
-
-  @Expose
-  private Long id;
 
   @Expose
   private String name;
@@ -52,66 +48,18 @@ public class CenterArea implements Serializable, IAuditLog {
   @Expose
   private GlobalUnit researchCenter;
 
-
-  @Expose
-  private boolean active;
-
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private User createdBy;
-
-  @Expose
-  private User modifiedBy;
-
-
-  @Expose
-  private String modificationJustification;
-
   @Expose
   private String color;
-
 
   private Set<CenterProgram> researchPrograms = new HashSet<CenterProgram>(0);
 
   private Set<CenterLeader> researchLeaders = new HashSet<CenterLeader>(0);
 
-
   private List<CenterProgram> programs;
 
   private List<CenterLeader> leaders;
 
-
-  /**
-   * 
-   */
   public CenterArea() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
-
-  /**
-   * @param name
-   */
-  public CenterArea(String name) {
-    super();
-    this.name = name;
-  }
-
-
-  /**
-   * @param name
-   * @param acronym
-   * @param active
-   * @param createdBy
-   * @param modifiedBy
-   */
-  public CenterArea(String name, String acronym, boolean active) {
-    super();
-    this.name = name;
-    this.acronym = acronym;
   }
 
 
@@ -127,11 +75,11 @@ public class CenterArea implements Serializable, IAuditLog {
       return false;
     }
     CenterArea other = (CenterArea) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (this.getId() == null) {
+      if (other.getId() != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (!this.getId().equals(other.getId())) {
       return false;
     }
     return true;
@@ -145,23 +93,8 @@ public class CenterArea implements Serializable, IAuditLog {
     return acronym;
   }
 
-
-  public Date getActiveSince() {
-    return activeSince;
-  }
-
   public String getColor() {
     return color;
-  }
-
-  public User getCreatedBy() {
-    return createdBy;
-  }
-
-
-  @Override
-  public Long getId() {
-    return this.id;
   }
 
   public List<CenterLeader> getLeaders() {
@@ -173,17 +106,6 @@ public class CenterArea implements Serializable, IAuditLog {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
-  }
-
-  @Override
-  public String getModificationJustification() {
-    return modificationJustification;
-  }
-
-
-  @Override
-  public User getModifiedBy() {
-    return modifiedBy;
   }
 
   /**
@@ -217,13 +139,8 @@ public class CenterArea implements Serializable, IAuditLog {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
     return result;
-  }
-
-  @Override
-  public boolean isActive() {
-    return active;
   }
 
   /**
@@ -233,45 +150,14 @@ public class CenterArea implements Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  public void setActiveSince(Date activeSince) {
-    this.activeSince = activeSince;
-  }
-
 
   public void setColor(String color) {
     this.color = color;
   }
 
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
-
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-
   public void setLeaders(List<CenterLeader> leaders) {
     this.leaders = leaders;
-  }
-
-
-  public void setModificationJustification(String modificationJustification) {
-    this.modificationJustification = modificationJustification;
-  }
-
-
-  public void setModifiedBy(User modifiedBy) {
-    this.modifiedBy = modifiedBy;
   }
 
 
@@ -307,7 +193,7 @@ public class CenterArea implements Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return "CenterArea [id=" + id + ", name=" + name + ", acronym=" + acronym + "]";
+    return "CenterArea [id=" + this.getId() + ", name=" + name + ", acronym=" + acronym + "]";
   }
 
 }

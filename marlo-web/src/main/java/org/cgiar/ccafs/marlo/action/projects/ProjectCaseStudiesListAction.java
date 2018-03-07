@@ -83,7 +83,6 @@ public class ProjectCaseStudiesListAction extends BaseAction {
       caseStudy.setEvidenceOutcome("");
       caseStudy.setExplainIndicatorRelation("");
       caseStudy.setFile(null);
-      caseStudy.setModificationJustification("");
       caseStudy.setNonResearchPartneres("");
       caseStudy.setOutcomeStatement("");
       caseStudy.setOutputUsed("");

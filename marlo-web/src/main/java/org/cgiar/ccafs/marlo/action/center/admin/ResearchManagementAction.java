@@ -31,7 +31,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,26 +79,15 @@ public class ResearchManagementAction extends BaseAction {
         // Check if is a new one
         if (centerArea.getId() == null || centerArea.getId() == -1) {
           CenterArea newCenterArea = new CenterArea();
-
-          newCenterArea.setActive(true);
-          newCenterArea.setCreatedBy(this.getCurrentUser());
-          newCenterArea.setModifiedBy(this.getCurrentUser());
-          newCenterArea.setActiveSince(new Date());
           newCenterArea.setName(centerArea.getName());
           newCenterArea.setAcronym(centerArea.getAcronym());
           newCenterArea.setResearchCenter(loggedCenter);
-          newCenterArea.setModificationJustification("");
           centerAreaService.save(newCenterArea);
           // save area leaders
           List<CenterLeader> areaLeaders = centerArea.getLeaders();
           if (areaLeaders != null) {
             for (CenterLeader areaLeader : areaLeaders) {
               CenterLeader newareaLeader = new CenterLeader();
-              newareaLeader.setActive(true);
-              newareaLeader.setActiveSince(new Date());
-              newareaLeader.setCreatedBy(this.getCurrentUser());
-              newareaLeader.setModificationJustification("");
-              newareaLeader.setModifiedBy(this.getCurrentUser());
               newareaLeader.setResearchArea(newCenterArea);
               newareaLeader.setResearchCenter(loggedCenter);
               newareaLeader.setType(
@@ -117,11 +105,6 @@ public class ResearchManagementAction extends BaseAction {
               // Save center program
               newCenterProgram.setAcronym(centerProgram.getAcronym());
               newCenterProgram.setName(centerProgram.getName());
-              newCenterProgram.setActive(true);
-              newCenterProgram.setActiveSince(new Date());
-              newCenterProgram.setCreatedBy(this.getCurrentUser());
-              newCenterProgram.setModificationJustification("");
-              newCenterProgram.setModifiedBy(this.getCurrentUser());
               newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
                 Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
               newCenterProgram.setResearchArea(newCenterArea);
@@ -130,11 +113,6 @@ public class ResearchManagementAction extends BaseAction {
               if (programLeaders != null) {
                 for (CenterLeader programLeader : programLeaders) {
                   CenterLeader newProgramLeader = new CenterLeader();
-                  newProgramLeader.setActive(true);
-                  newProgramLeader.setActiveSince(new Date());
-                  newProgramLeader.setCreatedBy(this.getCurrentUser());
-                  newProgramLeader.setModificationJustification("");
-                  newProgramLeader.setModifiedBy(this.getCurrentUser());
                   newProgramLeader.setResearchCenter(loggedCenter);
                   newProgramLeader.setResearchProgram(newCenterProgram);
                   newProgramLeader.setType(centerAllTypesService
@@ -158,8 +136,6 @@ public class ResearchManagementAction extends BaseAction {
             hasChanges = true;
           }
           if (hasChanges) {
-            centerAreaDB.setActive(true);
-            centerAreaDB.setModifiedBy(this.getCurrentUser());
             centerAreaService.save(centerAreaDB);
           }
 
@@ -170,11 +146,6 @@ public class ResearchManagementAction extends BaseAction {
               // check new area leader
               if (areaLeader.getId() == null || areaLeader.getId() == -1) {
                 CenterLeader newareaLeader = new CenterLeader();
-                newareaLeader.setActive(true);
-                newareaLeader.setActiveSince(new Date());
-                newareaLeader.setCreatedBy(this.getCurrentUser());
-                newareaLeader.setModificationJustification("");
-                newareaLeader.setModifiedBy(this.getCurrentUser());
                 newareaLeader.setResearchArea(centerAreaDB);
                 newareaLeader.setResearchCenter(loggedCenter);
                 newareaLeader.setType(centerAllTypesService
@@ -194,11 +165,6 @@ public class ResearchManagementAction extends BaseAction {
                 // Save center program
                 newCenterProgram.setAcronym(centerProgram.getAcronym());
                 newCenterProgram.setName(centerProgram.getName());
-                newCenterProgram.setActive(true);
-                newCenterProgram.setActiveSince(new Date());
-                newCenterProgram.setCreatedBy(this.getCurrentUser());
-                newCenterProgram.setModificationJustification("");
-                newCenterProgram.setModifiedBy(this.getCurrentUser());
                 newCenterProgram.setProgramType(centerAllTypesService.getCenterAllTypesById(
                   Long.parseLong(this.getSession().get(APConstants.CENTER_PROGRAM_TYPE).toString())));
                 newCenterProgram.setResearchArea(centerArea);
@@ -207,11 +173,6 @@ public class ResearchManagementAction extends BaseAction {
                 if (programLeaders != null) {
                   for (CenterLeader programLeader : programLeaders) {
                     CenterLeader newProgramLeader = new CenterLeader();
-                    newProgramLeader.setActive(true);
-                    newProgramLeader.setActiveSince(new Date());
-                    newProgramLeader.setCreatedBy(this.getCurrentUser());
-                    newProgramLeader.setModificationJustification("");
-                    newProgramLeader.setModifiedBy(this.getCurrentUser());
                     newProgramLeader.setResearchCenter(loggedCenter);
                     newProgramLeader.setResearchProgram(newCenterProgram);
                     newProgramLeader.setType(centerAllTypesService
@@ -233,8 +194,6 @@ public class ResearchManagementAction extends BaseAction {
                   hasChangesProgram = true;
                 }
                 if (hasChangesProgram) {
-                  centerProgramDB.setActive(true);
-                  centerProgramDB.setModifiedBy(this.getCurrentUser());
                   centerProgramService.saveProgram(centerProgramDB);
                 }
                 // check if there are new program leaders
@@ -245,11 +204,6 @@ public class ResearchManagementAction extends BaseAction {
                     // check new area leader
                     if (programLeader.getId() == null || programLeader.getId() == -1) {
                       CenterLeader newProgramLeader = new CenterLeader();
-                      newProgramLeader.setActive(true);
-                      newProgramLeader.setActiveSince(new Date());
-                      newProgramLeader.setCreatedBy(this.getCurrentUser());
-                      newProgramLeader.setModificationJustification("");
-                      newProgramLeader.setModifiedBy(this.getCurrentUser());
                       newProgramLeader.setResearchArea(centerAreaDB);
                       newProgramLeader.setResearchCenter(loggedCenter);
                       newProgramLeader.setType(centerAllTypesService

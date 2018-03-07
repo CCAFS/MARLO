@@ -68,7 +68,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -715,8 +714,6 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OUTPUT_RELATION);
       relationsName.add(APConstants.PROJECT_LOCATION_RELATION);
       project = projectService.getCenterProjectById(projectID);
-      project.setActiveSince(new Date());
-      project.setModifiedBy(this.getCurrentUser());
       projectService.saveCenterProject(project, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
@@ -821,11 +818,6 @@ public class ProjectDescriptionAction extends BaseAction {
           fundingSourceSave.setDirectDonor(projectFundingSource.getDirectDonor());
           fundingSourceSave.setOriginalDonor(projectFundingSource.getOriginalDonor());
           fundingSourceSave.setTotalAmount(projectFundingSource.getTotalAmount());
-          fundingSourceSave.setActive(true);
-          fundingSourceSave.setActiveSince(new Date());
-          fundingSourceSave.setCreatedBy(this.getCurrentUser());
-          fundingSourceSave.setModifiedBy(this.getCurrentUser());
-          fundingSourceSave.setModificationJustification("");
 
           projectFundingSourceService.saveProjectFundingSource(fundingSourceSave);
 
@@ -845,8 +837,6 @@ public class ProjectDescriptionAction extends BaseAction {
           }
 
           if (hasChanges) {
-            fundingSourcePrew.setModifiedBy(this.getCurrentUser());
-            fundingSourcePrew.setActiveSince(new Date());
             projectFundingSourceService.saveProjectFundingSource(fundingSourcePrew);
           }
 
@@ -884,11 +874,6 @@ public class ProjectDescriptionAction extends BaseAction {
         if (projectLocation.getId() == null || projectLocation.getId() == -1) {
 
           CenterProjectLocation projectLocationSave = new CenterProjectLocation();
-          projectLocationSave.setActive(true);
-          projectLocationSave.setActiveSince(new Date());
-          projectLocationSave.setCreatedBy(this.getCurrentUser());
-          projectLocationSave.setModifiedBy(this.getCurrentUser());
-          projectLocationSave.setModificationJustification("");
           projectLocationSave.setProject(projectDB);
 
           LocElement element = locElementService.getLocElementById(projectLocation.getLocElement().getId());
@@ -923,11 +908,6 @@ public class ProjectDescriptionAction extends BaseAction {
         if (projectLocation.getId() == null || projectLocation.getId() == -1) {
 
           CenterProjectLocation projectLocationSave = new CenterProjectLocation();
-          projectLocationSave.setActive(true);
-          projectLocationSave.setActiveSince(new Date());
-          projectLocationSave.setCreatedBy(this.getCurrentUser());
-          projectLocationSave.setModifiedBy(this.getCurrentUser());
-          projectLocationSave.setModificationJustification("");
           projectLocationSave.setProject(projectDB);
 
           LocElement element = locElementService.getLocElementByISOCode(projectLocation.getLocElement().getIsoAlpha2());
@@ -966,11 +946,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
           outputSave.setProject(project);
           outputSave.setResearchOutput(researchOutput);
-          outputSave.setActive(true);
-          outputSave.setCreatedBy(this.getCurrentUser());
-          outputSave.setModifiedBy(this.getCurrentUser());
-          outputSave.setActiveSince(new Date());
-          outputSave.setModificationJustification("");
 
           projectOutputService.saveProjectOutput(outputSave);
 
