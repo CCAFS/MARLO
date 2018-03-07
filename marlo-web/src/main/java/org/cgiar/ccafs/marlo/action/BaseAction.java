@@ -2714,9 +2714,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         returnValue = true;
         break;
       case EVIDENCES:
-        if (this.isPowbFlagship(powbSynthesis.getLiaisonInstitution())) {
-          returnValue = true;
+        if (this.isPowbPMU(powbSynthesis.getLiaisonInstitution())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByPowbSynthesis(powbSynthesis.getId(),
+            this.getCurrentCycle(), powbSynthesis.getPhase().getYear(), sectionName);
+          if (sectionStatus == null) {
+            return false;
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
         }
+        returnValue = true;
         break;
       case CROSS_CUTTING_DIMENSIONS:
       case STAFFING:

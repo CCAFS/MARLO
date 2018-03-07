@@ -3,16 +3,26 @@
 "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
   "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
-  <!-- Add addition packages and configuration here. -->
-  <package name="summaries" namespace="/summaries" extends="marlo-default">
+	<!-- Add addition packages and configuration here. -->
+	<package name="summaries" namespace="/summaries" extends="marlo-default">
 
-    <action name="{crp}/summaries"
-      class="org.cgiar.ccafs.marlo.action.BaseAction">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="homeStack" />
-      <result name="input">/WEB-INF/crp/views/summaries/boardSummaries.ftl</result>
-    </action>
+		<action name="{crp}/summaries" class="org.cgiar.ccafs.marlo.action.BaseAction">
+			<!-- interceptor-ref name="autoLogin" / -->
+			<interceptor-ref name="homeStack" />
+			<result name="input">/WEB-INF/crp/views/summaries/boardSummaries.ftl
+			</result>
+		</action>
 
-  </package>
+		<action name="{crp}/POWBSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.POWBPOISummaryAction">
+			<interceptor-ref name="homeStack" />
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
+
+	</package>
 
 </struts>

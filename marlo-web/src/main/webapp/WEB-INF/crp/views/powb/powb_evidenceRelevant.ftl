@@ -42,24 +42,25 @@
           [#if PMU]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="" paramText="${(actualPhase.year)!}" editable=editable /]
+            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" display=true required=true className="" labelClass="label-min-width" paramText="${(actualPhase.year)!}" editable=editable powbInclude=true /]
           </div>
           [/#if]
           
           [#-- Table B: Flagships planned Studies for Relevant Outcomes and Impacts --]
           [#if PMU]
           <div class="form-group margin-panel">
-            <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.table.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="evidenceRelevant.table.title" /]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /]<span class="glyphicon glyphicon-save-file"></span></span>
             <hr />
             [@tableBMacro /]
           </div>
           [/#if]
           
           [#-- Planned Studies for Relevant Outcomes and Impacts --]
-          [#if Flagship]
+          [#if flagship]
           <div class="form-group margin-panel">
-            <div class="evidence-plannedStudies-header row">
-              <h4 class="subTitle headTitle col-md-9">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
+            <div class="evidence-plannedStudies-header">
+              <h4 class="subTitle headTitle">[@s.text name="evidenceRelevant.plannedStudies" /]</h4>
             </div>
             [#-- Project planned studies (Table) --]
             <hr />
