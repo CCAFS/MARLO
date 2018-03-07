@@ -256,10 +256,31 @@ public class EvidencesAction extends BaseAction {
       }
     } else {
 
-      for (PowbEvidencePlannedStudy powbStudy : powbEvidenceDB.getPowbEvidencePlannedStudies().stream()
-        .filter(rio -> rio.isActive()).collect(Collectors.toList())) {
-        powbEvidencePlannedStudyManager.deletePowbEvidencePlannedStudy(powbStudy.getId());
+      for (Long studyId : studiesIds) {
+        ProjectExpectedStudy expectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(studyId);
+
+        PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+
+        evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+
+        evidencePlannedStudyNew.setProjectExpectedStudy(expectedStudy);
+        evidencePlannedStudyNew.setPowbEvidence(powbEvidenceDB);
+
+        List<PowbEvidencePlannedStudy> powbEvidencePlannedStudies = powbEvidenceDB.getPowbEvidencePlannedStudies()
+          .stream().filter(rio -> rio.isActive()).collect(Collectors.toList());
+
+
+        if (!powbEvidencePlannedStudies.contains(evidencePlannedStudyNew)) {
+          evidencePlannedStudyNew.setActive(true);
+          evidencePlannedStudyNew.setActiveSince(new Date());
+          evidencePlannedStudyNew.setCreatedBy(this.getCurrentUser());
+          evidencePlannedStudyNew.setModifiedBy(this.getCurrentUser());
+          evidencePlannedStudyNew.setModificationJustification("");
+          evidencePlannedStudyNew =
+            powbEvidencePlannedStudyManager.savePowbEvidencePlannedStudy(evidencePlannedStudyNew);
+        }
       }
+
     }
   }
 
@@ -339,17 +360,42 @@ public class EvidencesAction extends BaseAction {
       }
 
       List<Integer> removeList = new ArrayList<>();
-      for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
-        for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
-          int index = flagshipPlannedList.indexOf(dto);
-          if (dto.getProjectExpectedStudy().equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
-            removeList.add(index);
+      // for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
+      for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
+        int index = flagshipPlannedList.indexOf(dto);
+
+        List<Integer> removeLiaison = new ArrayList<>();
+        for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
+          int indexLi = dto.getLiaisonInstitutions().indexOf(liaisonInstitution);
+          PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+          if (powbSynthesis != null) {
+            if (powbSynthesis.getPowbEvidence() != null) {
+
+              PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+              evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
+              evidencePlannedStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+
+              if (evidencePlannedStudies.contains(evidencePlannedStudyNew)) {
+                removeLiaison.add(indexLi);
+              }
+            }
           }
         }
+
+        for (Integer integer : removeLiaison) {
+          LiaisonInstitution removeIns = dto.getLiaisonInstitutions().get(integer);
+          dto.getLiaisonInstitutions().remove(removeIns);
+        }
+
+        if (dto.getLiaisonInstitutions().isEmpty()) {
+          removeList.add(index);
+        }
       }
+      // }
 
       for (Integer i : removeList) {
-        flagshipPlannedList.remove(i);
+        PowbEvidencePlannedStudyDTO remove = flagshipPlannedList.get(i);
+        flagshipPlannedList.remove(remove);
       }
 
     }
