@@ -209,7 +209,9 @@ function modalButtonsListeners(){
 
   // Cancel button
   $("#cancelButton").on("click", function(e) {
-    console.log('close');
+    e.preventDefault();
+    console.log('bye');
+    $("#close-modal-button").click();
   });
 }
 
