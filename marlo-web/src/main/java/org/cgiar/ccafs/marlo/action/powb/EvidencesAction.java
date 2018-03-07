@@ -314,12 +314,15 @@ public class EvidencesAction extends BaseAction {
     flagshipPlannedList = new ArrayList<>();
 
     if (projectExpectedStudyManager.findAll() != null) {
-      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
-        .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
-            .collect(Collectors.toList()).size() > 0)
-        .collect(Collectors.toList()));
+      List<ProjectExpectedStudy> expectedStudies =
+        new ArrayList<>(
+          projectExpectedStudyManager.findAll().stream()
+            .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+              && ps.getProject().getGlobalUnitProjects().stream()
+                .filter(
+                  gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(loggedCrp.getId()))
+                .collect(Collectors.toList()).size() > 0)
+            .collect(Collectors.toList()));
 
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
 
@@ -358,14 +361,11 @@ public class EvidencesAction extends BaseAction {
         }
       }
 
-      List<Integer> removeList = new ArrayList<>();
-      // for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
+      List<PowbEvidencePlannedStudyDTO> removeList = new ArrayList<>();
       for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
-        int index = flagshipPlannedList.indexOf(dto);
 
-        List<Integer> removeLiaison = new ArrayList<>();
+        List<LiaisonInstitution> removeLiaison = new ArrayList<>();
         for (LiaisonInstitution liaisonInstitution : dto.getLiaisonInstitutions()) {
-          int indexLi = dto.getLiaisonInstitutions().indexOf(liaisonInstitution);
           PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
           if (powbSynthesis != null) {
             if (powbSynthesis.getPowbEvidence() != null) {
@@ -373,28 +373,27 @@ public class EvidencesAction extends BaseAction {
               PowbEvidencePlannedStudy evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
               evidencePlannedStudyNew = new PowbEvidencePlannedStudy();
               evidencePlannedStudyNew.setProjectExpectedStudy(dto.getProjectExpectedStudy());
+              evidencePlannedStudyNew.setPowbEvidence(powbSynthesis.getPowbEvidence());
 
               if (evidencePlannedStudies.contains(evidencePlannedStudyNew)) {
-                removeLiaison.add(indexLi);
+                removeLiaison.add(liaisonInstitution);
               }
             }
           }
         }
 
-        for (Integer integer : removeLiaison) {
-          LiaisonInstitution removeIns = dto.getLiaisonInstitutions().get(integer);
-          dto.getLiaisonInstitutions().remove(removeIns);
+        for (LiaisonInstitution li : removeLiaison) {
+          dto.getLiaisonInstitutions().remove(li);
         }
 
         if (dto.getLiaisonInstitutions().isEmpty()) {
-          removeList.add(index);
+          removeList.add(dto);
         }
       }
-      // }
 
-      for (Integer i : removeList) {
-        PowbEvidencePlannedStudyDTO remove = flagshipPlannedList.get(i);
-        flagshipPlannedList.remove(remove);
+
+      for (PowbEvidencePlannedStudyDTO i : removeList) {
+        flagshipPlannedList.remove(i);
       }
 
     }
