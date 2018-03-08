@@ -42,18 +42,18 @@
           [#-- Briefly summarize the main areas of work in 2018 relevant to cross-cutting dimensions --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
-              [@customForm.textArea name="powbSynthesis.flagshipSummarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.flagshipSummarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
           </div>
         
           [#-- Open Data and Intellectual Assets --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
-              [@customForm.textArea name="powbSynthesis.flagshipAssets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.flagshipAssets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
           </div>
           
