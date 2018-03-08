@@ -219,7 +219,7 @@
                               </div>
                               [#-- Button --]
                               <div style="margin-left:10px; float:right;">
-                                <span id="cancelButton" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">Cancel</span>
+                                <span id="cancelButton-locations" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">Cancel</span>
                               </div>
                               <div>
                                 <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location(s)</span>
