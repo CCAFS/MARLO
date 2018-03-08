@@ -146,9 +146,6 @@ public class OutcomesListAction extends BaseAction {
       topicID = outcome.getResearchTopic().getId();
       outcome
         .setModificationJustification(this.getJustification() == null ? "Outcome deleted" : this.getJustification());
-
-      outcome = outcomeService.saveResearchOutcome(outcome);
-
       CenterSectionStatus status = sectionStatusService.getSectionStatusByOutcome(programID, outcome.getId(),
         "outcomesList", this.getCenterYear());
 
@@ -156,8 +153,10 @@ public class OutcomesListAction extends BaseAction {
         sectionStatusService.deleteSectionStatus(status.getId());
       }
 
+      outcomeService.saveResearchOutcome(outcome);
 
       outcomeService.deleteResearchOutcome(outcome.getId());
+
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }
 

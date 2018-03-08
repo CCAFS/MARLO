@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterLeader;
 import org.cgiar.ccafs.marlo.data.model.CenterLeaderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
@@ -60,6 +62,7 @@ public class OutputsListAction extends BaseAction {
   private GlobalUnitManager centerService;
 
   private ICenterProgramManager programService;
+  private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
   private ICenterAreaManager researchAreaService;
   private UserManager userService;
   private ICenterOutputManager outputService;
@@ -83,7 +86,7 @@ public class OutputsListAction extends BaseAction {
   @Inject
   public OutputsListAction(APConfig config, GlobalUnitManager centerService, ICenterProgramManager programService,
     ICenterAreaManager researchAreaService, UserManager userService, ICenterOutputManager outputService,
-    ICenterSectionStatusManager sectionStatusService) {
+    ICenterSectionStatusManager sectionStatusService, CenterOutputsOutcomeManager centerOutputsOutcomeManager) {
     super(config);
     this.centerService = centerService;
     this.programService = programService;
@@ -91,6 +94,7 @@ public class OutputsListAction extends BaseAction {
     this.userService = userService;
     this.outputService = outputService;
     this.sectionStatusService = sectionStatusService;
+    this.centerOutputsOutcomeManager = centerOutputsOutcomeManager;
   }
 
   @Override
@@ -144,8 +148,17 @@ public class OutputsListAction extends BaseAction {
 
     CenterOutput output = outputService.getResearchOutputById(outputID);
 
+    programID = output.getCenterProgram().getId();
+
     if (output != null) {
       output.setModificationJustification(this.getJustification() == null ? "Output deleted" : this.getJustification());
+
+      List<CenterOutputsOutcome> centerOutputsOutcomes = new ArrayList<>(
+        output.getCenterOutputsOutcomes().stream().filter(co -> co.isActive()).collect(Collectors.toList()));
+
+      for (CenterOutputsOutcome centerOutputsOutcome : centerOutputsOutcomes) {
+        centerOutputsOutcomeManager.deleteCenterOutputsOutcome(centerOutputsOutcome.getId());
+      }
 
       CenterSectionStatus status =
         sectionStatusService.getSectionStatusByOutput(programID, output.getId(), "outputsList", this.getCenterYear());
@@ -157,6 +170,7 @@ public class OutputsListAction extends BaseAction {
       outputService.saveResearchOutput(output);
 
       outputService.deleteResearchOutput(output.getId());
+
 
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }

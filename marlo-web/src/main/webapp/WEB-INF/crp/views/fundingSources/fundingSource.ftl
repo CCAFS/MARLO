@@ -321,6 +321,7 @@
               [#if editable]
                 [@customForm.select name="fundingSource.fundingSourceInfo.directDonor.id" i18nkey="projectCofunded.directDonor" className="donor" showTitle=false listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" disabled=isW1W2 editable=editable /]
               [#else]
+                <p class="input">${(fundingSource.fundingSourceInfo.directDonor.composedName)!}</p>
                 <input  type="hidden" name="fundingSource.fundingSourceInfo.directDonor.id" value="${(fundingSource.fundingSourceInfo.directDonor.id)!-1}" />
               [/#if]
             <span class="text-warning metadataSuggested"></span> 
@@ -335,6 +336,7 @@
               [#if editable]
                 [@customForm.select name="fundingSource.fundingSourceInfo.originalDonor.id" i18nkey="projectCofunded.donor" className="donor" showTitle=false  listName="institutionsDonors" keyFieldName="id"  displayFieldName="composedNameLoc" editable=editable /]
               [#else]
+                <p class="input">${(fundingSource.fundingSourceInfo.originalDonor.composedName)!}</p>
                 <input  type="hidden" name="fundingSource.fundingSourceInfo.originalDonor.id" value="${(fundingSource.fundingSourceInfo.originalDonor.id)!-1}" />
               [/#if]
             <span class="text-warning metadataSuggested"></span> 
@@ -549,7 +551,7 @@
                     ${(projectBudget.project.projectInfo.title)!}
                   </a>
                 </td>
-                <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
+                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
                 <td>${(projectBudget.budgetType.name)!}
                    [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
          

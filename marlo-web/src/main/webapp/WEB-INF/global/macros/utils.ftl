@@ -17,8 +17,26 @@
   [/#if]
 [/#macro]
 
-[#-- letterCutter, is the same of WordCutter but cut by letters
---]
+[#macro helpBox name="" param=""]
+  
+  [#if param?has_content]
+    [#assign text][@s.text name=name][@s.param]${param}[/@s.param][/@s.text][/#assign]
+  [#else]
+    [#assign text][@s.text name=name /][/#assign]
+  [/#if]
+  
+  [#if text?has_content]
+  <div class="container helpText viewMore-block">
+    <div class="helpMessage infoText">
+      <img class="col-md-2" src="${baseUrl}/global/images/icon-help.jpg" />
+        <p class="col-md-10"> ${text} </p>
+    </div> 
+    <div style="display:none" class="viewMore closed"></div>
+  </div>
+  [/#if]
+[/#macro]
+
+[#-- letterCutter, is the same of WordCutter but cut by letters --]
 [#macro letterCutter string maxPos substr=" "]
   [#if string?length < maxPos]    
     ${string}     
@@ -38,3 +56,4 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 [/#macro]
+

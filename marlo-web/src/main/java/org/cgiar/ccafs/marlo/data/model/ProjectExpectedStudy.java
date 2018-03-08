@@ -68,7 +68,9 @@ public class ProjectExpectedStudy implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
     ProjectExpectedStudy other = (ProjectExpectedStudy) obj;
     if (id == null) {
       if (other.id != null) {

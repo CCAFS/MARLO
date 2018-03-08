@@ -980,6 +980,7 @@ public class ProjectLocationAction extends BaseAction {
 
     if (project.getLocationsData() != null) {
       for (CountryLocationLevel locationData : project.getLocationsData()) {
+
         if (!locationsDataPrew.contains(locationData)) {
 
 
@@ -1062,6 +1063,10 @@ public class ProjectLocationAction extends BaseAction {
                 if (!element.getName().equals(locElement.getName())) {
                   element.setName(locElement.getName());
                   locElementManager.saveLocElement(element);
+                }
+                if (locElement.getLocGeoposition() != null && locElement.getLocGeoposition().getId() != null) {
+                  locElement.setLocGeoposition(
+                    locGeopositionManager.getLocGeopositionById(locElement.getLocGeoposition().getId()));
                 }
 
                 if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {

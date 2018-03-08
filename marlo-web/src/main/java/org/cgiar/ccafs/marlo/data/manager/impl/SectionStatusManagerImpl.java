@@ -21,8 +21,8 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Christian Garcia
@@ -97,6 +97,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   @Override
   public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
     return sectionStatusDAO.getSectionStatusByIpProgram(ipProgramID, cycle, year, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByPowbSynthesis(long powbSynthesisID, String cycle, int year,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByPowbSynthesis(powbSynthesisID, cycle, year, sectionName);
   }
 
   @Override
