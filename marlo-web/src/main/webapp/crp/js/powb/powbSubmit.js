@@ -167,7 +167,7 @@ function processTasks(tasks,id,button) {
                 }
                 setTimeout(function() {
                   nextTask();
-                }, 100);
+                }, 200);
               },
               error: function(error) {
                 console.log(error)
