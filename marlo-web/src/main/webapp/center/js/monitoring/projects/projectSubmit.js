@@ -69,6 +69,7 @@ function submitButtonEvent(e) {
               text: 'Ok',
               onClick: function($noty) {
                 $noty.close();
+                $('.projectSubmitButton').hide();
                 window.location.href = $(e.target).attr('href');
               }
           }, {

@@ -1,0 +1,1 @@
+RENAME TABLE cross_cutting_dimensions TO powb_cross_cutting_dimensions;

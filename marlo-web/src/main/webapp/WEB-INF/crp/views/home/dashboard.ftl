@@ -77,7 +77,8 @@
     
     [#-- Shorcuts --]    
     <div id="shorcuts"  class="col-md-5">
-    [#if crpSession?contains("CCAFS")]
+    [#-- if crpSession?contains("CCAFS")  --]
+    [#if false ]
       <div class="homeTitle"><strong>Timeline</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">

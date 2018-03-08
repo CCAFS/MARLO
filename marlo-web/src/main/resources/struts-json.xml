@@ -50,6 +50,18 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="uploadPowbSynthesis"
+      class="org.cgiar.ccafs.marlo.action.json.project.UploadPowbSynthesisGeneral">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref>
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 		
 		<action name="uploadBaseLine"
       class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
@@ -132,6 +144,16 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="crpProgramsGlobalUnit"
+      class="org.cgiar.ccafs.marlo.action.json.global.CrpProgramsGlobalUnitAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    
 		<action name="ocsService"
       class="org.cgiar.ccafs.marlo.action.json.global.OcsServiceAction">
       <result type="json">
@@ -590,6 +612,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		  <action name="validatePowbSynthesisSection"
+      class="org.cgiar.ccafs.marlo.action.json.powb.ValidateSectionStatusPowbSynthesisAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="previewParticipants"
 			class="org.cgiar.ccafs.marlo.action.center.json.capdev.FilterListsAction"
@@ -760,7 +790,7 @@
         <param name="includeProperties">success</param>
       </result>
     </action>
-    
+       
 	</package>
 
 	<package name="json-planning" namespace="/impactPathway"

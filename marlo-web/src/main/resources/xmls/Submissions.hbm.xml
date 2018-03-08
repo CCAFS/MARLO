@@ -14,6 +14,9 @@
         <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
             <column name="project_id" />
         </many-to-one>
+        <many-to-one name="powbSynthesis" class="org.cgiar.ccafs.marlo.data.model.PowbSynthesis" fetch="select">
+            <column name="powb_synthesis_id" />
+        </many-to-one>
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="user_id" not-null="true" />
         </many-to-one>

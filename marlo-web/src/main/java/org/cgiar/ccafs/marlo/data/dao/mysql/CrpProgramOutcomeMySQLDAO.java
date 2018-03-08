@@ -22,8 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -84,9 +85,6 @@ public class CrpProgramOutcomeMySQLDAO extends AbstractMarloDAO<CrpProgramOutcom
     Object findSingleResult = super.findSingleResult(CrpProgramOutcome.class, createQuery);
     CrpProgramOutcome crpProgramOutcome = (CrpProgramOutcome) findSingleResult;
 
-    if (crpProgramOutcome != null) {
-      crpProgramOutcome = super.refreshEntity(crpProgramOutcome);
-    }
 
     // projectPartner.getProjectPartnerLocations().size();
 
