@@ -140,42 +140,58 @@ public class POISummary {
     paragraphRun.setFontSize(10);
   }
 
-  public void textTable(XWPFDocument document, List<String> sHeaders, List<List<String>> sData) {
+  public void textTable(XWPFDocument document, List<List<String>> sHeaders, List<List<String>> sData,
+    Boolean highlightFirstColumn) {
 
     XWPFTable table = document.createTable();
     int record = 0;
-    // Setting the Header
-    XWPFTableRow tableRowHeader = table.getRow(0);
-    for (String header : sHeaders) {
-      if (record == 0) {
-
-        XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(header);
-        paragraphRun.setColor(TEXT_FONT_COLOR);
-        paragraphRun.setBold(true);
-        paragraphRun.setFontFamily(FONT_TYPE);
-        paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-
-        tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-
+    int headerIndex = 0;
+    for (List<String> headers : sHeaders) {
+      // Setting the Header
+      XWPFTableRow tableRowHeader;
+      if (headerIndex == 0) {
+        tableRowHeader = table.getRow(0);
       } else {
-
-        XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(header);
-        paragraphRun.setColor(TEXT_FONT_COLOR);
-        paragraphRun.setBold(true);
-        paragraphRun.setFontFamily(FONT_TYPE);
-        paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
-
-        tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-
-
+        tableRowHeader = table.createRow();
       }
-      record++;
+      for (String header : headers) {
+        if (headerIndex == 0) {
+          if (record == 0) {
+            XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun paragraphRun = paragraph.createRun();
+            paragraphRun.setText(header);
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            paragraphRun.setBold(true);
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          } else {
+            XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun paragraphRun = paragraph.createRun();
+            paragraphRun.setText(header);
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            paragraphRun.setBold(true);
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          }
+        } else {
+          XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
+          paragraph.setAlignment(ParagraphAlignment.CENTER);
+          XWPFRun paragraphRun = paragraph.createRun();
+          paragraphRun.setText(header);
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+          paragraphRun.setBold(true);
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+          tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+        }
+        record++;
+      }
+      headerIndex++;
+      record = 0;
     }
 
 
@@ -189,9 +205,14 @@ public class POISummary {
         XWPFRun paragraphRun = paragraph.createRun();
         paragraphRun.setText(row);
         paragraphRun.setColor(TEXT_FONT_COLOR);
-        paragraphRun.setBold(false);
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+        if (highlightFirstColumn && record == 0) {
+          dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          paragraphRun.setBold(true);
+        } else {
+          paragraphRun.setBold(false);
+        }
 
         record++;
       }
