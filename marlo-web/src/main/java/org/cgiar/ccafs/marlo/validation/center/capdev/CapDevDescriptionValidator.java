@@ -102,19 +102,19 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
 
 
-    if (capdev.getCapdevOutputsList() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
-      baseAction.getInvalidFields().put("list-capdev.outputs",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
-    }
+    // if (capdev.getCapdevOutputsList() == null) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
+    // baseAction.getInvalidFields().put("list-capdev.outputs",
+    // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+    // }
 
-    if (capdev.getCapdevOutputsList() != null) {
-      if (capdev.getCapdevOutputsList().isEmpty()) {
-        baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
-        baseAction.getInvalidFields().put("list-capdev.outputs",
-          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
-      }
-    }
+    // if (capdev.getCapdevOutputsList() != null) {
+    // if (capdev.getCapdevOutputsList().isEmpty()) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
+    // baseAction.getInvalidFields().put("list-capdev.outputs",
+    // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+    // }
+    // }
 
 
   }

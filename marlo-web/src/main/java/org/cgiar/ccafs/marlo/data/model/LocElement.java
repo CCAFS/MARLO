@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -91,8 +92,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
+  private Set<FundingSourceLocation> fundingSourceLocations = new HashSet<FundingSourceLocation>(0);
+
 
   private Set<InstitutionLocation> institutionLocations = new HashSet<InstitutionLocation>(0);
+
+  private List<Project> projects;
+
+  private List<FundingSource> fundingSources;
 
 
   public LocElement() {
@@ -113,10 +120,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
   }
 
+
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -138,34 +147,42 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public GlobalUnit getCrp() {
     return crp;
   }
+
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
 
-
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
   }
+
+  public Set<FundingSourceLocation> getFundingSourceLocations() {
+    return fundingSourceLocations;
+  }
+
+
+  public List<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public Set<InstitutionLocation> getInstitutionLocations() {
     return institutionLocations;
@@ -175,6 +192,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return institutions;
   }
 
+
   public String getIsoAlpha2() {
     return isoAlpha2;
   }
@@ -182,6 +200,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public Long getIsoNumeric() {
     return isoNumeric;
   }
+
 
   public Boolean getIsSiteIntegration() {
     return this.isSiteIntegration;
@@ -216,13 +235,16 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getName() {
     return this.name;
   }
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
+  }
+
+  public List<Project> getProjects() {
+    return projects;
   }
 
   @Override
@@ -239,19 +261,19 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
@@ -266,10 +288,19 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
 
+  public void setFundingSourceLocations(Set<FundingSourceLocation> fundingSourceLocations) {
+    this.fundingSourceLocations = fundingSourceLocations;
+  }
+
+
+  public void setFundingSources(List<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
+  }
 
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setInstitutionLocations(Set<InstitutionLocation> institutionLocations) {
     this.institutionLocations = institutionLocations;
@@ -317,6 +348,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
+  }
+
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
   }
 
   @Override

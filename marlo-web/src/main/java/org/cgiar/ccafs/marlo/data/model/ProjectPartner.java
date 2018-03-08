@@ -146,7 +146,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
       }
       return this.getInstitution().getName();
     } catch (Exception e) {
-      return this.getInstitution().getName();
+      return "";
     }
 
 

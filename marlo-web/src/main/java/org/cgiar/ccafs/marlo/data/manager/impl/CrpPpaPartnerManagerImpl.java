@@ -24,8 +24,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 
 /**
@@ -50,7 +50,7 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
         && c.getInstitution().getId().longValue() == crpPpaPartner.getInstitution().getId().longValue()
         && c.getCrp().getId().longValue() == crpID)
       .collect(Collectors.toList());
-    if ( outcomes.isEmpty()) {
+    if (outcomes.isEmpty()) {
       CrpPpaPartner crpPpaPartnerAdd = new CrpPpaPartner();
       crpPpaPartnerAdd.setActive(true);
       crpPpaPartnerAdd.setActiveSince(crpPpaPartner.getActiveSince());
@@ -73,8 +73,7 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
   @Override
   public void deleteCrpPpaPartner(long crpPpaPartnerId) {
     CrpPpaPartner crpPpaPartner = this.getCrpPpaPartnerById(crpPpaPartnerId);
-    crpPpaPartner.setActive(false);
-    this.saveCrpPpaPartner(crpPpaPartner);
+    crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartner.getId());
 
     if (crpPpaPartner.getPhase().getNext() != null) {
       this.deleteCrpPpaPartnerPhase(crpPpaPartner.getPhase().getNext(), crpPpaPartner.getCrp().getId(), crpPpaPartner);

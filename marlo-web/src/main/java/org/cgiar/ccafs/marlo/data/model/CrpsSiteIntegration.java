@@ -71,19 +71,27 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   private List<CrpSitesLeader> siteLeaders;
 
+  private List<Project> projects;
+
+  private List<FundingSource> fundingSources;
+
+
   public CrpsSiteIntegration() {
   }
+
 
   public CrpsSiteIntegration(GlobalUnit crps, LocElement locElements) {
     this.crp = crps;
     this.locElement = locElements;
   }
 
+
   public CrpsSiteIntegration(GlobalUnit crps, LocElement locElements, Set<CrpSitesLeader> crpSitesLeaders) {
     this.crp = crps;
     this.locElement = locElements;
     this.crpSitesLeaders = crpSitesLeaders;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -111,7 +119,6 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
@@ -124,12 +131,15 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return this.crpSitesLeaders;
   }
 
+  public List<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public LocElement getLocElement() {
     return this.locElement;
@@ -142,10 +152,12 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -154,6 +166,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   public List<String> getProgramName() {
     return programName;
+  }
+
+  public List<Project> getProjects() {
+    return projects;
   }
 
   public List<CrpSitesLeader> getSiteLeaders() {
@@ -185,15 +201,19 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
+  }
+
+  public void setFundingSources(List<FundingSource> flagships) {
+    this.fundingSources = flagships;
   }
 
 
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLocElement(LocElement locElements) {
     this.locElement = locElements;
@@ -211,6 +231,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     this.programName = programName;
   }
 
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
+  }
+
   public void setRegional(boolean regional) {
     this.regional = regional;
   }
@@ -221,7 +245,7 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-     return "CrpsSiteIntegration [id=" + id + ", crp=" + crp + ", locElement=" + locElement + ", regional=" + regional
+    return "CrpsSiteIntegration [id=" + id + ", crp=" + crp + ", locElement=" + locElement + ", regional=" + regional
       + ", programName=" + programName + "]";
   }
 

@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.utils.NoPhaseException;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -131,9 +130,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
         } else {
-          List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-          if (projects.contains(project)
-            && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
+          // List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
             canEdit = true;
 
           }

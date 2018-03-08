@@ -1,12 +1,13 @@
 [#ftl]
 [#macro text name readText=false param="" ][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
 
-[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText=""]
+[#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText=""]
   <div class="input ${changedField(name)}" style="display:${display?string('block','none')};">
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#if showTitle]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">${labelTitle}:[@req required=required && editable /]</label>
-      [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -30,18 +31,19 @@
   </div>
 [/#macro]
 
-[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" showTitle=true display=true className="-NULL" paramText="" readOnly=false editable=true placeholder=""]
+[#macro textArea name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" powbInclude=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
     [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
-        [#if help != ""]
-          <img  class="hint-img" src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" style="display:inline-block" />
-          <span class="hint" style="display:none" title="[@s.text name="${help}"/]"> [HINT] </span>
-        [/#if]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
       </label>
+      [#if powbInclude]
+        <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+      [/#if]
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -52,9 +54,9 @@
       <p>
         [#if value=="-NULL"] 
           [#assign customValue][@s.property value="${name?string}"/][/#assign] 
-          [#if !(customValue)?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${customValue?replace('\n', '<br>')}[/#if]
+          [#if !(customValue)?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${customValue?replace('\n', '<br>')}[/#if]
         [#else]
-          [#if !value?has_content]${requiredText}[@s.text name="form.values.fieldEmpty" /][#else]${value?replace('\n', '<br>')}[/#if] 
+          [#if !value?has_content]${requiredText}[@s.text name=fieldEmptyText /][#else]${value?replace('\n', '<br>')}[/#if] 
         [/#if]
       </p>
     [/#if] 
@@ -65,14 +67,15 @@
   <input type="button" class="form-control ${class}" id="${id}" value="[@s.text name='${i18nkey}' /]" />
 [/#macro]
 
-[#macro checkbox name value="-NULL" label="" i18nkey="" disabled=false className="" checked=false required=false display=true help="" editable=true]
+[#macro checkbox name value="-NULL" label="" i18nkey="" disabled=false className="" checked=false required=false display=true help="" helpIcon=true paramText="" editable=true]
   <div class="checkbox ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#if editable]
       <label for="${name}" class="${editable?string('editable', 'readOnly')}">
         <input type="checkbox" id="${name}" class="${className}" name="${name}" value="${value}" [#if checked]checked="checked"[/#if] [#if disabled]disabled="disabled[/#if] />
         [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}" /][/#if] [@req required=required && editable /]
         <input type="hidden" id="__checkbox_${name}" name="__checkbox_${name}" value="${value}" />
-        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+        [#--  Help Text --]
+        [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
       </label>
     [#else]
       [#if checked]<p class="checked">[#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}.readText" /][/#if]</p>[/#if]
@@ -128,14 +131,15 @@
   </div>
 [/#macro]
 
-[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
+[#macro select name listName label="" keyFieldName="" displayFieldName="" paramText="" value="-NULL" i18nkey="" disabled=false required=false errorField="" selected=false className="" multiple=false help="" helpIcon=true header=true display=true showTitle=true stringKey=false placeholder="" editable=true]
   <div class="select ${changedField(name)}" [#if !display]style="display: none;"[/#if]>
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
     <label for="">
-        [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
-        [#if help != ""]<img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
+      [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
+      [#--  Help Text --]
+      [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
@@ -382,27 +386,34 @@
 [/#macro]
 
 [#macro radioFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
+  [#if editable]
   <div class="radioFlat radio-inline">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     <label for="${id}" class="radio-label ${cssClassLabel}"> ${label} </label>
   </div>
+  [#elseif checked]
+    <p>${label}</p>
+  [/#if]
 [/#macro]
 
 [#macro checkBoxFlat id name label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel=""]
   <div class="inputsFlat">
-    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked[/#if] />
+    <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> [@s.text name=label /] </label>
   </div>
 [/#macro]
 
-[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass=""]
+[#macro fileUploadAjax fileDB name label="" dataUrl="" path="" required=false isEditable=true cssClass="" labelClass=""]
   [#assign hasFile = (fileDB.id??)!false /]
   <div class="fileUploadContainer ${cssClass}" >
-    <label>[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
+    <label class="${labelClass}">[@customForm.text name=label readText=!isEditable /]: [@req required=required && isEditable /]</label>
     <input class="fileID" type="hidden" name="${name}" value="${(fileDB.id)!}" />
     [#-- Input File --]
     [#if isEditable]
       <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${dataUrl}"></div>
+    [/#if]
+    [#if !isEditable && !hasFile]
+      <p>Prefilled if available</p>
     [/#if]
     [#-- Uploaded File --]
     <p class="fileUploaded textMessage" style="display:${hasFile?string('block','none')}">
@@ -412,6 +423,18 @@
       [#if isEditable]<span class="removeIcon"> </span>[/#if]
     </p>
   </div>
+[/#macro]
+
+[#macro helpLabel name="" paramText="" showIcon=true editable=true]
+  [#--  Help Text --]
+  [#if name != "" && editable]
+    [#if showIcon]
+      <img src="${baseUrl}/global/images/icon-help2.png" title="[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]" />
+      <span class="hint" style="display:none" title="[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]"> [HINT] </span>
+    [#else]
+      <br /><i class="helpLabel">[@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text]</i>
+    [/#if]
+  [/#if]
 [/#macro]
 
 [#function changedField name]
