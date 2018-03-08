@@ -10,7 +10,7 @@
   var GOOGLE_API_KEY="${config.googleApiKey}";
   var PUSHER_KEY = "${config.pushApiKey}";
   
-  var MIN_DATE = '2010-01-01';
+  var MIN_DATE = '2000-01-01';
   var MAX_DATE = '2030-12-31';
   
   var actionName = "${actionName}";
@@ -22,7 +22,7 @@
   var editable = ${editable?string};
   var canEdit = ${canEdit?string};
   var draft = ${draft?string};
-  var autoSaveActive = ${((currentUser.autoSave)!false)?string};
+  var autoSaveActive = ${(((currentUser.autoSave)!false) && editable)?string};
   var currentCrpID=${(crpID)!'-1'};
   var currentCrpSession='${(crpSession)!'-1'}';
   var currentCycleYear = ${(currentCycleYear)!1999};

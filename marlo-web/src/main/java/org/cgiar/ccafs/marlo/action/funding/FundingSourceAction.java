@@ -1011,6 +1011,11 @@ public class FundingSourceAction extends BaseAction {
 
       fundingSource.getFundingSourceInfo().setPhase(this.getActualPhase());
       fundingSource.getFundingSourceInfo().setFundingSource(fundingSource);
+      if (fundingSource.getFundingSourceInfo().getOriginalDonor() != null
+        && (fundingSource.getFundingSourceInfo().getOriginalDonor().getId() == null
+          || fundingSource.getFundingSourceInfo().getOriginalDonor().getId() <= 0)) {
+        fundingSource.getFundingSourceInfo().setOriginalDonor(null);
+      }
       fundingSourceInfoManager.saveFundingSourceInfo(fundingSource.getFundingSourceInfo());
 
       fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);

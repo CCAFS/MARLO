@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,7 +46,12 @@ public class RequireUserInterceptor extends AbstractInterceptor {
     Map<String, Object> session = invocation.getInvocationContext().getSession();
     User user = (User) session.get(APConstants.SESSION_USER);
     if (user != null) {
-      return invocation.invoke();
+      BaseAction action = (BaseAction) invocation.getAction();
+      if (action.getActualPhase() != null) {
+        return invocation.invoke();
+      } else {
+        return BaseAction.NOT_LOGGED;
+      }
     } else {
       return BaseAction.NOT_LOGGED;
     }

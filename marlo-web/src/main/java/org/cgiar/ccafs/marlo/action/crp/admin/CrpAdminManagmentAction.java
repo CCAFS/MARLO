@@ -252,9 +252,9 @@ public class CrpAdminManagmentAction extends BaseAction {
         .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
       for (UserRole userRole : userRoles) {
         if (crpAdmins.isEmpty()) {
-          crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+          crpAdmins += userRole.getUser().getComposedCompleteName()+ " (" + userRole.getUser().getEmail() + ")";
         } else {
-          crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+          crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         }
       }
 
@@ -342,11 +342,11 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
 
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -421,10 +421,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -507,10 +507,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -590,10 +590,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -647,10 +647,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -698,10 +698,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -775,26 +775,28 @@ public class CrpAdminManagmentAction extends BaseAction {
       i++;
     }
     // Add new Users roles
-    for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-      if (userRole.getId() == null) {
-        if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-          .collect(Collectors.toList()).isEmpty()) {
-          userRoleManager.saveUserRole(userRole);
-          userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+    if ((loggedCrp.getProgramManagmenTeam() != null)) {
+      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
+        if (userRole.getId() == null) {
+          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
+            userRoleManager.saveUserRole(userRole);
+            userRole.setUser(userManager.getUser(userRole.getUser().getId()));
 
-          this.addCrpUser(userRole.getUser());
-          this.notifyNewUserCreated(userRole.getUser());
-          // Notifiy user been assigned to Program Management
-          this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
+            this.addCrpUser(userRole.getUser());
+            this.notifyNewUserCreated(userRole.getUser());
+            // Notifiy user been assigned to Program Management
+            this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
 
-          LiaisonInstitution cuLiasonInstitution;
+            LiaisonInstitution cuLiasonInstitution;
 
-          cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser.setCrp(loggedCrp);
-          liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
-          liaisonUser.setUser(userRole.getUser());
-          liaisonUserManager.saveLiaisonUser(liaisonUser);
+            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
+            LiaisonUser liaisonUser = new LiaisonUser();
+            liaisonUser.setCrp(loggedCrp);
+            liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
+            liaisonUser.setUser(userRole.getUser());
+            liaisonUserManager.saveLiaisonUser(liaisonUser);
+          }
         }
       }
     }
