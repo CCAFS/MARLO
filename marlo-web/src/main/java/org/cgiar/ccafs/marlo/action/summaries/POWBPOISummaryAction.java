@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbExpectedCrpProgressManager;
+import org.cgiar.ccafs.marlo.data.manager.PowbSynthesisManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -27,14 +29,18 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
+import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsFlagship;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.TypeExpectedStudiesEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.POISummary;
 
@@ -76,6 +82,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
   // Managers
   private PowbExpectedCrpProgressManager powbExpectedCrpProgressManager;
+  private ProjectExpectedStudyManager projectExpectedStudyManager;
+  private PowbSynthesisManager powbSynthesisManager;
 
   // Parameters
   private POISummary poiSummary;
@@ -84,6 +92,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   private PowbSynthesis powbSynthesisPMU;
   private long startTime;
   private XWPFDocument document = new XWPFDocument();
+  private List<PowbEvidencePlannedStudyDTO> flagshipPlannedList;
 
   private List<CrpProgram> flagships;
   // Streams
@@ -93,10 +102,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   private byte[] bytesDOC;
 
   public POWBPOISummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager) {
+    PowbExpectedCrpProgressManager powbExpectedCrpProgressManager,
+    ProjectExpectedStudyManager projectExpectedStudyManager, PowbSynthesisManager powbSynthesisManager) {
     super(config, crpManager, phaseManager);
     poiSummary = new POISummary();
     this.powbExpectedCrpProgressManager = powbExpectedCrpProgressManager;
+    this.projectExpectedStudyManager = projectExpectedStudyManager;
+    this.powbSynthesisManager = powbSynthesisManager;
   }
 
   private void addAdjustmentDescription() {
@@ -327,11 +339,15 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       this.getText("summaries.powb.participantingCenters") + ": " + participantingCenters);
   }
 
-  public void createTableA(XWPFDocument document) {
+  public void createTableA() {
     this.loadTablePMU();
 
-    String[] header = {"FP", "Mapped and contributing to Sub-IDO", "2022 CRP outcomes (from proposal)", "Milestone",
-      "Budget  W1/W2", "Budget  W3/Bilateral", "Assessment of risk to achievement", "Means of verification"};
+    String[] header = {this.getText("expectedProgress.tableA.fp"), this.getText("expectedProgress.tableA.subIDO"),
+      this.getText("expectedProgress.tableA.outcomes"), this.getText("expectedProgress.tableA.milestone") + "*",
+      "Budget  " + this.getText("expectedProgress.tableA.w1w2"),
+      "Budget  " + this.getText("expectedProgress.tableA.w3bilateral"),
+      this.getText("expectedProgress.tableA.assessment") + "**",
+      this.getText("expectedProgress.tableA.meansVerification")};
 
     List<String> headers = Arrays.asList(header);
 
@@ -410,6 +426,65 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     poiSummary.textTable(document, headers, datas);
   }
 
+  private void createTableB() {
+    String[] header = {this.getText("evidenceRelevant.table.plannedTopic"),
+      this.getText("evidenceRelevant.tablePlannedStudies.geographicScope"),
+      this.getText("evidenceRelevant.tablePlannedStudies.relevant"),
+      this.getText("evidenceRelevant.tablePlannedStudies.comments")};
+    List<String> headers = Arrays.asList(header);
+
+    List<List<String>> datas = new ArrayList<>();
+
+    List<String> data;
+
+    this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
+    for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList.stream()
+      .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
+        && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.OUTCOMECASESTUDY.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.ADOPTIONSTUDY.getId()))
+      .collect(Collectors.toList())) {
+      String plannedStudy = "", geographicScope = "", revelantSubIDO = "", comments = "";
+      plannedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
+          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() : " ";
+
+      geographicScope = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getScopeName() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getScopeName().trim().isEmpty()
+          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getScopeName() : " ";
+      if (powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSubIdo() != null
+        && powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSubIdo().getDescription() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSubIdo().getDescription().trim().isEmpty()) {
+        revelantSubIDO += "• " + powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSubIdo().getDescription();
+      }
+
+      if (powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSloIndicator() != null
+        && powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSloIndicator().getTitle() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSloIndicator().getTitle().trim().isEmpty()) {
+        if (revelantSubIDO.isEmpty()) {
+          revelantSubIDO +=
+            "• " + powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSloIndicator().getTitle();
+        } else {
+          revelantSubIDO +=
+            "\n• " + powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getSrfSloIndicator().getTitle();
+        }
+      }
+      if (revelantSubIDO.isEmpty()) {
+        revelantSubIDO = " ";
+      }
+      comments = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
+          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
+
+      String[] sData = {plannedStudy, geographicScope, revelantSubIDO, comments};
+      data = Arrays.asList(sData);
+
+
+      datas.add(data);
+    }
+    poiSummary.textTable(document, headers, datas);
+  }
+
   @Override
   public String execute() throws Exception {
     try {
@@ -448,8 +523,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       paragraph.setPageBreak(true);
       poiSummary.textHead1Title(paragraph, "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableA.title"));
-      this.createTableA(document);
-
+      this.createTableA();
+      poiSummary.textNotes(document.createParagraph(), "*" + this.getText("expectedProgress.tableA.milestone.help"));
+      poiSummary.textNotes(document.createParagraph(), "**" + this.getText("expectedProgress.tableA.assessment.help"));
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableB.title"));
+      this.createTableB();
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
       bytesDOC = os.toByteArray();
@@ -488,7 +566,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     return fileName.toString();
   }
 
-
   public List<LiaisonInstitution> getFlagships() {
     List<LiaisonInstitution> flagshipsList = this.getLoggedCrp().getLiaisonInstitutions().stream()
       .filter(c -> c.getCrpProgram() != null
@@ -499,6 +576,70 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       return flagshipsList;
     } else {
       return new ArrayList<>();
+    }
+  }
+
+
+  public void getFpPlannedList(List<LiaisonInstitution> lInstitutions, long phaseID) {
+    flagshipPlannedList = new ArrayList<>();
+
+    if (projectExpectedStudyManager.findAll() != null) {
+      List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
+        .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+            .collect(Collectors.toList()).size() > 0)
+        .collect(Collectors.toList()));
+
+      for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
+
+        PowbEvidencePlannedStudyDTO dto = new PowbEvidencePlannedStudyDTO();
+        dto.setProjectExpectedStudy(projectExpectedStudy);
+        List<ProjectFocus> projectFocuses = new ArrayList<>(projectExpectedStudy.getProject().getProjectFocuses()
+          .stream().filter(pf -> pf.isActive() && pf.getPhase().getId() == phaseID).collect(Collectors.toList()));
+        List<LiaisonInstitution> liaisonInstitutions = new ArrayList<>();
+        for (ProjectFocus projectFocus : projectFocuses) {
+          liaisonInstitutions.addAll(projectFocus.getCrpProgram().getLiaisonInstitutions().stream()
+            .filter(li -> li.isActive() && li.getCrpProgram() != null
+              && li.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList()));
+        }
+        dto.setLiaisonInstitutions(liaisonInstitutions);
+        flagshipPlannedList.add(dto);
+      }
+
+      List<PowbEvidencePlannedStudy> evidencePlannedStudies = new ArrayList<>();
+      for (LiaisonInstitution liaisonInstitution : lInstitutions) {
+        PowbSynthesis powbSynthesis = powbSynthesisManager.findSynthesis(phaseID, liaisonInstitution.getId());
+        if (powbSynthesis != null) {
+          if (powbSynthesis.getPowbEvidence() != null) {
+            if (powbSynthesis.getPowbEvidence().getPowbEvidencePlannedStudies() != null) {
+              List<PowbEvidencePlannedStudy> studies = new ArrayList<>(powbSynthesis.getPowbEvidence()
+                .getPowbEvidencePlannedStudies().stream().filter(s -> s.isActive()).collect(Collectors.toList()));
+              if (studies != null || !studies.isEmpty()) {
+                for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : studies) {
+                  evidencePlannedStudies.add(powbEvidencePlannedStudy);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      List<Integer> removeList = new ArrayList<>();
+      for (PowbEvidencePlannedStudy powbEvidencePlannedStudy : evidencePlannedStudies) {
+        for (PowbEvidencePlannedStudyDTO dto : flagshipPlannedList) {
+          int index = flagshipPlannedList.indexOf(dto);
+          if (dto.getProjectExpectedStudy().equals(powbEvidencePlannedStudy.getProjectExpectedStudy())) {
+            removeList.add(index);
+          }
+        }
+      }
+
+      for (Integer i : removeList) {
+        flagshipPlannedList.remove(i);
+      }
+
     }
   }
 
