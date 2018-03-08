@@ -209,7 +209,7 @@
           <td class="tb-fp text-center">
             [#if flagshipPlanned.liaisonInstitutions?has_content]
               [#list flagshipPlanned.liaisonInstitutions as institution]
-                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">${institution.crpProgram.acronym}</span>
+                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#000000'}">${(institution.crpProgram.acronym)!institution.acronym}</span>
               [/#list]
             [#elseif flagshipPlanned.projectExpectedStudy.project.projectInfo.administrative]
               <span class="programTag" style="border-color:#444">PMU</span>
