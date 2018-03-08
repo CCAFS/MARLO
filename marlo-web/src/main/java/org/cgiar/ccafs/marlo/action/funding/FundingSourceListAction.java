@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -224,7 +225,7 @@ public class FundingSourceListAction extends BaseAction {
       fundingSource.getFundingSourceBudgets().stream()
         .filter(fsb -> fsb.isActive() && fsb.getPhase() != null && fsb.getPhase().equals(this.getActualPhase())
           && fsb.getYear() != null && fsb.getYear().equals(this.getActualPhase().getYear()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (fundingSourceBudgets != null && fundingSourceBudgets.size() > 0) {
       FundingSourceBudget fundingSourceBudget = fundingSourceBudgets.get(0);
       if (fundingSourceBudget != null) {
@@ -273,9 +274,8 @@ public class FundingSourceListAction extends BaseAction {
             && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == null
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(FundingStatusEnum.Ongoing.getStatusId())
-                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                    .parseInt(FundingStatusEnum.Extended.getStatusId())
+                  .parseInt(FundingStatusEnum.Ongoing.getStatusId()) || fs.getFundingSourceInfo(this.getActualPhase())
+                    .getStatus() == Integer.parseInt(FundingStatusEnum.Extended.getStatusId())
 
 
                   || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
@@ -284,7 +284,7 @@ public class FundingSourceListAction extends BaseAction {
                     .parseInt(FundingStatusEnum.Informally.getStatusId())
 
 
-        )))).collect(Collectors.toList());
+                )))).collect(Collectors.toList());
 
 
         myProjects.addAll(fundingSourceManager.findAll().stream()
@@ -295,15 +295,15 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(FundingStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(FundingStatusEnum.Extended.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(FundingStatusEnum.Pipeline.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(FundingStatusEnum.Informally.getStatusId())
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(FundingStatusEnum.Extended.getStatusId())
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(FundingStatusEnum.Informally.getStatusId())
 
 
-        )))).collect(Collectors.toList()));
+                )))).collect(Collectors.toList()));
       } else {
         /*
          * allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
@@ -319,15 +319,15 @@ public class FundingSourceListAction extends BaseAction {
               || (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
                 && (fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                   .parseInt(FundingStatusEnum.Ongoing.getStatusId())
-                || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-                  .parseInt(FundingStatusEnum.Extended.getStatusId())
+                  || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+                    .parseInt(FundingStatusEnum.Extended.getStatusId())
 
                   || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(FundingStatusEnum.Pipeline.getStatusId())
                   || fs.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
                     .parseInt(FundingStatusEnum.Informally.getStatusId())
 
-        )))).collect(Collectors.toList());
+                )))).collect(Collectors.toList());
 
       }
     }
@@ -369,6 +369,12 @@ public class FundingSourceListAction extends BaseAction {
       closedProjects.clear();
       closedProjects.addAll(fundingSources);
     }
+
+
+    closedProjects
+      .sort(Comparator.comparing(FundingSource::getEndDatePhase, Comparator.nullsFirst(Comparator.naturalOrder())));
+    myProjects
+      .sort(Comparator.comparing(FundingSource::getEndDatePhase, Comparator.nullsFirst(Comparator.naturalOrder())));
 
 
   }

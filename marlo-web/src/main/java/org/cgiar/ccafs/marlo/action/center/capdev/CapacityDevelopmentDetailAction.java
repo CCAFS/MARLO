@@ -124,6 +124,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   private CapdevFoundingTypeManager capdevFoundingTypeService;
   private CapacityDevelopmentValidator validator;
   private ReadExcelFile reader = new ReadExcelFile();
+  private CapacityDevelopment capdevDB;
 
 
   private List<Map<String, Object>> previewList;
@@ -561,8 +562,10 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
-      capdevID = -1;
-      projectID = 0;
+      if (capdevID <= 0) {
+        capdevID = -1;
+      }
+      projectID = -1;
     }
 
 
@@ -694,6 +697,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     }
 
+    capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
+
     if (this.isHttpPost()) {
       capdev.setCapdevType(null);
       capdev.setCapdevLocations(null);
@@ -731,21 +736,14 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   @Override
   public String save() {
-    Session session = SecurityUtils.getSubject().getSession();
 
-    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
-
-    CapacityDevelopment capdevDB = capdevService.getCapacityDevelopmentById(capdevID);
-
-
-    capdevDB.setCreatedBy(currentUser);
     capdevDB.setStartDate(capdev.getStartDate());
     capdevDB.setEndDate(capdev.getEndDate());
     capdevDB.setDuration(capdev.getDuration());
     capdevDB.setGlobal(this.bolValue(capdev.getsGlobal()));
     capdevDB.setRegional(this.bolValue(capdev.getsRegional()));
 
-
+    System.out.println(capdev.getTitle());
     capdevDB.setTitle(capdev.getTitle());
 
 
@@ -784,14 +782,18 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
       this.saveParticipant(capdev.getParticipant());
 
-
-      // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
-      List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
-        .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevDB.getId()))
-        .collect(Collectors.toList());
-      System.out.println(participants.size());
-      if (participants != null) {
-        if (participants.isEmpty()) {
+      if (capdevParicipantService.findAll() != null) {
+        // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
+        List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
+          .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevID)).collect(Collectors.toList());
+        System.out.println(participants.size());
+        if (participants != null) {
+          if (participants.isEmpty()) {
+            this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
+          }
+        }
+      } else {
+        if (capdev.getParticipant() != null) {
           this.saveCapDevParticipan(capdev.getParticipant(), capdevDB);
         }
       }
@@ -852,15 +854,17 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     this.saveCapDevRegions(capdev.getCapDevRegions(), capdevDB);
     this.saveCapDevCountries(capdev.getCapDevCountries(), capdevDB);
 
+    capdevDB = capdevService.saveCapacityDevelopment(capdevDB);
+    capdev = capdevService.getCapacityDevelopmentById(capdevID);
     // Save CapDev with History
     final List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.CAPDEV_LOCATIONS_RELATION);
     relationsName.add(APConstants.CAPDEV_PARTICIPANTS_RELATION);
-    capdevDB.setActiveSince(new Date());
-    capdevDB.setModifiedBy(this.getCurrentUser());
+    capdev.setActiveSince(new Date());
+    capdev.setModifiedBy(this.getCurrentUser());
 
 
-    capdevService.saveCapacityDevelopment(capdevDB, this.getActionName(), relationsName);
+    capdevService.saveCapacityDevelopment(capdev, this.getActionName(), relationsName);
 
     Path path = this.getAutoSaveFilePath();
 
@@ -886,9 +890,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void saveCapDevCountries(List<CapdevLocations> capdevCountries, CapacityDevelopment capdev) {
     CapdevLocations capdevLocations = null;
-    Session session = SecurityUtils.getSubject().getSession();
-
-    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     if (capdevCountries != null) {
       for (CapdevLocations iterator : capdevCountries) {
         if (iterator.getId() == null) {
@@ -897,8 +898,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations.setLocElement(iterator.getLocElement());
           capdevLocations.setActive(true);
           capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(currentUser);
-          capdevLocations.setModifiedBy(currentUser);
+          capdevLocations.setCreatedBy(this.getCurrentUser());
+          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
 
@@ -909,15 +910,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
   public void saveCapDevParticipan(Participant participant, CapacityDevelopment capdev) {
     CapdevParticipant capdevParticipant = new CapdevParticipant();
-    Session session = SecurityUtils.getSubject().getSession();
-
-    User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
     capdevParticipant.setCapacityDevelopment(capdev);
     capdevParticipant.setParticipant(participant);
     capdevParticipant.setActive(true);
     capdevParticipant.setActiveSince(new Date());
-    capdevParticipant.setCreatedBy(currentUser);
-    capdevParticipant.setModifiedBy(currentUser);
+    capdevParticipant.setCreatedBy(this.getCurrentUser());
+    capdevParticipant.setModifiedBy(this.getCurrentUser());
 
     capdevParicipantService.saveCapdevParticipant(capdevParticipant);
   }
@@ -927,8 +925,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
     CapdevLocations capdevLocations = null;
     if (capdevRegions != null) {
-      Session session = SecurityUtils.getSubject().getSession();
-      User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
       for (CapdevLocations iterator : capdevRegions) {
         if (iterator.getId() == null) {
           capdevLocations = new CapdevLocations();
@@ -936,8 +932,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
           capdevLocations.setLocElement(iterator.getLocElement());
           capdevLocations.setActive(true);
           capdevLocations.setActiveSince(new Date());
-          capdevLocations.setCreatedBy(currentUser);
-          capdevLocations.setModifiedBy(currentUser);
+          capdevLocations.setCreatedBy(this.getCurrentUser());
+          capdevLocations.setModifiedBy(this.getCurrentUser());
           capdevLocationService.saveCapdevLocations(capdevLocations);
         }
       }
@@ -946,8 +942,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
 
 
   public void saveParticipant(Participant participant) {
-    final Session session = SecurityUtils.getSubject().getSession();
-    final User currentUser = (User) session.getAttribute(APConstants.SESSION_USER);
 
 
     if (participant.getCode() == null) {
@@ -956,8 +950,12 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     if (participant.getGender().equals("-1")) {
       participant.setGender(null);
     }
-    if (participant.getAge().equals("-1")) {
+    if (participant.getAge() == null) {
       participant.setAge(null);
+    } else {
+      if (participant.getAge().getId() == -1) {
+        participant.setAge(null);
+      }
     }
     if ((participant.getLocElementsByCitizenship() == null)
       || (participant.getLocElementsByCitizenship().getId() == -1)) {
@@ -983,8 +981,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
     }
     participant.setActive(true);
     participant.setAciveSince(new Date());
-    participant.setCreatedBy(currentUser);
-    participant.setModifiedBy(currentUser);
+    participant.setCreatedBy(this.getCurrentUser());
+    participant.setModifiedBy(this.getCurrentUser());
 
     participantService.saveParticipant(participant);
   }
@@ -1142,11 +1140,8 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
   public void validate() {
     this.setInvalidFields(new HashMap<>());
     if (save) {
-
       validator.validate(this, capdev, capdev.getParticipant(), uploadFile, uploadFileContentType);
     }
-
-
   }
 
 

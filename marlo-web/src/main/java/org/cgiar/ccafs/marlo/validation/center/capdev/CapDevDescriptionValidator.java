@@ -22,12 +22,12 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.HashMap;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 
-
+@Named
 public class CapDevDescriptionValidator extends BaseValidator {
 
-  @Inject
+
   public CapDevDescriptionValidator() {
 
   }
@@ -102,19 +102,19 @@ public class CapDevDescriptionValidator extends BaseValidator {
     }
 
 
-    if (capdev.getCapdevOutputsList() == null) {
-      baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
-      baseAction.getInvalidFields().put("list-capdev.outputs",
-        baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
-    }
+    // if (capdev.getCapdevOutputsList() == null) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
+    // baseAction.getInvalidFields().put("list-capdev.outputs",
+    // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+    // }
 
-    if (capdev.getCapdevOutputsList() != null) {
-      if (capdev.getCapdevOutputsList().isEmpty()) {
-        baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
-        baseAction.getInvalidFields().put("list-capdev.outputs",
-          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
-      }
-    }
+    // if (capdev.getCapdevOutputsList() != null) {
+    // if (capdev.getCapdevOutputsList().isEmpty()) {
+    // baseAction.addMessage(baseAction.getText("capdev.action.outputs"));
+    // baseAction.getInvalidFields().put("list-capdev.outputs",
+    // baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outputs"}));
+    // }
+    // }
 
 
   }

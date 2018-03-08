@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -66,12 +67,12 @@ public class DeliverableValidator extends BaseValidator {
     this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
-  private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
+  private Path getAutoSaveFilePath(Deliverable deliverable, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.DELIVERABLE.getStatus().replace("/", "_");
-    String autoSaveFile =
-      deliverable.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -104,7 +105,7 @@ public class DeliverableValidator extends BaseValidator {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
 
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
+        Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");
@@ -144,8 +145,8 @@ public class DeliverableValidator extends BaseValidator {
 
           } else {
             if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType()
-              .getDeliverableType() != null) {
-              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+              .getDeliverableCategory() != null) {
+              if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
                 .getId() == -1) {
                 action.addMessage(action.getText("project.deliverable.generalInformation.type"));
                 action.getInvalidFields().put("input-deliverable.deliverableInfo.deliverableType.deliverableType.id",
@@ -278,8 +279,8 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable Publication Meta-data
         if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null && deliverable
-          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType() != null) {
-          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableType()
+          .getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory() != null) {
+          if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getDeliverableCategory()
             .getId() == 49) {
             this.validatePublicationMetadata(deliverable, action);
           }
@@ -686,11 +687,13 @@ public class DeliverableValidator extends BaseValidator {
       } else {
         if (deliverable.getResponsiblePartner() != null
           && deliverable.getResponsiblePartner().getProjectPartnerPerson() != null) {
+          ProjectPartnerPerson projectPartnerPerson = projectPartnerPersonManager
+            .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
 
-
-          if (projectPartnerPersonManager
-            .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId())
-            .getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
+          if (projectPartnerPerson.getProjectPartner() != null
+            && projectPartnerPerson.getProjectPartner().getInstitution() != null
+            && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym() != null
+            && projectPartnerPerson.getProjectPartner().getInstitution().getAcronym().equalsIgnoreCase("IFPRI")) {
             if (action.hasSpecificities(APConstants.CRP_DIVISION_FS)) {
               if (deliverable.getResponsiblePartner().getPartnerDivision() == null) {
                 action.addMessage(action.getText("deliverable.division"));

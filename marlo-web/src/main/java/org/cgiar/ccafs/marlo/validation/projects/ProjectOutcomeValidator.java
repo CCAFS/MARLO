@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -47,6 +48,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   private final ProjectManager projectManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private final CrpMilestoneManager crpMilestoneManager;
 
 
   // GlobalUnit Manager
@@ -54,19 +56,20 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    GlobalUnitManager crpManager) {
+    GlobalUnitManager crpManager, CrpMilestoneManager crpMilestoneManager) {
 
     this.projectManager = projectManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpManager = crpManager;
+    this.crpMilestoneManager = crpMilestoneManager;
   }
 
-  private Path getAutoSaveFilePath(ProjectOutcome project, long crpID) {
+  private Path getAutoSaveFilePath(ProjectOutcome project, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.OUTCOME.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -83,7 +86,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
   public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID());
+      Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -118,7 +121,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
     int counter = i + 1;
     params.add(String.valueOf(counter));
     if (projectMilestone != null) {
-      if (projectMilestone.getYear() == action.getCurrentCycleYear()) {
+      projectMilestone
+        .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(projectMilestone.getCrpMilestone().getId()));
+      if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
@@ -193,7 +198,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     endDate.setTime(project.getProjecInfoPhase(action.getActualPhase()).getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    if (!action.isProjectNew(project.getId())) {
+    if (!action.isProjectNew(project.getId()) && action.isReportingActive()) {
       this.validateLessonsLearnOutcome(action, projectOutcome);
       if (action.getValidationMessage().toString().contains("Lessons")) {
         this.replaceAll(action.getValidationMessage(), "Lessons",

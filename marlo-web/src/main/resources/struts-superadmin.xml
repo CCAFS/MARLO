@@ -79,6 +79,12 @@
 				<param name="edit">true</param> <param name="phaseID">${phaseID}</param>
 			</result>
 		</action>
+		
+		<action name="emails" class="org.cgiar.ccafs.marlo.action.superadmin.EmailsOnTrackAction">
+      <interceptor-ref name="superAdminStack" />
+      <result name="input">/WEB-INF/global/views/superadmin/marloEmails.ftl
+      </result>
+    </action>
 
 		<action name="marloParameters"
 			class="org.cgiar.ccafs.marlo.action.superadmin.CrpParametersAction">

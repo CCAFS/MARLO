@@ -129,13 +129,16 @@ public class DashboardAction extends BaseAction {
 
 
       }
-      List<Project> closedProjects =
-        projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
-      if (closedProjects != null) {
-        // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
-        myProjects.removeAll(closedProjects);
+      if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
+        List<Project> closedProjects =
+          projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());
+        if (closedProjects != null) {
+          // closedProjects.addAll(projectManager.getNoPhaseProjects(this.getCrpID(), this.getActualPhase()));
+          myProjects.removeAll(closedProjects);
+        }
+        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
       }
-      Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
     }
 

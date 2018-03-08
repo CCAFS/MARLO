@@ -44,12 +44,12 @@ public class ProjectLocationValidator extends BaseValidator {
     this.crpManager = crpManager;
   }
 
-  private Path getAutoSaveFilePath(Project project, long crpID) {
+  private Path getAutoSaveFilePath(Project project, long crpID, BaseAction action) {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.LOCATIONS.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -58,7 +58,7 @@ public class ProjectLocationValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
 
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(project, action.getCrpID());
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
       if (path.toFile().exists()) {
         action.addMissingField("draft");
@@ -80,13 +80,22 @@ public class ProjectLocationValidator extends BaseValidator {
   public void validateLocation(BaseAction action, Project project) {
 
     if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal() != null
-        && !project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal()) {
-        action.getInvalidFields().put("list-project.locationsData",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-        action.addMessage(action.getText("project.locationsData"));
+      if (project.getRegionFS() == null || project.getRegionFS().isEmpty()) {
+        if (project.getCountryFS() == null || project.getCountryFS().isEmpty()) {
+          if (project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal() != null
+            && project.getProjecInfoPhase(action.getActualPhase()).getLocationGlobal().booleanValue() == false) {
+            action.getInvalidFields().put("list-project.locationsData",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
+            action.addMessage(action.getText("project.locationsData"));
+          }
+
+
+        }
+
       }
+
     }
+
 
   }
 

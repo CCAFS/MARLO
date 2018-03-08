@@ -21,8 +21,10 @@ package org.cgiar.ccafs.marlo.action.center.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CenterOutputsOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterNextuserTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterOutputsNextUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterProgramManager;
@@ -32,9 +34,11 @@ import org.cgiar.ccafs.marlo.data.model.CenterNextuserType;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterOutput;
 import org.cgiar.ccafs.marlo.data.model.CenterOutputsNextUser;
+import org.cgiar.ccafs.marlo.data.model.CenterOutputsOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterProgram;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ResearchTopicsOutcomesDTO;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -72,27 +76,23 @@ public class OutputsAction extends BaseAction {
   // Services - Managers
   // GlobalUnit Manager
   private GlobalUnitManager centerService;
-
-
   private AuditLogManager auditLogService;
-
-
   private ICenterProgramManager programService;
-
-
   private ICenterOutputManager outputService;
-
-
   private ICenterNextuserTypeManager nextUserService;
   private ICenterOutputsNextUserManager outputNextUserService;
+  private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
+  private ICenterOutcomeManager outcomeManager;
+
+
   // Front Variables
   private GlobalUnit loggedCenter;
   private List<CenterArea> researchAreas;
   private CenterArea selectedResearchArea;
   private List<CenterProgram> researchPrograms;
-
   private CenterProgram selectedProgram;
   private CenterOutcome selectedResearchOutcome;
+
   private CenterOutput output;
   private CenterTopic selectedResearchTopic;
   private List<CenterLeader> contacPersons;
@@ -104,6 +104,8 @@ public class OutputsAction extends BaseAction {
   private long outputID;
   private String transaction;
   private long nextUserTypeID;
+  private CenterOutput outputDb;
+  private List<ResearchTopicsOutcomesDTO> outcomes;
   // Validator
   private OutputsValidator validator;
 
@@ -113,7 +115,8 @@ public class OutputsAction extends BaseAction {
   @Inject
   public OutputsAction(APConfig config, GlobalUnitManager centerService, AuditLogManager auditLogService,
     ICenterProgramManager programService, ICenterOutputManager outputService, OutputsValidator validator,
-    ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService) {
+    ICenterNextuserTypeManager nextUserService, ICenterOutputsNextUserManager outputNextUserService,
+    CenterOutputsOutcomeManager centerOutputsOutcomeManager, ICenterOutcomeManager outcomeManager) {
     super(config);
     this.centerService = centerService;
     this.auditLogService = auditLogService;
@@ -122,6 +125,8 @@ public class OutputsAction extends BaseAction {
     this.validator = validator;
     this.nextUserService = nextUserService;
     this.outputNextUserService = outputNextUserService;
+    this.centerOutputsOutcomeManager = centerOutputsOutcomeManager;
+    this.outcomeManager = outcomeManager;
   }
 
   public String addNextUsers() {
@@ -153,11 +158,9 @@ public class OutputsAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public long getAreaID() {
     return areaID;
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = output.getClass().getSimpleName();
@@ -167,9 +170,11 @@ public class OutputsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<CenterLeader> getContacPersons() {
     return contacPersons;
   }
+
 
   public GlobalUnit getLoggedCenter() {
     return loggedCenter;
@@ -179,13 +184,17 @@ public class OutputsAction extends BaseAction {
     return nextUserTypeID;
   }
 
-
   public List<CenterNextuserType> getNextuserTypes() {
     return nextuserTypes;
   }
 
   public long getOutcomeID() {
     return outcomeID;
+  }
+
+
+  public List<ResearchTopicsOutcomesDTO> getOutcomes() {
+    return outcomes;
   }
 
   public CenterOutput getOutput() {
@@ -198,6 +207,30 @@ public class OutputsAction extends BaseAction {
 
   public long getProgramID() {
     return programID;
+  }
+
+  public void getProgramOutcomes() {
+
+    outcomes = new ArrayList<>();
+
+    List<CenterTopic> researchTopics = new ArrayList<>(
+      selectedProgram.getResearchTopics().stream().filter(rt -> rt.isActive()).collect(Collectors.toList()));
+
+    for (CenterTopic researchTopic : researchTopics) {
+      ResearchTopicsOutcomesDTO outcomesDTO = new ResearchTopicsOutcomesDTO();
+      outcomesDTO.setResearchTopic(researchTopic);
+      outcomesDTO.setOutcomes(new ArrayList<>());
+      List<CenterOutcome> centerOutcomes = new ArrayList<>();
+      List<CenterOutcome> researchOutcomes = new ArrayList<>(
+        researchTopic.getResearchOutcomes().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+      for (CenterOutcome researchOutcome : researchOutcomes) {
+        centerOutcomes.add(researchOutcome);
+      }
+      for (CenterOutcome centerOutcome : researchOutcomes) {
+        outcomesDTO.getOutcomes().add(centerOutcome);
+      }
+      outcomes.add(outcomesDTO);
+    }
   }
 
   public List<CenterArea> getResearchAreas() {
@@ -267,11 +300,8 @@ public class OutputsAction extends BaseAction {
 
     if (researchAreas != null && output != null) {
 
-      selectedResearchOutcome = output.getResearchOutcome();
-      outcomeID = selectedResearchOutcome.getId();
-      programID = selectedResearchOutcome.getResearchTopic().getResearchProgram().getId();
+      programID = output.getCenterProgram().getId();
       selectedProgram = programService.getProgramById(programID);
-      selectedResearchTopic = selectedResearchOutcome.getResearchTopic();
       selectedResearchArea = selectedProgram.getResearchArea();
       areaID = selectedResearchArea.getId();
 
@@ -313,8 +343,36 @@ public class OutputsAction extends BaseAction {
 
             output.setNextUsers(new ArrayList<>(autoSaveOutputNextrUsers));
           }
-        }
 
+          outputDb = outputService.getResearchOutputById(output.getId());
+          if (output.getOutcomes() != null) {
+            List<CenterOutputsOutcome> outputsOutcomes = new ArrayList<>(output.getOutcomes());
+            List<CenterOutputsOutcome> autoSaveOutputsOutcomes = new ArrayList<>();
+            for (CenterOutputsOutcome outputsOutcome : outputsOutcomes) {
+              CenterOutputsOutcome autoSaveOutputsOutcome = new CenterOutputsOutcome();
+
+              autoSaveOutputsOutcome.setCenterOutput(outputDb);
+
+              CenterOutcome outcome = null;
+              if (outputsOutcome.getCenterOutcome() != null) {
+                if (outputsOutcome.getCenterOutcome().getId() != null) {
+                  if (outputsOutcome.getCenterOutcome().getId() != -1) {
+                    outcome = outcomeManager.getResearchOutcomeById(outputsOutcome.getCenterOutcome().getId());
+                  }
+                }
+              }
+
+              autoSaveOutputsOutcome.setCenterOutcome(outcome);
+
+              if (outputsOutcome.getId() != null) {
+                autoSaveOutputsOutcome.setId(outputsOutcome.getId());
+              }
+              autoSaveOutputsOutcomes.add(autoSaveOutputsOutcome);
+
+            }
+            output.setOutcomes(new ArrayList<>(autoSaveOutputsOutcomes));
+          }
+        }
 
         this.setDraft(true);
       } else {
@@ -322,6 +380,9 @@ public class OutputsAction extends BaseAction {
 
         output.setNextUsers(new ArrayList<>(
           output.getResearchOutputsNextUsers().stream().filter(nu -> nu.isActive()).collect(Collectors.toList())));
+
+        output.setOutcomes(new ArrayList<>(
+          output.getCenterOutputsOutcomes().stream().filter(op -> op.isActive()).collect(Collectors.toList())));
       }
 
       contacPersons = new ArrayList<>(
@@ -332,8 +393,12 @@ public class OutputsAction extends BaseAction {
           .filter(nu -> nu.isActive() && nu.getNextuserType() == null).collect(Collectors.toList()));
       }
 
+      this.getProgramOutcomes();
+
       String params[] = {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + ""};
       this.setBasePermission(this.getText(Permission.RESEARCH_PROGRAM_BASE_PERMISSION, params));
+
+      outputDb = outputService.getResearchOutputById(outputID);
 
       if (this.isHttpPost()) {
         if (contacPersons != null) {
@@ -347,6 +412,10 @@ public class OutputsAction extends BaseAction {
         if (output.getNextUsers() != null) {
           output.getNextUsers().clear();
         }
+
+        if (output.getOutcomes() != null) {
+          output.getOutcomes().clear();
+        }
       }
     }
 
@@ -355,24 +424,20 @@ public class OutputsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
-
-      CenterOutput outputDb = outputService.getResearchOutputById(outputID);
+    if (this.hasPermissionCenter("*")) {
 
       outputDb.setTitle(output.getTitle());
-
       outputDb.setShortName(output.getShortName());
 
-      outputDb = outputService.saveResearchOutput(outputDb);
-
       this.saveNextUser(outputDb);
+      this.saveOutcomes(outputDb);
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.RESEARCH_OUTPUT_NEXTUSER_RELATION);
-      output = outputService.getResearchOutputById(outputID);
-      output.setActiveSince(new Date());
-      output.setModifiedBy(this.getCurrentUser());
-      outputService.saveResearchOutput(output, this.getActionName(), relationsName);
+      outputDb.setActiveSince(new Date());
+      outputDb.setModifiedBy(this.getCurrentUser());
+      outputService.saveResearchOutput(outputDb, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
 
@@ -474,6 +539,44 @@ public class OutputsAction extends BaseAction {
 
   }
 
+  public void saveOutcomes(CenterOutput outputSave) {
+
+    if (outputSave.getCenterOutputsOutcomes() != null && outputSave.getCenterOutputsOutcomes().size() > 0) {
+
+      List<CenterOutputsOutcome> outputsOutcomesPrev = new ArrayList<>(
+        outputSave.getCenterOutputsOutcomes().stream().filter(nu -> nu.isActive()).collect(Collectors.toList()));
+
+      for (CenterOutputsOutcome outputOutcome : outputsOutcomesPrev) {
+        if (!output.getOutcomes().contains(outputOutcome)) {
+          centerOutputsOutcomeManager.deleteCenterOutputsOutcome(outputOutcome.getId());
+        }
+      }
+    }
+
+    if (output.getOutcomes() != null) {
+      for (CenterOutputsOutcome outputOutcome : output.getOutcomes()) {
+        if (outputOutcome.getId() == null) {
+          CenterOutputsOutcome outputOutcomeNew = new CenterOutputsOutcome();
+          outputOutcomeNew.setActive(true);
+          outputOutcomeNew.setActiveSince(new Date());
+          outputOutcomeNew.setCreatedBy(this.getCurrentUser());
+          outputOutcomeNew.setModifiedBy(this.getCurrentUser());
+          outputOutcomeNew.setModificationJustification("");
+
+          outputOutcomeNew
+            .setCenterOutcome(outcomeManager.getResearchOutcomeById(outputOutcome.getCenterOutcome().getId()));
+
+          outputOutcomeNew.setCenterOutput(outputSave);
+
+          centerOutputsOutcomeManager.saveCenterOutputsOutcome(outputOutcomeNew);
+
+        }
+
+      }
+    }
+
+  }
+
   public void setAreaID(long areaID) {
     this.areaID = areaID;
   }
@@ -501,6 +604,10 @@ public class OutputsAction extends BaseAction {
     this.outcomeID = outcomeID;
   }
 
+  public void setOutcomes(List<ResearchTopicsOutcomesDTO> outcomes) {
+    this.outcomes = outcomes;
+  }
+
   public void setOutput(CenterOutput output) {
     this.output = output;
   }
@@ -508,6 +615,7 @@ public class OutputsAction extends BaseAction {
   public void setOutputID(long outputID) {
     this.outputID = outputID;
   }
+
 
   public void setProgramID(long programID) {
     this.programID = programID;
@@ -547,7 +655,6 @@ public class OutputsAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {

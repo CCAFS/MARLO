@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.ocs.ws;
 
 import org.cgiar.ccafs.marlo.ocs.model.AgreementOCS;
+import org.cgiar.ccafs.marlo.ocs.model.ResourceInfoOCS;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.concurrent.ExecutorService;
@@ -66,6 +67,28 @@ public class MarloOcsClient {
     } else {
       System.out.println(agreementOCS.getDescription());
       return agreementOCS;
+    }
+  }
+
+  public ResourceInfoOCS getHRInformation(String agreementID) {
+    ResourceInfoOCS resourceInfoOCS = new ResourceInfoOCS();
+    ExecutorService executor = Executors.newFixedThreadPool(MYTHREADS);
+    // Run the services on parallel
+
+    Runnable worker = new WsThread(apConfig, 5, agreementID, resourceInfoOCS);
+    executor.execute(worker);
+
+    executor.shutdownNow();
+    // Wait until all threads are finish
+    while (!executor.isTerminated()) {
+      // LOG.info("Ws OCS waiting");
+    }
+
+    if (resourceInfoOCS.getId() == null) {
+      return null;
+    } else {
+      System.out.println(resourceInfoOCS.getFirstName());
+      return resourceInfoOCS;
     }
   }
 

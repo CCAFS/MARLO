@@ -182,10 +182,10 @@ public class ImpactSubmissionAction extends BaseAction {
       .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
     for (UserRole userRole : userRoles) {
       if (crpAdmins.isEmpty()) {
-        crpAdmins += userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += userRole.getUser().getEmail();
       } else {
-        crpAdmins += ", " + userRole.getUser().getFirstName() + " (" + userRole.getUser().getEmail() + ")";
+        crpAdmins += ", " + userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
         crpAdminsEmail += ", " + userRole.getUser().getEmail();
       }
     }
@@ -219,7 +219,7 @@ public class ImpactSubmissionAction extends BaseAction {
 
     StringBuilder message = new StringBuilder();
     String[] values = new String[4];
-    values[0] = this.getCurrentUser().getFirstName();
+    values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crpProgram.getAcronym();
     values[2] = crp;
     values[3] = crpProgram.getName();

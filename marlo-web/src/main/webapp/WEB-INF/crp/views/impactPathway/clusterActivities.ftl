@@ -56,7 +56,7 @@
           [#list programs as program]
             [#assign isActive = (program.id == crpProgramID)/]
             <li class="${isActive?string('active','')}">
-              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">Flagship ${program.acronym}</a>
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="global.flagship" /] ${program.acronym}</a>
             </li>
           [/#list]
         </ul>
@@ -134,7 +134,9 @@
       </div>
       [#-- Remove Button --]
       [#if editable && action.canBeDeleted((cluster.id)!-1,(cluster.class.name)!"" )]
-        <div class=" removeElement removeCluster" title="Remove Cluster"></div>
+        <div class="removeElement removeCluster" title="Remove [@s.text name="global.sClusterOfActivities"/]"></div>
+      [#elseif editable]
+        <div class="removeElement disable" title="[@s.text name="global.sClusterOfActivities"/] can not be deleted "></div>
       [/#if]
       
       [#if !isTemplate]
@@ -222,6 +224,8 @@
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
+    [#elseif editable]
+        <div class="removeElement disable" title="[@s.text name='global.CrpClusterKeyOutput' /] can not be deleted "></div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
@@ -279,6 +283,8 @@
       <div class="removeLink">
         <div id="removeActivity" class="removeOutcome sm removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
       </div>
+    [#elseif editable]
+      <div class="removeElement sm disable" title="[@s.text name='global.CrpProgramOutcome' /] can not be deleted "></div>
     [/#if]    
       [#-- Statement --]
       <div class="form-group">

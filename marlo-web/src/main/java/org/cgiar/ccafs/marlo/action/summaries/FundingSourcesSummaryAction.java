@@ -17,22 +17,22 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
+import org.cgiar.ccafs.marlo.data.model.FundingStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
-import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.ibm.icu.util.Calendar;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -86,7 +85,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private Boolean showPIEmail;
   private Boolean showIfpriDivision;
   private Boolean showSheet3;
-  private Set<Project> fundingSourceProjects = new HashSet<>();
+  private Set<Project> fundingSourceProjectsWithBudgets = new HashSet<>();
   private Set<FundingSource> currentCycleFundingSources = new HashSet<>();
   private Set<Project> allProjects = new HashSet<>();
   private long startTime;
@@ -94,7 +93,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   // Managers
   private CrpProgramManager programManager;
   private ProjectManager projectManager;
-  private DeliverableFundingSourceManager deliverableFundingSourceManager;
   // XLSX bytes
   private byte[] bytesXLSX;
 
@@ -103,30 +101,12 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
   @Inject
   public FundingSourcesSummaryAction(APConfig config, GlobalUnitManager crpManager, CrpProgramManager programManager,
-    ProjectManager projectManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
-    PhaseManager phaseManager) {
+    ProjectManager projectManager, PhaseManager phaseManager) {
     super(config, crpManager, phaseManager);
     this.programManager = programManager;
     this.projectManager = projectManager;
-    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
   }
 
-  private void addCurrentCycleFundingSources() {
-    for (FundingSource fundingSource : this.getLoggedCrp().getFundingSources().stream().filter(fs -> fs.isActive()
-      && fs.getFundingSourceInfo(this.getSelectedPhase()) != null && fs.getFundingSourceInfo().getBudgetType() != null)
-      .collect(Collectors.toList())) {
-      if (fundingSource.getFundingSourceInfo().getEndDate() != null) {
-        Date endDate = fundingSource.getFundingSourceInfo().getEndDate();
-        Date extentionDate = fundingSource.getFundingSourceInfo().getExtensionDate();
-        int endYear = this.getCalendarFromDate(endDate);
-        int extentionYear = this.getCalendarFromDate(extentionDate);
-        if (endYear >= this.getSelectedYear() || (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-          .parseInt(ProjectStatusEnum.Extended.getStatusId()) && extentionYear >= this.getSelectedYear())) {
-          currentCycleFundingSources.add((fundingSource));
-        }
-      }
-    }
-  }
 
   /**
    * Method to add i8n parameters to masterReport in Pentaho
@@ -168,6 +148,9 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
     // Funding Sources by Projects
     masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
+    masterReport.getParameterValues().put("i8nFundingSourcesProjectsNote",
+      this.getText("summaries.fundingSource.sheet2Description"));
+
 
     // Funding Sources no Projects
     masterReport.getParameterValues().put("i8nSheet3Title", this.getText("summaries.fundingSource.sheet3Title"));
@@ -176,6 +159,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
     return masterReport;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -220,21 +204,17 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       this.getAllSubreports(hm, masteritemBand);
 
       // get funding sources to the current cycle
-      this.addCurrentCycleFundingSources();
+      currentCycleFundingSources = this.getActiveFundingSourcesOnPhase();
 
 
       this.fillSubreport((SubReport) hm.get("funding_sources"), "funding_sources");
       this.fillSubreport((SubReport) hm.get("funding_sources_projects"), "funding_sources_projects");
 
       // Add all projects
-      if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
-        for (ProjectPhase projectPhase : this.getSelectedPhase().getProjectPhases().stream()
-          .filter(pf -> pf.isActive() && pf.getProject().isActive()).collect(Collectors.toList())) {
-          allProjects.add((projectPhase.getProject()));
-        }
-      }
+      allProjects = this.getActiveProjectsOnPhase();
+
       // delete projects with FS
-      for (Project project : fundingSourceProjects) {
+      for (Project project : fundingSourceProjectsWithBudgets) {
         allProjects.remove(project);
       }
       this.setShowSheet3(!allProjects.isEmpty() ? true : false);
@@ -259,7 +239,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     return SUCCESS;
 
   }
-
 
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -334,17 +313,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       }
     }
   }
-
-  private int getCalendarFromDate(Date date) {
-    try {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(date);
-      return cal.get(Calendar.YEAR);
-    } catch (NullPointerException e) {
-      return 0;
-    }
-  }
-
 
   @Override
   public int getContentLength() {
@@ -466,9 +434,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "flagships", "coas", "donor", "directDonor", "global_dimension", "regional_dimension", "specific_countries",
-        "phaseID"},
+        "phaseID", "deliverables"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Long.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, Long.class,
+        String.class},
       0);
 
     for (FundingSource fundingSource : currentCycleFundingSources) {
@@ -498,8 +467,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
           && pb.getYear() == this.getSelectedYear() && pb.getProject() != null && pb.getProject().isActive()
           && pb.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().getStatus()
-            .intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().isActive()
+          && (pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())))
         .collect(Collectors.toList())) {
         String leadPartner = "";
         String projectId = "";
@@ -509,8 +481,33 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
         projectId = projectBudget.getProject().getId().toString();
         // add to list of projects
-        fundingSourceProjects.add(projectBudget.getProject());
+        fundingSourceProjectsWithBudgets.add(projectBudget.getProject());
         if (projectId != null && !projectId.isEmpty()) {
+          Boolean isAdministrative = true;
+          int countAdministrative = 0;
+          if (countAdministrative == 0) {
+            if (projectBudget.getProject().getProjecInfoPhase(this.getSelectedPhase()).getAdministrative() != null) {
+              isAdministrative =
+                projectBudget.getProject().getProjecInfoPhase(this.getSelectedPhase()).getAdministrative();
+            } else {
+              isAdministrative = false;
+            }
+            if (isAdministrative) {
+              countAdministrative++;
+              if (flagships == null || flagships.isEmpty()) {
+                flagships = "Cross cutting";
+              } else {
+                flagships += "\n Cross cutting";
+              }
+              if (coas == null || coas.isEmpty()) {
+                coas = "Cross cutting";
+              } else {
+                coas += "\n Cross cutting";
+              }
+            }
+          }
+
+
           // get Flagships related to the project sorted by acronym
           for (ProjectFocus projectFocuses : projectBudget.getProject().getProjectFocuses().stream()
             .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
@@ -529,8 +526,8 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           // get CoAs related to the project sorted by acronym
           if (projectBudget.getProject().getProjectClusterActivities() != null) {
             for (ProjectClusterActivity projectClusterActivity : projectBudget.getProject()
-              .getProjectClusterActivities().stream()
-              .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+              .getProjectClusterActivities().stream().filter(c -> c.isActive() && c.getPhase() != null
+                && c.getPhase().equals(this.getSelectedPhase()) && c.getCrpClusterOfActivity().isActive())
               .collect(Collectors.toList())) {
               if (coas == null || coas.isEmpty()) {
                 coas = projectClusterActivity.getCrpClusterOfActivity().getIdentifier();
@@ -599,10 +596,33 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           specificCountries = null;
         }
 
-        model.addRow(new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships,
-          coas, originalDonor, directDonor, globalDimension, regionalDimension, specificCountries, phaseID});
+        String deliverables = "";
+        if (!projectBudget.getProject().getDeliverables().isEmpty()) {
+          for (Deliverable deliverable : projectBudget.getProject().getDeliverables().stream()
+            .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
+              && ((d.getDeliverableInfo().getStatus() == null
+                && d.getDeliverableInfo().getYear() == this.getSelectedYear()) && d.getDeliverableInfo().isActive()
+                || (d.getDeliverableInfo().getStatus() != null
+                  && d.getDeliverableInfo().getStatus().intValue() == Integer
+                    .parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  && d.getDeliverableInfo().getNewExpectedYear() != null
+                  && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+                || (d.getDeliverableInfo().getStatus() != null
+                  && d.getDeliverableInfo().getYear() == this.getSelectedYear() && d.getDeliverableInfo().getStatus()
+                    .intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
+            .collect(Collectors.toList())) {
+            if (deliverables.isEmpty()) {
+              deliverables += "D" + deliverable.getId();
+            } else {
+              deliverables += ", D" + deliverable.getId();
+            }
+          }
+        }
+        model.addRow(
+          new Object[] {fsTitle, fsId, financeCode, leadPartner, fsWindow, projectId, totalBudget, flagships, coas,
+            originalDonor, directDonor, globalDimension, regionalDimension, specificCountries, phaseID, deliverables});
       }
-
     }
     return model;
   }
@@ -641,7 +661,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
       String extentionDate = "";
 
       if (fundingSource.getFundingSourceInfo().getStatus().intValue() == Integer
-        .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+        .parseInt(FundingStatusEnum.Extended.getStatusId())) {
         if (fundingSource.getFundingSourceInfo().getExtensionDate() != null) {
           extentionDate = formatter.format(fundingSource.getFundingSourceInfo().getExtensionDate());
         } else {
@@ -659,7 +679,6 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         contract = this.getFundingSourceFileURL() + fundingSource.getFundingSourceInfo().getFile().getFileName();
         contractName = fundingSource.getFundingSourceInfo().getFile().getFileName();
       }
-
       String status = "";
       status = fundingSource.getFundingSourceInfo().getStatusName();
 
@@ -707,7 +726,11 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           }
         }
       }
-      String fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
+      String fsWindow = "";
+      if (fundingSource.getFundingSourceInfo().getBudgetType() != null) {
+        fsWindow = fundingSource.getFundingSourceInfo().getBudgetType().getName();
+      }
+
       if (hasW1W2Co && fundingSource.getFundingSourceInfo().getW1w2() != null
         && fundingSource.getFundingSourceInfo().getW1w2()) {
         fsWindow = "W1/W2 Co-Financing";
@@ -733,6 +756,21 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
 
       for (String projectString : s.stream().collect(Collectors.toList())) {
         Project projectById = this.projectManager.getProjectById(Long.parseLong(projectString));
+        Boolean isAdministrative = true;
+        int countAdministrative = 0;
+        if (countAdministrative == 0) {
+          if (projectById.getProjecInfoPhase(this.getSelectedPhase()).getAdministrative() != null) {
+            isAdministrative = projectById.getProjecInfoPhase(this.getSelectedPhase()).getAdministrative();
+          } else {
+            isAdministrative = false;
+          }
+          if (isAdministrative) {
+            countAdministrative++;
+            flagshipsList.add("Cross cutting");
+            coasList.add("Cross cutting");
+          }
+        }
+
 
         // get Flagships related to the project sorted by acronym
         for (ProjectFocus projectFocuses : projectById.getProjectFocuses().stream()
@@ -794,18 +832,33 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
         .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getProject().isActive()
           && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
           && pb.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null && pb.getPhase() != null
-          && pb.getProject().getProjectInfo().getStatus() != null && pb.getProject().getProjectInfo().getStatus() == 2)
+          && pb.getProject().getProjectInfo().getStatus() != null
+          && (pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())))
         .collect(Collectors.toList())) {
         totalBudgetProjects += projectBudget.getAmount();
       }
 
       // get deliverable funding sources
       String deliverables = "";
-      for (DeliverableFundingSource deliverableFundingSource : this.deliverableFundingSourceManager.findAll().stream()
-        .filter(df -> df.getFundingSource().getId().longValue() == fundingSource.getId().longValue() && df.isActive()
-          && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase()) && df.getDeliverable() != null
-          && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
-          && df.getDeliverable().getProject().isActive())
+      for (DeliverableFundingSource deliverableFundingSource : fundingSource.getDeliverableFundingSources().stream()
+        .filter(df -> df.isActive() && df.getPhase() != null && df.getPhase().equals(this.getSelectedPhase())
+          && df.getDeliverable() != null && df.getDeliverable().isActive() && df.getDeliverable().getProject() != null
+          && df.getDeliverable().getProject().isActive()
+          && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+          && ((df.getDeliverable().getDeliverableInfo().getStatus() == null
+            && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
+            || (df.getDeliverable().getDeliverableInfo().getStatus() != null
+              && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Extended.getStatusId())
+              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
+              && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())
+            || (df.getDeliverable().getDeliverableInfo().getStatus() != null
+              && df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear()
+              && df.getDeliverable().getDeliverableInfo().getStatus().intValue() == Integer
+                .parseInt(ProjectStatusEnum.Ongoing.getStatusId()))))
         .sorted((df1, df2) -> Long.compare(df1.getDeliverable().getId(), df2.getDeliverable().getId()))
         .collect(Collectors.toList())) {
         if (deliverables.length() == 0) {
@@ -892,9 +945,10 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail"},
-        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class});
-    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail});
+      new TypedTableModel(new String[] {"center", "date", "managingPPAField", "year", "showPIEmail", "cycle"},
+        new Class[] {String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, "Managing / PPA Partner", this.getSelectedYear(), showPIEmail,
+      this.getSelectedCycle()});
     return model;
   }
 

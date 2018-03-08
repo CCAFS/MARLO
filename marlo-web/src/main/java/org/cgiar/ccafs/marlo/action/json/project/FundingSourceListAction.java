@@ -113,16 +113,16 @@ public class FundingSourceListAction extends BaseAction {
       .filter(c -> c.getFundingSourceInfo(this.getActualPhase()).getStatus() != null
         && (c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
           .parseInt(FundingStatusEnum.Ongoing.getStatusId())
-        || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(FundingStatusEnum.Pipeline.getStatusId())
-        || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
-          .parseInt(FundingStatusEnum.Informally.getStatusId())
+          || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Pipeline.getStatusId())
+          || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
+            .parseInt(FundingStatusEnum.Informally.getStatusId())
 
           || c.getFundingSourceInfo(this.getActualPhase()).getStatus() == Integer
             .parseInt(FundingStatusEnum.Extended.getStatusId()))
 
 
-    ).collect(Collectors.toList()));
+      ).collect(Collectors.toList()));
     fundingSources.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
     for (FundingSource fundingSource : fundingSources) {
@@ -132,6 +132,7 @@ public class FundingSourceListAction extends BaseAction {
         source.put("name", fundingSource.getFundingSourceInfo().getTitle());
         source.put("type", fundingSource.getFundingSourceInfo().getBudgetType().getName());
         source.put("typeId", fundingSource.getFundingSourceInfo().getBudgetType().getId());
+        source.put("financeCode", fundingSource.getFundingSourceInfo().getFinanceCode());
 
         if ((fundingSource.getFundingSourceInfo().getW1w2() != null)
           && (this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING))) {

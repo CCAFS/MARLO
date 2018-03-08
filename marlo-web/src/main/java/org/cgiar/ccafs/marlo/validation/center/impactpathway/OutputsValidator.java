@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -44,7 +43,6 @@ public class OutputsValidator extends BaseValidator {
   private GlobalUnitManager centerService;
 
 
-  @Inject
   public OutputsValidator(GlobalUnitManager centerService) {
     this.centerService = centerService;
   }
@@ -133,6 +131,13 @@ public class OutputsValidator extends BaseValidator {
       baseAction.getInvalidFields().put("input-output.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (output.getOutcomes() != null) {
+      if (output.getOutcomes().size() == 0) {
+        baseAction.addMessage(baseAction.getText("output.action.outcomes"));
+        baseAction.getInvalidFields().put("list-output.outcomeList",
+          baseAction.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outcomes"}));
+      }
+    }
 
     if (output.getNextUsers() != null) {
       if (output.getNextUsers().size() == 0) {

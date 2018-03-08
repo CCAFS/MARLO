@@ -167,6 +167,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private CenterProject project;
   private String principalInvestigator;
   private String transaction;
+  private CenterProject projectDB;
 
   @Inject
   public ProjectDescriptionAction(APConfig config, GlobalUnitManager centerService,
@@ -287,8 +288,11 @@ public class ProjectDescriptionAction extends BaseAction {
         OutcomeOutputs outcomeOutputs = new OutcomeOutputs();
         outcomeOutputs.setOutcome(researchOutcome);
         outcomeOutputs.setOutputs(new ArrayList<>());
+
         List<CenterOutput> researchOutputs = new ArrayList<>(
-          researchOutcome.getResearchOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+          selectedProgram.getCenterOutputs().stream().filter(ro -> ro.isActive()).collect(Collectors.toList()));
+
+
         for (CenterOutput researchOutput : researchOutputs) {
           outcomeOutputs.getOutputs().add(researchOutput);
         }
@@ -594,6 +598,8 @@ public class ProjectDescriptionAction extends BaseAction {
       {loggedCenter.getAcronym(), selectedResearchArea.getId() + "", selectedProgram.getId() + "", projectID + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
+    projectDB = projectService.getCenterProjectById(projectID);
+
     if (this.isHttpPost()) {
       if (outputs != null) {
         outputs.clear();
@@ -622,9 +628,9 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getProjectCrosscutingTheme().setImpactAssessment(null);
       }
 
-      if (project.getProject() != null) {
-        project.setProject(null);
-      }
+      // if (project.getProject() != null) {
+      // project.setProject(null);
+      // }
 
       if (project.getFundingSources() != null) {
         project.getFundingSources().clear();
@@ -647,11 +653,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (this.hasPermissionCenter("*")) {
 
       Phase phase = this.getCurrentCenterPhase();
-
-      CenterProject projectDB = projectService.getCenterProjectById(projectID);
 
       // Get The Crp/Center/Platform where the project was created
       GlobalUnitProject globalUnitProject = globalUnitProjectManager.findByProjectId(projectDB.getId());

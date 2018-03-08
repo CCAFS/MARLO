@@ -697,7 +697,7 @@ function settingDate(start,end,extensionDate) {
         $(this).datepicker('setDate', selectedDate);
         $(this).next().html(getDateLabel(this));
         $(this).datepicker("hide");
-        if(selectedDate != "") {
+        if((selectedDate != "") && editable) {
           $(to).datepicker("option", "maxDate", selectedDate);
         }
         refreshYears();
@@ -746,8 +746,8 @@ function settingDate(start,end,extensionDate) {
 
   // Activate tab default
   if(!$('.budgetByYears .nav-tabs li.active').exists()) {
-    $('.budgetByYears .nav-tabs li').last().addClass('active');
-    $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+    $('.budgetByYears .nav-tabs li').first().addClass('active');
+    $('.budgetByYears .tab-content .tab-pane').first().addClass('active');
   }
 }
 
