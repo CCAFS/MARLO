@@ -56,8 +56,16 @@
             [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(project.fundingSourceInfo.w1w2?string('<br /> <span class="programTag">Co-Financing</span> ',''))!}[/#if]
           </td>
           [#-- Finance Code --]
-          <td>
-            [#if project.fundingSourceInfo.financeCode?has_content]${project.fundingSourceInfo.financeCode}[#else] <p class="text-muted">Not defined</p>  [/#if]
+          <td style="position:relative">
+            [#if project.fundingSourceInfo.financeCode?has_content]
+              [#assign isSynced = (project.fundingSourceInfo.synced)!false ]
+              [#-- Icon --]
+              [#if isSynced]<span title="Synced on ${(project.fundingSourceInfo.syncedDate)!''}" class="glyphicon glyphicon-retweet" style="color: #2aa4c9;"></span>[/#if]
+              [#-- Code --]
+              <span [#if isSynced]style="color: #2aa4c9;"[/#if]>${project.fundingSourceInfo.financeCode}</span>
+            [#else]
+              <p class="text-muted">Not defined</p>
+            [/#if]
           </td>
           [#-- Project Status 
           <td>
