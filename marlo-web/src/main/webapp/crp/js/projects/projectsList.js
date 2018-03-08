@@ -29,6 +29,14 @@ $(document).ready(function() {
                 0
               ]
           }
+      ],
+      dom: 'Bfrtip',
+      buttons: [
+        {
+            text: 'Copy',
+            extend: 'copy',
+            title: currentCrpSession + '_Projects_list_Data_export_' + getDateString()
+        }
       ]
   });
 

@@ -22,8 +22,9 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
@@ -79,9 +80,7 @@ public class CrpMilestoneMySQLDAO extends AbstractMarloDAO<CrpMilestone, Long> i
     createQuery.setParameter("crpProgramOutcomeID", crpProgramOutcome.getId());
     Object findSingleResult = super.findSingleResult(CrpMilestone.class, createQuery);
     CrpMilestone crpMilestone = (CrpMilestone) findSingleResult;
-    if (crpMilestone != null) {
-      crpMilestone = super.refreshEntity(crpMilestone);
-    }
+
 
     // projectPartner.getProjectPartnerLocations().size();
 

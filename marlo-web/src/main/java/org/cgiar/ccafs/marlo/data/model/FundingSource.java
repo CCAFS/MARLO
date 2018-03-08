@@ -118,8 +118,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
     try {
-      System.out.println("<b> (FS" + this.id + ") " + this.getFundingSourceInfo().getBudgetType().getName() + "</b> - "
-        + this.getFundingSourceInfo().getTitle());
+
       return "<b> (FS" + this.id + ") " + this.getFundingSourceInfo().getBudgetType().getName() + "</b> - "
         + this.getFundingSourceInfo().getTitle();
     } catch (Exception e) {
@@ -148,14 +147,21 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Date getEndDatePhase() {
+    if (this.getFundingSourceInfo() != null) {
+      return this.getFundingSourceInfo().getEndDate();
+    }
+    return null;
+  }
+
   public List<FundingSourceLocation> getFundingCountry() {
     return fundingCountry;
   }
 
+
   public List<FundingSourceLocation> getFundingRegions() {
     return fundingRegions;
   }
-
 
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;

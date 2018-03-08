@@ -784,6 +784,7 @@ img.icon {
 
 .removeElement.disable {
   opacity:0.4;
+  cursor: not-allowed;
 }
 
 .removeElement.sm {
@@ -799,6 +800,11 @@ img.icon {
   top: 0;
   right: 0;
   cursor: pointer;
+}
+
+.removeIcon.disable{
+  opacity:0.4;
+  cursor: not-allowed;
 }
 
 .removeLink img, .removeLink a {
@@ -1808,7 +1814,7 @@ a.currentReportingSection li, a.currentSection li {
 #secondaryMenu ul li ul li {
   margin: 2px 0 5px 0;
   list-style: none;
-  font-size: 0.95em;
+  font-size: 0.9em;
   border: 1px solid #e8e7e7;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
   background: #fff;
@@ -1846,8 +1852,7 @@ a.currentReportingSection li, a.currentSection li {
   display: block;
   text-decoration: none;
   color: #5E5E5E;
-  padding: 5px 0 9px 28px;
-  padding: 4px 9px;
+  padding: 5px 19px 5px 10px !important;
   /* border-left: 5px solid; */
 }
 
@@ -4272,6 +4277,10 @@ li.fileUploaded span {
   background: url('../../global/images/sprite-icons-activities.png') 0 -150px;
 }
 
+.icon-neutral{
+  background: url('../../global/images/sprite-icons-activities.png') 0 -88px;
+}
+
 /*** Project next users  ***/
 
 #nextUsersBlock .nextUser {
@@ -5298,9 +5307,13 @@ table.evaluationRank thead th{
 }
 
 .radio-label {
-    overflow: hidden;
-    cursor: pointer;
-    /* margin: 0 10px !important; */
+  overflow: hidden;
+  cursor: pointer;
+  /* margin: 0 10px !important; */
+}
+
+.radio-label.fieldError {
+  color:red;
 }
 
 .radio-label .onoffswitch-radio:checked + label{ 
@@ -6514,7 +6527,11 @@ p.dateLabel.fieldError {
 .elementRelations  {
   margin: 7px 0 0 15px;
 }
-/* END Radio Flat*/
+
+.elementRelations.ProjectBudget  {
+  padding: 0 7px 15px 0;
+}
+
 
 /* Select2 show and hide animation in dropdowns*/
 .select2-results__option.loading-results,
@@ -6543,4 +6560,20 @@ p.dateLabel.fieldError {
     transform: scale(1.0);
     opacity: 0;
   }
+}
+
+/* Datatables button*/
+
+a.dt-button {
+    padding: 0px 10px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 3px;
+    background: #fff;
+}
+
+i.helpLabel {
+  font-weight: normal;
+  font-size: 0.9em;
+  opacity: 0.7;
 }

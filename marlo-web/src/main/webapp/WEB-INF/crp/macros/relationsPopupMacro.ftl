@@ -8,7 +8,7 @@
   
   [#if className == "ProjectPartner"] 
     [#local deliverables = deliverablesPartner /]
-  [#elseif className == "ProjectOutcome"]
+  [#elseif (className == "ProjectOutcome") || (className == "ProjectBudget")]
     [#local deliverables = deliverablesProject /]
   [#else]
     [#local deliverables = ((deliverablesImpact)!deliverablesPartner)! /]

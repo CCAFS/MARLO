@@ -11,7 +11,7 @@
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
-[#assign hideJustification = false /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -468,7 +468,10 @@
       [#if element.fundingSources?has_content]
         [#list element.fundingSources as fs]
           [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fs.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
-          <span style="font-size:0.7em;">${fs.composedName}</span><br />
+          <a target="_blank" href="[@s.url namespace="/fundingSources" action="${(crpSession)!}/fundingSource"] [@s.param name='fundingSourceID']${fs.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <span style="font-size:0.7em;">${fs.composedName}</span>
+          </a>
+          <br />
         [/#list]
       [/#if]
     </div>

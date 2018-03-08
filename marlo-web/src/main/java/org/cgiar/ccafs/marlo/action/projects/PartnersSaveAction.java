@@ -317,10 +317,10 @@ public class PartnersSaveAction extends BaseAction {
         .getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase()).getTitle());
     }
 
-    partnerRequestManager.savePartnerRequest(partnerRequest);
+    partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
     partnerRequestModifications.setPartnerRequest(partnerRequest);
     partnerRequestModifications.setModified(false);
-    partnerRequestManager.savePartnerRequest(partnerRequestModifications);
+    partnerRequestModifications = partnerRequestManager.savePartnerRequest(partnerRequestModifications);
 
     message.append(".</br>");
     message.append("</br>");

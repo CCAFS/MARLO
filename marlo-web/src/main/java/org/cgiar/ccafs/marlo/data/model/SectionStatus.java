@@ -49,14 +49,13 @@ public class SectionStatus implements java.io.Serializable {
 
   private Deliverable deliverable;
 
-
   private ProjectOutcome projectOutcome;
+
 
   private CaseStudy caseStudy;
 
 
   private ProjectHighlight projectHighlight;
-
 
   private IpProgram ipProgram;
 
@@ -64,9 +63,11 @@ public class SectionStatus implements java.io.Serializable {
   private IpLiaisonInstitution ipLiaisonInstitution;
 
 
+  private PowbSynthesis powbSynthesis;
+
+
   public SectionStatus() {
   }
-
 
   public SectionStatus(CrpProgram crpProgram, String sectionName, String missingFields, String cycle, Integer year) {
     this.crpProgram = crpProgram;
@@ -76,9 +77,11 @@ public class SectionStatus implements java.io.Serializable {
     this.year = year;
   }
 
+
   public SectionStatus(String sectionName) {
     this.sectionName = sectionName;
   }
+
 
   public CaseStudy getCaseStudy() {
     return caseStudy;
@@ -116,6 +119,10 @@ public class SectionStatus implements java.io.Serializable {
     return this.missingFields;
   }
 
+  public PowbSynthesis getPowbSynthesis() {
+    return powbSynthesis;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -132,7 +139,6 @@ public class SectionStatus implements java.io.Serializable {
     return this.sectionName;
   }
 
-
   public Integer getYear() {
     return this.year;
   }
@@ -142,14 +148,15 @@ public class SectionStatus implements java.io.Serializable {
     this.caseStudy = caseStudy;
   }
 
+
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
 
-
   public void setCycle(String cycle) {
     this.cycle = cycle;
   }
+
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -158,7 +165,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
   }
-
 
   public void setId(Long id) {
     this.id = id;
@@ -174,8 +180,13 @@ public class SectionStatus implements java.io.Serializable {
     this.ipProgram = ipProgram;
   }
 
+
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
+  }
+
+  public void setPowbSynthesis(PowbSynthesis powbSynthesis) {
+    this.powbSynthesis = powbSynthesis;
   }
 
 

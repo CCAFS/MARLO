@@ -50,7 +50,33 @@ public class Permission {
   public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
   public static final String SYNTHESIS_BY_MOG_BASE_PERMISSION = "crp:{0}:synthesisProgram:{1}";
   public static final String SYNTHESIS_BY_MOG_PERMISSION = "crp:{0}:synthesisProgram:{1}:*";
+  public static final String POWB_SYNTHESIS_CAN_VIEW = "crp:{0}:powbSynthesis:manage:canAcess";
+  public static final String POWB_SYNTHESIS_RPL_EFFORT = "crp:{0}:powbSynthesis:{1}:collaboration{2}:effort";
+
+
   public static final String PROJECT_BUDGET_FLAGSHIP_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByFlagship";
+  public static final String POWB_SYNTHESIS_TOC_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:tocAdjustments";
+  public static final String POWB_SYNTHESIS_FLAGSHIPPLANS_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:flagshipPlans";
+  public static final String POWB_SYNTHESIS_PERMISSION = "crp:{0}:powbSynthesis:{1}:canEdit";
+  public static final String POWB_SYNTHESIS_EVIDENCES_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:evidences";
+  public static final String POWB_SYNTHESIS_EXPECTED_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:expectedProgress";
+  public static final String POWB_SYNTHESIS_MEL_BASE_PERMISSION =
+    "crp:{0}:powbSynthesis:{1}:monitoringEvaluationLearning";
+  public static final String POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:collaboration";
+  public static final String POWB_SYNTHESIS_CROSS_CUTING_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:crossCuting";
+
+  public static final String POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION =
+    "crp:{0}:powbSynthesis:{1}:collaboration:canEdit";
+
+
+  public static final String POWB_SYNTHESIS_CRPSTAFFING_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:crpStaffing";
+  public static final String POWB_SYNTHESIS_FINANCIAL_PLAN_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:financialPlan";
+  public static final String POWB_SYNTHESIS_MANAGEMENT_RISK_BASE_PERMISSION =
+    "crp:{0}:powbSynthesis:{1}:managementRisk";
+  public static final String POWB_SYNTHESIS_MANAGEMENT_GOVERNANCE_BASE_PERMISSION =
+    "crp:{0}:powbSynthesis:{1}:managementGovernance";
+  public static final String POWB_SYNTHESIS_MANAGE_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage";
+  public static final String POWB_SYNTHESIS_SUBMISSION_PERMISSION = "crp:{0}:powbSynthesis:{1}:manage:canSubmmit";
 
   public static final String CRP_INDICATORS_BASE_PERMISSION = "crp:{0}:crpIndicators:{1}";
   public static final String CRP_INDICATORS_PERMISSION = "crp:{0}:crpIndicators:{1}:*";
@@ -105,6 +131,8 @@ public class Permission {
 
 
   public static final String PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:w3";
+  public static final String PROJECT_GENDER_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:gender";
+
   public static final String PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION =
     "crp:{0}:project:{1}:fundingSource:{2}:w3";
 

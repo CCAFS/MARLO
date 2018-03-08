@@ -48,7 +48,7 @@ public class OutcomeValidator extends BaseValidator
   }
 
 
-  private Path getAutoSaveFilePath(CrpProgram program) {
+  private Path getAutoSaveFilePath(CrpProgram program, BaseAction action) {
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = SectionStatusEnum.OUTCOMES.getStatus().replace("/", "_");
     String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
@@ -59,7 +59,7 @@ public class OutcomeValidator extends BaseValidator
   public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
-      Path path = this.getAutoSaveFilePath(program);
+      Path path = this.getAutoSaveFilePath(program, action);
 
       if (path.toFile().exists()) {
         action.addMissingField("program.outcomes.draft");

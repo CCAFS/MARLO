@@ -21,8 +21,9 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hibernate.SessionFactory;
 
 @Named
@@ -96,7 +97,7 @@ public class LiaisonInstitutionMySQLDAO extends AbstractMarloDAO<LiaisonInstitut
   public LiaisonInstitution save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       liaisonInstitution.setActive(true);
-      super.saveEntity(liaisonInstitution);
+      liaisonInstitution = super.saveEntity(liaisonInstitution);
     } else {
       liaisonInstitution = super.update(liaisonInstitution);
     }

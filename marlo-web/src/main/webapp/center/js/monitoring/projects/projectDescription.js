@@ -390,8 +390,6 @@ function addOutput() {
           var $item = $("#output-template").clone(true).removeAttr("id");
           $item.find("span.index").text("O" + m.outputInfo.id);
           $item.find("div.oStatement").text(option.text());
-          $item.find("div.rTopic").text(m.outputInfo.topicName);
-          $item.find("div.outcome").text(m.outputInfo.outcomeName);
           $item.find(".outputId").val(m.outputInfo.id);
           $list.append($item);
           $item.show('slow');

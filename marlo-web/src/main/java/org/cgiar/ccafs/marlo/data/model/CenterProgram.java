@@ -72,12 +72,12 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
 
   private List<CenterLeader> leaders;
 
+
   @Expose
   private String color;
 
   @Expose
   private String impactColor;
-
 
   @Expose
   private boolean active;
@@ -92,8 +92,11 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private String modificationJustification;
+
+  private Set<CenterOutput> centerOutputs = new HashSet<CenterOutput>(0);
 
   public CenterProgram() {
   }
@@ -158,6 +161,10 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public Set<CenterOutput> getCenterOutputs() {
+    return centerOutputs;
+  }
+
   public String getColor() {
     return color;
   }
@@ -215,10 +222,10 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
     return programType;
   }
 
-
   public Set<CenterProject> getProjects() {
     return projects;
   }
+
 
   /**
    * @return the researchArea
@@ -269,6 +276,10 @@ public class CenterProgram implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCenterOutputs(Set<CenterOutput> centerOutputs) {
+    this.centerOutputs = centerOutputs;
   }
 
   public void setColor(String color) {

@@ -202,8 +202,7 @@ public class LoginAction extends BaseAction {
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
       if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
-        loggedUser.setLastLogin(new Date());
-        userManager.saveLastLogin(loggedUser);
+
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
         // put the crp parameters in the session
@@ -212,6 +211,8 @@ public class LoginAction extends BaseAction {
             this.getSession().put(parameter.getParameter().getKey(), parameter.getValue());
           }
         }
+
+        this.getSession().put(APConstants.CRP_VISIBLE_TOP_GULIST, new Boolean(this.isVisibleTopGUList()));
         this.getSession().put("color", this.randomColor());
         // Validate if the user already logged in other session.
         /*
@@ -242,6 +243,8 @@ public class LoginAction extends BaseAction {
     }
 
     LOG.info("User " + user.getEmail() + " logged in successfully.");
+    loggedUser.setLastLogin(new Date());
+    userManager.saveLastLogin(loggedUser);
     /*
      * Save the user url with trying to enter the system to redirect after
      * loged.

@@ -173,7 +173,6 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">${centerSession}/outputsList</param>
 				<param name="programID">${programID}</param>
-				<param name="outcomeID">${outcomeID}</param>
 			</result>
 
 		</action>

@@ -23,12 +23,14 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -60,6 +62,7 @@ public class MilestonesbyYearAction extends BaseAction {
     CrpProgramOutcome crpProgramOutcome = crpProgramManager.getCrpProgramOutcomeById(crpProgamID);
     List<CrpMilestone> milestones = crpProgramOutcome.getCrpMilestones().stream()
       .filter(c -> c.isActive() & c.getYear() >= year).collect(Collectors.toList());
+    milestones.sort(Comparator.comparing(CrpMilestone::getYear));
 
     for (CrpMilestone crpMilestoneInfo : milestones) {
       Map<String, Object> crpMilestone = new HashMap<>();

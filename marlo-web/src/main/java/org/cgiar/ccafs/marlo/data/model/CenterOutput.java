@@ -46,17 +46,16 @@ public class CenterOutput implements Serializable, IAuditLog {
   private Date dateAdded;
 
   @Expose
-  private CenterOutcome researchOutcome;
-
-  @Expose
   private Date activeSince;
 
 
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private User modifiedBy;
@@ -66,15 +65,24 @@ public class CenterOutput implements Serializable, IAuditLog {
 
 
   @Expose
+  private CenterProgram centerProgram;
+
+  @Expose
   private String modificationJustification;
 
   private Set<CenterSectionStatus> sectionStatuses = new HashSet<CenterSectionStatus>(0);
+
 
   private Set<CenterOutputsNextUser> researchOutputsNextUsers = new HashSet<CenterOutputsNextUser>(0);
 
   private Set<CenterProjectOutput> projectOutputs = new HashSet<CenterProjectOutput>(0);
 
+
   private List<CenterOutputsNextUser> nextUsers;
+
+  private Set<CenterOutputsOutcome> centerOutputsOutcomes = new HashSet<CenterOutputsOutcome>(0);
+
+  private List<CenterOutputsOutcome> outcomes;
 
   public CenterOutput() {
     super();
@@ -86,11 +94,10 @@ public class CenterOutput implements Serializable, IAuditLog {
    * @param dateAdded
    * @param researchOutcome
    */
-  public CenterOutput(String title, Date dateAdded, CenterOutcome researchOutcome, Date activeSince) {
+  public CenterOutput(String title, Date dateAdded, Date activeSince) {
     super();
     this.title = title;
     this.dateAdded = dateAdded;
-    this.researchOutcome = researchOutcome;
     this.activeSince = activeSince;
   }
 
@@ -120,6 +127,13 @@ public class CenterOutput implements Serializable, IAuditLog {
     return activeSince;
   }
 
+  public Set<CenterOutputsOutcome> getCenterOutputsOutcomes() {
+    return centerOutputsOutcomes;
+  }
+
+  public CenterProgram getCenterProgram() {
+    return centerProgram;
+  }
 
   public String getComposedName() {
     return "O" + this.id + "- " + (this.title != null ? this.title : "title not defined");
@@ -128,7 +142,6 @@ public class CenterOutput implements Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   /**
    * @return the dateAdded
@@ -146,7 +159,6 @@ public class CenterOutput implements Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -154,11 +166,11 @@ public class CenterOutput implements Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -169,21 +181,21 @@ public class CenterOutput implements Serializable, IAuditLog {
     return nextUsers;
   }
 
+
+  public List<CenterOutputsOutcome> getOutcomes() {
+    return outcomes;
+  }
+
+
   public Set<CenterProjectOutput> getProjectOutputs() {
     return projectOutputs;
   }
 
 
-  /**
-   * @return the researchOutcome
-   */
-  public CenterOutcome getResearchOutcome() {
-    return researchOutcome;
-  }
-
   public Set<CenterOutputsNextUser> getResearchOutputsNextUsers() {
     return researchOutputsNextUsers;
   }
+
 
   public Set<CenterSectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -197,6 +209,7 @@ public class CenterOutput implements Serializable, IAuditLog {
     return title;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -204,7 +217,6 @@ public class CenterOutput implements Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -215,11 +227,18 @@ public class CenterOutput implements Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
+  public void setCenterOutputsOutcomes(Set<CenterOutputsOutcome> centerOutputsOutcomes) {
+    this.centerOutputsOutcomes = centerOutputsOutcomes;
+  }
+
+
+  public void setCenterProgram(CenterProgram centerProgram) {
+    this.centerProgram = centerProgram;
+  }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -246,25 +265,23 @@ public class CenterOutput implements Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setNextUsers(List<CenterOutputsNextUser> nextUsers) {
     this.nextUsers = nextUsers;
   }
 
-
-  public void setProjectOutputs(Set<CenterProjectOutput> projectOutputs) {
-    this.projectOutputs = projectOutputs;
+  public void setOutcomes(List<CenterOutputsOutcome> outcomes) {
+    this.outcomes = outcomes;
   }
 
 
-  /**
-   * @param researchOutcome the researchOutcome to set
-   */
-  public void setResearchOutcome(CenterOutcome researchOutcome) {
-    this.researchOutcome = researchOutcome;
+  public void setProjectOutputs(Set<CenterProjectOutput> projectOutputs) {
+    this.projectOutputs = projectOutputs;
   }
 
 

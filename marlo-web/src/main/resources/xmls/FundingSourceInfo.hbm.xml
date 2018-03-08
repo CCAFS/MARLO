@@ -35,13 +35,13 @@
 			<column name="file" not-null="false" />
 		</many-to-one>
 		<many-to-one name="originalDonor" not-null="false"
-      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-      <column name="donor" />
-    </many-to-one>
-    <many-to-one name="directDonor"
-      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-      <column name="direct_donor" />
-    </many-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="donor" />
+		</many-to-one>
+		<many-to-one name="directDonor"
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="direct_donor" />
+		</many-to-one>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>
@@ -76,20 +76,23 @@
 			<column name="funding_source_id" not-null="true" />
 		</many-to-one>
 		<property name="synced" type="java.lang.Boolean">
-      <column name="sync"  default="0"/>
-    </property>
-    <property name="syncedDate" type="date">
-      <column name="syn_date" length="10" />
-    </property>
-    <property name="extensionDate" type="date">
-      <column name="extended_date" length="10" />
-    </property>
-    <property name="hasFileResearch" type="java.lang.Boolean">
-      <column name="has_file_research" />
-    </property>
-    <many-to-one name="fileResearch"
-      class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-      <column name="file_research"/>
-    </many-to-one>
+			<column name="sync" default="0" />
+		</property>
+		<property name="syncedDate" type="date">
+			<column name="syn_date" length="10" />
+		</property>
+		<property name="extensionDate" type="date">
+			<column name="extended_date" length="10" />
+		</property>
+		<property name="hasFileResearch" type="java.lang.Boolean">
+			<column name="has_file_research" />
+		</property>
+		<property name="grantAmount" type="java.lang.Double">
+			<column name="grant_amount" precision="20" scale="5" />
+		</property>
+		<many-to-one name="fileResearch"
+			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+			<column name="file_research" />
+		</many-to-one>
 	</class>
 </hibernate-mapping>

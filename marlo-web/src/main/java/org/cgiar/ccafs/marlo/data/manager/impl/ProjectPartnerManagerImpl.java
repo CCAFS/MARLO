@@ -483,9 +483,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     for (ProjectPartnerPerson partnerPerson : projectPartnerPrev.getProjectPartnerPersons().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       if (projectPartner.getPartnerPersons() == null || projectPartner.getPartnerPersons().stream()
-        .filter(c -> partnerPerson.getUser() != null && partnerPerson.getUser().getId() != null
-          && c.getUser().getId().equals(partnerPerson.getUser().getId())
-          && c.getContactType().equals(partnerPerson.getContactType()))
+        .filter(c -> partnerPerson.getUser() != null && partnerPerson.getUser().getId() != null && c.getUser() != null
+          && c.getUser().getId() != null && c.getUser().getId().equals(partnerPerson.getUser().getId())
+          && c.getContactType() != null && c.getContactType().equals(partnerPerson.getContactType()))
         .collect(Collectors.toList()).isEmpty()) {
         partnerPerson.setActive(false);
         projectPartnerPersonDAO.save(partnerPerson);
@@ -494,7 +494,9 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
     if (projectPartner.getPartnerPersons() != null) {
       for (ProjectPartnerPerson partnerPerson : projectPartner.getPartnerPersons()) {
         if (projectPartnerPrev.getProjectPartnerPersons().stream()
-          .filter(c -> c.isActive() && c.getUser().getId().equals(partnerPerson.getUser().getId()))
+          .filter(c -> c.isActive() && c.getUser() != null && partnerPerson.getUser() != null
+            && partnerPerson.getUser().getId() != null && c.getUser().getId() != null
+            && c.getUser().getId().equals(partnerPerson.getUser().getId()))
           .collect(Collectors.toList()).isEmpty()) {
 
           ProjectPartnerPerson partnerPersonAdd = new ProjectPartnerPerson();
