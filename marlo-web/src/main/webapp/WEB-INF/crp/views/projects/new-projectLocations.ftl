@@ -33,7 +33,7 @@
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
-    
+
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
@@ -188,11 +188,11 @@
                     <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                          <button id="close-modal-button" type="button" class="close hidden" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                           
                           <div class="locationForm-container">
                             [#-- <div class="title">Adding a new location</div> --]
-                            [#-- <h3 class="title">Adding a new location</h3> --]
+                            <h3 class="title">Adding a new location</h3>
                             <hr />
                               <div class="form-group col-md-7">
                               <div class="locLevelSelect-container">
@@ -212,15 +212,16 @@
                                 <select name="" data-placeholder="Click here to drop down the options" id="countriesCmvs" multiple="true"></select>
                               </div>
                               [#-- Location name -Lat -Lon --]
-                              <div id="inputFormWrapper" style="display:none;">
+                              <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
                                 <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
                                 <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
                                 <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
                               </div>
+                              
+                              <div style="display:none;">
+                                <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add another location</div>
+                              </div> 
                               [#-- Button --]
-                              <div style="margin-left:10px; float:right;">
-                                <span id="cancelButton-locations" class=" cancelButton pull-right" style="display:block; margin-top:10px; border-radius:8px;">Cancel</span>
-                              </div>
                               <div>
                                 <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location(s)</span>
                               </div>
