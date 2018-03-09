@@ -584,30 +584,44 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     List<PowbSynthesisCrpStaffingCategory> powbSynthesisCrpStaffingCategoryList =
       powbSynthesisPMU.getPowbSynthesisCrpStaffingCategory().stream().filter(c -> c.isActive())
         .sorted((c1, c2) -> c1.getId().compareTo(c2.getId())).collect(Collectors.toList());
-    Double totalFemale = 0.0, totalMale = 0.0;
+    Double totalFemale = 0.0, totalMale = 0.0, totalFemaleNoCg = 0.0, totalMaleNoCg = 0.0;
     if (powbSynthesisCrpStaffingCategoryList != null && !powbSynthesisCrpStaffingCategoryList.isEmpty()) {
       for (PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory : powbSynthesisCrpStaffingCategoryList) {
         String category = "";
-        Double female = 0.0, totalFTE = 0.0, femalePercentaje = 0.0, male = 0.0;
+        Double female = 0.0, femaleNoCg = 0.0, totalFTE = 0.0, femalePercentaje = 0.0, male = 0.0, maleNoCg = 0.0;
         category = powbSynthesisCrpStaffingCategory.getPowbCrpStaffingCategory().getCategory();
-        female = powbSynthesisCrpStaffingCategory.getFemale();
-        totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
+        female =
+          powbSynthesisCrpStaffingCategory.getFemale() != null ? powbSynthesisCrpStaffingCategory.getFemale() : 0.0;
+        femaleNoCg = powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() != null
+          ? powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() : 0.0;
         femalePercentaje = powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0;
-        male = powbSynthesisCrpStaffingCategory.getMale();
+        male = powbSynthesisCrpStaffingCategory.getMale() != null ? powbSynthesisCrpStaffingCategory.getMale() : 0.0;
+        maleNoCg = powbSynthesisCrpStaffingCategory.getMaleNoCgiar() != null
+          ? powbSynthesisCrpStaffingCategory.getMaleNoCgiar() : 0.0;
         totalFemale += female;
+        totalFemaleNoCg += femaleNoCg;
         totalMale += male;
-        String[] sData = {category, String.valueOf(female), String.valueOf(male), String.valueOf(totalFTE),
-          percentageFormat.format(femalePercentaje)};
+        totalMaleNoCg += maleNoCg;
+        totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
+        String[] sData =
+          {category, String.valueOf(female) + "(" + femaleNoCg + ")", String.valueOf(male) + "(" + maleNoCg + ")",
+            String.valueOf(totalFTE), percentageFormat.format(femalePercentaje)};
         data = Arrays.asList(sData);
         datas.add(data);
       }
     }
     PowbSynthesisCrpStaffingCategory powbSynthesisCrpStaffingCategory = new PowbSynthesisCrpStaffingCategory();
     powbSynthesisCrpStaffingCategory.setMale(totalMale);
+    powbSynthesisCrpStaffingCategory.setMaleNoCgiar(totalMaleNoCg);
     powbSynthesisCrpStaffingCategory.setFemale(totalFemale);
-    String[] sData =
-      {"Total CRP", String.valueOf(totalFemale), String.valueOf(totalMale), String.valueOf(totalFemale + totalMale),
-        percentageFormat.format(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0)};
+    powbSynthesisCrpStaffingCategory.setFemaleNoCgiar(totalFemaleNoCg);
+    String[] sData = {"Total CRP",
+      String.valueOf(powbSynthesisCrpStaffingCategory.getFemale()) + "("
+        + powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() + ")",
+      String.valueOf(powbSynthesisCrpStaffingCategory.getMale()) + "("
+        + powbSynthesisCrpStaffingCategory.getMaleNoCgiar() + ")",
+      String.valueOf(powbSynthesisCrpStaffingCategory.getTotalFTE()),
+      percentageFormat.format(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0)};
 
     data = Arrays.asList(sData);
     datas.add(data);
