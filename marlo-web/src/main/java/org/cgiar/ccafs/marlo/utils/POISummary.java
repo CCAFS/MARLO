@@ -38,7 +38,11 @@ public class POISummary {
   private static final Logger LOG = LoggerFactory.getLogger(POISummary.class);
 
 
-  private final String FONT_TYPE = "Calibri Light";
+  private final static String FONT_TYPE = "Calibri Light";
+  private final static String TITLE_FONT_COLOR = "3366CC";
+  private final static String TEXT_FONT_COLOR = "000000";
+  private final static Integer TABLE_TEXT_FONT_SIZE = 10;
+  private final static String TABLE_HEADER_FONT_COLOR = "FFFFCC";
 
   /**
    * Head 1 Title
@@ -52,9 +56,9 @@ public class POISummary {
 
     XWPFRun h1Run = h1.createRun();
     h1Run.setText(text);
-    h1Run.setColor("3366CC");
+    h1Run.setColor(TITLE_FONT_COLOR);
     h1Run.setBold(true);
-    h1Run.setFontFamily("Calibri Light");
+    h1Run.setFontFamily(FONT_TYPE);
     h1Run.setFontSize(16);
   }
 
@@ -64,9 +68,9 @@ public class POISummary {
 
     XWPFRun h2Run = h2.createRun();
     h2Run.setText(text);
-    h2Run.setColor("3366CC");
+    h2Run.setColor(TITLE_FONT_COLOR);
     h2Run.setBold(true);
-    h2Run.setFontFamily("Calibri Light");
+    h2Run.setFontFamily(FONT_TYPE);
     h2Run.setFontSize(14);
   }
 
@@ -76,9 +80,9 @@ public class POISummary {
 
     XWPFRun h2Run = h2.createRun();
     h2Run.setText(text);
-    h2Run.setColor("3366CC");
+    h2Run.setColor(TITLE_FONT_COLOR);
     h2Run.setBold(true);
-    h2Run.setFontFamily("Calibri Light");
+    h2Run.setFontFamily(FONT_TYPE);
     h2Run.setFontSize(12);
   }
 
@@ -114,54 +118,80 @@ public class POISummary {
 
   }
 
+  public void textNotes(XWPFParagraph paragraph, String text) {
+    paragraph.setAlignment(ParagraphAlignment.BOTH);
+    XWPFRun paragraphRun = paragraph.createRun();
+    paragraphRun.setText(text);
+    paragraphRun.setColor(TEXT_FONT_COLOR);
+    paragraphRun.setBold(false);
+    paragraphRun.setFontFamily(FONT_TYPE);
+    paragraphRun.setFontSize(10);
+  }
+
   public void textParagraph(XWPFParagraph paragraph, String text) {
 
     paragraph.setAlignment(ParagraphAlignment.BOTH);
 
     XWPFRun paragraphRun = paragraph.createRun();
     paragraphRun.setText(text);
-    paragraphRun.setColor("000000");
+    paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
-    paragraphRun.setFontFamily("Calibri Light");
-    paragraphRun.setFontSize(11);
+    paragraphRun.setFontFamily(FONT_TYPE);
+    paragraphRun.setFontSize(10);
   }
 
-  public void textTable(XWPFDocument document, List<String> sHeaders, List<List<String>> sData) {
+  public void textTable(XWPFDocument document, List<List<String>> sHeaders, List<List<String>> sData,
+    Boolean highlightFirstColumn) {
 
     XWPFTable table = document.createTable();
     int record = 0;
-    // Setting the Header
-    XWPFTableRow tableRowHeader = table.getRow(0);
-    for (String header : sHeaders) {
-      if (record == 0) {
-
-        XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(header);
-        paragraphRun.setColor("000000");
-        paragraphRun.setBold(true);
-        paragraphRun.setFontFamily("Calibri Light");
-        paragraphRun.setFontSize(10);
-
-        tableRowHeader.getCell(record).setColor("FFFFCC");
-
+    int headerIndex = 0;
+    for (List<String> headers : sHeaders) {
+      // Setting the Header
+      XWPFTableRow tableRowHeader;
+      if (headerIndex == 0) {
+        tableRowHeader = table.getRow(0);
       } else {
-
-        XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(header);
-        paragraphRun.setColor("000000");
-        paragraphRun.setBold(true);
-        paragraphRun.setFontFamily("Calibri Light");
-        paragraphRun.setFontSize(10);
-
-        tableRowHeader.getCell(record).setColor("FFFFCC");
-
-
+        tableRowHeader = table.createRow();
       }
-      record++;
+      for (String header : headers) {
+        if (headerIndex == 0) {
+          if (record == 0) {
+            XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun paragraphRun = paragraph.createRun();
+            paragraphRun.setText(header);
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            paragraphRun.setBold(true);
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          } else {
+            XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun paragraphRun = paragraph.createRun();
+            paragraphRun.setText(header);
+            paragraphRun.setColor(TEXT_FONT_COLOR);
+            paragraphRun.setBold(true);
+            paragraphRun.setFontFamily(FONT_TYPE);
+            paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+            tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          }
+        } else {
+          XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
+          paragraph.setAlignment(ParagraphAlignment.CENTER);
+          XWPFRun paragraphRun = paragraph.createRun();
+          paragraphRun.setText(header);
+          paragraphRun.setColor(TEXT_FONT_COLOR);
+          paragraphRun.setBold(true);
+          paragraphRun.setFontFamily(FONT_TYPE);
+          paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+          tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+        }
+        record++;
+      }
+      headerIndex++;
+      record = 0;
     }
 
 
@@ -174,10 +204,15 @@ public class POISummary {
         paragraph.setAlignment(ParagraphAlignment.LEFT);
         XWPFRun paragraphRun = paragraph.createRun();
         paragraphRun.setText(row);
-        paragraphRun.setColor("000000");
-        paragraphRun.setBold(false);
-        paragraphRun.setFontFamily("Calibri Light");
-        paragraphRun.setFontSize(10);
+        paragraphRun.setColor(TEXT_FONT_COLOR);
+        paragraphRun.setFontFamily(FONT_TYPE);
+        paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
+        if (highlightFirstColumn && record == 0) {
+          dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
+          paragraphRun.setBold(true);
+        } else {
+          paragraphRun.setBold(false);
+        }
 
         record++;
       }

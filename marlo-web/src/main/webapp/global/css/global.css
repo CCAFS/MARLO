@@ -6496,3 +6496,9 @@ a.dt-button {
     margin-right: 3px;
     background: #fff;
 }
+
+i.helpLabel {
+  font-weight: normal;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
