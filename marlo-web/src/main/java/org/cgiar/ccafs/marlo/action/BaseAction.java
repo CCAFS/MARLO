@@ -4943,7 +4943,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
-      double centerFounds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double centerFunds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
 
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
@@ -4952,7 +4952,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       double percentageW1 = 0;
       double percentageW3 = 0;
       double percentageB = 0;
-      double percentageCenterFounds = 0;
+      double percentageCenterFunds = 0;
 
       if (!this.getCountProjectFlagships(project.getId())) {
         if (w1 > 0) {
@@ -4964,8 +4964,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (bilateral > 0) {
           percentageB = 100;
         }
-        if (centerFounds > 0) {
-          percentageCenterFounds = 100;
+        if (centerFunds > 0) {
+          percentageCenterFunds = 100;
         }
       }
       for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
@@ -4980,7 +4980,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             percentageB = percentageB + projectBudgetsFlagship.getAmount();
             break;
           case 4:
-            percentageCenterFounds = percentageCenterFounds + projectBudgetsFlagship.getAmount();
+            percentageCenterFunds = percentageCenterFunds + projectBudgetsFlagship.getAmount();
             break;
           default:
             break;
@@ -4989,23 +4989,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project.setW3Budget(w3);
       project.setCoreBudget(w1);
       project.setBilateralBudget(bilateral);
-      project.setCentenFoundsBudget(centerFounds);
+      project.setCentenFundsBudget(centerFunds);
 
       project.setPercentageW3(percentageW3);
       project.setPercentageW1(percentageW1);
       project.setPercentageBilateral(percentageB);
-      project.setPercentageFoundsBudget(percentageCenterFounds);
+      project.setPercentageFundsBudget(percentageCenterFunds);
 
 
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
-      centerFounds = centerFounds * (percentageCenterFounds) / 100;
+      centerFunds = centerFunds * (percentageCenterFunds) / 100;
 
       project.setTotalW3(w3);
       project.setTotalW1(w1);
       project.setTotalBilateral(bilateral);
-      project.setTotalCenterFounds(centerFounds);
+      project.setTotalCenterFunds(centerFunds);
 
       projectsToRet.add(project);
     }

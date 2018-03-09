@@ -112,7 +112,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private double w1;
 
   private double w3;
-  private double centerFounds;
+  private double centerFunds;
 
 
   private PowbCollaboration collaboration;
@@ -186,8 +186,8 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getCenterFounds() {
-    return centerFounds;
+  public double getCenterFunds() {
+    return centerFunds;
   }
 
 
@@ -355,8 +355,8 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.baseLine = baseLine;
   }
 
-  public void setCenterFounds(double centerFounds) {
-    this.centerFounds = centerFounds;
+  public void setCenterFunds(double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
