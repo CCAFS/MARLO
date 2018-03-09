@@ -92,12 +92,6 @@ function attachEvents() {
     } else {
       $("#addLocationButton").show("slow");
       if(option.val().split("-")[1] == "true") {
-        // If is a country change button text
-        if(option.val().split("-")[2] === "Country") {
-          $("#addLocationButton").text("Add location");
-        } else {
-          $("#addLocationButton").text("Add location");
-        }
         // LocElements options using ajax
         var select = $("#countriesCmvs");
         var url = baseURL + "/searchCountryListPL.do";
@@ -210,7 +204,6 @@ function modalButtonsListeners(){
   // Cancel button
   $("#cancelButton-locations").on("click", function(e) {
     e.preventDefault();
-    console.log('bye');
     $("#close-modal-button").click();
   });
 }
@@ -690,6 +683,10 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     mappingCountries();
   }
 
+  $("#close-modal-button").click();
+/*  $locationSelect.select2("destroy");
+  $locationSelect.html("<option></option>");
+  $locationSelect.select2();*/
 }
 
 function checkItems(block) {

@@ -445,7 +445,7 @@
       [#-- Check Icon --]
       [#if element.locElement??]
         [#if editable]
-          <input type="checkbox" class="recommendedSelected pull-right" name="" [#if element.selected]checked[/#if]/>
+          <input type="checkbox" class="recommended-locations-checkbox pull-right" name="" [#if element.selected]checked[/#if]/>
         [#else]
           [#if element.selected]<span class="glyphicon glyphicon-ok text-success pull-right"></span>[/#if]
         [/#if]
@@ -456,7 +456,7 @@
       [/#if]
       [#if element.locElementType??]
         [#if editable]
-        <input type="checkbox" class="recommendedSelected pull-right" name="" [#if element.selected]checked[/#if]/>
+        <input type="checkbox" class="recommended-locations-checkbox pull-right" name="" [#if element.selected]checked[/#if]/>
         [#else]
           [#if element.selected]<span class="glyphicon glyphicon-ok text-success pull-right"></span>[/#if]
         [/#if]
