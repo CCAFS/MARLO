@@ -41,7 +41,7 @@
         
           [#-- Provide any major modifications to the overall balance of the program and/or Theory of change --] 
           <div class="form-group margin-panel">
-            [@customForm.textArea name="powbSynthesis.powbManagementGovernance.description"  help="powbSynthesis.powbManagementGovernance.description.help" paramText="${(actualPhase.year)!}" fieldEmptyText="global.prefilledByPmu" required=true className="" editable=editable && PMU powbInclude=true /]
+            [@customForm.textArea name="powbSynthesis.powbManagementGovernance.description"  help="powbSynthesis.powbManagementGovernance.description.help" helpIcon=false paramText="${(actualPhase.year)!}" fieldEmptyText="global.prefilledByPmu" required=true className="" editable=editable && PMU powbInclude=true /]
           </div>
           
           [#-- 
