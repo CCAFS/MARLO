@@ -49,7 +49,7 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
   private double w1;
 
   private double w3;
-  private double centerFounds;
+  private double centerFunds;
 
 
   public PowbExpenditureAreas() {
@@ -61,8 +61,8 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getCenterFounds() {
-    return centerFounds;
+  public double getCenterFunds() {
+    return centerFunds;
   }
 
 
@@ -143,8 +143,8 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCenterFounds(double centerFounds) {
-    this.centerFounds = centerFounds;
+  public void setCenterFunds(double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
 

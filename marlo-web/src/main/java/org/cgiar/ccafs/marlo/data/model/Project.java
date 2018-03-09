@@ -256,7 +256,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private double bilateralBudget;
-  private double centenFoundsBudget;
+  private double centenFundsBudget;
 
 
   private double percentageW1;
@@ -264,7 +264,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private double percentageW3;
   private double percentageBilateral;
-  private double percentageFoundsBudget;
+  private double percentageFundsBudget;
 
 
   private double totalW1;
@@ -274,7 +274,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private double totalW3;
-  private double totalCenterFounds;
+  private double totalCenterFunds;
 
 
   private Set<GlobalUnitProject> globalUnitProjects = new HashSet<GlobalUnitProject>(0);
@@ -358,8 +358,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     return caseStudyProjects;
   }
 
-  public double getCentenFoundsBudget() {
-    return centenFoundsBudget;
+  public double getCentenFundsBudget() {
+    return centenFundsBudget;
   }
 
   public double getCenterBudget(int year, Phase phase) {
@@ -820,8 +820,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public double getPercentageFoundsBudget() {
-    return percentageFoundsBudget;
+  public double getPercentageFundsBudget() {
+    return percentageFundsBudget;
   }
 
   public double getPercentageW1() {
@@ -1071,8 +1071,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     return totalBilateral;
   }
 
-  public double getTotalCenterFounds() {
-    return totalCenterFounds;
+  public double getTotalCenterFunds() {
+    return totalCenterFunds;
   }
 
 
@@ -1164,8 +1164,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.caseStudyProjects = caseStudyProjects;
   }
 
-  public void setCentenFoundsBudget(double centenFoundsBudget) {
-    this.centenFoundsBudget = centenFoundsBudget;
+  public void setCentenFundsBudget(double centenFundsBudget) {
+    this.centenFundsBudget = centenFundsBudget;
   }
 
   public void setCenterProject(CenterProject centerProject) {
@@ -1335,8 +1335,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.percentageBilateral = percentageBilateral;
   }
 
-  public void setPercentageFoundsBudget(double percentageFoundsBudget) {
-    this.percentageFoundsBudget = percentageFoundsBudget;
+  public void setPercentageFundsBudget(double percentageFundsBudget) {
+    this.percentageFundsBudget = percentageFundsBudget;
   }
 
   public void setPercentageW1(double percentageW1) {
@@ -1500,8 +1500,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.totalBilateral = totalBilateral;
   }
 
-  public void setTotalCenterFounds(double totalCenterFounds) {
-    this.totalCenterFounds = totalCenterFounds;
+  public void setTotalCenterFunds(double totalCenterFunds) {
+    this.totalCenterFunds = totalCenterFunds;
   }
 
 

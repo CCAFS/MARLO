@@ -36,7 +36,7 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
   private Double w3Bilateral;
 
   @Expose
-  private Double centerFounds;
+  private Double centerFunds;
 
 
   @Expose
@@ -80,8 +80,8 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return carry;
   }
 
-  public Double getCenterFounds() {
-    return centerFounds;
+  public Double getCenterFunds() {
+    return centerFunds;
   }
 
 
@@ -178,8 +178,8 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     this.carry = carry;
   }
 
-  public void setCenterFounds(Double centerFounds) {
-    this.centerFounds = centerFounds;
+  public void setCenterFunds(Double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
 
