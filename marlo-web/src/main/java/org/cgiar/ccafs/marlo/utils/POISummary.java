@@ -15,9 +15,11 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -27,7 +29,9 @@ import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,27 @@ public class POISummary {
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
   private final static String TABLE_HEADER_FONT_COLOR = "FFFFCC";
+
+  /**
+   * Header title
+   * 
+   * @param document
+   * @param text
+   * @throws IOException
+   */
+  public void pageHeader(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpHeader = CTP.Factory.newInstance();
+    CTR ctrHeader = ctpHeader.addNewR();
+    CTText ctHeader = ctrHeader.addNewT();
+    ctHeader.setStringValue(text);
+    XWPFParagraph headerParagraph = new XWPFParagraph(ctpHeader, document);
+    headerParagraph.setAlignment(ParagraphAlignment.RIGHT);
+    XWPFParagraph[] parsHeader = new XWPFParagraph[1];
+    parsHeader[0] = headerParagraph;
+    policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
 
   /**
    * Head 1 Title
@@ -84,6 +109,17 @@ public class POISummary {
     h2Run.setBold(true);
     h2Run.setFontFamily(FONT_TYPE);
     h2Run.setFontSize(12);
+  }
+
+  public void textHeadCoverTitle(XWPFParagraph h1, String text) {
+    h1.setAlignment(ParagraphAlignment.CENTER);
+
+    XWPFRun h1Run = h1.createRun();
+    h1Run.setText(text);
+    h1Run.setColor(TEXT_FONT_COLOR);
+    h1Run.setBold(false);
+    h1Run.setFontFamily(FONT_TYPE);
+    h1Run.setFontSize(26);
   }
 
   public void textHyperlink(String url, String text, XWPFParagraph paragraph) {
@@ -131,7 +167,6 @@ public class POISummary {
   public void textParagraph(XWPFParagraph paragraph, String text) {
 
     paragraph.setAlignment(ParagraphAlignment.BOTH);
-
     XWPFRun paragraphRun = paragraph.createRun();
     paragraphRun.setText(text);
     paragraphRun.setColor(TEXT_FONT_COLOR);
