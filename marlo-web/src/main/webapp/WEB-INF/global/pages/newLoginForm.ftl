@@ -112,8 +112,8 @@
         [#-- Terms and conditions checkbox --]
         <div class="row">
           <div class="col-xs-12">
-            <div class="terms-container">
-              <input type="checkbox" name="terms" id="terms" class="terms"> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
+            <div class="terms-container hidden">
+              <input type="checkbox" name="terms" id="terms" class="terms" checked required> I agree to the <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">Terms and Conditions</a>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="login-button-container">
-              [@s.submit key="Next" name="next" cssClass="login-form-button" role="button "/]
+              [@s.submit key="Next" name="next" cssClass="login-form-button" role="button" disabled=false /]
               [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
             </div>
           </div>
