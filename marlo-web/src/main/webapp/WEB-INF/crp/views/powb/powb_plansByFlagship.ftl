@@ -43,7 +43,7 @@
           [#if flagship]
           <div class="form-group">
           <input type="hidden" name="powbSynthesis.powbFlagshipPlans.id" value="${(powbSynthesis.powbFlagshipPlans.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" paramText="${actualPhase.year}" required=true className="" editable=editable powbInclude=true /]
+            [@customForm.textArea  name="powbSynthesis.powbFlagshipPlans.planSummary" i18nkey="liaisonInstitution.powb.planSummary" help="liaisonInstitution.powb.planSummary.help" helpIcon=false paramText="${actualPhase.year}" required=true className="" editable=editable powbInclude=true /]
           </div>
           [/#if]
           

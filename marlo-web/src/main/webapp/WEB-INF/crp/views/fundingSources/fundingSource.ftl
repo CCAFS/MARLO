@@ -103,11 +103,11 @@
         </div>
         
         [#-- Finance code module --]
-         [#if fundingSource.fundingSourceInfo?has_content]
-         [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
-          [#else]
-           [#assign isSynced =false ]
-          [/#if]
+        [#if fundingSource.fundingSourceInfo?has_content]
+          [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+        [#else]
+          [#assign isSynced =false ]
+        [/#if]
        
         [#assign financeChannelInstitution = {} /]
         [#if fundingSource.institutions?has_content]

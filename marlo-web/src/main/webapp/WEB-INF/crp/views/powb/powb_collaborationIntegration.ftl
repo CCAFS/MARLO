@@ -41,14 +41,14 @@
           
           [#-- 2.3.1  New Key External Partnerships  --] 
           <div class="form-group">
-            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("external") powbInclude=true/]
+            [@customForm.textArea  name="powbSynthesis.collaboration.keyExternalPartners" i18nkey="powbSynthesis.collaborationIntegration.partnerships" help="powbSynthesis.collaborationIntegration.partnerships.help" helpIcon=false paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("external") powbInclude=true/]
           </div>
           
           [#-- Project Partnerships --]
           [#if flagship]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableFlagshipPartnerships.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <div class="viewMoreSyntesis-block" style="display:none">
+            <div class="viewMoreSyntesis-block" >
               [@tableFlagshipPartnershipsMacro list=(action.loadProjects(liaisonInstitution.crpProgram.id))![]  /]
               <div class="viewMoreSyntesis closed"></div>
             </div>
@@ -59,7 +59,7 @@
           [#if PMU]
           <div class="form-group">
             <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableKeyExternal.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-            <div class="viewMoreSyntesis-block" style="display:none">
+            <div class="viewMoreSyntesis-block" >
               [@tableFlagshipsOverallMacro list=crpPrograms item=1 /]
               <div class="viewMoreSyntesis closed"></div>
             </div>
@@ -70,17 +70,17 @@
           [#if PMU]
             [#-- 2.3.2  New Contribution to and from Platforms --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("contributions") powbInclude=true /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.cotributionsPlatafforms" i18nkey="powbSynthesis.collaborationIntegration.platformsContributions" help="powbSynthesis.collaborationIntegration.platformsContributions.help" helpIcon=false paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("contributions") powbInclude=true /]
             </div>
             
             [#-- 2.3.3  New Cross-CRP Interactions --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("crossCrp") powbInclude=true /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.crossCrp" i18nkey="powbSynthesis.collaborationIntegration.crpInteractions" help="powbSynthesis.collaborationIntegration.crpInteractions.help" helpIcon=false paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("crossCrp") powbInclude=true /]
             </div>
             
             <div class="form-group">
               <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.listCollaborations.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-              <div class="viewMoreSyntesis-block" style="display:none">
+              <div class="viewMoreSyntesis-block" >
                 [@tableOverallCRPCollaborationsMacro crpPrograms=crpPrograms /]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
@@ -135,21 +135,22 @@
                   [#-- Efforts Country by region--]
                   <h5 class="subTitle headTitle regionTitle"><strong>${liaisonInstitution.crpProgram.composedName}</strong></h5>
                   <div class="form-group">
-                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="updateEffostornCountry " editable=editable && action.canEditRegion(liaisonInstitution.id) powbInclude=true/]
+                    [@customForm.textArea  name="powbSynthesis.regions[${regionIndex}].effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEffortsIn" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" helpIcon=false paramText="${liaisonInstitution.crpProgram.acronym}" required=true className="updateEffostornCountry " editable=editable && action.canEditRegion(liaisonInstitution.id) powbInclude=true/]
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].liaisonInstitution.id" value="${(liaisonInstitution.id)!}" />
                     <input type="hidden" name="powbSynthesis.regions[${regionIndex}].id" value="${(regionElement.id)!}" />
                     
                     <div class="clearfix"></div>
                   </div>
                   
-                  [#--  Regional Table --]
+                  [#--  Regional Table 
                   <div class="form-group">
                     <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.projectsRegionalTagged.title"][@s.param]${liaisonInstitution.crpProgram.acronym}[/@s.param][/@s.text]</h4>
-                    <div class="viewMoreSyntesis-block" style="display:none">
+                    <div class="viewMoreSyntesis-block" >
                       [@tableCountryContributionsMacro locElements=(action.getLocElementsByRegion(liaisonInstitution.id))![] /]
                       <div class="viewMoreSyntesis closed"></div>
                     </div>
                   </div>
+                  --]
                   
                   [#if regionElement.effostornCountry?has_content]
                     [#assign pmuValue]${pmuValue} 
@@ -163,30 +164,33 @@
             
             <textarea style="display:none" id="pmuValue" name="powbSynthesis.collaboration.effostornCountry" id="" cols="30" rows="10">${(pmuValue)!}</textarea>
             <br />
-            <hr />
-            [#-- Table: CGIAR Country Coordination--]
+            
+            [#-- Table: Projects with no regional programmatic focus
             <div class="form-group">
               <h4 class="sectionSubTitle">[@s.text name="collaborationIntegration.tableCountryContribution.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-              <div class="viewMoreSyntesis-block" style="display:none">
+              <div class="viewMoreSyntesis-block" >
                 [@tableCountryContributionsMacro locElements=action.getLocElementsByPMU()/]
                 <div class="viewMoreSyntesis closed"></div>
               </div>
             </div>
+            --]
           [#else]
             [#-- 2.3.4  Expected Efforts on Country Coordination --] 
             <div class="form-group">
-              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("effostornCountry") powbInclude=true /]
+              [@customForm.textArea  name="powbSynthesis.collaboration.effostornCountry" i18nkey="powbSynthesis.collaborationIntegration.expectedEfforts" help="powbSynthesis.collaborationIntegration.expectedEfforts.help" helpIcon=false paramText="${actualPhase.year}" required=true className="" editable=editable && action.hasPermission("effostornCountry") powbInclude=true /]
             </div>
             
-            [#-- Table: CGIAR Country Coordination--]
-            <div class="form-group">
-              <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContributionOther.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
-              <div class="viewMoreSyntesis-block" style="display:none">
-                [@tableCountryContributionsMacro locElements=action.loadLocations()/]
-                <div class="viewMoreSyntesis closed"></div>
-              </div>
-            </div>
           [/#if]
+          
+          [#-- Table: Country projects contributions--]
+          <hr />
+          <div class="form-group">
+            <h4 class="subTitle headTitle">[@s.text name="collaborationIntegration.tableCountryContributionOther.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <div class="viewMoreSyntesis-block" >
+              [@tableCountryContributionsMacro locElements=action.loadLocations()/]
+              <div class="viewMoreSyntesis closed"></div>
+            </div>
+          </div>
           
         </div>
         [/#if]
@@ -378,7 +382,7 @@
             <td> 
               <strong>${(collaboration.globalUnit.acronym)!}</strong><br />
               ${(collaboration.collaborationTypeName)!'<nobr>Not defined</nobr>'} <br />
-              <i>${collaboration.globalUnit.globalUnitType.name}</i>
+              <i>${(collaboration.globalUnit.globalUnitType.name)!}</i>
             </td>
             <td> ${(collaboration.flagship)!'<nobr>Not defined</nobr>'} </td>
             <td class="col-md-6"> ${(collaboration.brief?replace('\n', '<br>'))!} </td>

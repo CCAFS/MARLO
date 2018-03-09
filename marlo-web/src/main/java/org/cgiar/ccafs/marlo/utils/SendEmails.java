@@ -318,12 +318,12 @@ public class SendEmails {
         users.add(user);
         // Send UserManual.pdf
         String contentType = "application/pdf";
-        String fileName = "Introduction_To_MARLO_v2.1.pdf";
+        String fileName = "Introduction_To_MARLO_v2.2.pdf";
         byte[] buffer = null;
         InputStream inputStream = null;
 
         try {
-          inputStream = action.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.1.pdf");
+          inputStream = action.getClass().getResourceAsStream("/manual/Introduction_To_MARLO_v2.2.pdf");
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
           // TODO Auto-generated catch block
