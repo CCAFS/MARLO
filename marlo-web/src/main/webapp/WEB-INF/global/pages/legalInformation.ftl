@@ -126,7 +126,7 @@
         </div>
         <div>
           <strong>2. Copyright </strong>
-          <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the International Center for Tropical Agriculture (CIAT) (<a targe="_blank" href="ciat.cgiar.org/">http://ciat.cgiar.org</a>).</p>
+          <p>MARLO (Managing Agricultural Research for Learning and Outcomes) is an online platform initially conceive to assist CGIAR Research Programs and CGIAR Centers in their strategic results-based program planning to reporting and learning. MARLO has been developed under the CGIAR Research Program on Climate Change, Agriculture and Food Security (CCAFS), led by the <a targe="_blank" href="ciat.cgiar.org/">International Center for Tropical Agriculture (CIAT)</a>.</p>
         </div>
         <div>
           <strong>3. Use License</strong>
