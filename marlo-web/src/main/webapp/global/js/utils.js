@@ -647,3 +647,13 @@ function getCookie(cname) {
   }
 
 }());
+
+/**
+ * Get the current date in String
+ * 
+ * @returns {string} date
+ */
+function getDateString() {
+  var today = new Date();
+  return today.toISOString().split('T')[0] + "_" + today.getHours() + today.getMinutes();
+}
