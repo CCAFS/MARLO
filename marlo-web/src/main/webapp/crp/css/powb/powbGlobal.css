@@ -203,3 +203,7 @@ tfoot {
   color:#999;
   text-decoration:underline;
 }
+
+#tableE td {
+  padding: 4px;
+}
