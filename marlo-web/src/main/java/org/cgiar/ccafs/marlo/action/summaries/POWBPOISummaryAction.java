@@ -32,12 +32,14 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.PowbCollaborationGlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidence;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudy;
 import org.cgiar.ccafs.marlo.data.model.PowbEvidencePlannedStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbExpectedCrpProgress;
 import org.cgiar.ccafs.marlo.data.model.PowbExpenditureAreas;
+import org.cgiar.ccafs.marlo.data.model.PowbFinancialExpenditure;
 import org.cgiar.ccafs.marlo.data.model.PowbFinancialPlannedBudget;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory;
@@ -678,9 +680,144 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     poiSummary.textTable(document, headers, datas, false);
   }
 
+  private void createTableF() {
+    List<List<String>> headers = new ArrayList<>();
+    String[] sHeader = {this.getText("financialPlan.tableF.expenditureArea") + "*",
+      this.getText("financialPlan.tableF.estimatedPercentage", new String[] {String.valueOf(this.getSelectedYear())})
+        + "**",
+      this.getText("financialPlan.tableF.comments")};
+
+    List<String> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    List<List<String>> datas = new ArrayList<>();
+    List<String> data;
+
+
+    Double totalEstimatedPercentajeFS = 0.0;
+    List<PowbFinancialExpenditure> powbFinancialExpenditureList =
+      powbSynthesisPMU.getPowbFinancialExpenditures().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+    // Expenditure areas
+    List<PowbExpenditureAreas> powbExpenditureAreas = this.getExpenditureAreas();
+    if (powbExpenditureAreas != null && !powbExpenditureAreas.isEmpty()) {
+      for (PowbExpenditureAreas powbExpenditureArea : powbExpenditureAreas) {
+        Double estimatedPercentajeFS = 0.0;
+        String expenditureArea = "", commentsSpace = "";
+        expenditureArea = powbExpenditureArea.getExpenditureArea();
+        if (powbFinancialExpenditureList != null && !powbFinancialExpenditureList.isEmpty()) {
+          List<PowbFinancialExpenditure> powbFinancialExpenditureAreaList = powbFinancialExpenditureList.stream()
+            .filter(f -> f.getPowbExpenditureArea() != null && f.getPowbExpenditureArea().equals(powbExpenditureArea))
+            .collect(Collectors.toList());
+          PowbFinancialExpenditure powbFinancialExpenditure = null;
+          if (powbFinancialExpenditureAreaList != null && !powbFinancialExpenditureAreaList.isEmpty()) {
+            powbFinancialExpenditure = powbFinancialExpenditureAreaList.get(0);
+            estimatedPercentajeFS = powbFinancialExpenditure.getW1w2Percentage();
+            commentsSpace =
+              powbFinancialExpenditure.getComments() == null || powbFinancialExpenditure.getComments().trim().isEmpty()
+                ? " " : powbFinancialExpenditure.getComments();
+          }
+          totalEstimatedPercentajeFS += estimatedPercentajeFS;
+          String[] sData =
+            {expenditureArea, percentageFormat.format(round(estimatedPercentajeFS / 100, 2)), commentsSpace};
+
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
+      }
+    }
+    String[] sData =
+      {"Total Funding (Amount)", currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 100, 2)), " "};
+
+    data = Arrays.asList(sData);
+    datas.add(data);
+
+    poiSummary.textTable(document, headers, datas, true);
+  }
+
+  private void createTableG() {
+    List<List<String>> headers = new ArrayList<>();
+    String[] sHeader = {this.getText("summaries.powb.tableG.crpName"),
+      this.getText("summaries.powb.tableG.description"), this.getText("summaries.powb.tableG.relevantFP")};
+    List<String> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    List<List<String>> datas = new ArrayList<>();
+    List<String> data;
+    for (PowbSynthesis powbSynthesis : powbSynthesisList) {
+      List<PowbCollaborationGlobalUnit> powbCollaborationGlobalUnitList =
+        powbSynthesis.getPowbCollaborationGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      if (powbCollaborationGlobalUnitList != null && !powbCollaborationGlobalUnitList.isEmpty()) {
+        for (PowbCollaborationGlobalUnit powbCollaborationGlobalUnit : powbCollaborationGlobalUnitList) {
+          String crpPlatform = " ", descriptionCollaboration = " ", relevantFP = " ";
+          if (powbCollaborationGlobalUnit.getGlobalUnit() != null) {
+            crpPlatform = powbCollaborationGlobalUnit.getGlobalUnit().getAcronym() != null
+              && !powbCollaborationGlobalUnit.getGlobalUnit().getAcronym().isEmpty()
+                ? powbCollaborationGlobalUnit.getGlobalUnit().getAcronym()
+                : powbCollaborationGlobalUnit.getGlobalUnit().getName();
+          }
+
+          descriptionCollaboration =
+            powbCollaborationGlobalUnit.getBrief() != null && !powbCollaborationGlobalUnit.getBrief().isEmpty()
+              ? powbCollaborationGlobalUnit.getBrief() : " ";
+          relevantFP =
+            powbCollaborationGlobalUnit.getFlagship() != null && !powbCollaborationGlobalUnit.getFlagship().isEmpty()
+              ? powbCollaborationGlobalUnit.getFlagship() : " ";
+
+          String[] sData = {crpPlatform, descriptionCollaboration, relevantFP};
+
+          data = Arrays.asList(sData);
+          datas.add(data);
+        }
+      }
+    }
+    poiSummary.textTable(document, headers, datas, false);
+  }
+
+  private void createTableH() {
+    List<List<String>> headers = new ArrayList<>();
+    String[] sHeader =
+      {this.getText("monitoringLearning.table.plannedStudies", new String[] {String.valueOf(this.getSelectedYear())}),
+        this.getText("monitoringLearning.table.comments")};
+    List<String> header = Arrays.asList(sHeader);
+    headers.add(header);
+
+    List<List<String>> datas = new ArrayList<>();
+    List<String> data;
+
+    this.getFpPlannedList(this.getFlagships(), this.getSelectedPhase().getId());
+    for (PowbEvidencePlannedStudyDTO powbEvidencePlannedStudyDTO : flagshipPlannedList.stream()
+      .filter(p -> p.getProjectExpectedStudy() != null && p.getProjectExpectedStudy().getType() != null
+        && (p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.EVAULATION.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTASSESMENT.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.LEARNING.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.IMPACTCASESTUDY.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.CRP_PTF.getId()
+          || p.getProjectExpectedStudy().getType() == TypeExpectedStudiesEnum.REVIEW.getId()))
+      .collect(Collectors.toList())) {
+      String plannedStudy = "", comments = "";
+      plannedStudy = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy().trim().isEmpty()
+          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getTopicStudy() : " ";
+      comments = powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() != null
+        && !powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments().trim().isEmpty()
+          ? powbEvidencePlannedStudyDTO.getProjectExpectedStudy().getComments() : " ";
+
+      String[] sData = {plannedStudy, comments};
+
+      data = Arrays.asList(sData);
+      datas.add(data);
+    }
+
+    poiSummary.textTable(document, headers, datas, false);
+  }
+
   @Override
   public String execute() throws Exception {
     try {
+      poiSummary.pageHeader(document, this.getText("summaries.powb.header"));
+      poiSummary.textLineBreak(document, 13);
+      poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.powb.mainTitle"));
+      poiSummary.textLineBreak(document, 12);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.mainTitle2"));
       poiSummary.textLineBreak(document, 1);
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.cover"));
@@ -729,6 +866,16 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title"));
+      this.createTableF();
+      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
+      poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.estimatedPercentage.help"));
+      poiSummary.textHead2Title(document.createParagraph(),
+        this.getText("collaborationIntegration.listCollaborations.title"));
+      this.createTableG();
+      poiSummary.textNotes(document.createParagraph(), this.getText("summaries.powb.tableG.description.help"));
+      poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableF.title"));
+      this.createTableH();
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.write(os);
       bytesDOC = os.toByteArray();
@@ -755,6 +902,16 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String getContentType() {
     return "application/docx";
+  }
+
+  public List<PowbExpenditureAreas> getExpenditureAreas() {
+    List<PowbExpenditureAreas> expenditureAreaList = powbExpenditureAreasManager.findAll().stream()
+      .filter(e -> e.isActive() && e.getIsExpenditure()).collect(Collectors.toList());
+    if (expenditureAreaList != null) {
+      return expenditureAreaList;
+    } else {
+      return new ArrayList<>();
+    }
   }
 
   @Override

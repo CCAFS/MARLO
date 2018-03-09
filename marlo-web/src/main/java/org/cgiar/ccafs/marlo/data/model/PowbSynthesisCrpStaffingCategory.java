@@ -34,6 +34,12 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
 
 
   @Expose
+  private Double femaleNoCgiar;
+
+  @Expose
+  private Double maleNoCgiar;
+
+  @Expose
   private User createdBy;
 
 
@@ -48,7 +54,6 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
 
@@ -61,13 +66,21 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public Double getFemale() {
     return female;
   }
+
+
+  public Double getFemaleNoCgiar() {
+    return femaleNoCgiar;
+  }
+
 
   public Double getFemalePercentage() {
     Double femaleT;
@@ -84,7 +97,6 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -92,9 +104,12 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return sb.toString();
   }
 
-
   public Double getMale() {
     return male;
+  }
+
+  public Double getMaleNoCgiar() {
+    return maleNoCgiar;
   }
 
 
@@ -114,6 +129,7 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return powbCrpStaffingCategory;
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -131,7 +147,6 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     }
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -142,26 +157,36 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-
   public void setFemale(Double female) {
     this.female = female;
   }
+
+  public void setFemaleNoCgiar(Double femaleNoCgiar) {
+    this.femaleNoCgiar = femaleNoCgiar;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setMale(Double male) {
     this.male = male;
+  }
+
+
+  public void setMaleNoCgiar(Double maleNoCgiar) {
+    this.maleNoCgiar = maleNoCgiar;
   }
 
 
