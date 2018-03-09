@@ -248,7 +248,7 @@ public class BaseSummariesAction extends BaseAction {
    * @param date
    * @return int year
    */
-  private int getIntYearFromDate(Date date) {
+  public int getIntYearFromDate(Date date) {
     try {
       Calendar cal = Calendar.getInstance();
       cal.setTime(date);

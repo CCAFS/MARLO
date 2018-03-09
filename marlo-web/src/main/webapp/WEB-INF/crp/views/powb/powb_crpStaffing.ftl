@@ -42,12 +42,13 @@
           [#-- Briefly summarize any staffing issues or constraints relevant to CRP capacity --] 
           <div class="form-group">
             <input type="hidden" name="powbSynthesis.crpStaffing.id" value="${(powbSynthesis.crpStaffing.id)!}" />
-            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="limitWords-100" editable=editable && PMU /]
+            [@customForm.textArea  name="powbSynthesis.crpStaffing.staffingIssues" i18nkey="powbSynthesis.crpStaffing.staffingIssues" help="powbSynthesis.crpStaffing.staffingIssues.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${actualPhase.year}" required=true className="" editable=editable && PMU powbInclude=true /]
           </div>
           
           [#-- Table D: CRP Staffing (OPTIONAL IN POWB 2018)  --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="crpStaffing.tableD.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="crpStaffing.tableD.title"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             [@tableD /]
           </div>
         
@@ -71,11 +72,17 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th>[@s.text name="crpStaffing.tableD.category" /]</th>
-          <th class="col-md-2">[@s.text name="crpStaffing.tableD.female" /] </th>
-          <th class="col-md-2">[@s.text name="crpStaffing.tableD.male" /]</th>
-          <th>[@s.text name="crpStaffing.tableD.total" /]</th>
-          <th>[@s.text name="crpStaffing.tableD.percFemale" /]</th>
+          <th rowspan="2">[@s.text name="crpStaffing.tableD.category" /]</th>
+          <th colspan="2" class="col-md-3 text-center">[@s.text name="crpStaffing.tableD.female" /] </th>
+          <th colspan="2" class="col-md-3 text-center">[@s.text name="crpStaffing.tableD.male" /]</th>
+          <th rowspan="2">[@s.text name="crpStaffing.tableD.total" /]</th>
+          <th rowspan="2">[@s.text name="crpStaffing.tableD.percFemale" /]</th>
+        </tr>
+        <tr class="text-small">
+          <th class="text-center"> [@s.text name="global.cgiar"/]    </th>
+          <th class="text-center"> [@s.text name="global.nonCgiar"/] </th>
+          <th class="text-center"> [@s.text name="global.cgiar"/]    </th>
+          <th class="text-center"> [@s.text name="global.nonCgiar"/] </th>
         </tr>
       </thead>
       <tbody>
@@ -89,8 +96,10 @@
                 <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
                 <input type="hidden" name="${customName}.powbCrpStaffingCategory.id" value="${(crpStaffingCategory.id)!}" />
               </td>
-              <td class="text-center"> [@customForm.input name="${customName}.female" value="${(element.female)!'0'}" i18nkey="" showTitle=false className="currencyInput numericValue text-center type-female category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]  </td>
+              <td class="text-center"> [@customForm.input name="${customName}.female" value="${(element.female)!'0'}" i18nkey="" showTitle=false className="currencyInput numericValue text-center type-female category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]</td>
+              <td class="text-center"> [@customForm.input name="${customName}.femaleNoCgiar" value="${(element.femaleNoCgiar)!'0'}" i18nkey="" showTitle=false className="currencyInput numericValue text-center type-femaleNon category-${crpStaffingCategory_index}" required=true editable=editable && PMU /]</td>
               <td class="text-center"> [@customForm.input name="${customName}.male" value="${(element.male)!'0'}" i18nkey="" showTitle=false className="currencyInput numericValue text-center type-male category-${crpStaffingCategory_index}" required=true editable=editable && PMU /] </td>
+              <td class="text-center"> [@customForm.input name="${customName}.maleNoCgiar" value="${(element.maleNoCgiar)!'0'}" i18nkey="" showTitle=false className="currencyInput numericValue text-center type-maleNon category-${crpStaffingCategory_index}" required=true editable=editable && PMU /] </td>
               <td class="text-center"> <span class="label-total category-${crpStaffingCategory_index}">${(element.totalFTE)!"0"}</span> </td>
               <td class="text-center"> <span class="label-percFemale category-${crpStaffingCategory_index}">${(element.femalePercentage)!"0"}</span>% </td>
             </tr>
@@ -103,7 +112,9 @@
             <span>Total CRP</span>
           </td>
           <td class="text-center"> <span class="type-female totalByType">0</span> </td>
+          <td class="text-center"> <span class="type-femaleNon totalByType">0</span> </td>
           <td class="text-center"> <span class="type-male totalByType">0</span> </td>
+          <td class="text-center"> <span class="type-maleNon totalByType">0</span> </td>
           <td class="text-center"> <span class="label-total grandTotal">0</span> </td>
           <td class="text-center"> <span class="label-percFemale grandTotal">0</span>% </td>
         </tr>

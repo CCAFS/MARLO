@@ -48,20 +48,22 @@ public class CapDevSubmissionAction extends BaseAction {
   /// LOG
   private static Logger LOG = LoggerFactory.getLogger(CapDevSubmissionAction.class);
 
+
   private ICenterSubmissionManager submissionService;
 
 
   private ICapacityDevelopmentService capdevService;
 
-
   private GlobalUnitManager centerService;
+
+
   private GlobalUnit loggedCenter;
 
+
   private CapacityDevelopment capacityDevelopment;
+  private long capdevID;
 
-  private long capDevID;
   private boolean isSubmited = false;
-
 
   @Inject
   public CapDevSubmissionAction(APConfig config, ICenterSubmissionManager submissionService,
@@ -75,9 +77,9 @@ public class CapDevSubmissionAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     if (this.hasPermissionCenter("*")) {
-      if (this.isCompleteCapDev(capDevID)) {
+      if (this.isCompleteCapDev(capdevID)) {
         if (submissionService.findAll() != null) {
-          CapacityDevelopment capDev = capdevService.getCapacityDevelopmentById(capDevID);
+          CapacityDevelopment capDev = capdevService.getCapacityDevelopmentById(capdevID);
 
           List<CenterSubmission> submissions = new ArrayList<>(capDev.getSubmissions().stream()
             .filter(s -> s.getYear().intValue() == this.getCenterYear()).collect(Collectors.toList()));
@@ -111,8 +113,9 @@ public class CapDevSubmissionAction extends BaseAction {
     }
   }
 
-  public long getCapDevID() {
-    return capDevID;
+
+  public long getCapdevID() {
+    return capdevID;
   }
 
   @Override
@@ -121,20 +124,21 @@ public class CapDevSubmissionAction extends BaseAction {
     loggedCenter = centerService.getGlobalUnitById(loggedCenter.getId());
 
     try {
-      capDevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+      capdevID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
     } catch (NumberFormatException e) {
-      capDevID = -1;
+      capdevID = -1;
       return; // Stop here and go to execute method.
     }
 
-    capacityDevelopment = capdevService.getCapacityDevelopmentById(capDevID);
+    capacityDevelopment = capdevService.getCapacityDevelopmentById(capdevID);
 
     // TODO create base permission
   }
 
 
-  public void setCapDevID(long capDevID) {
-    this.capDevID = capDevID;
+  public void setCapdevID(long capdevID) {
+    this.capdevID = capdevID;
   }
+
 
 }

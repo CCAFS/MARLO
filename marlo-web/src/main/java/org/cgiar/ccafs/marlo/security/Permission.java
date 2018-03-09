@@ -63,6 +63,8 @@ public class Permission {
   public static final String POWB_SYNTHESIS_MEL_BASE_PERMISSION =
     "crp:{0}:powbSynthesis:{1}:monitoringEvaluationLearning";
   public static final String POWB_SYNTHESIS_COLLABORATION_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:collaboration";
+  public static final String POWB_SYNTHESIS_CROSS_CUTING_BASE_PERMISSION = "crp:{0}:powbSynthesis:{1}:crossCuting";
+
   public static final String POWB_SYNTHESIS_COLLABORATION_CAN_EDIT_PERMISSION =
     "crp:{0}:powbSynthesis:{1}:collaboration:canEdit";
 
