@@ -123,6 +123,7 @@
 [#macro powbExpenditureArea area element index isLiaison]
   [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]" /]
   <tr>
+    [#-- FLAGSHIP/OTHER/PMU --]
     <td class="col-md-2">
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       [#if isLiaison]
@@ -133,6 +134,7 @@
         <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
       [/#if]
     </td>
+    [#-- W1/W2 --]
     <td class="text-right">
       [#if editable && PMU && element.editBudgets  ]
         [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true /]
@@ -145,6 +147,7 @@
         [/#if]
       [/#if]
     </td>
+    [#-- W3/BILATERAL --]
     <td class="text-right">
       [#if editable && PMU && element.editBudgets ]
         [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}"  required=true /]
@@ -157,7 +160,9 @@
         [/#if]
       [/#if]
     </td>
+    [#-- TOTAL --]
     <td class="text-right"> <nobr>US$ <span class="text-right label-total category-${index}">0.00</span></nobr> </td>
+    [#-- COMMENTS--]
     <td class="col-md-4">[@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" fieldEmptyText="global.prefilledByPmu" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
 [/#macro]
