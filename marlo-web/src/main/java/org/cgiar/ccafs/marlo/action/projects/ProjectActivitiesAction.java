@@ -53,10 +53,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -483,6 +484,9 @@ public class ProjectActivitiesAction extends BaseAction {
               .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
                 .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase()))
                 .collect(Collectors.toList())));
+            for (DeliverableActivity deliverableActivity : openActivity.getDeliverables()) {
+              deliverableActivity.getDeliverable().getDeliverableInfo(this.getActualPhase());
+            }
           }
         }
         /*

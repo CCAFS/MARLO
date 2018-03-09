@@ -63,8 +63,7 @@ public class CrpStaffingValidator extends BaseValidator {
       }
     }
     if (powbSynthesis != null) {
-      if (!(this.isValidString(powbSynthesis.getCrpStaffing().getStaffingIssues())
-        && this.wordCount(powbSynthesis.getCrpStaffing().getStaffingIssues()) <= 100)) {
+      if (!(this.isValidString(powbSynthesis.getCrpStaffing().getStaffingIssues()))) {
         action.addMessage(action.getText("powbSynthesis.crpStaffing.staffingIssues.readText"));
         action.getInvalidFields().put("input-powbSynthesis.crpStaffing.staffingIssues",
           InvalidFieldsMessages.EMPTYFIELD);

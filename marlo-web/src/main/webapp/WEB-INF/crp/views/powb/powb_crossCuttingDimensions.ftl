@@ -42,24 +42,25 @@
           [#-- Briefly summarize the main areas of work in 2018 relevant to cross-cutting dimensions --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.summarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
-              [@customForm.textArea name="powbSynthesis.flagshipSummarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.flagshipSummarize" i18nkey="liaisonInstitution.powb.summarizeCorssCutting"  help="liaisonInstitution.powb.summarizeCorssCutting.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
           </div>
         
           [#-- Open Data and Intellectual Assets --] 
           <div class="form-group">
             [#if PMU]
-              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.powbCrossCuttingDimension.assets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU powbInclude=true /]
             [#else]
-              [@customForm.textArea name="powbSynthesis.flagshipAssets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="limitWords-100" editable=editable && PMU /]
+              [@customForm.textArea name="powbSynthesis.flagshipAssets" i18nkey="liaisonInstitution.powb.openDataIntellectualAssests" help="liaisonInstitution.powb.openDataIntellectualAssests.help" helpIcon=false fieldEmptyText="global.prefilledByPmu" paramText="${(actualPhase.year)!}" required=true className="" editable=editable && PMU /]
             [/#if]
           </div>
           
           [#-- Table C: Cross-cutting Aspect of Expected Deliverables (OPTIONAL) --]
           <div class="form-group">
-            <h4 class="subTitle headTitle">[@s.text name="crossCuttingDimensions.tableC.title" /]</h4>
+            <h4 class="subTitle headTitle powb-table">[@s.text name="crossCuttingDimensions.tableC.title" /]</h4>
+            <span class="powb-doc badge label-powb-table" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
             <hr />
             [@tableHMacro /]
           </div>
@@ -131,7 +132,7 @@
   
   <!-- Modal -->
   <div class="modal fade" id="overallOutputsMacro" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" style="" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -163,7 +164,7 @@
           [#list dList as dInfo]
           <tr>
             <td class="row">
-              <p> <strong>D${(dInfo.deliverable.id)!}</strong> ${(dInfo.title)!'Not Defined'}</p>
+              <span title="${(dInfo.title)!}"><strong>D${(dInfo.deliverable.id)!}</strong> [@utilities.wordCutter string="${(dInfo.title)!'Not Defined'}" maxPos=70 /] </span> <br />
               <small>(${(dInfo.deliverableType.name)!'Not Defined'})</small>
             </td>
             <td>

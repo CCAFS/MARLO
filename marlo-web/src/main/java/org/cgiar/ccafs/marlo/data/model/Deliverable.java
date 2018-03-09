@@ -162,7 +162,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getComposedName() {
     if (this.getDeliverableInfo() != null) {
       try {
-        return "<b> (D" + this.id + ") " + this.getDeliverableInfo().getDeliverableType().getDescription() + "</b> - "
+        return "<b> (D" + this.id + ") " + this.getDeliverableInfo().getDeliverableType().getName() + "</b> - "
           + this.getDeliverableInfo().getTitle();
       } catch (Exception e) {
         return "<b> (D" + this.id + ") </b> - " + this.getDeliverableInfo().getTitle();

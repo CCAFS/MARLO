@@ -1,11 +1,32 @@
 table {
 }
 
+.powb-table{
+  display: inline-block;
+}
+
+span.powb-doc.badge{
+  background-color: #0d8dc0;
+}
+
+.label-powb-table{
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.powb-label{
+  width: 100%;
+}
+
 table tr {
   list-style: none;
   padding-bottom: 9px;
   border-bottom: 1px solid #e7e7e7;
   font-size: 0.95em;
+}
+
+table tr.text-small{
+  font-size: 0.85em;
 }
 
 table tr a {
@@ -105,16 +126,20 @@ form .form-group.margin-panel {
   background-color: #41b9dd;
 }
 
+.label-min-width{
+  max-width: 85% !important;
+}
+
 #table-plannedStudies .subHeader th {
   text-align: center;
 }
 
 #table-plannedStudies .relevantSubIDO ul {
-  padding-left: 20px;
+  padding-left: 12px;
 }
 
 #table-plannedStudies .relevantSubIDO ul li{
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 }
 
 .modal-content {
@@ -177,4 +202,8 @@ tfoot {
 .viewMoreSyntesis:hover{
   color:#999;
   text-decoration:underline;
+}
+
+#tableE td {
+  padding: 4px;
 }

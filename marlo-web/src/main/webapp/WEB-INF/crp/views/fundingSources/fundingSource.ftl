@@ -78,7 +78,7 @@
                         [#-- Check IFPRI Division --]
                         [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
                         [#-- Check CIAT Institution --]
-                        [#if institutionLead.institution.acronym == "CIAT" ] [#assign hasCIAT = true /] [/#if]
+                        [#if (institutionLead.institution.acronymName == "CIAT")!false ] [#assign hasCIAT = true /] [/#if]
                       </li>
                     [/#if]
                   [/#list]
@@ -103,11 +103,11 @@
         </div>
         
         [#-- Finance code module --]
-         [#if fundingSource.fundingSourceInfo?has_content]
-         [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
-          [#else]
-           [#assign isSynced =false ]
-          [/#if]
+        [#if fundingSource.fundingSourceInfo?has_content]
+          [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+        [#else]
+          [#assign isSynced =false ]
+        [/#if]
        
         [#assign financeChannelInstitution = {} /]
         [#if fundingSource.institutions?has_content]
@@ -551,7 +551,7 @@
                     ${(projectBudget.project.projectInfo.title)!}
                   </a>
                 </td>
-                <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
+                <td> ${(projectBudget.institution.acronymName)!(projectBudget.institution.name)} </td>
                 <td>${(projectBudget.budgetType.name)!}
                    [#if action.hasSpecificities('crp_fs_w1w2_cofinancing')] ${(fundingSource.fundingSourceInfo.w1w2?string('<small class="text-primary">(Co-Financing)</small>',''))!} [/#if]
          
