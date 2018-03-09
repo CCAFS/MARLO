@@ -25,6 +25,10 @@ table tr {
   font-size: 0.95em;
 }
 
+table tr.text-small{
+  font-size: 0.85em;
+}
+
 table tr a {
   color: #444;
 }
