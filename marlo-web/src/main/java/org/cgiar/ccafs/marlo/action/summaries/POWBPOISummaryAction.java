@@ -362,22 +362,73 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       this.getText("summaries.powb.participantingCenters") + ": " + participantingCenters);
   }
 
-  public void createTableA() {
+  public void createTableA1() {
     this.loadTablePMU();
 
     List<List<String>> headers = new ArrayList<>();
 
     String[] sHeader = {this.getText("expectedProgress.tableA.fp"), this.getText("expectedProgress.tableA.subIDO"),
-      this.getText("expectedProgress.tableA.outcomes"), this.getText("expectedProgress.tableA.milestone") + "*",
-      "Budget  " + this.getText("expectedProgress.tableA.w1w2"),
-      "Budget  " + this.getText("expectedProgress.tableA.w3bilateral"),
-      this.getText("expectedProgress.tableA.assessment") + "**",
-      this.getText("expectedProgress.tableA.meansVerification")};
+      this.getText("summaries.powb.tableA1.outcomes"),
+      this.getSelectedYear() + " Budget  " + this.getText("expectedProgress.tableA.w1w2"),
+      this.getSelectedYear() + " Budget  " + this.getText("expectedProgress.tableA.w3bilateral")};
 
     List<String> header = Arrays.asList(sHeader);
     headers.add(header);
-    String FP, subIDO = "", outcomes, milestone, assessment, meansVerifications;
-    Double w1w2, w3Bilateral;
+    String FP, subIDO = "", outcomes;
+
+    List<List<String>> datas = new ArrayList<>();
+    List<String> data;
+    for (CrpProgram flagship : flagships) {
+      int flagshipIndex = 0;
+      data = new ArrayList<>();
+      for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
+        subIDO = "";
+        for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+          if (subIDO.isEmpty()) {
+            if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+              subIDO = "• CC: " + subIdo.getSrfSubIdo().getDescription();
+            } else {
+              subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
+            }
+          } else {
+            if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
+              subIDO += "\n • CC:" + subIdo.getSrfSubIdo().getDescription();
+            } else {
+              subIDO += "\n •" + subIdo.getSrfSubIdo().getDescription();
+            }
+          }
+        }
+        outcomes = outcome.getComposedName();
+
+        if (flagshipIndex == 0) {
+          FP = flagship.getAcronym();
+        } else {
+          FP = " ";
+        }
+        String[] sData = {FP, subIDO, outcomes, "", ""};
+        data = Arrays.asList(sData);
+        datas.add(data);
+        flagshipIndex++;
+      }
+    }
+
+
+    poiSummary.textTable(document, headers, datas, false);
+  }
+
+  private void createTableA2() {
+    this.loadTablePMU();
+
+    List<List<String>> headers = new ArrayList<>();
+
+    String[] sHeader = {this.getText("expectedProgress.tableA.fp"), this.getText("summaries.powb.tableA1.outcomes"),
+      this.getText("expectedProgress.tableA.milestone") + "*",
+      this.getText("expectedProgress.tableA.meansVerification"),
+      this.getText("expectedProgress.tableA.assessment") + "**"};
+
+    List<String> header = Arrays.asList(sHeader);
+    headers.add(header);
+    String FP, outcomes, milestone, assessment, meansVerifications;
 
     List<List<String>> datas = new ArrayList<>();
 
@@ -387,7 +438,6 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       data = new ArrayList<>();
       int outcome_index = 0;
       for (CrpProgramOutcome outcome : flagship.getOutcomes()) {
-        subIDO = "";
         int milestone_index = 0;
         for (CrpMilestone crpMilestone : outcome.getMilestones()) {
           Boolean isFlagshipRow = (outcome_index == 0) && (milestone_index == 0);
@@ -403,28 +453,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             outcomes = " ";
           }
           milestone = crpMilestone.getComposedName();
-          if (isOutcomeRow) {
-            for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-              if (subIDO.isEmpty()) {
-                if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                  subIDO = "• CC: " + subIdo.getSrfSubIdo().getDescription();
-                } else {
-                  subIDO = "• " + subIdo.getSrfSubIdo().getDescription();
-                }
-              } else {
-                if (subIdo.getSrfSubIdo().getSrfIdo().isIsCrossCutting()) {
-                  subIDO += "\n • CC:" + subIdo.getSrfSubIdo().getDescription();
-                } else {
-                  subIDO += "\n •" + subIdo.getSrfSubIdo().getDescription();
-                }
-              }
-            }
-          } else {
-            subIDO = " ";
-          }
 
-          w1w2 = flagship.getW1();
-          w3Bilateral = flagship.getW3();
           PowbExpectedCrpProgress milestoneProgress =
             this.getPowbExpectedCrpProgressProgram(crpMilestone.getId(), flagship.getId());
           assessment =
@@ -433,8 +462,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           meansVerifications = milestoneProgress.getMeans() != null && !milestoneProgress.getMeans().trim().isEmpty()
             ? milestoneProgress.getMeans() : " ";
 
-          String[] sData = {FP, subIDO, outcomes, milestone, "US" + currencyFormat.format(round(w1w2, 2)),
-            "US" + currencyFormat.format(round(w3Bilateral, 2)), assessment, meansVerifications};
+          String[] sData = {FP, outcomes, milestone, meansVerifications, assessment};
           data = Arrays.asList(sData);
           datas.add(data);
 
@@ -853,9 +881,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       paragraph.setPageBreak(true);
       poiSummary.textHead1Title(paragraph, "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableA.title"));
-      this.createTableA();
+      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA1.title"));
+      this.createTableA1();
+      poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA2.title"));
+      this.createTableA2();
       poiSummary.textNotes(document.createParagraph(), "*" + this.getText("expectedProgress.tableA.milestone.help"));
-      poiSummary.textNotes(document.createParagraph(), "**" + this.getText("expectedProgress.tableA.assessment.help"));
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableB.title"));
       this.createTableB();
       poiSummary.textHead2Title(document.createParagraph(), this.getText("crossCuttingDimensions.tableC.title"));
