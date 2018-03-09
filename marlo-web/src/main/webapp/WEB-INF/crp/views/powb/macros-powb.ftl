@@ -10,9 +10,9 @@
   [#else]
     [#local projects = (action.loadFlagShipBudgetInfoProgram(element.id))![] ]
     [#if projects?size > 0]
-    <a class=" btn btn-default btn-xs" data-toggle="modal" style="border-color: #00BCD4;" data-target="#projectBudgets-${type}-${element.id}">
+    <a class=" btn btn-default btn-xs" data-toggle="modal" style="border-color: #00BCD4;color: #057584;" data-target="#projectBudgets-${type}-${element.id}">
        [#-- <span class="glyphicon glyphicon-fullscreen" style="color:#b3b3b3"></span>  --]
-       US$ <span >
+       <span >
         [#if type == "W1W2"]${((element.w1)!0)?number?string(",##0.00")}
         [#elseif type == "W3BILATERAL"]${((element.w3)!0)?number?string(",##0.00")}
         [#elseif type == "CENTERFUNDS"]${((element.centerFunds)!0)?number?string(",##0.00")}
