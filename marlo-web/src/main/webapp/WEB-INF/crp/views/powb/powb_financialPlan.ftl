@@ -141,10 +141,10 @@
     [#-- CARRY OVER--]
     <td class="text-right">
       [#if editable && PMU  ]
-        [@customForm.input name="${customName}.carryOver" value="${(element.carryOver)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-carryOver category-${index}" required=true /]
+        [@customForm.input name="${customName}.carry" value="${(element.carry)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-carry category-${index}" required=true /]
       [#else]
-        <input type="hidden" name="${customName}.carryOver" value="${(element.carryOver)!'0'}" class="currencyInput type-carryOver category-${index}"/>
-        <nobr>US$ ${((element.carryOver)!'0')?number?string(",##0.00")}</nobr>
+        <input type="hidden" name="${customName}.carry" value="${(element.carry)!'0'}" class="currencyInput type-carry category-${index}"/>
+        <nobr>US$ ${((element.carry)!'0')?number?string(",##0.00")}</nobr>
       [/#if]
     </td>
     [#-- W1/W2 --]
