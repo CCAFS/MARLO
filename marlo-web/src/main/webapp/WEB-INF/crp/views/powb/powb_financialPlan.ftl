@@ -79,7 +79,7 @@
 
 [#macro tableE ]
   <div class="">
-    <table class="table table-bordered">
+    <table id="tableE" class="table table-bordered">
       <thead>
         <tr>
           <th rowspan="2"></th>
