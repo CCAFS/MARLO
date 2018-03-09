@@ -268,7 +268,7 @@ public class ProjectBudgetByFlagshipAction extends BaseAction {
   }
 
   /**
-   * @param type
+   * @param budget type
    * @param year
    * @return
    */
