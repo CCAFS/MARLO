@@ -78,6 +78,7 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableE ]
+  [#assign commentsBelow = true /]
   <div class="">
     <table id="tableE" class="table table-bordered">
       <thead>
