@@ -60,6 +60,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -75,6 +76,13 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -867,6 +875,19 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String execute() throws Exception {
     try {
+
+      /* Create a portrait text Section */
+      CTDocument1 doc = document.getDocument();
+      CTBody body = doc.getBody();
+      CTSectPr sectionText = body.addNewSectPr();
+      CTPageSz pageSize = sectionText.addNewPgSz();
+
+      /* standard Letter page size */
+      pageSize.setOrient(STPageOrientation.PORTRAIT);
+      pageSize.setH(BigInteger.valueOf(842 * 20));
+      pageSize.setW(BigInteger.valueOf(595 * 20));
+
+
       poiSummary.pageHeader(document, this.getText("summaries.powb.header"));
       poiSummary.textLineBreak(document, 13);
       poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.powb.mainTitle"));
@@ -902,33 +923,52 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       poiSummary.textHead1Title(document.createParagraph(), this.getText("summaries.powb.management"));
       this.addManagement();
 
+      /* Create a landscape text Section */
+      CTSectPr sectionTables = body.addNewSectPr();
+      pageSize = sectionTables.addNewPgSz();
+      XWPFParagraph para = document.createParagraph();
+      CTP ctp = para.getCTP();
+      CTPPr br = ctp.addNewPPr();
+      br.setSectPr(sectionTables);
+      /* standard Letter page size */
+      pageSize.setOrient(STPageOrientation.LANDSCAPE);
+      pageSize.setW(BigInteger.valueOf(842 * 20));
+      pageSize.setH(BigInteger.valueOf(595 * 20));
+
       XWPFParagraph paragraph = document.createParagraph();
-      paragraph.setPageBreak(true);
       poiSummary.textHead1Title(paragraph, "TABLES");
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableA.title"));
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA1.title"));
       this.createTableA1();
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead3Title(document.createParagraph(), this.getText("summaries.powb.tableA2.title"));
       this.createTableA2();
       poiSummary.textNotes(document.createParagraph(), "*" + this.getText("expectedProgress.tableA.milestone.help"));
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableB.title"));
       this.createTableB();
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("crossCuttingDimensions.tableC.title"));
       this.createTableC();
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("crpStaffing.tableD.title"));
       this.createTableD();
       poiSummary.textNotes(document.createParagraph(), this.getText("crpStaffing.tableD.help"));
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("financialPlan.tableE.title", new String[] {String.valueOf(this.getSelectedYear())}));
       this.createTableE();
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("financialPlan.tableF.title"));
       this.createTableF();
       poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.expenditureArea.help"));
       poiSummary.textNotes(document.createParagraph(), this.getText("financialPlan.tableF.estimatedPercentage.help"));
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(),
         this.getText("collaborationIntegration.listCollaborations.title"));
       this.createTableG();
       poiSummary.textNotes(document.createParagraph(), this.getText("summaries.powb.tableG.description.help"));
+      document.createParagraph().setPageBreak(true); // Fast Page Break
       poiSummary.textHead2Title(document.createParagraph(), this.getText("summaries.powb.tableF.title"));
       this.createTableH();
       ByteArrayOutputStream os = new ByteArrayOutputStream();
