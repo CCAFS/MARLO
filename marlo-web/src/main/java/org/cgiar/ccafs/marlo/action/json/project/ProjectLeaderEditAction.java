@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.LocalizedTextProvider;
@@ -45,7 +44,6 @@ import org.apache.struts2.dispatcher.Parameter;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Named
 public class ProjectLeaderEditAction extends BaseAction {
 
   private static final long serialVersionUID = -7458726524471438475L;
