@@ -178,13 +178,13 @@ public class POISummary {
     paragraphRun.setFontSize(10);
   }
 
-  public void textTable(XWPFDocument document, List<List<String>> sHeaders, List<List<String>> sData,
+  public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
     Boolean highlightFirstColumn) {
 
     XWPFTable table = document.createTable();
     int record = 0;
     int headerIndex = 0;
-    for (List<String> headers : sHeaders) {
+    for (List<POIField> poiParameters : sHeaders) {
       // Setting the Header
       XWPFTableRow tableRowHeader;
       if (headerIndex == 0) {
@@ -192,36 +192,48 @@ public class POISummary {
       } else {
         tableRowHeader = table.createRow();
       }
-      for (String header : headers) {
+      for (POIField poiParameter : poiParameters) {
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
-            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(header);
+            paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           } else {
             XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
-            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(header);
+            paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           }
         } else {
           XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
-          paragraph.setAlignment(ParagraphAlignment.CENTER);
+          paragraph.setAlignment(poiParameter.getAlignment());
           XWPFRun paragraphRun = paragraph.createRun();
-          paragraphRun.setText(header);
+          paragraphRun.setText(poiParameter.getText());
           paragraphRun.setColor(TEXT_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -232,28 +244,33 @@ public class POISummary {
       record = 0;
     }
 
-
-    for (List<String> rows : sData) {
+    for (List<POIField> poiParameters : sData) {
       record = 0;
       XWPFTableRow dataRow = table.createRow();
-      for (String row : rows) {
+      for (POIField poiParameter : poiParameters) {
 
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.LEFT);
+        paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(row);
+        paragraphRun.setText(poiParameter.getText());
         paragraphRun.setColor(TEXT_FONT_COLOR);
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {
           dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
         } else {
-          paragraphRun.setBold(false);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(false);
+          }
         }
-
         record++;
-
       }
     }
 
