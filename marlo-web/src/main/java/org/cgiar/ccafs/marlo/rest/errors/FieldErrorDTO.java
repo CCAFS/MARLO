@@ -13,18 +13,36 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.errors;
 
-package org.cgiar.ccafs.marlo.data.model.dto.mapper;
+import java.io.Serializable;
 
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
-import org.cgiar.ccafs.marlo.data.model.dto.LiaisonInstitutionDTO;
+public class FieldErrorDTO implements Serializable {
 
-import org.mapstruct.Mapper;
+  private static final long serialVersionUID = 1L;
 
-@Mapper
-public interface LiaisonInstitutionMapper {
+  private final String objectName;
 
-  public LiaisonInstitution liaisonInstitutionDTOToLiaisonInstitution(LiaisonInstitution liaison);
+  private final String field;
 
-  public LiaisonInstitutionDTO liaisonInstitutionToLiaisonInstitutionDTO(LiaisonInstitution liaison);
+  private final String message;
+
+  FieldErrorDTO(String dto, String field, String message) {
+    this.objectName = dto;
+    this.field = field;
+    this.message = message;
+  }
+
+  public String getField() {
+    return field;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public String getObjectName() {
+    return objectName;
+  }
+
 }

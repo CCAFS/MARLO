@@ -15,14 +15,14 @@
 
 package org.cgiar.ccafs.marlo;
 
-import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * Configuration for MARLO Security using Apache Shiro.
@@ -30,33 +30,37 @@ import org.springframework.context.annotation.DependsOn;
 @Configuration
 public class MarloShiroConfiguration {
 
-  @Bean(name = "lifecycleBeanPostProcessor")
-  public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
-    return new LifecycleBeanPostProcessor();
-  }
 
-  @Bean(name = "realm")
-  @DependsOn("lifecycleBeanPostProcessor")
-  public APCustomRealm realm() {
-    return new APCustomRealm();
-  }
-
+  /**
+   * The realm @APCustomRealm is discovered and initialized by Spring classpath scanning and is injected with other
+   * dependencies which is why it is not configured here. The @ShiroSpringStartupListener will then set the realm on the
+   * securityManager when notified by an @ApplicationEvent.
+   */
   @Bean(name = "securityManager")
   public DefaultWebSecurityManager securityManager() {
     DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-    // securityManager.setRealm(this.realm());
     return securityManager;
   }
 
   @Bean(name = "shiroFilter")
-  public ShiroFilterFactoryBean shiroFilter() throws Exception {
+  public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager) throws Exception {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-    shiroFilterFactoryBean.setSecurityManager(this.securityManager());
+    shiroFilterFactoryBean.setSecurityManager(securityManager);
 
     shiroFilterFactoryBean.setLoginUrl("/login.do");
     shiroFilterFactoryBean.setSuccessUrl("/");
     shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 
+    // RESTfull services basic authentication filter setup.
+    Map<String, String> filterChainDefinitionMap = new HashMap<>();
+    filterChainDefinitionMap.put("/api/**", "authcBasic");
+    shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+
     return shiroFilterFactoryBean;
+  }
+
+  @Bean(name = "lifecycleBeanPostProcessor")
+  public LifecycleBeanPostProcessor vetLifecycleBeanPostProcessor() {
+    return new LifecycleBeanPostProcessor();
   }
 }
