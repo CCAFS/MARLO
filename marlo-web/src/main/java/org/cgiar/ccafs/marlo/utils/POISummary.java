@@ -274,7 +274,6 @@ public class POISummary {
       }
     }
 
-
     /* Vertical merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
