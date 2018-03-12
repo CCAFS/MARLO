@@ -33,6 +33,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,18 +255,37 @@ public class POISummary {
       }
     }
 
-    table.getRow(0).getCell(0).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
 
+    // table.getRow(0).getCell(0).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       XWPFTableRow row = table.getRow(x);
       int numberOfCell = row.getTableCells().size();
       for (int y = 0; y < numberOfCell; y++) {
         XWPFTableCell cell = row.getCell(y);
-
         cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+        if (x == 1) {
+          if (x == 1) {
+            if (y == 0) {
+              vmerge.setVal(STMerge.RESTART);
+              cell.getCTTc().getTcPr().setVMerge(vmerge);
+            }
+
+          } else {
+            vmerge1.setVal(STMerge.CONTINUE);
+            if (y == 0) {
+              try {
+                cell.getCTTc().getTcPr().setVMerge(vmerge1);
+              } catch (Exception e) {
+              }
+            }
+          }
+        }
+
       }
     }
-
   }
 
 }
