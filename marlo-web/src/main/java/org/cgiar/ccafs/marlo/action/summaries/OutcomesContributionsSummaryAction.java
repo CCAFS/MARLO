@@ -261,7 +261,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
             if (projectMilestone.getProjectOutcome().isActive()) {
               String projectId = "", title = "", flagship = "", outcome = "", projectUrl = "", milestone = "",
                 expectedUnit = "", narrativeTarget = "", outcomeIndicator = null;
-              Long expectedValue = -1L;
+              Double expectedValue = new Double(0);
               Long phaseID = null;
               projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
               if (projectMilestone.getProjectOutcome().getProject()
@@ -327,7 +327,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         String flagship = "";
         String outcome = "";
         String outcomeIndicator = null;
-        BigDecimal expectedValue = new BigDecimal(-1);
+        Double expectedValue = new Double(0);
         String expectedUnit = "";
         String expectedNarrative = "";
         String projectUrl = "";
