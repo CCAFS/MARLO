@@ -13,19 +13,19 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.errors;
 
-package org.cgiar.ccafs.marlo.data.model.dto.mapper;
 
-import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.dto.GlobalUnitDTO;
+public class ResourceConflictException extends RuntimeException {
 
-import org.mapstruct.Mapper;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-@Mapper
-public interface GloblUnitMapper {
+  public ResourceConflictException(String message) {
+    super(message);
+  }
 
-  public GlobalUnit globalUnitDTOToGlobalUnit(GlobalUnitDTO globalUnitDTO);
-
-  public GlobalUnitDTO globalUnitToGlobalUnitDTO(GlobalUnit globalUnit);
 
 }

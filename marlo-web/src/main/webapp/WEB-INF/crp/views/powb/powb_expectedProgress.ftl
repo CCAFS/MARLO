@@ -106,8 +106,8 @@
           [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
           [#if !allowPopups]<th rowspan="1" colspan="2" class="text-center"> Budget </th> [/#if]
-          <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
         </tr>
         <tr>
           [#if !allowPopups]

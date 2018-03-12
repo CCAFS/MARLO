@@ -13,32 +13,20 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.errors;
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+public final class ErrorConstants {
 
-import java.io.Serializable;
+  public static final String ERR_CONCURRENCY_FAILURE = "error.concurrencyFailure";
+  public static final String ERR_ACCESS_DENIED = "error.accessDenied";
+  public static final String ERR_VALIDATION = "error.validation";
+  public static final String ERR_METHOD_NOT_SUPPORTED = "error.methodNotSupported";
 
-public class InstitutionDTO implements Serializable {
+  public static final String ERR_RESOURCE_ALREADY_EXISTS = "error.resourceAlreadyExists";
+  public static final String ERR_INTERNAL_SERVER = "error.internalServerError";
+  public static final String ERR_RESOURCE_NOT_FOUND = "error.resourceNotFound";
 
-  private static final long serialVersionUID = -965998500451887514L;
-  private Long id;
-  private String name;
-
-  public Long getId() {
-    return id;
+  private ErrorConstants() {
   }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
 
 }
