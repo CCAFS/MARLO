@@ -28,6 +28,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -261,6 +262,7 @@ public class POISummary {
 
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
     for (int x = 0; x < table.getNumberOfRows(); x++) {
       if (x > 0) {
         XWPFTableRow row = table.getRow(x);
@@ -273,6 +275,27 @@ public class POISummary {
         } else {
           vmerge1.setVal(STMerge.CONTINUE);
           cell.getCTTc().getTcPr().setVMerge(vmerge1);
+        }
+      }
+    }
+
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+      cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+      System.out.println(cell.getText());
+      if (y > 0 && y < numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
         }
       }
     }
