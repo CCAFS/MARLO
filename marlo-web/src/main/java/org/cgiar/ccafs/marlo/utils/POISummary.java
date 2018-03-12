@@ -200,7 +200,11 @@ public class POISummary {
             XWPFRun paragraphRun = paragraph.createRun();
             paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -210,7 +214,11 @@ public class POISummary {
             XWPFRun paragraphRun = paragraph.createRun();
             paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -221,7 +229,11 @@ public class POISummary {
           XWPFRun paragraphRun = paragraph.createRun();
           paragraphRun.setText(poiParameter.getText());
           paragraphRun.setColor(TEXT_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -246,17 +258,23 @@ public class POISummary {
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {
           dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
         } else {
-          paragraphRun.setBold(false);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(false);
+          }
         }
         record++;
       }
     }
 
-
-    // table.getRow(0).getCell(0).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-
+    /* Vertical merge, From format tables A */
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
 
@@ -265,6 +283,9 @@ public class POISummary {
         XWPFTableRow row = table.getRow(x);
         XWPFTableCell cell = row.getCell(0);
         cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+        if (x == 1 && !(cell.getText().trim().length() > 0)) {
+          break;
+        }
         if (cell.getText().trim().length() > 0) {
           vmerge.setVal(STMerge.RESTART);
           cell.getCTTc().getTcPr().setVMerge(vmerge);
@@ -275,6 +296,7 @@ public class POISummary {
       }
     }
 
+    /* Horizontal merge, From format tables E */
     CTHMerge hMerge = CTHMerge.Factory.newInstance();
     CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
 
@@ -284,7 +306,6 @@ public class POISummary {
     for (int y = 0; y < numberOfCell - 1; y++) {
       XWPFTableCell cell = row.getCell(y);
       cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-      System.out.println(cell.getText());
       if (y > 0 && y < numberOfCell) {
         if (cell.getText().trim().length() > 0) {
           hMerge.setVal(STMerge.RESTART);
