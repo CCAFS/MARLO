@@ -185,7 +185,7 @@
                   [#-- LOCATION LIST --]
                   <div class="col-md-12">
                     [#-- Add new location (Modal) --]
-                    <div class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
+                    <div id="addLocationModal" class="modal fade addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addNewLocation" aria-hidden="true">
                       <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                           <button id="close-modal-button" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -217,7 +217,7 @@
                                 <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
                                 <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
                               </div>
-                              
+                              [#-- Big Button to add more inputs --]
                               <div style="display:none;">
                                 <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add another location</div>
                               </div> 
@@ -239,17 +239,15 @@
                     </div>
                     <div id="selectsContent" class="col-md-12 " listname="project.locationsData">
                       <div class="row">
-                        [#if project.locationsData?has_content]
-                          <table class="locationsDataTable">
+                          [#if project.locationsData?has_content]
+                            <table class="locationsDataTable">
                             [#list project.locationsData as locationLevels]
-                              [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
-                              [#-- Hiden template into table tag --]
-                              [@locationsTableMacro element={} name="${locationLevelName}" index=-1 template=true /]
+                                [@locationsTableMacro element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list/]
                             [/#list]
-                          </table>
-                        [#else]
-                          <p class="text-center borderBox inf">No locations has been added, please add locations.</p>
-                        [/#if]
+                            </table>
+                          [#else]
+                            <p>No locations has been added, please add locations.</p>
+                          [/#if]
                       </div>
                     </div>
                   </div>
@@ -268,6 +266,7 @@
 
 
 [#-- Section hidden inputs--]
+[@locationsTableMacro element={} name="${locationLevelName}" index=-1 template=true /]
 
 [@locationMacro element={} name="${locationLevelName}[-1].${locationName}" index=-1 template=true /]
 
@@ -277,6 +276,7 @@
 <input type="hidden" id="locationName" value="${locationName}" />
 
 [#macro locationsTableMacro element name index template=false list=false]
+  [#if template]<table>[/#if]
       [#local customName = "${name}[${index}]" /]
       <tr id="locationLevel-${template?string('template',index)}" class="locationLevel" style="display:${template?string('none','')}">
         <th class="locLevelName" width="20%">${(element.name)!''}</th>
@@ -296,6 +296,7 @@
         <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
         <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
       </tr>
+  [#if template]</table>[/#if]
 [/#macro]
 
 [#macro locationMacro element  name index template=false isList=false ]
@@ -339,37 +340,6 @@
 </ul>
 
 [#include "/WEB-INF/crp/pages/footer.ftl"]
-
-[#macro locationLevelTableDisabled element  name index template=false list=false]
-  [#local customName = "${name}[${index}]" /]
-  [#local countryQuestion = '[@s.text name="projectLocations.selectAllCountries" /]'/]
-  [#local cmvsQuestion = '[@s.text name="projectLocations.selectAllCmvs" /]'/]
-  <table>
-    <tr>
-      <th width="20%">${(element.name)!}:</th>
-      <td width="80%">
-        <div class=" locationLevel-optionContent " listname="${customName}.locElements">
-          <span class="allCountriesQuestion" style="display:none">
-            <span class="question">[@s.text name="projectLocations.selectAllCmvs" /]</span>
-            [@customForm.yesNoInput name="${customName}.allCountries"  editable=editable inverse=false  cssClass="allCountries text-center" /]
-            <hr />
-          </span>
-          [#-- Content of locations--]
-          <div class="optionSelect-content row">
-            [#if element.locElements?has_content]
-              [#list element.locElements as location]
-                [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
-              [/#list]
-            [/#if]
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
-  <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
-  <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
-  <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
-[/#macro]
 
 [#macro recommendedLocation element  name index template=false ]
   [#local customName = "${name}[${index}]" /]
