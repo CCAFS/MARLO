@@ -36,6 +36,14 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
   private Double w3Bilateral;
 
   @Expose
+  private Double centerFunds;
+
+
+  @Expose
+  private Double carry;
+
+
+  @Expose
   private String comments;
 
 
@@ -46,24 +54,34 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
   @Expose
   private Date activeSince;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private String modificationJustification;
 
-  private boolean editBudgets = true;
 
+  private boolean editBudgets = true;
 
   public PowbFinancialPlannedBudget() {
   }
 
-
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public Double getCarry() {
+    return carry;
+  }
+
+  public Double getCenterFunds() {
+    return centerFunds;
   }
 
 
@@ -87,12 +105,14 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return liaisonInstitution;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -104,32 +124,35 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return modifiedBy;
   }
 
-
   public PowbExpenditureAreas getPowbExpenditureArea() {
     return powbExpenditureArea;
   }
-
 
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
 
+
   public Double getTotalPlannedBudget() {
     Double w1w2T;
     Double w3BilateralT;
+    Double carryT;
+    Double centerT;
     w1w2T = w1w2 == null ? 0.0 : w1w2;
     w3BilateralT = w3Bilateral == null ? 0.0 : w3Bilateral;
-    if (w1w2T + w3BilateralT != 0) {
-      return Math.round(((w1w2T + w3BilateralT)) * 10.0) / 10.0;
+    carryT = carry == null ? 0.0 : carry;
+    centerT = centerFunds == null ? 0.0 : centerFunds;
+    if (w1w2T + w3BilateralT + carryT + centerT != 0) {
+      return Math.round(((w1w2T + w3BilateralT + carryT + centerT)) * 10.0) / 10.0;
     } else {
       return 0.0;
     }
   }
 
+
   public Double getW1w2() {
     return w1w2;
   }
-
 
   public Double getW3Bilateral() {
     return w3Bilateral;
@@ -145,13 +168,22 @@ public class PowbFinancialPlannedBudget implements java.io.Serializable, IAuditL
     return editBudgets;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setCarry(Double carry) {
+    this.carry = carry;
+  }
+
+  public void setCenterFunds(Double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
 
