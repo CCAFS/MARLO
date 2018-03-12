@@ -934,18 +934,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String execute() throws Exception {
     try {
-
       /* Create a portrait text Section */
       CTDocument1 doc = document.getDocument();
       CTBody body = doc.getBody();
-      CTSectPr sectionText = body.addNewSectPr();
-      CTPageSz pageSize = sectionText.addNewPgSz();
-
-      /* standard Letter page size */
-      pageSize.setOrient(STPageOrientation.PORTRAIT);
-      pageSize.setH(BigInteger.valueOf(842 * 20));
-      pageSize.setW(BigInteger.valueOf(595 * 20));
-
 
       poiSummary.pageHeader(document, this.getText("summaries.powb.header"));
       poiSummary.textLineBreak(document, 13);
@@ -983,16 +974,16 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       this.addManagement();
 
       /* Create a landscape text Section */
-      CTSectPr sectionTables = body.addNewSectPr();
-      pageSize = sectionTables.addNewPgSz();
       XWPFParagraph para = document.createParagraph();
-      CTP ctp = para.getCTP();
-      CTPPr br = ctp.addNewPPr();
-      br.setSectPr(sectionTables);
+      CTSectPr sectionTable = body.getSectPr();
+      CTPageSz pageSizeTable = sectionTable.addNewPgSz();
+      CTP ctpTable = para.getCTP();
+      CTPPr brTable = ctpTable.addNewPPr();
+      brTable.setSectPr(sectionTable);
       /* standard Letter page size */
-      pageSize.setOrient(STPageOrientation.LANDSCAPE);
-      pageSize.setW(BigInteger.valueOf(842 * 20));
-      pageSize.setH(BigInteger.valueOf(595 * 20));
+      pageSizeTable.setOrient(STPageOrientation.LANDSCAPE);
+      pageSizeTable.setW(BigInteger.valueOf(842 * 20));
+      pageSizeTable.setH(BigInteger.valueOf(595 * 20));
 
       XWPFParagraph paragraph = document.createParagraph();
       poiSummary.textHead1Title(paragraph, "TABLES");
@@ -1098,8 +1089,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream().filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin()
+              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -1393,8 +1385,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus()
-              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
