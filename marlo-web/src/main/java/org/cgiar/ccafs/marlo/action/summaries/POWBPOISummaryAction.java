@@ -583,14 +583,14 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         new POIField(percentageFormat.format(tableC.getPercentageYouthPrincipal() / 100), ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(tableC.getPercentageYouthSignificant() / 100), ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(tableC.getPercentageYouthNotScored() / 100), ParagraphAlignment.CENTER),
-        new POIField(String.valueOf(tableC.getTotal()), ParagraphAlignment.CENTER)};
+        new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData2);
       datas.add(data);
       POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(tableC.getPercentageCapDevPrincipal() / 100), ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(tableC.getPercentageCapDevSignificant() / 100), ParagraphAlignment.CENTER),
         new POIField(percentageFormat.format(tableC.getPercentageCapDevNotScored() / 100), ParagraphAlignment.CENTER),
-        new POIField(String.valueOf(tableC.getTotal()), ParagraphAlignment.CENTER)};
+        new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData3);
       datas.add(data);
     }
