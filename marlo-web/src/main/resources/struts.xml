@@ -16,18 +16,15 @@
 	<constant name="struts.action.extension" value="do,,json" />
 	<constant name="struts.mapper.class"
 		value="org.apache.struts2.dispatcher.mapper.PrefixBasedActionMapper" />
-	<constant name="struts.mapper.prefixMapping" value="/api:rest,:struts" />
-	<constant name="struts.convention.action.suffix" value="Action, Controller" />
+	<constant name="struts.mapper.prefixMapping" value=":struts" />
+	<constant name="struts.convention.action.suffix" value="Action" />
 	<constant name="struts.convention.action.mapAllMatches" value="true" />
-	<constant name="struts.convention.default.parent.package"
-		value="rest-default" />
-	<constant name="struts.convention.package.locators" value="rest" />
-
-	<constant name="struts.rest.namespace" value="/api" />
-	<constant name="struts.rest.defaultExtension" value="json" />
 	  
   <constant name="struts.localizedTextProvider" value="marloLocalizedTextProvider" />
-		
+  
+  <!-- Spring MVC will power the REST services exposed by MARLO not Struts2 -->
+  <constant name="struts.action.excludePattern" value="/api/*"/>
+
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
 
@@ -408,6 +405,8 @@
 		<global-exception-mappings>
 			<exception-mapping exception="java.lang.Exception"
 				result="unhandledException" />
+      <exception-mapping exception="org.apache.shiro.authz.AuthorizationException"
+        result="403"/>
 		</global-exception-mappings>
 
 		<action name="unhandledExceptionAction"
@@ -436,7 +435,6 @@
 	<include file="struts-synthesis.xml" />
 	<include file="struts-powb.xml" />
 	<include file="struts-publications.xml" />
-	<include file="struts-rest.xml" />
 
 	<include file="struts-center-home.xml" />
 	<include file="struts-center-impactPathway.xml" />
