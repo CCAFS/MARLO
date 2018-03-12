@@ -314,7 +314,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             this.getPowbPath(liaisonInstitution,
               this.getLoggedCrp().getAcronym() + "_"
                 + PowbSynthesisSectionStatusEnum.FLAGSHIP_PLANS.getStatus().toString())
-              + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName(),
+              + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName().replaceAll(" ", "%20"),
             "URL: " + powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile().getFileName(),
             document.createParagraph());
         }
