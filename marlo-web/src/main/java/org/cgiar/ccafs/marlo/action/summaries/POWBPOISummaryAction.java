@@ -639,14 +639,15 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     powbSynthesisCrpStaffingCategory.setMaleNoCgiar(totalMaleNoCg);
     powbSynthesisCrpStaffingCategory.setFemale(totalFemale);
     powbSynthesisCrpStaffingCategory.setFemaleNoCgiar(totalFemaleNoCg);
-    POIField[] sData = {new POIField("Total CRP", ParagraphAlignment.LEFT),
+    Boolean bold = true;
+    POIField[] sData = {new POIField("Total CRP", ParagraphAlignment.LEFT, bold),
       new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getFemale()) + "("
-        + powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() + ")", ParagraphAlignment.CENTER),
+        + powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() + ")", ParagraphAlignment.CENTER, bold),
       new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getMale()) + "("
-        + powbSynthesisCrpStaffingCategory.getMaleNoCgiar() + ")", ParagraphAlignment.CENTER),
-      new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getTotalFTE()), ParagraphAlignment.CENTER),
+        + powbSynthesisCrpStaffingCategory.getMaleNoCgiar() + ")", ParagraphAlignment.CENTER, bold),
+      new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getTotalFTE()), ParagraphAlignment.CENTER, bold),
       new POIField(percentageFormat.format(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0),
-        ParagraphAlignment.CENTER)};
+        ParagraphAlignment.CENTER, bold)};
 
     data = Arrays.asList(sData);
     datas.add(data);
@@ -664,7 +665,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
       new POIField("", ParagraphAlignment.CENTER), new POIField("", ParagraphAlignment.CENTER),
       new POIField(this.getText("financialPlan.tableE.comments"), ParagraphAlignment.CENTER)};
-    POIField[] sHeader2 = {new POIField("", ParagraphAlignment.CENTER),
+    POIField[] sHeader2 = {new POIField(" ", ParagraphAlignment.CENTER),
       new POIField(
         this.getText("financialPlan.tableE.carryOver", new String[] {String.valueOf(this.getSelectedYear() - 1)}),
         ParagraphAlignment.CENTER),
@@ -672,7 +673,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       new POIField(this.getText("financialPlan.tableE.w3bilateral"), ParagraphAlignment.CENTER),
       new POIField(this.getText("financialPlan.tableE.centerFunds"), ParagraphAlignment.CENTER),
       new POIField(this.getText("financialPlan.tableE.total"), ParagraphAlignment.CENTER),
-      new POIField("", ParagraphAlignment.CENTER)};
+      new POIField(" ", ParagraphAlignment.CENTER)};
 
     List<POIField> header = Arrays.asList(sHeader);
     List<POIField> header2 = Arrays.asList(sHeader2);
@@ -765,13 +766,14 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         }
       }
     }
-    POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER),
-      new POIField(currencyFormat.format(round(totalCarry, 2)), ParagraphAlignment.CENTER),
-      new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER),
-      new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER),
-      new POIField(currencyFormat.format(round(totalCarry, 2)), ParagraphAlignment.CENTER),
-      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER),
-      new POIField(" ", ParagraphAlignment.LEFT)};
+    Boolean bold = true;
+    POIField[] sData = {new POIField("CRP Total", ParagraphAlignment.CENTER, bold),
+      new POIField(currencyFormat.format(round(totalCarry, 2)), ParagraphAlignment.CENTER, bold),
+      new POIField(currencyFormat.format(round(totalw1w2, 2)), ParagraphAlignment.CENTER, bold),
+      new POIField(currencyFormat.format(round(totalw3Bilateral, 2)), ParagraphAlignment.CENTER, bold),
+      new POIField(currencyFormat.format(round(totalCarry, 2)), ParagraphAlignment.CENTER, bold),
+      new POIField(currencyFormat.format(round(grandTotal, 2)), ParagraphAlignment.CENTER, bold),
+      new POIField(" ", ParagraphAlignment.LEFT, bold)};
 
     data = Arrays.asList(sData);
     datas.add(data);
@@ -826,10 +828,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         }
       }
     }
-    POIField[] sData = {new POIField("Total Funding (Amount)", ParagraphAlignment.LEFT),
+    Boolean bold = true;
+    POIField[] sData = {new POIField("Total Funding (Amount)", ParagraphAlignment.LEFT, bold),
       new POIField(currencyFormat.format(round((totalw1w2 * totalEstimatedPercentajeFS) / 100, 2)),
-        ParagraphAlignment.CENTER),
-      new POIField(" ", ParagraphAlignment.LEFT)};
+        ParagraphAlignment.CENTER, bold),
+      new POIField(" ", ParagraphAlignment.LEFT, bold)};
 
     data = Arrays.asList(sData);
     datas.add(data);
@@ -1055,9 +1058,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin()
-              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -1351,8 +1353,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d

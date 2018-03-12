@@ -21,6 +21,8 @@ public class POIField {
 
   private String text;
   private ParagraphAlignment alignment;
+  private Boolean bold;
+
 
   public POIField(String text, ParagraphAlignment alignment) {
     super();
@@ -29,8 +31,21 @@ public class POIField {
   }
 
 
+  public POIField(String text, ParagraphAlignment alignment, Boolean bold) {
+    super();
+    this.text = text;
+    this.alignment = alignment;
+    this.bold = bold;
+  }
+
+
   public ParagraphAlignment getAlignment() {
     return alignment;
+  }
+
+
+  public Boolean getBold() {
+    return bold;
   }
 
 
@@ -41,6 +56,11 @@ public class POIField {
 
   public void setAlignment(ParagraphAlignment alignment) {
     this.alignment = alignment;
+  }
+
+
+  public void setBold(Boolean bold) {
+    this.bold = bold;
   }
 
 
