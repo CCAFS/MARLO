@@ -49,6 +49,7 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
   private double w1;
 
   private double w3;
+  private double centerFunds;
 
 
   public PowbExpenditureAreas() {
@@ -57,6 +58,11 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  public double getCenterFunds() {
+    return centerFunds;
   }
 
 
@@ -134,6 +140,11 @@ public class PowbExpenditureAreas implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setCenterFunds(double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
 

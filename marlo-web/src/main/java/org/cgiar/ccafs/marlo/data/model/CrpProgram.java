@@ -112,15 +112,17 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private double w1;
 
   private double w3;
+  private double centerFunds;
+
 
   private PowbCollaboration collaboration;
+
 
   private PowbSynthesis synthesis;
 
 
   public CrpProgram() {
   }
-
 
   public CrpProgram(GlobalUnit crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -184,6 +186,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   }
 
 
+  public double getCenterFunds() {
+    return centerFunds;
+  }
+
+
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
   }
@@ -193,6 +200,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return collaboration;
   }
 
+
   public String getColor() {
     return color;
   }
@@ -200,7 +208,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public String getComposedName() {
     return this.acronym + ": " + this.name;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -211,10 +218,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
+
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
-
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
@@ -224,6 +231,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
   }
+
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
@@ -238,10 +246,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
-
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -257,7 +265,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return managers;
   }
 
-
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
@@ -268,15 +275,16 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public String getName() {
     return this.name;
   }
+
 
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
@@ -294,15 +302,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return projectFocuses;
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
 
+
   public List<String> getSelectedCountries() {
     return selectedCountries;
   }
-
 
   public Set<Submission> getSubmissions() {
     return submissions;
@@ -313,6 +320,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return synthesis;
   }
 
+
   public double getW1() {
     return w1;
   }
@@ -321,11 +329,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return w3;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -345,6 +353,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setBaseLine(Boolean baseLine) {
     this.baseLine = baseLine;
+  }
+
+  public void setCenterFunds(double centerFunds) {
+    this.centerFunds = centerFunds;
   }
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {

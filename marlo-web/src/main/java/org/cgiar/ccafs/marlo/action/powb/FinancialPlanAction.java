@@ -243,6 +243,8 @@ public class FinancialPlanAction extends BaseAction {
             this.loadFlagShipBudgetInfo(liaisonInstitution.getCrpProgram());
             powbFinancialPlannedBudget.setW1w2(liaisonInstitution.getCrpProgram().getW1());
             powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setCenterFunds(liaisonInstitution.getCrpProgram().getCenterFunds());
+
             powbFinancialPlannedBudget.setEditBudgets(false);
 
           }
@@ -256,6 +258,8 @@ public class FinancialPlanAction extends BaseAction {
             this.loadFlagShipBudgetInfo(liaisonInstitution.getCrpProgram());
             powbFinancialPlannedBudget.setW1w2(new Double(liaisonInstitution.getCrpProgram().getW1()));
             powbFinancialPlannedBudget.setW3Bilateral(liaisonInstitution.getCrpProgram().getW3());
+            powbFinancialPlannedBudget.setCenterFunds(liaisonInstitution.getCrpProgram().getCenterFunds());
+
             powbFinancialPlannedBudget.setEditBudgets(false);
 
           }
@@ -279,6 +283,8 @@ public class FinancialPlanAction extends BaseAction {
             this.loadPMU(powbExpenditureArea);
             powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
             powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
+
             powbFinancialPlannedBudget.setEditBudgets(false);
           }
           return powbFinancialPlannedBudget;
@@ -290,6 +296,8 @@ public class FinancialPlanAction extends BaseAction {
             this.loadPMU(powbExpenditureArea);
             powbFinancialPlannedBudget.setW1w2(powbExpenditureArea.getW1());
             powbFinancialPlannedBudget.setW3Bilateral(powbExpenditureArea.getW3());
+            powbFinancialPlannedBudget.setCenterFunds(powbExpenditureArea.getCenterFunds());
+
             powbFinancialPlannedBudget.setEditBudgets(false);
           }
           return powbFinancialPlannedBudget;
@@ -370,6 +378,8 @@ public class FinancialPlanAction extends BaseAction {
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double centerFunds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
+
       List<ProjectBudgetsFlagship> budgetsFlagships = project.getProjectBudgetsFlagships().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == crpProgram.getId().longValue()
           && c.getPhase().equals(this.getActualPhase()) && c.getYear() == this.getActualPhase().getYear())
@@ -377,11 +387,14 @@ public class FinancialPlanAction extends BaseAction {
       double percentageW1 = 0;
       double percentageW3 = 0;
       double percentageB = 0;
+      double percentageCenterFunds = 0;
+
 
       if (!this.getCountProjectFlagships(project.getId())) {
         percentageW1 = 100;
         percentageW3 = 100;
         percentageB = 100;
+        percentageCenterFunds = 100;
 
       }
       for (ProjectBudgetsFlagship projectBudgetsFlagship : budgetsFlagships) {
@@ -395,6 +408,9 @@ public class FinancialPlanAction extends BaseAction {
           case 3:
             percentageB = percentageB + projectBudgetsFlagship.getAmount();
             break;
+          case 4:
+            percentageCenterFunds = percentageCenterFunds + projectBudgetsFlagship.getAmount();
+            break;
           default:
             break;
         }
@@ -402,8 +418,11 @@ public class FinancialPlanAction extends BaseAction {
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
+      centerFunds = centerFunds * (percentageCenterFunds) / 100;
+
       crpProgram.setW1(crpProgram.getW1() + w1);
       crpProgram.setW3(crpProgram.getW3() + w3 + bilateral);
+      crpProgram.setCenterFunds(crpProgram.getCenterFunds() + centerFunds);
 
 
     }
@@ -440,23 +459,28 @@ public class FinancialPlanAction extends BaseAction {
       double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
       double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
       double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double centerFunds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
 
       double percentageW1 = 0;
       double percentageW3 = 0;
       double percentageB = 0;
+      double percentageCenterFunds = 0;
 
 
       percentageW1 = 100;
       percentageW3 = 100;
       percentageB = 100;
+      percentageCenterFunds = 100;
 
 
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
+      centerFunds = centerFunds * (percentageCenterFunds) / 100;
+
       liaisonInstitution.setW1(liaisonInstitution.getW1() + w1);
       liaisonInstitution.setW3(liaisonInstitution.getW3() + w3 + bilateral);
-
+      liaisonInstitution.setCenterFunds(liaisonInstitution.getCenterFunds() + centerFunds);
 
     }
   }
@@ -637,6 +661,18 @@ public class FinancialPlanAction extends BaseAction {
     } else {
       newPowbFinancialPlannedBudget.setW3Bilateral(0.0);
     }
+    if (powbFinancialPlannedBudget.getCenterFunds() != null) {
+      newPowbFinancialPlannedBudget.setCenterFunds(powbFinancialPlannedBudget.getCenterFunds());
+    } else {
+      newPowbFinancialPlannedBudget.setCenterFunds(0.0);
+    }
+    if (powbFinancialPlannedBudget.getCarry() != null) {
+      newPowbFinancialPlannedBudget.setCarry(powbFinancialPlannedBudget.getCarry());
+    } else {
+      newPowbFinancialPlannedBudget.setCarry(0.0);
+    }
+
+
     newPowbFinancialPlannedBudget.setComments(powbFinancialPlannedBudget.getComments());
 
     newPowbFinancialPlannedBudget =
@@ -685,6 +721,16 @@ public class FinancialPlanAction extends BaseAction {
       powbFinancialPlannedBudgetDB.setW3Bilateral(powbFinancialPlannedBudget.getW3Bilateral());
     } else {
       powbFinancialPlannedBudgetDB.setW3Bilateral(0.0);
+    }
+    if (powbFinancialPlannedBudget.getCenterFunds() != null) {
+      powbFinancialPlannedBudgetDB.setCenterFunds(powbFinancialPlannedBudget.getCenterFunds());
+    } else {
+      powbFinancialPlannedBudgetDB.setCenterFunds(0.0);
+    }
+    if (powbFinancialPlannedBudget.getCarry() != null) {
+      powbFinancialPlannedBudgetDB.setCarry(powbFinancialPlannedBudget.getCarry());
+    } else {
+      powbFinancialPlannedBudgetDB.setCarry(0.0);
     }
     powbFinancialPlannedBudgetDB.setComments(powbFinancialPlannedBudget.getComments());
     powbFinancialPlannedBudgetDB =
