@@ -200,7 +200,11 @@ public class POISummary {
             XWPFRun paragraphRun = paragraph.createRun();
             paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -210,7 +214,11 @@ public class POISummary {
             XWPFRun paragraphRun = paragraph.createRun();
             paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -221,7 +229,11 @@ public class POISummary {
           XWPFRun paragraphRun = paragraph.createRun();
           paragraphRun.setText(poiParameter.getText());
           paragraphRun.setColor(TEXT_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -246,9 +258,17 @@ public class POISummary {
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {
           dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
         } else {
-          paragraphRun.setBold(false);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(false);
+          }
         }
         record++;
       }
@@ -284,7 +304,6 @@ public class POISummary {
     for (int y = 0; y < numberOfCell - 1; y++) {
       XWPFTableCell cell = row.getCell(y);
       cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-      System.out.println(cell.getText());
       if (y > 0 && y < numberOfCell) {
         if (cell.getText().trim().length() > 0) {
           hMerge.setVal(STMerge.RESTART);
