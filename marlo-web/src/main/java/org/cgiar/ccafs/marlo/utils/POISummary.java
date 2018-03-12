@@ -16,7 +16,6 @@
 package org.cgiar.ccafs.marlo.utils;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
@@ -26,7 +25,6 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
@@ -250,18 +248,6 @@ public class POISummary {
         }
 
         record++;
-      }
-    }
-
-    table.getRow(0).getCell(0).getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-
-    for (int x = 0; x < table.getNumberOfRows(); x++) {
-      XWPFTableRow row = table.getRow(x);
-      int numberOfCell = row.getTableCells().size();
-      for (int y = 0; y < numberOfCell; y++) {
-        XWPFTableCell cell = row.getCell(y);
-
-        cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
       }
     }
 
