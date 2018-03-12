@@ -262,32 +262,22 @@ public class POISummary {
     CTVMerge vmerge = CTVMerge.Factory.newInstance();
     CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
     for (int x = 0; x < table.getNumberOfRows(); x++) {
-      XWPFTableRow row = table.getRow(x);
-      int numberOfCell = row.getTableCells().size();
-      for (int y = 0; y < numberOfCell; y++) {
-        XWPFTableCell cell = row.getCell(y);
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        XWPFTableCell cell = row.getCell(0);
         cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-        if (x == 1) {
-          if (x == 1) {
-            if (y == 0) {
-              vmerge.setVal(STMerge.RESTART);
-              cell.getCTTc().getTcPr().setVMerge(vmerge);
-            }
-
-          } else {
-            vmerge1.setVal(STMerge.CONTINUE);
-            if (y == 0) {
-              try {
-                cell.getCTTc().getTcPr().setVMerge(vmerge1);
-              } catch (Exception e) {
-              }
-            }
-          }
+        System.out.println(cell.getText());
+        if (cell.getText().trim().length() > 0) {
+          vmerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setVMerge(vmerge);
+        } else {
+          vmerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setVMerge(vmerge1);
         }
-
-
       }
     }
+
+
   }
 
 }
