@@ -49,7 +49,7 @@ public class POISummary {
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
-  private final static String TABLE_HEADER_FONT_COLOR = "FFFFCC";
+  private final static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
 
   /**
    * Footer title
