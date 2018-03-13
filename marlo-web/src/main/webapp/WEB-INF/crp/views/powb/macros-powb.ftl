@@ -2,15 +2,7 @@
 [#macro projectBudgetsByFlagshipMacro element type totalValue=0 tiny=false popupEnabled=true isAreaPMU=false]
   
   [#if !popupEnabled]
-    <nobr>US$ <span >
-      ${((totalValue)!0)?number?string(",##0.00")}
-      [#-- 
-      [#if type == "W1W2"]${((element.w1)!0)?number?string(",##0.00")}
-      [#elseif type == "W3BILATERAL"]${((element.w3)!0)?number?string(",##0.00")}
-      [#elseif type == "CENTERFUNDS"]${((element.centerFunds)!0)?number?string(",##0.00")}
-      [/#if]
-       --]
-      </span></nobr>
+    <nobr>US$ <span >${((totalValue)!0)?number?string(",##0.00")}</span></nobr>
   [#else]
     [#if isAreaPMU]
       [#local projects = (action.loadPMUProjects())![] ]
@@ -20,15 +12,7 @@
     [#if projects?size > 0]
     <a class=" btn btn-default btn-xs" data-toggle="modal" style="border-color: #00BCD4;color: #057584;" data-target="#projectBudgets-${type}-${(element.id)!}">
        [#-- <span class="glyphicon glyphicon-fullscreen" style="color:#b3b3b3"></span>  --]
-       <span >
-        ${((totalValue)!0)?number?string(",##0.00")}
-        [#-- 
-        [#if type == "W1W2"]${((element.w1)!0)?number?string(",##0.00")}
-        [#elseif type == "W3BILATERAL"]${((element.w3)!0)?number?string(",##0.00")}
-        [#elseif type == "CENTERFUNDS"]${((element.centerFunds)!0)?number?string(",##0.00")}
-        [/#if]
-         --]
-        </span>
+       <span >${((totalValue)!0)?number?string(",##0.00")}</span>
     </a>
     
     <!-- Modal -->
@@ -55,9 +39,9 @@
                   <tr>
                     <th rowspan="2">[@s.text name="project.title" /]</th>
                     [#if type == "W1W2"] <th colspan="2" class="text-center">[@s.text name="project.coreBudget" /]</th>[/#if]
-                    [#if type == "W3BILATERAL"] <th colspan="2" class="text-center">W3</th>[/#if]
-                    [#if type == "W3BILATERAL"] <th colspan="2" class="text-center">Bilateral</th>[/#if]
-                    [#if type == "CENTERFUNDS"] <th colspan="2" class="text-center">Center Funds</th>[/#if]
+                    [#if type == "W3BILATERAL"] <th colspan="2" class="text-center">[@s.text name="project.w3Budget" /]</th>[/#if]
+                    [#if type == "W3BILATERAL"] <th colspan="2" class="text-center">[@s.text name="project.bilateralBudget" /]</th>[/#if]
+                    [#if type == "CENTERFUNDS"] <th colspan="2" class="text-center">[@s.text name="project.centerFundsBudget" /]</th>[/#if]
                     
                   </tr>
                   <tr>
@@ -160,8 +144,9 @@
               <div class="text-right">
                 
                 <strong>
-                  [#if type == "W3BILATERAL"]Total W3/Bilateral[/#if]
-                  [#if type == "W1W2"]Total W1W2[/#if]
+                  [#if type == "W1W2"]Total [@s.text name="project.coreBudget" /][/#if]
+                  [#if type == "W3BILATERAL"]Total [@s.text name="project.w3Budget" /]/[@s.text name="project.bilateralBudget" /] [/#if]
+                  [#if type == "CENTERFUNDS"]Total [@s.text name="project.centerFundsBudget" /][/#if]
                   : US$ <span >${((totalValue)!0)?number?string(",##0.00")}</span>
                 </strong>
               </div>
