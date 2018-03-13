@@ -436,7 +436,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     }
 
 
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableA");
   }
 
   private void createTableA2() {
@@ -500,7 +500,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     }
 
 
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableA");
   }
 
   private void createTableB() {
@@ -561,7 +561,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
       datas.add(data);
     }
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableB");
   }
 
   private void createTableC() {
@@ -603,7 +603,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       datas.add(data);
     }
 
-    poiSummary.textTable(document, headers, datas, true);
+    poiSummary.textTable(document, headers, datas, true, "tableC");
   }
 
   private void createTableD() {
@@ -671,7 +671,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     data = Arrays.asList(sData);
     datas.add(data);
 
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableD");
   }
 
   private void createTableE() {
@@ -785,7 +785,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     data = Arrays.asList(sData);
     datas.add(data);
 
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableE");
   }
 
   private void createTableF() {
@@ -847,7 +847,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     data = Arrays.asList(sData);
     datas.add(data);
 
-    poiSummary.textTable(document, headers, datas, true);
+    poiSummary.textTable(document, headers, datas, true, "tableF");
   }
 
   private void createTableG() {
@@ -889,7 +889,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         }
       }
     }
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableG");
   }
 
   private void createTableH() {
@@ -930,7 +930,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       datas.add(data);
     }
 
-    poiSummary.textTable(document, headers, datas, false);
+    poiSummary.textTable(document, headers, datas, false, "tableH");
   }
 
   @Override
@@ -1100,8 +1100,9 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream().filter(
-            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream()
+            .filter(gup -> gup.isActive() && gup.isOrigin()
+              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -1532,8 +1533,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus()
-              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d
