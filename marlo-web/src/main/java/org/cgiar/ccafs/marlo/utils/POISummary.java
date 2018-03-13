@@ -33,6 +33,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
@@ -49,7 +50,7 @@ public class POISummary {
   private final static String TITLE_FONT_COLOR = "3366CC";
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
-  private final static String TABLE_HEADER_FONT_COLOR = "FFFFCC";
+  private final static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
 
   /**
    * Footer title
@@ -91,6 +92,164 @@ public class POISummary {
     XWPFParagraph[] parsHeader = new XWPFParagraph[1];
     parsHeader[0] = headerParagraph;
     policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, parsHeader);
+  }
+
+  public void tableAStyle(XWPFTable table) {
+    /* Vertical merge, From format tables A */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        for (int y = 0; y < 2; y++) {
+          XWPFTableCell cell = row.getCell(y);
+
+          if (cell.getCTTc() == null) {
+            ((CTTc) cell).addNewTcPr();
+          }
+
+          if (cell.getCTTc().getTcPr() == null) {
+            cell.getCTTc().addNewTcPr();
+          }
+          if (x == 1 && !(cell.getText().trim().length() > 0)) {
+            break;
+          }
+          if (cell.getText().trim().length() > 0) {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge.setVal(STMerge.RESTART);
+            cell.getCTTc().getTcPr().setVMerge(vmerge);
+          } else {
+            if (y == 0) {
+              cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(1500));
+            }
+            vmerge1.setVal(STMerge.CONTINUE);
+            cell.getCTTc().getTcPr().setVMerge(vmerge1);
+          }
+        }
+
+      }
+    }
+  }
+
+  public void tableCStyle(XWPFTable table) {
+    /* Vertical merge, From format tables C */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        XWPFTableCell cell = row.getCell(row.getTableCells().size() - 1);
+
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+        if (x == 1 && !(cell.getText().trim().length() > 0)) {
+          break;
+        }
+        if (cell.getText().trim().length() > 0) {
+          vmerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setVMerge(vmerge);
+        } else {
+          vmerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setVMerge(vmerge1);
+        }
+      }
+    }
+  }
+
+  public void tableEStyle(XWPFTable table) {
+    /* Horizontal merge, From format tables E */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+
+      if (cell.getCTTc() == null) {
+        ((CTTc) cell).addNewTcPr();
+      }
+
+      if (cell.getCTTc().getTcPr() == null) {
+        cell.getCTTc().addNewTcPr();
+      }
+      if (y > 0 && y < numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+      }
+    }
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 1) {
+        XWPFTableRow rowCom = table.getRow(x);
+        XWPFTableCell cell = rowCom.getCell(6);
+
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+
+        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+
+      }
+    }
+  }
+
+  public void tableFStyle(XWPFTable table) {
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        XWPFTableCell cell = row.getCell(2);
+
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+
+        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(7000));
+
+      }
+    }
+  }
+
+  public void tableGStyle(XWPFTable table) {
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      XWPFTableRow row = table.getRow(x);
+      for (int y = 0; y < row.getTableCells().size(); y++) {
+        XWPFTableCell cell = row.getCell(y);
+        if (cell.getCTTc() == null) {
+          ((CTTc) cell).addNewTcPr();
+        }
+
+        if (cell.getCTTc().getTcPr() == null) {
+          cell.getCTTc().addNewTcPr();
+        }
+
+        cell.getCTTc().getTcPr().addNewTcW().setW(BigInteger.valueOf(5000));
+      }
+    }
   }
 
   /**
@@ -200,7 +359,7 @@ public class POISummary {
   }
 
   public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
-    Boolean highlightFirstColumn) {
+    Boolean highlightFirstColumn, String tableType) {
 
     XWPFTable table = document.createTable();
     int record = 0;
@@ -295,48 +454,24 @@ public class POISummary {
       }
     }
 
-    /* Vertical merge, From format tables A */
-    CTVMerge vmerge = CTVMerge.Factory.newInstance();
-    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
-
-    for (int x = 0; x < table.getNumberOfRows(); x++) {
-      if (x > 0) {
-        XWPFTableRow row = table.getRow(x);
-        XWPFTableCell cell = row.getCell(0);
-        cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-        if (x == 1 && !(cell.getText().trim().length() > 0)) {
-          break;
-        }
-        if (cell.getText().trim().length() > 0) {
-          vmerge.setVal(STMerge.RESTART);
-          cell.getCTTc().getTcPr().setVMerge(vmerge);
-        } else {
-          vmerge1.setVal(STMerge.CONTINUE);
-          cell.getCTTc().getTcPr().setVMerge(vmerge1);
-        }
-      }
+    switch (tableType) {
+      case "tableA":
+        this.tableAStyle(table);
+        break;
+      case "tableE":
+        this.tableEStyle(table);
+        break;
+      case "tableC":
+        this.tableCStyle(table);
+      case "tableF":
+        this.tableFStyle(table);
+      case "tableG":
+        this.tableGStyle(table);
+        break;
     }
 
-    /* Horizontal merge, From format tables E */
-    CTHMerge hMerge = CTHMerge.Factory.newInstance();
-    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
 
-
-    XWPFTableRow row = table.getRow(0);
-    int numberOfCell = row.getTableCells().size();
-    for (int y = 0; y < numberOfCell - 1; y++) {
-      XWPFTableCell cell = row.getCell(y);
-      cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
-      if (y > 0 && y < numberOfCell) {
-        if (cell.getText().trim().length() > 0) {
-          hMerge.setVal(STMerge.RESTART);
-          cell.getCTTc().getTcPr().setHMerge(hMerge);
-        } else {
-          hMerge1.setVal(STMerge.CONTINUE);
-          cell.getCTTc().getTcPr().setHMerge(hMerge1);
-        }
-      }
-    }
+    table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(15000));
 
 
   }
