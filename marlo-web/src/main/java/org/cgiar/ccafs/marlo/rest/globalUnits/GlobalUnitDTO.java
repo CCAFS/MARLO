@@ -13,23 +13,35 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
-package org.cgiar.ccafs.marlo.data.model.dto;
+package org.cgiar.ccafs.marlo.rest.globalUnits;
 
 import java.io.Serializable;
 
-public class LiaisonInstitutionDTO implements Serializable {
+import javax.validation.constraints.NotNull;
 
-  private static final long serialVersionUID = -3240330586886973844L;
+public class GlobalUnitDTO implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private Long id;
-  private String name;
-  private String acronym;
-  private InstitutionDTO institution;
-  private CrpProgramDTO crpProgram;
-  private GlobalUnitDTO crp;
 
-  public LiaisonInstitutionDTO() {
+  @NotNull
+  private String name;
+
+  @NotNull
+  private String acronym;
+
+  private Integer category;
+
+  private boolean active;
+
+  private boolean marlo;
+
+  private boolean hasRegions;
+
+  private String modificationJustification;
+
+  public GlobalUnitDTO() {
 
   }
 
@@ -37,51 +49,77 @@ public class LiaisonInstitutionDTO implements Serializable {
     return acronym;
   }
 
-  public GlobalUnitDTO getCrp() {
-    return crp;
+
+  public Integer getCategory() {
+    return category;
   }
 
-  public CrpProgramDTO getCrpProgram() {
-    return crpProgram;
-  }
 
   public Long getId() {
     return id;
   }
 
-  public InstitutionDTO getInstitution() {
-    return institution;
+
+  public String getModificationJustification() {
+    return modificationJustification;
   }
+
 
   public String getName() {
     return name;
   }
 
+
+  public boolean isActive() {
+    return active;
+  }
+
+
+  public boolean isHasRegions() {
+    return hasRegions;
+  }
+
+
+  public boolean isMarlo() {
+    return marlo;
+  }
+
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-  public void setCrp(GlobalUnitDTO crp) {
-    this.crp = crp;
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
-  public void setCrpProgram(CrpProgramDTO crpProgram) {
-    this.crpProgram = crpProgram;
+
+  public void setCategory(Integer category) {
+    this.category = category;
   }
+
+
+  public void setHasRegions(boolean hasRegions) {
+    this.hasRegions = hasRegions;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
 
-  public void setInstitution(InstitutionDTO institution) {
-    this.institution = institution;
+  public void setMarlo(boolean marlo) {
+    this.marlo = marlo;
   }
 
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
 
   public void setName(String name) {
     this.name = name;
   }
-
 
 }

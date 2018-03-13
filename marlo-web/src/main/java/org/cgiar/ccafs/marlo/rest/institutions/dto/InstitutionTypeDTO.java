@@ -13,31 +13,22 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.institutions.dto;
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+import javax.validation.constraints.NotNull;
 
-import java.io.Serializable;
+public class InstitutionTypeDTO {
 
-
-public class GlobalUnitDTO implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-
+  @NotNull
   private Long id;
 
   private String name;
 
-  private String acronym;
-
-  private boolean active;
-
-  public GlobalUnitDTO() {
-
-  }
+  private String description;
 
 
-  public String getAcronym() {
-    return acronym;
+  public String getDescription() {
+    return description;
   }
 
 
@@ -51,18 +42,8 @@ public class GlobalUnitDTO implements Serializable {
   }
 
 
-  public boolean isActive() {
-    return active;
-  }
-
-
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
-
-
-  public void setActive(boolean active) {
-    this.active = active;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 

@@ -13,19 +13,23 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.errors;
 
-package org.cgiar.ccafs.marlo.data.model.dto.mapper;
+/**
+ * A custom exception for when trying to update resources that don't exist.
+ * 
+ * @author GrantL
+ */
+public class ResourceNotFoundException extends RuntimeException {
 
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.dto.CrpProgramDTO;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-import org.mapstruct.Mapper;
+  public ResourceNotFoundException(String message) {
+    super(message);
+  }
 
-@Mapper
-public interface CrpProgramMapper {
-
-  public CrpProgram crpProgramDTOToCrpProgram(CrpProgramDTO crpProgram);
-
-  public CrpProgramDTO crpProgramToCrpProgramDTO(CrpProgram crpProgram);
 
 }
