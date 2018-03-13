@@ -12,3 +12,5 @@ bin
 
 # Mainfest
 *.MF
+configuration/test/marlo.properties
+configuration/dev/marlo.properties
