@@ -532,11 +532,26 @@ public class FinancialPlanAction extends BaseAction {
       percentageB = 100;
       percentageCenterFunds = 100;
 
+      project.setW3Budget(w3);
+      project.setCoreBudget(w1);
+      project.setBilateralBudget(bilateral);
+      project.setCentenFundsBudget(centerFunds);
+
+      project.setPercentageW3(percentageW3);
+      project.setPercentageW1(percentageW1);
+      project.setPercentageBilateral(percentageB);
+      project.setPercentageFundsBudget(percentageCenterFunds);
+
 
       w1 = w1 * (percentageW1) / 100;
       w3 = w3 * (percentageW3) / 100;
       bilateral = bilateral * (percentageB) / 100;
       centerFunds = centerFunds * (percentageCenterFunds) / 100;
+
+      project.setTotalW3(w3);
+      project.setTotalW1(w1);
+      project.setTotalBilateral(bilateral);
+      project.setTotalCenterFunds(centerFunds);
 
 
       projectsToRet.add(project);

@@ -16,10 +16,12 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrossCuttingScoringManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GenderTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingScoring;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -99,6 +101,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
   // Managers
   private GenderTypeManager genderTypeManager;
   private CrpProgramManager crpProgramManager;
+  private CrossCuttingScoringManager crossCuttingScoringManager;
   private Set<Deliverable> currentPhaseDeliverables = new HashSet<>();
   // XLS bytes
   private byte[] bytesXLSX;
@@ -111,10 +114,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
   @Inject
   public ExpectedDeliverablesSummaryAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
-    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager) {
+    GenderTypeManager genderTypeManager, CrpProgramManager crpProgramManager,
+    CrossCuttingScoringManager crossCuttingScoringManager) {
     super(config, crpManager, phaseManager);
     this.genderTypeManager = genderTypeManager;
     this.crpProgramManager = crpProgramManager;
+    this.crossCuttingScoringManager = crossCuttingScoringManager;
   }
 
 
@@ -138,6 +143,9 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
     masterReport.getParameterValues().put("i8nSubType", this.getText("deliverable.subtype"));
     masterReport.getParameterValues().put("i8nCrossCutting", this.getText("project.crossCuttingDimensions.readText"));
     masterReport.getParameterValues().put("i8nGenderLevels", this.getText("deliverable.genderLevels.readText"));
+    masterReport.getParameterValues().put("i8nGenderScoring", this.getText("summaries.deliverable.genderScore"));
+    masterReport.getParameterValues().put("i8nYouthScoring", this.getText("summaries.deliverable.youthScore"));
+    masterReport.getParameterValues().put("i8nCapScoring", this.getText("summaries.deliverable.capScore"));
     masterReport.getParameterValues().put("i8nStatus", this.getText("project.deliverable.generalInformation.status"));
     masterReport.getParameterValues().put("i8nProjectID", this.getText("searchTerms.projectId"));
     masterReport.getParameterValues().put("i8nProjectTitle", this.getText("project.title.readText"));
@@ -260,11 +268,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       new String[] {"deliverableId", "deliverableTitle", "completionYear", "deliverableType", "deliverableSubType",
         "crossCutting", "genderLevels", "keyOutput", "delivStatus", "delivNewYear", "projectID", "projectTitle",
         "projectClusterActivities", "flagships", "regions", "individual", "partnersResponsible", "shared", "openFS",
-        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS"},
+        "fsWindows", "outcomes", "projectLeadPartner", "managingResponsible", "phaseID", "finishedFS", "genderScoring",
+        "youthScoring", "capScoring"},
       new Class[] {Long.class, String.class, Integer.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, Long.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Long.class, String.class},
+        Long.class, String.class, String.class, String.class, String.class},
       0);
 
     for (GlobalUnitProject globalUnitProject : this.getLoggedCrp().getGlobalUnitProjects().stream()
@@ -312,6 +321,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
 
       // Get cross_cutting dimension
       String crossCutting = "";
+      String genderScoring = null, youthScoring = null, capScoring = null;
       if (deliverableInfo.getCrossCuttingNa() != null) {
         if (deliverableInfo.getCrossCuttingNa() == true) {
           crossCutting += "N/A";
@@ -326,6 +336,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
         }
       }
+      if (deliverableInfo.getCrossCuttingScoreGender() != null) {
+        Long scoring = deliverableInfo.getCrossCuttingScoreGender();
+        if (scoring != null) {
+          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+          genderScoring = crossCuttingScoring.getDescription();
+        }
+      }
       if (deliverableInfo.getCrossCuttingYouth() != null) {
         if (deliverableInfo.getCrossCuttingYouth() == true) {
           if (crossCutting.isEmpty()) {
@@ -335,6 +352,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           }
         }
       }
+      if (deliverableInfo.getCrossCuttingScoreYouth() != null) {
+        Long scoring = deliverableInfo.getCrossCuttingScoreYouth();
+        if (scoring != null) {
+          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+          youthScoring = crossCuttingScoring.getDescription();
+        }
+      }
       if (deliverableInfo.getCrossCuttingCapacity() != null) {
         if (deliverableInfo.getCrossCuttingCapacity() == true) {
           if (crossCutting.isEmpty()) {
@@ -342,7 +366,13 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
           } else {
             crossCutting += ", Capacity Development";
           }
-
+        }
+      }
+      if (deliverableInfo.getCrossCuttingScoreCapacity() != null) {
+        Long scoring = deliverableInfo.getCrossCuttingScoreCapacity();
+        if (scoring != null) {
+          CrossCuttingScoring crossCuttingScoring = crossCuttingScoringManager.getCrossCuttingScoringById(scoring);
+          capScoring = crossCuttingScoring.getDescription();
         }
       }
 
@@ -721,7 +751,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseSummariesAction imple
       model.addRow(new Object[] {deliverableId, deliverableTitle, completionYear, deliverableType, deliverableSubType,
         crossCutting, genderLevels, keyOutput, delivStatus, delivNewYear, projectID, projectTitle,
         projectClusterActivities, flagships, regions, individual, ppaRespondible, shared, openFS, fsWindows, outcomes,
-        projectLeadPartner, managingResponsible, phaseID, finishedFS});
+        projectLeadPartner, managingResponsible, phaseID, finishedFS, genderScoring, youthScoring, capScoring});
 
       if (deliverablePerYearList.containsKey(completionYear)) {
         Set<Deliverable> deliverableSet = deliverablePerYearList.get(completionYear);
