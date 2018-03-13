@@ -15,6 +15,7 @@
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
   {"label":"projectBudgetByFlagships", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -70,15 +71,30 @@
             <div class="tab-content budget-content">
               [#list startYear .. selectedYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                  [#-- Budgest cannot be editable message --]
-                  [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
+                [#-- Budgest cannot be editable message --]
+                [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
                 [#if action.hasBudgets(1,year) || action.hasBudgets(2,year) || action.hasBudgets(3,year) || action.hasBudgets(4,year) || action.hasBudgets(5,year)]
+                  [#-- Total year budget type --]
+                  <table class="text-center">
+                    <tr>
+                    [#list budgetTypesList as budgetType]
+                      [#-- Budget Type--]
+                      [#if action.hasBudgets(budgetType.id, year)]
+                        <td class="">
+                          <h5 class="subTitle"> 
+                            ${budgetType.name} <img title="${budgetType.description}" src="${baseUrl}/global/images/icon-help2.png" alt="" /> <br /> 
+                            <small>US$ <span class="totalByYear year-${year} totalByYear-${budgetType.id}">${((action.getTotalAmount(budgetType.id, year))!0)?number?string(",##0.00")}</span></small>
+                          </h5>
+                        </td>
+                      [/#if]
+                    [/#list]
+                    </tr>
+                  </table>
                   [#if project.flagships?has_content]
                     [#list project.flagships as budgetFlagship]
                       [@BudgetByFlagshipsMacro element=budgetFlagship name="project.flagships" index=flagships_index selectedYear=year/]
                     [/#list]
-                    
                   [#else]
                     <div class="simpleBox emptyMessage text-center"> [@s.text name="projectBudgetByFlagships.beforeEnteringBudgetInformation" /] <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">description section</a></div>
                   [/#if]
@@ -166,6 +182,8 @@
                     <div class="input"><p><span class="percentageInput totalByPartner-${budgetType.id}">${((budgetObject.amount)!0)}%</span></p></div>
                     <input type="hidden" name="${customName}.amount" value="${(budgetObject.amount)!0}"/>
                   [/#if]
+                  [#-- Label Amount 
+                  <span class="labelAmount pull-right type-${budgetType.id}"><small><i>$US 0.00</i></small></span>--]
                 </td>
               [/#if]
             [/#list]

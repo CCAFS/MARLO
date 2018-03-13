@@ -2753,7 +2753,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     StringBuffer fileName = new StringBuffer();
     fileName.append("FullProjectReportSummary-");
-    fileName.append(globalUnitProject.getGlobalUnit().getName() + "-");
+    fileName.append(globalUnitProject.getGlobalUnit().getAcronym() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
