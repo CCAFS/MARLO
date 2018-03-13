@@ -53,6 +53,27 @@ public class POISummary {
   private final static String TABLE_HEADER_FONT_COLOR = "FFFFCC";
 
   /**
+   * Footer title
+   * 
+   * @param document
+   * @param text
+   * @throws IOException
+   */
+  public void pageFooter(XWPFDocument document, String text) throws IOException {
+    CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+    XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+    CTP ctpFooter = CTP.Factory.newInstance();
+    CTR ctrFooter = ctpFooter.addNewR();
+    CTText ctFooter = ctrFooter.addNewT();
+    ctFooter.setStringValue(text);
+    XWPFParagraph footerParagraph = new XWPFParagraph(ctpFooter, document);
+    footerParagraph.setAlignment(ParagraphAlignment.LEFT);
+    XWPFParagraph[] parsFooter = new XWPFParagraph[1];
+    parsFooter[0] = footerParagraph;
+    policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, parsFooter);
+  }
+
+  /**
    * Header title
    * 
    * @param document

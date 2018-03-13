@@ -66,6 +66,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -952,6 +954,15 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       CTBody body = doc.getBody();
 
       poiSummary.pageHeader(document, this.getText("summaries.powb.header"));
+      // Get datetime
+      ZonedDateTime timezone = ZonedDateTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+      String zone = timezone.getOffset() + "";
+      if (zone.equals("Z")) {
+        zone = "+0";
+      }
+      String currentDate = timezone.format(format) + "(GMT" + zone + ")";
+      poiSummary.pageFooter(document, "This report was generated on " + currentDate);
       poiSummary.textLineBreak(document, 13);
       poiSummary.textHeadCoverTitle(document.createParagraph(), this.getText("summaries.powb.mainTitle"));
       poiSummary.textLineBreak(document, 12);
@@ -1076,7 +1087,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append(this.getLoggedCrp().getAcronym() + "-POWBSummary-");
+    fileName.append(this.getLoggedCrp().getAcronym() + "-POWBSynthesis-");
     fileName.append(this.getSelectedYear() + "_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".docx");
