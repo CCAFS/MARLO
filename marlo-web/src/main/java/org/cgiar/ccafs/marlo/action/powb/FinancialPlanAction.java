@@ -487,7 +487,7 @@ public class FinancialPlanAction extends BaseAction {
   }
 
 
-  public List<Project> loadPMUProjects(PowbExpenditureAreas liaisonInstitution) {
+  public List<Project> loadPMUProjects() {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     List<Project> projectsToRet = new ArrayList<>();
 
@@ -538,9 +538,7 @@ public class FinancialPlanAction extends BaseAction {
       bilateral = bilateral * (percentageB) / 100;
       centerFunds = centerFunds * (percentageCenterFunds) / 100;
 
-      liaisonInstitution.setW1(liaisonInstitution.getW1() + w1);
-      liaisonInstitution.setW3(liaisonInstitution.getW3() + w3 + bilateral);
-      liaisonInstitution.setCenterFunds(liaisonInstitution.getCenterFunds() + centerFunds);
+
       projectsToRet.add(project);
 
     }
