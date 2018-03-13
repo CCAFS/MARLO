@@ -6,9 +6,9 @@
       <li class="[#if !item_has_next]active[/#if]">
         [#if item.action?has_content]
           [#if item.param?exists]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}" >[@s.text name="breadCrumb.menu.${item.label}" /]</a>
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
           [#else]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do" >[@s.text name="breadCrumb.menu.${item.label}" /]</a>
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
           [/#if]
         [#else]
           [@s.text name="breadCrumb.menu.${item.label}" /]</a>
