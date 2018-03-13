@@ -353,8 +353,9 @@ public class FinancialPlanAction extends BaseAction {
   }
 
   public void loadFlagShipBudgetInfo(CrpProgram crpProgram) {
-    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
-      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<ProjectFocus> projects =
+      crpProgram.getProjectFocuses().stream().filter(c -> c.getProject().isActive() && c.isActive()
+        && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
     Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();

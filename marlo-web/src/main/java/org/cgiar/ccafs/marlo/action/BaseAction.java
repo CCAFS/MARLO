@@ -4918,8 +4918,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Project> loadFlagShipBudgetInfoProgram(long crpProgramID) {
     List<Project> projectsToRet = new ArrayList<>();
     CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-    List<ProjectFocus> projects = crpProgram.getProjectFocuses().stream()
-      .filter(c -> c.getProject().isActive() && c.isActive()).collect(Collectors.toList());
+    List<ProjectFocus> projects =
+      crpProgram.getProjectFocuses().stream().filter(c -> c.getProject().isActive() && c.isActive()
+        && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
     Set<Project> myProjects = new HashSet();
     for (ProjectFocus projectFocus : projects) {
       Project project = projectFocus.getProject();
