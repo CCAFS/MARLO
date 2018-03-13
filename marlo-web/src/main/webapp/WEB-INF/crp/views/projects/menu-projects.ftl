@@ -72,7 +72,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu <br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
+  <p>[@s.text name="projects.menu.project" /]<br /><small> [#if (project.projectInfo.administrative)!false]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
