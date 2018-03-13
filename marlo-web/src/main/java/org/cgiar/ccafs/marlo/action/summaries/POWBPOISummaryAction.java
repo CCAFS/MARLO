@@ -747,12 +747,14 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           category = powbExpenditureArea.getExpenditureArea();
           PowbFinancialPlannedBudget powbFinancialPlannedBudget =
             this.getPowbFinancialPlanBudget(powbExpenditureArea.getId(), false);
-          w1w2 = powbFinancialPlannedBudget.getW1w2();
-          w3Bilateral = powbFinancialPlannedBudget.getW3Bilateral();
-          total = powbFinancialPlannedBudget.getTotalPlannedBudget();
-          comments = powbFinancialPlannedBudget.getComments() == null
-            || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
-              : powbFinancialPlannedBudget.getComments();
+          if (powbFinancialPlannedBudget != null) {
+            w1w2 = powbFinancialPlannedBudget.getW1w2();
+            w3Bilateral = powbFinancialPlannedBudget.getW3Bilateral();
+            total = powbFinancialPlannedBudget.getTotalPlannedBudget();
+            comments = powbFinancialPlannedBudget.getComments() == null
+              || powbFinancialPlannedBudget.getComments().trim().isEmpty() ? " "
+                : powbFinancialPlannedBudget.getComments();
+          }
           totalCarry += carry;
           totalw1w2 += w1w2;
           totalw3Bilateral += w3Bilateral;
@@ -1100,9 +1102,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     if (projectExpectedStudyManager.findAll() != null) {
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(ps -> ps.isActive() && ps.getPhase().getId() == phaseID
-          && ps.getProject().getGlobalUnitProjects().stream()
-            .filter(gup -> gup.isActive() && gup.isOrigin()
-              && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
+          && ps.getProject().getGlobalUnitProjects().stream().filter(
+            gup -> gup.isActive() && gup.isOrigin() && gup.getGlobalUnit().getId().equals(this.getLoggedCrp().getId()))
             .collect(Collectors.toList()).size() > 0)
         .collect(Collectors.toList()));
 
@@ -1237,7 +1238,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     if (isLiaison) {
       LiaisonInstitution liaisonInstitution =
         liaisonInstitutionManager.getLiaisonInstitutionById(plannedBudgetRelationID);
-      if (liaisonInstitution != null) {
+      if (liaisonInstitution != null && powbSynthesisPMU.getPowbFinancialPlannedBudgetList() != null) {
         List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList = powbSynthesisPMU
           .getPowbFinancialPlannedBudgetList().stream()
           .filter(
@@ -1280,7 +1281,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
       PowbExpenditureAreas powbExpenditureArea =
         powbExpenditureAreasManager.getPowbExpenditureAreasById(plannedBudgetRelationID);
 
-      if (powbExpenditureArea != null) {
+      if (powbExpenditureArea != null && powbSynthesisPMU.getPowbFinancialPlannedBudgetList() != null) {
         List<PowbFinancialPlannedBudget> powbFinancialPlannedBudgetList =
           powbSynthesisPMU.getPowbFinancialPlannedBudgetList().stream().filter(p -> p.getPowbExpenditureArea() != null
             && p.getPowbExpenditureArea().getId().equals(plannedBudgetRelationID)).collect(Collectors.toList());
@@ -1533,8 +1534,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
         && d.getDeliverableInfo(phase) != null
         && ((d.getDeliverableInfo().getStatus() == null && d.getDeliverableInfo().getYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null
-            && d.getDeliverableInfo().getStatus().intValue() == Integer
-              .parseInt(ProjectStatusEnum.Extended.getStatusId())
+            && d.getDeliverableInfo().getStatus()
+              .intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             && d.getDeliverableInfo().getNewExpectedYear() != null
             && d.getDeliverableInfo().getNewExpectedYear() == phase.getYear())
           || (d.getDeliverableInfo().getStatus() != null && d.getDeliverableInfo().getYear() == phase.getYear() && d

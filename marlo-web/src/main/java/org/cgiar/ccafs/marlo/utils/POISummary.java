@@ -348,10 +348,19 @@ public class POISummary {
   }
 
   public void textParagraph(XWPFParagraph paragraph, String text) {
-
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
-    paragraphRun.setText(text);
+    if (text.contains("\n")) {
+      String[] lines = text.split("\n");
+      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      for (int i = 1; i < lines.length; i++) {
+        // add break and insert new text
+        paragraphRun.addBreak();
+        paragraphRun.setText(lines[i]);
+      }
+    } else {
+      paragraphRun.setText(text, 0);
+    }
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
