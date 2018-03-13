@@ -207,3 +207,12 @@ tfoot {
 #tableE td {
   padding: 4px;
 }
+
+.powb-submenuItem {
+  padding: 7px;
+  margin: 0;
+  display: inline-block;
+  border: 1px dashed #ccc;
+  height: 72px;
+  vertical-align: middle;
+}
