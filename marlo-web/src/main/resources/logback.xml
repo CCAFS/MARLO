@@ -1,7 +1,6 @@
-<configuration>
+<configuration debug="true">
   <contextName>Marlo Activities</contextName>
-  <property resource="marlo.properties" />
-
+  <property resource="config/marlo-${spring.profiles.active}.properties" />
 
   <!-- ======= Filters by levels to print logs in file ======= -->
 
@@ -84,12 +83,15 @@
   <logger name="org.pentaho">
     <level value="WARN" />
   </logger>
-  
-   
- <logger name="org.hibernate.type" level="ERROR" />
- <logger name="com.zaxxer.hikari" level="ERROR" />
-
-
+  <logger name="com.zaxxer.hikari">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.springframework">
+    <level value="INFO" />
+  </logger>
+  <logger name="springfox.documentation">
+    <level value="INFO" />
+  </logger>
 
   
  

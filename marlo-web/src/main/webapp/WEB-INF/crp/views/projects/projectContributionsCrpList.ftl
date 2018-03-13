@@ -13,6 +13,7 @@
 [#assign isListSection = true /]
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"text":"P${project.id}", "nameSpace":"/projects", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
   {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -53,7 +54,7 @@
             [#-- Your project contributes to the flagships --]
             <div class="form-group">
               <p>
-                <strong>Your Project contributes to the following Flagships:</strong><br />
+                <strong>[@s.text name="projectContributionsCrpList.flagships" /]</strong><br />
                 [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
                 <div class="clearfix"></div>
               </p>

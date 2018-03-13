@@ -376,6 +376,16 @@ public class CRPStaffingAction extends BaseAction {
     } else {
       newPowbCrpStaffingCategories.setMale(0.0);
     }
+    if (powbSynthesisCrpStaffingCategory.getMaleNoCgiar() != null) {
+      newPowbCrpStaffingCategories.setMaleNoCgiar(powbSynthesisCrpStaffingCategory.getMaleNoCgiar());
+    } else {
+      newPowbCrpStaffingCategories.setMaleNoCgiar(0.0);
+    }
+    if (powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() != null) {
+      newPowbCrpStaffingCategories.setFemaleNoCgiar(powbSynthesisCrpStaffingCategory.getFemaleNoCgiar());
+    } else {
+      newPowbCrpStaffingCategories.setFemaleNoCgiar(0.0);
+    }
     newPowbCrpStaffingCategories =
       powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(newPowbCrpStaffingCategories);
   }
@@ -396,6 +406,16 @@ public class CRPStaffingAction extends BaseAction {
       powbCrpStaffingCategories.setMale(powbSynthesisCrpStaffingCategory.getMale());
     } else {
       powbCrpStaffingCategories.setMale(0.0);
+    }
+    if (powbSynthesisCrpStaffingCategory.getMaleNoCgiar() != null) {
+      powbCrpStaffingCategories.setMaleNoCgiar(powbSynthesisCrpStaffingCategory.getMaleNoCgiar());
+    } else {
+      powbCrpStaffingCategories.setMaleNoCgiar(0.0);
+    }
+    if (powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() != null) {
+      powbCrpStaffingCategories.setFemaleNoCgiar(powbSynthesisCrpStaffingCategory.getFemaleNoCgiar());
+    } else {
+      powbCrpStaffingCategories.setFemaleNoCgiar(0.0);
     }
     powbCrpStaffingCategories =
       powbSynthesisCrpStaffingCategoryManager.savePowbSynthesisCrpStaffingCategory(powbCrpStaffingCategories);

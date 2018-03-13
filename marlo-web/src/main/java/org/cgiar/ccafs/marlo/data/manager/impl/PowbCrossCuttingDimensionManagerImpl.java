@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.PowbCrossCuttingDimensionDAO;
 import org.cgiar.ccafs.marlo.data.manager.PowbCrossCuttingDimensionManager;
+import org.cgiar.ccafs.marlo.data.model.CrossCuttingDimensionTableDTO;
 import org.cgiar.ccafs.marlo.data.model.PowbCrossCuttingDimension;
-import org.cgiar.ccafs.marlo.data.model.dto.CrossCuttingDimensionTableDTO;
 
 import java.util.List;
 
