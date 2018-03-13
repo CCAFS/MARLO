@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.utils;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
@@ -25,12 +26,16 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRelation;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,13 +178,13 @@ public class POISummary {
     paragraphRun.setFontSize(10);
   }
 
-  public void textTable(XWPFDocument document, List<List<String>> sHeaders, List<List<String>> sData,
+  public void textTable(XWPFDocument document, List<List<POIField>> sHeaders, List<List<POIField>> sData,
     Boolean highlightFirstColumn) {
 
     XWPFTable table = document.createTable();
     int record = 0;
     int headerIndex = 0;
-    for (List<String> headers : sHeaders) {
+    for (List<POIField> poiParameters : sHeaders) {
       // Setting the Header
       XWPFTableRow tableRowHeader;
       if (headerIndex == 0) {
@@ -187,36 +192,48 @@ public class POISummary {
       } else {
         tableRowHeader = table.createRow();
       }
-      for (String header : headers) {
+      for (POIField poiParameter : poiParameters) {
         if (headerIndex == 0) {
           if (record == 0) {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
-            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(header);
+            paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           } else {
             XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
-            paragraph.setAlignment(ParagraphAlignment.CENTER);
+            paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(header);
+            paragraphRun.setText(poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
-            paragraphRun.setBold(true);
+            if (poiParameter.getBold() != null) {
+              paragraphRun.setBold(poiParameter.getBold());
+            } else {
+              paragraphRun.setBold(true);
+            }
             paragraphRun.setFontFamily(FONT_TYPE);
             paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
             tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
           }
         } else {
           XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
-          paragraph.setAlignment(ParagraphAlignment.CENTER);
+          paragraph.setAlignment(poiParameter.getAlignment());
           XWPFRun paragraphRun = paragraph.createRun();
-          paragraphRun.setText(header);
+          paragraphRun.setText(poiParameter.getText());
           paragraphRun.setColor(TEXT_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
           paragraphRun.setFontFamily(FONT_TYPE);
           paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
           tableRowHeader.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
@@ -227,29 +244,79 @@ public class POISummary {
       record = 0;
     }
 
-
-    for (List<String> rows : sData) {
+    for (List<POIField> poiParameters : sData) {
       record = 0;
       XWPFTableRow dataRow = table.createRow();
-      for (String row : rows) {
+      for (POIField poiParameter : poiParameters) {
 
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
-        paragraph.setAlignment(ParagraphAlignment.LEFT);
+        paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(row);
+        paragraphRun.setText(poiParameter.getText());
         paragraphRun.setColor(TEXT_FONT_COLOR);
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
         if (highlightFirstColumn && record == 0) {
           dataRow.getCell(record).setColor(TABLE_HEADER_FONT_COLOR);
-          paragraphRun.setBold(true);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(true);
+          }
         } else {
-          paragraphRun.setBold(false);
+          if (poiParameter.getBold() != null) {
+            paragraphRun.setBold(poiParameter.getBold());
+          } else {
+            paragraphRun.setBold(false);
+          }
         }
-
         record++;
       }
     }
+
+    /* Vertical merge, From format tables A */
+    CTVMerge vmerge = CTVMerge.Factory.newInstance();
+    CTVMerge vmerge1 = CTVMerge.Factory.newInstance();
+
+    for (int x = 0; x < table.getNumberOfRows(); x++) {
+      if (x > 0) {
+        XWPFTableRow row = table.getRow(x);
+        XWPFTableCell cell = row.getCell(0);
+        cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+        if (x == 1 && !(cell.getText().trim().length() > 0)) {
+          break;
+        }
+        if (cell.getText().trim().length() > 0) {
+          vmerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setVMerge(vmerge);
+        } else {
+          vmerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setVMerge(vmerge1);
+        }
+      }
+    }
+
+    /* Horizontal merge, From format tables E */
+    CTHMerge hMerge = CTHMerge.Factory.newInstance();
+    CTHMerge hMerge1 = CTHMerge.Factory.newInstance();
+
+
+    XWPFTableRow row = table.getRow(0);
+    int numberOfCell = row.getTableCells().size();
+    for (int y = 0; y < numberOfCell - 1; y++) {
+      XWPFTableCell cell = row.getCell(y);
+      cell.getCTTc().addNewTcPr().addNewTcW().setW(BigInteger.valueOf(2000));
+      if (y > 0 && y < numberOfCell) {
+        if (cell.getText().trim().length() > 0) {
+          hMerge.setVal(STMerge.RESTART);
+          cell.getCTTc().getTcPr().setHMerge(hMerge);
+        } else {
+          hMerge1.setVal(STMerge.CONTINUE);
+          cell.getCTTc().getTcPr().setHMerge(hMerge1);
+        }
+      }
+    }
+
 
   }
 

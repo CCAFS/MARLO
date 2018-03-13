@@ -114,7 +114,7 @@
 
 
 [#-- Generate RTF --]
-[#if ((PMU)!false) && completed]
+[#if true]
 <br />
 <div class="text-center">
   [#assign documentLink][@s.url namespace="/summaries" action="${crpSession}/POWBSummary"][@s.param name='cycle']${actualPhase.description}[/@s.param][@s.param name='year']${actualPhase.year}[/@s.param][/@s.url][/#assign]

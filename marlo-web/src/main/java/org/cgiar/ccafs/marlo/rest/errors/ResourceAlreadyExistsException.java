@@ -13,19 +13,23 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.errors;
 
-package org.cgiar.ccafs.marlo.data.model.dto.mapper;
+/**
+ * A custom exception for when trying to create resources that already exist.
+ * 
+ * @author GrantL
+ */
+public class ResourceAlreadyExistsException extends RuntimeException {
 
-import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.cgiar.ccafs.marlo.data.model.dto.PhaseDTO;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-import org.mapstruct.Mapper;
+  public ResourceAlreadyExistsException(String message) {
+    super(message);
+  }
 
-@Mapper
-public interface PhaseMapper {
-
-  public Phase phaseDTOToPhase(PhaseDTO phase);
-
-  public PhaseDTO phaseToPhaseDTO(Phase phase);
 
 }

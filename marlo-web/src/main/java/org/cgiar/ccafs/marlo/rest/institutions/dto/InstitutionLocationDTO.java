@@ -13,42 +13,69 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.rest.institutions.dto;
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+import javax.validation.constraints.NotNull;
 
-import java.io.Serializable;
-
-
-public class PhaseDTO implements Serializable {
-
-  private static final long serialVersionUID = -3727704249353436156L;
+public class InstitutionLocationDTO {
 
   private Long id;
-  private String description;
-  private int year;
 
-  public String getDescription() {
-    return description;
+  @NotNull
+  private String countryIsoAlpha2Code;
+
+  private String countryName;
+
+  private boolean headquater;
+
+  private Long institutionId;
+
+  public String getCountryIsoAlpha2Code() {
+    return countryIsoAlpha2Code;
   }
+
+
+  public String getCountryName() {
+    return countryName;
+  }
+
 
   public Long getId() {
     return id;
   }
 
-  public int getYear() {
-    return year;
+
+  public Long getInstitutionId() {
+    return institutionId;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+
+  public boolean isHeadquater() {
+    return headquater;
   }
+
+  public void setCountryIsoAlpha2Code(String countryIsoAlpha2Code) {
+    this.countryIsoAlpha2Code = countryIsoAlpha2Code;
+  }
+
+
+  public void setCountryName(String countryName) {
+    this.countryName = countryName;
+  }
+
+
+  public void setHeadquater(boolean headquater) {
+    this.headquater = headquater;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setYear(int year) {
-    this.year = year;
+
+  public void setInstitutionId(Long institutionId) {
+    this.institutionId = institutionId;
   }
 
 
