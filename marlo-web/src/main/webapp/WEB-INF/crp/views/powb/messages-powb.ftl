@@ -71,6 +71,7 @@
     </div>
     
     [#-- Concurrence Hidden Block --]
+    [#if (concurrenceEnabled)!true ]
     <div id="concurrenceBlock" class="text-center" style="display:none">
       <div class="layer"></div>
       <div class="content">
@@ -78,6 +79,7 @@
         <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
       </div> 
     </div>
+    [/#if]
   [/#if]
 
   [#-- Draft Message --]
