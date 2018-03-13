@@ -155,7 +155,11 @@
       [#else]
         <input type="hidden" name="${customName}.w1w2" value="${(element.w1w2)!'0'}" class="currencyInput type-w1w2 category-${index}"/>
         [#if (area.crpProgram??)!false]
-          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram type="W1W2" popupEnabled=true/]
+          [#-- Flagship --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram totalValue=element.w1w2 type="W1W2" popupEnabled=true/]
+        [#elseif area.id == 2]
+          [#-- PMU --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.w1w2)! type="W1W2" popupEnabled=true isAreaPMU=true/]
         [#else]
           <nobr>US$ ${((element.w1w2)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
@@ -168,7 +172,11 @@
       [#else]
         <input type="hidden" name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0'}" class="currencyInput type-w3bilateral category-${index}"/>
         [#if (area.crpProgram??)!false]
-          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram type="W3BILATERAL" popupEnabled=true/]
+          [#-- Flagship --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram totalValue=(element.w3Bilateral)!0 type="W3BILATERAL" popupEnabled=true/]
+        [#elseif area.id == 2]
+          [#-- PMU --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.w3Bilateral)! type="W3BILATERAL" popupEnabled=true isAreaPMU=true/]
         [#else]
           <nobr>US$ ${((element.w3Bilateral)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
@@ -181,7 +189,11 @@
       [#else]
         <input type="hidden" name="${customName}.centerFunds" value="${(element.centerFunds)!'0'}" class="currencyInput type-centerFunds category-${index}"/>
         [#if (area.crpProgram??)!false]
-          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram type="CENTERFUNDS" popupEnabled=true/]
+          [#-- Flagship --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram totalValue=(element.centerFunds)!0 type="CENTERFUNDS" popupEnabled=true/]
+        [#elseif area.id == 2]
+          [#-- PMU --]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.centerFunds)! type="CENTERFUNDS" popupEnabled=true isAreaPMU=true/]
         [#else]
           <nobr>US$ ${((element.centerFunds)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
