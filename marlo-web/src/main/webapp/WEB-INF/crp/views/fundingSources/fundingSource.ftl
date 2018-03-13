@@ -78,7 +78,7 @@
                         [#-- Check IFPRI Division --]
                         [#if institutionLead.institution.id == action.getIFPRIId() ] [#assign ifpriDivision = true /] [/#if]
                         [#-- Check CIAT Institution --]
-                        [#if institutionLead.institution.acronym == "CIAT" ] [#assign hasCIAT = true /] [/#if]
+                        [#if (institutionLead.institution.acronymName == "CIAT")!false ] [#assign hasCIAT = true /] [/#if]
                       </li>
                     [/#if]
                   [/#list]
@@ -103,11 +103,11 @@
         </div>
         
         [#-- Finance code module --]
-         [#if fundingSource.fundingSourceInfo?has_content]
-         [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
-          [#else]
-           [#assign isSynced =false ]
-          [/#if]
+        [#if fundingSource.fundingSourceInfo?has_content]
+          [#assign isSynced = (fundingSource.fundingSourceInfo.synced)!false ]
+        [#else]
+          [#assign isSynced =false ]
+        [/#if]
        
         [#assign financeChannelInstitution = {} /]
         [#if fundingSource.institutions?has_content]

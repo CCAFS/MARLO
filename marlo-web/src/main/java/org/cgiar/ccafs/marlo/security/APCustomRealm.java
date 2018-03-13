@@ -208,11 +208,14 @@ public class APCustomRealm extends AuthorizingRealm {
     // get info form LDAP User
     LDAPUser ldapUser = service.searchUserByEmail(user.getEmail());
     if (ldapUser != null) {
+      // get the username from LDAP
+
       if (user.getUsername() == null) {
-        // get the username from LDAP
         user.setUsername(ldapUser.getLogin().toLowerCase());
         // Save user
         userManager.saveUser(user, user);
+      } else {
+        user.setUsername(ldapUser.getLogin().toLowerCase());
       }
       return true;
     } else {

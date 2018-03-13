@@ -42,7 +42,7 @@
           [#if PMU]
           <div class="form-group margin-panel">
             [#-- Change display=true for display=PMU to show just for PMU --]
-            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" helpIcon=false display=true required=true className="" labelClass="label-min-width" paramText="${(actualPhase.year)!}" editable=editable powbInclude=true /]
+            [@customForm.textArea name="powbSynthesis.powbEvidence.narrative" i18nkey="evidenceRelevant.narrative" help="evidenceRelevant.help" helpIcon=false display=true required=true className="" labelClass="" paramText="${(actualPhase.year)!}" editable=editable powbInclude=true /]
           </div>
           [/#if]
           
@@ -209,7 +209,7 @@
           <td class="tb-fp text-center">
             [#if flagshipPlanned.liaisonInstitutions?has_content]
               [#list flagshipPlanned.liaisonInstitutions as institution]
-                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#fff'}">${institution.crpProgram.acronym}</span>
+                <span class="programTag" style="border-color:${(institution.crpProgram.color)!'#000000'}">${(institution.crpProgram.acronym)!institution.acronym}</span>
               [/#list]
             [#elseif flagshipPlanned.projectExpectedStudy.project.projectInfo.administrative]
               <span class="programTag" style="border-color:#444">PMU</span>

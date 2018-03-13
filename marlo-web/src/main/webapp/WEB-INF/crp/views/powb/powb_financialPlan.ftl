@@ -78,17 +78,20 @@
 [#---------------------------------------------- MACROS ----------------------------------------------]
 
 [#macro tableE ]
+  [#assign commentsBelow = true /]
   <div class="">
-    <table class="table table-bordered">
+    <table id="tableE" class="table table-bordered">
       <thead>
         <tr>
           <th rowspan="2"></th>
-          <th colspan="3" class="text-center">[@s.text name="financialPlan.tableE.plannedBudget"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
+          <th colspan="5" class="text-center">[@s.text name="financialPlan.tableE.plannedBudget"][@s.param]${(actualPhase.year)!}[/@s.param][/@s.text]</th>
           <th rowspan="2">[@s.text name="financialPlan.tableE.comments" /][@customForm.req required=editable && PMU /]</th>
         </tr>
         <tr>
+          <th class="text-center col-md-2"> [@s.text name="financialPlan.tableE.carryOver"][@s.param]${(actualPhase.year - 1)!}[/@s.param][/@s.text] </th>
           <th class="text-center col-md-2">[@s.text name="financialPlan.tableE.w1w2" /]</th>
           <th class="text-center col-md-2">[@s.text name="financialPlan.tableE.w3bilateral" /]</th>
+          <th class="text-center col-md-2">[@s.text name="financialPlan.tableE.centerFunds" /]</th>
           <th class="text-center">[@s.text name="financialPlan.tableE.total" /]</th>
         </tr>
       </thead>
@@ -110,8 +113,10 @@
       [/#if]
       <tr>
         <th>CRP Total</th>
+        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-carryOver">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w1w2">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w3bilateral">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-centerFunds">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-grandTotal">0.00</span></nobr> </th>
         <th></th>
       </tr>
@@ -123,6 +128,7 @@
 [#macro powbExpenditureArea area element index isLiaison]
   [#local customName = "powbSynthesis.powbFinancialPlannedBudgetList[${index}]" /]
   <tr>
+    [#-- FLAGSHIP/OTHER/PMU --]
     <td class="col-md-2">
       <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
       [#if isLiaison]
@@ -133,6 +139,16 @@
         <input type="hidden" name="${customName}.powbExpenditureArea.id" value="${(area.id)!}" />
       [/#if]
     </td>
+    [#-- CARRY OVER--]
+    <td class="text-right">
+      [#if editable && PMU  ]
+        [@customForm.input name="${customName}.carry" value="${(element.carry)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-carry category-${index}" required=true /]
+      [#else]
+        <input type="hidden" name="${customName}.carry" value="${(element.carry)!'0'}" class="currencyInput type-carry category-${index}"/>
+        <nobr>US$ ${((element.carry)!'0')?number?string(",##0.00")}</nobr>
+      [/#if]
+    </td>
+    [#-- W1/W2 --]
     <td class="text-right">
       [#if editable && PMU && element.editBudgets  ]
         [@customForm.input name="${customName}.w1w2" value="${(element.w1w2)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w1w2 category-${index}" required=true /]
@@ -145,6 +161,7 @@
         [/#if]
       [/#if]
     </td>
+    [#-- W3/BILATERAL --]
     <td class="text-right">
       [#if editable && PMU && element.editBudgets ]
         [@customForm.input name="${customName}.w3Bilateral" value="${(element.w3Bilateral)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-w3bilateral category-${index}"  required=true /]
@@ -157,7 +174,22 @@
         [/#if]
       [/#if]
     </td>
+    [#-- CENTER FUNDS--]
+    <td class="text-right">
+      [#if editable && PMU && element.editBudgets ]
+        [@customForm.input name="${customName}.centerFunds" value="${(element.centerFunds)!'0.00'}" i18nkey="" showTitle=false className="currencyInput text-right type-centerFunds category-${index}"  required=true /]
+      [#else]
+        <input type="hidden" name="${customName}.centerFunds" value="${(element.centerFunds)!'0'}" class="currencyInput type-centerFunds category-${index}"/>
+        [#if (area.crpProgram??)!false]
+          [@powbMacros.projectBudgetsByFlagshipMacro element=area.crpProgram type="CENTERFUNDS" popupEnabled=true/]
+        [#else]
+          <nobr>US$ ${((element.centerFunds)!'0')?number?string(",##0.00")}</nobr>
+        [/#if]
+      [/#if]
+    </td>
+    [#-- TOTAL --]
     <td class="text-right"> <nobr>US$ <span class="text-right label-total category-${index}">0.00</span></nobr> </td>
+    [#-- COMMENTS--]
     <td class="col-md-4">[@customForm.textArea  name="${customName}.comments" value="${(element.comments)!}" i18nkey="" fieldEmptyText="global.prefilledByPmu" showTitle=false className="" editable=editable && PMU/]</td>
   </tr>
 [/#macro]

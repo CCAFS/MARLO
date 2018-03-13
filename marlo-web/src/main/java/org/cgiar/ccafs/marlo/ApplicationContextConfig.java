@@ -43,7 +43,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @PropertySource({"classpath:config/marlo-${spring.profiles.active:dev}.properties"})
 @ComponentScan({"org.cgiar.ccafs.marlo.utils", "org.cgiar.ccafs.marlo.config", "org.cgiar.ccafs.marlo.ocs",
   "org.cgiar.ccafs.marlo.security", "org.cgiar.ccafs.marlo.web", "org.cgiar.ccafs.marlo.data.dao",
-  "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.validation"})
+  "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.validation", "org.cgiar.ccafs.marlo.action"})
 public class ApplicationContextConfig {
 
   public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
