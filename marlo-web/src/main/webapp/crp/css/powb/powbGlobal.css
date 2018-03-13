@@ -25,6 +25,10 @@ table tr {
   font-size: 0.95em;
 }
 
+table tr.text-small{
+  font-size: 0.85em;
+}
+
 table tr a {
   color: #444;
 }
@@ -198,4 +202,32 @@ tfoot {
 .viewMoreSyntesis:hover{
   color:#999;
   text-decoration:underline;
+}
+
+#tableE td {
+  padding: 4px;
+}
+
+.powb-submenuItem {
+  padding: 6px 7px 6px 0;
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  height: 32px;
+  vertical-align: middle;
+  border-radius: 2px;
+  color: #a9a9a9;
+  text-decoration: none;
+  position: relative;
+}
+
+.powb-submenuItem.active {
+  background-color: #1da5ce;
+  color:#fff;
+}
+
+.powb-submenuItem img.check {
+  position:absolute;
+  right: 3px;
+  bottom: 6px;
 }

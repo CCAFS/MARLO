@@ -34,6 +34,12 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
 
 
   @Expose
+  private Double femaleNoCgiar;
+
+  @Expose
+  private Double maleNoCgiar;
+
+  @Expose
   private User createdBy;
 
 
@@ -48,7 +54,6 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
 
@@ -61,19 +66,29 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return activeSince;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Double getFemale() {
     return female;
   }
 
+
+  public Double getFemaleNoCgiar() {
+    return femaleNoCgiar;
+  }
+
+
   public Double getFemalePercentage() {
     Double femaleT;
     femaleT = female == null ? 0.0 : female;
+    Double femaleNoCgT;
+    femaleNoCgT = femaleNoCgiar == null ? 0.0 : femaleNoCgiar;
     if (this.getTotalFTE() != 0) {
-      return Math.round(((femaleT * 100) / this.getTotalFTE()) * 10.0) / 10.0;
+      return Math.round((((femaleT + femaleNoCgT) * 100) / this.getTotalFTE()) * 10.0) / 10.0;
     } else {
       return 0.0;
     }
@@ -84,7 +99,6 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -92,9 +106,12 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return sb.toString();
   }
 
-
   public Double getMale() {
     return male;
+  }
+
+  public Double getMaleNoCgiar() {
+    return maleNoCgiar;
   }
 
 
@@ -114,6 +131,7 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     return powbCrpStaffingCategory;
   }
 
+
   public PowbSynthesis getPowbSynthesis() {
     return powbSynthesis;
   }
@@ -123,14 +141,18 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     Double maleT;
     Double femaleT;
     maleT = male == null ? 0.0 : male;
+    Double maleNoCgT;
+    Double femaleNoCgT;
+    maleT = male == null ? 0.0 : male;
+    maleNoCgT = maleNoCgiar == null ? 0.0 : maleNoCgiar;
     femaleT = female == null ? 0.0 : female;
-    if (maleT + femaleT != 0) {
-      return Math.round(((maleT + femaleT)) * 10.0) / 10.0;
+    femaleNoCgT = femaleNoCgiar == null ? 0.0 : femaleNoCgiar;
+    if (maleT + maleNoCgT + femaleT + femaleNoCgT != 0) {
+      return Math.round(((maleT + maleNoCgT + femaleT + femaleNoCgT)) * 10.0) / 10.0;
     } else {
       return 0.0;
     }
   }
-
 
   @Override
   public boolean isActive() {
@@ -142,26 +164,36 @@ public class PowbSynthesisCrpStaffingCategory implements java.io.Serializable, I
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-
   public void setFemale(Double female) {
     this.female = female;
   }
+
+  public void setFemaleNoCgiar(Double femaleNoCgiar) {
+    this.femaleNoCgiar = femaleNoCgiar;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
-
   public void setMale(Double male) {
     this.male = male;
+  }
+
+
+  public void setMaleNoCgiar(Double maleNoCgiar) {
+    this.maleNoCgiar = maleNoCgiar;
   }
 
 

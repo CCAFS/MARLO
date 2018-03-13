@@ -55,7 +55,7 @@
           </small>
           
           [#-- Title --]
-          <h3 class="headTitle"> Project Contribution </h3>
+          <h3 class="headTitle">[@s.text name="projectOutcome.projectContribution" /] </h3>
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
           [#assign pimText][@s.text name="contribution.message" /][/#assign]

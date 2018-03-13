@@ -129,20 +129,24 @@
       <groupId>org.pentaho</groupId>
       <artifactId>report-charts</artifactId>
     </dependency>
-    <!--  Struts 2 Rest Plugin -->
+    <!--  Struts Convention plugin may not be required anymore after we ditched the struts-rest plugin -->
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-convention-plugin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.struts</groupId>
-      <artifactId>struts2-rest-plugin</artifactId>
     </dependency>
     <!-- Struts JSON library -->
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-json-plugin</artifactId>
     </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+      </dependency>
     <!-- Java JSON Library -->
     <dependency>
       <groupId>org.json</groupId>
@@ -170,6 +174,26 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+      </dependency>
     <!--  End spring dependencies -->
     <dependency>
       <groupId>mysql</groupId>
@@ -202,6 +226,10 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
     </dependency>
+    <dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>ooxml-schemas</artifactId>
+		</dependency>
     <!-- Database version control -->
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -333,49 +361,35 @@
       <artifactId>catalina</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-jdk8</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <!-- Quartz framework -->
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
     <!--  Slack WebHook Library - To send notifications to Slack Chat rooms -->
     <dependency>
       <groupId>net.gpedro.integrations.slack</groupId>
       <artifactId>slack-webhook</artifactId>
     </dependency>
-  	<dependency>
-  		<groupId>org.mapstruct</groupId>
-  		<artifactId>mapstruct-jdk8</artifactId>
-  		<version>1.2.0.Final</version>
-  	</dependency>
+    <dependency>
+   <groupId>javax.el</groupId>
+   <artifactId>javax.el-api</artifactId>
+   <version>2.2.4</version>
+</dependency>
+<dependency>
+   <groupId>org.glassfish.web</groupId>
+   <artifactId>javax.el</artifactId>
+   <version>2.2.4</version>
+</dependency>
   </dependencies>
-
-
-
-  <!-- Profile configuration -->
-  <profiles>
-    <!-- The configuration of the development profile -->
-    <profile>
-      <id>dev</id>
-      <!-- The development profile is active by default -->
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <build.profile.id>dev</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the production profile -->
-    <profile>
-      <id>pro</id>
-      <properties>
-        <build.profile.id>pro</build.profile.id>
-      </properties>
-    </profile>
-    <!-- The configuration of the testing profile -->
-    <profile>
-      <id>test</id>
-      <properties>
-        <build.profile.id>test</build.profile.id>
-      </properties>
-    </profile>
-  </profiles>
-
 
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -417,29 +431,6 @@
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
           <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
         </configuration>
-      </plugin>
-      <!-- Plugin to copy the resources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <!-- Copy properties to impactPathways module -->
-          <execution>
-            <id>copy-properties-to-module</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/classes</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- MINIFYING CSS AND JS - TEST -->

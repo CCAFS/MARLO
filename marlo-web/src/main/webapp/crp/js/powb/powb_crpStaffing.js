@@ -9,14 +9,14 @@ $(document).ready(function() {
     var type = $(this).classParam('type');
     var category = $(this).classParam('category');
     var totalCategory = getTotalByCategory(category);
-    var totalFemale = getTotalByCategoryAndType(category, "female");
+    var totalFemale = getTotalByCategoryAndType(category, "female") + getTotalByCategoryAndType(category, "femaleNon");
     var totalType = getTotalByType(type);
     var granTotal = getGrandTotal();
     var percFemale = ((totalFemale / totalCategory) * 100);
     if(isNaN(percFemale)) {
       percFemale = 0;
     }
-    var percFemaleGrandTotal = ((getTotalByType("female") / granTotal) * 100);
+    var percFemaleGrandTotal = (((getTotalByType("female") + getTotalByType("femaleNon")) / granTotal) * 100);
     if(isNaN(percFemaleGrandTotal)) {
       percFemaleGrandTotal = 0;
     }
