@@ -13,55 +13,59 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+package org.cgiar.ccafs.marlo.utils;
 
-package org.cgiar.ccafs.marlo.data.model.dto;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
-import java.io.Serializable;
+public class POIField {
 
-public class CrpProgramDTO implements Serializable {
+  private String text;
+  private ParagraphAlignment alignment;
+  private Boolean bold;
 
-  private static final long serialVersionUID = -4402900937493896893L;
 
-  private Long id;
-  private String name;
-  private String acronym;
-  private GlobalUnitDTO crp;
-
-  public CrpProgramDTO() {
-
+  public POIField(String text, ParagraphAlignment alignment) {
+    super();
+    this.text = text;
+    this.alignment = alignment;
   }
 
-  public String getAcronym() {
-    return acronym;
+
+  public POIField(String text, ParagraphAlignment alignment, Boolean bold) {
+    super();
+    this.text = text;
+    this.alignment = alignment;
+    this.bold = bold;
   }
 
-  public GlobalUnitDTO getCrp() {
-    return crp;
+
+  public ParagraphAlignment getAlignment() {
+    return alignment;
   }
 
-  public Long getId() {
-    return id;
+
+  public Boolean getBold() {
+    return bold;
   }
 
-  public String getName() {
-    return name;
+
+  public String getText() {
+    return text;
   }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
+
+  public void setAlignment(ParagraphAlignment alignment) {
+    this.alignment = alignment;
   }
 
-  public void setCrp(GlobalUnitDTO crp) {
-    this.crp = crp;
+
+  public void setBold(Boolean bold) {
+    this.bold = bold;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setText(String text) {
+    this.text = text;
   }
-
 
 }

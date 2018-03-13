@@ -106,8 +106,8 @@
           [#if !allowPopups]<th rowspan="2" >[@s.text name="expectedProgress.tableA.outcomes" /]</th>[/#if]
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.milestone" /]</th>
           [#if !allowPopups]<th rowspan="1" colspan="2" class="text-center"> Budget </th> [/#if]
-          <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
           <th rowspan="2" >[@s.text name="expectedProgress.tableA.meansVerification" /]</th>
+          <th rowspan="2" >[@s.text name="expectedProgress.tableA.assessment" /]</th>
         </tr>
         <tr>
           [#if !allowPopups]
@@ -141,10 +141,10 @@
                 [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W1W2" popupEnabled=allowPopups/] </td>[/#if]
                 [#-- W3/Bilateral --]
                 [#if isFlagshipRow && !allowPopups]<td rowspan="${milestoneSize}">[@powbMacros.projectBudgetsByFlagshipMacro element=fp type="W3BILATERAL" popupEnabled=allowPopups/]  </td>[/#if]
+                [#-- Means Verification --]
+                <td class="col-md-4">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
                 [#-- Assessment --]
                 <td>[#if (milestoneProgress.assesmentName?has_content)!false]${milestoneProgress.assesmentName}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
-                [#-- Means Verification --]
-                <td class="col-md-3">[#if (milestoneProgress.means?has_content)!false]${milestoneProgress.means}[#else]<i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>[/#if]</td>
               </tr>
             [/#list]
           [/#list]

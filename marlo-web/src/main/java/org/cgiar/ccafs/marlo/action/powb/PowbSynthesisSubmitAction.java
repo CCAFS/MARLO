@@ -153,7 +153,7 @@ public class PowbSynthesisSubmitAction extends BaseAction {
     }
 
 
-    String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym() + ""};
+    String params[] = {crpManager.getGlobalUnitById(this.getCrpID()).getAcronym() + "", powbSynthesisID + ""};
     this.setBasePermission(this.getText(Permission.POWB_SYNTHESIS_MANAGE_PERMISSION, params));
 
   }
