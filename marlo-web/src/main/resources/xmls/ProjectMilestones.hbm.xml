@@ -30,8 +30,8 @@
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
         
-         <property name="expectedValue" type="long">
-            <column name="expected_value" precision="10" scale="0"/>
+         <property name="expectedValue" type="java.lang.Double">
+            <column name="expected_value" precision="10" scale="2"/>
         </property>
 
         

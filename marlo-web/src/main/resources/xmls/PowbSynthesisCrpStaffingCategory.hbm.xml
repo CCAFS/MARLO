@@ -25,6 +25,12 @@
 		<property name="male" type="java.lang.Double">
 			<column name="male" precision="22" scale="0" />
 		</property>
+		  <property name="femaleNoCgiar" type="java.lang.Double">
+      <column name="female_no_cgiar" precision="22" scale="0" />
+    </property>
+    <property name="maleNoCgiar" type="java.lang.Double">
+      <column name="male_no_cgiar" precision="22" scale="0" />
+    </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
