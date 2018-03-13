@@ -428,6 +428,7 @@ public class FinancialPlanAction extends BaseAction {
     }
   }
 
+
   public void loadPMU(PowbExpenditureAreas liaisonInstitution) {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
@@ -483,6 +484,81 @@ public class FinancialPlanAction extends BaseAction {
       liaisonInstitution.setCenterFunds(liaisonInstitution.getCenterFunds() + centerFunds);
 
     }
+  }
+
+
+  public List<Project> loadPMUProjects() {
+    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+    List<Project> projectsToRet = new ArrayList<>();
+
+    Set<Project> myProjects = new HashSet();
+    for (GlobalUnitProject projectFocus : loggedCrp.getGlobalUnitProjects().stream()
+      .filter(c -> c.isActive() && c.isOrigin()).collect(Collectors.toList())) {
+      Project project = projectFocus.getProject();
+      if (project.isActive()) {
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        if (project.getProjectInfo() != null && project.getProjectInfo().getStatus() != null) {
+          if (project.getProjectInfo().getStatus().intValue() == Integer
+            .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || project.getProjectInfo().getStatus().intValue() == Integer
+              .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
+              && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
+              myProjects.add(project);
+            }
+
+          }
+        }
+
+
+      }
+    }
+    for (Project project : myProjects) {
+
+
+      double w1 = project.getCoreBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double w3 = project.getW3Budget(this.getActualPhase().getYear(), this.getActualPhase());
+      double bilateral = project.getBilateralBudget(this.getActualPhase().getYear(), this.getActualPhase());
+      double centerFunds = project.getCenterBudget(this.getActualPhase().getYear(), this.getActualPhase());
+
+      double percentageW1 = 0;
+      double percentageW3 = 0;
+      double percentageB = 0;
+      double percentageCenterFunds = 0;
+
+
+      percentageW1 = 100;
+      percentageW3 = 100;
+      percentageB = 100;
+      percentageCenterFunds = 100;
+
+      project.setW3Budget(w3);
+      project.setCoreBudget(w1);
+      project.setBilateralBudget(bilateral);
+      project.setCentenFundsBudget(centerFunds);
+
+      project.setPercentageW3(percentageW3);
+      project.setPercentageW1(percentageW1);
+      project.setPercentageBilateral(percentageB);
+      project.setPercentageFundsBudget(percentageCenterFunds);
+
+
+      w1 = w1 * (percentageW1) / 100;
+      w3 = w3 * (percentageW3) / 100;
+      bilateral = bilateral * (percentageB) / 100;
+      centerFunds = centerFunds * (percentageCenterFunds) / 100;
+
+      project.setTotalW3(w3);
+      project.setTotalW1(w1);
+      project.setTotalBilateral(bilateral);
+      project.setTotalCenterFunds(centerFunds);
+
+
+      projectsToRet.add(project);
+
+    }
+    return projectsToRet;
+
   }
 
   @Override
