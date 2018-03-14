@@ -37,6 +37,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STUnderline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,20 @@ public class POISummary {
   private final static String TEXT_FONT_COLOR = "000000";
   private final static Integer TABLE_TEXT_FONT_SIZE = 10;
   private final static String TABLE_HEADER_FONT_COLOR = "FFF2CC";
+
+  private void addParagraphTextBreak(XWPFRun paragraphRun, String text) {
+    if (text.contains("\n")) {
+      String[] lines = text.split("\n");
+      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
+      for (int i = 1; i < lines.length; i++) {
+        // add break and insert new text
+        paragraphRun.addBreak();
+        paragraphRun.setText(lines[i]);
+      }
+    } else {
+      paragraphRun.setText(text, 0);
+    }
+  }
 
   /**
    * Footer title
@@ -259,11 +274,9 @@ public class POISummary {
    * @param text
    */
   public void textHead1Title(XWPFParagraph h1, String text) {
-
     h1.setAlignment(ParagraphAlignment.BOTH);
-
     XWPFRun h1Run = h1.createRun();
-    h1Run.setText(text);
+    this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor(TITLE_FONT_COLOR);
     h1Run.setBold(true);
     h1Run.setFontFamily(FONT_TYPE);
@@ -271,11 +284,9 @@ public class POISummary {
   }
 
   public void textHead2Title(XWPFParagraph h2, String text) {
-
     h2.setAlignment(ParagraphAlignment.BOTH);
-
     XWPFRun h2Run = h2.createRun();
-    h2Run.setText(text);
+    this.addParagraphTextBreak(h2Run, text);
     h2Run.setColor(TITLE_FONT_COLOR);
     h2Run.setBold(true);
     h2Run.setFontFamily(FONT_TYPE);
@@ -283,11 +294,9 @@ public class POISummary {
   }
 
   public void textHead3Title(XWPFParagraph h2, String text) {
-
     h2.setAlignment(ParagraphAlignment.BOTH);
-
     XWPFRun h2Run = h2.createRun();
-    h2Run.setText(text);
+    this.addParagraphTextBreak(h2Run, text);
     h2Run.setColor(TITLE_FONT_COLOR);
     h2Run.setBold(true);
     h2Run.setFontFamily(FONT_TYPE);
@@ -296,9 +305,8 @@ public class POISummary {
 
   public void textHeadCoverTitle(XWPFParagraph h1, String text) {
     h1.setAlignment(ParagraphAlignment.CENTER);
-
     XWPFRun h1Run = h1.createRun();
-    h1Run.setText(text);
+    this.addParagraphTextBreak(h1Run, text);
     h1Run.setColor(TEXT_FONT_COLOR);
     h1Run.setBold(false);
     h1Run.setFontFamily(FONT_TYPE);
@@ -322,7 +330,8 @@ public class POISummary {
 
     CTR ctr = CTR.Factory.newInstance();
     ctr.setTArray(new CTText[] {ctText});
-
+    ctr.addNewRPr().addNewColor().setVal("0000FF");
+    ctr.addNewRPr().addNewU().setVal(STUnderline.SINGLE);
     // Insert the linked text into the link
     cLink.setRArray(new CTR[] {ctr});
 
@@ -330,17 +339,15 @@ public class POISummary {
   }
 
   public void textLineBreak(XWPFDocument document, int breakNumber) {
-
     for (int i = 0; i < breakNumber; i++) {
       document.createParagraph();
     }
-
   }
 
   public void textNotes(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
-    paragraphRun.setText(text);
+    this.addParagraphTextBreak(paragraphRun, text);
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
@@ -350,17 +357,7 @@ public class POISummary {
   public void textParagraph(XWPFParagraph paragraph, String text) {
     paragraph.setAlignment(ParagraphAlignment.BOTH);
     XWPFRun paragraphRun = paragraph.createRun();
-    if (text.contains("\n")) {
-      String[] lines = text.split("\n");
-      paragraphRun.setText(lines[0], 0); // set first line into XWPFRun
-      for (int i = 1; i < lines.length; i++) {
-        // add break and insert new text
-        paragraphRun.addBreak();
-        paragraphRun.setText(lines[i]);
-      }
-    } else {
-      paragraphRun.setText(text, 0);
-    }
+    this.addParagraphTextBreak(paragraphRun, text);
     paragraphRun.setColor(TEXT_FONT_COLOR);
     paragraphRun.setBold(false);
     paragraphRun.setFontFamily(FONT_TYPE);
@@ -387,7 +384,7 @@ public class POISummary {
             XWPFParagraph paragraph = tableRowHeader.getCell(0).addParagraph();
             paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(poiParameter.getText());
+            this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
             if (poiParameter.getBold() != null) {
               paragraphRun.setBold(poiParameter.getBold());
@@ -401,7 +398,7 @@ public class POISummary {
             XWPFParagraph paragraph = tableRowHeader.createCell().addParagraph();
             paragraph.setAlignment(poiParameter.getAlignment());
             XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText(poiParameter.getText());
+            this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
             paragraphRun.setColor(TEXT_FONT_COLOR);
             if (poiParameter.getBold() != null) {
               paragraphRun.setBold(poiParameter.getBold());
@@ -416,7 +413,7 @@ public class POISummary {
           XWPFParagraph paragraph = tableRowHeader.getCell(record).addParagraph();
           paragraph.setAlignment(poiParameter.getAlignment());
           XWPFRun paragraphRun = paragraph.createRun();
-          paragraphRun.setText(poiParameter.getText());
+          this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
           paragraphRun.setColor(TEXT_FONT_COLOR);
           if (poiParameter.getBold() != null) {
             paragraphRun.setBold(poiParameter.getBold());
@@ -441,7 +438,7 @@ public class POISummary {
         XWPFParagraph paragraph = dataRow.getCell(record).addParagraph();
         paragraph.setAlignment(poiParameter.getAlignment());
         XWPFRun paragraphRun = paragraph.createRun();
-        paragraphRun.setText(poiParameter.getText());
+        this.addParagraphTextBreak(paragraphRun, poiParameter.getText());
         paragraphRun.setColor(TEXT_FONT_COLOR);
         paragraphRun.setFontFamily(FONT_TYPE);
         paragraphRun.setFontSize(TABLE_TEXT_FONT_SIZE);
@@ -479,9 +476,7 @@ public class POISummary {
         break;
     }
 
-
     table.getCTTbl().addNewTblPr().addNewTblW().setW(BigInteger.valueOf(15000));
-
 
   }
 
