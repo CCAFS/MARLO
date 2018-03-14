@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Feb 26, 2018 9:41:01 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" table="powb_collaboration" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.PowbCollaboration" table="powb_collaboration" optimistic-lock="none">
        <id name="id" type="java.lang.Long">
       <column name="id" />
       <generator class="foreign">
