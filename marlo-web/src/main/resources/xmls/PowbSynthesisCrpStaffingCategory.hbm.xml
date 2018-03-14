@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class
 		name="org.cgiar.ccafs.marlo.data.model.PowbSynthesisCrpStaffingCategory"
-		table="powb_synthesis_crp_staffing_category" optimistic-lock="version">
+		table="powb_synthesis_crp_staffing_category" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

@@ -113,7 +113,7 @@
       [/#if]
       <tr>
         <th>CRP Total</th>
-        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-carryOver">0.00</span></nobr> </th>
+        <th class="text-right"> <nobr>US$ <span class="label-totalByType type-carry">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w1w2">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-totalByType type-w3bilateral">0.00</span></nobr> </th>
         <th class="text-right"> <nobr>US$ <span class="label-totalByType type-centerFunds">0.00</span></nobr> </th>
@@ -161,6 +161,7 @@
           [#-- PMU --]
           [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.w1w2)! type="W1W2" popupEnabled=true isAreaPMU=true/]
         [#else]
+          [#-- Other --]
           <nobr>US$ ${((element.w1w2)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
       [/#if]
@@ -178,6 +179,7 @@
           [#-- PMU --]
           [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.w3Bilateral)! type="W3BILATERAL" popupEnabled=true isAreaPMU=true/]
         [#else]
+          [#-- Other --]
           <nobr>US$ ${((element.w3Bilateral)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
       [/#if]
@@ -195,6 +197,7 @@
           [#-- PMU --]
           [@powbMacros.projectBudgetsByFlagshipMacro element=element totalValue=(element.centerFunds)! type="CENTERFUNDS" popupEnabled=true isAreaPMU=true/]
         [#else]
+          [#-- Other --]
           <nobr>US$ ${((element.centerFunds)!'0')?number?string(",##0.00")}</nobr>
         [/#if]
       [/#if]

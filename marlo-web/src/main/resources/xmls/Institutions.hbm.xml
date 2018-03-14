@@ -4,7 +4,7 @@
 <!-- Generated Jun 15, 2016 9:17:09 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.Institution" table="institutions"
-		optimistic-lock="version">
+		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
@@ -97,5 +97,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" />
 		</set>
+		<set name="globalUnits" table="global_units"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="institution_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" />
+    </set>
 	</class>
 </hibernate-mapping>
