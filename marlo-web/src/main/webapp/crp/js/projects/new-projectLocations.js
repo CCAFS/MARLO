@@ -152,6 +152,10 @@ function attachEvents() {
   $('input.recommendedSelected').on('change', function() {
     $(this).next().val($(this).is(":checked"));
   });
+
+  $('#countriesCmvs').on('change', function() {
+    console.log('Change');
+  });
 }
 
 function modalButtonsListeners(){
@@ -623,6 +627,41 @@ function updateIndex() {
   $(document).trigger('updateComponent');
 }
 
+function setMapCenterPosition($item,locId,locName){
+  /* GET COORDINATES */
+  var url = baseURL + "/geopositionByElement.do";
+  var data = {
+      "locElementID": locId,
+      phaseID: phaseID
+  };
+  console.log(locId);
+  $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: "json",
+      data: data
+  }).done(function(m) {
+
+    if(m.geopositions.length != 0) {
+      latitude = m.geopositions[0].latitude;
+      longitude = m.geopositions[0].longitude;
+      $item.find('.geoLatitude').val(latitude);
+      $item.find('.geoLongitude').val(longitude);
+      //addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+      var latLng = new google.maps.LatLng(latitude, longitude);
+      map.setCenter(latLng);
+    }else{
+      var geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode( {'address' : locName}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            map.setCenter(results[0].geometry.location);
+        }
+      });
+    }
+  });
+}
+
 //Adding locElement into location level(Country and CSVS)
 function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
   var locationContent =
@@ -635,34 +674,13 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     var locName = e.split("-")[2];
     // Check if the item doesn't exists into the list
     if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
-      notify(locName + " already exists into the " + locationContent.parent().parent().find(".locationLevelName").val()
+      notify(locName + " already exists into the " + locationContent.parent().parent().parent().find(".locationLevelName").val()
           + " list")
     } else {
       console.log('doesnt exist');
-      /* GET COORDINATES */
-      var url = baseURL + "/geopositionByElement.do";
-      var data = {
-          "locElementID": locId,
-          phaseID: phaseID
-      };
       countID++;
-      $.ajax({
-          url: url,
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).done(function(m) {
+      setMapCenterPosition($item,locId,locName);
 
-        if(m.geopositions.length != 0) {
-          latitude = m.geopositions[0].latitude;
-          longitude = m.geopositions[0].longitude;
-          $item.find('.geoLatitude').val(latitude);
-          $item.find('.geoLongitude').val(longitude);
-          //addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
-          var latLng = new google.maps.LatLng(latitude, longitude);
-          map.setCenter(latLng);
-        }
-      });
       $item.attr("id", "location-" + (countID));
       $item.find(".lName").html(locName);
       $item.find(".locElementName").val(locName);
@@ -685,7 +703,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     mappingCountries();
   }
 
-  $("#close-modal-button").click();
+  //$("#close-modal-button").click();
 }
 
 function cleanSelected(){
