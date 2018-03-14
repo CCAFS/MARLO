@@ -156,6 +156,7 @@ function attachEvents() {
   $('#countriesCmvs').on('change', function() {
     console.log('Change');
   });
+
 }
 
 function modalButtonsListeners(){
@@ -608,7 +609,7 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         $list.append($item);
         $item.show('slow');
         // add marker
-        //addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
         // update indexes
         updateIndex();
         checkItems($list.parents("#selectsContent"));
@@ -627,7 +628,7 @@ function updateIndex() {
   $(document).trigger('updateComponent');
 }
 
-function setMapCenterPosition($item,locId,locName){
+function setMapCenterPosition($item,locId,locName,countID){
   /* GET COORDINATES */
   var url = baseURL + "/geopositionByElement.do";
   var data = {
@@ -647,7 +648,7 @@ function setMapCenterPosition($item,locId,locName){
       longitude = m.geopositions[0].longitude;
       $item.find('.geoLatitude').val(latitude);
       $item.find('.geoLongitude').val(longitude);
-      //addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+      addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
       var latLng = new google.maps.LatLng(latitude, longitude);
       map.setCenter(latLng);
     }else{
@@ -679,7 +680,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     } else {
       console.log('doesnt exist');
       countID++;
-      setMapCenterPosition($item,locId,locName);
+      setMapCenterPosition($item,locId,locName,countID);
 
       $item.attr("id", "location-" + (countID));
       $item.find(".lName").html(locName);
@@ -739,4 +740,113 @@ function checkItems(block) {
   } else {
     $(block).find('p.inf').fadeOut();
   }
+}
+
+//Map events
+
+function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
+  // Close info window
+  infoWindow.close();
+  var drag;
+  if(editable && isList == "false") {
+    drag = true;
+  } else {
+    drag = false;
+  }
+
+  var $item = $("#location-" + idMarker);
+  var marker = new google.maps.Marker({
+      id: idMarker,
+      draggable: drag,
+      position: {
+          lat: latitude,
+          lng: longitude
+      },
+      icon: baseUrl + '/global/images/otherSite-marker.png',
+      name: sites,
+      animation: google.maps.Animation.DROP,
+      list: isList
+  });
+  markers[idMarker] = {
+      gElement: marker,
+      type: locType
+  };
+// To add the marker to the map, call setMap();
+  marker.setMap(map);
+  map.setCenter(marker.getPosition());
+
+  // MARKER EVENTS
+  marker.addListener('click', function() {
+    $(".locations").removeClass("selected");
+    openInfoWindow(marker);
+    $item.find(".locations").addClass("selected");
+  });
+
+  marker.addListener('drag', function() {
+
+    var markerLatLng = marker.getPosition();
+    var latitude = markerLatLng.lat();
+    var longitude = markerLatLng.lng();
+    $item.find("input.geoLongitude").val(longitude);
+    $item.find("input.geoLatitude").val(latitude);
+    $item.find("span.lPos").html(" (" + latitude.toFixed(4) + ", " + longitude.toFixed(4) + ")");
+    $item.find(".locations").addClass("selected");
+    // update Infowindow
+    $(".editableLoc").find(".latMap").attr("value", latitude);
+    $(".editableLoc").find(".lngMap").attr("value", longitude);
+  });
+
+  marker.addListener('dragend', function() {
+    // GET Isoalpha
+    $.ajax({
+        'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+        'data': {
+            key: GOOGLE_API_KEY,
+            latlng: ($item.find("input.geoLatitude").val() + "," + $item.find("input.geoLongitude").val())
+        },
+        success: function(data) {
+          if(data.status == 'OK') {
+            $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
+          } else {
+            console.log(data.status);
+          }
+        }
+    });
+    $item.find(".locations").removeClass("selected");
+    // Update component event
+    $(document).trigger('updateComponent');
+  });
+
+}
+
+//Delete markers
+function deleteMarkers() {
+  setAllMap(null);
+  markers = [];
+}
+
+// Sets the map on all markers in the array.
+function setAllMap(map) {
+  $.each(markers, function(index,marker) {
+    if(marker.gElement) {
+      marker.gElement.setMap(map);
+    }
+  });
+}
+
+// Remove individual marker by id
+function removeMarker(id) {
+  marker = markers[id].gElement;
+  marker.setMap(null);
+  delete markers[id];
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  setAllMap(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setAllMap(map);
 }
