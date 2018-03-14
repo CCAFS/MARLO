@@ -4,7 +4,7 @@
 <!-- Generated Jun 20, 2016 9:05:33 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry"
-		table="crp_program_countries" optimistic-lock="version">
+		table="crp_program_countries" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Aug 22, 2016 10:31:14 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectCommunication" table="project_communications"  optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectCommunication" table="project_communications"  optimistic-lock="none">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
