@@ -275,7 +275,8 @@ public class ExpectedCRPProgressAction extends BaseAction {
     if (powbSynthesis.getExpectedCrpProgresses() != null) {
       int i = 0;
       for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-        if (powbExpectedCrpProgress != null) {
+        if (powbExpectedCrpProgress != null && powbExpectedCrpProgress.getCrpMilestone() != null
+          && powbExpectedCrpProgress.getCrpMilestone().getId() != null) {
           if (powbExpectedCrpProgress.getCrpMilestone().getId().longValue() == crpMilestoneID.longValue()) {
             return i;
           }
