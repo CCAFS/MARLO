@@ -285,7 +285,7 @@ public class ProjectListAction extends BaseAction {
 
     ProjectInfo projectInfo = new ProjectInfo();
     projectInfo.setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
-    projectInfo.setModificationJustification("New expected Project created");
+    projectInfo.setModificationJustification("New OCS Project created");
     projectInfo.setSummary(agreement.getDescription());
     projectInfo.setStartDate(agreement.getStartDate());
     projectInfo.setEndDate(agreement.getEndDate());
@@ -452,6 +452,8 @@ public class ProjectListAction extends BaseAction {
     centerProject.setResearchProgram(selectedProgram);
     centerProject.setProjectStatus(new CenterProjectStatus(new Long(2), true));
     centerProject.setAutoFill(false);
+    centerProject.setSync(false);
+    centerProject.setSyncDate(new Date());
 
     CenterProjectCrosscutingTheme projectCrosscutingTheme = new CenterProjectCrosscutingTheme();
 
@@ -494,11 +496,8 @@ public class ProjectListAction extends BaseAction {
     project = projectManager.saveProject(project);
 
     ProjectInfo projectInfo = new ProjectInfo();
-    projectInfo.setTitle("[ " + syncCode.trim() + " ]" + agreement.getDescription());
     projectInfo.setModificationJustification("New expected Project created");
-    projectInfo.setSummary(agreement.getDescription());
-    projectInfo.setStartDate(agreement.getStartDate());
-    projectInfo.setEndDate(agreement.getEndDate());
+    projectInfo.setStartDate(new Date());
     projectInfo.setScale(0);
     projectInfo.setCofinancing(false);
     projectInfo.setProjectEditLeader(false);
@@ -774,8 +773,9 @@ public class ProjectListAction extends BaseAction {
         } catch (Exception ex) {
           User user = userService.getUser(this.getCurrentUser().getId());
           // Check if the User is an Area Leader
-          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream().filter(
-            rl -> rl.isActive() && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))
+          List<CenterLeader> userAreaLeads = new ArrayList<>(user.getResearchLeaders().stream()
+            .filter(rl -> rl.isActive()
+              && (rl.getType().getId() == CenterLeaderTypeEnum.RESEARCH_AREA_LEADER_TYPE.getValue()))
             .collect(Collectors.toList()));
           if (!userAreaLeads.isEmpty()) {
             areaID = userAreaLeads.get(0).getResearchArea().getId();
