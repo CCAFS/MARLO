@@ -97,5 +97,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.InstitutionLocation" />
 		</set>
+		<set name="globalUnits" table="global_units"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="institution_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" />
+    </set>
 	</class>
 </hibernate-mapping>
