@@ -26,8 +26,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private GlobalUnitType globalUnitType;
 
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private User createdBy;
 
@@ -48,30 +50,31 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean login;
-
   private String acronymValid;
-  
+
   @Expose
   private String smoCode;
 
+  @Expose
+  private Institution institution;
 
   private Set<CenterLeader> centerLeaders = new HashSet<CenterLeader>(0);
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
-  private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
+  private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
   private Set<CenterArea> centerAreas = new HashSet<CenterArea>(0);
 
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
+
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
-
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
@@ -90,7 +93,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
-
   private Set<CrpLocElementType> crpLocElementTypes = new HashSet<CrpLocElementType>(0);
 
 
@@ -102,11 +104,11 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   private Set<Role> roles = new HashSet<Role>(0);
 
+
   private Set<GlobalUnitProject> globalUnitProjects = new HashSet<GlobalUnitProject>(0);
 
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
-
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
@@ -117,7 +119,9 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   private List<UserRole> programManagmenTeam; // Used by CrpAdminManagmentAction
 
+
   private List<LocElementType> locationCustomElementTypes; // Used by CrpLocationsAction
+
 
   private List<LocElementType> locationElementTypes; // Used by CrpLocationsAction
 
@@ -225,7 +229,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return centerObjectives;
   }
 
-
   public Set<CenterProjectFundingSource> getCenterProjectFundingSources() {
     return centerProjectFundingSources;
   }
@@ -238,6 +241,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     }
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -246,7 +250,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return crpInstitutionsPartners;
   }
 
-
   public Set<CrpLocElementType> getCrpLocElementTypes() {
     return crpLocElementTypes;
   }
@@ -254,6 +257,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
+
 
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
@@ -312,6 +316,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+  public Institution getInstitution() {
+    return institution;
+  }
+
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -336,13 +344,13 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return locElementTypes;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -374,7 +382,6 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     return roles;
   }
 
-
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
   }
@@ -383,6 +390,7 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
   public String getSmoCode() {
     return smoCode;
   }
+
 
   public List<TargetUnitSelect> getTargetUnits() {
     return targetUnits;
@@ -429,15 +437,14 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCenterAreas(Set<CenterArea> centerAreas) {
     this.centerAreas = centerAreas;
   }
 
+
   public void setCenterLeaders(Set<CenterLeader> centerLeaders) {
     this.centerLeaders = centerLeaders;
   }
-
 
   public void setCenterObjectives(Set<CenterObjective> centerObjectives) {
     this.centerObjectives = centerObjectives;
@@ -448,14 +455,15 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.centerProjectFundingSources = centerProjectFundingSources;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
   }
+
 
   public void setCrpLocElementTypes(Set<CrpLocElementType> crpLocElementTypes) {
     this.crpLocElementTypes = crpLocElementTypes;
@@ -497,19 +505,19 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
-
   public void setDeliverablesList(List<Deliverable> deliverablesList) {
     this.deliverablesList = deliverablesList;
   }
+
 
   public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
     this.deliverableTypes = deliverableTypes;
   }
 
-
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
+
 
   public void setGlobalUnitProjects(Set<GlobalUnitProject> globalUnitProjects) {
     this.globalUnitProjects = globalUnitProjects;
@@ -525,6 +533,10 @@ public class GlobalUnit implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
   public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {

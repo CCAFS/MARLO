@@ -4,7 +4,7 @@
 <!-- Generated Feb 2, 2018 8:27:14 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.PowbToc" table="powb_toc"
-		optimistic-lock="version">
+		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="foreign">
