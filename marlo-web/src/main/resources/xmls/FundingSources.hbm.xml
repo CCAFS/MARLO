@@ -5,7 +5,7 @@
 <hibernate-mapping>
 
   <class name="org.cgiar.ccafs.marlo.data.model.FundingSource"
-    table="funding_sources" optimistic-lock="version">
+    table="funding_sources" optimistic-lock="none">
     <id name="id" type="java.lang.Long">
       <column name="id" />
       <generator class="identity" />

@@ -4,7 +4,7 @@
 <!-- Generated Jul 12, 2017 2:20:41 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CapdevPartners"
-		table="capdev_partners" optimistic-lock="version">
+		table="capdev_partners" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />

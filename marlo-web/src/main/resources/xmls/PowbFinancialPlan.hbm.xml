@@ -4,7 +4,7 @@
 <!-- Generated Feb 5, 2018 11:32:16 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.PowbFinancialPlan"
-		table="powb_financial_plan" optimistic-lock="version">
+		table="powb_financial_plan" optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="foreign">

@@ -4,7 +4,7 @@
 <!-- Generated Jun 8, 2016 11:23:28 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.Auditlog" table="auditlog"
-		optimistic-lock="version">
+		optimistic-lock="none">
 		<id name="auditLogId" type="java.lang.Long">
 			<column name="AUDIT_LOG_ID" />
 			<generator class="identity" />
