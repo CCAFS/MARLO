@@ -224,6 +224,7 @@ tfoot {
 .powb-submenuItem.active {
   background-color: #1da5ce;
   color:#fff;
+  border-color: #1c96bb;
 }
 
 .powb-submenuItem img.check {
