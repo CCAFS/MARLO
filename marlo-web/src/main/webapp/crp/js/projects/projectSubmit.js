@@ -272,7 +272,7 @@ function unSubmitButtonEvent(e) {
                   function(m) {
                     window.location.href =
                         baseURL + "/projects/" + currentCrpSession + "/description.do?projectID=" + projectId
-                            + "&edit=true";
+                            + "&edit=true&phaseID=" + phaseID;
                   });
             } else {
               $justification.addClass('fieldError');

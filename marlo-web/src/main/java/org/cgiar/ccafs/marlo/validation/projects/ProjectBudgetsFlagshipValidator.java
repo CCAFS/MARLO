@@ -66,8 +66,8 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGETBYFLAGSHIP.getStatus().replace("/", "_");
-    String autoSaveFile =
-      project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription() + "_" + action.getActualPhase().getYear() +"_"+crp.getAcronym() +"_"+ actionFile + ".json";
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getDescription()
+      + "_" + action.getActualPhase().getYear() + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -76,7 +76,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     Project projectBD = projectManager.getProjectById(projectID);
     List<ProjectBudget> budgets = projectBD.getProjectBudgets()
       .stream().filter(c -> c.isActive() && c.getYear() == year
-        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
+        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() >= 0))
       .collect(Collectors.toList());
 
     return budgets.size() > 0;
@@ -105,7 +105,7 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     action.setInvalidFields(new HashMap<>());
     if (project != null) {
       if (!saving) {
-        Path path = this.getAutoSaveFilePath(project, action.getCrpID(),action);
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
         if (path.toFile().exists()) {
           action.addMissingField("draft");
