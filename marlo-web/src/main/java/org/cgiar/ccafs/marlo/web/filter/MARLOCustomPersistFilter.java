@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Cache;
 import org.hibernate.SessionFactory;
 import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
@@ -86,6 +87,11 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       AuditLogContextProvider.push(new AuditLogContext());
 
       LOG.debug("begin doFilter for MARLOCustomPersistFilter for request: " + requestUrl);
+      Cache cache = sessionFactory.getCache();
+
+      if (cache != null) {
+        cache.evictAllRegions(); // Evict data from all query regions.
+      }
       sessionFactory.getCurrentSession().beginTransaction();
 
       // Continue filter chain
@@ -131,6 +137,7 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
      */
     finally {
       LOG.debug("clean up AuditLogHelper for MARLOCustomPersistFilter request : " + requestUrl);
+
       // This must get executed in a finally block or otherwise we risk a memory leak.
       AuditLogContextProvider.pop();
     }

@@ -106,17 +106,20 @@ public class ExpectedCRPProgressValidator extends BaseValidator {
           if (powbSynthesis.getExpectedCrpProgresses() != null) {
             if (!powbSynthesis.getExpectedCrpProgresses().isEmpty()) {
               for (PowbExpectedCrpProgress powbExpectedCrpProgress : powbSynthesis.getExpectedCrpProgresses()) {
-                int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
-                if (!(this.isValidString(powbExpectedCrpProgress.getMeans()))) {
-                  action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
-                  action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
-                    InvalidFieldsMessages.EMPTYFIELD);
-                }
+                if (powbExpectedCrpProgress != null && powbExpectedCrpProgress.getCrpMilestone() != null
+                  && powbExpectedCrpProgress.getCrpMilestone().getId() != null) {
+                  int i = this.getIndex(powbExpectedCrpProgress.getCrpMilestone().getId().longValue(), powbSynthesis);
+                  if (!(this.isValidString(powbExpectedCrpProgress.getMeans()))) {
+                    action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].means"));
+                    action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].means",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
 
-                if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
-                  action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
-                  action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
-                    InvalidFieldsMessages.EMPTYFIELD);
+                  if (!this.isValidString(powbExpectedCrpProgress.getAssessment())) {
+                    action.addMissingField(action.getText("powbSynthesis.expectedCrpProgresses[" + i + "].assessment"));
+                    action.getInvalidFields().put("input-powbSynthesis.expectedCrpProgresses[" + i + "].assessment",
+                      InvalidFieldsMessages.EMPTYFIELD);
+                  }
                 }
               }
             } else {

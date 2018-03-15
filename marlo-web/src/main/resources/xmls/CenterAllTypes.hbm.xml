@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class name="org.cgiar.ccafs.marlo.data.model.CenterAllTypes" table="center_all_types"
-		optimistic-lock="version">
+		optimistic-lock="none">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
