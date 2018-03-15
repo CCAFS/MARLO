@@ -235,14 +235,18 @@ span.allCountriesQuestion {
 .centerMarker{
     position:absolute;
     /*url of the marker*/
-    background:url('../../../global/images/red-map-marker.png') no-repeat;
+    /* background:url('../../../global/images/red-map-marker.png') no-repeat; */
+    background:url('../../../global/images/pointer-hand.png') no-repeat;
     /*center the marker*/
     top:50%;
     left:50%;
     z-index:1;
-    /*fix offset when needed*/
-    margin-left:-17px;
-    margin-top:-35px;
+    /*fix offset when needed (RED MARKER)*/
+    /* margin-left:-17px; */
+    /* margin-top:-35px; */
+    /*fix offset when needed (POINTER HAND)*/
+    margin-left:-14px;
+    margin-top:-5px;
     /*size of the image*/
     height:35px;
     width:35px;
@@ -428,3 +432,50 @@ tr:nth-child(even) {
 .inputFormCoordinates-container{
     margin-top: 5px;
 }
+
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  #pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 145px;
+    left: 113px !important;
+  }
+
+  #pac-input:focus {
+    border-color: #4d90fe;
+  }
+
+  .pac-container {
+    font-family: Roboto;
+    z-index: 1100;
+  }
+
+  #type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+  }
+
+  #type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+  }
+  #target {
+    width: 345px;
+  }

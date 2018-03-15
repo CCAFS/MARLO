@@ -213,7 +213,7 @@
                               </div>
                               [#-- Location name -Lat -Lon --]
                               <div id="inputFormWrapper" class="inputFormCoordinates-container" style="display:none;">
-                                <div class="nameWrapper"><label for="">Location name:</label><input placeholder="name (Required)" class="name form-control" type="text" /></div>
+                                <div class="nameWrapper"><label for="">Location name:</label><input placeholder="Name (Required)" class="name form-control" type="text" /></div>
                                 <div class="latitudeWrapper"><label for="">Latitude:</label><input placeholder="Latitude" class="latitude form-control" type="text" value="" /></div>
                                 <div class="longitudeWrapper"><label for="">Longitude:</label><input placeholder="Longitude" class="longitude form-control " type="text"  value=""/></div>
                               </div>
@@ -230,6 +230,7 @@
                           
                           <div class="map-container col-md-5">
                             <div  class="col-md-12 map">
+                              <input id="pac-input" class="controls" type="text" placeholder="Search Box">
                               <div id="map" class="col-md-12"></div>
                             </div>
                           </div>
