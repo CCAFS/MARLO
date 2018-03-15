@@ -86,8 +86,15 @@ function attachEvents() {
 //Events
   $("#locLevelSelect").on("change",function() {
     var option = $(this).find("option:selected");
+    if(option.val() == "-1" || option.val().split("-")[0] == "10"){
+      //If the selected option is "Climate Smart Village" hide the red marker in the map
+      $('#map .centerMarker').hide();
+    }else{
+      $('#map .centerMarker').show();
+    }
     if(option.val() == "-1") {
       $("#addLocationButton").hide("slow");
+      $(".locationForm-container .selectLocations").hide("slow");
     } else {
       $("#addLocationButton").show("slow");
       if(option.val().split("-")[1] == "true") {
@@ -163,6 +170,7 @@ function modalButtonsListeners(){
 
   // Add location button
   $("#addLocationButton").on("click", function(e) {
+    $(this).prop('disabled',true);
 
     //Select input
     var $locationLevelSelect = $("#locLevelSelect");
@@ -291,7 +299,7 @@ function checkRegionList(block) {
 //Load script of google services
 function loadScript() {
   var script = document.createElement("script");
-  script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&callback=initMap";
+  script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&libraries=places&sensor=false&callback=initMap";
   document.body.appendChild(script);
 }
 
@@ -384,8 +392,53 @@ function initMap() {
       mapTypeId: 'roadmap',
       styles: style
   });
+
+  //Create the search box and link it to the UI element.
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+    searchBox.setBounds(map.getBounds());
+  });
+
+  //Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBox.addListener('places_changed', function() {
+    var places = searchBox.getPlaces();
+
+    if (places.length == 0) {
+      return;
+    }
+
+    // For each place, get the icon, name and location.
+    var bounds = new google.maps.LatLngBounds();
+    places.forEach(function(place) {
+      if (!place.geometry) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+      var icon = {
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25)
+      };
+
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+    });
+    map.fitBounds(bounds);
+  });
+
   //Center marker into map on click
-  $('<div/>').addClass('centerMarker').appendTo(map.getDiv()).click(function(){
+  $('<div/>').addClass('centerMarker').css('display','none').appendTo(map.getDiv()).click(function(){
     addLocationFromMap();
  });
   var centerControlDiv = document.createElement('div');
@@ -615,6 +668,7 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         checkItems($list.parents("#selectsContent"));
       }
   });
+  $('#inputFormWrapper .nameWrapper input').val('');
 }
 
 function updateIndex() {
@@ -703,7 +757,7 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
     layer.setMap(null);
     mappingCountries();
   }
-
+  cleanSelected();
   //$("#close-modal-button").click();
 }
 
