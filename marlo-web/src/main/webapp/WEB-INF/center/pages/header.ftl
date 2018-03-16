@@ -20,7 +20,8 @@
       <meta name="googlebot" content="${robotAccess}" />
     [/#if]
     [#-- Title --]
-    <title>${(title)!"MARLO"} [#if !config.production][Testing Environment][/#if]</title> 
+    <title>[#include "/WEB-INF/global/pages/titleGenerator.ftl" /]</title> 
+    
     [#compress]
   	[#-- Importing Global CSS files --]
   	[#if globalLibs??][#list globalLibs as libraryName][@components.css_imports libraryName=libraryName/][/#list][/#if]
