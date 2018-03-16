@@ -271,7 +271,7 @@
       [/#list]
     [#else]
       <tr>
-        <td class="text-center" colspan="5">
+        <td class="text-center" colspan="6">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
       </tr>
