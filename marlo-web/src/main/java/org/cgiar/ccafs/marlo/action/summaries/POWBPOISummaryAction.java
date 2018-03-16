@@ -158,7 +158,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
-      if (powbSynthesisPMU.getPowbToc().getFile() != null) {
+      if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
           this.getPowbPath(powbSynthesisPMU.getLiaisonInstitution(),
             this.getLoggedCrp().getAcronym() + "_"
@@ -314,7 +314,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           plansCRPFlagshipDescription += powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
         }
         poiSummary.textParagraph(document.createParagraph(), plansCRPFlagshipDescription);
-        if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
+        if (powbSynthesis.getPowbFlagshipPlans() != null
+          && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
           poiSummary.textHyperlink(
             this.getPowbPath(liaisonInstitution,
               this.getLoggedCrp().getAcronym() + "_"
