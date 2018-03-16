@@ -221,9 +221,13 @@
                               <div style="display:none;">
                                 <div class="addExpectedStudy bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add another location</div>
                               </div> 
-                              [#-- Button --]
-                              <div>
+                              [#-- add Location Button --]
+                              <div class="addLocationButton-container">
                                 <span id="addLocationButton" class=" addButton pull-right" style="display:none; margin-top:10px; border-radius:8px;">Add location(s)</span>
+                              </div>
+                              [#-- Successfully added alert --]
+                              <div>
+                                <div id="alert-succesfully-added" class="alert alert-success" role="alert" style="display:none">Successfully added</div>
                               </div>
                             </div>
                           </div>
