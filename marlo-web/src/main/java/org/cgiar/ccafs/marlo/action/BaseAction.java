@@ -1152,6 +1152,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * ***********************CENTER METHOD********************
+   * Check if the Monitoring Outcomes section is Active
+   * ************************************************************
+   * 
+   * @return true if the section is Active.
+   */
+  public boolean centerMonitoringOutcomeActive() {
+    try {
+      boolean sectionActive =
+        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_OUTCOME_ACTIVE).toString());
+      return sectionActive;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
 
   /**
    * ***********************CENTER METHOD********************

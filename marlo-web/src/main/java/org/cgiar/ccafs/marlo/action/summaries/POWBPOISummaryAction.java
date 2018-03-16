@@ -158,7 +158,7 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
             ? powbSynthesisPMU.getPowbToc().getTocOverall() : "";
       }
       poiSummary.textParagraph(document.createParagraph(), adjustmentsDescription);
-      if (powbSynthesisPMU.getPowbToc().getFile() != null) {
+      if (powbSynthesisPMU.getPowbToc() != null && powbSynthesisPMU.getPowbToc().getFile() != null) {
         poiSummary.textHyperlink(
           this.getPowbPath(powbSynthesisPMU.getLiaisonInstitution(),
             this.getLoggedCrp().getAcronym() + "_"
@@ -314,7 +314,8 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           plansCRPFlagshipDescription += powbSynthesis.getPowbFlagshipPlans().getPlanSummary();
         }
         poiSummary.textParagraph(document.createParagraph(), plansCRPFlagshipDescription);
-        if (powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
+        if (powbSynthesis.getPowbFlagshipPlans() != null
+          && powbSynthesis.getPowbFlagshipPlans().getFlagshipProgramFile() != null) {
           poiSummary.textHyperlink(
             this.getPowbPath(liaisonInstitution,
               this.getLoggedCrp().getAcronym() + "_"
@@ -581,23 +582,32 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
 
     if (tableC != null) {
       POIField[] sData = {new POIField("Gender", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageGenderPrincipal() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageGenderSignificant() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageGenderNotScored() / 100), ParagraphAlignment.CENTER),
-        new POIField(String.valueOf(tableC.getTotal()), ParagraphAlignment.CENTER)};
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderPrincipal() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderSignificant() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageGenderNotScored() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(String.valueOf((int) tableC.getTotal()), ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData);
       datas.add(data);
       POIField[] sData2 = {new POIField("Youth", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageYouthPrincipal() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageYouthSignificant() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageYouthNotScored() / 100), ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthPrincipal() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthSignificant() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageYouthNotScored() / 100, 2)),
+          ParagraphAlignment.CENTER),
         new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData2);
       datas.add(data);
       POIField[] sData3 = {new POIField("CapDev", ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageCapDevPrincipal() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageCapDevSignificant() / 100), ParagraphAlignment.CENTER),
-        new POIField(percentageFormat.format(tableC.getPercentageCapDevNotScored() / 100), ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevPrincipal() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevSignificant() / 100, 2)),
+          ParagraphAlignment.CENTER),
+        new POIField(percentageFormat.format(round(tableC.getPercentageCapDevNotScored() / 100, 2)),
+          ParagraphAlignment.CENTER),
         new POIField("", ParagraphAlignment.CENTER)};
       data = Arrays.asList(sData3);
       datas.add(data);
@@ -644,10 +654,11 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
           totalMaleNoCg += maleNoCg;
           totalFTE = powbSynthesisCrpStaffingCategory.getTotalFTE();
           POIField[] sData = {new POIField(category, ParagraphAlignment.LEFT),
-            new POIField(String.valueOf(female) + " (" + femaleNoCg + ")", ParagraphAlignment.CENTER),
-            new POIField(String.valueOf(male) + " (" + maleNoCg + ")", ParagraphAlignment.CENTER),
-            new POIField(String.valueOf(totalFTE), ParagraphAlignment.CENTER),
-            new POIField(percentageFormat.format(femalePercentaje), ParagraphAlignment.CENTER)};
+            new POIField(String.valueOf(round(female, 2)) + " (" + round(femaleNoCg, 2) + ")",
+              ParagraphAlignment.CENTER),
+            new POIField(String.valueOf(round(male, 2)) + " (" + round(maleNoCg, 2) + ")", ParagraphAlignment.CENTER),
+            new POIField(String.valueOf(round(totalFTE, 2)), ParagraphAlignment.CENTER),
+            new POIField(percentageFormat.format(round(femalePercentaje, 2)), ParagraphAlignment.CENTER)};
           data = Arrays.asList(sData);
           datas.add(data);
         }
@@ -660,12 +671,13 @@ public class POWBPOISummaryAction extends BaseSummariesAction implements Summary
     powbSynthesisCrpStaffingCategory.setFemaleNoCgiar(totalFemaleNoCg);
     Boolean bold = true;
     POIField[] sData = {new POIField("Total CRP", ParagraphAlignment.LEFT, bold),
-      new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getFemale()) + " ("
-        + powbSynthesisCrpStaffingCategory.getFemaleNoCgiar() + ")", ParagraphAlignment.CENTER, bold),
-      new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getMale()) + " ("
-        + powbSynthesisCrpStaffingCategory.getMaleNoCgiar() + ")", ParagraphAlignment.CENTER, bold),
-      new POIField(String.valueOf(powbSynthesisCrpStaffingCategory.getTotalFTE()), ParagraphAlignment.CENTER, bold),
-      new POIField(percentageFormat.format(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0),
+      new POIField(String.valueOf(round(powbSynthesisCrpStaffingCategory.getFemale(), 2)) + " ("
+        + round(powbSynthesisCrpStaffingCategory.getFemaleNoCgiar(), 2) + ")", ParagraphAlignment.CENTER, bold),
+      new POIField(String.valueOf(round(powbSynthesisCrpStaffingCategory.getMale(), 2)) + " ("
+        + round(powbSynthesisCrpStaffingCategory.getMaleNoCgiar(), 2) + ")", ParagraphAlignment.CENTER, bold),
+      new POIField(String.valueOf(round(powbSynthesisCrpStaffingCategory.getTotalFTE(), 2)), ParagraphAlignment.CENTER,
+        bold),
+      new POIField(percentageFormat.format(round(powbSynthesisCrpStaffingCategory.getFemalePercentage() / 100.0, 2)),
         ParagraphAlignment.CENTER, bold)};
 
     data = Arrays.asList(sData);
