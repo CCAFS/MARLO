@@ -17,7 +17,7 @@
 
 [#if switchSession]
   <script type="text/javascript">
-        location.reload();
+    window.location.href = window.location.href;
   </script>
 [/#if]
 <section class="marlo-content">
