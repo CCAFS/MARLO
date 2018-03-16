@@ -68,7 +68,6 @@ function setPhaseID(phaseID) {
       },
       success: function(data) {
         // $('.timeline-loader').fadeOut();
-        // location.reload();
         window.location.href = currentURL;
       },
       complete: function() {

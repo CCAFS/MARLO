@@ -52,7 +52,7 @@ $(document).ready(function() {
                       phaseID: phaseID
                   },
                   success: function(data) {
-                    location.reload();
+                    window.location.href = window.location.href;
                     if(data.ok) {
                       $thisLabel.siblings().removeClass('radio-checked');
                       $thisLabel.addClass('radio-checked');
